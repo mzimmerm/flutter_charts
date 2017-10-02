@@ -85,9 +85,9 @@ class LineChartPainter extends widgets.CustomPainter {
   /// Draws the actual data, either as lines with points (line chart),
   /// or bars/columns, stacked or grouped (bar/column charts).
   void drawPresentersColumns(ui.Canvas canvas) {
-   this._layouter.presentersColumns.valuePresentersColumns
+   this._layouter.presentersColumns.presentersColumns
        .forEach((common.PointAndLinePresentersColumn presentersColumn) {
-     presentersColumn.valuePresenters
+     presentersColumn.presenters
          .forEach((common.PointAndLinePresenter presenter) {
        canvas.drawLine(
            presenter.linePresenter.from,

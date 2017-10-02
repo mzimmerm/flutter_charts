@@ -74,9 +74,9 @@ class SimpleChartLayouter {
   ///     required to paint half of the topmost label.
   SimpleChartLayouter(
       {ui.Size chartArea, ChartData chartData, ChartOptions chartOptions}) {
+    this.chartArea = chartArea;
     this.data = chartData;
     this.options = chartOptions;
-    this.chartArea = chartArea;
   }
 
 
@@ -217,7 +217,7 @@ class SimpleChartLayouter {
     // ### 6. Here, calculate and create offsets and paint
     //        for chart elements such as bars, points  and lines, etc,
     //        depending on the chart type.
-    setupValuePresentersColumns();
+    setupPresentersColumns();
   }
 
 
@@ -227,14 +227,14 @@ class SimpleChartLayouter {
   /// This is a core function that must run at the end of layout.
   /// Painters use the created presenters directly to draw lines, points,
   /// and bars from the presenters' values.
-  void setupValuePresentersColumns() {
+  void setupPresentersColumns() {
 
-    var valuePointsColumns = new ValuePointsColumns(
+    var pointsColumns = new ValuePointsColumns(
         layouter: this,
         createPoint: PointAndLinePresentersColumns.createPoint);
 
     this.presentersColumns = new PointAndLinePresentersColumns(
-      valuePointsColumns: valuePointsColumns,
+      pointsColumns: pointsColumns,
       options: options,
     );
   }
@@ -811,9 +811,9 @@ class ValuePointsColumns {
 
   }
 
-  ValuePointsColumn valuePointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
+  ValuePointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
 
-  StackableValuePoint valuePointAt({int columnIndex, int rowIndex}) => pointsColumns[columnIndex].stackablePoints[rowIndex];
+  StackableValuePoint pointAt({int columnIndex, int rowIndex}) => pointsColumns[columnIndex].stackablePoints[rowIndex];
 
 }
 
@@ -824,7 +824,7 @@ class ValuePointsColumns {
 /// The line, is from this [valuePoint]
 /// to the valuePoint of the PointAndLinePresenter
 /// next in the [PointAndLinePresentersColumn]'s
-/// [valuePresenters] list.
+/// [presenters] list.
 class PointAndLinePresenter {
 
   // todo 1 consider: extends StackableValuePoint / ValuePresenter
@@ -854,13 +854,13 @@ class PointAndLinePresenter {
         to: toPoint,
         paint: linePresenterPaint,
       );
-      point = fromPoint; // point is the left (from) end of the line
-      innerPaint = new ui.Paint();
-      innerPaint.color = material.Colors.yellow;
-      outerPaint = new ui.Paint();
-      outerPaint.color = material.Colors.black;
-      innerRadius = options.hotspotInnerRadius;
-      outerRadius = options.hotspotOuterRadius;
+      this.point = fromPoint; // point is the left (from) end of the line
+      this.innerPaint = new ui.Paint();
+      this.innerPaint.color = material.Colors.yellow;
+      this.outerPaint = new ui.Paint();
+      this.outerPaint.color = material.Colors.black;
+      this.innerRadius = options.hotspotInnerRadius;
+      this.outerRadius = options.hotspotOuterRadius;
 
     }
   }
@@ -870,7 +870,7 @@ class PointAndLinePresentersColumn {
 
 // todo 1 consider:  extends ValuePointsColumn / ValuePresentersColumn
 
-  List<PointAndLinePresenter> valuePresenters = new List();
+  List<PointAndLinePresenter> presenters = new List();
   PointAndLinePresentersColumn nextRightPointsColumn;
 
   PointAndLinePresentersColumn({
@@ -888,7 +888,7 @@ class PointAndLinePresentersColumn {
         rowIndex: rowIndex,
         options: options,
       );
-      valuePresenters.add(presenter);
+      this.presenters.add(presenter);
       rowIndex++;
     });
 
@@ -901,22 +901,22 @@ class PointAndLinePresentersColumns {
 
   // todo 1 consider: extends ValuePresentersColumns
 
-    List<PointAndLinePresentersColumn> valuePresentersColumns = new List();
+    List<PointAndLinePresentersColumn> presentersColumns = new List();
 
     PointAndLinePresentersColumns({
-      ValuePointsColumns valuePointsColumns,
+      ValuePointsColumns pointsColumns,
       LineChartOptions options,
     }) {
       // iterate "column first", that is, over valuePointsColumns.
       PointAndLinePresentersColumn leftPresentersColumn = null;
-      valuePointsColumns.pointsColumns.forEach((ValuePointsColumn pointsColumn) {
-        var valuePresentersColumn = new PointAndLinePresentersColumn(
+      pointsColumns.pointsColumns.forEach((ValuePointsColumn pointsColumn) {
+        var presentersColumn = new PointAndLinePresentersColumn(
           pointsColumn: pointsColumn,
           options: options,
         );
-        valuePresentersColumns.add(valuePresentersColumn);
-        leftPresentersColumn?.nextRightPointsColumn = valuePresentersColumn;
-        leftPresentersColumn = valuePresentersColumn;
+        presentersColumns.add(presentersColumn);
+        leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
+        leftPresentersColumn = presentersColumn;
       });
     }
 

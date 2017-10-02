@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
    }
 
-  void _chartStateChanger() {
+  void _chartStateChanger() { // MVC Controller todo -1
     setState(() {
       // This call to setState tells the Flutter framework that
       // something has changed in this State, which causes it to rerun
@@ -232,12 +232,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands horizontally <-->
                   new Expanded(
-                    child: new LineChart(                // Model
+                    child: new LineChart(                // Controller (View and Controller essentially collapsed)
                       // size: chartLogicalSize,
                       painter: new LineChartPainter(),   // View
-                      layouter: new SimpleChartLayouter( // Controller
-                          chartData: _chartData,
-                          chartOptions: _chartOptions),
+                      // layouter was not here
+                      layouter: new SimpleChartLayouter( // part of Controller
+                          chartData: _chartData,         // Model
+                          chartOptions: _chartOptions),  // Model
                     ),
                   ), // Row -> Expanded ,
 
