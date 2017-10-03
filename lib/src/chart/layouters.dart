@@ -1,17 +1,57 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, PaintingStyle;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint;
 import 'dart:math' as math show max, min;
 
 import 'package:flutter/painting.dart' as painting show TextPainter;
-import 'package:flutter/widgets.dart' as widgets show Widget;
-import 'package:flutter/material.dart' as material;
+// import 'package:flutter/widgets.dart' as widgets show Widget;
+// import 'package:flutter/material.dart' as material;
 
-//import 'package:flutter/widgets.dart' as widgets show TextPainter;
+// import 'package:flutter/widgets.dart' as widgets show TextPainter;
 
 import 'elements_painters.dart';
+
+// MVC-M
 import 'chart_options.dart';
 import 'chart_data.dart';
+
+// MVC-VC
+import 'presenters.dart'; // V
+
 import '../util/range.dart';
 import '../util/util.dart' as util;
+
+class LineChartLayouter extends SimpleChartLayouter {
+
+
+  LineChartLayouter({
+    ui.Size chartArea,
+    ChartData chartData,
+    ChartOptions chartOptions,
+  }) : super (
+    chartArea: chartArea,
+    chartData: chartData,
+    chartOptions: chartOptions,
+  );
+
+  /// Creates from [ChartData] (currently kept by this layouter),
+  /// the stackable points and from them, the columns of presenters.
+  ///
+  /// This is a core function that must run at the end of layout.
+  /// Painters use the created presenters directly to draw lines, points,
+  /// and bars from the presenters' values.
+  void setupPresentersColumns() {
+
+    var pointsColumns = new ValuePointsColumns(
+        layouter: this,
+        createPoint: PointAndLinePresentersColumns.createPoint);
+
+    this.pointAndLinePresentersColumns = new PointAndLinePresentersColumns(
+      pointsColumns: pointsColumns,
+      options: options,
+    );
+  }
+
+
+}
 
 /// Layouters calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -23,7 +63,16 @@ import '../util/util.dart' as util;
 ///      "in the coordinates of the full chart area given to the
 ///      ChartPainter by the application.
 ///   -
-class SimpleChartLayouter {
+abstract class SimpleChartLayouter {
+
+  /// Columns of presenters.
+  ///
+  /// Presenters may be:
+  ///   - points and lines in line chart
+  ///   - bars (stacked or grouped) in bar chart
+  PointAndLinePresentersColumns pointAndLinePresentersColumns;
+  // todo -1 add: BarPresentersColumns barPresentersColumns;
+
   // todo 0 see if these 3 can/should be made private
   ChartOptions options;
   ChartData data;
@@ -38,13 +87,6 @@ class SimpleChartLayouter {
   /// and uses its members as "guiding points" where it's child layouts should
   /// draw themselves.
   GuidingPoints _guidingPoints;
-
-   /// Columns of presenters.
-  ///
-  /// Presenters may be:
-  ///   - points and lines in line chart
-  ///   - bars (stacked or grouped) in bar chart
-  PointAndLinePresentersColumns presentersColumns;
 
   /// [xOutputs] and [yOutputs] hold on the X and Y Layouters output,
   /// maintain all points in absolute positions.
@@ -72,8 +114,11 @@ class SimpleChartLayouter {
   ///     In the Y direction, takes
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
-  SimpleChartLayouter(
-      {ui.Size chartArea, ChartData chartData, ChartOptions chartOptions}) {
+  SimpleChartLayouter({
+    ui.Size chartArea,
+    ChartData chartData,
+    ChartOptions chartOptions,
+  }) {
     this.chartArea = chartArea;
     this.data = chartData;
     this.options = chartOptions;
@@ -220,24 +265,7 @@ class SimpleChartLayouter {
     setupPresentersColumns();
   }
 
-
-  /// Creates from [ChartData] (currently kept by this layouter),
-  /// the stackable points and from them, the columns of presenters.
-  ///
-  /// This is a core function that must run at the end of layout.
-  /// Painters use the created presenters directly to draw lines, points,
-  /// and bars from the presenters' values.
-  void setupPresentersColumns() {
-
-    var pointsColumns = new ValuePointsColumns(
-        layouter: this,
-        createPoint: PointAndLinePresentersColumns.createPoint);
-
-    this.presentersColumns = new PointAndLinePresentersColumns(
-      pointsColumns: pointsColumns,
-      options: options,
-    );
-  }
+  void setupPresentersColumns();
 
   // todo 0 surely some getters from here are not needed?
   double get xyLayoutersAbsY => math.max(
@@ -680,7 +708,7 @@ class GuidingPoints {
   List<ui.Offset> yLabelPoints;
 }
 
-/// Stores both scaled and unscaled X and Y values resulting from data.
+/// Manages both scaled and unscaled X and Y values created from data.
 ///
 /// While [GuidingPoints] manages points where layouts should
 /// draw themselves, this class manages data values that should be drawn.
@@ -692,31 +720,6 @@ class LayoutValues {
   /// Y values of grid (also centers of Y labels),
   /// scaled to the main layouter coordinates.
   List<num> yGridValues;
-}
-
-
-/// todo 0 document
-class LinePresenter {
-  ui.Paint paint;
-  ui.Offset from;
-  ui.Offset to;
-
-  LinePresenter({ui.Offset from, ui.Offset to, ui.Paint paint}) {
-
-    this.paint = paint;
-    this.paint.strokeWidth = 3.0; // todo 1 set as option
-    this.from = from;
-    this.to = to;
-  }
-}
-
-ui.Paint gridLinesPaint(ChartOptions options) {
-  ui.Paint paint = new ui.Paint();
-  paint.color = options.gridLinesColor;
-  paint.style = ui.PaintingStyle.stroke;
-  paint.strokeWidth = 1.0;
-
-  return paint;
 }
 
 /// General x, y coordinates are the outer bound where
@@ -817,113 +820,5 @@ class ValuePointsColumns {
 
 }
 
-/// Represents the point at which data value is shown,
-/// and the line from this point to the next point
-/// on the right.
-///
-/// The line, is from this [valuePoint]
-/// to the valuePoint of the PointAndLinePresenter
-/// next in the [PointAndLinePresentersColumn]'s
-/// [presenters] list.
-class PointAndLinePresenter {
-
-  // todo 1 consider: extends StackableValuePoint / ValuePresenter
-
-  LinePresenter linePresenter;
-  ui.Offset point; // value point
-  ui.Paint innerPaint;
-  ui.Paint outerPaint;
-  double innerRadius;
-  double outerRadius;
-  ChartOptions options;
-
-  PointAndLinePresenter({
-    StackableValuePoint valuePoint,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    LineChartOptions options}) {
-
-      ui.Paint linePresenterPaint = new ui.Paint();
-      linePresenterPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
-
-      ui.Offset fromPoint = valuePoint.to;
-      ui.Offset toPoint = nextRightColumnValuePoint?.to;
-      toPoint ??= fromPoint;
-      linePresenter = new LinePresenter(
-        from: fromPoint,
-        to: toPoint,
-        paint: linePresenterPaint,
-      );
-      this.point = fromPoint; // point is the left (from) end of the line
-      this.innerPaint = new ui.Paint();
-      this.innerPaint.color = material.Colors.yellow;
-      this.outerPaint = new ui.Paint();
-      this.outerPaint.color = material.Colors.black;
-      this.innerRadius = options.hotspotInnerRadius;
-      this.outerRadius = options.hotspotOuterRadius;
-
-    }
-  }
-
-
-class PointAndLinePresentersColumn {
-
-// todo 1 consider:  extends ValuePointsColumn / ValuePresentersColumn
-
-  List<PointAndLinePresenter> presenters = new List();
-  PointAndLinePresentersColumn nextRightPointsColumn;
-
-  PointAndLinePresentersColumn({
-    ValuePointsColumn pointsColumn,
-    LineChartOptions options}) {
-     // setup the contained presenters from points
-    int rowIndex = 0;
-    pointsColumn.stackablePoints.forEach((StackableValuePoint stackablePoint) {
-      var nextRightColumnValuePoint =
-      pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.stackablePoints[rowIndex] : null;
-
-      PointAndLinePresenter presenter = new PointAndLinePresenter(
-        valuePoint: stackablePoint,
-        nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: rowIndex,
-        options: options,
-      );
-      this.presenters.add(presenter);
-      rowIndex++;
-    });
-
-  }
-
-}
-
-// todo 0 : write this in terms of abstracts, reuse implementation
-class PointAndLinePresentersColumns {
-
-  // todo 1 consider: extends ValuePresentersColumns
-
-    List<PointAndLinePresentersColumn> presentersColumns = new List();
-
-    PointAndLinePresentersColumns({
-      ValuePointsColumns pointsColumns,
-      LineChartOptions options,
-    }) {
-      // iterate "column first", that is, over valuePointsColumns.
-      PointAndLinePresentersColumn leftPresentersColumn = null;
-      pointsColumns.pointsColumns.forEach((ValuePointsColumn pointsColumn) {
-        var presentersColumn = new PointAndLinePresentersColumn(
-          pointsColumn: pointsColumn,
-          options: options,
-        );
-        presentersColumns.add(presentersColumn);
-        leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
-        leftPresentersColumn = presentersColumn;
-      });
-    }
-
- static StackableValuePoint createPoint(double x, double y, StackableValuePoint underThisPoint) {
-      double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // Bar: toY
-   return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
- }
-}
 
 

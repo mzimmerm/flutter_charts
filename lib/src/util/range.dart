@@ -471,7 +471,7 @@ class Interval {
     return false;
   }
 
-  /// Outermost union todo 1 consider includes
+  /// Outermost union of this interal with [other].
   Interval merge(Interval other) {
     return new Interval(
         math.min(this.min, other.min), math.max(this.max, other.max));

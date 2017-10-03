@@ -174,6 +174,15 @@ class _MyHomePageState extends State<MyHomePage> {
         "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
         "chartLogicalSize=$chartLogicalSize");
 
+    LineChart lineChart = new LineChart(                // Controller (View and Controller essentially collapsed) - Painting knows about Painter
+      // size: chartLogicalSize,
+      painter: new LineChartPainter(),   // View
+      // layouter was not here
+      layouter: new LineChartLayouter( // part of Controller // was: SimpleChartLayouter
+          chartData: _chartData,         // Model
+          chartOptions: _chartOptions),  // Model
+    );
+
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
@@ -231,8 +240,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   // during the paint phase.
 
                   // Row -> Expanded -> Chart expands horizontally <-->
+                  /* todo -1 remove
                   new Expanded(
-                    child: new LineChart(                // Controller (View and Controller essentially collapsed)
+                    child: new LineChart(                // Controller (View and Controller essentially collapsed) - Painting knows about Painter
                       // size: chartLogicalSize,
                       painter: new LineChartPainter(),   // View
                       // layouter was not here
@@ -241,7 +251,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           chartOptions: _chartOptions),  // Model
                     ),
                   ), // Row -> Expanded ,
-
+                  */
+                  new Expanded(
+                    child: lineChart,
+                  ), // Row -> Expanded ,
                   new Text('<<<'),
                 ],
               ), //

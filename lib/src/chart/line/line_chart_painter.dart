@@ -10,7 +10,37 @@ import 'package:flutter/painting.dart' as painting;
 
 // NO -  need some private import 'package:flutter_charts/flutter_charts.dart' as common;
 import 'package:flutter_charts/flutter_charts.dart' as common;
-import '../elements_layouters.dart' as layouters;
+import '../layouters.dart' as layouters; // todo -1 export in lib instead
+import '../presenters.dart' as presenters; // todo -1 export in lib instead
+
+class LineChartPainter extends ChartPainter {
+
+  layouters.SimpleChartLayouter _layouter;
+
+  /// Draws the actual data, either as lines with points (line chart),
+  /// or bars/columns, stacked or grouped (bar/column charts).
+  void drawPresentersColumns(ui.Canvas canvas) {
+    this._layouter.pointAndLinePresentersColumns.presentersColumns
+        .forEach((presenters.PointAndLinePresentersColumn presentersColumn) {
+      presentersColumn.presenters
+          .forEach((presenters.PointAndLinePresenter presenter) {
+        canvas.drawLine(
+          presenter.linePresenter.from,
+          presenter.linePresenter.to,
+          presenter.linePresenter.paint,
+        );
+        canvas.drawCircle(
+            presenter.point,
+            presenter.outerRadius,
+            presenter.outerPaint);
+        canvas.drawCircle(
+            presenter.point,
+            presenter.innerRadius,
+            presenter.innerPaint);
+      });
+    });
+  }
+}
 
 /// [LineChartPainter] is the core of painting the line chart.
 ///
@@ -19,7 +49,9 @@ import '../elements_layouters.dart' as layouters;
 /// Also encapsulates separate facilities
 /// to paint text on [Canvas].
 ///
-class LineChartPainter extends widgets.CustomPainter {
+/// todo 0 document
+///
+abstract class ChartPainter extends widgets.CustomPainter {
 
   /// Layouter provides the auto-layout of chart elements.
   ///
@@ -32,7 +64,7 @@ class LineChartPainter extends widgets.CustomPainter {
 
   // todo 0 document - change
 
- LineChartPainter() // note: data should be same for all charts,  options differ
+  ChartPainter() // note: data should be same for all charts,  options differ
   {
   }
 
@@ -55,10 +87,10 @@ class LineChartPainter extends widgets.CustomPainter {
     _layouter.chartArea = size;
     _layouter.layout(); // todo 0 pass size to layout
 
-    drawGrid(canvas, size); // todo 0 do we need both args?
-    drawYLabels(size, canvas);
-    drawXLabels(size, canvas);
-    drawLegend(size, canvas);
+    drawGrid(canvas);
+    drawYLabels(canvas);
+    drawXLabels(canvas);
+    drawLegend(canvas);
     drawPresentersColumns(canvas); // bars (bar chart), lines and points (line)
 
     // clip canvas to size - this does nothing
@@ -70,7 +102,7 @@ class LineChartPainter extends widgets.CustomPainter {
     return true;
   }
 
-  void drawGrid(ui.Canvas canvas, ui.Size gridSize) {
+  void drawGrid(ui.Canvas canvas) {
 
     // draw horizontal and vertical grid
     _layouter.horizGridLines.forEach((linePresenter) =>
@@ -82,30 +114,7 @@ class LineChartPainter extends widgets.CustomPainter {
     );
   }
 
-  /// Draws the actual data, either as lines with points (line chart),
-  /// or bars/columns, stacked or grouped (bar/column charts).
-  void drawPresentersColumns(ui.Canvas canvas) {
-   this._layouter.presentersColumns.presentersColumns
-       .forEach((common.PointAndLinePresentersColumn presentersColumn) {
-     presentersColumn.presenters
-         .forEach((common.PointAndLinePresenter presenter) {
-       canvas.drawLine(
-           presenter.linePresenter.from,
-         presenter.linePresenter.to,
-         presenter.linePresenter.paint,
-       );
-       canvas.drawCircle(
-           presenter.point,
-           presenter.outerRadius,
-           presenter.outerPaint);
-       canvas.drawCircle(
-           presenter.point,
-           presenter.innerRadius,
-           presenter.innerPaint);
-     });
-   });
-  }
-  void drawXLabels(ui.Size size, ui.Canvas canvas) {
+  void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
     for (common.XLayouterOutput xLabel in _layouter.xOutputs) {
       // todo 0 : move / keep label coords in layouter
@@ -116,7 +125,7 @@ class LineChartPainter extends widgets.CustomPainter {
     }
   }
 
-  void drawYLabels(ui.Size size, ui.Canvas canvas) {
+  void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
     for (common.YLayouterOutput yLabel in _layouter.yOutputs) {
       // todo 0 : move / keep label coords in layouter
@@ -129,12 +138,16 @@ class LineChartPainter extends widgets.CustomPainter {
     }
   }
 
-  void drawLegend(ui.Size size, ui.Canvas canvas) {
+  void drawLegend(ui.Canvas canvas) {
     for (common.LegendLayouterOutput legend in _layouter.legendOutputs) {
       legend.labelPainter.paint(canvas, legend.labelOffset);
 
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
     }
   }
+
+  /// Draws the actual data, either as lines with points (line chart),
+  /// or bars/columns, stacked or grouped (bar/column charts).
+  void drawPresentersColumns(ui.Canvas canvas);
 }
 
