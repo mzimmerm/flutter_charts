@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
    }
 
-  void _chartStateChanger() { // MVC Controller todo -1
+  void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
       // something has changed in this State, which causes it to rerun
@@ -174,13 +174,11 @@ class _MyHomePageState extends State<MyHomePage> {
         "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
         "chartLogicalSize=$chartLogicalSize");
 
-    LineChart lineChart = new LineChart(                // Controller (View and Controller essentially collapsed) - Painting knows about Painter
-      // size: chartLogicalSize,
-      painter: new LineChartPainter(),   // View
-      // layouter was not here
-      layouter: new LineChartLayouter( // part of Controller // was: SimpleChartLayouter
-          chartData: _chartData,         // Model
-          chartOptions: _chartOptions),  // Model
+    LineChart lineChart = new LineChart(
+      painter: new LineChartPainter(),
+      layouter: new LineChartLayouter(
+          chartData: _chartData,
+          chartOptions: _chartOptions),
     );
 
     // [MyHomePage] extends [StatefulWidget].

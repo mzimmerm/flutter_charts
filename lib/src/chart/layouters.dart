@@ -9,17 +9,15 @@ import 'package:flutter/painting.dart' as painting show TextPainter;
 
 import 'elements_painters.dart';
 
-// MVC-M
 import 'chart_options.dart';
 import 'chart_data.dart';
 
-// MVC-VC
 import 'presenters.dart'; // V
 
 import '../util/range.dart';
 import '../util/util.dart' as util;
 
-class LineChartLayouter extends SimpleChartLayouter {
+class LineChartLayouter extends ChartLayouter {
 
 
   LineChartLayouter({
@@ -63,7 +61,7 @@ class LineChartLayouter extends SimpleChartLayouter {
 ///      "in the coordinates of the full chart area given to the
 ///      ChartPainter by the application.
 ///   -
-abstract class SimpleChartLayouter {
+abstract class ChartLayouter {
 
   /// Columns of presenters.
   ///
@@ -114,7 +112,7 @@ abstract class SimpleChartLayouter {
   ///     In the Y direction, takes
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
-  SimpleChartLayouter({
+  ChartLayouter({
     ui.Size chartArea,
     ChartData chartData,
     ChartOptions chartOptions,
@@ -305,7 +303,7 @@ abstract class SimpleChartLayouter {
 /// providing remaining available space for grid and x labels.
 class YLayouter {
   /// The containing layouter.
-  SimpleChartLayouter _chartLayouter;
+  ChartLayouter _chartLayouter;
 
   // ### input values
 
@@ -328,7 +326,7 @@ class YLayouter {
   /// much width as needed for Y labels to be painted.
   ///
   YLayouter({
-    SimpleChartLayouter chartLayouter,
+    ChartLayouter chartLayouter,
     double yAxisAbsMin,
     double yAxisAbsMax,
   }) {
@@ -437,7 +435,7 @@ class YLayouter {
 /// Generally, the owner of this object decides what the offsets are:
 ///   - If owner is YLayouter, all positions are relative to the top of
 ///     the container of y labels
-///   - If owner is Area [SimpleChartLayouter], all positions are relative
+///   - If owner is Area [ChartLayouter], all positions are relative
 ///     to the top of the available [chartArea].
 class YLayouterOutput {
   /// Painter configured to paint one label
@@ -485,7 +483,7 @@ class YLayouterOutput {
 
 class XLayouter {
   /// The containing layouter.
-  SimpleChartLayouter _chartLayouter;
+  ChartLayouter _chartLayouter;
 
   // ### input values
 
@@ -508,7 +506,7 @@ class XLayouter {
   /// much height as needed for X labels to be painted.
   ///
   XLayouter({
-    SimpleChartLayouter chartLayouter,
+    ChartLayouter chartLayouter,
     double availableWidth,
   }) {
     _chartLayouter = chartLayouter;
@@ -579,7 +577,7 @@ class XLayouterOutput {
 /// This is not very efficient but simple, so legend text should be short
 class LegendLayouter {
   /// The containing layouter.
-  SimpleChartLayouter _chartLayouter;
+  ChartLayouter _chartLayouter;
 
   double _availableWidth;
 
@@ -599,7 +597,7 @@ class LegendLayouter {
   /// much height as needed for legend labels to be painted.
   ///
   LegendLayouter({
-    SimpleChartLayouter chartLayouter,
+    ChartLayouter chartLayouter,
     double availableWidth,
   }) {
     _chartLayouter = chartLayouter;
@@ -756,9 +754,11 @@ typedef StackableValuePoint createPoint(double x, double y, StackableValuePoint 
 
 
 /// todo 0 document
-/// This is basically dataRows' coordinates, scaled to Y axis, inverted,
+/// Represents coordinates of [dataRows], scaled to Y axis, inverted,
 /// and stacked (if the type of chart requires stacking).
-/// It can be used, rather directly, to paint areas above labels.
+///
+/// Passed to presenters, which paint the values in areas above labels,
+/// in the appropriate presentation (point and line chart, column chart, etc)
 /// todo -1 remove need for _ members.
 /// todo -1 rename to ValuePointsTable - allows to view data in rows or columns
 class ValuePointsColumns {
@@ -771,7 +771,7 @@ class ValuePointsColumns {
   /// the passed [dataRows]. Then transposes the [_pointsRows]
   /// to [_pointsColumns].
   ValuePointsColumns({
-    SimpleChartLayouter layouter,
+    ChartLayouter layouter,
     var createPoint,
     }) {
     _pointsRows = new List();

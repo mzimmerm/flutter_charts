@@ -8,7 +8,8 @@ import 'random_chart_data.dart' show RandomChartData;
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
-/// related, may be overriden or adjusted by the chart auto-layout.
+/// related, may be overriden or adjusted by the chart auto-layout,
+/// see [SimpleChartLayouter].
 class ChartOptions {
 
   /// Defines how to layout chart's Y labels: manually or using auto-layout,

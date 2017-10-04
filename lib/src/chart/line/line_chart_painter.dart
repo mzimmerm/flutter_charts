@@ -15,7 +15,7 @@ import '../presenters.dart' as presenters; // todo -1 export in lib instead
 
 class LineChartPainter extends ChartPainter {
 
-  layouters.SimpleChartLayouter _layouter;
+  layouters.ChartLayouter _layouter;
 
   /// Draws the actual data, either as lines with points (line chart),
   /// or bars/columns, stacked or grouped (bar/column charts).
@@ -56,7 +56,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Layouter provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  layouters.SimpleChartLayouter _layouter;
+  layouters.ChartLayouter _layouter;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -68,7 +68,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   {
   }
 
-  setLayouter(common.SimpleChartLayouter layouter) {
+  setLayouter(common.ChartLayouter layouter) {
    _layouter = layouter;
   }
   /// todo 00 document

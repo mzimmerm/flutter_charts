@@ -14,23 +14,22 @@ import 'line_chart_painter.dart' as painter;
 ///       and syntax of a constructor with named parameters
 ///       can be seen in the [LineChart] constructor.
 class LineChart extends widgets.CustomPaint {
-
   /// Default constructor accepts size
   LineChart({
-    widgets.Key                     key,
-    painter.LineChartPainter        painter,
-    widgets.CustomPainter           foregroundPainter,
-    widgets.Size size:              widgets.Size.zero,
-    widgets.Widget                  child,
-    layouters.SimpleChartLayouter   layouter,
-  }) : super(
-    key:                  key,
-    painter:              painter,
-    foregroundPainter:    foregroundPainter,
-    size:                 size,
-    child:                child
-  ) {
+    widgets.Key key,
+    painter.LineChartPainter painter,
+    widgets.CustomPainter foregroundPainter,
+    widgets.Size size: widgets.Size.zero,
+    widgets.Widget child,
+    layouters.LineChartLayouter layouter,
+  })
+      : super(
+          key: key,
+          painter: painter,
+          foregroundPainter: foregroundPainter,
+          size: size,
+          child: child,
+        ) {
     painter.setLayouter(layouter);
   }
 }
-

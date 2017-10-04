@@ -4,12 +4,10 @@ import 'package:flutter/painting.dart' as painting show TextPainter;
 import 'package:flutter/widgets.dart' as widgets show Widget;
 import 'package:flutter/material.dart' as material;
 
-// MVC-M
 import 'chart_options.dart';
 // import 'chart_data.dart';
 
-// MVC-VC
-import 'layouters.dart'; // C
+import 'layouters.dart';
 
 
 /// todo 0 document
@@ -88,7 +86,7 @@ class PointAndLinePresenter {
 
 class PointAndLinePresentersColumn {
 
-// todo 1 consider:  extends ValuePointsColumn / ValuePresentersColumn / List
+// todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
 
   List<PointAndLinePresenter> presenters = new List();
   PointAndLinePresentersColumn nextRightPointsColumn;
