@@ -17,6 +17,60 @@ import 'presenters.dart'; // V
 import '../util/range.dart';
 import '../util/util.dart' as util;
 
+// todo 0 replace typedef with function or better, a method
+typedef StackableValuePoint pointCreator(double x, double y, StackableValuePoint underThisPoint); // previous in column
+
+typedef StackableValuePointPresenter pointPresenterCreator({
+  StackableValuePoint valuePoint,
+  StackableValuePoint nextRightColumnValuePoint,
+  int rowIndex,
+  LineChartOptions options,
+  });
+
+
+class VerticalBarChartLayouter extends ChartLayouter {
+
+  VerticalBarChartLayouter({
+    ui.Size chartArea,
+    ChartData chartData,
+    ChartOptions chartOptions,
+  }) : super (
+    chartArea: chartArea,
+    chartData: chartData,
+    chartOptions: chartOptions,
+  );
+
+
+  void setupPresentersColumns() {
+
+    var pointsColumns = new ValuePointsColumns(
+        layouter: this,
+        pointCreator: null); // todo -2 VerticalBarPresentersColumns.pointCreator);
+
+    this.pointAndLinePresentersColumns = new PresentersColumns(
+      pointsColumns: pointsColumns,
+      options: options,
+      pointPresenterCreator: pointPresenterCreator,
+    );
+  }
+
+  // todo -2 needs to return VerticalBarPresenter
+  static StackableValuePointPresenter pointPresenterCreator({
+    StackableValuePoint valuePoint,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    LineChartOptions options,
+  }) {
+    return new VerticalBarPresenter(
+      valuePoint: valuePoint,
+      nextRightColumnValuePoint: nextRightColumnValuePoint,
+      rowIndex: rowIndex,
+      options: options,
+    );
+  }
+}
+
+/// todo -1 document
 class LineChartLayouter extends ChartLayouter {
 
 
@@ -40,15 +94,28 @@ class LineChartLayouter extends ChartLayouter {
 
     var pointsColumns = new ValuePointsColumns(
         layouter: this,
-        createPoint: PointAndLinePresentersColumns.createPoint);
+        pointCreator: PresentersColumns.pointCreator);
 
-    this.pointAndLinePresentersColumns = new PointAndLinePresentersColumns(
+    this.pointAndLinePresentersColumns = new PresentersColumns(
       pointsColumns: pointsColumns,
       options: options,
+      pointPresenterCreator: pointPresenterCreator,
     );
   }
 
-
+  static StackableValuePointPresenter pointPresenterCreator({
+    StackableValuePoint valuePoint,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    LineChartOptions options,
+  }) {
+    return new PointAndLinePresenter(
+      valuePoint: valuePoint,
+      nextRightColumnValuePoint: nextRightColumnValuePoint,
+      rowIndex: rowIndex,
+      options: options,
+    );
+  }
 }
 
 /// Layouters calculate coordinates of chart points
@@ -63,13 +130,27 @@ class LineChartLayouter extends ChartLayouter {
 ///   -
 abstract class ChartLayouter {
 
+  /// ##### Abstract methods
+
+  /// Creates from [ChartData] (currently kept by this layouter),
+  /// the stackable points and from them, the columns of presenters.
+  ///
+  /// This is a core function that must run at the end of layout.
+  /// Painters use the created presenters directly to draw lines, points,
+  /// and bars from the presenters' values.
+  void setupPresentersColumns();
+
+  /// ##### Subclasses - aware members. todo 2 replace with Visitor or Mixins
+
   /// Columns of presenters.
   ///
   /// Presenters may be:
   ///   - points and lines in line chart
   ///   - bars (stacked or grouped) in bar chart
-  PointAndLinePresentersColumns pointAndLinePresentersColumns;
-  // todo -1 add: BarPresentersColumns barPresentersColumns;
+  ///
+  /// todo -1 replace with getters.
+  PresentersColumns pointAndLinePresentersColumns;
+  PresentersColumns  verticalBarPresentersColumns; // todo -2 VerticalBarPresentersColumns
 
   // todo 0 see if these 3 can/should be made private
   ChartOptions options;
@@ -260,10 +341,8 @@ abstract class ChartLayouter {
     // ### 6. Here, calculate and create offsets and paint
     //        for chart elements such as bars, points  and lines, etc,
     //        depending on the chart type.
-    setupPresentersColumns();
+    setupPresentersColumns(); // abstract
   }
-
-  void setupPresentersColumns();
 
   // todo 0 surely some getters from here are not needed?
   double get xyLayoutersAbsY => math.max(
@@ -749,9 +828,6 @@ class ValuePointsColumn {
     ValuePointsColumn({this.stackablePoints});
 }
 
-// todo 0 replace typedef with function or better, a method
-typedef StackableValuePoint createPoint(double x, double y, StackableValuePoint underThisPoint); // previous in column
-
 
 /// todo 0 document
 /// Represents coordinates of [dataRows], scaled to Y axis, inverted,
@@ -772,7 +848,7 @@ class ValuePointsColumns {
   /// to [_pointsColumns].
   ValuePointsColumns({
     ChartLayouter layouter,
-    var createPoint,
+    var pointCreator, // todo -1 pointCreator pointCreator ?
     }) {
     _pointsRows = new List();
 
@@ -793,7 +869,7 @@ class ValuePointsColumns {
         // todo -1 this vvv should be other places
         double x = layouter.vertGridLines[col].from.dx;
         double y = layouter.yScaler.scaleY(value: colValue);
-        var thisPoint = createPoint(x, y, underThisPoints[col]);
+        var thisPoint = pointCreator(x, y, underThisPoints[col]); // todo -1 pointCreator thisPoint ?
         pointsRow.add(thisPoint);
         underThisPoints[col] = thisPoint;
       };

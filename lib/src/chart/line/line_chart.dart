@@ -33,3 +33,25 @@ class LineChart extends widgets.CustomPaint {
     painter.setLayouter(layouter);
   }
 }
+
+/// todo 0 document
+class VerticalBarChart extends widgets.CustomPaint {
+  /// Default constructor accepts size
+  VerticalBarChart({
+    widgets.Key key,
+    painter.VerticalBarChartPainter painter,
+    widgets.CustomPainter foregroundPainter,
+    widgets.Size size: widgets.Size.zero,
+    widgets.Widget child,
+    layouters.VerticalBarChartLayouter layouter,
+  })
+      : super(
+    key: key,
+    painter: painter,
+    foregroundPainter: foregroundPainter,
+    size: size,
+    child: child,
+  ) {
+    painter.setLayouter(layouter);
+  }
+}

@@ -13,30 +13,64 @@ import 'package:flutter_charts/flutter_charts.dart' as common;
 import '../layouters.dart' as layouters; // todo -1 export in lib instead
 import '../presenters.dart' as presenters; // todo -1 export in lib instead
 
-class LineChartPainter extends ChartPainter {
 
-  layouters.ChartLayouter _layouter;
+/// todo 0 document, move to own file
+class VerticalBarChartPainter extends ChartPainter {
 
-  /// Draws the actual data, either as lines with points (line chart),
-  /// or bars/columns, stacked or grouped (bar/column charts).
+  // todo -2 remove layouters.ChartLayouter _layouter;
+
+  /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     this._layouter.pointAndLinePresentersColumns.presentersColumns
-        .forEach((presenters.PointAndLinePresentersColumn presentersColumn) {
+        .forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumn.presenters
-          .forEach((presenters.PointAndLinePresenter presenter) {
+          .forEach((presenters.StackableValuePointPresenter presenter) {
+        // .forEach((presenters.PointAndLinePresenter presenter) {
+        presenters.PointAndLinePresenter presenterCast = presenter as presenters.PointAndLinePresenter;
         canvas.drawLine(
-          presenter.linePresenter.from,
-          presenter.linePresenter.to,
-          presenter.linePresenter.paint,
+          presenterCast.linePresenter.from,
+          presenterCast.linePresenter.to,
+          presenterCast.linePresenter.paint,
         );
         canvas.drawCircle(
-            presenter.point,
-            presenter.outerRadius,
-            presenter.outerPaint);
+            presenterCast.point,
+            presenterCast.outerRadius,
+            presenterCast.outerPaint);
         canvas.drawCircle(
-            presenter.point,
-            presenter.innerRadius,
-            presenter.innerPaint);
+            presenterCast.point,
+            presenterCast.innerRadius,
+            presenterCast.innerPaint);
+      });
+    });
+  }
+}
+
+/// todo 0 document, move to own file
+class LineChartPainter extends ChartPainter {
+
+  // todo -2 remove layouters.ChartLayouter _layouter;
+
+  /// See super [ChartPainter.drawPresentersColumns].
+  void drawPresentersColumns(ui.Canvas canvas) {
+    this._layouter.pointAndLinePresentersColumns.presentersColumns
+        .forEach((presenters.PresentersColumn presentersColumn) {
+      presentersColumn.presenters
+          .forEach((presenters.StackableValuePointPresenter presenter) {
+        // .forEach((presenters.PointAndLinePresenter presenter) {
+        presenters.PointAndLinePresenter presenterCast = presenter as presenters.PointAndLinePresenter;
+        canvas.drawLine(
+          presenterCast.linePresenter.from,
+          presenterCast.linePresenter.to,
+          presenterCast.linePresenter.paint,
+        );
+        canvas.drawCircle(
+            presenterCast.point,
+            presenterCast.outerRadius,
+            presenterCast.outerPaint);
+        canvas.drawCircle(
+            presenterCast.point,
+            presenterCast.innerRadius,
+            presenterCast.innerPaint);
       });
     });
   }
@@ -49,7 +83,7 @@ class LineChartPainter extends ChartPainter {
 /// Also encapsulates separate facilities
 /// to paint text on [Canvas].
 ///
-/// todo 0 document
+/// todo 0 document fix
 ///
 abstract class ChartPainter extends widgets.CustomPainter {
 
