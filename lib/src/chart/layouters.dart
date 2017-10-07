@@ -18,9 +18,9 @@ import '../util/range.dart';
 import '../util/util.dart' as util;
 
 // todo 0 replace typedef with function or better, a method
-typedef StackableValuePoint pointCreator(double x, double y, StackableValuePoint underThisPoint); // previous in column
+typedef StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint); // previous in stack of points (in this column)
 
-typedef StackableValuePointPresenter pointPresenterCreator({
+typedef StackableValuePointPresenter pointPresenterCreatorFunc({
   StackableValuePoint valuePoint,
   StackableValuePoint nextRightColumnValuePoint,
   int rowIndex,
@@ -45,17 +45,25 @@ class VerticalBarChartLayouter extends ChartLayouter {
 
     var pointsColumns = new ValuePointsColumns(
         layouter: this,
-        pointCreator: null); // todo -2 VerticalBarPresentersColumns.pointCreator);
+        pointCreatorFunc: pointCreatorFunc); // todo -2 VerticalBarPresentersColumns.pointCreatorFunc);
 
     this.pointAndLinePresentersColumns = new PresentersColumns(
       pointsColumns: pointsColumns,
       options: options,
-      pointPresenterCreator: pointPresenterCreator,
+      pointPresenterCreatorFunc: pointPresenterCreatorFunc,
     );
   }
 
+  // todo -2 move to creator of this class - to setupPresentersColumns - needs to differ between VerticalBar and PointAndLine
+  // todo -2 this needs adding a param, like pointPresenterCreatorFunc
+  static StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint) {
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
+    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+  }
+
+
   // todo -2 needs to return VerticalBarPresenter
-  static StackableValuePointPresenter pointPresenterCreator({
+  static StackableValuePointPresenter pointPresenterCreatorFunc({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
@@ -94,16 +102,16 @@ class LineChartLayouter extends ChartLayouter {
 
     var pointsColumns = new ValuePointsColumns(
         layouter: this,
-        pointCreator: PresentersColumns.pointCreator);
+        pointCreatorFunc: pointCreatorFunc);
 
     this.pointAndLinePresentersColumns = new PresentersColumns(
       pointsColumns: pointsColumns,
       options: options,
-      pointPresenterCreator: pointPresenterCreator,
+      pointPresenterCreatorFunc: pointPresenterCreatorFunc,
     );
   }
 
-  static StackableValuePointPresenter pointPresenterCreator({
+  static StackableValuePointPresenter pointPresenterCreatorFunc({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
@@ -116,6 +124,14 @@ class LineChartLayouter extends ChartLayouter {
       options: options,
     );
   }
+
+  // todo -2 move to creator of this class - to setupPresentersColumns - needs to differ between VerticalBar and PointAndLine
+  // todo -2 this needs adding a param, like pointPresenterCreatorFunc
+  static StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint) {
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
+    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+  }
+
 }
 
 /// Layouters calculate coordinates of chart points
@@ -848,7 +864,7 @@ class ValuePointsColumns {
   /// to [_pointsColumns].
   ValuePointsColumns({
     ChartLayouter layouter,
-    var pointCreator, // todo -1 pointCreator pointCreator ?
+    var pointCreatorFunc, // todo -1 pointCreatorFunc pointCreatorFunc ?
     }) {
     _pointsRows = new List();
 
@@ -869,7 +885,7 @@ class ValuePointsColumns {
         // todo -1 this vvv should be other places
         double x = layouter.vertGridLines[col].from.dx;
         double y = layouter.yScaler.scaleY(value: colValue);
-        var thisPoint = pointCreator(x, y, underThisPoints[col]); // todo -1 pointCreator thisPoint ?
+        var thisPoint = pointCreatorFunc(x, y, underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
         pointsRow.add(thisPoint);
         underThisPoints[col] = thisPoint;
       };

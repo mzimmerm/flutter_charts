@@ -81,7 +81,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     LineChartOptions options,
-    var pointPresenterCreator,
+    var pointPresenterCreatorFunc,
   })
       : super(
     valuePoint: valuePoint,
@@ -149,79 +149,6 @@ class VerticalBarPresenter extends StackableValuePointPresenter {
   }
 }
 
-
-/* todo -1 delete when extension works
-class PointAndLinePresenter {
-
-  // todo 1 consider: extends StackableValuePoint / ValuePresenter
-
-  LinePresenter linePresenter;
-  ui.Offset point; // value point
-  ui.Paint innerPaint;
-  ui.Paint outerPaint;
-  double innerRadius;
-  double outerRadius;
-  ChartOptions options;
-
-  PointAndLinePresenter({
-    StackableValuePoint valuePoint,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    LineChartOptions options}) {
-
-    ui.Paint linePresenterPaint = new ui.Paint();
-    linePresenterPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
-
-    ui.Offset fromPoint = valuePoint.to;
-    ui.Offset toPoint = nextRightColumnValuePoint?.to;
-    toPoint ??= fromPoint;
-    linePresenter = new LinePresenter(
-      from: fromPoint,
-      to: toPoint,
-      paint: linePresenterPaint,
-    );
-    this.point = fromPoint; // point is the left (from) end of the line
-    this.innerPaint = new ui.Paint();
-    this.innerPaint.color = material.Colors.yellow;
-    this.outerPaint = new ui.Paint();
-    this.outerPaint.color = material.Colors.black;
-    this.innerRadius = options.hotspotInnerRadius;
-    this.outerRadius = options.hotspotOuterRadius;
-
-  }
-}
-
-class PointAndLinePresentersColumn {
-
-// todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
-
-  List<PointAndLinePresenter> presenters = new List();
-  PointAndLinePresentersColumn nextRightPointsColumn;
-
-  PointAndLinePresentersColumn({
-    ValuePointsColumn pointsColumn,
-    LineChartOptions options}) {
-    // setup the contained presenters from points
-    int rowIndex = 0;
-    pointsColumn.stackablePoints.forEach((StackableValuePoint stackablePoint) {
-      var nextRightColumnValuePoint =
-      pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.stackablePoints[rowIndex] : null;
-
-      PointAndLinePresenter presenter = new PointAndLinePresenter(
-        valuePoint: stackablePoint,
-        nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: rowIndex,
-        options: options,
-      );
-      this.presenters.add(presenter);
-      rowIndex++;
-    });
-
-  }
-
-}
- */
-
 class PresentersColumn {
 
 // todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
@@ -232,7 +159,7 @@ class PresentersColumn {
   PresentersColumn({
     ValuePointsColumn pointsColumn,
     LineChartOptions options,
-    var pointPresenterCreator,
+    var pointPresenterCreatorFunc,
   }) {
     // setup the contained presenters from points
     int rowIndex = 0;
@@ -248,7 +175,7 @@ class PresentersColumn {
         options: options,
       );
       */
-      StackableValuePointPresenter presenter = pointPresenterCreator(
+      StackableValuePointPresenter presenter = pointPresenterCreatorFunc(
         valuePoint: stackablePoint,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: rowIndex,
@@ -272,7 +199,7 @@ class PresentersColumns {
   PresentersColumns({
     ValuePointsColumns pointsColumns,
     LineChartOptions options,
-    var pointPresenterCreator,
+    var pointPresenterCreatorFunc,
   }) {
     // iterate "column first", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn = null;
@@ -280,20 +207,12 @@ class PresentersColumns {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         options: options,
-        pointPresenterCreator: pointPresenterCreator,
+        pointPresenterCreatorFunc: pointPresenterCreatorFunc,
       );
       presentersColumns.add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
       leftPresentersColumn = presentersColumn;
     });
   }
-
-  // todo -2 move to creator of this class - to setupPresentersColumns - needs to differ between VerticalBar and PointAndLine
-  // todo -2 this needs adding a param, like pointPresenterCreator
-  static StackableValuePoint pointCreator(double x, double y, StackableValuePoint underThisPoint) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
-  }
-
 
 }
