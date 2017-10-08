@@ -215,8 +215,8 @@ class PresentersColumns {
 abstract class PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
-    double scaledX,
-    double scaledY,
+    String xLabel,
+    double y,
     StackableValuePoint underThisPoint,});
 
   StackableValuePointPresenter createPointPresenter({
@@ -231,6 +231,15 @@ abstract class PointAndPresenterCreator {
 class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
+    String xLabel,
+    double y,
+    StackableValuePoint underThisPoint,
+  }) {
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
+    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
+  }
+/* todo -1 remove
+StackableValuePoint createPoint({
     double scaledX,
     double scaledY,
     StackableValuePoint underThisPoint,
@@ -238,7 +247,7 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
     double fromScaledY = underThisPoint == null ? 0.0 : underThisPoint.fromScaledY; // VerticalBar: toY
     return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromScaledY: fromScaledY);
   }
-
+ */
     StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
@@ -258,13 +267,13 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 class VerticalBarLeafCreator extends PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
-    double scaledX,
-    double scaledY,
+    String xLabel,
+    double y,
     StackableValuePoint underThisPoint,
   }) {
     // todo -4 start here
-    double fromScaledY = underThisPoint == null ? 0.0 : underThisPoint.toScaledY; // PointAndLine: fromY
-    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromScaledY: fromScaledY);
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
+    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
   }
 
   StackableValuePointPresenter createPointPresenter({

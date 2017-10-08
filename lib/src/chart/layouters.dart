@@ -281,6 +281,7 @@ abstract class ChartLayouter {
     //        depending on the chart type.
 
     setupPointsColumns(); // todo -4 move up
+    scalePointsColumns(); // todo -4 move up
     setupPresentersColumns();
   }
 
@@ -290,6 +291,10 @@ abstract class ChartLayouter {
     this.pointsColumns = new ValuePointsColumns(
         layouter: this,
         pointAndPresenterCreator: this.pointAndPresenterCreator);
+  }
+
+  void scalePointsColumns() {
+    this.pointsColumns.scale(); // todo -4
   }
 
   /// Creates from [ChartData] (model for this layouter),
@@ -771,21 +776,47 @@ class LayoutValues {
   List<num> yGridValues;
 }
 
-/// General x, y coordinates are the outer bound where
+/// Manages values and coordinates of one presented atom of data (x and y).
+///
+/// The managed values are:
+///   - [xLabel], [y], and also the stacking support values [fromY], [toY];
+/// The managed coordinates are absolute coordinates painted by [ChartPainter]:
+///   - [scaledX], [scaledY], [scaledFrom], [scaledTo], and also
+///   the stacking support coordinates [fromScaledY], [toScaledY].
+/// are General x, y coordinates are the outer bound where
 /// represented values will be shown.
 ///
 /// For a bar chart (stacked or grouped), this may be the rectangle
 /// representing one data value.
-
+///
+/// Notes:
+///   - [scaledFrom] and [scaledTo] are offsets for painting in absolute chart
+///     coordinates. Both are set lazily after [scale] is called.
+///   - This object does not manage it's stacking (setting it's [stackFromY],
+///     it is left for the container that manages this object along with
+///     values before (below) and after (above).
 class StackableValuePoint {
+  // todo 0 make appropriate values private
+  String xLabel; // todo 0 this is unused, document why, and maybe use xLabel instead
+  double y;
+  double fromY;
+  double toY;
+
+  /// Scaled values. All set lazily after [scale]
   double scaledX;
   double scaledY;
-  double fromScaledY;
-  double toScaledY;
+  double fromScaledY; // todo -3 rename scaledFromY
+  double toScaledY;// todo -3 rename scaledToY
+
+  /// Scaled Offsets for painting in absolute chart coordinates.
+  /// More precisely, offsets of the bottom and top of the presenter of this
+  /// point - for example, for VerticalBar, bottom and top of each bar
+  /// representing this value point (data point)
   ui.Offset scaledFrom;
   ui.Offset scaledTo;
 
-  StackableValuePoint({scaledX, double scaledY, double stackFromScaledY}) {
+  // todo -1 consider deleting this constructor
+  StackableValuePoint.fromScaledValues({double scaledX, double scaledY, double stackFromScaledY,}) {
     this.scaledX = scaledX;
     this.scaledY = scaledY;
     this.fromScaledY = stackFromScaledY;
@@ -793,6 +824,33 @@ class StackableValuePoint {
 
     this.scaledFrom = new ui.Offset(scaledX, fromScaledY);
     this.scaledTo   = new ui.Offset(scaledX, toScaledY);
+  }
+
+  StackableValuePoint({String xLabel, double y, double stackFromY,}) {
+    this.xLabel = xLabel;
+    this.y = y;
+    this.fromY = stackFromY;
+    this.toY = fromY + this.y;
+  }
+
+  /// Scales this point's data values [x] and [y], and all stacked y values
+  /// and points - [scaledX], [scaledY], [fromScaledY],  [toScaledY],
+  /// [scaledFrom], [scaledTo] - using the passed values scaler [yScaler].
+  ///
+  /// Note that the x values are not really scaled, as object doed not
+  /// manage the unscaled [x] (it manages the corresponding label only).
+  /// For this reason, the [scaledX] value must be provided explicitly.
+  /// The provided [scaledX] value should be the
+  /// "within [ChartPainter] absolute" x coordinate (generally the center
+  /// of the correspoding x label).
+  ///
+  void scale({LabelScalerFormatter yScaler, double scaledX,}) {
+    this.scaledX     = scaledX;
+    this.scaledY     = yScaler.scaleY(value:  this.y); // todo -4 was: yScaler.scaleY(value: colValue)
+    this.fromScaledY = yScaler.scaleY(value: this.fromY);
+    this.toScaledY   = yScaler.scaleY(value: this.toY);
+    this.scaledFrom  = new ui.Offset(scaledX, this.fromScaledY);
+    this.scaledTo    = new ui.Offset(scaledX, this.toScaledY);
   }
 }
 
@@ -812,6 +870,92 @@ class ValuePointsColumn {
 /// in the appropriate presentation (point and line chart, column chart, etc)
 /// todo -1 remove need for _ members.
 /// todo -1 rename to ValuePointsTable - allows to view data in rows or columns
+/// todo -1 see if this can be separated from _layouter: problem: gettting the scaled x, _layouter.vertGridLines[col].from.dx
+class ValuePointsColumns {
+  List<List<StackableValuePoint>> _pointsRows;
+  List<List<StackableValuePoint>> _pointsColumns;
+  ChartLayouter _layouter;
+  List<ValuePointsColumn> pointsColumns;
+
+
+  /// Creates [_pointsRows] with the same structure and values as
+  /// the passed [dataRows]. Then transposes the [_pointsRows]
+  /// to [_pointsColumns].
+  ValuePointsColumns({ // todo -1 rename this and friends to PointsColumns
+    ChartLayouter layouter,
+    PointAndPresenterCreator pointAndPresenterCreator, // todo -1 pointCreatorFunc pointCreatorFunc ?
+    }) {
+    _layouter = layouter;
+    _pointsRows = new List();
+
+    ChartData chartData = layouter.data;
+
+    // dataRows.forEach((var dataRow) {
+    List<StackableValuePoint> underThisPoints = new List(chartData.dataRows[0].length); // todo 0 deal with no data rows
+    for (int col = 0; col < underThisPoints.length; col++) underThisPoints[col] = null;
+
+    for (int row = 0; row < chartData.dataRows.length; row++) {
+      List<num> dataRow = chartData.dataRows[row];
+      List<StackableValuePoint> pointsRow = new List<StackableValuePoint>();
+      _pointsRows.add(pointsRow);
+      // int col = 0;
+      // dataRow.forEach((var colValue) {
+      for (int col = 0; col < dataRow.length; col++) {
+        num colValue = dataRow[col];
+        var thisPoint = pointAndPresenterCreator.createPoint(
+            xLabel: null, y: colValue, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
+
+        /*
+        num colValue = dataRow[col];
+        double scaledX = _layouter.vertGridLines[col].from.dx;
+        double scaledY = _layouter.yScaler.scaleY(value: colValue);
+        var thisPoint = pointAndPresenterCreator.createPoint(
+            scaledX: scaledX, scaledY: scaledY, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
+         */
+        pointsRow.add(thisPoint);
+        underThisPoints[col] = thisPoint;
+      };
+    };
+    _pointsRows.toList();
+    _pointsColumns = util.transpose(_pointsRows);
+
+    // convert List<List<StackableValuePoint>> to List<ValuePointsColumn>
+    ValuePointsColumn leftColumn = null;
+    pointsColumns = new List();
+
+    _pointsColumns.forEach((List<StackableValuePoint> points) {
+      var pointsColumn = new ValuePointsColumn(stackablePoints: points);
+      pointsColumns.add(pointsColumn);
+      leftColumn?.nextRightPointsColumn = pointsColumn;
+      leftColumn = pointsColumn;
+    });
+  }
+
+  /// Scales this object's column values managed in [pointsColumns].
+  ///
+  /// This allows separation of creating this object with
+  /// the original, unscaled data points, and apply scaling later
+  /// on the stackable (stacked or unstacked) values.
+  ///
+  /// Notes:
+  ///   - Iterates this object's [pointsColumns], and the contained
+  ///   [ValuePointsColumn.stackablePoints] and applies each
+  ///   [StackableValuePoint]'s [StackableValuePoint.scale] on each point.
+  ///   - No scaling of the internal representation stored in [_pointsRows]
+  ///   or [_pointsColumns].
+  void scale() {
+    int col = 0;
+    pointsColumns.forEach((ValuePointsColumn column) {
+      column.stackablePoints.forEach((StackableValuePoint point) {
+        // todo -4
+        double scaledX = _layouter.vertGridLines[col].from.dx;
+        point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
+      });
+      col++;
+    });
+  }
+
+  /* todo -4 remove when scaling separation works
 class ValuePointsColumns {
   List<List<StackableValuePoint>> _pointsRows;
   List<List<StackableValuePoint>> _pointsColumns;
@@ -865,7 +1009,7 @@ class ValuePointsColumns {
     });
 
   }
-
+   */
   ValuePointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
 
   StackableValuePoint pointAt({int columnIndex, int rowIndex}) => pointsColumns[columnIndex].stackablePoints[rowIndex];
