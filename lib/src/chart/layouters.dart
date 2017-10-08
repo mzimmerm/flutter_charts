@@ -146,7 +146,7 @@ abstract class ChartLayouter {
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as we need to scale y values and create labels
     //        from the stacked points (if chart shows values stacked).
-    setupPointsColumns(); // todo -4 move here
+    setupPointsColumns();
 
     // ### 2. Layout the legends on top
 
@@ -208,13 +208,7 @@ abstract class ChartLayouter {
       return xOutput;
     }).toList();
 
-    // ### 5. Once xLayouter is done, we have the rescaled X values,
-    //        (which depend on vertGridLineX), available.
-    //        Here,
-
-    // todo -4 5 is not needed???
-
-    // ### 6. Second call to YLayouter is needed, as available height for Y
+    // ### 5. Second call to YLayouter is needed, as available height for Y
     //        is only known after XLayouter provided height of xLabels
     //        on the bottom .
     //        The y axis absolute min and max are used to scale data values
@@ -238,7 +232,7 @@ abstract class ChartLayouter {
 
     this.yLayouter = yLayouter;
 
-    // ### 7. Recalculate offsets for this Area layouter
+    // ### 6. Recalculate offsets for this Area layouter
 
     yOutputs = yLayouter.outputs.map((var output) {
       var yOutput = new YLayouterOutput();
@@ -251,11 +245,11 @@ abstract class ChartLayouter {
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
 
-    // ### 8. Here, calculate and create offsets and paint
-    //        for chart elements such as bars, points  and lines, etc,
-    //        depending on the chart type.
+    // ### 7. Here, scale the [pointsColumns] to the chart scale,
+    //        calculate and create the chart presenters for
+    //        bars, points  and lines, etc, depending on the chart type.
 
-    scalePointsColumns(); // todo -4 move up
+    scalePointsColumns();
     setupPresentersColumns();
   }
 
@@ -455,6 +449,8 @@ class YLayouter {
   /// Y axis according to data range, labels range, and display range
   void layoutAutomatically() {
     List<double> flatData = _chartLayouter.pointsColumns.flattenYValues(); // todo -1 move to common layout, same for manual and auto
+
+    print("flatData=$flatData");
 
     Range range = new Range(
         values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);
@@ -834,7 +830,7 @@ class StackableValuePoint {
     this.xLabel = xLabel;
     this.y = y;
     this.fromY = stackFromY;
-    this.toY = fromY + this.y;
+    this.toY = this.fromY + this.y;
   }
 
   /// Scales this point's data values [x] and [y], and all stacked y values
@@ -904,6 +900,7 @@ class ValuePointsColumns {
       _pointsRows.add(pointsRow);
       // int col = 0;
       // dataRow.forEach((var colValue) {
+      StackableValuePoint underThisPoint = null;
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
         var thisPoint = pointAndPresenterCreator.createPoint(
@@ -958,7 +955,7 @@ class ValuePointsColumns {
       List<num> flat = [];
       pointsColumns.forEach((ValuePointsColumn column) {
         column.stackablePoints.forEach((StackableValuePoint point) {
-          flat.add(point.y);
+          flat.add(point.toY);
         });
       });
     return flat;

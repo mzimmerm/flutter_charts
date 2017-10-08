@@ -236,18 +236,8 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
     StackableValuePoint underThisPoint,
   }) {
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
+    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);  // fromY remains 0.0 for all points
   }
-/* todo -1 remove
-StackableValuePoint createPoint({
-    double scaledX,
-    double scaledY,
-    StackableValuePoint underThisPoint,
-  }) {
-    double fromScaledY = underThisPoint == null ? 0.0 : underThisPoint.fromScaledY; // VerticalBar: toY
-    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromScaledY: fromScaledY);
-  }
- */
     StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
