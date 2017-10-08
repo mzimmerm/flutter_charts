@@ -215,8 +215,8 @@ class PresentersColumns {
 abstract class PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
-    double x,
-    double y,
+    double scaledX,
+    double scaledY,
     StackableValuePoint underThisPoint,});
 
   StackableValuePointPresenter createPointPresenter({
@@ -231,12 +231,12 @@ abstract class PointAndPresenterCreator {
 class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
-    double x,
-    double y,
+    double scaledX,
+    double scaledY,
     StackableValuePoint underThisPoint,
   }) {
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromY: fromY);
   }
 
     StackableValuePointPresenter createPointPresenter({
@@ -258,13 +258,13 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 class VerticalBarLeafCreator extends PointAndPresenterCreator {
 
   StackableValuePoint createPoint({
-    double x,
-    double y,
+    double scaledX,
+    double scaledY,
     StackableValuePoint underThisPoint,
   }) {
     // todo -4 start here
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
-    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromY: fromY);
   }
 
   StackableValuePointPresenter createPointPresenter({

@@ -79,11 +79,9 @@ abstract class ChartLayouter {
   ///
   /// todo -1 replace with getters.
 
-  ///
-  // PresentersColumns pointAndLinePresentersColumns;
-  // PresentersColumns  verticalBarPresentersColumns; // !! todo -2 VerticalBarPresentersColumns (same above)
-  PresentersColumns presentersColumns;
 
+  PresentersColumns  presentersColumns;
+  ValuePointsColumns pointsColumns;
 
 
   // todo 0 see if these 3 can/should be made private
@@ -175,7 +173,13 @@ abstract class ChartLayouter {
 
 
   layout() {
-    // ### 1. First layout the legends on top
+
+    // ### 1. Prepare, from dataRows, the stackable points early, as
+    //        we need to scale y values and create labels from
+    //        the stacked points (if chart shows values stacked)
+    //setupPointsColumns(); // todo -4 move here
+
+    // ### 2. Layout the legends on top
 
     LegendLayouter legendLayouter = new LegendLayouter(
         chartLayouter: this, availableWidth: chartArea.width);
@@ -193,7 +197,7 @@ abstract class ChartLayouter {
       return legendOutput;
     }).toList();
 
-    // ### 2. Next, we ask YLayouter to provide Y label container width.
+    // ### 3. Ask YLayouter to provide Y label container width.
     //        This provides how much width
     //        is left for the XLayouter (grid and X axis) to use.
     //        The y axis absolute min and max is not relevant in this first call.
@@ -213,11 +217,11 @@ abstract class ChartLayouter {
 
     this.yLayouter = yLayouterFirst;
 
-    // ### 3. Knowing width required by Y axis (from first YLayouter layout call),
-    //        we can layout X labels and grid in X direction, by calling
-    //        XLayouter.layout().
-    //        We do not give it the available height, as is only marginally
-    //        relevant (if there was not enough height for x labels).
+    // ### 4. Knowing the width required by Y axis
+    //        (from first YLayouter layout call), we can layout X labels
+    //        and grid in X direction, by calling XLayouter.layout().
+    //        We do not give it the available height, although height may be
+    //        marginally relevant (if there was not enough height for x labels).
     var xLayouter = new XLayouter(
         chartLayouter: this,
         // todo 1 add padding, from options
@@ -235,7 +239,7 @@ abstract class ChartLayouter {
       return xOutput;
     }).toList();
 
-    // ### 4. Second call to YLayouter is needed, as available height for Y
+    // ### 5. Second call to YLayouter is needed, as available height for Y
     //        is only known after XLayouter provided height of xLabels
     //        on the bottom .
     //        The y axis absolute min and max are used to scale data values
@@ -259,7 +263,7 @@ abstract class ChartLayouter {
 
     this.yLayouter = yLayouter;
 
-    // ### 5. Recalculate offsets for this Area layouter
+    // ### 6. Recalculate offsets for this Area layouter
 
     yOutputs = yLayouter.outputs.map((var output) {
       var yOutput = new YLayouterOutput();
@@ -272,10 +276,20 @@ abstract class ChartLayouter {
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
 
-    // ### 6. Here, calculate and create offsets and paint
+    // ### 7. Here, calculate and create offsets and paint
     //        for chart elements such as bars, points  and lines, etc,
     //        depending on the chart type.
+
+    setupPointsColumns(); // todo -4 move up
     setupPresentersColumns();
+  }
+
+  // todo -1 document
+  void setupPointsColumns() {
+
+    this.pointsColumns = new ValuePointsColumns(
+        layouter: this,
+        pointAndPresenterCreator: this.pointAndPresenterCreator);
   }
 
   /// Creates from [ChartData] (model for this layouter),
@@ -292,12 +306,8 @@ abstract class ChartLayouter {
 
   void setupPresentersColumns() {
 
-    var pointsColumns = new ValuePointsColumns(
-        layouter: this,
-        pointAndPresenterCreator: this.pointAndPresenterCreator);
-
     this.presentersColumns = new PresentersColumns(
-      pointsColumns: pointsColumns,
+      pointsColumns: this.pointsColumns,
       options: options,
       pointAndPresenterCreator: this.pointAndPresenterCreator,
     );
@@ -768,18 +778,18 @@ class LayoutValues {
 /// representing one data value.
 
 class StackableValuePoint {
-  double x;
+  double scaledX;
   double fromY;
   double toY;
   ui.Offset from;
   ui.Offset to;
 
-  StackableValuePoint({this.x, double y, double stackFromY}) {
+  StackableValuePoint({this.scaledX, double scaledY, double stackFromY}) {
     fromY = stackFromY;
-    toY = fromY + y;
+    toY = fromY + scaledY;
 
-    from = new ui.Offset(x, fromY);
-    to   = new ui.Offset(x, toY);
+    from = new ui.Offset(scaledX, fromY);
+    to   = new ui.Offset(scaledX, toY);
   }
 }
 
@@ -829,10 +839,10 @@ class ValuePointsColumns {
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
         // todo -1 this vvv should be other places
-        double x = layouter.vertGridLines[col].from.dx;
-        double y = layouter.yScaler.scaleY(value: colValue);
+        double scaledX = layouter.vertGridLines[col].from.dx;
+        double scaledY = layouter.yScaler.scaleY(value: colValue);
         var thisPoint = pointAndPresenterCreator.createPoint(
-            x: x, y: y, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
+            scaledX: scaledX, scaledY: scaledY, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
         pointsRow.add(thisPoint);
         underThisPoints[col] = thisPoint;
       };
