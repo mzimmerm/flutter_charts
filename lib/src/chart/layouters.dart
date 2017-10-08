@@ -17,16 +17,18 @@ import 'presenters.dart'; // V
 import '../util/range.dart';
 import '../util/util.dart' as util;
 
+// todo -1 delete typedef
 // todo 0 replace typedef with function or better, a method
-typedef StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint); // previous in stack of points (in this column)
+/*
+typedef StackableValuePoint PointCreatorFuncType(double x, double y, StackableValuePoint underThisPoint); // previous in stack of points (in this column)
 
-typedef StackableValuePointPresenter pointPresenterCreatorFunc({
+typedef StackableValuePointPresenter PointPresenterCreatorFuncType({
   StackableValuePoint valuePoint,
   StackableValuePoint nextRightColumnValuePoint,
   int rowIndex,
-  LineChartOptions options,
+  LineChartOptions options, // todo -1
   });
-
+*/
 
 class VerticalBarChartLayouter extends ChartLayouter {
 
@@ -38,49 +40,13 @@ class VerticalBarChartLayouter extends ChartLayouter {
     chartArea: chartArea,
     chartData: chartData,
     chartOptions: chartOptions,
-  );
-
-
-  void setupPresentersColumns() {
-
-    var pointsColumns = new ValuePointsColumns(
-        layouter: this,
-        pointCreatorFunc: pointCreatorFunc); // todo -2 VerticalBarPresentersColumns.pointCreatorFunc);
-
-    this.pointAndLinePresentersColumns = new PresentersColumns(
-      pointsColumns: pointsColumns,
-      options: options,
-      pointPresenterCreatorFunc: pointPresenterCreatorFunc,
-    );
-  }
-
-  // todo -2 move to creator of this class - to setupPresentersColumns - needs to differ between VerticalBar and PointAndLine
-  // todo -2 this needs adding a param, like pointPresenterCreatorFunc
-  static StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
-    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
-  }
-
-
-  // todo -2 needs to return VerticalBarPresenter
-  static StackableValuePointPresenter pointPresenterCreatorFunc({
-    StackableValuePoint valuePoint,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    LineChartOptions options,
-  }) {
-    return new VerticalBarPresenter(
-      valuePoint: valuePoint,
-      nextRightColumnValuePoint: nextRightColumnValuePoint,
-      rowIndex: rowIndex,
-      options: options,
-    );
+  ) {
+    pointAndPresenterCreator = new VerticalBarLeafCreator();
   }
 }
 
 /// todo -1 document
 class LineChartLayouter extends ChartLayouter {
-
 
   LineChartLayouter({
     ui.Size chartArea,
@@ -90,46 +56,8 @@ class LineChartLayouter extends ChartLayouter {
     chartArea: chartArea,
     chartData: chartData,
     chartOptions: chartOptions,
-  );
-
-  /// Creates from [ChartData] (currently kept by this layouter),
-  /// the stackable points and from them, the columns of presenters.
-  ///
-  /// This is a core function that must run at the end of layout.
-  /// Painters use the created presenters directly to draw lines, points,
-  /// and bars from the presenters' values.
-  void setupPresentersColumns() {
-
-    var pointsColumns = new ValuePointsColumns(
-        layouter: this,
-        pointCreatorFunc: pointCreatorFunc);
-
-    this.pointAndLinePresentersColumns = new PresentersColumns(
-      pointsColumns: pointsColumns,
-      options: options,
-      pointPresenterCreatorFunc: pointPresenterCreatorFunc,
-    );
-  }
-
-  static StackableValuePointPresenter pointPresenterCreatorFunc({
-    StackableValuePoint valuePoint,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    LineChartOptions options,
-  }) {
-    return new PointAndLinePresenter(
-      valuePoint: valuePoint,
-      nextRightColumnValuePoint: nextRightColumnValuePoint,
-      rowIndex: rowIndex,
-      options: options,
-    );
-  }
-
-  // todo -2 move to creator of this class - to setupPresentersColumns - needs to differ between VerticalBar and PointAndLine
-  // todo -2 this needs adding a param, like pointPresenterCreatorFunc
-  static StackableValuePoint pointCreatorFunc(double x, double y, StackableValuePoint underThisPoint) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+  ) {
+    pointAndPresenterCreator = new PointAndLineLeafCreator();
   }
 
 }
@@ -146,15 +74,32 @@ class LineChartLayouter extends ChartLayouter {
 ///   -
 abstract class ChartLayouter {
 
-  /// ##### Abstract methods
+  /// ##### Abstract methods or sub-implemented getters
 
+  // todo -1 document or change to abstract getter, make subs
+  PointAndPresenterCreator pointAndPresenterCreator;
+
+// todo -1 move to non abstract area
   /// Creates from [ChartData] (currently kept by this layouter),
   /// the stackable points and from them, the columns of presenters.
   ///
   /// This is a core function that must run at the end of layout.
   /// Painters use the created presenters directly to draw lines, points,
   /// and bars from the presenters' values.
-  void setupPresentersColumns();
+
+  void setupPresentersColumns() {
+
+    var pointsColumns = new ValuePointsColumns(
+        layouter: this,
+        pointAndPresenterCreator: this.pointAndPresenterCreator);
+
+    this.pointAndLinePresentersColumns = new PresentersColumns(
+      pointsColumns: pointsColumns,
+      options: options,
+      pointAndPresenterCreator: this.pointAndPresenterCreator,
+    );
+  }
+
 
   /// ##### Subclasses - aware members. todo 2 replace with Visitor or Mixins
 
@@ -165,8 +110,10 @@ abstract class ChartLayouter {
   ///   - bars (stacked or grouped) in bar chart
   ///
   /// todo -1 replace with getters.
+
   PresentersColumns pointAndLinePresentersColumns;
   PresentersColumns  verticalBarPresentersColumns; // todo -2 VerticalBarPresentersColumns
+
 
   // todo 0 see if these 3 can/should be made private
   ChartOptions options;
@@ -357,7 +304,7 @@ abstract class ChartLayouter {
     // ### 6. Here, calculate and create offsets and paint
     //        for chart elements such as bars, points  and lines, etc,
     //        depending on the chart type.
-    setupPresentersColumns(); // abstract
+    setupPresentersColumns();
   }
 
   // todo 0 surely some getters from here are not needed?
@@ -862,9 +809,9 @@ class ValuePointsColumns {
   /// Creates [_pointsRows] with the same structure and values as
   /// the passed [dataRows]. Then transposes the [_pointsRows]
   /// to [_pointsColumns].
-  ValuePointsColumns({
+  ValuePointsColumns({ // todo -1 rename this and friends to PointsColumns
     ChartLayouter layouter,
-    var pointCreatorFunc, // todo -1 pointCreatorFunc pointCreatorFunc ?
+    PointAndPresenterCreator pointAndPresenterCreator, // todo -1 pointCreatorFunc pointCreatorFunc ?
     }) {
     _pointsRows = new List();
 
@@ -885,7 +832,8 @@ class ValuePointsColumns {
         // todo -1 this vvv should be other places
         double x = layouter.vertGridLines[col].from.dx;
         double y = layouter.yScaler.scaleY(value: colValue);
-        var thisPoint = pointCreatorFunc(x, y, underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
+        var thisPoint = pointAndPresenterCreator.createPoint(
+            x: x, y: y, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
         pointsRow.add(thisPoint);
         underThisPoints[col] = thisPoint;
       };

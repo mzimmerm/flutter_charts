@@ -25,6 +25,7 @@ class LinePresenter {
   }
 }
 
+// todo -1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
   ui.Paint paint = new ui.Paint();
   paint.color = options.gridLinesColor;
@@ -35,7 +36,7 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 }
 
 ////////////////////////////
-/// Base class for
+/// Base class for todo 0 document
 class StackableValuePointPresenter {
 
   StackableValuePoint valuePoint;
@@ -65,6 +66,7 @@ class StackableValuePointPresenter {
 /// to the valuePoint of the PointAndLinePresenter
 /// next in the [PresentersColumn]'s
 /// [presenters] list.
+// todo -1 can this be refactored and joined with / common code with / VerticalBarPresenter? see move colors creation to super
 class PointAndLinePresenter extends StackableValuePointPresenter {
 
   // todo 1 consider: extends StackableValuePoint / ValuePresenter
@@ -81,7 +83,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     LineChartOptions options,
-    var pointPresenterCreatorFunc,
+    PointAndPresenterCreator pointAndPresenterCreator, // todo -2 is this used??
   })
       : super(
     valuePoint: valuePoint,
@@ -89,8 +91,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     rowIndex: rowIndex,
     options: options,
   ){
-
-    // todo -1 move to super (shared for VerticalBar and PointAndLine)
+    // todo -1 move colors creation to super (shared for VerticalBar and PointAndLine)
     ui.Paint linePresenterPaint = new ui.Paint();
     linePresenterPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
 
@@ -114,6 +115,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
 }
 
 // todo -2 make this an actual bar presenter
+// todo -1 can this be refactored and joined with / common code with / PointAndLinePresenter? see move colors creation to super
 
 class VerticalBarPresenter extends StackableValuePointPresenter {
 
@@ -159,7 +161,7 @@ class PresentersColumn {
   PresentersColumn({
     ValuePointsColumn pointsColumn,
     LineChartOptions options,
-    var pointPresenterCreatorFunc,
+    PointAndPresenterCreator pointAndPresenterCreator,
   }) {
     // setup the contained presenters from points
     int rowIndex = 0;
@@ -175,7 +177,7 @@ class PresentersColumn {
         options: options,
       );
       */
-      StackableValuePointPresenter presenter = pointPresenterCreatorFunc(
+      StackableValuePointPresenter presenter = pointAndPresenterCreator.createPointPresenter(
         valuePoint: stackablePoint,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: rowIndex,
@@ -189,7 +191,8 @@ class PresentersColumn {
 
 }
 
-// todo 0 : write this in terms of abstracts, reuse implementation
+// todo -1 : write this in terms of abstracts, reuse implementation - may be done now
+// todo -1 document
 class PresentersColumns {
 
   // todo 1 consider: extends ValuePresentersColumns or extend List
@@ -199,7 +202,7 @@ class PresentersColumns {
   PresentersColumns({
     ValuePointsColumns pointsColumns,
     LineChartOptions options,
-    var pointPresenterCreatorFunc,
+    PointAndPresenterCreator pointAndPresenterCreator,
   }) {
     // iterate "column first", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn = null;
@@ -207,7 +210,7 @@ class PresentersColumns {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         options: options,
-        pointPresenterCreatorFunc: pointPresenterCreatorFunc,
+        pointAndPresenterCreator: pointAndPresenterCreator,
       );
       presentersColumns.add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
@@ -215,4 +218,69 @@ class PresentersColumns {
     });
   }
 
+}
+
+// todo -1 document as creating the actual presenter of the value for chart - creates instances of PointAndLine Presenter and value, , VerticalBar
+// todo -2 rename ChartLeafAtomsCreator
+abstract class PointAndPresenterCreator {
+
+  StackableValuePoint createPoint({
+    double x,
+    double y,
+    StackableValuePoint underThisPoint,});
+
+  StackableValuePointPresenter createPointPresenter({
+    StackableValuePoint valuePoint,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    LineChartOptions options,
+  });
+
+}
+
+class PointAndLineLeafCreator extends PointAndPresenterCreator {
+
+  StackableValuePoint createPoint({double x, double y, StackableValuePoint underThisPoint}) {
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
+    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+  }
+
+    StackableValuePointPresenter createPointPresenter({
+    StackableValuePoint valuePoint,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    LineChartOptions options,
+  }) {
+    return new PointAndLinePresenter(
+      valuePoint: valuePoint,
+      nextRightColumnValuePoint: nextRightColumnValuePoint,
+      rowIndex: rowIndex,
+      options: options,
+    );
+  }
+
+}
+
+class VerticalBarLeafCreator extends PointAndPresenterCreator {
+
+  StackableValuePoint createPoint({double x, double y, StackableValuePoint underThisPoint}) {
+    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
+    return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
+  }
+
+
+  // todo -2 needs to return VerticalBarPresenter
+  StackableValuePointPresenter createPointPresenter({
+    StackableValuePoint valuePoint,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    LineChartOptions options,
+  }) {
+    return new VerticalBarPresenter(
+      valuePoint: valuePoint,
+      nextRightColumnValuePoint: nextRightColumnValuePoint,
+      rowIndex: rowIndex,
+      options: options,
+    );
+  }
 }
