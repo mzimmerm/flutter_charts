@@ -5,8 +5,6 @@ import 'package:flutter/widgets.dart' as widgets show Widget;
 import 'package:flutter/material.dart' as material;
 
 import 'chart_options.dart';
-// import 'chart_data.dart';
-
 import 'layouters.dart';
 
 
@@ -83,7 +81,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     LineChartOptions options,
-    PointAndPresenterCreator pointAndPresenterCreator, // todo -2 is this used??
+    // PointAndPresenterCreator pointAndPresenterCreator, // todo -2 is this used??
   })
       : super(
     valuePoint: valuePoint,
@@ -119,7 +117,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
 
 class VerticalBarPresenter extends StackableValuePointPresenter {
 
-
+  // todo -3 replace with BarPresenter
   LinePresenter linePresenter;
   ui.Offset point;
 
@@ -169,14 +167,6 @@ class PresentersColumn {
       var nextRightColumnValuePoint =
       pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.stackablePoints[rowIndex] : null;
 
-      /* todo -2
-      PointAndLinePresenter presenter = new PointAndLinePresenter(
-        valuePoint: stackablePoint,
-        nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: rowIndex,
-        options: options,
-      );
-      */
       StackableValuePointPresenter presenter = pointAndPresenterCreator.createPointPresenter(
         valuePoint: stackablePoint,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
@@ -240,7 +230,11 @@ abstract class PointAndPresenterCreator {
 
 class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
-  StackableValuePoint createPoint({double x, double y, StackableValuePoint underThisPoint}) {
+  StackableValuePoint createPoint({
+    double x,
+    double y,
+    StackableValuePoint underThisPoint,
+  }) {
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
     return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
   }
@@ -263,13 +257,16 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
 class VerticalBarLeafCreator extends PointAndPresenterCreator {
 
-  StackableValuePoint createPoint({double x, double y, StackableValuePoint underThisPoint}) {
+  StackableValuePoint createPoint({
+    double x,
+    double y,
+    StackableValuePoint underThisPoint,
+  }) {
+    // todo -4 start here
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
     return new StackableValuePoint(x: x, y: y, stackFromY: fromY);
   }
 
-
-  // todo -2 needs to return VerticalBarPresenter
   StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,

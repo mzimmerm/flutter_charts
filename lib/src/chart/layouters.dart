@@ -17,19 +17,6 @@ import 'presenters.dart'; // V
 import '../util/range.dart';
 import '../util/util.dart' as util;
 
-// todo -1 delete typedef
-// todo 0 replace typedef with function or better, a method
-/*
-typedef StackableValuePoint PointCreatorFuncType(double x, double y, StackableValuePoint underThisPoint); // previous in stack of points (in this column)
-
-typedef StackableValuePointPresenter PointPresenterCreatorFuncType({
-  StackableValuePoint valuePoint,
-  StackableValuePoint nextRightColumnValuePoint,
-  int rowIndex,
-  LineChartOptions options, // todo -1
-  });
-*/
-
 class VerticalBarChartLayouter extends ChartLayouter {
 
   VerticalBarChartLayouter({
@@ -77,29 +64,10 @@ abstract class ChartLayouter {
   /// ##### Abstract methods or sub-implemented getters
 
   // todo -1 document or change to abstract getter, make subs
+  /// Subclass specific factory creates instances of chart-leaf elements:
+  /// presenters and points which are painted on the chart
+  /// (points and lines, bar charts, etc).
   PointAndPresenterCreator pointAndPresenterCreator;
-
-// todo -1 move to non abstract area
-  /// Creates from [ChartData] (currently kept by this layouter),
-  /// the stackable points and from them, the columns of presenters.
-  ///
-  /// This is a core function that must run at the end of layout.
-  /// Painters use the created presenters directly to draw lines, points,
-  /// and bars from the presenters' values.
-
-  void setupPresentersColumns() {
-
-    var pointsColumns = new ValuePointsColumns(
-        layouter: this,
-        pointAndPresenterCreator: this.pointAndPresenterCreator);
-
-    this.pointAndLinePresentersColumns = new PresentersColumns(
-      pointsColumns: pointsColumns,
-      options: options,
-      pointAndPresenterCreator: this.pointAndPresenterCreator,
-    );
-  }
-
 
   /// ##### Subclasses - aware members. todo 2 replace with Visitor or Mixins
 
@@ -111,8 +79,11 @@ abstract class ChartLayouter {
   ///
   /// todo -1 replace with getters.
 
-  PresentersColumns pointAndLinePresentersColumns;
-  PresentersColumns  verticalBarPresentersColumns; // todo -2 VerticalBarPresentersColumns
+  ///
+  // PresentersColumns pointAndLinePresentersColumns;
+  // PresentersColumns  verticalBarPresentersColumns; // !! todo -2 VerticalBarPresentersColumns (same above)
+  PresentersColumns presentersColumns;
+
 
 
   // todo 0 see if these 3 can/should be made private
@@ -307,6 +278,32 @@ abstract class ChartLayouter {
     setupPresentersColumns();
   }
 
+  /// Creates from [ChartData] (model for this layouter),
+  /// columns of leaf values encapsulated as [StackableValuePoint]s,
+  /// and from the values, the columns of leaf presenters,
+  /// encapsulated as [StackableValuePointPresenter]s.
+  ///
+  /// The resulting elements (points and presenters) are
+  /// stored in member [presentersColumns].
+  /// This is a core method that must run at the end of layout.
+  /// Painters use the created leaf presenters directly to draw lines, points,
+  /// and bars from the presenters' prepared ui elements:
+  /// lines, points, bars, etc.
+
+  void setupPresentersColumns() {
+
+    var pointsColumns = new ValuePointsColumns(
+        layouter: this,
+        pointAndPresenterCreator: this.pointAndPresenterCreator);
+
+    this.presentersColumns = new PresentersColumns(
+      pointsColumns: pointsColumns,
+      options: options,
+      pointAndPresenterCreator: this.pointAndPresenterCreator,
+    );
+  }
+
+
   // todo 0 surely some getters from here are not needed?
   double get xyLayoutersAbsY => math.max(
       _yLabelsMaxHeight / 2 + _legendContainerHeight,
@@ -399,6 +396,7 @@ class YLayouter {
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually() {
+    // todo -4
     List<double> flatData = _chartLayouter.data.dataRows.expand((i) => i).toList();
     var dataRange =
         new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
@@ -418,7 +416,7 @@ class YLayouter {
 
     var labelScaler = new LabelScalerFormatter(
         dataRange: dataRange,
-        labeValues: yLabelsDividedInYAxisRange,
+        valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: _yAxisAbsMin,
         toScaleMax: _yAxisAbsMax,
         chartOptions: _chartLayouter.options);
@@ -436,6 +434,7 @@ class YLayouter {
   /// Generate labels from data, and auto layout
   /// Y axis according to data range, labels range, and display range
   void layoutAutomatically() {
+    // todo -4
     List flatData = _chartLayouter.data.dataRows.expand((i) => i).toList();
 
     Range range = new Range(

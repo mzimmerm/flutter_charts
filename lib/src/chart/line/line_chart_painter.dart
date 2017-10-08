@@ -21,17 +21,18 @@ class VerticalBarChartPainter extends ChartPainter {
 
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    this._layouter.pointAndLinePresentersColumns.presentersColumns
+    this._layouter.presentersColumns.presentersColumns
         .forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumn.presenters
           .forEach((presenters.StackableValuePointPresenter presenter) {
         // .forEach((presenters.PointAndLinePresenter presenter) {
-        presenters.PointAndLinePresenter presenterCast = presenter as presenters.PointAndLinePresenter;
+        presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
         canvas.drawLine(
           presenterCast.linePresenter.from,
           presenterCast.linePresenter.to,
           presenterCast.linePresenter.paint,
         );
+        /* todo -3 start here
         canvas.drawCircle(
             presenterCast.point,
             presenterCast.outerRadius,
@@ -40,7 +41,9 @@ class VerticalBarChartPainter extends ChartPainter {
             presenterCast.point,
             presenterCast.innerRadius,
             presenterCast.innerPaint);
+            */
       });
+
     });
   }
 }
@@ -52,7 +55,7 @@ class LineChartPainter extends ChartPainter {
 
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    this._layouter.pointAndLinePresentersColumns.presentersColumns
+    this._layouter.presentersColumns.presentersColumns
         .forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumn.presenters
           .forEach((presenters.StackableValuePointPresenter presenter) {

@@ -181,6 +181,13 @@ class _MyHomePageState extends State<MyHomePage> {
           chartOptions: _chartOptions),
     );
 
+    VerticalBarChart verticalBarChart = new VerticalBarChart(
+      painter: new VerticalBarChartPainter(),
+      layouter: new VerticalBarChartLayouter(
+          chartData: _chartData,
+          chartOptions: _chartOptions),
+    );
+
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
@@ -238,18 +245,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   // during the paint phase.
 
                   // Row -> Expanded -> Chart expands horizontally <-->
-                  /* todo -1 remove
-                  new Expanded(
-                    child: new LineChart(                // Controller (View and Controller essentially collapsed) - Painting knows about Painter
-                      // size: chartLogicalSize,
-                      painter: new LineChartPainter(),   // View
-                      // layouter was not here
-                      layouter: new SimpleChartLayouter( // part of Controller
-                          chartData: _chartData,         // Model
-                          chartOptions: _chartOptions),  // Model
-                    ),
-                  ), // Row -> Expanded ,
-                  */
                   new Expanded(
                     child: lineChart,
                   ), // Row -> Expanded ,

@@ -4,13 +4,8 @@ import '../chart/chart_data.dart';
 import '../chart/chart_options.dart';
 import 'util.dart' as util;
 
-/// Scalable range, supporting creation of properly scaled x and y axis labels.
+/// Scalable range, supporting creation of scaled x and y axis labels.
 ///
-/// Given a list of values (for example to show on Y axis),
-/// [makeLabelsFromData] creates labels evenly distributed to cover the range of values,
-/// trying to not waste space, and show only relevant labels, in
-/// decimal steps.
-
 class Range {
   // todo 00 document fields and methods
 
@@ -26,7 +21,13 @@ class Range {
   int _maxLabels;
 
 
-  Range({List<num> values, ChartOptions chartOptions, int maxLabels = 10}) {
+  /// Constructs a scalable range from a list of passed [values].
+  ///
+  /// Given a list of [values] (to show on Y axis),
+  /// [makeLabelsFromData] creates labels evenly distributed to cover the range of values,
+  /// trying to not waste space, and show only relevant labels, in
+  /// decimal steps.
+  Range({List<num> values, ChartOptions chartOptions, int maxLabels = 10,}) {
     _values = values;
     // todo 1 maxLabels does not work. Enable and add to test
     _maxLabels = maxLabels;
@@ -44,7 +45,7 @@ class Range {
   /// The [toScaleMin] and [toScaleMax] are the display scale,
   /// for example the range of Y axis positions between bottom and top.
   LabelScalerFormatter makeLabelsFromDataOnScale(
-      {double toScaleMin, double toScaleMax}) {
+      {double toScaleMin, double toScaleMax,}) {
     num min = _closure.min;
     num max = _closure.max;
     num diff = max - min;
@@ -99,7 +100,7 @@ class Range {
 
     var labelScaler = new LabelScalerFormatter(
         dataRange: new Interval(from, to),
-        labeValues: labels,
+        valueOnLabels: labels,
         toScaleMin: toScaleMin,
         toScaleMax: toScaleMax,
         chartOptions: _options);
@@ -197,13 +198,13 @@ class LabelScalerFormatter {
 
   LabelScalerFormatter({
     Interval dataRange,
-    List<num> labeValues,
+    List<num> valueOnLabels,
     double toScaleMin,
     double toScaleMax,
-    ChartOptions chartOptions}) {
+    ChartOptions chartOptions,}) {
     this.dataRange = dataRange;
     this.labelInfos =
-        labeValues.map((value) => new LabelInfo(value, this)).toList();
+        valueOnLabels.map((value) => new LabelInfo(value, this)).toList();
     _toScaleMin = toScaleMin;
     _toScaleMax = toScaleMax;
     _options = chartOptions;
