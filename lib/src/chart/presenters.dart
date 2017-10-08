@@ -93,8 +93,8 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     ui.Paint linePresenterPaint = new ui.Paint();
     linePresenterPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
 
-    ui.Offset fromPoint = valuePoint.to;
-    ui.Offset toPoint = nextRightColumnValuePoint?.to;
+    ui.Offset fromPoint = valuePoint.scaledTo;
+    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     linePresenter = new LinePresenter(
       from: fromPoint,
@@ -136,8 +136,8 @@ class VerticalBarPresenter extends StackableValuePointPresenter {
     ui.Paint linePresenterPaint = new ui.Paint();
     linePresenterPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
 
-    ui.Offset fromPoint = valuePoint.to;
-    ui.Offset toPoint = nextRightColumnValuePoint?.to;
+    ui.Offset fromPoint = valuePoint.scaledTo;
+    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     linePresenter = new LinePresenter(
       from: fromPoint,
@@ -235,8 +235,8 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
     double scaledY,
     StackableValuePoint underThisPoint,
   }) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromY: fromY);
+    double fromScaledY = underThisPoint == null ? 0.0 : underThisPoint.fromScaledY; // VerticalBar: toY
+    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromScaledY: fromScaledY);
   }
 
     StackableValuePointPresenter createPointPresenter({
@@ -263,8 +263,8 @@ class VerticalBarLeafCreator extends PointAndPresenterCreator {
     StackableValuePoint underThisPoint,
   }) {
     // todo -4 start here
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
-    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromY: fromY);
+    double fromScaledY = underThisPoint == null ? 0.0 : underThisPoint.toScaledY; // PointAndLine: fromY
+    return new StackableValuePoint(scaledX: scaledX, scaledY: scaledY, stackFromScaledY: fromScaledY);
   }
 
   StackableValuePointPresenter createPointPresenter({

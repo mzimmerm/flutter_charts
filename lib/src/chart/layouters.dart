@@ -779,17 +779,20 @@ class LayoutValues {
 
 class StackableValuePoint {
   double scaledX;
-  double fromY;
-  double toY;
-  ui.Offset from;
-  ui.Offset to;
+  double scaledY;
+  double fromScaledY;
+  double toScaledY;
+  ui.Offset scaledFrom;
+  ui.Offset scaledTo;
 
-  StackableValuePoint({this.scaledX, double scaledY, double stackFromY}) {
-    fromY = stackFromY;
-    toY = fromY + scaledY;
+  StackableValuePoint({scaledX, double scaledY, double stackFromScaledY}) {
+    this.scaledX = scaledX;
+    this.scaledY = scaledY;
+    this.fromScaledY = stackFromScaledY;
+    this.toScaledY = fromScaledY + this.scaledY;
 
-    from = new ui.Offset(scaledX, fromY);
-    to   = new ui.Offset(scaledX, toY);
+    this.scaledFrom = new ui.Offset(scaledX, fromScaledY);
+    this.scaledTo   = new ui.Offset(scaledX, toScaledY);
   }
 }
 
