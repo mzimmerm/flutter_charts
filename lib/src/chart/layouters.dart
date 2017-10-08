@@ -135,37 +135,6 @@ abstract class ChartLayouter {
     this.options = chartOptions;
   }
 
-
-  List<LinePresenter> get vertGridLines {
-    return xOutputs.map((var output) {
-      return new LinePresenter(
-          from: new ui.Offset(
-            output.vertGridLineX,
-            this.vertGridLinesFromY,
-          ),
-          to: new ui.Offset(
-            output.vertGridLineX,
-            this.vertGridLinesToY,
-          ),
-          paint: gridLinesPaint(options) );
-    }).toList();
-  }
-
-  List<LinePresenter> get horizGridLines {
-    return yOutputs.map((var output) {
-      return new LinePresenter(
-          from: new ui.Offset(
-            this.horizGridLinesFromX,
-            output.horizGridLineY,
-          ),
-          to: new ui.Offset(
-            this.horizGridLinesToX,
-            output.horizGridLineY,
-          ),
-          paint: gridLinesPaint(options));
-    }).toList();
-  }
-
   // todo 0 document
   double _legendContainerHeight = 0.0;
   double _yLabelsContainerWidth;
@@ -174,10 +143,10 @@ abstract class ChartLayouter {
 
   layout() {
 
-    // ### 1. Prepare, from dataRows, the stackable points early, as
-    //        we need to scale y values and create labels from
-    //        the stacked points (if chart shows values stacked)
-    //setupPointsColumns(); // todo -4 move here
+    // ### 1. Prepare early, from dataRows, the stackable points managed
+    //        in [pointsColumns], as we need to scale y values and create labels
+    //        from the stacked points (if chart shows values stacked).
+    setupPointsColumns(); // todo -4 move here
 
     // ### 2. Layout the legends on top
 
@@ -239,7 +208,13 @@ abstract class ChartLayouter {
       return xOutput;
     }).toList();
 
-    // ### 5. Second call to YLayouter is needed, as available height for Y
+    // ### 5. Once xLayouter is done, we have the rescaled X values,
+    //        (which depend on vertGridLineX), available.
+    //        Here,
+
+    // todo -4 5 is not needed???
+
+    // ### 6. Second call to YLayouter is needed, as available height for Y
     //        is only known after XLayouter provided height of xLabels
     //        on the bottom .
     //        The y axis absolute min and max are used to scale data values
@@ -263,7 +238,7 @@ abstract class ChartLayouter {
 
     this.yLayouter = yLayouter;
 
-    // ### 6. Recalculate offsets for this Area layouter
+    // ### 7. Recalculate offsets for this Area layouter
 
     yOutputs = yLayouter.outputs.map((var output) {
       var yOutput = new YLayouterOutput();
@@ -276,11 +251,10 @@ abstract class ChartLayouter {
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
 
-    // ### 7. Here, calculate and create offsets and paint
+    // ### 8. Here, calculate and create offsets and paint
     //        for chart elements such as bars, points  and lines, etc,
     //        depending on the chart type.
 
-    setupPointsColumns(); // todo -4 move up
     scalePointsColumns(); // todo -4 move up
     setupPresentersColumns();
   }
@@ -294,7 +268,7 @@ abstract class ChartLayouter {
   }
 
   void scalePointsColumns() {
-    this.pointsColumns.scale(); // todo -4
+    this.pointsColumns.scale();
   }
 
   /// Creates from [ChartData] (model for this layouter),
@@ -316,6 +290,37 @@ abstract class ChartLayouter {
       options: options,
       pointAndPresenterCreator: this.pointAndPresenterCreator,
     );
+  }
+
+
+  List<LinePresenter> get vertGridLines {
+    return xOutputs.map((var output) {
+      return new LinePresenter(
+          from: new ui.Offset(
+            output.vertGridLineX,
+            this.vertGridLinesFromY,
+          ),
+          to: new ui.Offset(
+            output.vertGridLineX,
+            this.vertGridLinesToY,
+          ),
+          paint: gridLinesPaint(options) );
+    }).toList();
+  }
+
+  List<LinePresenter> get horizGridLines {
+    return yOutputs.map((var output) {
+      return new LinePresenter(
+          from: new ui.Offset(
+            this.horizGridLinesFromX,
+            output.horizGridLineY,
+          ),
+          to: new ui.Offset(
+            this.horizGridLinesToX,
+            output.horizGridLineY,
+          ),
+          paint: gridLinesPaint(options));
+    }).toList();
   }
 
 
@@ -411,8 +416,8 @@ class YLayouter {
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually() {
-    // todo -4
-    List<double> flatData = _chartLayouter.data.dataRows.expand((i) => i).toList();
+    List<double> flatData = _chartLayouter.pointsColumns.flattenYValues(); // todo -1 move to common layout, same for manual and auto
+
     var dataRange =
         new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
 
@@ -449,8 +454,7 @@ class YLayouter {
   /// Generate labels from data, and auto layout
   /// Y axis according to data range, labels range, and display range
   void layoutAutomatically() {
-    // todo -4
-    List flatData = _chartLayouter.data.dataRows.expand((i) => i).toList();
+    List<double> flatData = _chartLayouter.pointsColumns.flattenYValues(); // todo -1 move to common layout, same for manual and auto
 
     Range range = new Range(
         values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);
@@ -846,7 +850,7 @@ class StackableValuePoint {
   ///
   void scale({LabelScalerFormatter yScaler, double scaledX,}) {
     this.scaledX     = scaledX;
-    this.scaledY     = yScaler.scaleY(value:  this.y); // todo -4 was: yScaler.scaleY(value: colValue)
+    this.scaledY     = yScaler.scaleY(value:  this.y);
     this.fromScaledY = yScaler.scaleY(value: this.fromY);
     this.toScaledY   = yScaler.scaleY(value: this.toY);
     this.scaledFrom  = new ui.Offset(scaledX, this.fromScaledY);
@@ -903,15 +907,7 @@ class ValuePointsColumns {
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
         var thisPoint = pointAndPresenterCreator.createPoint(
-            xLabel: null, y: colValue, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
-
-        /*
-        num colValue = dataRow[col];
-        double scaledX = _layouter.vertGridLines[col].from.dx;
-        double scaledY = _layouter.yScaler.scaleY(value: colValue);
-        var thisPoint = pointAndPresenterCreator.createPoint(
-            scaledX: scaledX, scaledY: scaledY, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
-         */
+            xLabel: null, y: colValue, underThisPoint: underThisPoints[col]);
         pointsRow.add(thisPoint);
         underThisPoints[col] = thisPoint;
       };
@@ -938,9 +934,9 @@ class ValuePointsColumns {
   /// on the stackable (stacked or unstacked) values.
   ///
   /// Notes:
-  ///   - Iterates this object's [pointsColumns], and the contained
-  ///   [ValuePointsColumn.stackablePoints] and applies each
-  ///   [StackableValuePoint]'s [StackableValuePoint.scale] on each point.
+  ///   - Iterates this object's [pointsColumns], then the contained
+  ///   [ValuePointsColumn.stackablePoints], and scales each point by
+  ///   applying its [StackableValuePoint.scale] method.
   ///   - No scaling of the internal representation stored in [_pointsRows]
   ///   or [_pointsColumns].
   void scale() {
@@ -955,64 +951,25 @@ class ValuePointsColumns {
     });
   }
 
-  /* todo -4 remove when scaling separation works
-class ValuePointsColumns {
-  List<List<StackableValuePoint>> _pointsRows;
-  List<List<StackableValuePoint>> _pointsColumns;
-  List<ValuePointsColumn> pointsColumns;
-
-
-  /// Creates [_pointsRows] with the same structure and values as
-  /// the passed [dataRows]. Then transposes the [_pointsRows]
-  /// to [_pointsColumns].
-  ValuePointsColumns({ // todo -1 rename this and friends to PointsColumns
-    ChartLayouter layouter,
-    PointAndPresenterCreator pointAndPresenterCreator, // todo -1 pointCreatorFunc pointCreatorFunc ?
-    }) {
-    _pointsRows = new List();
-
-    ChartData chartData = layouter.data;
-
-    // dataRows.forEach((var dataRow) {
-    List<StackableValuePoint> underThisPoints = new List(chartData.dataRows[0].length); // todo 0 deal with no data rows
-    for (int col = 0; col < underThisPoints.length; col++) underThisPoints[col] = null;
-
-    for (int row = 0; row < chartData.dataRows.length; row++) {
-      List<num> dataRow = chartData.dataRows[row];
-      List<StackableValuePoint> pointsRow = new List<StackableValuePoint>();
-      _pointsRows.add(pointsRow);
-      // int col = 0;
-      // dataRow.forEach((var colValue) {
-      for (int col = 0; col < dataRow.length; col++) {
-        num colValue = dataRow[col];
-        // todo -1 this vvv should be other places
-        double scaledX = layouter.vertGridLines[col].from.dx;
-        double scaledY = layouter.yScaler.scaleY(value: colValue);
-        var thisPoint = pointAndPresenterCreator.createPoint(
-            scaledX: scaledX, scaledY: scaledY, underThisPoint: underThisPoints[col]); // todo -1 pointCreatorFunc thisPoint ?
-        pointsRow.add(thisPoint);
-        underThisPoints[col] = thisPoint;
-      };
-    };
-    _pointsRows.toList();
-    _pointsColumns = util.transpose(_pointsRows);
-
-    // convert List<List<StackableValuePoint>> to List<ValuePointsColumn>
-    ValuePointsColumn leftColumn = null;
-    pointsColumns = new List();
-
-    _pointsColumns.forEach((List<StackableValuePoint> points) {
-      var pointsColumn = new ValuePointsColumn(stackablePoints: points);
-      pointsColumns.add(pointsColumn);
-      leftColumn?.nextRightPointsColumn = pointsColumn;
-      leftColumn = pointsColumn;
-    });
-
+  /// todo 0 document
+  /// todo -1 replace with expand like in: dataRows.expand((i) => i).toList()
+  List<num> flattenYValues() {
+    {
+      List<num> flat = [];
+      pointsColumns.forEach((ValuePointsColumn column) {
+        column.stackablePoints.forEach((StackableValuePoint point) {
+          flat.add(point.y);
+        });
+      });
+    return flat;
   }
-   */
-  ValuePointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
 
-  StackableValuePoint pointAt({int columnIndex, int rowIndex}) => pointsColumns[columnIndex].stackablePoints[rowIndex];
+
+
+    ValuePointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
+
+    StackableValuePoint pointAt({int columnIndex, int rowIndex}) => pointsColumns[columnIndex].stackablePoints[rowIndex];
+  }
 
 }
 

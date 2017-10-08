@@ -271,7 +271,7 @@ class VerticalBarLeafCreator extends PointAndPresenterCreator {
     double y,
     StackableValuePoint underThisPoint,
   }) {
-    // todo -4 start here
+    // todo -4 start here for VerticalBar
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
     return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
   }
