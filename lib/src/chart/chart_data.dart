@@ -26,7 +26,7 @@ class ChartData {
   /// If you need number labels with units (e.g. %), define % in options
   /// If you need purely String labels, this is a todo 1.
   ///
-  /// This is used only if [ChartOptions.doManualLayoutUsingYLabels] is true.
+  /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
   ///
   /// They may be undefined, in which case the
   /// Y axis is likely not shown.

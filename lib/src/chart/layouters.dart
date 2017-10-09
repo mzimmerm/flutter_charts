@@ -44,7 +44,7 @@ class LineChartLayouter extends ChartLayouter {
     chartData: chartData,
     chartOptions: chartOptions,
   ) {
-    pointAndPresenterCreator = new PointAndLineLeafCreator();
+    pointAndPresenterCreator = new PointAndLineLeafCreator(layouter: this);
   }
 
 }
@@ -281,7 +281,7 @@ abstract class ChartLayouter {
 
     this.presentersColumns = new PresentersColumns(
       pointsColumns: this.pointsColumns,
-      options: options,
+      layouter: this,
       pointAndPresenterCreator: this.pointAndPresenterCreator,
     );
   }
@@ -391,7 +391,7 @@ class YLayouter {
   /// Lays out the the area containing the Y axis.
   ///
   layout() {
-    if (_chartLayouter.options.doManualLayoutUsingYLabels) {
+    if (_chartLayouter.options.useUserProvidedYLabels) {
       layoutManually();
     } else {
       layoutAutomatically();
@@ -805,8 +805,8 @@ class StackableValuePoint {
   /// Scaled values. All set lazily after [scale]
   double scaledX;
   double scaledY;
-  double fromScaledY; // todo -3 rename scaledFromY
-  double toScaledY;// todo -3 rename scaledToY
+  double fromScaledY;
+  double toScaledY;
 
   /// Scaled Offsets for painting in absolute chart coordinates.
   /// More precisely, offsets of the bottom and top of the presenter of this
@@ -940,7 +940,6 @@ class ValuePointsColumns {
     int col = 0;
     pointsColumns.forEach((ValuePointsColumn column) {
       column.stackablePoints.forEach((StackableValuePoint point) {
-        // todo -4
         double scaledX = _layouter.vertGridLines[col].from.dx;
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
       });

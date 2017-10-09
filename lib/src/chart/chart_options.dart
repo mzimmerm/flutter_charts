@@ -12,8 +12,8 @@ import 'random_chart_data.dart' show RandomChartData;
 /// see [SimpleChartLayouter].
 class ChartOptions {
 
-  /// Defines how to layout chart's Y labels: manually or using auto-layout,
-  /// and auto-creation and scaling of Y labels from data.
+  /// Defines how to create and layout chart's Y labels: either from user
+  /// defined Y labels, or from auto-created Y labels from data.
   ///
   /// - If `true`, a "manual" layout of Y axis is used.
   ///   This requires [ChartData.yLabels] to be defined.
@@ -21,11 +21,11 @@ class ChartOptions {
   ///   Current layout implementation splits Y axis into even number of
   ///   sections, each of [ChartData.yLabels] labels one horizontal guide line.
   /// - If `false`, a "auto" layout of Y axis is used.
-  ///   - Current auto-layout implementation smartly creates Y labels
-  ///     from data on a limited number of points, so that Y labels do not
+  ///   - Current auto-layout implementation smartly creates
+  ///     a limited number of Y labels from data, so that Y labels do not
   ///     crowd, and little Y space is wasted on top.
 
-  bool doManualLayoutUsingYLabels = false;
+  bool useUserProvidedYLabels = false;
 
   /// Shows largest value on very top of the chart grid, to save space.
   bool largestValuePointOnVeryTop = true; // false not supported yet
