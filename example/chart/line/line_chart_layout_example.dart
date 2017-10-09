@@ -231,12 +231,39 @@ class _MyHomePageState extends State<MyHomePage> {
               'vvvvvvvv:',
             ),
 
-            // Column -> Expanded(Row), expands row vertically |
-            //   BUT also needs crossAxisAlignment:  CrossAxisAlignment.stretch,
-            //   on Row -> Expanded(Chart). The cross alignmnet stretch carries
-            //   the | expansion from inside row to column, sort of speak
-            new Expanded(
-              child: new Row(
+            // Expanded can be around a child of Row, or Column (one or more children).
+            // We use | for vertical expansion, <--> for horizontal expansion.
+            // Expanded around one of children of Row, or Column,
+            // stretches/pulls the expanded child in the parent's
+            // "growing" direction. So:
+            //   - Column (children: [A, B, Expanded (C)]) stretches C in
+            //     column's "growing" direction (that is vertically |)
+            //     to the fullest available outside height.
+            //   - Row  (children: [A, B, Expanded (C)]) stretches C in
+            //     rows's "growing" direction (that is horizontally <-->)
+            //     to the fullest available outside width.
+            // The layout is, structurally:
+            //   Column (children: [
+            //      vvv,
+            //      Expanded (
+            //        Row  (children: [
+            //        >>>, Expanded (Chart), <<<,
+            //        ]),
+            //      ^^^
+            //    ])
+            // The outer | expansion, in the Column's middle child
+            //   pulls/stretches the row vertically |
+            //   BUT also needs explicit
+            //   crossAxisAlignment: CrossAxisAlignment.stretch.
+            //   The cross alignment stretch carries
+            //   the | expansion to all <--> expanded children.
+            //  Basically, while "Expanded" only applies stretch in one
+            //    direction, another outside "Expanded" with CrossAxisAlignment.stretch
+            //    can force the innermost child to be stretched in both directions.
+            new Expanded( // expansion inside Column pulls contents |
+              child:
+              new Row(
+                // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   new Text('>>>'),
@@ -244,9 +271,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   // A widget that provides a canvas on which to draw
                   // during the paint phase.
 
-                  // Row -> Expanded -> Chart expands horizontally <-->
+                  // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart,
+                    child: verticalBarChart,
                   ), // Row -> Expanded ,
                   new Text('<<<'),
                 ],
