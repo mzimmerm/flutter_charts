@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Offset, Paint, PaintingStyle;
+import 'dart:ui' as ui show Rect, Offset, Paint, PaintingStyle;
 
 import 'package:flutter/painting.dart' as painting show TextPainter;
 import 'package:flutter/widgets.dart' as widgets show Widget;
@@ -74,6 +74,8 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
   double innerRadius;
   double outerRadius;
 
+  ui.Paint rowDataPaint;
+
   PointAndLinePresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
@@ -87,7 +89,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     layouter: layouter,
   ){
     // todo -1 move colors creation to super (shared for VerticalBar and PointAndLine)
-    ui.Paint rowDataPaint = new ui.Paint();
+    rowDataPaint = new ui.Paint();
     rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
     ui.Offset fromPoint = valuePoint.scaledTo;
@@ -98,13 +100,13 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
       to: toPoint,
       paint: rowDataPaint,
     );
-    this.point = fromPoint; // point is the left (from) end of the line
-    this.innerPaint = new ui.Paint();
-    this.innerPaint.color = material.Colors.yellow;
-    this.outerPaint = new ui.Paint();
-    this.outerPaint.color = material.Colors.black;
-    this.innerRadius = (layouter.options as LineChartOptions).hotspotInnerRadius;
-    this.outerRadius = (layouter.options as LineChartOptions).hotspotOuterRadius;
+    point = fromPoint; // point is the left (from) end of the line
+    innerPaint = new ui.Paint();
+    innerPaint.color = material.Colors.yellow;
+    outerPaint = new ui.Paint();
+    outerPaint.color = material.Colors.black;
+    innerRadius = (layouter.options as LineChartOptions).hotspotInnerRadius;
+    outerRadius = (layouter.options as LineChartOptions).hotspotOuterRadius;
   }
 }
 
@@ -114,8 +116,11 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
 class VerticalBarPresenter extends StackableValuePointPresenter {
 
   // todo -3 replace with BarPresenter
-  LinePresenter linePresenter;
-  ui.Offset point;
+  // LinePresenter linePresenter;
+  // ui.Offset point;
+
+  ui.Rect presentedRect;
+  ui.Paint dataRowPaint;
 
   VerticalBarPresenter({
     StackableValuePoint valuePoint,
@@ -128,65 +133,28 @@ class VerticalBarPresenter extends StackableValuePointPresenter {
     rowIndex: rowIndex,
     layouter: layouter,
   ){
-
     // todo -1 move colors creation to super (shared for VerticalBar and PointAndLine)
-    ui.Paint rowDataPaint = new ui.Paint();
-    rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
+    dataRowPaint = new ui.Paint();
+    dataRowPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
-    ui.Offset fromPoint = valuePoint.scaledTo;
-    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
-    toPoint ??= fromPoint;
-    linePresenter = new LinePresenter(
-      from: fromPoint,
-      to: toPoint,
-      paint: rowDataPaint,
-    );
-    this.point = fromPoint; // point is the left (from) end of the line
+    // todo 0 simplify, unnecessary tmp vars
+    ui.Offset barMidBottom     = valuePoint.scaledFrom;
+    ui.Offset barMidTop        = valuePoint.scaledTo;
+    double    barWidth         = layouter.gridStepWidth * layouter.options.gridStepWidthPortionUsedByAtomicPresenter;
 
+    ui.Offset barLeftTop       = barMidTop.translate(-1 * barWidth / 2, 0.0);
+    ui.Offset barRightBottom   = barMidBottom.translate(1 * barWidth / 2, 0.0);
+
+    presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom);
   }
 }
 
-/* todo -2 remove when Bar working.
-class VerticalBarPresenter extends StackableValuePointPresenter {
-
-  LinePresenter linePresenter;
-  ui.Offset point;
-
-  VerticalBarPresenter({
-    StackableValuePoint valuePoint,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    LineChartOptions options})
-      : super(
-    valuePoint: valuePoint,
-    nextRightColumnValuePoint: nextRightColumnValuePoint,
-    rowIndex: rowIndex,
-    options: options,
-  ){
-
-    ui.Paint rowDataPaint = new ui.Paint();
-    rowDataPaint.color = options.dataRowsColors[rowIndex % options.dataRowsColors.length];
-
-    ui.Offset fromPoint = valuePoint.scaledTo;
-    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
-    toPoint ??= fromPoint;
-    linePresenter = new LinePresenter(
-      from: fromPoint,
-      to: toPoint,
-      paint: rowDataPaint,
-    );
-    this.point = fromPoint; // point is the left (from) end of the line
-
-  }
-}
-
- */
 class PresentersColumn {
 
 // todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
 
   List<StackableValuePointPresenter> presenters = new List();
-  PresentersColumn nextRightPointsColumn; // todo -2 address the base class (not a presenter)
+  PresentersColumn nextRightPointsColumn; // todo -1 address the base class (not a presenter)
 
   PresentersColumn({
     ValuePointsColumn pointsColumn,
@@ -213,6 +181,26 @@ class PresentersColumn {
 
 // todo -1 : write this in terms of abstracts, reuse implementation - may be done now
 // todo -1 document
+/// Manages the visual elements (atoms) presented in each
+/// "column of view" in chart - that is, all widgets representing
+/// series of data displayed above each X label.
+///
+/// The "column first" list of data is managed by [ValuePointsColumns.pointsColumns],
+/// and is a "source" for creating this object.
+/// In addition to [ValuePointsColumns.pointsColumns], a constructor
+/// of this object needs to be given a way to create each "visual atomic widget"
+/// to display each data value. This is provided by the passed
+/// [PointAndPresenterCreator], which "create" methods know how to create the concrete
+/// instances of :
+///   - the "atomic stacked data value" using
+///   [PointAndPresenterCreator.createPoint] and
+///   - the "atomic stacked display widget of the data value" using
+///   [PointAndPresenterCreator.createPointPresenter]
+///
+/// Notes:
+///   - Each [PresentersColumn] element of [presentersColumns]
+///   manages a link to the [PresentersColumn] on it's right, allowing
+///   walk without the [presentersColumns] list. todo 0 consider if this is needed
 class PresentersColumns {
 
   // todo 1 consider: extends ValuePresentersColumns or extend List

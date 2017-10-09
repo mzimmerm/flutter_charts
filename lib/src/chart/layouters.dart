@@ -347,6 +347,8 @@ abstract class ChartLayouter {
       (xLayouter._xLabelsContainerHeight + options.xLabelsPadTB);
 
   double get yLabelsMaxHeight => yLayouter._yLabelsMaxHeight;
+
+  double get gridStepWidth => xLayouter._gridStepWidth;
 }
 
 /// Auto-layouter of the area containing Y axis.
@@ -868,7 +870,6 @@ class ValuePointsColumn {
 ///
 /// Passed to presenters, which paint the values in areas above labels,
 /// in the appropriate presentation (point and line chart, column chart, etc)
-/// todo -1 remove need for _ members.
 /// todo -1 rename to ValuePointsTable - allows to view data in rows or columns
 /// todo -1 see if this can be separated from _layouter: problem: gettting the scaled x, _layouter.vertGridLines[col].from.dx
 class ValuePointsColumns {
@@ -912,10 +913,18 @@ class ValuePointsColumns {
     _pointsRows.toList();
     _pointsColumns = util.transpose(_pointsRows);
 
-    // convert List<List<StackableValuePoint>> to List<ValuePointsColumn>
+    // convert "column first" List<List<StackableValuePoint>> _pointsColumns
+    // to public List<ValuePointsColumn> pointsColumns
     ValuePointsColumn leftColumn = null;
     pointsColumns = new List();
 
+    //todo -4:
+    //  - ValuePointsColumn add
+    //  -
+    //  -
+    //  -
+    //  -
+    //  -
     _pointsColumns.forEach((List<StackableValuePoint> points) {
       var pointsColumn = new ValuePointsColumn(stackablePoints: points);
       pointsColumns.add(pointsColumn);

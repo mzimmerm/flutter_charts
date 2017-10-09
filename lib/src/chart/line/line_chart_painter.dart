@@ -27,21 +27,7 @@ class VerticalBarChartPainter extends ChartPainter {
           .forEach((presenters.StackableValuePointPresenter presenter) {
         // .forEach((presenters.PointAndLinePresenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
-        canvas.drawLine(
-          presenterCast.linePresenter.from,
-          presenterCast.linePresenter.to,
-          presenterCast.linePresenter.paint,
-        );
-        /* todo -3 start here
-        canvas.drawCircle(
-            presenterCast.point,
-            presenterCast.outerRadius,
-            presenterCast.outerPaint);
-        canvas.drawCircle(
-            presenterCast.point,
-            presenterCast.innerRadius,
-            presenterCast.innerPaint);
-            */
+        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
 
     });
