@@ -75,7 +75,7 @@ export 'src/chart/chart_data.dart';
 export 'src/chart/random_chart_data.dart';
 export 'src/chart/line/line_chart.dart';
 export 'src/chart/chart_options.dart';
-export 'src/chart/elements_painters.dart';
+export 'src/chart/label_painter.dart';
 export 'src/chart/layouters.dart';
 export 'src/util/util.dart';
 export 'src/util/range.dart';

@@ -8,7 +8,7 @@ import 'package:flutter/painting.dart' as painting show TextPainter;
 
 // import 'package:flutter/widgets.dart' as widgets show TextPainter;
 
-import 'elements_painters.dart';
+import 'label_painter.dart';
 
 import 'chart_options.dart';
 import 'chart_data.dart';
@@ -29,7 +29,7 @@ class VerticalBarChartLayouter extends ChartLayouter {
           chartData: chartData,
           chartOptions: chartOptions,
         ) {
-    pointAndPresenterCreator = new VerticalBarLeafCreator();
+    presenterCreator = new VerticalBarLeafCreator();
   }
 }
 
@@ -45,7 +45,7 @@ class LineChartLayouter extends ChartLayouter {
           chartData: chartData,
           chartOptions: chartOptions,
         ) {
-    pointAndPresenterCreator = new PointAndLineLeafCreator(layouter: this);
+    presenterCreator = new PointAndLineLeafCreator(layouter: this);
   }
 }
 
@@ -66,7 +66,7 @@ abstract class ChartLayouter {
   /// Subclass specific factory creates instances of chart-leaf elements:
   /// presenters and points which are painted on the chart
   /// (points and lines, bar charts, etc).
-  PointAndPresenterCreator pointAndPresenterCreator;
+  PresenterCreator presenterCreator;
 
   /// ##### Subclasses - aware members. todo 2 replace with Visitor or Mixins
 
@@ -79,7 +79,7 @@ abstract class ChartLayouter {
   /// todo -1 replace with getters.
 
   PresentersColumns presentersColumns;
-  ValuePointsColumns pointsColumns;
+  PointsColumns pointsColumns;
   bool isStacked;
 
   // todo 0 see if these 3 can/should be made private
@@ -256,9 +256,9 @@ abstract class ChartLayouter {
 
   /// Create member [pointsColumns] from data rows [data.dataRows].
   void setupPointsColumns() {
-    this.pointsColumns = new ValuePointsColumns(
+    this.pointsColumns = new PointsColumns(
         layouter: this,
-        pointAndPresenterCreator: this.pointAndPresenterCreator,
+        presenterCreator: this.presenterCreator,
         isStacked: this.isStacked);
   }
 
@@ -273,7 +273,7 @@ abstract class ChartLayouter {
   /// Creates from [ChartData] (model for this layouter),
   /// columns of leaf values encapsulated as [StackableValuePoint]s,
   /// and from the values, the columns of leaf presenters,
-  /// encapsulated as [StackableValuePointPresenter]s.
+  /// encapsulated as [Presenter]s.
   ///
   /// The resulting elements (points and presenters) are
   /// stored in member [presentersColumns].
@@ -286,7 +286,7 @@ abstract class ChartLayouter {
     this.presentersColumns = new PresentersColumns(
       pointsColumns: this.pointsColumns,
       layouter: this,
-      pointAndPresenterCreator: this.pointAndPresenterCreator,
+      presenterCreator: this.presenterCreator,
     );
   }
 
@@ -468,21 +468,20 @@ class YLayouter {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
     }
 
-    var labelScaler = new YScalerAndLabelFormatter(
+    // todo -1 make yScaler private
+    var yScaler = new YScalerAndLabelFormatter(
         dataRange: dataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: _yAxisAbsMin,
         toScaleMax: _yAxisAbsMax,
         chartOptions: _chartLayouter.options);
 
-    labelScaler.setLabelValuesForManualLayout(
+    yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYAxisRange,
         scaledLabelValues: yLabelsDividedInYAxisRange,
         formattedYLabels: yLabels);
-    //labelScaler.scaleLabelInfos();
-    //labelScaler.makeLabelsPresentable(); // todo -1 make private
 
-    _commonLayout(labelScaler);
+    _commonLayout(yScaler);
   }
 
   /// Generates scaled and spaced Y labels from data, then auto layouts
@@ -498,18 +497,18 @@ class YLayouter {
         values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
-    YScalerAndLabelFormatter labelScaler = range.makeLabelsFromDataOnScale(
+    YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
         toScaleMin: _yAxisAbsMin, toScaleMax: _yAxisAbsMax);
 
-    _commonLayout(labelScaler);
+    _commonLayout(yScaler);
   }
 
-  void _commonLayout(YScalerAndLabelFormatter labelScaler) {
+  void _commonLayout(YScalerAndLabelFormatter yScaler) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _chartLayouter.yScaler = labelScaler;
+    _chartLayouter.yScaler = yScaler;
 
-    for (LabelInfo labelInfo in labelScaler.labelInfos) {
+    for (LabelInfo labelInfo in yScaler.labelInfos) {
       double topY = labelInfo.scaledLabelValue;
       var output = new YLayouterOutput();
       // textPainterForLabel calls [TextPainter.layout]
@@ -967,7 +966,7 @@ class StackableValuePoint {
 /// todo 0 document
 /// support for stacked type charts, where negative
 /// and positive points must be stacked separately, above and below zero .
-class ValuePointsColumn {
+class PointsColumn {
   /// List of charted values in this column
   List<StackableValuePoint> points;
 
@@ -981,7 +980,7 @@ class ValuePointsColumn {
   /// above and below zero.
   List<StackableValuePoint> stackedNegativePoints;
 
-  ValuePointsColumn nextRightPointsColumn = null;
+  PointsColumn nextRightPointsColumn = null;
 
   ///  Construct column from the passed [points].
   ///
@@ -991,7 +990,7 @@ class ValuePointsColumn {
   ///  Creates members [stackedNegativePoints], [stackedPositivePoints]
   ///  which exist only to be stacked, so the constructor stacks them
   ///  on creation.
-  ValuePointsColumn({
+  PointsColumn({
     List<StackableValuePoint> points,
   }) {
     // todo -1 add validation that points are not stacked
@@ -1010,13 +1009,13 @@ class ValuePointsColumn {
     List<StackableValuePoint> points,
     bool selector(StackableValuePoint point),
   }) {
-    StackableValuePoint previous;
+    StackableValuePoint predecessorPoint;
     List<StackableValuePoint> selected = this.points.where((point) {
       return selector(point);
     }) // point.y >= 0;
         .map((point) {
-      var thisPoint = point.unstackedClone().stackOnAnother(previous);
-      previous = thisPoint;
+      var thisPoint = point.unstackedClone().stackOnAnother(predecessorPoint);
+      predecessorPoint = thisPoint;
       return thisPoint;
     }).toList();
     return selected;
@@ -1038,22 +1037,21 @@ class ValuePointsColumn {
 /// Manages value point structure as column based (currently only supported)
 /// or row based.
 ///
-/// todo -1 rename to ValuePointsTable - allows to view data in rows or columns
-/// todo -1 see if this can be separated from _layouter: problem: gettting the scaled x, _layouter.vertGridLines[col].from.dx
-class ValuePointsColumns {
+/// todo 0 see if this can be separated from _layouter: problem: gettting the scaled x, _layouter.vertGridLines[col].from.dx
+class PointsColumns {
   List<List<StackableValuePoint>> _pointsRows;
   List<List<StackableValuePoint>> _pointsColumns;
   ChartLayouter _layouter;
-  List<ValuePointsColumn> pointsColumns;
+  List<PointsColumn> pointsColumns;
   bool _isStacked;
 
   /// Creates [_pointsRows] with the same structure and values as
   /// the passed [dataRows]. Then transposes the [_pointsRows]
   /// to [_pointsColumns].
-  ValuePointsColumns({
+  PointsColumns({
     // todo -1 rename this and friends to PointsColumns
     ChartLayouter layouter,
-    PointAndPresenterCreator pointAndPresenterCreator,
+    PresenterCreator presenterCreator,
     bool isStacked,
   }) {
     _layouter = layouter;
@@ -1099,11 +1097,11 @@ class ValuePointsColumns {
 
     // convert "column first" List<List<StackableValuePoint>> _pointsColumns
     // to public List<ValuePointsColumn> pointsColumns
-    ValuePointsColumn leftColumn = null;
+    PointsColumn leftColumn = null;
     pointsColumns = new List();
 
     _pointsColumns.forEach((List<StackableValuePoint> columnPoints) {
-      var pointsColumn = new ValuePointsColumn(points: columnPoints);
+      var pointsColumn = new PointsColumn(points: columnPoints);
       pointsColumns.add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
@@ -1118,13 +1116,13 @@ class ValuePointsColumns {
   ///
   /// Notes:
   ///   - Iterates this object's [pointsColumns], then the contained
-  ///   [ValuePointsColumn.points], and scales each point by
+  ///   [PointsColumn.points], and scales each point by
   ///   applying its [StackableValuePoint.scale] method.
   ///   - No scaling of the internal representation stored in [_pointsRows]
   ///   or [_pointsColumns].
   void scale() {
     int col = 0;
-    pointsColumns.forEach((ValuePointsColumn column) {
+    pointsColumns.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _layouter.vertGridLines[col].from.dx;
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
@@ -1148,7 +1146,7 @@ class ValuePointsColumns {
     // flattenUnstackedPointsYValues
 
     List<num> flat = [];
-    pointsColumns.forEach((ValuePointsColumn column) {
+    pointsColumns.forEach((PointsColumn column) {
       column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
@@ -1161,7 +1159,7 @@ class ValuePointsColumns {
   /// Use in layouters for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    pointsColumns.forEach((ValuePointsColumn column) {
+    pointsColumns.forEach((PointsColumn column) {
       column.stackedNegativePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
@@ -1172,7 +1170,7 @@ class ValuePointsColumns {
     return flat;
   }
 
-  ValuePointsColumn pointsColumnAt({int columnIndex}) =>
+  PointsColumn pointsColumnAt({int columnIndex}) =>
       pointsColumns[columnIndex];
 
   StackableValuePoint pointAt({int columnIndex, int rowIndex}) =>

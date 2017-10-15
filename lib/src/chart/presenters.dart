@@ -34,41 +34,41 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 }
 
 /// Base class for todo 0 document
-/// todo -1 remove options, we take them from _layout
-class StackableValuePointPresenter {
+class Presenter {
 
-  StackableValuePoint valuePoint;
+  StackableValuePoint point;
   StackableValuePoint nextRightColumnValuePoint;
   int rowIndex;
   ChartLayouter layouter;
 
-  StackableValuePointPresenter({
-    StackableValuePoint valuePoint,
+  Presenter({
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,}) {
-    this.valuePoint = valuePoint;
+    this.point = point;
     this.nextRightColumnValuePoint = nextRightColumnValuePoint;
     this.rowIndex = rowIndex;
-    this.layouter = layouter; // todo -2 do we need to store the layouter, or just pass?
+    this.layouter = layouter; // todo 0 do we need to store the layouter, or just pass?
   }
 }
 
-/// Represents the point at which data value is shown,
-/// and the line from this point to the next point
+/// Represents, as offset, the point at which data value is shown,
+/// and the line from this data value point to the next data value point
 /// on the right.
 ///
-/// The line leads from this [valuePoint]
-/// to the [valuePoint] of the [PointAndLinePresenter]
+/// The line leads from this [offsetPoint]
+/// to the [offsetPoint] of the [PointAndLinePresenter]
 /// which is next in the [PresentersColumn.presenters] list.
 ///
-// todo -1 can this be refactored and joined with / common code with / VerticalBarPresenter? see move colors creation to super
-class PointAndLinePresenter extends StackableValuePointPresenter {
+/// todo 0 document
+/// todo 0 can this be refactored and joined with / common code with / VerticalBarPresenter? see move colors creation to super
+class PointAndLinePresenter extends Presenter {
 
   // todo 1 consider: extends StackableValuePoint / ValuePresenter
 
   LinePresenter linePresenter;
-  ui.Offset point; // offset where the data point will be painted
+  ui.Offset offsetPoint; // offset where the data point will be painted
   ui.Paint innerPaint;
   ui.Paint outerPaint;
   double innerRadius;
@@ -77,13 +77,13 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
   ui.Paint rowDataPaint;
 
   PointAndLinePresenter({
-    StackableValuePoint valuePoint,
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,
   })
       : super(
-    valuePoint: valuePoint,
+    point: point,
     nextRightColumnValuePoint: nextRightColumnValuePoint,
     rowIndex: rowIndex,
     layouter: layouter,
@@ -92,7 +92,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
     rowDataPaint = new ui.Paint();
     rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
-    ui.Offset fromPoint = valuePoint.scaledTo;
+    ui.Offset fromPoint = point.scaledTo;
     ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     linePresenter = new LinePresenter(
@@ -100,7 +100,7 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
       to: toPoint,
       paint: rowDataPaint,
     );
-    point = fromPoint; // point is the left (from) end of the line
+    offsetPoint = fromPoint; // point is the left (from) end of the line
     innerPaint = new ui.Paint();
     innerPaint.color = material.Colors.yellow;
     outerPaint = new ui.Paint();
@@ -113,18 +113,18 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
 // todo -2 make this an actual bar presenter
 // todo -1 can this be refactored and joined with / common code with / PointAndLinePresenter? see move colors creation to super
 
-class VerticalBarPresenter extends StackableValuePointPresenter {
+class VerticalBarPresenter extends Presenter {
 
   ui.Rect presentedRect;
   ui.Paint dataRowPaint;
 
   VerticalBarPresenter({
-    StackableValuePoint valuePoint,
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,})
       : super(
-    valuePoint: valuePoint,
+    point: point,
     nextRightColumnValuePoint: nextRightColumnValuePoint,
     rowIndex: rowIndex,
     layouter: layouter,
@@ -134,8 +134,8 @@ class VerticalBarPresenter extends StackableValuePointPresenter {
     dataRowPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
     // todo 0 simplify, unnecessary tmp vars
-    ui.Offset barMidBottom     = valuePoint.scaledFrom;
-    ui.Offset barMidTop        = valuePoint.scaledTo;
+    ui.Offset barMidBottom     = point.scaledFrom;
+    ui.Offset barMidTop        = point.scaledTo;
     double    barWidth         = layouter.gridStepWidth * layouter.options.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop       = barMidTop.translate(-1 * barWidth / 2, 0.0);
@@ -151,48 +151,48 @@ class PresentersColumn {
 
 // todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
 
-  List<StackableValuePointPresenter> presenters = new List();
-  List<StackableValuePointPresenter> positivePresenters = new List();
-  List<StackableValuePointPresenter> negativePresenters = new List();
+  List<Presenter> presenters = new List();
+  List<Presenter> positivePresenters = new List();
+  List<Presenter> negativePresenters = new List();
   PresentersColumn nextRightPointsColumn; // todo -1 address the base class (not a presenter)
 
   PresentersColumn({
-    ValuePointsColumn pointsColumn,
+    PointsColumn pointsColumn,
     ChartLayouter layouter,
-    PointAndPresenterCreator pointAndPresenterCreator,
+    PresenterCreator presenterCreator,
   }) {
     // setup the contained presenters from points
     _createPresentersInColumn(
         fromPoints: pointsColumn.points,
         toPresenters: this.presenters,
         pointsColumn: pointsColumn,
-        pointAndPresenterCreator: pointAndPresenterCreator,
+        presenterCreator: presenterCreator,
         layouter: layouter);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
         toPresenters: this.positivePresenters,
         pointsColumn: pointsColumn,
-        pointAndPresenterCreator: pointAndPresenterCreator,
+        presenterCreator: presenterCreator,
         layouter: layouter);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
         toPresenters: this.negativePresenters,
         pointsColumn: pointsColumn,
-        pointAndPresenterCreator: pointAndPresenterCreator,
+        presenterCreator: presenterCreator,
         layouter: layouter);
   }
 
-  void _createPresentersInColumn({List fromPoints, List toPresenters, ValuePointsColumn pointsColumn, PointAndPresenterCreator pointAndPresenterCreator, ChartLayouter layouter,}) {
+  void _createPresentersInColumn({List fromPoints, List toPresenters, PointsColumn pointsColumn, PresenterCreator presenterCreator, ChartLayouter layouter,}) {
     int rowIndex = 0;
-    fromPoints.forEach((StackableValuePoint stackablePoint) {
+    fromPoints.forEach((StackableValuePoint point) {
       // todo 0 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint =
       pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.points[rowIndex] : null;
 
-      StackableValuePointPresenter presenter = pointAndPresenterCreator.createPointPresenter(
-        valuePoint: stackablePoint,
+      Presenter presenter = presenterCreator.createPointPresenter(
+        point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: stackablePoint.dataRowIndex,
+        rowIndex: point.dataRowIndex,
         layouter: layouter,
       );
       toPresenters.add(presenter);
@@ -207,15 +207,15 @@ class PresentersColumn {
 /// "column of view" in chart - that is, all widgets representing
 /// series of data displayed above each X label.
 ///
-/// The "column first" list of data is managed by [ValuePointsColumns.pointsColumns],
+/// The "column first" list of data is managed by [PointsColumns.pointsColumns],
 /// and is a "source" for creating this object.
-/// In addition to [ValuePointsColumns.pointsColumns], a constructor
+/// In addition to [PointsColumns.pointsColumns], a constructor
 /// of this object needs to be given a way to create each "visual atomic widget"
 /// to display each data value. This is provided by the passed
-/// [PointAndPresenterCreator], which "create" methods know how to create the concrete
+/// [PresenterCreator], which "create" methods know how to create the concrete
 /// instances of the "atomic stacked display widget of the data value" using
 ///
-///   [PointAndPresenterCreator.createPointPresenter]
+///   [PresenterCreator.createPointPresenter]
 ///
 /// Notes:
 ///   - Each [PresentersColumn] element of [presentersColumns]
@@ -228,17 +228,17 @@ class PresentersColumns {
   List<PresentersColumn> presentersColumns = new List();
 
   PresentersColumns({
-    ValuePointsColumns pointsColumns,
+    PointsColumns pointsColumns,
     ChartLayouter layouter,
-    PointAndPresenterCreator pointAndPresenterCreator,
+    PresenterCreator presenterCreator,
   }) {
     // iterate "column first", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn = null;
-    pointsColumns.pointsColumns.forEach((ValuePointsColumn pointsColumn) {
+    pointsColumns.pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         layouter: layouter,
-        pointAndPresenterCreator: pointAndPresenterCreator,
+        presenterCreator: presenterCreator,
       );
       presentersColumns.add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
@@ -249,7 +249,7 @@ class PresentersColumns {
 }
 
 // todo -1 document as creating the actual presenter of the value for chart - creates instances of PointAndLine Presenter and value, , VerticalBar
-abstract class PointAndPresenterCreator {
+abstract class PresenterCreator {
 
   /// The layouter is generally needed for the creation of Presenters, as
   /// presenters may need some layout values.
@@ -257,12 +257,12 @@ abstract class PointAndPresenterCreator {
   /// todo 0 : The question is , is it worth to narrow down the information
   ///          passed to something more narrow? (e.g. width of each column, etc)
   ChartLayouter _layouter;
-  PointAndPresenterCreator({ChartLayouter layouter,})  {
+  PresenterCreator({ChartLayouter layouter,})  {
     this._layouter = layouter;
   }
 
-  StackableValuePointPresenter createPointPresenter({
-    StackableValuePoint valuePoint,
+  Presenter createPointPresenter({
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,
@@ -270,18 +270,18 @@ abstract class PointAndPresenterCreator {
 
 }
 
-class PointAndLineLeafCreator extends PointAndPresenterCreator {
+class PointAndLineLeafCreator extends PresenterCreator {
 
   PointAndLineLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
 
-    StackableValuePointPresenter createPointPresenter({
-    StackableValuePoint valuePoint,
+    Presenter createPointPresenter({
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,
   }) {
     return new PointAndLinePresenter(
-      valuePoint: valuePoint,
+      point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
       layouter: layouter,
@@ -290,18 +290,18 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
 }
 
-class VerticalBarLeafCreator extends PointAndPresenterCreator {
+class VerticalBarLeafCreator extends PresenterCreator {
 
   VerticalBarLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
 
-  StackableValuePointPresenter createPointPresenter({
-    StackableValuePoint valuePoint,
+  Presenter createPointPresenter({
+    StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
     ChartLayouter layouter,
   }) {
     return new VerticalBarPresenter(
-      valuePoint: valuePoint,
+      point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
       layouter: layouter,

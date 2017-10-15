@@ -283,20 +283,21 @@ class YScalerAndLabelFormatter {
 
 }
 
-/// Manages labels and their values: scaled in , unscaled, and presented (formatted) todo 00 document
+/// Manages labels and their values: scaled in , unscaled, and presented (formatted)
+/// todo 00 document
 /// todo 00 review privacy, consider make private
 ///
-/// Note:
+///  YLabels important Note:
 ///
-///    - YLabels critical issue: There are 3 intervals (example values in text):
+///    - There are 3 intervals (example values in text):
 ///     - We have these scales:
-///       - *LabelScalerFormatter.dataRange* e.g.  ###dataRange= [-600.0, 1800.0]  from data _values=[-600.0 ....  1800.0]
-///       - *LabelScalerFormatter.labelRange* = [-1000, 1000] was correctly deduced
-///       - *LabelScalerFormatter.labelAndDataRangeMerged* =  [-1000, 1800] - merge of the above
+///       - *YScalerAndLabelFormatter.dataRange* e.g.  ###dataRange= [-600.0, 1800.0]  from data _values=[-600.0 ....  1800.0]
+///       - *YScalerAndLabelFormatter.labelRange* = [-1000, 1000] was correctly deduced
+///       - *YScalerAndLabelFormatter.labelAndDataRangeMerged* =  [-1000, 1800] - merge of the above
 ///       - *_yAxisAvailableHeight* = 376.0
 ///       - *Further, y axis must start at _yAxisMinOffsetFromTop = 8.0*
 ///     - *So, we need to*:
-///       - 1. *Map / scale all LabelScalerFormatter.labelValues using:*
+///       - 1. *Map / scale all YScalerAndLabelFormatter.labelValues using:*
 ///         - /ownScale=labelAndDataRangeMerged=[-1000, 1800]/,
 ///         - /toScale=[8, 8+376]/;
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
@@ -333,10 +334,9 @@ class LabelInfo {
   }
 }
 
-/// Not quite a polynomial. Just the minimum needed for Y label and axis
-/// scaling.
+/// A minimal polynomial needed for Y label and axis scaling.
 ///
-/// Uses the [decimal] package.
+/// Not fully a polynomial. Uses the [decimal] package.
 class Poly {
   // ### members
 
@@ -447,7 +447,7 @@ class IntervalC<T extends Comparable> {
   }
 */
 
-// todo 0 add tests
+// todo 2 add tests
 class Interval {
   // todo 0 make constant; also add validation for min before max
   Interval(this.min, this.max,

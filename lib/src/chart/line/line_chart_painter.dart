@@ -26,13 +26,13 @@ class VerticalBarChartPainter extends ChartPainter {
         .forEach((presenters.PresentersColumn presentersColumn) {
       // todo 0 do not repeat loop, collapse to one construct
       presentersColumn.positivePresenters
-          .forEach((presenters.StackableValuePointPresenter presenter) {
+          .forEach((presenters.Presenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
         canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
 
       presentersColumn.negativePresenters
-          .forEach((presenters.StackableValuePointPresenter presenter) {
+          .forEach((presenters.Presenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
         canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
@@ -51,8 +51,7 @@ class LineChartPainter extends ChartPainter {
     this._layouter.presentersColumns.presentersColumns
         .forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumn.presenters
-          .forEach((presenters.StackableValuePointPresenter presenter) {
-        // .forEach((presenters.PointAndLinePresenter presenter) {
+          .forEach((presenters.Presenter presenter) {
         presenters.PointAndLinePresenter presenterCast = presenter as presenters.PointAndLinePresenter;
         canvas.drawLine(
           presenterCast.linePresenter.from,
@@ -60,11 +59,11 @@ class LineChartPainter extends ChartPainter {
           presenterCast.linePresenter.paint,
         );
         canvas.drawCircle(
-            presenterCast.point,
+            presenterCast.offsetPoint,
             presenterCast.outerRadius,
             presenterCast.outerPaint);
         canvas.drawCircle(
-            presenterCast.point,
+            presenterCast.offsetPoint,
             presenterCast.innerRadius,
             presenterCast.innerPaint);
       });
