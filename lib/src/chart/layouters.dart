@@ -299,7 +299,9 @@ abstract class ChartLayouter {
   /// Depending on [isStacked], either the middle-of-column grid lines,
   /// or the righ-and-left-column-border grid lines are prepared.
   List<LinePresenter> get vertGridLines {
+    XLayouterOutput lastOutput;
     var vertGridLines = xOutputs.map((var output) {
+      lastOutput = output;
       double x = isStacked ? output.leftVertGridLineX : output.vertGridLineX;
 
       return new LinePresenter(
@@ -312,9 +314,25 @@ abstract class ChartLayouter {
             this.vertGridLinesToY,
           ),
           paint: gridLinesPaint(options));
-    });
+    }).toList();
 
-    return vertGridLines.toList();
+    // For stacked, we need to add last righ grid line
+    if (isStacked && lastOutput != null) {
+      vertGridLines.add(
+        new LinePresenter(
+          from: new ui.Offset(
+            lastOutput.rightVertGridLineX,
+            this.vertGridLinesFromY,
+          ),
+          to: new ui.Offset(
+            lastOutput.rightVertGridLineX,
+            this.vertGridLinesToY,
+          ),
+          paint: gridLinesPaint(options))
+      );
+    }
+
+    return vertGridLines;
   }
 
   List<LinePresenter> get horizGridLines {

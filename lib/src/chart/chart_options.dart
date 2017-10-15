@@ -53,7 +53,7 @@ class ChartOptions {
   double xLabelsPadLR = 12.0; // left and right - Unused
 
   /// Pad space around Y labels.todo 1 separate top, bottom, left, right, and only keep those used
-  double yLabelsPadTB = 12.0;
+  double yLabelsPadTB = 12.0; // todo 0 check if used
   double yLabelsPadLR = 12.0;
 
   /// Side of the square used to show color of lines/bars

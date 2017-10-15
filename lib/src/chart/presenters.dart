@@ -17,7 +17,7 @@ class LinePresenter {
   LinePresenter({ui.Offset from, ui.Offset to, ui.Paint paint}) {
 
     this.paint = paint;
-    this.paint.strokeWidth = 3.0; // todo 1 set as option
+    this.paint.strokeWidth = 1.0; // todo 1 set as option
     this.from = from;
     this.to = to;
   }
