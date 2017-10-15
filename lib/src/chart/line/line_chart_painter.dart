@@ -52,7 +52,7 @@ class LineChartPainter extends ChartPainter {
         .forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumn.presenters
           .forEach((presenters.Presenter presenter) {
-        presenters.PointAndLinePresenter presenterCast = presenter as presenters.PointAndLinePresenter;
+        presenters.LineAndHotspotPresenter presenterCast = presenter as presenters.LineAndHotspotPresenter;
         canvas.drawLine(
           presenterCast.linePresenter.from,
           presenterCast.linePresenter.to,

@@ -45,7 +45,7 @@ class LineChartLayouter extends ChartLayouter {
           chartData: chartData,
           chartOptions: chartOptions,
         ) {
-    presenterCreator = new PointAndLineLeafCreator(layouter: this);
+    presenterCreator = new LineAndHotspotLeafCreator(layouter: this);
   }
 }
 

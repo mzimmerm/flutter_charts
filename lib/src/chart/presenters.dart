@@ -17,7 +17,6 @@ class LinePresenter {
   LinePresenter({ui.Offset from, ui.Offset to, ui.Paint paint}) {
 
     this.paint = paint;
-    this.paint.strokeWidth = 1.0; // todo 1 set as option
     this.from = from;
     this.to = to;
   }
@@ -58,12 +57,12 @@ class Presenter {
 /// on the right.
 ///
 /// The line leads from this [offsetPoint]
-/// to the [offsetPoint] of the [PointAndLinePresenter]
+/// to the [offsetPoint] of the [LineAndHotspotPresenter]
 /// which is next in the [PresentersColumn.presenters] list.
 ///
 /// todo 0 document
 /// todo 0 can this be refactored and joined with / common code with / VerticalBarPresenter? see move colors creation to super
-class PointAndLinePresenter extends Presenter {
+class LineAndHotspotPresenter extends Presenter {
 
   // todo 1 consider: extends StackableValuePoint / ValuePresenter
 
@@ -76,7 +75,7 @@ class PointAndLinePresenter extends Presenter {
 
   ui.Paint rowDataPaint;
 
-  PointAndLinePresenter({
+  LineAndHotspotPresenter({
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
@@ -88,7 +87,7 @@ class PointAndLinePresenter extends Presenter {
     rowIndex: rowIndex,
     layouter: layouter,
   ){
-    // todo -1 move colors creation to super (shared for VerticalBar and PointAndLine)
+    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = new ui.Paint();
     rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
@@ -98,7 +97,7 @@ class PointAndLinePresenter extends Presenter {
     linePresenter = new LinePresenter(
       from: fromPoint,
       to: toPoint,
-      paint: rowDataPaint,
+      paint: rowDataPaint..strokeWidth = 3.0, // todo 0 set as option
     );
     offsetPoint = fromPoint; // point is the left (from) end of the line
     innerPaint = new ui.Paint();
@@ -111,7 +110,7 @@ class PointAndLinePresenter extends Presenter {
 }
 
 // todo -2 make this an actual bar presenter
-// todo -1 can this be refactored and joined with / common code with / PointAndLinePresenter? see move colors creation to super
+// todo -1 can this be refactored and joined with / common code with / LineAndHotspotPresenter? see move colors creation to super
 
 class VerticalBarPresenter extends Presenter {
 
@@ -129,7 +128,7 @@ class VerticalBarPresenter extends Presenter {
     rowIndex: rowIndex,
     layouter: layouter,
   ){
-    // todo -1 move colors creation to super (shared for VerticalBar and PointAndLine)
+    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = new ui.Paint();
     dataRowPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
 
@@ -248,7 +247,7 @@ class PresentersColumns {
 
 }
 
-// todo -1 document as creating the actual presenter of the value for chart - creates instances of PointAndLine Presenter and value, , VerticalBar
+// todo -1 document as creating the actual presenter of the value for chart - creates instances of LineAndHotspot Presenter and value, , VerticalBar
 abstract class PresenterCreator {
 
   /// The layouter is generally needed for the creation of Presenters, as
@@ -270,9 +269,9 @@ abstract class PresenterCreator {
 
 }
 
-class PointAndLineLeafCreator extends PresenterCreator {
+class LineAndHotspotLeafCreator extends PresenterCreator {
 
-  PointAndLineLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
+  LineAndHotspotLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
 
     Presenter createPointPresenter({
     StackableValuePoint point,
@@ -280,7 +279,7 @@ class PointAndLineLeafCreator extends PresenterCreator {
     int rowIndex,
     ChartLayouter layouter,
   }) {
-    return new PointAndLinePresenter(
+    return new LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
