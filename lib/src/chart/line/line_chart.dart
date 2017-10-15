@@ -30,6 +30,7 @@ class LineChart extends widgets.CustomPaint {
           size: size,
           child: child,
         ) {
+    layouter.isStacked = false;
     painter.setLayouter(layouter);
   }
 }
@@ -52,6 +53,7 @@ class VerticalBarChart extends widgets.CustomPaint {
     size: size,
     child: child,
   ) {
+    layouter.isStacked = true;
     painter.setLayouter(layouter);
   }
 }

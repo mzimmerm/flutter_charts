@@ -231,18 +231,24 @@ class _MyHomePageState extends State<MyHomePage> {
               'vvvvvvvv:',
             ),
 
-            // Expanded can be around a child of Row, or Column (one or more children).
-            // We use | for vertical expansion, <--> for horizontal expansion.
-            // Expanded around one of children of Row, or Column,
+            // Expanded can be around one child of a Row or a Column
+            // (there can be one or more children of those layouts).
+            //
+            // In this document below, we use | as abbreviation for vertical expansion,
+            // <--> for horizontal expansion.
+            //
+            // "new Expanded()" around one of children of Row, or Column,
             // stretches/pulls the expanded child in the parent's
-            // "growing" direction. So:
-            //   - Column (children: [A, B, Expanded (C)]) stretches C in
+            // "growing" direction.
+            //
+            // So:
+            //   - Inside Column (e.g. children: [A, B, Expanded (C)]) stretches C in
             //     column's "growing" direction (that is vertically |)
             //     to the fullest available outside height.
-            //   - Row  (children: [A, B, Expanded (C)]) stretches C in
+            //   - For Row  (e.g. children: [A, B, Expanded (C)]) stretches C in
             //     rows's "growing" direction (that is horizontally <-->)
             //     to the fullest available outside width.
-            // The layout is, structurally:
+            // The layout of this code, is, structurally like this:
             //   Column (children: [
             //      vvv,
             //      Expanded (
@@ -273,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: verticalBarChart,
+                    child: lineChart,
                   ),
                   new Text('<<<'),
                 ],

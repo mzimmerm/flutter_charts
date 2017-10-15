@@ -149,11 +149,15 @@ class VerticalBarPresenter extends StackableValuePointPresenter {
   }
 }
 
+// todo 0 comment add good comment how stacked type chart must separate above/below
+
 class PresentersColumn {
 
 // todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
 
   List<StackableValuePointPresenter> presenters = new List();
+  List<StackableValuePointPresenter> positivePresenters = new List();
+  List<StackableValuePointPresenter> negativePresenters = new List();
   PresentersColumn nextRightPointsColumn; // todo -1 address the base class (not a presenter)
 
   PresentersColumn({
@@ -162,18 +166,40 @@ class PresentersColumn {
     PointAndPresenterCreator pointAndPresenterCreator,
   }) {
     // setup the contained presenters from points
+    _createPresentersInColumn(
+        fromPoints: pointsColumn.points,
+        toPresenters: this.presenters,
+        pointsColumn: pointsColumn,
+        pointAndPresenterCreator: pointAndPresenterCreator,
+        layouter: layouter);
+    _createPresentersInColumn(
+        fromPoints: pointsColumn.stackedPositivePoints,
+        toPresenters: this.positivePresenters,
+        pointsColumn: pointsColumn,
+        pointAndPresenterCreator: pointAndPresenterCreator,
+        layouter: layouter);
+    _createPresentersInColumn(
+        fromPoints: pointsColumn.stackedNegativePoints,
+        toPresenters: this.negativePresenters,
+        pointsColumn: pointsColumn,
+        pointAndPresenterCreator: pointAndPresenterCreator,
+        layouter: layouter);
+  }
+
+  void _createPresentersInColumn({List fromPoints, List toPresenters, ValuePointsColumn pointsColumn, PointAndPresenterCreator pointAndPresenterCreator, ChartLayouter layouter,}) {
     int rowIndex = 0;
-    pointsColumn.stackablePoints.forEach((StackableValuePoint stackablePoint) {
+    fromPoints.forEach((StackableValuePoint stackablePoint) {
+      // todo -3 nextRightPointsColumn may be wrong.
       var nextRightColumnValuePoint =
-      pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.stackablePoints[rowIndex] : null;
+      pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.points[rowIndex] : null;
 
       StackableValuePointPresenter presenter = pointAndPresenterCreator.createPointPresenter(
         valuePoint: stackablePoint,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: rowIndex,
+        rowIndex: stackablePoint.dataRowIndex,
         layouter: layouter,
       );
-      this.presenters.add(presenter);
+      toPresenters.add(presenter);
       rowIndex++;
     });
   }
@@ -241,11 +267,12 @@ abstract class PointAndPresenterCreator {
     this._layouter = layouter;
   }
 
+  /* todo -3 remove
   StackableValuePoint createPoint({
     String xLabel,
     double y,
     StackableValuePoint underThisPoint,});
-
+*/
   StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
@@ -259,6 +286,7 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
   PointAndLineLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
 
+/* todo -3 remove
   StackableValuePoint createPoint({
     String xLabel,
     double y,
@@ -267,6 +295,8 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
     return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);  // fromY remains 0.0 for all hotspots
   }
+  */
+
     StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
@@ -287,6 +317,7 @@ class VerticalBarLeafCreator extends PointAndPresenterCreator {
 
   VerticalBarLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
 
+/* todo -3 remove
   StackableValuePoint createPoint({
     String xLabel,
     double y,
@@ -295,6 +326,7 @@ class VerticalBarLeafCreator extends PointAndPresenterCreator {
     double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
     return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
   }
+  */
 
   StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,

@@ -14,7 +14,8 @@ import '../layouters.dart' as layouters; // todo -1 export in lib instead
 import '../presenters.dart' as presenters; // todo -1 export in lib instead
 
 
-/// todo 0 document, move to own file
+/// todo 0 document,
+/// todo -1 move to own file
 class VerticalBarChartPainter extends ChartPainter {
 
   // todo -2 remove layouters.ChartLayouter _layouter;
@@ -23,7 +24,15 @@ class VerticalBarChartPainter extends ChartPainter {
   void drawPresentersColumns(ui.Canvas canvas) {
     this._layouter.presentersColumns.presentersColumns
         .forEach((presenters.PresentersColumn presentersColumn) {
-      presentersColumn.presenters
+      // todo 0 do not repeat loop, collapse to one construct
+      presentersColumn.positivePresenters
+          .forEach((presenters.StackableValuePointPresenter presenter) {
+        // .forEach((presenters.PointAndLinePresenter presenter) {
+        presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
+        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
+      });
+
+      presentersColumn.negativePresenters
           .forEach((presenters.StackableValuePointPresenter presenter) {
         // .forEach((presenters.PointAndLinePresenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;

@@ -90,11 +90,12 @@ class Range {
       }
     }
 
-    // Now make labels, evenly distributed in the from, to range,
-    // only showing significant steps. labels are unscaled, that is,
-    // on scale of data.
+    // Now make labels, evenly distributed in the from, to range.
+    // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+    // Labels are (obviously) unscaled, that is, on the scale of data,
+    // not the displayed pixels scale.
 
-    List<num> labels = _distributeLabelsIn(new Interval(from, to));
+    List<num> labels = _distributeLabelsIn(new Interval(from, to)); // todo 0 pull only once (see below)
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
 
@@ -176,7 +177,7 @@ class Range {
 
 }
 
-// todo 00 document as encapsulating Y Labels, also as return from ?? and
+// todo 00 document as encapsulating Y axis scaling (dataRange scaling to available pixels) and Y Labels creation,
 // todo 0 refactor and make immutable
 class LabelScalerFormatter {
   /// Manages, formats, and scales Y labels created from data values
