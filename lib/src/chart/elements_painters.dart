@@ -34,7 +34,7 @@ class LabelPainter {
         style:
         new painting.TextStyle(
             color: material.Colors.grey[600],
-            fontSize: 14.0)); // todo 2 remove hardcoded fontSize and textScaleFactor below.
+            fontSize: 14.0)); // todo 1 remove hardcoded fontSize and textScaleFactor below.
     var textPainter =
     new painting.TextPainter(
         text: text,

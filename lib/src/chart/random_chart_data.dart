@@ -41,7 +41,7 @@ class RandomChartData extends ChartData {
 
     _generateYValues();
 
-    _generateRowLegends();
+    _generateDataRowsLegends();
 
     _generateYLabels();
 
@@ -86,23 +86,23 @@ class RandomChartData extends ChartData {
     }
   }
 
-  void _generateRowLegends() {
+  void _generateDataRowsLegends() {
     int dataRowsCount = dataRows.length;
 
     if (dataRowsCount >= 1) {
-      rowLegends.add("REDS");
+      dataRowsLegends.add("YELLOW");
     }
     if (dataRowsCount >= 2) {
-      rowLegends.add("GREENS");
+      dataRowsLegends.add("GREEN");
     }
     if (dataRowsCount >= 3) {
-      rowLegends.add("BLUES");
+      dataRowsLegends.add("BLUE");
     }
     if (dataRowsCount > 3) {
       for (int i = 3; i < dataRowsCount; i++) {
         // todo -1 this proves we are painting over canvas, fix this.
         int number = new math.Random().nextInt(10000);
-        rowLegends.add("OTHER " + number.toString());
+        dataRowsLegends.add("OTHER " + number.toString());
       }
     }
   }

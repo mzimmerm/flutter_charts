@@ -65,12 +65,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo Title',
+      title: 'Charts Demo Title',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Chart Demo Home Page'),
+      home: new MyHomePage(title: 'Flutter Charts Demo'),
     );
   }
 }
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
    _MyHomePageState() {
 
-      // todo 0 move to a common method
+      // todo 1 move to a common method
      var randomChartOptions = new RandomLineChartOptions();
      _chartOptions = randomChartOptions;
      _chartData = new RandomChartData(chartOptions: _chartOptions);
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart,
+                    child: verticalBarChart,
                   ),
                   new Text('<<<'),
                 ],

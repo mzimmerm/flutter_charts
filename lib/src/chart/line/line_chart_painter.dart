@@ -27,14 +27,12 @@ class VerticalBarChartPainter extends ChartPainter {
       // todo 0 do not repeat loop, collapse to one construct
       presentersColumn.positivePresenters
           .forEach((presenters.StackableValuePointPresenter presenter) {
-        // .forEach((presenters.PointAndLinePresenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
         canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
 
       presentersColumn.negativePresenters
           .forEach((presenters.StackableValuePointPresenter presenter) {
-        // .forEach((presenters.PointAndLinePresenter presenter) {
         presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
         canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
       });

@@ -115,10 +115,6 @@ class PointAndLinePresenter extends StackableValuePointPresenter {
 
 class VerticalBarPresenter extends StackableValuePointPresenter {
 
-  // todo -3 replace with BarPresenter
-  // LinePresenter linePresenter;
-  // ui.Offset point;
-
   ui.Rect presentedRect;
   ui.Paint dataRowPaint;
 
@@ -189,7 +185,7 @@ class PresentersColumn {
   void _createPresentersInColumn({List fromPoints, List toPresenters, ValuePointsColumn pointsColumn, PointAndPresenterCreator pointAndPresenterCreator, ChartLayouter layouter,}) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint stackablePoint) {
-      // todo -3 nextRightPointsColumn may be wrong.
+      // todo 0 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint =
       pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.points[rowIndex] : null;
 
@@ -217,10 +213,8 @@ class PresentersColumn {
 /// of this object needs to be given a way to create each "visual atomic widget"
 /// to display each data value. This is provided by the passed
 /// [PointAndPresenterCreator], which "create" methods know how to create the concrete
-/// instances of :
-///   - the "atomic stacked data value" using
-///   [PointAndPresenterCreator.createPoint] and
-///   - the "atomic stacked display widget of the data value" using
+/// instances of the "atomic stacked display widget of the data value" using
+///
 ///   [PointAndPresenterCreator.createPointPresenter]
 ///
 /// Notes:
@@ -267,12 +261,6 @@ abstract class PointAndPresenterCreator {
     this._layouter = layouter;
   }
 
-  /* todo -3 remove
-  StackableValuePoint createPoint({
-    String xLabel,
-    double y,
-    StackableValuePoint underThisPoint,});
-*/
   StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
     StackableValuePoint nextRightColumnValuePoint,
@@ -285,17 +273,6 @@ abstract class PointAndPresenterCreator {
 class PointAndLineLeafCreator extends PointAndPresenterCreator {
 
   PointAndLineLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
-
-/* todo -3 remove
-  StackableValuePoint createPoint({
-    String xLabel,
-    double y,
-    StackableValuePoint underThisPoint,
-  }) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.fromY; // VerticalBar: toY
-    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);  // fromY remains 0.0 for all hotspots
-  }
-  */
 
     StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,
@@ -316,17 +293,6 @@ class PointAndLineLeafCreator extends PointAndPresenterCreator {
 class VerticalBarLeafCreator extends PointAndPresenterCreator {
 
   VerticalBarLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
-
-/* todo -3 remove
-  StackableValuePoint createPoint({
-    String xLabel,
-    double y,
-    StackableValuePoint underThisPoint,
-  }) {
-    double fromY = underThisPoint == null ? 0.0 : underThisPoint.toY; // PointAndLine: fromY
-    return new StackableValuePoint(xLabel: null, y: y, stackFromY: fromY);
-  }
-  */
 
   StackableValuePointPresenter createPointPresenter({
     StackableValuePoint valuePoint,

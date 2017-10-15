@@ -107,7 +107,7 @@ abstract class ChartLayouter {
   List<LegendLayouterOutput> legendOutputs = new List();
 
   /// Scaler of data values to values on the Y axis.
-  LabelScalerFormatter yScaler;
+  YScalerAndLabelFormatter yScaler;
 
   /// Simple Layouter for a simple flutter chart.
   ///
@@ -468,7 +468,7 @@ class YLayouter {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
     }
 
-    var labelScaler = new LabelScalerFormatter(
+    var labelScaler = new YScalerAndLabelFormatter(
         dataRange: dataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: _yAxisAbsMin,
@@ -498,13 +498,13 @@ class YLayouter {
         values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
-    LabelScalerFormatter labelScaler = range.makeLabelsFromDataOnScale(
+    YScalerAndLabelFormatter labelScaler = range.makeLabelsFromDataOnScale(
         toScaleMin: _yAxisAbsMin, toScaleMax: _yAxisAbsMax);
 
     _commonLayout(labelScaler);
   }
 
-  void _commonLayout(LabelScalerFormatter labelScaler) {
+  void _commonLayout(YScalerAndLabelFormatter labelScaler) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
     _chartLayouter.yScaler = labelScaler;
@@ -707,7 +707,7 @@ class LegendLayouter {
   /// Evenly divides available width to all legend items.
   layout() {
     ChartOptions options = _chartLayouter.options;
-    List<String> rowLegends = _chartLayouter.data.rowLegends;
+    List<String> dataRowsLegends = _chartLayouter.data.dataRowsLegends;
     double indicatorToLegendPad = options.legendColorIndicatorPaddingLR;
     double indicatorWidth = options.legendColorIndicatorWidth;
     double indicatorHeight = indicatorWidth;
@@ -716,10 +716,10 @@ class LegendLayouter {
 
     // Allocated width of one color square + legend text (one legend item)
     double legendItemWidth =
-        (_availableWidth - 2 * containerMarginLR) / rowLegends.length;
+        (_availableWidth - 2 * containerMarginLR) / dataRowsLegends.length;
 
     var legendSeqs =
-        new Iterable.generate(rowLegends.length, (i) => i); // 0 .. length-1
+        new Iterable.generate(dataRowsLegends.length, (i) => i); // 0 .. length-1
 
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
@@ -728,7 +728,7 @@ class LegendLayouter {
     var legendMax = ui.Size.zero;
     for (var index in legendSeqs) {
       painting.TextPainter p = new LabelPainter(options: options)
-          .textPainterForLabel(rowLegends[index]);
+          .textPainterForLabel(dataRowsLegends[index]);
       legendMax = new ui.Size(math.max(legendMax.width, p.width),
           math.max(legendMax.height, p.height));
     }
@@ -743,7 +743,7 @@ class LegendLayouter {
       var legendOutput = new LegendLayouterOutput();
 
       legendOutput.labelPainter = new LabelPainter(options: options)
-          .textPainterForLabel(rowLegends[index]);
+          .textPainterForLabel(dataRowsLegends[index]);
 
       double indicatorX = legendItemWidth * index + containerMarginLR;
 
@@ -844,7 +844,7 @@ class StackableValuePoint {
       xLabel; // todo 0 this is unused, document why, and maybe use xLabel instead
   double y;
   int dataRowIndex; // series index
-  StackableValuePoint underThisPoint;
+  StackableValuePoint predecessorPoint;
   bool isStacked = false;
 
   // stacking - sets the y coordinate of range representing this point's value
@@ -868,12 +868,12 @@ class StackableValuePoint {
     String xLabel,
     double y,
     int dataRowIndex,
-    StackableValuePoint underThisPoint,
+    StackableValuePoint predecessorPoint,
   }) {
     this.xLabel = xLabel;
     this.y = y;
     this.dataRowIndex = dataRowIndex;
-    this.underThisPoint = underThisPoint;
+    this.predecessorPoint = predecessorPoint;
     this.isStacked = false;
 
     this.fromY = 0.0;
@@ -884,25 +884,21 @@ class StackableValuePoint {
     this.isStacked = true;
 
     // todo -1 validate: check if both points y is same sign or zero
-    this.fromY = underThisPoint != null ? underThisPoint.toY : 0.0;
+    this.fromY = predecessorPoint != null ? predecessorPoint.toY : 0.0;
     this.toY = this.fromY + this.y;
 
     return this;
   }
 
-  StackableValuePoint stackOnAnother(StackableValuePoint underThisPoint) {
-    this.underThisPoint = underThisPoint;
+  /// Stacks this point on top of the passed [predecessorPoint].
+  ///
+  /// Points are constructed unstacked. Depending on chart type,
+  /// a later processing can stack points using this method
+  /// (if chart type is [ChartLayouter.isStacked].
+  StackableValuePoint stackOnAnother(StackableValuePoint predecessorPoint) {
+    this.predecessorPoint = predecessorPoint;
     return this.stack();
   }
-
-  /* todo -3 remove
-  StackableValuePoint({String xLabel, double y, double stackFromY,}) {
-    this.xLabel = xLabel;
-    this.y = y;
-    this.fromY = stackFromY;
-    this.toY = this.fromY + this.y;
-  }
-*/
 
   /// Scales this point's data values [x] and [y], and all stacked y values
   /// and points - [scaledX], [scaledY], [fromScaledY],  [toScaledY],
@@ -916,7 +912,7 @@ class StackableValuePoint {
   /// of the correspoding x label).
   ///
   StackableValuePoint scale({
-    LabelScalerFormatter yScaler,
+    YScalerAndLabelFormatter yScaler,
     double scaledX,
   }) {
     this.scaledX = scaledX;
@@ -944,13 +940,13 @@ class StackableValuePoint {
         xLabel: this.xLabel,
         y: this.y,
         dataRowIndex: this.dataRowIndex,
-        underThisPoint: this.underThisPoint);
+        predecessorPoint: this.predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable atoms.
     clone.xLabel = xLabel;
     clone.y = y;
-    clone.underThisPoint = null;
+    clone.predecessorPoint = null;
     clone.dataRowIndex = dataRowIndex;
     clone.isStacked = false;
     clone.fromY = fromY;
@@ -990,7 +986,7 @@ class ValuePointsColumn {
   ///  Construct column from the passed [points].
   ///
   ///  Passed points are assumed to:
-  ///    - Be configured with appropriate [underThisPoint]
+  ///    - Be configured with appropriate [predecessorPoint]
   ///    - Not stacked
   ///  Creates members [stackedNegativePoints], [stackedPositivePoints]
   ///  which exist only to be stacked, so the constructor stacks them
@@ -1066,11 +1062,13 @@ class ValuePointsColumns {
 
     ChartData chartData = layouter.data;
 
-    // dataRows.forEach((var dataRow) {
-    List<StackableValuePoint> underThisPoints =
+    // Manages "predecessor in stack" points - each element is the per column point
+    // below the currently processed point. The currently processed point is
+    // (potentially) stacked on it's predecessor.
+    List<StackableValuePoint> rowOfPredecessorPoints =
         new List(chartData.dataRows[0].length); // todo 0 deal with no data rows
-    for (int col = 0; col < underThisPoints.length; col++)
-      underThisPoints[col] = null;
+    for (int col = 0; col < rowOfPredecessorPoints.length; col++)
+      rowOfPredecessorPoints[col] = null;
 
     for (int row = 0; row < chartData.dataRows.length; row++) {
       List<num> dataRow = chartData.dataRows[row];
@@ -1078,23 +1076,20 @@ class ValuePointsColumns {
       _pointsRows.add(pointsRow);
       // int col = 0;
       // dataRow.forEach((var colValue) {
-      StackableValuePoint underThisPoint = null;
+      StackableValuePoint predecessorPoint = null;
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
-/* todo -3 remove
-        var thisPoint = pointAndPresenterCreator.createPoint(
-            xLabel: null, y: colValue, underThisPoint: underThisPoints[col]);
-*/
-        // create all points unstacked. later processing can stack them,
-        // depending on chart type
+
+        // Create all points unstacked. A later processing can stack them,
+        // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = new StackableValuePoint(
             xLabel: null,
             y: colValue,
             dataRowIndex: row,
-            underThisPoint: underThisPoints[col]);
+            predecessorPoint: rowOfPredecessorPoints[col]);
 
         pointsRow.add(thisPoint);
-        underThisPoints[col] = thisPoint;
+        rowOfPredecessorPoints[col] = thisPoint;
       }
       ;
     }
@@ -1107,22 +1102,6 @@ class ValuePointsColumns {
     ValuePointsColumn leftColumn = null;
     pointsColumns = new List();
 
-    //todo -4:
-    // d 1. ValuePointsColumn
-    // d    - add stackedNegPoints, stackedPosPoints, add comment
-    // d    - constructor from points, actually create pos/neg points
-    // d    - pos/neg points EXIST ONLY TO BE STACKED, SO STACK THE POINT "from/to" VALUE FROM RIGHT ON CREATION.
-    // d 2. PresentersColumn
-    // d    - add negativePresenters, positivePresenters, add comment
-    // d    -  constructor, actually create pos/neg presenters, depending on passed pointsColumn.points[i] point value
-    // d    - add good comment how stacked type chart must separate above/below
-    // d 3. remove need for createPoint above
-    // ? 4. MAKE SURE presentedRect is created correctly (now we have pos/neg coordinates)
-    // d 5. VerticalBarChartPainter presentersColumn.presenters .forEach - change to 2 loops, for pos/neg presenters
-    // d 6. Look where points.scale is called. We need to scale positive and negative separately
-    //  7.  Look where presenters.scale is called. We need to scale positive and negative separately
-    //  8. get VerticalBar working
-    //  9. remove need for createPoint in interface and all places
     _pointsColumns.forEach((List<StackableValuePoint> columnPoints) {
       var pointsColumn = new ValuePointsColumn(points: columnPoints);
       pointsColumns.add(pointsColumn);

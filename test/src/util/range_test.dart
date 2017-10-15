@@ -61,7 +61,7 @@ void main() {
     double max = 500.0;
 
     Range r;
-    LabelScalerFormatter lsf;
+    YScalerAndLabelFormatter lsf;
 
     r = new Range(values: [1, 22, 333], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);

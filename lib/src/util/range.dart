@@ -44,7 +44,7 @@ class Range {
   ///
   /// The [toScaleMin] and [toScaleMax] are the display scale,
   /// for example the range of Y axis positions between bottom and top.
-  LabelScalerFormatter makeLabelsFromDataOnScale(
+  YScalerAndLabelFormatter makeLabelsFromDataOnScale(
       {double toScaleMin, double toScaleMax,}) {
     num min = _closure.min;
     num max = _closure.max;
@@ -99,17 +99,17 @@ class Range {
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
 
-    var labelScaler = new LabelScalerFormatter(
+    var yScaler = new YScalerAndLabelFormatter(
         dataRange: new Interval(from, to),
         valueOnLabels: labels,
         toScaleMin: toScaleMin,
         toScaleMax: toScaleMax,
         chartOptions: _options);
 
-    labelScaler.scaleLabelInfos();
-    labelScaler.makeLabelsPresentable();
+    yScaler.scaleLabelInfos();
+    yScaler.makeLabelsPresentable();
 
-    return labelScaler;
+    return yScaler;
   }
 
   /// Makes anywhere from zero to nine label values, of greatest power of
@@ -179,7 +179,7 @@ class Range {
 
 // todo 00 document as encapsulating Y axis scaling (dataRange scaling to available pixels) and Y Labels creation,
 // todo 0 refactor and make immutable
-class LabelScalerFormatter {
+class YScalerAndLabelFormatter {
   /// Manages, formats, and scales Y labels created from data values
   /// by [Range].
   ///
@@ -197,7 +197,7 @@ class LabelScalerFormatter {
   double _toScaleMax;
   ChartOptions _options;
 
-  LabelScalerFormatter({
+  YScalerAndLabelFormatter({
     Interval dataRange,
     List<num> valueOnLabels,
     double toScaleMin,
@@ -304,7 +304,7 @@ class LabelScalerFormatter {
 class LabelInfo {
   LabelInfo(this.labelValue, this.parentScaler);
 
-  LabelScalerFormatter parentScaler;
+  YScalerAndLabelFormatter parentScaler;
 
   /// Unscaled label value, ([labelValues] are on the scale of data).
   num labelValue;

@@ -31,30 +31,30 @@ class ChartOptions {
   bool largestValuePointOnVeryTop = true; // false not supported yet
 
   /// Colors corresponding to each data row (series) in [ChartData].
-  final List<ui.Color> dataRowsColors = new List<ui.Color>();
+  List<ui.Color> dataRowsColors = new List<ui.Color>();
 
   /// Number of grid lines and y axis labels. Not implemented
-  final int maxNumYLabels = 4;
+  int maxNumYLabels = 4;
 
   /// Color defaults
-  final ui.Color gridLinesColor = material.Colors.grey;
-  final ui.Color xLabelsColor = material.Colors
+  ui.Color gridLinesColor = material.Colors.grey;
+  ui.Color xLabelsColor = material.Colors
       .grey; // or const ui.Color(0xFFEEEEEE)
 
   /// Length of ticks around the grid rectangle.
   /// Autolayout can increase these lengths, to fit labels below them.
-  final double xTopMinTicksHeight = 6.0; // todo 00 not applied?
-  final double yRightMinTicksWidth = 6.0;
-  final double xBottomMinTicksHeight = 6.0;
-  final double yLeftMinTicksWidth = 6.0;
+  double xTopMinTicksHeight = 6.0; // todo 00 not applied?
+  double yRightMinTicksWidth = 6.0;
+  double xBottomMinTicksHeight = 6.0;
+  double yLeftMinTicksWidth = 6.0;
 
   /// Pad space around X labels. todo 1 separate top, bottom, left, right, and only keep those used
-  final double xLabelsPadTB = 12.0; // top and bottom
-  final double xLabelsPadLR = 12.0; // left and right - Unused
+  double xLabelsPadTB = 12.0; // top and bottom
+  double xLabelsPadLR = 12.0; // left and right - Unused
 
   /// Pad space around Y labels.todo 1 separate top, bottom, left, right, and only keep those used
-  final double yLabelsPadTB = 12.0;
-  final double yLabelsPadLR = 12.0;
+  double yLabelsPadTB = 12.0;
+  double yLabelsPadLR = 12.0;
 
   /// Side of the square used to show color of lines/bars
   /// together with data series name (legend name).
@@ -69,7 +69,7 @@ class ChartOptions {
   /// which displays the bars (grouped or stacked).
   double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
 
-  final String yLabelUnits = "";
+  String yLabelUnits = "";
 
   String toLabel(String label) => label + yLabelUnits;
 
@@ -87,7 +87,7 @@ class ChartOptions {
   /// Sets up colors first threee data rows (series) explicitly, rest randomly
   void setDataRowsRandomColors(int dataRowsCount) {
     if (dataRowsCount >= 1) {
-      dataRowsColors.add(material.Colors.red);
+      dataRowsColors.add(material.Colors.yellow);
     }
     if (dataRowsCount >= 2) {
       dataRowsColors.add(material.Colors.green);
@@ -112,8 +112,8 @@ class ChartOptions {
 ///
 class LineChartOptions extends ChartOptions {
 
-  final double hotspotInnerRadius = 3.0;
-  final double hotspotOuterRadius = 6.0;
+  double hotspotInnerRadius = 3.0;
+  double hotspotOuterRadius = 6.0;
 
 }
 
