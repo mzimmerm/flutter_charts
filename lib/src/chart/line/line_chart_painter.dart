@@ -145,11 +145,10 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
-    for (common.XLayouterOutput xLabel in _layouter.xOutputs) {
+    for (common.XLayouterOutput xLayouterOutput in _layouter.xOutputs) {
       // todo 0 : move / keep label coords in layouter
-      var offset = new ui.Offset(xLabel.labelX, _layouter.xLabelsAbsY);
-
-      widgets.TextPainter textPainter = xLabel.painter;
+      var offset = new ui.Offset(xLayouterOutput.labelLeftX, _layouter.xLabelsAbsY);
+      widgets.TextPainter textPainter = xLayouterOutput.painter;
       textPainter.paint(canvas, offset);
     }
   }
@@ -160,7 +159,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
       // todo 0 : move / keep label coords in layouter
       var offset = new ui.Offset(
         _layouter.yLabelsAbsX,
-        yLabel.labelY,
+        yLabel.labelTopY,
       );
       widgets.TextPainter textPainter = yLabel.painter;
       textPainter.paint(canvas, offset);
@@ -170,7 +169,6 @@ abstract class ChartPainter extends widgets.CustomPainter {
   void drawLegend(ui.Canvas canvas) {
     for (common.LegendLayouterOutput legend in _layouter.legendOutputs) {
       legend.labelPainter.paint(canvas, legend.labelOffset);
-
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
     }
   }

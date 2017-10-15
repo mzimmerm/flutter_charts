@@ -203,9 +203,12 @@ abstract class ChartLayouter {
 
     xOutputs = xLayouter.outputs.map((var output) {
       var xOutput = new XLayouterOutput();
-      xOutput.painter = output.painter;
-      xOutput.vertGridLineX = xLayouterAbsX + output.vertGridLineX;
-      xOutput.labelX = xLayouterAbsX + output.labelX;
+      xOutput.painter            = output.painter;
+      xOutput.vertGridLineX      = xLayouterAbsX + output.vertGridLineX;
+      xOutput.leftVertGridLineX  = xLayouterAbsX + output.leftVertGridLineX;
+      xOutput.rightVertGridLineX = xLayouterAbsX + output.rightVertGridLineX;
+      xOutput.tickX              = xLayouterAbsX + output.tickX;
+      xOutput.labelLeftX         = xLayouterAbsX + output.labelLeftX;
       return xOutput;
     }).toList();
 
@@ -239,7 +242,7 @@ abstract class ChartLayouter {
       var yOutput = new YLayouterOutput();
       yOutput.painter = output.painter;
       yOutput.horizGridLineY = output.horizGridLineY;
-      yOutput.labelY = output.labelY;
+      yOutput.labelTopY = output.labelTopY;
       return yOutput;
     }).toList();
 
@@ -290,19 +293,28 @@ abstract class ChartLayouter {
     );
   }
 
+  /// Prepares vertical grid lines fully configured for painting,
+  /// with colors and positions set.
+  ///
+  /// Depending on [isStacked], either the middle-of-column grid lines,
+  /// or the righ-and-left-column-border grid lines are prepared.
   List<LinePresenter> get vertGridLines {
-    return xOutputs.map((var output) {
+    var vertGridLines = xOutputs.map((var output) {
+      double x = isStacked ? output.leftVertGridLineX : output.vertGridLineX;
+
       return new LinePresenter(
           from: new ui.Offset(
-            output.vertGridLineX,
+            x,
             this.vertGridLinesFromY,
           ),
           to: new ui.Offset(
-            output.vertGridLineX,
+            x,
             this.vertGridLinesToY,
           ),
           paint: gridLinesPaint(options));
-    }).toList();
+    });
+
+    return vertGridLines.toList();
   }
 
   List<LinePresenter> get horizGridLines {
@@ -322,6 +334,12 @@ abstract class ChartLayouter {
 
   // todo 1 document these methods
   // todo 0 surely some getters from here are not needed?
+  // todo 0 review all these methods below. Mostly those with "Abs". How is this use??
+
+  /// X coordinates of x ticks (x tick - middle of column, also middle of label)
+  List<double> get xTicksXs
+      => xOutputs.map((var output) => output.tickX).toList();
+
   double get xyLayoutersAbsY => math.max(
       _yLabelsMaxHeight / 2 + _legendContainerHeight,
       options.xTopMinTicksHeight);
@@ -333,12 +351,14 @@ abstract class ChartLayouter {
 
   double get horizGridLinesFromX => _yLabelsContainerWidth;
 
-  double get vertGridLinesFromY => xyLayoutersAbsY;
-
+  // todo 0 replace this simple by width of the XLaouter!
   double get horizGridLinesToX =>
       xOutputs.map((var output) => output.vertGridLineX).reduce(math.max) +
       yRightTicksWidth;
 
+  double get vertGridLinesFromY => xyLayoutersAbsY;
+
+  // todo 0 replace this calc by height of the YLayouter!
   double get vertGridLinesToY =>
       yOutputs.map((var output) => output.horizGridLineY).reduce(math.max) +
       options.xBottomMinTicksHeight;
@@ -515,7 +535,7 @@ class YLayouter {
       output.painter = new LabelPainter(options: _chartLayouter.options)
           .textPainterForLabel(labelInfo.formattedYLabel);
       output.horizGridLineY = topY;
-      output.labelY = topY - output.painter.height / 2;
+      output.labelTopY = topY - output.painter.height / 2;
       outputs.add(output);
     }
   }
@@ -547,8 +567,8 @@ class YLayouterOutput {
   /// but y labels can be skipped.
   double horizGridLineY;
 
-  ///  y offset of Y label left point.
-  double labelY;
+  ///  y offset of Y label top point.
+  double labelTopY;
 }
 
 /// todo 0 document
@@ -618,9 +638,13 @@ class XLayouter {
   ///
   /// Label width includes spacing on each side.
   layout() {
-    double labelFullWidth = _availableWidth / _xLabels.length;
 
-    _gridStepWidth = labelFullWidth;
+    double yTicksWidth = _chartLayouter.options.yLeftMinTicksWidth + _chartLayouter.options.yRightMinTicksWidth;
+
+    double labelMaxAllowedWidth = (_availableWidth - yTicksWidth)
+        / _xLabels.length;
+
+    _gridStepWidth = labelMaxAllowedWidth;
 
     var seq = new Iterable.generate(_xLabels.length, (i) => i); // 0 .. length-1
 
@@ -629,8 +653,18 @@ class XLayouter {
       var xOutput = new XLayouterOutput();
       xOutput.painter = new LabelPainter(options: _chartLayouter.options)
           .textPainterForLabel(_xLabels[xIndex]);
-      xOutput.vertGridLineX = (_gridStepWidth / 2) + _gridStepWidth * xIndex;
-      xOutput.labelX = xOutput.vertGridLineX - xOutput.painter.width / 2;
+
+      double halfLabelWidth      =  xOutput.painter.width / 2;
+      double halfStepWidth       = _gridStepWidth / 2;
+      double atIndexOffset       = _gridStepWidth * xIndex;
+      xOutput.tickX              =  halfStepWidth + atIndexOffset + _chartLayouter.options.yLeftMinTicksWidth; // Start stepping after painting left Y tick
+      double columnLeftX         = xOutput.tickX - halfStepWidth;
+      double columnRightX        = xOutput.tickX + halfStepWidth;
+      xOutput.labelLeftX         = xOutput.tickX - halfLabelWidth; // center tickX and label on same center
+      xOutput.vertGridLineX      = xOutput.tickX;
+      xOutput.leftVertGridLineX  = columnLeftX;
+      xOutput.rightVertGridLineX = columnRightX;
+
       outputs.add(xOutput);
     }
 
@@ -640,6 +674,7 @@ class XLayouter {
         .map((painting.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
+
 }
 
 /// A Wrapper of [XLayouter] members that can be used by clients
@@ -650,18 +685,38 @@ class XLayouterOutput {
   /// Painter configured to paint one label
   painting.TextPainter painter;
 
-  ///  x offset of X label middle point.
+  /// The x offset of vertical grid line in the middle of column.
   ///
-  /// Also is the x offset of point that should
-  /// show a "tick dash" for the label center on the x axis (unused).
+  /// On all chart types, this is the same as [tickX] - allows
+  /// to draw a line in the middle of the column (middle of label).
   ///
-  /// Also is the x offset of vertical grid lines. (see draw grid)
+  /// Generally intended to be used on charts showing data as points
+  /// (e.g. line charts), but not on bucket type charts such as bar chart.
   ///
-  /// First "tick dash" is on the first label, last on the last label.
+  /// On some chart types, [vertGridLineX] may not be drawn;
+  /// [leftVertGridLineX] and [rightVertGridLineX] may be used instead.
   double vertGridLineX;
 
+  /// The x offset of vertical grid line on the left border of the chart column.
+  ///
+  /// See discussion in [vertGridLineX].
+  double leftVertGridLineX;
+
+  /// The x offset of vertical grid line on the right border of the chart column.
+  ///
+  /// See discussion in [vertGridLineX].
+  double rightVertGridLineX;
+
+  /// The x offset of point that should
+  /// show a "tick dash" for the label center on the x axis (unused).
+  ///
+  /// Equal to the x offset of X label middle point.
+  ///
+  /// First "tick dash" is on the first label, last on the last label.
+  double tickX;
+
   ///  x offset of X label left point .
-  double labelX;
+  double labelLeftX;
 }
 
 /// Lays out the legend area for the chart.
@@ -752,10 +807,10 @@ class LegendLayouter {
       legendOutput.indicatorRect = new ui.Offset(indicatorX, indicatorTop) &
           new ui.Size(indicatorWidth, indicatorHeight);
 
-      double labelX = indicatorX + indicatorWidth + indicatorToLegendPad;
+      double labelLeftX = indicatorX + indicatorWidth + indicatorToLegendPad;
 
-      double labelTop = (_size.height - legendOutput.labelPainter.height) / 2;
-      legendOutput.labelOffset = new ui.Offset(labelX, labelTop);
+      double labelTopY = (_size.height - legendOutput.labelPainter.height) / 2;
+      legendOutput.labelOffset = new ui.Offset(labelLeftX, labelTopY);
 
       legendOutput.indicatorPaint = new ui.Paint();
       legendOutput.indicatorPaint.color =
@@ -1124,7 +1179,7 @@ class PointsColumns {
     int col = 0;
     pointsColumns.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = _layouter.vertGridLines[col].from.dx;
+        double scaledX = _layouter.xTicksXs[col];
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
       });
       col++;
