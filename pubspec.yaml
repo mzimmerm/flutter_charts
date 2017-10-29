@@ -13,11 +13,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-# mz : example of dependency on another project: local, github, locally hosted on own pub server on 8080,
+# Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #
 #   # local directory
 #   flutter_charts_common:
-#     path: /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_common
+#     path: ~/dev/my-projects-source/public-on-github/flutter_charts_common
 #
 #   # github
 #   flutter_charts_common:
@@ -31,7 +31,7 @@ dev_dependencies:
 #       name: flutter_charts_common
 #       url: http://localhost:8080
 #
-#   # this default assumes package on official pub
+#   # this default assumes package on official pub repo
 #   flutter_charts_common:
 
 # For information on the generic Dart part of this file, see the

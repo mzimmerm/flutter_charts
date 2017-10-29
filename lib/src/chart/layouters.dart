@@ -1015,7 +1015,7 @@ class StackableValuePoint {
         predecessorPoint: this.predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
-    // rest of objects (ui.Offset) must be created from immutable atoms.
+    // rest of objects (ui.Offset) must be created from immutable leafs.
     clone.xLabel = xLabel;
     clone.y = y;
     clone.predecessorPoint = null;

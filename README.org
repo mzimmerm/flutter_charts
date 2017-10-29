@@ -1,3 +1,9 @@
 * Flutter charts
 
 
+* Terminology
+
+- (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
+  - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
+- Painter               :: Class which paints to chart to canvas. Terminology and class structure taken from Flutter's Painter and Painting classes.
+  - Classes: todo

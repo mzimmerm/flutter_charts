@@ -63,7 +63,7 @@ class ChartOptions {
   double legendContainerMarginLR = 12.0; // todo 1 make = xLabelsPadLR;
   double legendContainerMarginTB = 6.0;
 
-  /// Portion of horizontal (X) grid width, used to display presenter atoms.
+  /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
   /// For example, for bar charts, this represents the portion along X axis,
   /// which displays the bars (grouped or stacked).

@@ -202,7 +202,7 @@ class PresentersColumn {
 
 // todo -1 : write this in terms of abstracts, reuse implementation - may be done now
 // todo -1 document
-/// Manages the visual elements (atoms) presented in each
+/// Manages the visual elements (leafs) presented in each
 /// "column of view" in chart - that is, all widgets representing
 /// series of data displayed above each X label.
 ///
