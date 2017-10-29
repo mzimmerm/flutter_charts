@@ -23,7 +23,7 @@ class VerticalBarPresenter extends Presenter {
   ){
     // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = new ui.Paint();
-    dataRowPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
+    dataRowPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
 
     // todo 0 simplify, unnecessary tmp vars
     ui.Offset barMidBottom     = point.scaledFrom;

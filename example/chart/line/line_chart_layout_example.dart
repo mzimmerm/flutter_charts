@@ -106,19 +106,17 @@ class _MyHomePageState extends State<MyHomePage> {
   ///   "only static members can be accessed in initializers".
   ///   todo 0 resolve this ^ (current code works in practice as long as the RandomChartData size is the same)
 
-  ChartOptions _chartOptions;
-  LineChartOptions _lineChartOptions = new LineChartOptions();
+  LineChartOptions _lineChartOptions;
   ChartOptions _verticalBarChartOptions;
 
   RandomChartData _chartData;
 
    _MyHomePageState() {
 
-      // todo 1 move to a common method
-     var randomChartOptions = new ChartOptions();
-//     _chartOptions = randomChartOptions;
-     _chartData = new RandomChartData(chartOptions: randomChartOptions); // _chartOptions);
-     randomChartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
+      // todo -1 move to a common method
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
 
    }
 
@@ -132,18 +130,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // and so nothing would appear to happen.
 
       /// here we create new random data to illustrate working state change
-//      var chartOptions = new ChartOptions();
-//      _chartOptions = chartOptions;
-//      _chartData = new RandomChartData(chartOptions: _chartOptions);
-//      _chartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
-
-      // todo 1 move to a common method
-      var randomChartOptions = new ChartOptions();
-//     _chartOptions = randomChartOptions;
-      _chartData = new RandomChartData(chartOptions: randomChartOptions); // _chartOptions);
-      randomChartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
-
-
+      // todo -1 move to a common method
+      _lineChartOptions = new LineChartOptions();
+      _verticalBarChartOptions = new VerticalBarChartOptions();
+      _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
     });
   }
 

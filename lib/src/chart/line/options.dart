@@ -1,4 +1,3 @@
-
 import '../options.dart';
 
 class LineChartOptions extends ChartOptions {

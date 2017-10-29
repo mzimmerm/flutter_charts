@@ -803,7 +803,7 @@ class LegendLayouter {
 
       legendOutput.indicatorPaint = new ui.Paint();
       legendOutput.indicatorPaint.color =
-          options.dataRowsColors[index % options.dataRowsColors.length];
+          _chartLayouter.data.dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
 
       outputs.add(legendOutput);
     }
@@ -1118,7 +1118,7 @@ class PointsColumns {
       _pointsRows.add(pointsRow);
       // int col = 0;
       // dataRow.forEach((var colValue) {
-      StackableValuePoint predecessorPoint = null;
+      StackableValuePoint predecessorPoint;
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
 
@@ -1139,7 +1139,7 @@ class PointsColumns {
 
     // convert "column first" List<List<StackableValuePoint>> _pointsColumns
     // to public List<ValuePointsColumn> pointsColumns
-    PointsColumn leftColumn = null;
+    PointsColumn leftColumn;
     pointsColumns = new List();
 
     _pointsColumns.forEach((List<StackableValuePoint> columnPoints) {

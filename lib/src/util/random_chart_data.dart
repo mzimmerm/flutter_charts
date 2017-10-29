@@ -1,16 +1,12 @@
 import 'dart:math' as math;
 
-import 'dart:collection' as collection;
-
 import 'package:flutter_charts/src/chart/data.dart';
-import 'package:flutter_charts/src/chart/options.dart';
-
 
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
 
-  ChartOptions _chartOptions;
+  bool _useUserProvidedYLabels;
   int _numXLabels;
   int _numDataRows;
   bool _useMonthNames;
@@ -23,14 +19,14 @@ class RandomChartData extends ChartData {
   /// If [useMonthNames] is set to false, random
   ///
   RandomChartData({
-    ChartOptions chartOptions,
+    bool useUserProvidedYLabels,
     int numXLabels = 6,
     int numDataRows = 4,
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapYValues = false,
   }) {
-    _chartOptions = chartOptions;
+    _useUserProvidedYLabels = useUserProvidedYLabels;
     _numXLabels = numXLabels;
     _numDataRows = numDataRows;
     _useMonthNames = useMonthNames;
@@ -44,6 +40,8 @@ class RandomChartData extends ChartData {
     _generateDataRowsLegends();
 
     _generateYLabels();
+
+    assignDataRowsDefaultColors();
 
     validate();
   }
@@ -80,7 +78,7 @@ class RandomChartData extends ChartData {
   }
 
   void _generateYLabels() {
-    if (_chartOptions.useUserProvidedYLabels) {
+    if (_useUserProvidedYLabels) {
       // yLabels = [ "0%", "25%", "50%", "75%", "100%"];
       yLabels = [ "NONE", "OK", "GOOD", "BETTER", "100%"];
     }

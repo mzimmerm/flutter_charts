@@ -1,6 +1,5 @@
 import 'dart:math' as math show min, max, pow;
 import 'package:decimal/decimal.dart' as decimal;
-import 'package:flutter_charts/src/chart/data.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 import 'util.dart' as util;
 

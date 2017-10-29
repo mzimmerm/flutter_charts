@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Rect, Offset, Paint, PaintingStyle;
+import 'dart:ui' as ui show Offset, Paint;
 
 
 /// todo 0 document

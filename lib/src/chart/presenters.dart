@@ -122,7 +122,7 @@ class PresentersColumns {
     PresenterCreator presenterCreator,
   }) {
     // iterate "column first", that is, over valuePointsColumns.
-    PresentersColumn leftPresentersColumn = null;
+    PresentersColumn leftPresentersColumn;
     pointsColumns.pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,

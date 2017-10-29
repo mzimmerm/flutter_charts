@@ -27,10 +27,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// change some elements of chart's layout, colors, and overall look and feel.
 
   // todo 0 document - change
-
-  ChartPainter() // note: data should be same for all charts,  options differ
-  {
-  }
+  // note: data should be same for all charts,  options differ
+  ChartPainter(); // as ChartPainter() {} - empty body
 
   setLayouter(common.ChartLayouter layouter) {
     this.layouter = layouter;

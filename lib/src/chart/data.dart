@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui show Color;
+import 'package:flutter/material.dart' as material show Colors;
 
 class ChartData {
 
@@ -15,6 +17,9 @@ class ChartData {
   /// One Legend String per row.
   /// Alternative name would be "series names".
   List<String> dataRowsLegends = new List();
+
+  /// Colors corresponding to each data row (series) in [ChartData].
+  List<ui.Color> dataRowsColors = new List<ui.Color>();
 
   /// Labels on independent (X) axis.
   ///
@@ -61,6 +66,30 @@ class ChartData {
 
   double minData() {
      return _flattenData().reduce(math.min);
+  }
+
+  /// Sets up colors first threee data rows (series) explicitly, rest randomly
+  void assignDataRowsDefaultColors() {
+
+    int dataRowsCount = dataRows.length;
+
+    if (dataRowsCount >= 1) {
+      dataRowsColors.add(material.Colors.yellow);
+    }
+    if (dataRowsCount >= 2) {
+      dataRowsColors.add(material.Colors.green);
+    }
+    if (dataRowsCount >= 3) {
+      dataRowsColors.add(material.Colors.blue);
+    }
+    if (dataRowsCount > 3) {
+      for (int i = 3; i < dataRowsCount; i++) {
+        int colorHex = new math.Random().nextInt(0xFFFFFF);
+        int opacityHex = 0xFF;
+        dataRowsColors.add(
+            new ui.Color(colorHex + (opacityHex * math.pow(16, 6))));
+      }
+    }
   }
 
 }

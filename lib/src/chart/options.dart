@@ -1,5 +1,4 @@
 import 'dart:ui' as ui show Color;
-import 'dart:math' as math show Random, pow;
 import 'package:flutter/material.dart' as material show Colors;
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
@@ -26,9 +25,6 @@ class ChartOptions {
 
   /// Shows largest value on very top of the chart grid, to save space.
   bool largestValuePointOnVeryTop = true; // false not supported yet
-
-  /// Colors corresponding to each data row (series) in [ChartData].
-  List<ui.Color> dataRowsColors = new List<ui.Color>();
 
   /// Number of grid lines and y axis labels. Not implemented
   int maxNumYLabels = 4;
@@ -79,27 +75,6 @@ class ChartOptions {
     if (val.endsWith("000")) val = val.substring(0, val.length - 3) + "K";
 
     return val + yLabelUnits;
-  }
-
-  /// Sets up colors first threee data rows (series) explicitly, rest randomly
-  void setDataRowsRandomColors(int dataRowsCount) {
-    if (dataRowsCount >= 1) {
-      dataRowsColors.add(material.Colors.yellow);
-    }
-    if (dataRowsCount >= 2) {
-      dataRowsColors.add(material.Colors.green);
-    }
-    if (dataRowsCount >= 3) {
-      dataRowsColors.add(material.Colors.blue);
-    }
-    if (dataRowsCount > 3) {
-      for (int i = 3; i < dataRowsCount; i++) {
-        int colorHex = new math.Random().nextInt(0xFFFFFF);
-        int opacityHex = 0xFF;
-        dataRowsColors.add(
-            new ui.Color(colorHex + (opacityHex * math.pow(16, 6))));
-      }
-    }
   }
 
 }

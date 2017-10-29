@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Rect, Offset, Paint, PaintingStyle;
+import 'dart:ui' as ui show Offset, Paint;
 
 import 'package:flutter/material.dart' as material;
 
@@ -45,7 +45,7 @@ class LineAndHotspotPresenter extends Presenter {
   ){
     // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = new ui.Paint();
-    rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
+    rowDataPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
