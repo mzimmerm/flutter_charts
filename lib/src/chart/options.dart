@@ -2,9 +2,6 @@ import 'dart:ui' as ui show Color;
 import 'dart:math' as math show Random, pow;
 import 'package:flutter/material.dart' as material show Colors;
 
-import 'random_chart_data.dart' show RandomChartData;
-
-
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
@@ -104,21 +101,5 @@ class ChartOptions {
       }
     }
   }
-
-}
-
-/// File for [LineChartOptions] and [RandomLineChartOptions]
-/// todo 00 document
-///
-class LineChartOptions extends ChartOptions {
-
-  double hotspotInnerRadius = 3.0;
-  double hotspotOuterRadius = 6.0;
-
-}
-
-// todo 00 separate to it's file OR merge random_chart_data to chart_data
-class RandomLineChartOptions extends LineChartOptions {
-
 
 }

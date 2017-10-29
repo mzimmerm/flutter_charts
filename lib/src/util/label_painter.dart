@@ -3,7 +3,7 @@ import 'package:flutter/painting.dart' as painting
     show TextStyle, TextSpan, TextPainter;
 import 'package:flutter/material.dart' as material show Colors;
 import 'dart:ui' as ui;
-import 'chart_options.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 
 
 /// Provides ability to paint individual elements

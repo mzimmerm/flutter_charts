@@ -2,12 +2,12 @@
 //       Also, material.dart exports many dart files, including widgets.dart,
 //         so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 // or from flutter_charts exports (library)
-// provides: chart_data.dart, random_chart_data.dart, line_chart_options.dart
+// provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
 
-import 'dart:ui' as ui;
 
 /// Example of simple line chart usage in an application.
 ///
@@ -106,16 +106,19 @@ class _MyHomePageState extends State<MyHomePage> {
   ///   "only static members can be accessed in initializers".
   ///   todo 0 resolve this ^ (current code works in practice as long as the RandomChartData size is the same)
 
-  RandomLineChartOptions _chartOptions;
+  ChartOptions _chartOptions;
+  LineChartOptions _lineChartOptions = new LineChartOptions();
+  ChartOptions _verticalBarChartOptions;
+
   RandomChartData _chartData;
 
    _MyHomePageState() {
 
       // todo 1 move to a common method
-     var randomChartOptions = new RandomLineChartOptions();
-     _chartOptions = randomChartOptions;
-     _chartData = new RandomChartData(chartOptions: _chartOptions);
-     _chartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
+     var randomChartOptions = new ChartOptions();
+//     _chartOptions = randomChartOptions;
+     _chartData = new RandomChartData(chartOptions: randomChartOptions); // _chartOptions);
+     randomChartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
 
    }
 
@@ -129,10 +132,17 @@ class _MyHomePageState extends State<MyHomePage> {
       // and so nothing would appear to happen.
 
       /// here we create new random data to illustrate working state change
-      var randomChartOptions = new RandomLineChartOptions();
-      _chartOptions = randomChartOptions;
-      _chartData = new RandomChartData(chartOptions: _chartOptions);
-      _chartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
+//      var chartOptions = new ChartOptions();
+//      _chartOptions = chartOptions;
+//      _chartData = new RandomChartData(chartOptions: _chartOptions);
+//      _chartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
+
+      // todo 1 move to a common method
+      var randomChartOptions = new ChartOptions();
+//     _chartOptions = randomChartOptions;
+      _chartData = new RandomChartData(chartOptions: randomChartOptions); // _chartOptions);
+      randomChartOptions.setDataRowsRandomColors(_chartData.dataRows.length);
+
 
     });
   }
@@ -178,14 +188,14 @@ class _MyHomePageState extends State<MyHomePage> {
       painter: new LineChartPainter(),
       layouter: new LineChartLayouter(
           chartData: _chartData,
-          chartOptions: _chartOptions),
+          chartOptions: _lineChartOptions),
     );
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(),
       layouter: new VerticalBarChartLayouter(
           chartData: _chartData,
-          chartOptions: _chartOptions),
+          chartOptions: _verticalBarChartOptions),
     );
 
     // [MyHomePage] extends [StatefulWidget].

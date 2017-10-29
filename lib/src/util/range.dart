@@ -1,7 +1,7 @@
 import 'dart:math' as math show min, max, pow;
 import 'package:decimal/decimal.dart' as decimal;
-import '../chart/chart_data.dart';
-import '../chart/chart_options.dart';
+import 'package:flutter_charts/src/chart/data.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 import 'util.dart' as util;
 
 /// Scalable range, supporting creation of scaled x and y axis labels.

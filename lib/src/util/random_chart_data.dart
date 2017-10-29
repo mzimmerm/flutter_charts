@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'dart:collection' as collection;
 
-import 'chart_data.dart';
-import 'chart_options.dart';
+import 'package:flutter_charts/src/chart/data.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 
 
 /// Generator of sample data for testing the charts.

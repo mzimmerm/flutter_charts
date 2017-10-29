@@ -8,46 +8,17 @@ import 'package:flutter/painting.dart' as painting show TextPainter;
 
 // import 'package:flutter/widgets.dart' as widgets show TextPainter;
 
-import 'label_painter.dart';
+import 'package:flutter_charts/src/util/label_painter.dart';
 
-import 'chart_options.dart';
-import 'chart_data.dart';
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/chart/data.dart';
 
 import 'presenters.dart'; // V
 
 import '../util/range.dart';
 import '../util/util.dart' as util;
+import '../util/line_presenter.dart' as line_presenter;
 
-class VerticalBarChartLayouter extends ChartLayouter {
-  VerticalBarChartLayouter({
-    ui.Size chartArea,
-    ChartData chartData,
-    ChartOptions chartOptions,
-  })
-      : super(
-          chartArea: chartArea,
-          chartData: chartData,
-          chartOptions: chartOptions,
-        ) {
-    presenterCreator = new VerticalBarLeafCreator();
-  }
-}
-
-/// todo -1 document
-class LineChartLayouter extends ChartLayouter {
-  LineChartLayouter({
-    ui.Size chartArea,
-    ChartData chartData,
-    ChartOptions chartOptions,
-  })
-      : super(
-          chartArea: chartArea,
-          chartData: chartData,
-          chartOptions: chartOptions,
-        ) {
-    presenterCreator = new LineAndHotspotLeafCreator(layouter: this);
-  }
-}
 
 /// Layouters calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -298,13 +269,13 @@ abstract class ChartLayouter {
   ///
   /// Depending on [isStacked], either the middle-of-column grid lines,
   /// or the righ-and-left-column-border grid lines are prepared.
-  List<LinePresenter> get vertGridLines {
+  List<line_presenter.LinePresenter> get vertGridLines {
     XLayouterOutput lastOutput;
     var vertGridLines = xOutputs.map((var output) {
       lastOutput = output;
       double x = isStacked ? output.leftVertGridLineX : output.vertGridLineX;
 
-      return new LinePresenter(
+      return new line_presenter.LinePresenter(
           from: new ui.Offset(
             x,
             this.vertGridLinesFromY,
@@ -319,7 +290,7 @@ abstract class ChartLayouter {
     // For stacked, we need to add last righ grid line
     if (isStacked && lastOutput != null) {
       vertGridLines.add(
-        new LinePresenter(
+        new line_presenter.LinePresenter(
           from: new ui.Offset(
             lastOutput.rightVertGridLineX,
             this.vertGridLinesFromY,
@@ -335,9 +306,9 @@ abstract class ChartLayouter {
     return vertGridLines;
   }
 
-  List<LinePresenter> get horizGridLines {
+  List<line_presenter.LinePresenter> get horizGridLines {
     return yOutputs.map((var output) {
-      return new LinePresenter(
+      return new line_presenter.LinePresenter(
           from: new ui.Offset(
             this.horizGridLinesFromX,
             output.horizGridLineY,
@@ -1053,7 +1024,7 @@ class PointsColumn {
   /// above and below zero.
   List<StackableValuePoint> stackedNegativePoints;
 
-  PointsColumn nextRightPointsColumn = null;
+  PointsColumn nextRightPointsColumn;
 
   ///  Construct column from the passed [points].
   ///
@@ -1162,9 +1133,7 @@ class PointsColumns {
         pointsRow.add(thisPoint);
         rowOfPredecessorPoints[col] = thisPoint;
       }
-      ;
     }
-    ;
     _pointsRows.toList();
     _pointsColumns = util.transpose(_pointsRows);
 

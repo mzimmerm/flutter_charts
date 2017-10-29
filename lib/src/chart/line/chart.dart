@@ -1,7 +1,9 @@
+
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../layouters.dart' as layouters;
-import 'line_chart_painter.dart' as painter;
+import '../line/layouters.dart' as line_layouters;
+import '../line/painter.dart' as painter show LineChartPainter;
+
 
 /// [LineChart] provides a simple line chart graphics.
 ///
@@ -21,30 +23,7 @@ class LineChart extends widgets.CustomPaint {
     widgets.CustomPainter foregroundPainter,
     widgets.Size size: widgets.Size.zero,
     widgets.Widget child,
-    layouters.LineChartLayouter layouter,
-  })
-      : super(
-          key: key,
-          painter: painter,
-          foregroundPainter: foregroundPainter,
-          size: size,
-          child: child,
-        ) {
-    layouter.isStacked = false;
-    painter.setLayouter(layouter);
-  }
-}
-
-/// todo 0 document
-class VerticalBarChart extends widgets.CustomPaint {
-  /// Default constructor accepts size
-  VerticalBarChart({
-    widgets.Key key,
-    painter.VerticalBarChartPainter painter,
-    widgets.CustomPainter foregroundPainter,
-    widgets.Size size: widgets.Size.zero,
-    widgets.Widget child,
-    layouters.VerticalBarChartLayouter layouter,
+    line_layouters.LineChartLayouter layouter,
   })
       : super(
     key: key,
@@ -53,7 +32,7 @@ class VerticalBarChart extends widgets.CustomPaint {
     size: size,
     child: child,
   ) {
-    layouter.isStacked = true;
+    layouter.isStacked = false;
     painter.setLayouter(layouter);
   }
 }

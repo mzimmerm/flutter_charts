@@ -5,7 +5,7 @@
 ///
 /// Basically, files _exported_ in this file, for example
 ///
-/// > export 'src/chart/chart_data.dart';
+/// > export 'src/chart/data.dart';
 ///
 /// are visible to external applications (to which the contents of the _lib_
 /// directory is copied through pub) using code like this
@@ -15,7 +15,7 @@
 /// Code under [root/lib] directory
 ///     1. can use same _import 'package:etc'_ as above external code
 ///     2. or file scheme, e.g.
-///     > import 'src/chart/chart_data.dart';
+///     > import 'src/chart/data.dart';
 ///
 /// Any dart file (any client application) located outside
 /// of the "lib" directory just above, can only see the classes
@@ -56,27 +56,40 @@
 ///
 ///  1.  Paths in export the *lib level is skipped*
 ///      starting with the ‘src’ representing Private.
-///         `export 'src/chart/line/line_chart.dart';` // even though under lib
+///         `export 'src/chart/torefactor/line_chart.dart';` // even though under lib
 ///  2.  Generally, external code can import
 ///      all classes in one library in one line, referencing this file
 ///         `import 'package:flutter_charts/flutter_charts.dart';`
 ///  3. We can say that **files below the _lib/src_ directory in Dart,
 ///     are by convention, private, and invisible above the _lib_ directory.
 ///  4. Equivalent export syntaxes
-///     - `export                        'src/chart/chart_data.dart'`
-///     - `export 'package:flutter_charts/src/chart/chart_data.dart'`
+///     - `export                        'src/chart/data.dart'`
+///     - `export 'package:flutter_charts/src/chart/data.dart'`
 ///
 
-/// export path starts after lib!
-//
-export 'src/chart/line/line_chart_painter.dart';
+/// todo -2
+/// export path starts after lib, whether using 'package:flutter_charts' format or 'src/' format.
+///
+export 'package:flutter_charts/src/util/label_painter.dart';
+export 'package:flutter_charts/src/util/random_chart_data.dart';
 
-export 'src/chart/chart_data.dart';
-export 'src/chart/random_chart_data.dart';
-export 'src/chart/line/line_chart.dart';
-export 'src/chart/chart_options.dart';
-export 'src/chart/label_painter.dart';
+export 'package:flutter_charts/src/chart/data.dart';
 export 'src/chart/layouters.dart';
+
+export 'package:flutter_charts/src/chart/options.dart';
+
 export 'src/util/util.dart';
 export 'src/util/range.dart';
+
+export 'src/chart/line/chart.dart';
+export 'src/chart/line/painter.dart';
+export 'src/chart/line/layouters.dart';
+export 'src/chart/line/options.dart';
+
+export 'src/chart/bar/chart.dart';
+export 'src/chart/bar/painter.dart';
+export 'src/chart/bar/layouters.dart';
+export 'src/chart/bar/options.dart';
+
+export 'src/util/random_chart_data.dart';
 

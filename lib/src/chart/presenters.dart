@@ -1,26 +1,7 @@
-import 'dart:ui' as ui show Rect, Offset, Paint, PaintingStyle;
+import 'dart:ui' as ui show Paint, PaintingStyle;
 
-import 'package:flutter/painting.dart' as painting show TextPainter;
-import 'package:flutter/widgets.dart' as widgets show Widget;
-import 'package:flutter/material.dart' as material;
-
-import 'chart_options.dart';
+import 'package:flutter_charts/src/chart/options.dart';
 import 'layouters.dart';
-
-
-/// todo 0 document
-class LinePresenter {
-  ui.Paint paint;
-  ui.Offset from;
-  ui.Offset to;
-
-  LinePresenter({ui.Offset from, ui.Offset to, ui.Paint paint}) {
-
-    this.paint = paint;
-    this.from = from;
-    this.to = to;
-  }
-}
 
 // todo -1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
@@ -52,97 +33,6 @@ class Presenter {
   }
 }
 
-/// Represents, as offset, the point at which data value is shown,
-/// and the line from this data value point to the next data value point
-/// on the right.
-///
-/// The line leads from this [offsetPoint]
-/// to the [offsetPoint] of the [LineAndHotspotPresenter]
-/// which is next in the [PresentersColumn.presenters] list.
-///
-/// todo 0 document
-/// todo 0 can this be refactored and joined with / common code with / VerticalBarPresenter? see move colors creation to super
-class LineAndHotspotPresenter extends Presenter {
-
-  // todo 1 consider: extends StackableValuePoint / ValuePresenter
-
-  LinePresenter linePresenter;
-  ui.Offset offsetPoint; // offset where the data point will be painted
-  ui.Paint innerPaint;
-  ui.Paint outerPaint;
-  double innerRadius;
-  double outerRadius;
-
-  ui.Paint rowDataPaint;
-
-  LineAndHotspotPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartLayouter layouter,
-  })
-      : super(
-    point: point,
-    nextRightColumnValuePoint: nextRightColumnValuePoint,
-    rowIndex: rowIndex,
-    layouter: layouter,
-  ){
-    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
-    rowDataPaint = new ui.Paint();
-    rowDataPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
-
-    ui.Offset fromPoint = point.scaledTo;
-    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
-    toPoint ??= fromPoint;
-    linePresenter = new LinePresenter(
-      from: fromPoint,
-      to: toPoint,
-      paint: rowDataPaint..strokeWidth = 3.0, // todo 0 set as option
-    );
-    offsetPoint = fromPoint; // point is the left (from) end of the line
-    innerPaint = new ui.Paint();
-    innerPaint.color = material.Colors.yellow;
-    outerPaint = new ui.Paint();
-    outerPaint.color = material.Colors.black;
-    innerRadius = (layouter.options as LineChartOptions).hotspotInnerRadius;
-    outerRadius = (layouter.options as LineChartOptions).hotspotOuterRadius;
-  }
-}
-
-// todo -2 make this an actual bar presenter
-// todo -1 can this be refactored and joined with / common code with / LineAndHotspotPresenter? see move colors creation to super
-
-class VerticalBarPresenter extends Presenter {
-
-  ui.Rect presentedRect;
-  ui.Paint dataRowPaint;
-
-  VerticalBarPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartLayouter layouter,})
-      : super(
-    point: point,
-    nextRightColumnValuePoint: nextRightColumnValuePoint,
-    rowIndex: rowIndex,
-    layouter: layouter,
-  ){
-    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
-    dataRowPaint = new ui.Paint();
-    dataRowPaint.color = layouter.options.dataRowsColors[rowIndex % layouter.options.dataRowsColors.length];
-
-    // todo 0 simplify, unnecessary tmp vars
-    ui.Offset barMidBottom     = point.scaledFrom;
-    ui.Offset barMidTop        = point.scaledTo;
-    double    barWidth         = layouter.gridStepWidth * layouter.options.gridStepWidthPortionUsedByAtomicPresenter;
-
-    ui.Offset barLeftTop       = barMidTop.translate(-1 * barWidth / 2, 0.0);
-    ui.Offset barRightBottom   = barMidBottom.translate(1 * barWidth / 2, 0.0);
-
-    presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom);
-  }
-}
 
 // todo 0 comment add good comment how stacked type chart must separate above/below
 
@@ -269,41 +159,3 @@ abstract class PresenterCreator {
 
 }
 
-class LineAndHotspotLeafCreator extends PresenterCreator {
-
-  LineAndHotspotLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
-
-    Presenter createPointPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartLayouter layouter,
-  }) {
-    return new LineAndHotspotPresenter(
-      point: point,
-      nextRightColumnValuePoint: nextRightColumnValuePoint,
-      rowIndex: rowIndex,
-      layouter: layouter,
-    );
-  }
-
-}
-
-class VerticalBarLeafCreator extends PresenterCreator {
-
-  VerticalBarLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
-
-  Presenter createPointPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartLayouter layouter,
-  }) {
-    return new VerticalBarPresenter(
-      point: point,
-      nextRightColumnValuePoint: nextRightColumnValuePoint,
-      rowIndex: rowIndex,
-      layouter: layouter,
-    );
-  }
-}

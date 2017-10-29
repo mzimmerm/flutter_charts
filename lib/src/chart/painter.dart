@@ -1,75 +1,10 @@
 import 'dart:ui' as ui;
 
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart' as widgets; // note: external package imp
-
-import 'package:flutter/material.dart' as material;
-
-import 'package:flutter/painting.dart' as painting;
 
 // NO -  need some private import 'package:flutter_charts/flutter_charts.dart' as common;
 import 'package:flutter_charts/flutter_charts.dart' as common;
-import '../layouters.dart' as layouters; // todo -1 export in lib instead
-import '../presenters.dart' as presenters; // todo -1 export in lib instead
-
-
-/// todo 0 document,
-/// todo -1 move to own file
-class VerticalBarChartPainter extends ChartPainter {
-
-  // todo -2 remove layouters.ChartLayouter _layouter;
-
-  /// See super [ChartPainter.drawPresentersColumns].
-  void drawPresentersColumns(ui.Canvas canvas) {
-    this._layouter.presentersColumns.presentersColumns
-        .forEach((presenters.PresentersColumn presentersColumn) {
-      // todo 0 do not repeat loop, collapse to one construct
-      presentersColumn.positivePresenters
-          .forEach((presenters.Presenter presenter) {
-        presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
-        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
-
-      presentersColumn.negativePresenters
-          .forEach((presenters.Presenter presenter) {
-        presenters.VerticalBarPresenter presenterCast = presenter as presenters.VerticalBarPresenter;
-        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
-
-    });
-  }
-}
-
-/// todo 0 document, move to own file
-class LineChartPainter extends ChartPainter {
-
-  // todo -2 remove layouters.ChartLayouter _layouter;
-
-  /// See super [ChartPainter.drawPresentersColumns].
-  void drawPresentersColumns(ui.Canvas canvas) {
-    this._layouter.presentersColumns.presentersColumns
-        .forEach((presenters.PresentersColumn presentersColumn) {
-      presentersColumn.presenters
-          .forEach((presenters.Presenter presenter) {
-        presenters.LineAndHotspotPresenter presenterCast = presenter as presenters.LineAndHotspotPresenter;
-        canvas.drawLine(
-          presenterCast.linePresenter.from,
-          presenterCast.linePresenter.to,
-          presenterCast.linePresenter.paint,
-        );
-        canvas.drawCircle(
-            presenterCast.offsetPoint,
-            presenterCast.outerRadius,
-            presenterCast.outerPaint);
-        canvas.drawCircle(
-            presenterCast.offsetPoint,
-            presenterCast.innerRadius,
-            presenterCast.innerPaint);
-      });
-    });
-  }
-}
+import 'layouters.dart' as layouters; // todo -1 export in lib instead
 
 /// [LineChartPainter] is the core of painting the line chart.
 ///
@@ -85,7 +20,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Layouter provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  layouters.ChartLayouter _layouter;
+  layouters.ChartLayouter layouter;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -98,7 +33,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   setLayouter(common.ChartLayouter layouter) {
-   _layouter = layouter;
+    this.layouter = layouter;
   }
   /// todo 00 document
   /// This is sort of like constructor in the sense all initialization
@@ -113,8 +48,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
       return;
     }
 
-    _layouter.chartArea = size;
-    _layouter.layout(); // todo 0 pass size to layout
+    layouter.chartArea = size;
+    layouter.layout(); // todo 0 pass size to layout
 
     drawGrid(canvas);
     drawYLabels(canvas);
@@ -134,20 +69,20 @@ abstract class ChartPainter extends widgets.CustomPainter {
   void drawGrid(ui.Canvas canvas) {
 
     // draw horizontal and vertical grid
-    _layouter.horizGridLines.forEach((linePresenter) =>
+    layouter.horizGridLines.forEach((linePresenter) =>
         canvas.drawLine(linePresenter.from, linePresenter.to, linePresenter.paint)
     );
 
-    _layouter.vertGridLines.forEach((linePresenter) =>
+    layouter.vertGridLines.forEach((linePresenter) =>
         canvas.drawLine(linePresenter.from, linePresenter.to, linePresenter.paint)
     );
   }
 
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
-    for (common.XLayouterOutput xLayouterOutput in _layouter.xOutputs) {
+    for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
       // todo 0 : move / keep label coords in layouter
-      var offset = new ui.Offset(xLayouterOutput.labelLeftX, _layouter.xLabelsAbsY);
+      var offset = new ui.Offset(xLayouterOutput.labelLeftX, layouter.xLabelsAbsY);
       widgets.TextPainter textPainter = xLayouterOutput.painter;
       textPainter.paint(canvas, offset);
     }
@@ -155,10 +90,10 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
-    for (common.YLayouterOutput yLabel in _layouter.yOutputs) {
+    for (common.YLayouterOutput yLabel in layouter.yOutputs) {
       // todo 0 : move / keep label coords in layouter
       var offset = new ui.Offset(
-        _layouter.yLabelsAbsX,
+        layouter.yLabelsAbsX,
         yLabel.labelTopY,
       );
       widgets.TextPainter textPainter = yLabel.painter;
@@ -167,7 +102,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   void drawLegend(ui.Canvas canvas) {
-    for (common.LegendLayouterOutput legend in _layouter.legendOutputs) {
+    for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
       legend.labelPainter.paint(canvas, legend.labelOffset);
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
     }
