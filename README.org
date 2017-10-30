@@ -1,7 +1,58 @@
-* Flutter charts
+* Flutter Charts
+
+* Chart Data and Options - Notes
+
+Before we show several examples of charts, a few notes. 
+
+- The ~ChartData~ class allow to define data - X labels, Y values, (optional) Y labels, each-dataRow (series) legends, each-dataRow (series) color.
+  - X labels: ~ChartData.xLabels~ allow to define X labels. Setting ~xLabels~ is required, but client can set them to empty strings.
+  - Y values: ~ChartData.dataRows~ allow to define Y values in rows. Assumption: size of each data row in ~ChartData.dataRows~ is the same, and each data row size ==  ~ChartData.xLabels.size~
+  - Y labels (optional): Normally, Y labels are generated from data. The option ~ChartOptions.useUserProvidedYLabels~ (default /true/), asks flutter_charts to data-generate Y labels. If this option is set to /false/, then ~ChartData.yLabels~ must be set. Any number of such user-provided Y labels is allowed.
+  - Each-dataRow (each series) legends: ~ChartData.dataRowsLegends~ allow to define a legend for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsLegends.size~
+  - Each-dataRow (each series) color: ~ChartData.dataRowsColors~ allow to define a color for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsColors.size~
+- The  ~ChartOptions~ class allows to define options, by using it's defaults, or setting some options to non default values. There are also ~LineChartOptions~ and ~VerticalBarChartOptions~ classes. 
+- Flutter_charts also provides, in ~RandomChartData~, randomly generated:
+  - Y values data, 
+  - X labels, 
+  - Series colors, 
+  - Series legends  
+- Currently the only purpose of rando data is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends is not completely random, but define some reasonable demoable values.
 
 
-* Terminology
+* TODO Sample Application
+
+There is one sample application 
+
+
+
+* LineChart and VerticalBarChart Examples
+
+** TODO Random Data, Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
+ Data-Generated Y labels is the default.  
+explain support for scaling from data. Explain how negatives are shown.
+*** Equivalent vertical bar chart.
+** TODO User-Provided Data, User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
+*** Equivalent vertical bar chart.
+** TODO User-Provided Data, User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels,
+Explain how Y scaling is done with useUserProvidedYLabels.
+Example with X axis: Java, Dart, Python, Newspeak,
+*** Equivalent vertical bar chart
+
+
+* VerticalBar Chart - one more example, showing positive/negative stacks:
+
+** user data, user colors, user-provided labels: Example with positive/negative data that show stock groups X labels: Energy, Health, Finance, Chips, Oil)  Series Labels (<-2%, -2%_0%, 0%_+2%, >+2%) Y labels (Good, OK, Poor)
+
+
+* Future Work
+
+- First, crop labels not to run into the neighbor
+- Next, probably to provide tooltips
+- Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
+- Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
+- Next, add ability to invert X and Y axis (values on horizontal axis)
+
+* Terminology and Selected Classes
 
 - (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
   - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator

@@ -58,7 +58,8 @@ class ChartOptions {
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
-  /// For example, for bar charts, this represents the portion along X axis,
+  /// For example, for bar charts, this represents the portion of one
+  /// label width along X axis,
   /// which displays the bars (grouped or stacked).
   double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
 
