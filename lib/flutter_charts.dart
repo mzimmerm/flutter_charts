@@ -73,7 +73,7 @@
 export 'package:flutter_charts/src/util/label_painter.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 
-export 'package:flutter_charts/src/chart/data.dart';
+export 'src/chart/data.dart';
 export 'src/chart/layouters.dart';
 
 export 'package:flutter_charts/src/chart/options.dart';

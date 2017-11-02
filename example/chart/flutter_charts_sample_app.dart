@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
   LineChartOptions _lineChartOptions;
   ChartOptions _verticalBarChartOptions;
 
-  RandomChartData _chartData;
+  ChartData _chartData;
 
    _MyHomePageState() {
 
@@ -118,8 +118,60 @@ class _MyHomePageState extends State<MyHomePage> {
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "Spring",
+       "Summer",
+       "Fall",
+       "Winter"];
+     _chartData.dataRows = [
+       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
+       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0, ],
+       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
+       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0, ],
+     ];
+     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+     _chartData.assignDataRowsDefaultColors();
+     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+   }
+
+   /* 1
+   void defineOptionsAndData() {
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
      _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
    }
+   */
+
+   /* 2
+   void defineOptionsAndData() {
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "Spring",
+       "Summer",
+       "Fall",
+       "Winter"];
+     _chartData.dataRows = [
+       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
+       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0, ],
+       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
+       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0, ],
+     ];
+     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+     _chartData.assignDataRowsDefaultColors();
+     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+   }
+   */
+
+   /* 3
+
+    */
+
+   /* 4
+
+    */
 
   void _chartStateChanger() {
     setState(() {
