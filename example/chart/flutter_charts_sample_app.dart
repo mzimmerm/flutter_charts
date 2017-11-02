@@ -111,11 +111,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
    _MyHomePageState() {
 
-      // todo -1 move to a common method
+     // defineOptionsAndData();
+
+   }
+
+   void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-
+     _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
    }
 
   void _chartStateChanger() {
@@ -127,11 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // setState(), then the build method would not be called again,
       // and so nothing would appear to happen.
 
-      /// here we create new random data to illustrate working state change
-      // todo -1 move to a common method
-      _lineChartOptions = new LineChartOptions();
-      _verticalBarChartOptions = new VerticalBarChartOptions();
-      _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+      /// here we create new random data to illustrate state change
+      // defineOptionsAndData();
     });
   }
 
@@ -171,6 +171,8 @@ class _MyHomePageState extends State<MyHomePage> {
     print(" ### Size: ui.window.physicalSize=${ui.window.physicalSize}, "
         "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
         "chartLogicalSize=$chartLogicalSize");
+
+    defineOptionsAndData();
 
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(),

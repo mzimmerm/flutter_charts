@@ -1,17 +1,21 @@
-* Flutter Charts
+* Flutter Charts - Introduction
 
-* Chart Data and Options - Notes
+Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
+
+You may want to study the included sample app ~flutter_charts_sample_app.dart~ to build your application using Flutter Charts. The sample app shows how a Flutter Chart can be included in a Flutter application.
+
+* Flutter Chart - data, options, classes
 
 Before we show several examples of charts, a few notes. 
 
-- The ~ChartData~ class allow to define data - X labels, Y values, (optional) Y labels, each-dataRow (series) legends, each-dataRow (series) color.
+- The ~ChartData~ class: allows to define data - X labels, Y values, (optional) Y labels, each-dataRow (series) legends, each-dataRow (series) color. The list below provides a summary description of each item
   - X labels: ~ChartData.xLabels~ allow to define X labels. Setting ~xLabels~ is required, but client can set them to empty strings.
   - Y values: ~ChartData.dataRows~ allow to define Y values in rows. Assumption: size of each data row in ~ChartData.dataRows~ is the same, and each data row size ==  ~ChartData.xLabels.size~
   - Y labels (optional): Normally, Y labels are generated from data. The option ~ChartOptions.useUserProvidedYLabels~ (default /true/), asks flutter_charts to data-generate Y labels. If this option is set to /false/, then ~ChartData.yLabels~ must be set. Any number of such user-provided Y labels is allowed.
   - Each-dataRow (each series) legends: ~ChartData.dataRowsLegends~ allow to define a legend for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsLegends.size~
   - Each-dataRow (each series) color: ~ChartData.dataRowsColors~ allow to define a color for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsColors.size~
-- The  ~ChartOptions~ class allows to define options, by using it's defaults, or setting some options to non default values. There are also ~LineChartOptions~ and ~VerticalBarChartOptions~ classes. 
-- Flutter_charts also provides randomly generated data, using ~RandomChartData~. This class generates:
+- The  ~ChartOptions~ class: allows to define options, by using it's defaults, or setting some options to non default values. There are also ~LineChartOptions~ and ~VerticalBarChartOptions~ classes. 
+- Support for randomly generated data, colors, labels: Flutter Charts also provides randomly generated data, in the class ~RandomChartData~. This class generates:
   - Y values data, 
   - X labels, 
   - Series colors, 
@@ -19,7 +23,7 @@ Before we show several examples of charts, a few notes.
 - Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
 
-* Experimenting with Flutter Charts sample app flutter_charts_sample_app.dart
+* Experimenting with Flutter Charts: Using the included sample app flutter_charts_sample_app.dart
 
 There are multiple ways to experiment with Flutter Charts from your computer. We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
 
@@ -61,7 +65,12 @@ As described above, there is one sample application in flutter_charts: example/c
 
 This application is also used as a base to show several possible sample charts in the paragraphs below. Two samples:
 
+
+Vertical Bar Chart (Column Chart)
+
 [[file:README.org_20171102_154245_27063qmN.png]]
+
+Point and Line Chart (Line Chart)
 
 [[file:README.org_20171102_154329_270633wT.png]]
 
@@ -70,7 +79,8 @@ Output uses semi-random data. Click the blue + button to rerun chart with a diff
 
 * Flutter Charts: LineChart and VerticalBarChart Samples: Code and resulting charts
 
-Flutter Charts code allow to define the following
+Flutter Charts code allow to define the following data items:
+
 | /Data (Y values)/          | User-Provided or Random         |
 | /X Labels/                 | User-Provided or Random         |
 | /Options including Colors/ | User-Provided or Random         |
@@ -79,14 +89,25 @@ Flutter Charts code allow to define the following
 
 The samples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
 
-The chart images were obtained by substituting the code snippet to the example/chart/flutter_charts_sample_app.dart code. 
-
+The chart images were obtained by substituting the code snippet to the ~example/chart/flutter_charts_sample_app.dart~ code. 
 
 
 ** TODO Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 
 This example shows that Data-Generated Y labels is the default.  
 Flutter Charts support reasonably intelligently generated Y Labels from data, including dealing with negatives.
+
+The example charts in this section are equivalent to those shown in "Sample Flutter Charts Application Output".
+
+Data setting code in ~defineOptionsAndData()~:
+
+#+BEGIN_SRC groovy :exports code
+   void defineOptionsAndData() {
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+   }
+#+END_SRC
 
 
 *** Vertical bar chart.
@@ -101,6 +122,11 @@ Example with X axis: Java, Dart, Python, Newspeak,
 
 ** user data, user colors, user-provided labels: Example with positive/negative data that show stock groups X labels: Energy, Health, Finance, Chips, Oil)  Series Labels (<-2%, -2%_0%, 0%_+2%, >+2%) Y labels (Good, OK, Poor)
 
+
+
+* Known Bugs
+
+- Chart area needs clipping in the application
 
 * Future Work
 
