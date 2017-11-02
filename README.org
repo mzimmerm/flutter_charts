@@ -101,7 +101,7 @@ The example charts in this section are equivalent to those shown in "Sample Flut
 
 Data setting code in ~defineOptionsAndData()~:
 
-#+BEGIN_SRC groovy :exports code
+#+BEGIN_SRC
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
