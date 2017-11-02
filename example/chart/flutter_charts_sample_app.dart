@@ -28,32 +28,30 @@ void main() {
   //        2) import 'package:flutter/material.dart';
   //          Note: *NOT* 'package:flutter/material/material.dart'.
   //          Note: material.dart is on path: PROJ/packages/flutter/lib/material.dart
-  //          so another
-  //          Note:
+  //          so another note:
   //             * the lib level is skipped int the import reference
   //             * package: represent a directory where packages
   //               for this project are installed in pub update package (todo 1)
-  //
   //      - And:
   //        3) The imported 'package:flutter/material.dart' contains line:
   //            export 'widgets.dart';
-  //            which references, same level, path:
+  //            which references, at the same level, a path:
   //               PROJ/packages/flutter/lib/widgets.dart
   //            which contains:
   //               export 'src/widgets/binding.dart';
   //               on path: PROJ/packages/flutter/lib/src/widgets/binding.dart
-  //            which contains function runApp()
+  //            which contains the function runApp().
   //
-  //  So, eventually, the loading of binding .dart goes in MyApp goes like this:
-
-  //    1) line_chart_layout_example.dart of MyApp has
+  //  So, eventually, the loading of binding.dart, and it's runApp() function
+  //  goes in MyApp is achieved this way:
+  //    1) flutter_charts_sample_app.dart of MyApp has
   //        - import 'package:flutter/material.dart' (references PROJ/packages/flutter/lib/material.dart)
   //    2) material.dart has
   //        - export 'widgets.dart'; (references same dir        PROJ/packages/flutter/lib/widgets.dart)
   //    3) widgets.dart has
   //        - export 'src/widgets/binding.dart'; (references dir PROJ/packages/flutter/lib/src/widgets/binding.dart)
   //
-  // achieves importing (heh via exports) the file
+  // This process achieves importing (heh via exports) the file
   //    packages/flutter/lib/src/widgets/binding.dart
   //    which has the runApp() function.
   //
@@ -279,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: verticalBarChart,
+                    child: lineChart,
                   ),
                   new Text('<<<'),
                 ],
