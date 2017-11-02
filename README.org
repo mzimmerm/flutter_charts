@@ -1,3 +1,5 @@
+ #+OPTIONS: toc:3
+
 * Flutter Charts - Introduction
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
@@ -109,8 +111,12 @@ Data setting code in ~defineOptionsAndData()~:
    }
 #+END_SRC
 
+Result Chart:
+
+[[file:README.org_20171102_172324_27063E7Z.png]]
 
 *** Vertical bar chart.
+
 ** TODO User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
 *** Vertical bar chart.
 ** TODO User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels,

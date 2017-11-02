@@ -295,11 +295,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
 
+      // todo -2 reinstate
+      /*
       floatingActionButton: new FloatingActionButton(
         onPressed: _chartStateChanger,
         tooltip: 'Set Chart Data',
         child: new Icon(Icons.add),
       ),
+      */
     );
   }
 }
