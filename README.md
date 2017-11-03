@@ -1,4 +1,8 @@
 
+# Contained Images Note
+
+If you are reading this from pub <https://pub.dartlang.org/packages/flutter_charts>, please go over to github <https://github.com/mzimmerm/flutter_charts/blob/master/README.md> for a better README.md which also shows Flutter Charts image samples. I am unable to link images in this readme on pub.
+
 # Table of Contents
 
 1.  [Flutter Charts - introduction](#org3bcbfc4)
