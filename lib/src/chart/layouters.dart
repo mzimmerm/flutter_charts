@@ -461,10 +461,14 @@ class YLayouter {
     List<double> flatData = _chartLayouter.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
-    var dataRange =
-        new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
+    print("flatData=$flatData");
 
     List<String> yLabels = _chartLayouter.data.yLabels;
+
+    var dataRange =
+        new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
+    double dataStepHeight =
+        (dataRange.max - dataRange.min) / (yLabels.length - 1);
 
     Interval yAxisRange = new Interval(_yAxisAbsMin, _yAxisAbsMax);
 
@@ -477,6 +481,11 @@ class YLayouter {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
     }
 
+    List<num> yLabelsDividedInYDataRange =  new List();
+    for (var yIndex in seq) {
+      yLabelsDividedInYDataRange.add(dataRange.min + dataStepHeight * yIndex);
+    }
+
     // todo -1 make yScaler private
     var yScaler = new YScalerAndLabelFormatter(
         dataRange: dataRange,
@@ -486,7 +495,7 @@ class YLayouter {
         chartOptions: _chartLayouter.options);
 
     yScaler.setLabelValuesForManualLayout(
-        labelValues: yLabelsDividedInYAxisRange,
+        labelValues: yLabelsDividedInYDataRange,
         scaledLabelValues: yLabelsDividedInYAxisRange,
         formattedYLabels: yLabels);
 

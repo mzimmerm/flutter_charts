@@ -155,24 +155,63 @@ Result vertical bar chart:
 
 ** TODO User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
-Explain how Y scaling is done with useUserProvidedYLabels.
-Example with 
-Legends: Java, Dart, Python, Newspeak,
-Y labels: Ok, Higher, High
-X Labels: Fast, Readable, Novel, Users
+This example show how to use the option ~useUserProvidedYLabels~, and scaling of data to the Y labels range.
 
 
 Code in ~defineOptionsAndData()~:
 
 #+BEGIN_SRC java
+   void defineOptionsAndData() {
+     // This example shows user defined Y Labels.
+     //   When setting Y labels by user, the dataRows value scale
+     //   is irrelevant. User can use for example interval <0, 1>,
+     //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
+     //   The only thing that matters is  the relative values in the data Rows.
+
+     // Note that current implementation sets
+     // the minimum of dataRows range (1.0 in this example)
+     // on the level of the first Y Label ("Ok" in this example),
+     // and the maximum  of dataRows range (10.0 in this example)
+     // on the level of the last Y Label ("High" in this example).
+     // This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "Java",
+       "Dart",
+       "Python",
+       "Newspeak"];
+     _chartData.dataRows = [
+       [9.0, 4.0,  3.0,  9.0, ],
+       [7.0, 6.0,  7.0,  6.0, ],
+       [4.0, 9.0,  6.0,  8.0, ],
+       [3.0, 9.0, 10.0,  1.0, ],
+     ];
+     _chartData.xLabels =  ["Fast", "Readable", "Novel", "Use"];
+     _chartData.dataRowsColors = [
+       Colors.blue,
+       Colors.yellow,
+       Colors.green,
+       Colors.amber,
+     ];
+     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
+     _chartData.yLabels = [
+       "Ok",
+       "Higher",
+       "High",
+     ];
+   }
 #+END_SRC
 
 Result line chart:
 
+[[file:README.org_20171102_191037_27063qtB.png]]
 (Disclaimer: Not scientifically measured)
 
 Result vertical bar chart:
 
+[[file:README.org_20171102_191138_2706333H.png]]
 (Disclaimer: Not scientifically measured)
 
 * VerticalBar Chart - one more example, showing positive/negative stacks:
@@ -193,10 +232,19 @@ Result vertical bar chart:
 
 - Chart area needs clipping in the application
 
-* Future Work
+* Future Work 
 
-- First, crop labels not to run into the neighbor
-- Next, probably to provide tooltips
+Bug fixes:
+
+- Crop labels not to run into the neighbor
+
+On the boundary of bug and enhancement:
+
+- For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max. 
+
+Enhancements:
+
+- First, probably need to provide tooltips
 - Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
 - Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
 - Next, add ability to invert X and Y axis (values on horizontal axis)

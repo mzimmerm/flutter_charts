@@ -116,23 +116,45 @@ class _MyHomePageState extends State<MyHomePage> {
    }
 
    void defineOptionsAndData() {
+     // This example shows user defined Y Labels.
+     //   When setting Y labels by user, the dataRows value scale
+     //   is irrelevant. User can use for example interval <0, 1>,
+     //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
+     //   The only thing that matters is  the relative values in the data Rows.
+
+     // Note that current implementation sets
+     // the minimum of dataRows range (1.0 in this example)
+     // on the level of the first Y Label ("Ok" in this example),
+     // and the maximum  of dataRows range (10.0 in this example)
+     // on the level of the last Y Label ("High" in this example).
+     // This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
      _chartData = new ChartData();
      _chartData.dataRowsLegends = [
-       "Spring",
-       "Summer",
-       "Fall",
-       "Winter"];
+       "Java",
+       "Dart",
+       "Python",
+       "Newspeak"];
      _chartData.dataRows = [
-       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
-       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0, ],
-       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
-       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0, ],
+       [9.0, 4.0,  3.0,  9.0, ],
+       [7.0, 6.0,  7.0,  6.0, ],
+       [4.0, 9.0,  6.0,  8.0, ],
+       [3.0, 9.0, 10.0,  1.0, ],
      ];
-     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-     _chartData.assignDataRowsDefaultColors();
-     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+     _chartData.xLabels =  ["Fast", "Readable", "Novel", "Use"];
+     _chartData.dataRowsColors = [
+       Colors.blue,
+       Colors.yellow,
+       Colors.green,
+       Colors.amber,
+     ];
+     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
+     _chartData.yLabels = [
+       "Ok",
+       "Higher",
+       "High",
+     ];
    }
 
    /* 1
@@ -166,8 +188,49 @@ class _MyHomePageState extends State<MyHomePage> {
    */
 
    /* 3
+   void defineOptionsAndData() {
+     // This example shows user defined Y Labels.
+     //   When setting Y labels by user, the dataRows value scale
+     //   is irrelevant. User can use for example interval <0, 1>,
+     //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
+     //   The only thing that matters is  the relative values in the data Rows.
 
-    */
+     // Note that current implementation sets
+     // the minimum of dataRows range (1.0 in this example)
+     // on the level of the first Y Label ("Ok" in this example),
+     // and the maximum  of dataRows range (10.0 in this example)
+     // on the level of the last Y Label ("High" in this example).
+     // This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "Java",
+       "Dart",
+       "Python",
+       "Newspeak"];
+     _chartData.dataRows = [
+       [9.0, 4.0,  3.0,  9.0, ],
+       [7.0, 6.0,  7.0,  6.0, ],
+       [4.0, 9.0,  6.0,  8.0, ],
+       [3.0, 9.0, 10.0,  1.0, ],
+     ];
+     _chartData.xLabels =  ["Fast", "Readable", "Novel", "Use"];
+     _chartData.dataRowsColors = [
+       Colors.blue,
+       Colors.yellow,
+       Colors.green,
+       Colors.amber,
+     ];
+     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
+     _chartData.yLabels = [
+       "Ok",
+       "Higher",
+       "High",
+
+     ];
+   }
+  */
 
    /* 4
 
@@ -331,7 +394,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart,
+                    child: verticalBarChart,
                   ),
                   new Text('<<<'),
                 ],
