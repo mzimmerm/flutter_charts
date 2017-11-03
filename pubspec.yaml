@@ -3,7 +3,7 @@ version: 0.1.0
 description: Charts Library for Flutter, written in Dart with Flutter.
 author: Milan Zimmermann <milan.zimmermann@gmail.com>
 homepage: https://github.com/mzimmerm/flutter_charts/
-publish_to: pub.dartlang.org
+publish_to: https://pub.dartlang.org
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on github or local server.
