@@ -116,45 +116,36 @@ class _MyHomePageState extends State<MyHomePage> {
    }
 
    void defineOptionsAndData() {
-     // This example shows user defined Y Labels.
-     //   When setting Y labels by user, the dataRows value scale
-     //   is irrelevant. User can use for example interval <0, 1>,
-     //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
-     //   The only thing that matters is  the relative values in the data Rows.
-
-     // Note that current implementation sets
-     // the minimum of dataRows range (1.0 in this example)
-     // on the level of the first Y Label ("Ok" in this example),
-     // and the maximum  of dataRows range (10.0 in this example)
-     // on the level of the last Y Label ("High" in this example).
-     // This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
-     _lineChartOptions = new LineChartOptions();
+     // each column absolute values should add to same number todo -1 :
+     // 100 would make more sense, to represent 100% of stocks in each category
+    _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
      _chartData = new ChartData();
      _chartData.dataRowsLegends = [
-       "Java",
-       "Dart",
-       "Python",
-       "Newspeak"];
+       "-2%_0%",
+       "<-2%",
+       "0%_+2%",
+       ">+2%"];
+     // each column should add to same number. everything else is relative.
      _chartData.dataRows = [
-       [9.0, 4.0,  3.0,  9.0, ],
-       [7.0, 6.0,  7.0,  6.0, ],
-       [4.0, 9.0,  6.0,  8.0, ],
-       [3.0, 9.0, 10.0,  1.0, ],
+       [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
+       [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
+       [7.0, 8.0,  7.0, 11.0, 9.0, ],
+       [3.0, 2.0, 1.0,  3.0,  3.0, ],
      ];
-     _chartData.xLabels =  ["Fast", "Readable", "Novel", "Use"];
+     _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
      _chartData.dataRowsColors = [
-       Colors.blue,
-       Colors.yellow,
-       Colors.green,
-       Colors.amber,
+       Colors.grey,
+       Colors.red,
+       Colors.greenAccent,
+       Colors.black,
      ];
-     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
-     _chartData.yLabels = [
-       "Ok",
-       "Higher",
-       "High",
-     ];
+     _lineChartOptions.useUserProvidedYLabels = false; // use labels below
+     //_chartData.yLabels = [
+     //  "Ok",
+     //  "Higher",
+     //  "High",
+     //];
    }
 
    /* 1
@@ -233,8 +224,41 @@ class _MyHomePageState extends State<MyHomePage> {
   */
 
    /* 4
-
-    */
+   void defineOptionsAndData() {
+     // This example shows user defined Y Labels with
+     // a bar chart, showing negative and positive values
+     // similar to %down/%up stock charts.
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "-2%_0%",
+       "<-2%",
+       "0%_+2%",
+       ">+2%"];
+       // each column absolute values should add to same number todo -1 :
+       // 100 would make more sense, to represent 100% of stocks in each category
+      _chartData.dataRows = [
+       [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
+       [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
+       [7.0, 8.0,  7.0, 11.0, 9.0, ],
+       [3.0, 2.0, 1.0,  3.0,  3.0, ],
+     ];
+     _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
+     _chartData.dataRowsColors = [
+       Colors.grey,
+       Colors.red,
+       Colors.greenAccent,
+       Colors.black,
+     ];
+     _lineChartOptions.useUserProvidedYLabels = false; // use labels below
+     //_chartData.yLabels = [
+     //  "Ok",
+     //  "Higher",
+     //  "High",
+     //];
+   }
+  */
 
   void _chartStateChanger() {
     setState(() {

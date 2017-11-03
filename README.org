@@ -209,28 +209,63 @@ Result line chart:
 [[file:README.org_20171102_191037_27063qtB.png]]
 (Disclaimer: Not scientifically measured)
 
-Result vertical bar chart:
+Result vertical bar chart: Here the values must be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
 
 [[file:README.org_20171102_191138_2706333H.png]]
 (Disclaimer: Not scientifically measured)
 
 * VerticalBar Chart - one more example, showing positive/negative stacks:
 
-** user data, user colors, user-provided labels: Example with positive/negative data that show stock groups X labels: Energy, Health, Finance, Chips, Oil)  Series Labels (<-2%, -2%_0%, 0%_+2%, >+2%) Y labels (Good, OK, Poor)
+** User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
+This example has again user defined Y Labels, with a bar chart, using the smart auto-layout of user defined Y Labels. The chart shows negative and positive values similar to %down/%up stock charts.
 
 Code in ~defineOptionsAndData()~:
 
 #+BEGIN_SRC java
+   void defineOptionsAndData() {
+     // This example shows user defined Y Labels with
+     // a bar chart, showing negative and positive values
+     // similar to %down/%up stock charts.
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "-2%_0%",
+       "<-2%",
+       "0%_+2%",
+       ">+2%"];
+     // each column absolute values should add to same number todo - 100 would make more sense, to represent 100% of stocks in each category
+     _chartData.dataRows = [
+       [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
+       [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
+       [7.0, 8.0,  7.0, 11.0, 9.0, ],
+       [3.0, 2.0, 1.0,  3.0,  3.0, ],
+     ];
+     _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
+     _chartData.dataRowsColors = [
+       Colors.grey,
+       Colors.red,
+       Colors.greenAccent,
+       Colors.black,
+     ];
+     _lineChartOptions.useUserProvidedYLabels = false; // use labels below
+     //_chartData.yLabels = [
+     //  "Ok",
+     //  "Higher",
+     //  "High",
+     //];
+   }
 #+END_SRC
-Result line chart:
-
 
 Result vertical bar chart:
 
+[[file:README.org_20171102_195745_27063ECO.png]]
+(there is a bug here,see Known Bugs)
 * Known Bugs
 
 - Chart area needs clipping in the application
+- Take a look at the stock charts example. There is a bug reverting series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then,  dataRowsLegends are incorrect. 
 
 * Future Work 
 
