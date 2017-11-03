@@ -272,8 +272,8 @@ Result vertical bar chart:
 
 Bug fixes:
 
-- Crop chart to not paint outside area provided by Flutter app. 
-- Crop labels and legends not to run into the neighbor, if too long.
+- Clip chart to not paint outside area provided by Flutter app. 
+- Clip labels and legends not to run into the neighbor, if too long.
 
 On the boundary of bug and enhancement:
 
