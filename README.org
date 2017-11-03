@@ -1,12 +1,12 @@
  #+OPTIONS: toc:3
 
-* Flutter Charts - Introduction
+* Flutter Charts - introduction
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
 
 You may want to study the included sample app ~flutter_charts_sample_app.dart~ to build your application using Flutter Charts. The sample app shows how a Flutter Chart can be included in a Flutter application.
 
-* Flutter Chart - data, options, classes
+* Flutter Charts - data, options, classes
 
 Before we show several examples of charts, a few notes. 
 
@@ -61,7 +61,7 @@ There are multiple ways to experiment with Flutter Charts from your computer. We
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should see the flutter_charts_sample_app)
 
 
-** Sample Flutter Charts Application Output
+** Sample Flutter Charts application output
 
 As described above, there is one sample application in flutter_charts: example/chart/chart_usage_example.dart. You can run the application using one of the methods (6, 7) above.
 
@@ -79,9 +79,9 @@ Point and Line Chart (Line Chart)
 Output uses semi-random data. Click the blue + button to rerun chart with a different dataset.
 
 
-* Flutter Charts: LineChart and VerticalBarChart Samples: Code and resulting charts
+* Flutter Charts: LineChart and VerticalBarChart samples: Code and resulting charts
 
-Flutter Charts code allow to define the following data items:
+Flutter Charts code allow to define the following data elements:
 
 | /Data (Y values)/          | User-Provided or Random         |
 | /X Labels/                 | User-Provided or Random         |
@@ -94,7 +94,7 @@ The samples below show a few alternative code snippets (User-Provided or Random 
 The chart images were obtained by substituting the code snippet to the ~example/chart/flutter_charts_sample_app.dart~ code. 
 
 
-** TODO Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
+** Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 
 This example shows that Data-Generated Y labels is the default.  
 Flutter Charts support reasonably intelligently generated Y Labels from data, including dealing with negatives.
@@ -119,7 +119,7 @@ Result vertical bar chart:
 
 [[file:docs/readme_images/README.org_20171102_173422_27063ePm.png]]
 
-** TODO User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
+** User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
 
 Code in ~defineOptionsAndData()~:
 
@@ -153,7 +153,7 @@ Result vertical bar chart:
 
 [[file:docs/readme_images/README.org_20171102_180915_270634jy.png]]
 
-** TODO User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels
+** User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
 This example show how to use the option ~useUserProvidedYLabels~, and scaling of data to the Y labels range.
 
@@ -195,7 +195,7 @@ Code in ~defineOptionsAndData()~:
        Colors.green,
        Colors.amber,
      ];
-     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
+     _lineChartOptions.useUserProvidedYLabels = true; // use the labels below on Y axis
      _chartData.yLabels = [
        "Ok",
        "Higher",
@@ -207,12 +207,12 @@ Code in ~defineOptionsAndData()~:
 Result line chart:
 
 [[file:docs/readme_images/README.org_20171102_191037_27063qtB.png]]
-(Disclaimer: Not scientifically measured)
+(Disclaimer: Not actually measured)
 
-Result vertical bar chart: Here the values must be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
+Result vertical bar chart: Here the Y values should be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
 
 [[file:docs/readme_images/README.org_20171102_191138_2706333H.png]]
-(Disclaimer: Not scientifically measured)
+(Disclaimer: Not actually measured)
 
 * VerticalBar Chart - one more example, showing positive/negative stacks:
 
@@ -261,17 +261,19 @@ Code in ~defineOptionsAndData()~:
 Result vertical bar chart:
 
 [[file:docs/readme_images/README.org_20171102_195745_27063ECO.png]]
+
 (there is a bug here,see Known Bugs)
-* Known Bugs
+* Known bugs
 
 - Chart area needs clipping in the application
 - Take a look at the stock charts example. There is a bug reverting series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then,  dataRowsLegends are incorrect. 
 
-* Future Work 
+* Future enhancements and work 
 
 Bug fixes:
 
-- Crop labels not to run into the neighbor
+- Crop chart to not paint outside area provided by Flutter app. 
+- Crop labels and legends not to run into the neighbor, if too long.
 
 On the boundary of bug and enhancement:
 
@@ -279,12 +281,17 @@ On the boundary of bug and enhancement:
 
 Enhancements:
 
+- Create document / image showing layout and spacing - show option variables on image
+- Simple:
+  - Add options to hide the grid (keep axes) 
+  - Add options to hide  axes (if axes not shown, labels should not show?)
+  - Decrease option for default spacing around the Y axis.
 - First, probably need to provide tooltips
 - Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
 - Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
 - Next, add ability to invert X and Y axis (values on horizontal axis)
 
-* Terminology and Selected Classes
+* TODO Terminology and Selected Classes
 
 - (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
   - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
