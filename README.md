@@ -91,11 +91,11 @@ This application is also used as a base to show several possible sample charts i
 
 Vertical Bar Chart (Column Chart)
 
-![img](docs/readme_images/README.org_20171102_154245_27063qmN.png)
+![img](doc/readme_images/README.org_20171102_154245_27063qmN.png)
 
 Point and Line Chart (Line Chart)
 
-![img](docs/readme_images/README.org_20171102_154329_270633wT.png)
+![img](doc/readme_images/README.org_20171102_154329_270633wT.png)
 
 Output uses semi-random data. Click the blue + button to rerun chart with a different dataset.
 
@@ -170,11 +170,11 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](docs/readme_images/README.org_20171102_172324_27063E7Z.png)
+![img](doc/readme_images/README.org_20171102_172324_27063E7Z.png)
 
 Result vertical bar chart:
 
-![img](docs/readme_images/README.org_20171102_173422_27063ePm.png)
+![img](doc/readme_images/README.org_20171102_173422_27063ePm.png)
 
 
 <a id="org2291aa2"></a>
@@ -205,11 +205,11 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](docs/readme_images/README.org_20171102_180657_27063rZs.png)
+![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
 
 Result vertical bar chart:
 
-![img](docs/readme_images/README.org_20171102_180915_270634jy.png)
+![img](doc/readme_images/README.org_20171102_180915_270634jy.png)
 
 
 <a id="orga026989"></a>
@@ -264,12 +264,12 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](docs/readme_images/README.org_20171102_191037_27063qtB.png)
+![img](doc/readme_images/README.org_20171102_191037_27063qtB.png)
 (Disclaimer: Not actually measured)
 
 Result vertical bar chart: Here the Y values should be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
 
-![img](docs/readme_images/README.org_20171102_191138_2706333H.png)
+![img](doc/readme_images/README.org_20171102_191138_2706333H.png)
 (Disclaimer: Not actually measured)
 
 
@@ -322,7 +322,7 @@ Code in `defineOptionsAndData()`:
 
 Result vertical bar chart:
 
-![img](docs/readme_images/README.org_20171102_195745_27063ECO.png)
+![img](doc/readme_images/README.org_20171102_195745_27063ECO.png)
 
 (there is a bug here,see Known Bugs)
 
