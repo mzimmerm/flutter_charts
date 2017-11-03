@@ -1,3 +1,7 @@
+# v0.1.3 (2017-10-03)
+
+- Only changes in README, to figure out how to include images (turns out all links must be external)
+
 # v0.1.0 (2017-10-03)
 
 - Initial push. Line chart and (vertical) bar chart support. Various options supported.

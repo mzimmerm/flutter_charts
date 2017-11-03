@@ -1,5 +1,5 @@
 name: flutter_charts
-version: 0.1.1
+version: 0.1.3
 description: Charts Library for Flutter, written in Dart with Flutter.
 author: Milan Zimmermann <milan.zimmermann@gmail.com>
 homepage: https://github.com/mzimmerm/flutter_charts/
@@ -8,6 +8,20 @@ documentation: https://pub.dartlang.org/packages/flutter_charts/doc
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on github or local server.
+
+# Toggle:
+# if pub publish ->
+# ------------
+# dependencies:
+#   decimal: ">=0.1.4 <0.2.0"
+#   flutter: ">=0.0.20 <0.1.0"
+# #    sdk: flutter
+# ------------
+# else dev ->
+# dependencies:
+#   decimal: ">=0.1.4 <0.2.0"
+#   flutter:
+#     sdk: flutter
 
 dependencies:
   decimal: ">=0.1.4 <0.2.0"
