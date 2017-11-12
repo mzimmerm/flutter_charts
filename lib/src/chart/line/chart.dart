@@ -5,10 +5,12 @@ import '../line/layouters.dart' as line_layouters;
 import '../line/painter.dart' as painter show LineChartPainter;
 
 
-/// [LineChart] provides a simple line chart graphics.
+/// Provides paint for the line chart.
 ///
-/// It extends [CustomPaint] which is the widget
+/// It extends [CustomPaint] which is the flutter widget
 /// that provides a canvas on which to draw during the paint phase.
+/// The core override is to set the concrete [ChartLayouter], and
+/// it's [ChartLayouter.isStacked] setting.
 ///
 /// Note: The [LineChart] constructor shows how to call a super
 ///       with named parameters. The super's [CustomPaint] single constructor is

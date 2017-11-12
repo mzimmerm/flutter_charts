@@ -36,17 +36,19 @@ class ChartOptions {
 
   /// Length of ticks around the grid rectangle.
   /// Autolayout can increase these lengths, to fit labels below them.
-  double xTopMinTicksHeight = 6.0; // todo 00 not applied?
+  double xTopMinTicksHeight = 6.0; // todo -1 check if not applied?
   double yRightMinTicksWidth = 6.0;
   double xBottomMinTicksHeight = 6.0;
   double yLeftMinTicksWidth = 6.0;
 
-  /// Pad space around X labels. todo 1 separate top, bottom, left, right, and only keep those used
+  // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
+
+  /// Pad space around X labels.
   double xLabelsPadTB = 12.0; // top and bottom
   double xLabelsPadLR = 12.0; // left and right - Unused
 
-  /// Pad space around Y labels.todo 1 separate top, bottom, left, right, and only keep those used
-  double yLabelsPadTB = 12.0; // todo 0 check if used
+  /// Pad space around Y labels.
+  double yLabelsPadTB = 12.0; // todo 0 unused
   double yLabelsPadLR = 12.0;
 
   /// Side of the square used to show color of lines/bars
@@ -58,7 +60,7 @@ class ChartOptions {
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
-  /// For example, for bar charts, this represents the portion of one
+  /// For example, for the bar chart, this represents the portion of one
   /// label width along X axis,
   /// which displays the bars (grouped or stacked).
   double gridStepWidthPortionUsedByAtomicPresenter = 0.75;

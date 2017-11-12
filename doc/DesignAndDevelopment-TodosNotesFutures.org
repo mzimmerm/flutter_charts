@@ -1,0 +1,158 @@
+
+* TODO Refactorings (Flutter Charts)
+
+1. [X] Ask a question on how to achieve the paint in CustomPainter does not go over boundaries
+2. [-]  *Oct Release preparation*
+   1) [X] *restructure line_chart_painter and other files to support extension as bar_chart_painter*
+   2) [X] Bar preparation: in Layouter layout, add also calcs and members for barGridXCoord (bar grid vertical lines are  moved by half step compared to lineGrid)
+      - [X] class *StackedValue* - maintains value, stackFrom, stackTo
+
+      - [X] class stackedDataRows - in ChartData
+
+        - [X] list of StackedValue
+        - [X] On VerticalBar, show the bars rather than lines
+        - [X] On VerticalBar layouter, move the vertical lines shifter around  bars, not it their middle
+
+        - [X] methods to create stackedDataRows from dataRows. the idea is, on Bar chart painter, we just extend line chart painter, and:
+
+          - [X] keep layouting and grid painting
+
+          - [X] keep X/Y axis painting
+
+   3) [X] Move presenters to presenters.dart
+
+   4) [X] split line_chart_painters.dart to chart_painter.dart and line_chart_painter.dart, column_chart_painter.dart etc
+
+   5) [X] split options for line and vertical bar
+
+   6) [X] Refactor/rename
+
+      1) [X] SimpleChartLayouter -> ChartLayouter 
+
+      2) [X] LabelScalerFormatter -> YScalerAndLabelFormatter
+
+      3) [X] labelScaler -> yScaler (watch for conflicts)
+
+      4) [X] elements_layouters to layouters
+
+      5) [X] PointAndPresenterCreator ->  PresenterCreator
+
+      6) [X] ValuePoint -> Point
+
+      7) [X] ValuePresented -> Presenter
+
+      8) [X] PointAndLine -> LineAndHotspot (string substitution, upper/lower)
+
+      9) [X] PointAndLineLeafCreator -> LineAndHotspotLeafCreator
+
+      10) [X] commit and push
+
+      11) [X] split files into dir-per-chart-type structure
+
+   7) [ ] Change all reduce to fold to better handle no data
+   8) [ ] Remove Android and ios from .gitignore. Right now, if someone gets flutter_charts from github, they have to run ~flutter create .~  
+   9) [ ] fix todo 00, todo 00 document first - go over todo 0 
+      - [ ] todo -2,3,4
+
+      - [ ] todo -1
+
+      - [ ] todo 0
+
+      - [ ] todo 1
+
+      - [ ] todo 2
+
+      - [ ] todo 3
+
+      - [ ] all todos?
+
+   10) [ ] Move todos: todo 3 => 4 , 2 => 3, 1 => 2 0 => 1, 00 => 0
+   11) [ ] *Design - Document*
+
+   12) [ ] *Make sure and put checks, that all paint operations remain within =size=* - alternative : Use ClipLayout.
+       + [ ] *How to do this for TextPainter.paint??*
+
+   13) [ ] Draw UML Diagram. Think of a way do decrease dependency of classes on others, or make clear why dependecy needed.
+
+   14) [X] Create project flutter_charts. Empty, add Readme, license etc.
+
+
+
+* TODO After Release
+
+1) [ ] Resolve todo 0
+
+2) [ ] Refactor/rename (not much structural changes)
+   + [ ] Consider rename dataRows (and everything that has the word data) to valueRows. Later add ability to actually set data (which would include x and y coordinates). Maybe call such data "xyValues"
+
+   + [ ] Rename PresenterCreator -> LeafPresenterCreator class and instances.
+
+3) [ ] Pull dataRows, options, and PointsColumns into class named ChartData (ChartModel?), getting rid of public dataRows, PointsColumns, options and refactor code to use ChartModel.
+
+4) [ ] Now we manage rowIndex (seriesIndex) in StackableValuePoint as dataRowIndex. So:
+   + Add rowIndex on Presenter (Leaf) as dataRowIndex.
+
+   + [ ] remove rowIndex from everywhere - createPointPresenter (createPresentor) , _createPresentersInColumn - and when it is needed for color, just use the Presenter.dataRowIndex.
+
+5) [ ] Split Function of vertGridLines- *vertGridLines[col].from.dx* serves both to draw grid lines, and ValuePoints. Add, right in XLayouterOutput, a variable for valuePointX - *what is the difference from labelX???*.
+
+6) [ ] Redefine Points and Presenters internal structure, as (from the bottom) double-linked list of points (forms Columns), and double-linked list of Columns (forms PointsColumns = Data) and Presenters (PresentersColumns)
+
+7) [ ] Member privacy issues
+
+   1) [ ] ChartPainter.layouter is forced non-private (_) if we want to allow extensibility outside of the chart package (extensibility by clients).
+
+      + Other examples of same issue:
+
+        - 
+
+   2) [ ] Go over usage of private accessing private _chartLayouter._options - suspect. But maybe ok
+
+8) [ ] Think of a way to get rid of the need to upcast in baseclass using " as SomeClass" - 2 occurences in "presenter as presenters.PointAndLinePresenter"
+
+9) [ ] I think yAxisAbsMin/Max passed to layouters is switched. Fix it
+
+10) *REMOVE NOISE OF nextRightPointsColumn nextRightColumnValuePoint*
+
+    1) [ ] *nextRightPointsColumn* IS LIKELY UNUSED, REMOVE but check.
+
+    2) [ ] *nextRightColumnValuePoint*  IS LIKELY UNUSED, REMOVE but check.
+
+11) [ ] Create a document definiting sequence of layouters, and what each does
+    - [ ] particular attention to where scaling happents
+12) [ ] *Labels and legend improvements*
+
+    1) [ ] labels when printed: 
+
+       1) [ ] if too long, left justify and clip
+
+    2) [ ] legend text clip if too long
+
+13) [ ] Fix and test formalities, add docs, add examples, resolve versionning and library dependencies and branches, other preps before push to pub
+    + [ ] *list it here*
+    + [ ] 
+    + [ ] fix dependencies in pubspec (rm mz)
+    + [ ] Test and ensure empty data work.
+    + [ ] *ADD TESTS FOR RANGE, END TO END ETC*
+
+
+
+* TODO Future: Layout Recreation.
+23. [ ] Look over Hotspot calcs and positions, may need to move to GuidingPoints or LayoutValues
+
+
+* TODO Consider Change naming conventions to WX, HY, CY, CX so all names are consistent 
+   - whateverOWX (width along x axis    - when context is offset of some other element)
+   - whateverOHY (height along y axis   - when context is offset of some other element)
+   - whateverCX  (X coordinate  )       - if it is just a point
+   - whateverCY  (Y coordinate  )       - if it is just a point
+   - rare use below v
+   - whateverRWX (width along x axis  - when context is rectangle)
+   - whateverRHY (height along y axis  - when context is rectangle)
+   - whateverFromCY (Y coordinate from ) - if it is a point which is part of a line
+   - whateverToCY (Y coordinate to )     - if it is a point which is part of a line
+   - whateverFromCX (Y coordinate from ) - if it is a point which is part of a line
+   - whateverToCX (Y coordinate to )     - if it is a point which is part of a line
+
+
+

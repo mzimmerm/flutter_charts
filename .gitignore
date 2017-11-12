@@ -9,7 +9,13 @@ packages
 pubspec.lock
 .flutter-plugins
 *.iml
+
 # also ignore android and ios - not needed unless plugins are used or developed - todo is this right?
 android
 ios
+
+# misc local
+.emacs.d/
+.gnupg
+
 

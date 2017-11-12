@@ -13,7 +13,13 @@ ui.Paint gridLinesPaint(ChartOptions options) {
   return paint;
 }
 
-/// Base class for todo 0 document
+/// The visual element representing one data value on the chart.
+///
+/// Presenter of the atomic/leaf element of one data point on the chart.
+///
+/// For example, on a bar chart, this is one rectangle;
+/// on a line chart this is a point with line connecting to the next
+/// value point.
 class Presenter {
 
   StackableValuePoint point;
@@ -34,16 +40,18 @@ class Presenter {
 }
 
 
-// todo 0 comment add good comment how stacked type chart must separate above/below
-
+/// Manages and presents one "visual column" on the chart.
+///
+/// By one "visual column" here we mean the area above one label, which
+/// shows all data value at that label, each value in one instance of
+/// [Presenter].
 class PresentersColumn {
 
-// todo 1 consider: extends ValuePointsColumn / ValuePresentersColumn
 
   List<Presenter> presenters = new List();
   List<Presenter> positivePresenters = new List();
   List<Presenter> negativePresenters = new List();
-  PresentersColumn nextRightPointsColumn; // todo -1 address the base class (not a presenter)
+  PresentersColumn nextRightPointsColumn;
 
   PresentersColumn({
     PointsColumn pointsColumn,
@@ -74,7 +82,7 @@ class PresentersColumn {
   void _createPresentersInColumn({List fromPoints, List toPresenters, PointsColumn pointsColumn, PresenterCreator presenterCreator, ChartLayouter layouter,}) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
-      // todo 0 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+      // todo -1 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint =
       pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.points[rowIndex] : null;
 
@@ -90,13 +98,11 @@ class PresentersColumn {
   }
 }
 
-// todo -1 : write this in terms of abstracts, reuse implementation - may be done now
-// todo -1 document
 /// Manages the visual elements (leafs) presented in each
-/// "column of view" in chart - that is, all widgets representing
+/// "visual column" in chart - that is, all widgets representing
 /// series of data displayed above each X label.
 ///
-/// The "column first" list of data is managed by [PointsColumns.pointsColumns],
+/// The "column oriented" list of data is managed by [PointsColumns.pointsColumns],
 /// and is a "source" for creating this object.
 /// In addition to [PointsColumns.pointsColumns], a constructor
 /// of this object needs to be given a way to create each "visual atomic widget"
@@ -112,8 +118,6 @@ class PresentersColumn {
 ///   walk without the [presentersColumns] list. todo 0 consider if this is needed
 class PresentersColumns {
 
-  // todo 1 consider: extends ValuePresentersColumns or extend List
-
   List<PresentersColumn> presentersColumns = new List();
 
   PresentersColumns({
@@ -121,7 +125,7 @@ class PresentersColumns {
     ChartLayouter layouter,
     PresenterCreator presenterCreator,
   }) {
-    // iterate "column first", that is, over valuePointsColumns.
+    // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
     pointsColumns.pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
@@ -137,14 +141,19 @@ class PresentersColumns {
 
 }
 
-// todo -1 document as creating the actual presenter of the value for chart - creates instances of LineAndHotspot Presenter and value, , VerticalBar
+/// Maker of Presenter instances.
+///
+/// It's core method [createPointPresenter] creates [Presenter]s,
+/// the visuals painted on each chart column that
+/// represent data, (points and lines for the line chart,
+/// rectangles for the bar chart, and so on).
+///
+/// The concrete creators make [LineAndHotspotPresenter], [VerticalBarPresenter]
+/// and other concrete instances, depending on the chart type.
 abstract class PresenterCreator {
 
   /// The layouter is generally needed for the creation of Presenters, as
   /// presenters may need some layout values.
-  ///
-  /// todo 0 : The question is , is it worth to narrow down the information
-  ///          passed to something more narrow? (e.g. width of each column, etc)
   ChartLayouter _layouter;
   PresenterCreator({ChartLayouter layouter,})  {
     this._layouter = layouter;

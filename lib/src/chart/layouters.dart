@@ -27,19 +27,22 @@ import '../util/line_presenter.dart' as line_presenter;
 ///
 /// Terms used:
 ///   - `absolute positions` refer to positions
-///      "in the coordinates of the full chart area given to the
+///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-///   -
 abstract class ChartLayouter {
+
   /// ##### Abstract methods or sub-implemented getters
 
-  // todo -1 document or change to abstract getter, make subs
-  /// Subclass specific factory creates instances of chart-leaf elements:
-  /// presenters and points which are painted on the chart
-  /// (points and lines, bar charts, etc).
+  /// Makes presenters, the visuals painted on each chart column that
+  /// represent data, (points and lines for the line chart,
+  /// rectangles for the bar chart, and so on).
+  ///
+  /// See [PresenterCreator] and [Presenter] for more details.
+  /// todo 1 : There may be a question "why does a layouter need to
+  /// know about Presenter, albeit indirectly?
   PresenterCreator presenterCreator;
 
-  /// ##### Subclasses - aware members. todo 2 replace with Visitor or Mixins
+  /// ##### Subclasses - aware members.
 
   /// Columns of presenters.
   ///
@@ -47,18 +50,15 @@ abstract class ChartLayouter {
   ///   - points and lines in line chart
   ///   - bars (stacked or grouped) in bar chart
   ///
-  /// todo -1 replace with getters.
+  /// todo 0 replace with getters; see if members can be made private,  manipulated via YLayouterOutput.
 
   PresentersColumns presentersColumns;
   PointsColumns pointsColumns;
   bool isStacked;
 
-  // todo 0 see if these 3 can/should be made private
   ChartOptions options;
   ChartData data;
   ui.Size chartArea;
-
-  // todo 0 make layouters private - all manipulation through YLayouterOutput
   LegendLayouter legendLayouter;
   YLayouter yLayouter;
   XLayouter xLayouter;
@@ -66,7 +66,7 @@ abstract class ChartLayouter {
   /// This layouter stores positions in the [GuidingPoints] instance,
   /// and uses its members as "guiding points" where it's child layouts should
   /// draw themselves.
-  GuidingPoints _guidingPoints;
+  // todo future GuidingPoints _guidingPoints;
 
   /// [xOutputs] and [yOutputs] hold on the X and Y Layouters output,
   /// maintain all points in absolute positions.
@@ -105,7 +105,6 @@ abstract class ChartLayouter {
     this.options = chartOptions;
   }
 
-  // todo 0 document
   double _legendContainerHeight = 0.0;
   double _yLabelsContainerWidth;
   double _yLabelsMaxHeight;
@@ -154,7 +153,7 @@ abstract class ChartLayouter {
 
     _yLabelsContainerWidth = yLayouterFirst._yLabelsContainerWidth;
     _yLabelsMaxHeight =
-        yLayouterFirst._yLabelsMaxHeight; // todo 1 is this needed?
+        yLayouterFirst._yLabelsMaxHeight; // todo 0 is this needed?
 
     this.yLayouter = yLayouterFirst;
 
@@ -165,7 +164,7 @@ abstract class ChartLayouter {
     //        marginally relevant (if there was not enough height for x labels).
     var xLayouter = new XLayouter(
         chartLayouter: this,
-        // todo 1 add padding, from options
+        // todo 0 add padding, from options
         availableWidth: chartArea.width - xLayouterAbsX);
 
     print("   ### XLayouter");
@@ -321,9 +320,8 @@ abstract class ChartLayouter {
     }).toList();
   }
 
-  // todo 1 document these methods
-  // todo 0 surely some getters from here are not needed?
-  // todo 0 review all these methods below. Mostly those with "Abs". How is this use??
+  // todo 0 document these methods
+  // todo 0  some getters from here are not needed? Mostly those with "Abs"
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label)
   List<double> get xTicksXs
@@ -486,7 +484,6 @@ class YLayouter {
       yLabelsDividedInYDataRange.add(dataRange.min + dataStepHeight * yIndex);
     }
 
-    // todo -1 make yScaler private
     var yScaler = new YScalerAndLabelFormatter(
         dataRange: dataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
@@ -569,8 +566,6 @@ class YLayouterOutput {
   double labelTopY;
 }
 
-/// todo 0 document
-///
 /// Auto-layouter of chart in the independent (X) axis direction.
 ///
 /// Number of independent (X) values (length of each data row)
@@ -578,7 +573,7 @@ class YLayouterOutput {
 /// xLabels, so that value can be used interchangeably.
 ///
 /// Note:
-///   - As a byproduct this lays out the X labels in their container. todo 1 generalize
+///   - As a byproduct this lays out the X labels in their container.
 ///   - Layouters may use Painters, for example for text (`TextSpan`),
 ///     for which we do not know any sizing needed for the Layouters,
 ///     until we call `TextPainter(text: textSpan).layout()`.
@@ -629,7 +624,7 @@ class XLayouter {
     _availableWidth = availableWidth;
   }
 
-  /// Lays out the todo 0 document
+  /// Lays out the chart in horizontal (x) direction.
 
   /// Evenly divids available width to all labels.
   /// First / Last vertical line is at the center of first / last label,
@@ -775,7 +770,7 @@ class LegendLayouter {
 
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
-    // (todo 1 - is this ^^^ needed? can text of same font be diff. height)
+    // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
 
     var legendMax = ui.Size.zero;
     for (var index in legendSeqs) {
@@ -890,10 +885,9 @@ class LayoutValues {
 ///     it is left for the container that manages this object along with
 ///     values before (below) and after (above).
 class StackableValuePoint {
-  // todo 0 make appropriate values private
   // initial values
   String
-      xLabel; // todo 0 this is unused, document why, and maybe use xLabel instead
+      xLabel; // todo 0 check if this is unused; and why we need label in value?
   double y;
   int dataRowIndex; // series index
   StackableValuePoint predecessorPoint;
@@ -1016,9 +1010,17 @@ class StackableValuePoint {
   }
 }
 
-/// todo 0 document
-/// support for stacked type charts, where negative
-/// and positive points must be stacked separately, above and below zero .
+/// A column of value points, with support for stacked type charts.
+///
+/// Supports to convert the raw data values from the data rows,
+/// into values that are either
+///   - unstacked (such as in the line chart),  in which case it manages
+///   [points] that have values from [ChartData.dataRows].
+///   - stacked (such as in the bar chart), in which case it manages
+///   [points] that have values added up from [ChartData.dataRows].
+///
+/// Negative and positive points must be stacked separately,
+/// to support correctly displayed stacked values above and below zero.
 class PointsColumn {
   /// List of charted values in this column
   List<StackableValuePoint> points;
@@ -1080,8 +1082,7 @@ class PointsColumn {
   }
 }
 
-/// todo 0 document
-/// Represents coordinates of [dataRows], scaled to Y axis, inverted,
+/// Represents coordinates of [ChartData.dataRows], scaled to Y axis, inverted,
 /// and stacked (if the type of chart requires stacking).
 ///
 /// Passed to presenters, which paint the values in areas above labels,
@@ -1089,8 +1090,6 @@ class PointsColumn {
 ///
 /// Manages value point structure as column based (currently only supported)
 /// or row based.
-///
-/// todo 0 see if this can be separated from _layouter: problem: gettting the scaled x, _layouter.vertGridLines[col].from.dx
 class PointsColumns {
   List<List<StackableValuePoint>> _pointsRows;
   List<List<StackableValuePoint>> _pointsColumns;
@@ -1102,7 +1101,6 @@ class PointsColumns {
   /// the passed [dataRows]. Then transposes the [_pointsRows]
   /// to [_pointsColumns].
   PointsColumns({
-    // todo -1 rename this and friends to PointsColumns
     ChartLayouter layouter,
     PresenterCreator presenterCreator,
     bool isStacked,
@@ -1146,7 +1144,7 @@ class PointsColumns {
     _pointsRows.toList();
     _pointsColumns = util.transpose(_pointsRows);
 
-    // convert "column first" List<List<StackableValuePoint>> _pointsColumns
+    // convert "column oriented" List<List<StackableValuePoint>> _pointsColumns
     // to public List<ValuePointsColumn> pointsColumns
     PointsColumn leftColumn;
     pointsColumns = new List();
@@ -1188,13 +1186,11 @@ class PointsColumns {
     return flattenUnstackedPointsYValues();
   }
 
-  /// todo 0 document
-  /// todo -1 replace with expand like in: dataRows.expand((i) => i).toList()
   /// Flattens values of all unstacked data points.
   ///
   /// Use in layouters for unstacked charts (e.g. line chart)
   List<num> flattenUnstackedPointsYValues() {
-    // flattenUnstackedPointsYValues
+    // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
     pointsColumns.forEach((PointsColumn column) {

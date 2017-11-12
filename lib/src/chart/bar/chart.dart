@@ -4,7 +4,12 @@ import '../bar/painter.dart' as painter;
 
 import '../bar/layouters.dart' as bar_layouters;
 
-/// todo 0 document - see LineChart
+/// Provides paint for the vertical bar chart.
+///
+/// It extends [CustomPaint] which is the flutter widget
+/// that provides a canvas on which to draw during the paint phase.
+/// The core override is to set the concrete [ChartLayouter], and
+/// it's [ChartLayouter.isStacked] setting.
 class VerticalBarChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   VerticalBarChart({

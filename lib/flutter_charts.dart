@@ -67,8 +67,9 @@
 ///     - `export 'package:flutter_charts/src/chart/data.dart'`
 ///
 
-/// todo -2
-/// export path starts after lib, whether using 'package:flutter_charts' format or 'src/' format.
+/// Note:
+/// Export path starts after lib, whether using
+///   'package:flutter_charts' format or 'src/' format.
 ///
 export 'package:flutter_charts/src/util/label_painter.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';

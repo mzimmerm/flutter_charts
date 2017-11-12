@@ -31,7 +31,7 @@ void main() {
   //          so another note:
   //             * the lib level is skipped int the import reference
   //             * package: represent a directory where packages
-  //               for this project are installed in pub update package (todo 1)
+  //               for this project are installed in pub update package
   //      - And:
   //        3) The imported 'package:flutter/material.dart' contains line:
   //            export 'widgets.dart';
@@ -95,14 +95,8 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
+/// State of the page.
 class _MyHomePageState extends State<MyHomePage> {
-
-  /// Members [_chartData] and [_chartOptions] must be initialized
-  ///   otherwise first time this.build passes down nulls
-  ///   to the [LineChart].
-  /// However, the intended use also causes
-  ///   "only static members can be accessed in initializers".
-  ///   todo 0 resolve this ^ (current code works in practice as long as the RandomChartData size is the same)
 
   LineChartOptions _lineChartOptions;
   ChartOptions _verticalBarChartOptions;
@@ -115,39 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
    }
 
-   void defineOptionsAndData() {
-     // each column absolute values should add to same number todo -1 :
-     // 100 would make more sense, to represent 100% of stocks in each category
+  void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new ChartData();
-     _chartData.dataRowsLegends = [
-       "-2%_0%",
-       "<-2%",
-       "0%_+2%",
-       ">+2%"];
-     // each column should add to same number. everything else is relative.
-     _chartData.dataRows = [
-       [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
-       [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
-       [7.0, 8.0,  7.0, 11.0, 9.0, ],
-       [3.0, 2.0, 1.0,  3.0,  3.0, ],
-     ];
-     _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
-     _chartData.dataRowsColors = [
-       Colors.grey,
-       Colors.red,
-       Colors.greenAccent,
-       Colors.black,
-     ];
-     _lineChartOptions.useUserProvidedYLabels = false; // use labels below
-     //_chartData.yLabels = [
-     //  "Ok",
-     //  "Higher",
-     //  "High",
-     //];
-   }
-
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
    /* 1
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
@@ -225,10 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
    /* 4
    void defineOptionsAndData() {
-     // This example shows user defined Y Labels with
-     // a bar chart, showing negative and positive values
-     // similar to %down/%up stock charts.
-     _lineChartOptions = new LineChartOptions();
+     // In each column, adding it's absolute values should add to same number:
+     // 100 would make more sense, to represent 100% of stocks in each category.
+    _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
      _chartData = new ChartData();
      _chartData.dataRowsLegends = [
@@ -236,9 +201,8 @@ class _MyHomePageState extends State<MyHomePage> {
        "<-2%",
        "0%_+2%",
        ">+2%"];
-       // each column absolute values should add to same number todo -1 :
-       // 100 would make more sense, to represent 100% of stocks in each category
-      _chartData.dataRows = [
+     // each column should add to same number. everything else is relative.
+     _chartData.dataRows = [
        [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
        [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
        [7.0, 8.0,  7.0, 11.0, 9.0, ],
@@ -418,7 +382,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: verticalBarChart,
+                    child:  lineChart,
                   ),
                   new Text('<<<'),
                 ],

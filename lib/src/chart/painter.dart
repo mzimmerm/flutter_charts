@@ -1,20 +1,19 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/widgets.dart' as widgets; // note: external package imp
+import 'package:flutter/widgets.dart' as widgets; // note: external package
 
-// NO -  need some private import 'package:flutter_charts/flutter_charts.dart' as common;
 import 'package:flutter_charts/flutter_charts.dart' as common;
-import 'layouters.dart' as layouters; // todo -1 export in lib instead
+import 'layouters.dart' as layouters;
 
-/// [LineChartPainter] is the core of painting the line chart.
+/// [ChartPainter] does the core of painting the chart,
+/// in it's core method [paint].
 ///
-/// Extension of [CustomPainter] which provides the painting of
-/// chart elemnts - lines, circles, bars - on Canvas.
-/// Also encapsulates separate facilities
-/// to paint text on [Canvas].
+/// Extensions should implement method [drawPresentersColumns],
+/// which paints each column with the data representing elements -
+/// lines, or rectangles.
 ///
-/// todo 0 document fix
-///
+/// Itself an extension of flutter's [CustomPainter] which provides the
+/// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class ChartPainter extends widgets.CustomPainter {
 
   /// Layouter provides the auto-layout of chart elements.
@@ -26,16 +25,18 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// and [chartOptions] which are configurable options that allow to
   /// change some elements of chart's layout, colors, and overall look and feel.
 
-  // todo 0 document - change
   // note: data should be same for all charts,  options differ
-  ChartPainter(); // as ChartPainter() {} - empty body
+  ChartPainter();
 
   setLayouter(common.ChartLayouter layouter) {
     this.layouter = layouter;
   }
-  /// todo 00 document
-  /// This is sort of like constructor in the sense all initialization
-  ///   of sizes based on changed data is done here.
+  /// Paints the chart area - the legend in [drawLegend],
+  /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
+  /// and the data values in [drawPresentersColumns].
+  ///
+  /// Starts with a call to [ChartLayouter.layout], then painting
+  /// according to the calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
     print(" ### Size: paint(): passed size = ${size}");
 

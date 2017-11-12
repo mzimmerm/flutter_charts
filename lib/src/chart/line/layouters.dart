@@ -7,7 +7,11 @@ import '../layouters.dart';
 import 'presenters.dart';
 
 
-/// todo -1 document
+/// Layouter of the line chart.
+///
+/// The core override is setting the [presenterCreator] -
+/// object which makes instances of [LineAndHotspotPresenter]s,
+/// used to present each data value.
 class LineChartLayouter extends ChartLayouter {
   LineChartLayouter({
     ui.Size chartArea,

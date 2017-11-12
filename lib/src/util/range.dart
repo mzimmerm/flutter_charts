@@ -6,7 +6,6 @@ import 'util.dart' as util;
 /// Scalable range, supporting creation of scaled x and y axis labels.
 ///
 class Range {
-  // todo 00 document fields and methods
 
   // ### Public api
 
@@ -176,8 +175,8 @@ class Range {
 
 }
 
-// todo 00 document as encapsulating Y axis scaling (dataRange scaling to available pixels) and Y Labels creation,
-// todo 0 refactor and make immutable
+/// Encapsulating Y axis scaling (dataRange scaling to available pixels)
+/// and Y Labels creation and formatting.
 class YScalerAndLabelFormatter {
   /// Manages, formats, and scales Y labels created from data values
   /// by [Range].
@@ -283,10 +282,8 @@ class YScalerAndLabelFormatter {
 }
 
 /// Manages labels and their values: scaled in , unscaled, and presented (formatted)
-/// todo 00 document
-/// todo 00 review privacy, consider make private
 ///
-///  YLabels important Note:
+///  YLabels Note:
 ///
 ///    - There are 3 intervals (example values in text):
 ///     - We have these scales:
@@ -413,42 +410,8 @@ class Poly {
   }
 }
 
-/*
-// todo 1 consider fixing this later
-class IntervalC<T extends Comparable> {
-  Interval(this.min, this.max,
-      [this.includesMin = true, this.includesMax = true]);
-
-  final T min;
-  final T max;
-  final bool includesMin;
-  final bool includesMax;
-
-  bool includes(T comparable) {
-    // before - read as: if negative, true, if zero test for includes, if positive, false.
-    int beforeMin = comparable.compareTo(min);
-    int beforeMax = comparable.compareTo(max);
-
-    // Hopefully these complications gain some minor speed,
-    // dealing with the obvious cases first.
-    if (beforeMin < 0 || beforeMax > 0) return false;
-    if (beforeMin > 0 && beforeMax < 0) return true;
-    if (beforeMin == 0 && includesMin) return true;
-    if (beforeMax == 0 && includesMax) return true;
-
-    return false;
-  }
-
-  /// Outermost union
-  IntervalC<Comparable> merge(Interval other) {
-
-    return new IntervalC(math.min(this.min, other.min), math.max(this.max, other.max));
-  }
-*/
-
-// todo 2 add tests
+// todo 0 add tests; also make constant; also add validation for min before max
 class Interval {
-  // todo 0 make constant; also add validation for min before max
   Interval(this.min, this.max,
       [this.includesMin = true, this.includesMax = true]);
 

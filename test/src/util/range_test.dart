@@ -5,7 +5,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 void main() {
 
-  // todo 00 add tests for scaling . Add more tests in general
+  // todo 1 add tests for scaling . Add more tests in general
 
   test('Poly power and coeff', () {
     Poly p = new Poly(from: 123.04);
@@ -50,7 +50,7 @@ void main() {
     expect(p.floorAtMaxPower, 100); // ex: throwsA(throwsException));
     expect(p.ceilAtMaxPower, 200);
 
-    // todo 0 test pure fractions and negatives
+    // todo 1 test pure fractions and negatives
   });
 
 
@@ -136,7 +136,7 @@ void main() {
     expect(labels[1], 0.0);
     expect(labels[2], 1000.0);
 
-    // todo 0 test pure fractions, and combination of pure fractions and mixed (whole.fraction)
+    // todo 1 test pure fractions, and combination of pure fractions and mixed (whole.fraction)
   });
 
 }

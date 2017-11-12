@@ -30,8 +30,14 @@ class ChartData {
 
   /// Labels on dependent (Y) axis. They must be numbers.
   ///
-  /// If you need number labels with units (e.g. %), define % in options
-  /// If you need purely String labels, this is a todo 1.
+  /// - If you need Data-Generated Y label numbers with units (e.g. %),
+  ///   - Do not set [yLabels]
+  ///   - Set [ChartOptions.useUserProvidedYLabels] to false
+  ///   - define [ChartOptions.yLabelUnits] in options
+  /// - If you need to define "Ordinal" (Strings with order) Y labels,
+  ///   - Set [yLabels] to ordinal values
+  ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
+  ///   - [ChartOptions.yLabelUnits] are ignored
   ///
   /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
   ///

@@ -1,15 +1,20 @@
 import 'dart:ui' as ui;
 
-import '../presenters.dart' as presenters; // todo -1 export in lib instead
-import '../line/presenters.dart' as line_presenters; // todo -1 export in lib instead
+import '../presenters.dart' as presenters;
+import '../line/presenters.dart' as line_presenters;
 
 import '../painter.dart';
 
 
-/// todo 0 document
+/// Paints the columns of the line chart.
+///
+/// The core override is the [drawPresentersColumns] method
+/// which call on each column area of the chart, to paint the
+/// [LineAndHotspotPresenter]s - painting a point and line for
+/// each data value across series.
+///
+/// See [ChartPainter]
 class LineChartPainter extends ChartPainter {
-
-  // todo -2 remove layouters.ChartLayouter _layouter;
 
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {

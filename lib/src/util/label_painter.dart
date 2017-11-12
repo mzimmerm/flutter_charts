@@ -27,6 +27,7 @@ class LabelPainter {
   /// paint itself on `canvas`, with top-left position at `offset`,
   /// using `textPainter.paint(canvas, offset)`.
   widgets.TextPainter textPainterForLabel(String string) {
+    // todo -1 move hardcoded fontSize and textScaleFactor below to options.
     var text =
     new painting
         .TextSpan(
@@ -34,7 +35,7 @@ class LabelPainter {
         style:
         new painting.TextStyle(
             color: material.Colors.grey[600],
-            fontSize: 14.0)); // todo 1 remove hardcoded fontSize and textScaleFactor below.
+            fontSize: 14.0));
     var textPainter =
     new painting.TextPainter(
         text: text,

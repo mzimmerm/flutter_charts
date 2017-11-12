@@ -1,4 +1,4 @@
-// todo 1 - Functions here should eventually be held by a class
+// todo 1 - Functions here should eventually be held by a Utility class
 
 /// Scale the [value] that must be from the scale
 /// given by [ownScaleMin] - [ownScaleMax]
@@ -37,7 +37,7 @@ double scaleValue(
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
 List<List> transpose(List<List> colsInRows) {
   int nRows = colsInRows.length;
-  if (colsInRows.length == 0) return colsInRows; // todo 1 return a copy
+  if (colsInRows.length == 0) return colsInRows;
 
   int nCols = colsInRows[0].length;
   if (nCols == 0) throw new StateError("Degenerate matrix");
@@ -57,12 +57,3 @@ List<List> transpose(List<List> colsInRows) {
   return rowsInCols;
 }
 
-/* todo 1 finish this
-List<T> selectCollect(List<T> from, Function selector, Function converter) {
-
-  from.where((point) { selector(point); }).map((point) {
-    // create a clone
-    return converter(point);
-  });
-}
-*/
