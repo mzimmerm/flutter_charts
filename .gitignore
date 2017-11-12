@@ -10,9 +10,9 @@ pubspec.lock
 .flutter-plugins
 *.iml
 
-# also ignore android and ios - not needed unless plugins are used or developed - todo is this right?
-android
-ios
+#  android and ios are needed to run the sample app (on android, not sure about Ios)
+# android
+# ios
 
 # misc local
 .emacs.d/
