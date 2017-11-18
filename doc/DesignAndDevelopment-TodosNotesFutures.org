@@ -1,5 +1,5 @@
 
-* TODO Refactorings (Flutter Charts)
+* Refactorings (Flutter Charts)
 
 1. [X] Ask a question on how to achieve the paint in CustomPainter does not go over boundaries
 2. [-]  *Oct Release preparation*
@@ -49,43 +49,27 @@
 
       11) [X] split files into dir-per-chart-type structure
 
-   7) [ ] Change all reduce to fold to better handle no data
-   8) [ ] Remove Android and ios from .gitignore. Right now, if someone gets flutter_charts from github, they have to run ~flutter create .~  
-   9) [ ] fix todo 00, todo 00 document first - go over todo 0 
-      - [ ] todo -2,3,4
+   7) [X] Remove Android and ios from .gitignore. Right now, if someone gets flutter_charts from github, they have to run ~flutter create .~  
+   8) [X] Reorganize todos  document first - go over todo 0 
+   9) [ ] *Make sure and put checks, that all paint operations remain within =size=* - alternative : Use *ClipLayout*.
+      + [ ] *How to do this for TextPainter.paint??*
 
-      - [ ] todo -1
+   10) [X] Move todos: todo 3 => 4 , 2 => 3, 1 => 2 0 => 1, 00 => 0
+   11) [ ] Change all reduce to fold to better handle no data
 
-      - [ ] todo 0
-
-      - [ ] todo 1
-
-      - [ ] todo 2
-
-      - [ ] todo 3
-
-      - [ ] all todos?
-
-   10) [ ] Move todos: todo 3 => 4 , 2 => 3, 1 => 2 0 => 1, 00 => 0
-   11) [ ] *Design - Document*
-
-   12) [ ] *Make sure and put checks, that all paint operations remain within =size=* - alternative : Use ClipLayout.
-       + [ ] *How to do this for TextPainter.paint??*
+   12) [ ] *Design - Document*
 
    13) [ ] Draw UML Diagram. Think of a way do decrease dependency of classes on others, or make clear why dependecy needed.
 
    14) [X] Create project flutter_charts. Empty, add Readme, license etc.
 
 
+* Changing structure of the ChartData class
+
 
 * TODO After Release
 
 1) [ ] Resolve todo 0
-
-2) [ ] Refactor/rename (not much structural changes)
-   + [ ] Consider rename dataRows (and everything that has the word data) to valueRows. Later add ability to actually set data (which would include x and y coordinates). Maybe call such data "xyValues"
-
-   + [ ] Rename PresenterCreator -> LeafPresenterCreator class and instances.
 
 3) [ ] Pull dataRows, options, and PointsColumns into class named ChartData (ChartModel?), getting rid of public dataRows, PointsColumns, options and refactor code to use ChartModel.
 
@@ -134,7 +118,6 @@
     + [ ] fix dependencies in pubspec (rm mz)
     + [ ] Test and ensure empty data work.
     + [ ] *ADD TESTS FOR RANGE, END TO END ETC*
-
 
 
 * TODO Future: Layout Recreation.
