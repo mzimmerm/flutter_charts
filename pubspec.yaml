@@ -16,8 +16,8 @@ documentation: https://pub.dartlang.org/packages/flutter_charts/doc
 #   decimal: ">=0.1.4 <0.2.0"
 #   flutter: ">=0.0.20 <0.1.0"
 # #    sdk: flutter
+# else if dev ->
 # ------------
-# else dev ->
 # dependencies:
 #   decimal: ">=0.1.4 <0.2.0"
 #   flutter:

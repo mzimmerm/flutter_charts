@@ -1,3 +1,4 @@
+#+TODO: TODO IN-PROGRESS WAITING DONE CANCELED
 
 * Refactorings (Flutter Charts)
 
@@ -64,7 +65,127 @@
    14) [X] Create project flutter_charts. Empty, add Readme, license etc.
 
 
-* Changing structure of the ChartData class
+* IN-PROGRESS Changing structure of the ChartData class
+
+I realize we discussed we will make the new internal structure of ~ChartData.dataRows~ to be something like ~List<List<Point>~. During this week I went through some torments and I think I arrived at a change; but I do not want to push it without explanation. So let me describe the current structure, and the newly suggested structure of ~ChartData~.
+
+** Current ~ChartData~ structure
+
+Currently we have
+
+#+BEGIN_SRC dart
+
+  class ChartData {
+
+    List<List<double>> dataRows = new List();
+
+    List<String> dataRowsLegends = new List();
+
+    List<ui.Color> dataRowsColors = new List<ui.Color>();
+
+    List<String> xLabels = new List();
+
+    /// Labels on dependent (Y) axis. They must be numbers.
+    ///
+    /// - If you need Data-Generated Y label numbers with units (e.g. %),
+    ///   - Do not set [yLabels]
+    ///   - Set [ChartOptions.useUserProvidedYLabels] to false
+    ///   - define [ChartOptions.yLabelUnits] in options
+    /// - If you need to define "Ordinal" (Strings with order) Y labels,
+    ///   - Set [yLabels] to ordinal values
+    ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
+    ///   - [ChartOptions.yLabelUnits] are ignored
+    ///
+    /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
+    ///
+    /// They may be undefined, in which case the
+    /// Y axis is likely not shown.
+    List<String> yLabels = new List();
+
+  }
+
+#+END_SRC
+
+#+RESULTS:
+
+(leaving the comment on yLabels as their use is more complex, and xLabels are just about to become also more complex ;) )
+
+First, let me summarize that current (unexpressed) constraints on  ~ChartData.dataRows~ - in essence, all corresponding list lengths must be the same:
+
+1) Along the x axis (row wise)   : (each row in dataRows).length is the same 
+2) Along the x axis (row wise)   : (each row in dataRows).length == xLabels.length 
+3) Along the y axis (series wise): dataRows.length == dataRowsColors.length == dataRowsLegends.length
+
+Basically, ~dataRows~ is assumed to be an array (list of rows of equal length)
+
+So towards the future, the more I was thinking the way the layouting may work, the more I am sure it is best to keep 1) for sure, and maybe 3), but drop 2) for sure to support uneven steps and skipped labels. And in all case I kept arriving at thinking the layouter would eventually convert any ~List<List<Points>>~ to a list of Y values ~List<List<double>>~ and extract the X values under each point so we have List<double> xValues. I would like to note that this structure can be made in all respects equivalent to  ~List<List<Points>>~ - we can always write converters in either direction. 
+
+So I'd like to support the internal structure of ChartData as described below, and all external data in different formats/structure would have to provide convertes; this project would probably provide some basic converters (I am thinkig to support some basic (e.g. some Higchart type) JSON data formats out of the box.
+
+I'd like to rename the existing ~ChartData~ to ~SimpleChartData~. Clearly a breaking change, but hopefully a simple change for clients.
+
+** New, suggested ~ChartData~ structure 
+
+(For now all members public but that may change. Also will provide some constructors later.
+
+#+BEGIN_SRC dart
+
+  class ChartData {
+
+    List<List<double>> dataRows = new List(); 
+
+    List<double> xs = new List(); // x data points for each dataRow values, must be same size and order3.
+
+    Map xToXLabelMap = new Map();      // User-Provided or Data-Generated map from x values to xLabel
+
+    Function xLabelFormatter; // Required to create Data-Generated xLabels.
+
+    List<String> dataRowsLegends = new List();
+
+    List<ui.Color> dataRowsColors = new List<ui.Color>();
+
+    List<String> _xLabels = new List(); // private 
+
+    /// Labels on dependent (Y) axis. They must be numbers.
+    ///
+    /// - If you need Data-Generated Y label numbers with units (e.g. %),
+    ///   - Do not set [yLabels]
+    ///   - Set [ChartOptions.useUserProvidedYLabels] to false
+    ///   - define [ChartOptions.yLabelUnits] in options
+    /// - If you need to define "Ordinal" (Strings with order) Y labels,
+    ///   - Set [yLabels] to ordinal values
+    ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
+    ///   - [ChartOptions.yLabelUnits] are ignored
+    ///
+    /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
+    ///
+    /// They may be undefined, in which case the
+    /// Y axis is likely not shown.
+    List<String> yLabels = new List();
+
+    ////////////////////////// Added also ////////////////////
+
+    /// If [true], then [xValues] will be presented using scaled distances: e.g. if xs = [1,2,320, 200], 
+    /// then the (relative, scaled) distances between [1,2,20, 200], are preserver
+    /// (1,2,3 will be squished on the left). 
+    ///
+    /// A motivation note: X values [xs] are always ~Ordinal~ (ordered). 
+
+    bool doXsHonourDistanceMeasure
+    
+  }
+
+  // Supporting classes
+
+  abstract class LabelFormatter {
+    /// Formats x values to Data-Generated labels
+    String format(double x);
+  }
+#+END_SRC
+
+Notes:
+
+- Would you agree that to display dates on X axis, we store them in data x
 
 
 * TODO After Release
