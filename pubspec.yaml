@@ -10,27 +10,37 @@ documentation: https://pub.dartlang.org/packages/flutter_charts/doc
 #   including how to depend on package on github or local server.
 
 # Toggle:
-# if pub publish ->
+# if pub publish -> NOTE: DO NOT USE EVEN FOR PUBLISHING. CAUSES ERROR:
 # ------------
+# * Don't depend on "flutter" from the hosted source. Use the SDK source instead. For example:
+#   dependencies:
+#     flutter:
+#       sdk: >=0.0.20 <0.1.0
+#
+#   The Flutter SDK is downloaded and managed outside of pub.
 # dependencies:
 #   decimal: ">=0.1.4 <0.2.0"
 #   flutter: ">=0.0.20 <0.1.0"
 # #    sdk: flutter
+# COMMENT OUT THE dev_dependencies: SECTION
 # else if dev ->
 # ------------
 # dependencies:
 #   decimal: ">=0.1.4 <0.2.0"
 #   flutter:
 #     sdk: flutter
+# dev_dependencies:
+#   flutter_test:
+#     sdk: flutter
 
 dependencies:
   decimal: ">=0.1.4 <0.2.0"
-  flutter: ">=0.0.20 <0.1.0"
-#    sdk: flutter
+  flutter:
+    sdk:  ">=0.0.20 <0.1.0"
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+# dev_dependencies:
+#   flutter_test:
+#     sdk:  ">=0.0.20 <0.1.0"
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #
