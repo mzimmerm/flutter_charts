@@ -1,5 +1,5 @@
 name: flutter_charts
-version: 0.1.4
+version: 0.1.5
 description: Charts Library for Flutter, written in Dart with Flutter.
 author: Milan Zimmermann <milan.zimmermann@gmail.com>
 homepage: https://github.com/mzimmerm/flutter_charts/
@@ -9,38 +9,16 @@ documentation: https://pub.dartlang.org/packages/flutter_charts/doc
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on github or local server.
 
-# Toggle:
-# if pub publish -> NOTE: DO NOT USE EVEN FOR PUBLISHING. CAUSES ERROR:
-# ------------
-# * Don't depend on "flutter" from the hosted source. Use the SDK source instead. For example:
-#   dependencies:
-#     flutter:
-#       sdk: >=0.0.20 <0.1.0
-#
-#   The Flutter SDK is downloaded and managed outside of pub.
-# dependencies:
-#   decimal: ">=0.1.4 <0.2.0"
-#   flutter: ">=0.0.20 <0.1.0"
-# #    sdk: flutter
-# COMMENT OUT THE dev_dependencies: SECTION
-# else if dev ->
-# ------------
-# dependencies:
-#   decimal: ">=0.1.4 <0.2.0"
-#   flutter:
-#     sdk: flutter
-# dev_dependencies:
-#   flutter_test:
-#     sdk: flutter
-
 dependencies:
-  decimal: ">=0.1.4 <0.2.0"
   flutter:
-    sdk:  ">=0.0.20 <0.1.0"
+    sdk:  flutter
+  decimal: ">=0.1.4 <0.2.0"
 
-# dev_dependencies:
-#   flutter_test:
-#     sdk:  ">=0.0.20 <0.1.0"
+dev_dependencies:
+  test:
+  flutter_test:
+    sdk:  flutter
+
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #
