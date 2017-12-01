@@ -28,21 +28,20 @@ class ChartData {
   /// in each row in [dataRows].
   List<String> xLabels = new List();
 
-  /// Labels on dependent (Y) axis. They must be numbers.
+  /// Labels on dependent (Y) axis.
   ///
   /// - If you need Data-Generated Y label numbers with units (e.g. %),
   ///   - Do not set [yLabels]
   ///   - Set [ChartOptions.useUserProvidedYLabels] to false
   ///   - define [ChartOptions.yLabelUnits] in options
-  /// - If you need to define "Ordinal" (Strings with order) Y labels,
+  /// - If you need User-Defined "Ordinal" (Strings with order) Y labels,
   ///   - Set [yLabels] to ordinal values
   ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
   ///   - [ChartOptions.yLabelUnits] are ignored
   ///
-  /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
+  /// This [yLabels] member is used only if
+  /// [ChartOptions.useUserProvidedYLabels] is true.
   ///
-  /// They may be undefined, in which case the
-  /// Y axis is likely not shown.
   List<String> yLabels = new List();
 
   void validate() {

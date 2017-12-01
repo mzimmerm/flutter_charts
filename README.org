@@ -1,12 +1,12 @@
  #+OPTIONS: toc:3
 
-* Flutter Charts - introduction
+* Flutter Charts - an introduction
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
 
 You may want to study the included sample app ~flutter_charts_sample_app.dart~ to build your application using Flutter Charts. The sample app shows how a Flutter Chart can be included in a Flutter application.
 
-* Flutter Charts - data, options, classes
+* Flutter Charts - an overview: data, options, classes
 
 Before we show several examples of charts, a few notes. 
 
@@ -79,7 +79,7 @@ Point and Line Chart (Line Chart)
 Output uses semi-random data. Click the blue + button to rerun chart with a different dataset.
 
 
-* Flutter Charts: LineChart and VerticalBarChart samples: Code and resulting charts
+* Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts
 
 Flutter Charts code allow to define the following data elements:
 

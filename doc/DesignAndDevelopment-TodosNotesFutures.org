@@ -65,88 +65,108 @@
    14) [X] Create project flutter_charts. Empty, add Readme, license etc.
 
 
-* IN-PROGRESS Changing structure of the ChartData class
+* IN-PROGRESS Changing the structure of the "data source" class in Flutter Charts
 
-I realize we discussed we will make the new internal structure of ~ChartData.dataRows~ to be something like ~List<List<Point>~. During this week I went through some torments and I think I arrived at a change; but I do not want to push it without explanation. So let me describe the current structure, and the newly suggested structure of ~ChartData~.
+I realize we discussed we will make the new internal structure of ~ChartData.dataRows~ to be something like ~List<List<Point>~. During this week I went through some torments and I think I arrived at a change; but I do not want to push it without explanation. So let me describe the current structure, and the newly suggested structure of ~ChartData~ (renaming it to InternalChartData and providing adaptors).
 
-** Current ~ChartData~ structure
+** Current ~ChartData~ structure - see  file:../lib/src/chart/data.dart
 
-Currently we have
 
-#+BEGIN_SRC dart
+** Towards a new, suggested ~InternalChartData~ class - this is the class Flutter Charts will work from at it's core.
 
-  class ChartData {
-
-    List<List<double>> dataRows = new List();
-
-    List<String> dataRowsLegends = new List();
-
-    List<ui.Color> dataRowsColors = new List<ui.Color>();
-
-    List<String> xLabels = new List();
-
-    /// Labels on dependent (Y) axis. They must be numbers.
-    ///
-    /// - If you need Data-Generated Y label numbers with units (e.g. %),
-    ///   - Do not set [yLabels]
-    ///   - Set [ChartOptions.useUserProvidedYLabels] to false
-    ///   - define [ChartOptions.yLabelUnits] in options
-    /// - If you need to define "Ordinal" (Strings with order) Y labels,
-    ///   - Set [yLabels] to ordinal values
-    ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
-    ///   - [ChartOptions.yLabelUnits] are ignored
-    ///
-    /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
-    ///
-    /// They may be undefined, in which case the
-    /// Y axis is likely not shown.
-    List<String> yLabels = new List();
-
-  }
-
-#+END_SRC
-
-#+RESULTS:
-
-(leaving the comment on yLabels as their use is more complex, and xLabels are just about to become also more complex ;) )
-
-First, let me summarize that current (unexpressed) constraints on  ~ChartData.dataRows~ - in essence, all corresponding list lengths must be the same:
+First, let me summarize that current (unexpressed) constraints on  the current ~ChartData.dataRows~ - in essence, all corresponding list lengths must be the same:
 
 1) Along the x axis (row wise)   : (each row in dataRows).length is the same 
 2) Along the x axis (row wise)   : (each row in dataRows).length == xLabels.length 
 3) Along the y axis (series wise): dataRows.length == dataRowsColors.length == dataRowsLegends.length
 
-Basically, ~dataRows~ is assumed to be an array (list of rows of equal length)
+Basically, the ~dataRows~ member assumed to be an array (list of rows of equal length)
 
-So towards the future, the more I was thinking the way the layouting may work, the more I am sure it is best to keep 1) for sure, and maybe 3), but drop 2) for sure to support uneven steps and skipped labels. And in all case I kept arriving at thinking the layouter would eventually convert any ~List<List<Points>>~ to a list of Y values ~List<List<double>>~ and extract the X values under each point so we have List<double> xValues. I would like to note that this structure can be made in all respects equivalent to  ~List<List<Points>>~ - we can always write converters in either direction. 
+So towards the future, the more I was thinking the way the layouting may work, the more I am sure it is best to keep 1) for sure, and maybe 3), but drop 2) for sure to support uneven steps and skipped labels. And in all case I kept arriving at thinking the layouter would eventually convert any ~List<List<Point>>~ to a list of Y values ~List<List<double>>~ and extract the X values under each point so we have List<double> xValues. I would like to note that this structure can be made in all respects equivalent to  ~List<List<Point>>~ - we can always write adaptors in either direction. 
 
-So I'd like to support the internal structure of ChartData as described below, and all external data in different formats/structure would have to provide convertes; this project would probably provide some basic converters (I am thinkig to support some basic (e.g. some Higchart type) JSON data formats out of the box.
+So I'd like to support the internal structure of ChartData as described below, and all external data in different formats/structure would have to provide convertes; this project would probably provide some basic adaptors (I am thinkig to support some basic (e.g. some Higchart type) JSON data formats out of the box.
 
-I'd like to rename the existing ~ChartData~ to ~SimpleChartData~. Clearly a breaking change, but hopefully a simple change for clients.
+Next, goals and non-goals of this change.
 
-** New, suggested ~ChartData~ structure 
+*Current goals of the ~InternalChartData~ class:*
 
-(For now all members public but that may change. Also will provide some constructors later.
+- Define a data source class used on the the low end of chart layout. 
+- Define the data source class in terms of lowest level primitives: Because in the end, all paint operations operate only with Dart ~double~ (for Y values, and Distanced X points) and Dart ~String~, we only use those primitives.
+- Still allow for a simple, no frills way of clients defining their own X and Y labels directly, similar to the current ~ChartData~ 
+- Provide a sufficient description for data defined as any "reasonable" object to be convertable to  ~InternalChartData~ through adaptors.
+  - Data Adaptor Examples: 
+    - X values is a List<String>, Y values is a  List<double>      => ~InternalChartData~
+    - X and Y values are an array, e.g. List<List<double>>         => ~InternalChartData~
+    - X values is a List<DateTime>, Y values is a  List<double>    => ~InternalChartData~
+- Provide a converter from ~ChartData~ to  ~InternalChartData~
+
+
+*Current non-Goals of the ~InternalChartData~ class. These may become goals later*
+- We can rephrase the simplification of ~double~ (both for X and Y ) in terms of interfaces that allow for *order* and *distance* : let us call them ~OrdinalDimension~ and ~DistancedDimension extends OrdinalDimension~. ~OrdinalDimension~ provides order of it's points,  ~DistancedDimension~ provides distance of it's points. Basically substitute ~double~ everywhere above and is the definition of ~InternalChartData~ with ~OrdinalDimension~ . *BUT I HAVE A TODO HOW TO DO THIS RIGHT*. 
+  - ~double DistancedDimension.distance(DimensionPoint point, DimensionPoint point)~ // must satisfy distance properties
+  - ~int OrdinalDimension.comparePoints(DimensionPoint point, DimensionPoint point)~
+  - ~double DimensionPoint.toDouble()~ - basically, distance from origin on the chart. Required(?) to find a minimum, maximum; We require this for OrdinalDimension as well, where it duplicates order - basically the result is the sequence in a the list of ordered dimension points.
+
+
+For now all members are public but that may change. Also will describe some constructors later.
 
 #+BEGIN_SRC dart
 
-  class ChartData {
+  /// Used internally as a "data source" by Flutter Charts.
+  /// 
+  /// Data sources in other formats should provide adaptors to convert to this 
+  ///   internal format.  
+  /// 
+  /// Data Adaptor Examples (just as an overview): 
+  ///   - X values is a List<String>, Y values is a  List<double>      => ~InternalChartData~
+  ///   - X and Y values are an array, e.g. List<List<double>>         => ~InternalChartData~
+  ///   - X values is a List<DateTime>, Y values is a  List<double>    => ~InternalChartData~
+  ///   - ~ChartData~                                                  => ~InternalChartData~
+  class InternalChartData {
+
+    /// Data defined in terms of the low level primitives - a Dart double.
 
     List<List<double>> dataRows = new List(); 
 
-    List<double> xs = new List(); // x data points for each dataRow values, must be same size and order3.
+    /// Map from x values to xLabel. It's keys and values,
+    /// decide whether labels displayed are User-Provided or Data-Generated. 
+    ///
+    /// See the [validate] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated.
+    ///   Below is a summary from [validate]. This may sound complicated, 
+    ///   it exists to *also allow clients
+    ///   a simple, no frills way of defining their own X and Y labels directly, 
+    ///    similar to the current ~ChartData~ does*.
+    ///
+    /// 1. Overall Requirement of  [xToXLabelMap]: It is required that [xToXLabelMap]
+    ///    contains as many keys as each dataRow length for all [dataRows].
+    ///    *Note: If a client does not care about the actual x points, the client must set the keys
+    ///        in  [xToXLabelMap] to double 1.0, 2.0 ... etc - as if they were List indexes.*
+    ///
+    /// 2. Ensure that label is set on all x points, or none.
+    ///    So all labels or none must be provided as values of the [xToXLabelMap].
+    ///
+    /// 3. If labels are not null on all x keys, those labels will be used on the chart -
+    ///   so this condition is interpreted as:
+    ///   User (Client) provided labels in [xToXLabelMap],
+    ///     and is requesting those labels to be shown, as "User-Defined labels".
+    ///
+    /// 4. If labels are null on all x keys, this condition is interpreted as:
+    ///    User (Client) did not provide labels in [xToXLabelMap],
+    ///    and is requesting labels to be "Data-Generated". In this case, the
+    ///    formatter [xLabelFormatter] must be provided.
 
-    Map xToXLabelMap = new Map();      // User-Provided or Data-Generated map from x values to xLabel
+    TreeMap<double, String> xToXLabelMap;
 
-    Function xLabelFormatter; // Required to create Data-Generated xLabels.
+    /// Converts a x data value to a label representing the value at x axis point.
+    /// Required to create Data-Generated xLabels. 
+    ///
+    /// See the [validate] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated. 
 
-    List<String> dataRowsLegends = new List();
+    String Function(double) xLabelFormatter;
 
-    List<ui.Color> dataRowsColors = new List<ui.Color>();
-
-    List<String> _xLabels = new List(); // private 
-
-    /// Labels on dependent (Y) axis. They must be numbers.
+    /// Labels on dependent (Y) axis.
     ///
     /// - If you need Data-Generated Y label numbers with units (e.g. %),
     ///   - Do not set [yLabels]
@@ -161,32 +181,117 @@ I'd like to rename the existing ~ChartData~ to ~SimpleChartData~. Clearly a brea
     ///
     /// They may be undefined, in which case the
     /// Y axis is likely not shown.
+
     List<String> yLabels = new List();
+
+    String Function(double) yLabelFormatter;
+
+
+    /// Legends list. Currently has to be set, but can contain empty Strings
+    ///  (in which case todo 1 -take that as a hint user does not want the legend section).
+
+    List<String> dataRowsLegends = new List();
+
+    /// Colors list. Currently has to be set. todo 1 - If not set, default to reasonable colors.
+
+    List<ui.Color> dataRowsColors = new List<ui.Color>();
+
 
     ////////////////////////// Added also ////////////////////
 
-    /// If [true], then [xValues] will be presented using scaled distances: e.g. if xs = [1,2,320, 200], 
-    /// then the (relative, scaled) distances between [1,2,20, 200], are preserver
-    /// (1,2,3 will be squished on the left). 
+    /// - If [true], then the x values keep distances in data: For example, if xs = [1,2,20, 200], 
+    ///   then the (relative, scaled) distances between [1,2,20, 200], are preserved,
+    ///   so that 1,2,20 will be squished on the left. The only chart type where this is allowed
+    ///   is the line chart.
+    ///   This setting mathematically means that we view the x axis values using
+    ///     a proper real value distance as it's distance (in addition to viewing them ordered).
+    /// - If [false], then  then the x values will be "equidistanced": For example, if xs = [1,2,20, 200], 
+    ///   then the (relative, scaled) distances between [1,2,20, 200], are the same,
+    ///   so that 1, 2, 20, 200 will be evently layed out along the x axis.
+    ///   This setting mathematically means that we view the x axis values as ordered (ordinal) labels,
+    ///     ignoring the distance between them (when taken as numbers)
     ///
-    /// A motivation note: X values [xs] are always ~Ordinal~ (ordered). 
+    /// A note: X values [xs] are always ~Ordinal~ (ordered). 
 
-    bool doXsHonourDistanceMeasure
+    bool keepXValuesDistances
     
   }
 
-  // Supporting classes
-
-  abstract class LabelFormatter {
-    /// Formats x values to Data-Generated labels
-    String format(double x);
+  /// Validate the state of values. This code provides a set of rules this object members must satisfy.
+  void _validate() {
+    _validateX();
+    _validateY();
   }
+
+  void _validateX() {
+
+    if (xToXLabelMap == null) {
+      throw Error("xToXLabelMap must be defined!");
+    }
+
+    for (dataRow in dataRows) {
+      if (dataRow.size != xToXLabelMap.size) {
+        throw Error("Each Data row must be same size as xToXLabelMap");
+      }
+    }  
+    
+    // The setting of either keys or values or both determines the labels construction 
+    //   as User-Defined or Data-Generated.
+    // The section below describes the options and combinations.
+    if (xToXLabelMap.isEmpty()) {
+      // no data, return
+      return;
+    }
+
+    // Overall Requirement of  [xToXLabelMap]: It is required that [xToXLabelMap]
+    //    contains as many keys as each dataRow length for all [dataRows].
+    // *Note: If client does not care about the actual x points, client must set the keys
+    //        in  [xToXLabelMap] to double 1.0, 2.0 ... etc - as if they were List indexes.*
+    
+    // Ensure that label is set on all x points, or none.
+    // So all labels or none must be provided as values of the [xToXLabelMap].
+    if (xToXLabelMap.first.value != null) {
+      xToXLabelMap.each( (x, labelValue) {
+        if (labelValue == null) throw Error(" all labels or none must be provided as values of the [xToXLabelMap]");
+      });
+    }
+    if (xToXLabelMap.first.value == null) {
+      xToXLabelMap.each( (x, labelValue) {
+        if (labelValue != null) throw Error(" all labels or none must be provided as values of the [xToXLabelMap]");
+      });
+    }
+
+    // If labels are not null on all x keys, those labels will be used on the chart -
+    //   so this condition is interpreted as:
+    // User (Client) provided labels in [xToXLabelMap],
+    //   and is requesting those labels to be shown, as "User-Defined labels".
+    if (xToXLabelMap.first.value != null) {
+      // Labels will be User-Defined.
+      if (xLabelFormatter is not null) {
+        throw Error("xToXLabelMap defines User-Defined labels, xLabelFormatter should not be set");
+      }
+    }
+
+    // If labels are null on all x keys, this condition is interpreted as:
+    //  User (Client) did not provide labels in [xToXLabelMap],
+    //   and is requesting labels to be "Data-Generated". In this case, the
+    //   formatter [xLabelFormatter] must be provided.
+    if (xToXLabelMap.first.value == null) {
+      // Labels will be Data-Generated.
+      if (xLabelFormatter is null) {
+        throw Error("xToXLabelMap does not define User-Defined labels. xLabelFormatter must be set, to create Data-Generated x labels.");
+      }
+    }
+  }
+
 #+END_SRC
 
-Notes:
+Also, although "from a separation of data and view" principle I originally put some of the settings that define the chart "view" onto ChartOptions, I plan to move them to ChartData, and InternalChartData.
 
-- Would you agree that to display dates on X axis, we store them in data x
-
+- [ ] ChartOptions.useUserProvidedYLabels -> ChartData
+- [ ] ChartOptions.yLabelUnits -> ChartData
+- [ ] ChartOptions.toLabel(label) -> ChartData
+- 
 
 * TODO After Release
 

@@ -1,3 +1,6 @@
+# v0.1.5 (2017-10-27)
+
+This version finally fixed issue https://github.com/mzimmerm/flutter_charts/issues/2 - flutter charts not actually working as a library package (reason: incorrectly specified dependencies).
 # v0.1.4 (2017-10-27)
 
 - Only changes in documentation. Also publishing using `flutter packages pub publish` instead of previously incorrect `pub publish` which resulted in a package that reports error on clients' getting the package using `flutter pub get`. Hopefully this change will fix the issue. Below is the full error this new version is trying to fix:
