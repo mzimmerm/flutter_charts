@@ -65,7 +65,7 @@
    14) [X] Create project flutter_charts. Empty, add Readme, license etc.
 
 
-* IN-PROGRESS Changing the structure of the "data source" class in Flutter Charts
+* IN-PROGRESS  Changing the structure of the "data source" class in Flutter Charts *This may change significantly.*
 
 I realize we discussed we will make the new internal structure of ~ChartData.dataRows~ to be something like ~List<List<Point>~. During this week I went through some torments and I think I arrived at a change; but I do not want to push it without explanation. So let me describe the current structure, and the newly suggested structure of ~ChartData~ (renaming it to InternalChartData and providing adaptors).
 
@@ -129,13 +129,14 @@ For now all members are public but that may change. Also will describe some cons
     List<List<double>> dataRows = new List(); 
 
     /// Map from x values to xLabel. It's keys and values,
-    /// decide whether labels displayed are User-Provided or Data-Generated. 
+    /// decide whether the X labels displayed are User-Provided or Data-Generated. 
     ///
-    /// See the [validate] method which describes how construction of this map
+    /// See the [validateX] method which describes how construction of this map
     ///   affects the labels construction as User-Defined vs. Data-Generated.
-    ///   Below is a summary from [validate]. This may sound complicated, 
+    ///
+    ///   Below is a summary from [validateX]. This may sound complicated, 
     ///   it exists to *also allow clients
-    ///   a simple, no frills way of defining their own X and Y labels directly, 
+    ///   a simple, no frills way of defining their own X labels directly, 
     ///    similar to the current ~ChartData~ does*.
     ///
     /// 1. Overall Requirement of  [xToXLabelMap]: It is required that [xToXLabelMap]
@@ -148,7 +149,7 @@ For now all members are public but that may change. Also will describe some cons
     ///
     /// 3. If labels are not null on all x keys, those labels will be used on the chart -
     ///   so this condition is interpreted as:
-    ///   User (Client) provided labels in [xToXLabelMap],
+    ///   User (Client) provided X labels in [xToXLabelMap],
     ///     and is requesting those labels to be shown, as "User-Defined labels".
     ///
     /// 4. If labels are null on all x keys, this condition is interpreted as:
@@ -157,32 +158,54 @@ For now all members are public but that may change. Also will describe some cons
     ///    formatter [xLabelFormatter] must be provided.
 
     TreeMap<double, String> xToXLabelMap;
-
-    /// Converts a x data value to a label representing the value at x axis point.
+    
+    /// Converts a x axis data value to a label representing the value at the x axis point.
     /// Required to create Data-Generated xLabels. 
     ///
-    /// See the [validate] method which describes how construction of this map
+    /// See the [validateX] method which describes how construction of this map
     ///   affects the labels construction as User-Defined vs. Data-Generated. 
 
     String Function(double) xLabelFormatter;
 
-    /// Labels on dependent (Y) axis.
-    ///
-    /// - If you need Data-Generated Y label numbers with units (e.g. %),
-    ///   - Do not set [yLabels]
-    ///   - Set [ChartOptions.useUserProvidedYLabels] to false
-    ///   - define [ChartOptions.yLabelUnits] in options
-    /// - If you need to define "Ordinal" (Strings with order) Y labels,
-    ///   - Set [yLabels] to ordinal values
-    ///   - Set [ChartOptions.useUserProvidedYLabels] to true.
-    ///   - [ChartOptions.yLabelUnits] are ignored
-    ///
-    /// This is used only if [ChartOptions.useUserProvidedYLabels] is true.
-    ///
-    /// They may be undefined, in which case the
-    /// Y axis is likely not shown.
 
-    List<String> yLabels = new List();
+    /// Map from y values to yLabel. **The only purpose of [yToYLabelMap] is to chart Ordinal Y values with User-Defined labels**
+    ///
+    /// This is similar to [xToXLabelMap] in structure, but the internal use and
+    /// assumptions differ.    
+    ///
+    /// See the [validateY] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated.
+    /// 
+    ///   Below is a summary from [validateY].
+    ///
+    /// 1. If `yToYLabelMap.length > 0` this condition is interpreted as:
+    ///   User (Client) provided Y abels in [yToYLabelMap],
+    ///     and is requesting those labels to be shown, as "User-Defined labels".
+    ///
+    /// 2. Iff `yToYLabelMap.length == 0` , this condition is interpreted as:
+    ///    User (Client) did not provide labels in [yToYLabelMap],
+    ///    and is requesting labels to be "Data-Generated". In this case, the
+    ///    formatter [yLabelFormatter] must be provided.
+    ///
+    /// 3. Overall Requirement of [yToYLabelMap]: There is no requirement on number of entries 
+    ///     in [yToYLabelMap]. 
+    ///
+    /// 4. If the length of [yToYLabelMap] is not zero, ensure that label is not null on all y points.
+    ///
+    /// 5. Each entry's value shows one label on the Y axis. 
+    ///    
+    /// 6. Each entry's key is scaled to the scale of the outer envelope of [dataRows] and set of [yToYLabelMap.keys],
+    ///    and the `entry.value` is used as label, on Y position corresponding to the point of `entry.key`
+    ///    on the outer envelope.
+    ///
+
+    TreeMap<double, String> yToYLabelMap;
+
+    /// Converts a y axis data value to a label representing the value at the y axis point.
+    /// Required to create Data-Generated yLabels. 
+    ///
+    /// See the [validateY] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated. 
 
     String Function(double) yLabelFormatter;
 
@@ -197,7 +220,7 @@ For now all members are public but that may change. Also will describe some cons
     List<ui.Color> dataRowsColors = new List<ui.Color>();
 
 
-    ////////////////////////// Added also ////////////////////
+    ////////////////////////// Added also todo 1 **not planning to implement yet** ////////////////////
 
     /// - If [true], then the x values keep distances in data: For example, if xs = [1,2,20, 200], 
     ///   then the (relative, scaled) distances between [1,2,20, 200], are preserved,
