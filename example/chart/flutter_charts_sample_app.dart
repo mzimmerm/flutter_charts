@@ -1,10 +1,11 @@
-// note: All classes without prefix in this code are from material.dart.
+// note: All classes without prefix in this code are either
+//       - from material.dart or
+//       - from flutter_charts.dart exports (this library)
 //       Also, material.dart exports many dart files, including widgets.dart,
 //         so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-// or from flutter_charts exports (library)
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
 
@@ -43,13 +44,15 @@ void main() {
   //            which contains the function runApp().
   //
   //  So, eventually, the loading of binding.dart, and it's runApp() function
-  //  goes in MyApp is achieved this way:
+  //  in MyApp is achieved this way:
   //    1) flutter_charts_sample_app.dart of MyApp has
   //        - import 'package:flutter/material.dart' (references PROJ/packages/flutter/lib/material.dart)
   //    2) material.dart has
   //        - export 'widgets.dart'; (references same dir        PROJ/packages/flutter/lib/widgets.dart)
   //    3) widgets.dart has
   //        - export 'src/widgets/binding.dart'; (references dir PROJ/packages/flutter/lib/src/widgets/binding.dart)
+  //    4) binding.dart has
+  //        - the runApp() function
   //
   // This process achieves importing (heh via exports) the file
   //    packages/flutter/lib/src/widgets/binding.dart

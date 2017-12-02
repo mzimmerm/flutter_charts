@@ -39,6 +39,8 @@ class LineAndHotspotPresenter extends Presenter {
     rowIndex: rowIndex,
     layouter: layouter,
   ){
+    var options = layouter.options as LineChartOptions;
+
     // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = new ui.Paint();
     rowDataPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
@@ -49,17 +51,59 @@ class LineAndHotspotPresenter extends Presenter {
     linePresenter = new line_presenter.LinePresenter(
       from: fromPoint,
       to: toPoint,
-      paint: rowDataPaint..strokeWidth = 3.0, // todo 0 set as option
+      paint: rowDataPaint..strokeWidth = options.lineStrokeWidth,
     );
     offsetPoint = fromPoint; // point is the left (from) end of the line
-    innerPaint = new ui.Paint();
-    innerPaint.color = material.Colors.yellow;
-    outerPaint = new ui.Paint();
-    outerPaint.color = material.Colors.black;
-    innerRadius = (layouter.options as LineChartOptions).hotspotInnerRadius;
-    outerRadius = (layouter.options as LineChartOptions).hotspotOuterRadius;
+    //innerPaint = new ui.Paint();
+    //innerPaint.color = material.Colors.yellow;
+    //outerPaint = new ui.Paint();
+    //outerPaint.color = material.Colors.black;
+    innerPaint = options.hotspotInnerPaint;
+    outerPaint = options.hotspotOuterPaint;
+    innerRadius = options.hotspotInnerRadius;
+    outerRadius = options.hotspotOuterRadius;
   }
 }
+
+/* todo -2 remove when tested
+  LineAndHotspotPresenter({
+    StackableValuePoint point,
+    StackableValuePoint nextRightColumnValuePoint,
+    int rowIndex,
+    ChartLayouter layouter,
+  })
+      : super(
+    point: point,
+    nextRightColumnValuePoint: nextRightColumnValuePoint,
+    rowIndex: rowIndex,
+    layouter: layouter,
+  ){
+    var options = layouter.options as LineChartOptions;
+
+    rowDataPaint = new ui.Paint();
+    rowDataPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
+
+    ui.Offset fromPoint = point.scaledTo;
+    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
+    toPoint ??= fromPoint;
+    linePresenter = new line_presenter.LinePresenter(
+      from: fromPoint,
+      to: toPoint,
+      paint: rowDataPaint..strokeWidth = options.lineStrokeWidth,
+    );
+    offsetPoint = fromPoint; // point is the left (from) end of the line
+    //innerPaint = new ui.Paint();
+    //innerPaint.color = material.Colors.yellow;
+    //outerPaint = new ui.Paint();
+    //outerPaint.color = material.Colors.black;
+    innerPaint = options.hotspotInnerPaint;
+    outerPaint = options.hotspotOuterPaint;
+    innerRadius = options.hotspotInnerRadius;
+    outerRadius = options.hotspotOuterRadius;
+  }
+}
+
+ */
 
 /// Creator of the [LineAndHotspotPresenter] instances - the leaf visual
 /// elements on the line chart (point and line showing one data value).

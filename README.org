@@ -263,11 +263,12 @@ Result vertical bar chart:
 [[file:doc/readme_images/README.org_20171102_195745_27063ECO.png]]
 
 (there is a bug here,see Known Bugs)
-* Known bugs
+* Bugs status
 
-- Chart area needs clipping in the application
-- Take a look at the stock charts example. There is a bug reverting series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then,  dataRowsLegends are incorrect. 
-
+- [ ] Chart area needs clipping in the application
+- [ ] Take a look at the stock charts example. There is a bug reverting series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then,  dataRowsLegends are incorrect. 
+- [ ] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
+- [ ] 
 * Future enhancements and work 
 
 Bug fixes:
@@ -297,3 +298,11 @@ Enhancements:
   - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
 - Painter               :: Class which paints to chart to canvas. Terminology and class structure taken from Flutter's Painter and Painting classes.
   - Classes: todo
+
+* Internal notes
+
+** TODO Add index to README.org
+** TODO Convert README.org to README.md
+
+
+

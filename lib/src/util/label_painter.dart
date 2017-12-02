@@ -34,7 +34,7 @@ class LabelPainter {
         text: string,
         style:
         new painting.TextStyle(
-            color: material.Colors.grey[600],
+            color: material.Colors.grey[600], // todo -1
             fontSize: 14.0));
     var textPainter =
     new painting.TextPainter(

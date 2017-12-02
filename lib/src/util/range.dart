@@ -48,15 +48,15 @@ class Range {
     num max = _closure.max;
     num diff = max - min;
 
-    Poly polyMin = new Poly(from: min); // 99
-    Poly polyMax = new Poly(from: max); // 101
-    Poly polyDiff = new Poly(from: diff); // 2
+    Poly polyMin = new Poly(from: min);
+    Poly polyMax = new Poly(from: max);
+    Poly polyDiff = new Poly(from: diff);
 
-    int powerMin = polyMin.maxPower; // 1
+    int powerMin = polyMin.maxPower;
     int signMin = polyMin.signum;
-    int powerMax = polyMax.maxPower; // 2
+    int powerMax = polyMax.maxPower;
     int signMax = polyMax.signum;
-    int powerDiff = polyDiff.maxPower; // 0
+    int powerDiff = polyDiff.maxPower;
     int signDiff = polyDiff.signum;
 
     // envelope for all y values
@@ -68,8 +68,8 @@ class Range {
       // todo 1 - enable conditions where y=0 axis is not needed to show,
       //          to allow for details, mainly for lots of values.
       //          Make an option for this. Add to tests.
-      from = polyMin.floorAtMaxPower.toDouble(); // 90
-      to = polyMax.ceilAtMaxPower.toDouble(); // 110
+      from = polyMin.floorAtMaxPower.toDouble();
+      to = polyMax.ceilAtMaxPower.toDouble();
     } else {
       // for now, always start with min or 0, and end at max (reverse if both negative).
 
@@ -124,13 +124,13 @@ class Range {
     Poly polyMin = new Poly(from: interval.min);
     Poly polyMax = new Poly(from: interval.max);
 
-    int powerMax = polyMax.maxPower; // 2
-    int coeffMax = polyMax.coeffAtMaxPower; // 1
+    int powerMax = polyMax.maxPower;
+    int coeffMax = polyMax.coeffAtMaxPower;
     int signMax = polyMax.signum;
 
     // using Min makes sense if one or both (min, max) are negative
-    int powerMin = polyMin.maxPower; // 0
-    int coeffMin = polyMin.coeffAtMaxPower; // 0
+    int powerMin = polyMin.maxPower;
+    int coeffMin = polyMin.coeffAtMaxPower;
     int signMin = polyMin.signum;
 
     List<num> labels = [];

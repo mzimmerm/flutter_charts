@@ -3,11 +3,6 @@ import 'dart:math' as math show max, min;
 
 import 'package:flutter/painting.dart' as painting show TextPainter;
 
-// import 'package:flutter/widgets.dart' as widgets show Widget;
-// import 'package:flutter/material.dart' as material;
-
-// import 'package:flutter/widgets.dart' as widgets show TextPainter;
-
 import 'package:flutter_charts/src/util/label_painter.dart';
 
 import 'package:flutter_charts/src/chart/options.dart';

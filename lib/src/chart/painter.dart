@@ -33,7 +33,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
   /// Paints the chart area - the legend in [drawLegend],
   /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
-  /// and the data values in [drawPresentersColumns].
+  /// and the data values, column by column, in [drawPresentersColumns].
   ///
   /// Starts with a call to [ChartLayouter.layout], then painting
   /// according to the calculated layout positions.
@@ -48,7 +48,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
     }
 
     layouter.chartArea = size;
-    layouter.layout(); // todo 0 pass size to layout
+    layouter.layout();
 
     drawGrid(canvas);
     drawYLabels(canvas);
@@ -60,7 +60,10 @@ abstract class ChartPainter extends widgets.CustomPainter {
     canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
   }
 
-  /// abstract in super.
+  /// Implementing abstract in super.
+  ///
+  /// Called any time that a new CustomPaint object is created
+  /// with a new instance of the custom painter delegate class.
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
     return true;
   }
