@@ -123,7 +123,7 @@ class RandomChartData extends ChartData {
               pushUpBy: (rowIndex - 1) * pushUpStep,
               scale: scale));
     }
-    print("Random generator data: ${_flattenData()}.");
+    // print("Random generator data: ${_flattenData()}.");
   }
 
   List<double> _oneDataRow(

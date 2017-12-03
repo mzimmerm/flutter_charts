@@ -15,25 +15,29 @@ import '../bar/presenters.dart' as bar_presenters;
 /// See [ChartPainter]
 
 class VerticalBarChartPainter extends ChartPainter {
-
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    this.layouter.presentersColumns.presentersColumns
-        .forEach((presenters.PresentersColumn presentersColumn) {
+    var presentersColumns = this.layouter.presentersColumns.presentersColumns;
+    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       // todo 1 do not repeat loop, collapse to one construct
-      presentersColumn.positivePresenters
-          .forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
+
+      var positivePresenterList = presentersColumn.positivePresenters;
+      positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
+      positivePresenterList.forEach((presenters.Presenter presenter) {
+        bar_presenters.VerticalBarPresenter presenterCast =
+            presenter as bar_presenters.VerticalBarPresenter;
+        canvas.drawRect(
+            presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
 
-      presentersColumn.negativePresenters
-          .forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(presenterCast.presentedRect, presenterCast.dataRowPaint);
+      var negativePresenterList = presentersColumn.negativePresenters;
+      negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
+      negativePresenterList.forEach((presenters.Presenter presenter) {
+        bar_presenters.VerticalBarPresenter presenterCast =
+            presenter as bar_presenters.VerticalBarPresenter;
+        canvas.drawRect(
+            presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
-
     });
   }
 }
-

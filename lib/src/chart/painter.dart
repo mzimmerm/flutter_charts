@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart' as widgets; // note: external package
 import 'package:flutter_charts/flutter_charts.dart' as common;
 import 'layouters.dart' as layouters;
 
+import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
+
 /// [ChartPainter] does the core of painting the chart,
 /// in it's core method [paint].
 ///
@@ -38,7 +40,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Starts with a call to [ChartLayouter.layout], then painting
   /// according to the calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
-    print(" ### Size: paint(): passed size = ${size}");
+    // print(" ### Size: paint(): passed size = ${size}");
 
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
@@ -108,6 +110,17 @@ abstract class ChartPainter extends widgets.CustomPainter {
       legend.labelPainter.paint(canvas, legend.labelOffset);
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
     }
+  }
+
+  /// Optionally paint series in reverse order (first to last vs last to first)
+  ///
+  /// See [ChartOptions.firstDataRowPaintedFirst]
+  List<presenters.Presenter> optionalPaintOrderReverse(List<presenters.Presenter> presenters) {
+    var options = this.layouter.options;
+    if (options.firstDataRowPaintedFirst) {
+      presenters = presenters.reversed.toList();
+    }
+    return presenters;
   }
 
   /// Draws the actual data, either as lines with points (line chart),

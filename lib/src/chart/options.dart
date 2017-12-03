@@ -49,7 +49,7 @@ class ChartOptions {
 
   /// Pad space around Y labels.
   double yLabelsPadTB = 12.0; // todo 0 unused
-  double yLabelsPadLR = 12.0;
+  double yLabelsPadLR = 4.0;
 
   /// Series color indicator size - the "Series color indicator"
   /// is the square that shows the color of each dataRow
@@ -67,6 +67,16 @@ class ChartOptions {
   /// which displays the bars (grouped or stacked).
   double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
 
+  /// Controls the order the painter paints [ChartData.dataRows].
+  /// Motivation: Oh the line chart, if two data rows have same values,
+  /// the "last painted value wins". This option helps to change the data rows
+  /// painting order - painting starts from the first or from the last.
+  /// While so far only makes a difference on the line chart, this is defined
+  /// as a common option in case there is some future overlap use on other
+  /// chart types.
+  bool firstDataRowPaintedFirst = true;
+
+  /// todo -1 remove, replace with formatter outright
   String yLabelUnits = "";
 
   String toLabel(String label) => label + yLabelUnits;

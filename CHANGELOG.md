@@ -1,7 +1,7 @@
 # v0.1.5 (2017-12-03)
 
 ## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/5 
-There are the following new line chart options in `charts/line/options.dart`
+Added the following new line chart options in `charts/line/options.dart`
 ``` dart
   ui.Paint hotspotInnerPaint = new ui.Paint()
     ..color = material.Colors.yellow;
@@ -10,8 +10,14 @@ There are the following new line chart options in `charts/line/options.dart`
     ..color = material.Colors.black;
 
   double lineStrokeWidth = 3.0;
-
 ```
+
+## Implemented change in 
+Added the following new chart options in `charts/options.dart`
+
+``` dart
+  bool firstDataRowPaintedFirst = true;
+``` 
 
 # v0.1.5 (2017-10-27)
 

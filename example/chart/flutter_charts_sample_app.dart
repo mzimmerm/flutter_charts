@@ -115,9 +115,46 @@ class _MyHomePageState extends State<MyHomePage> {
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer",
+      "Fall",
+      "Winter"];
+    _chartData.dataRows = [
+      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
+      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0, ],
+      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
+      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0, ],
+    ];
+    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
   }
-   /* 1
+
+  /* 5 Demonstrate order of painting when dataRows lines are on top of each othr
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer",
+      "Fall",
+      "Winter"];
+    _chartData.dataRows = [
+      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
+      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0, ],
+      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
+      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0, ],
+    ];
+    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+   */
+
+   /* 4
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -125,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
    */
 
-   /* 2
+   /* 3
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -147,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
    */
 
-   /* 3
+   /* 2
    void defineOptionsAndData() {
      // This example shows user defined Y Labels.
      //   When setting Y labels by user, the dataRows value scale
@@ -192,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
   */
 
-   /* 4
+   /* 1
    void defineOptionsAndData() {
      // In each column, adding it's absolute values should add to same number:
      // 100 would make more sense, to represent 100% of stocks in each category.
@@ -385,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child:  lineChart,
+                    child:  verticalBarChart,
                   ),
                   new Text('<<<'),
                 ],

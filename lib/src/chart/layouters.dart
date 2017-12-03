@@ -120,7 +120,7 @@ abstract class ChartLayouter {
     legendLayouter.layout();
     _legendContainerHeight = legendLayouter._size.height;
 
-    print(" _legendContainerHeight = ${_legendContainerHeight}");
+    // print(" _legendContainerHeight = ${_legendContainerHeight}");
 
     legendOutputs = legendLayouter.outputs.map((var output) {
       var legendOutput = new LegendLayouterOutput();
@@ -142,9 +142,9 @@ abstract class ChartLayouter {
       yAxisAbsMax: 0.0,
     );
 
-    print("   ### YLayouter #1: before layout: ${yLayouterFirst}");
+    // print("   ### YLayouter #1: before layout: ${yLayouterFirst}");
+
     yLayouterFirst.layout();
-    print("   ### YLayouter #1: after layout: ${yLayouterFirst}");
 
     _yLabelsContainerWidth = yLayouterFirst._yLabelsContainerWidth;
     _yLabelsMaxHeight =
@@ -162,7 +162,7 @@ abstract class ChartLayouter {
         // todo 0 add padding, from options
         availableWidth: chartArea.width - xLayouterAbsX);
 
-    print("   ### XLayouter");
+    // print("   ### XLayouter");
     xLayouter.layout();
     this.xLayouter = xLayouter;
 
@@ -195,9 +195,8 @@ abstract class ChartLayouter {
       yAxisAbsMax: yAxisAbsMax,
     );
 
-    print("   ### YLayouter #2: before layout: ${yLayouter}");
+    // print("   ### YLayouter #2: before layout: ${yLayouter}");
     yLayouter.layout();
-    print("   ### YLayouter #2: after layout: ${yLayouter}");
 
     this.yLayouter = yLayouter;
 
@@ -454,7 +453,7 @@ class YLayouter {
     List<double> flatData = _chartLayouter.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
-    print("flatData=$flatData");
+    // print("flatData=$flatData");
 
     List<String> yLabels = _chartLayouter.data.yLabels;
 
@@ -501,7 +500,7 @@ class YLayouter {
     List<double> flatData = _chartLayouter.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
-    print("flatData=$flatData");
+    // print("flatData=$flatData");
 
     Range range = new Range(
         values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);

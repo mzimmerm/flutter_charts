@@ -303,6 +303,7 @@ Enhancements:
 
 ** TODO Add index to README.org
 ** TODO Convert README.org to README.md
+** TODO Add link to client packages
 
 
 

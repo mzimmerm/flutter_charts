@@ -5,7 +5,6 @@ import '../line/presenters.dart' as line_presenters;
 
 import '../painter.dart';
 
-
 /// Paints the columns of the line chart.
 ///
 /// The core override is the [drawPresentersColumns] method
@@ -15,29 +14,25 @@ import '../painter.dart';
 ///
 /// See [ChartPainter]
 class LineChartPainter extends ChartPainter {
-
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    this.layouter.presentersColumns.presentersColumns
-        .forEach((presenters.PresentersColumn presentersColumn) {
-      presentersColumn.presenters
-          .forEach((presenters.Presenter presenter) {
-        line_presenters.LineAndHotspotPresenter presenterCast = presenter as line_presenters.LineAndHotspotPresenter;
+    var presentersColumns = this.layouter.presentersColumns.presentersColumns;
+    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
+      var presenterList = presentersColumn.presenters;
+      presenterList = optionalPaintOrderReverse(presenterList);
+      presenterList.forEach((presenters.Presenter presenter) {
+        line_presenters.LineAndHotspotPresenter presenterCast =
+            presenter as line_presenters.LineAndHotspotPresenter;
         canvas.drawLine(
           presenterCast.linePresenter.from,
           presenterCast.linePresenter.to,
           presenterCast.linePresenter.paint,
         );
-        canvas.drawCircle(
-            presenterCast.offsetPoint,
-            presenterCast.outerRadius,
+        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,
             presenterCast.outerPaint);
-        canvas.drawCircle(
-            presenterCast.offsetPoint,
-            presenterCast.innerRadius,
+        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.innerRadius,
             presenterCast.innerPaint);
       });
     });
   }
 }
-
