@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Color;
+import 'dart:ui' as ui show Color, Paint;
 import 'package:flutter/material.dart' as material show Colors;
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
@@ -51,11 +51,13 @@ class ChartOptions {
   double yLabelsPadTB = 12.0; // todo 0 unused
   double yLabelsPadLR = 12.0;
 
-  /// Side of the square used to show color of lines/bars
+  /// Series color indicator size - the "Series color indicator"
+  /// is the square that shows the color of each dataRow
+  /// (color of lines or bars)
   /// together with data series name (legend name).
   double legendColorIndicatorWidth = 20.0;
   double legendColorIndicatorPaddingLR = 1.0;
-  double legendContainerMarginLR = 12.0; // todo 1 make = xLabelsPadLR;
+  double legendContainerMarginLR = 12.0;
   double legendContainerMarginTB = 6.0;
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.

@@ -1,3 +1,18 @@
+# v0.1.5 (2017-12-03)
+
+## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/5 
+There are the following new line chart options in `charts/line/options.dart`
+``` dart
+  ui.Paint hotspotInnerPaint = new ui.Paint()
+    ..color = material.Colors.yellow;
+
+  ui.Paint hotspotOuterPaint = new ui.Paint()
+    ..color = material.Colors.black;
+
+  double lineStrokeWidth = 3.0;
+
+```
+
 # v0.1.5 (2017-10-27)
 
 This version finally fixed issue https://github.com/mzimmerm/flutter_charts/issues/2 - flutter charts not actually working as a library package (reason: incorrectly specified dependencies).
