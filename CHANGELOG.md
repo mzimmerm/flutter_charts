@@ -1,6 +1,6 @@
 # v0.1.5 (2017-12-03)
 
-## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/5 
+## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/5  - allows to set paint on line chart hotspot circles
 Added the following new line chart options in `charts/line/options.dart`
 ``` dart
   ui.Paint hotspotInnerPaint = new ui.Paint()
@@ -12,12 +12,29 @@ Added the following new line chart options in `charts/line/options.dart`
   double lineStrokeWidth = 3.0;
 ```
 
-## Implemented change in 
+## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/6 - line chart allows to reverse order of data series (`dataRows`) to make the significant series line to be on top 
 Added the following new chart options in `charts/options.dart`
 
 ``` dart
   bool firstDataRowPaintedFirst = true;
 ``` 
+
+## Made several text options configurable
+
+Moved the following to options in `charts/options.dart` (from being hardcoded)
+
+``` dart
+  painting.TextStyle labelTextStyle = new painting.TextStyle(
+    color: material.Colors.grey[600],
+    fontSize: 14.0,);
+
+  ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
+  ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
+  double           labelTextScaleFactor = 1.0;
+```
+
+## Renamed option `xTopMinTicksHeight` to `xTopPaddingAboveTicksHeight`
+New name reflects the usage better.
 
 # v0.1.5 (2017-10-27)
 

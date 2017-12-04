@@ -323,7 +323,7 @@ abstract class ChartLayouter {
 
   double get xyLayoutersAbsY => math.max(
       _yLabelsMaxHeight / 2 + _legendContainerHeight,
-      options.xTopMinTicksHeight);
+      options.xTopPaddingAboveTicksHeight);
 
   double get xLayouterAbsX => _yLabelsContainerWidth;
 
@@ -644,7 +644,7 @@ class XLayouter {
       double halfLabelWidth      =  xOutput.painter.width / 2;
       double halfStepWidth       = _gridStepWidth / 2;
       double atIndexOffset       = _gridStepWidth * xIndex;
-      xOutput.tickX              =  halfStepWidth + atIndexOffset + _chartLayouter.options.yLeftMinTicksWidth; // Start stepping after painting left Y tick
+      xOutput.tickX              = halfStepWidth + atIndexOffset + _chartLayouter.options.yLeftMinTicksWidth; // Start stepping after painting left Y tick
       double columnLeftX         = xOutput.tickX - halfStepWidth;
       double columnRightX        = xOutput.tickX + halfStepWidth;
       xOutput.labelLeftX         = xOutput.tickX - halfLabelWidth; // center tickX and label on same center

@@ -5,46 +5,42 @@ import 'package:flutter/material.dart' as material show Colors;
 import 'dart:ui' as ui;
 import 'package:flutter_charts/src/chart/options.dart';
 
-
 /// Provides ability to paint individual elements
 /// of the chart: Labels, Axis, Titles.
 ///
 class LabelPainter {
-
   /// Options allow to configure certain sizes, colors, and layout.
   ChartOptions _options;
 
   LabelPainter({ChartOptions options}) {
     _options = options;
   }
-  ///  For the passed string , obtains a TextPainter that can be used
-  ///  both for measuring and drawing.
+
+  /// Paints the passed string using a [painting.TextPainter].
+  ///
+  /// For the passed string , obtains a new TextPainter that can be used
+  /// both for measuring and drawing.
   ///
   /// For the measured values to correspond the drawn sizes,
   /// all size related styling is included.
   ///
-  /// Returns a layed-out `textPainter` instance of [TextPainter], which can
-  /// paint itself on `canvas`, with top-left position at `offset`,
+  /// Returns a layed-out `textPainter` instance of [painting.TextPainter],
+  /// which can paint itself on `canvas`, with top-left position at `offset`,
   /// using `textPainter.paint(canvas, offset)`.
   widgets.TextPainter textPainterForLabel(String string) {
     // todo -1 move hardcoded fontSize and textScaleFactor below to options.
-    var text =
-    new painting
-        .TextSpan(
-        text: string,
-        style:
-        new painting.TextStyle(
-            color: material.Colors.grey[600], // todo -1
-            fontSize: 14.0));
-    var textPainter =
-    new painting.TextPainter(
-        text: text,
-        textDirection: ui.TextDirection.ltr,
-        textAlign: ui.TextAlign.center, // center text in available space
-        textScaleFactor: 1.0);          //  textScaleFactor does nothing ??
+    var text = new painting.TextSpan(
+      text: string,
+      style: _options.labelTextStyle, // All labels share one style object
+    );
+    var textPainter = new painting.TextPainter(
+      text: text,
+      textDirection: _options.labelTextDirection,
+      textAlign: _options.labelTextAlign, // center text in available space
+      textScaleFactor: _options.labelTextScaleFactor,
+    ); //  textScaleFactor does nothing ??
 
-    textPainter
-        .layout(); // (minWidth:0.0, maxWidth:double.INFINITY) or  minWidth:100.0, maxWidth: 300.0
+    textPainter.layout(); // minWidth:100.0, maxWidth: 300.0
 
     return textPainter;
   }

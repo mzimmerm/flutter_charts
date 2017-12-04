@@ -422,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child:  verticalBarChart,
+                    child:  lineChart,
                   ),
                   new Text('<<<'),
                 ],

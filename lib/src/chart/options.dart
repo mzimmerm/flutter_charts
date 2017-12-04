@@ -1,5 +1,6 @@
-import 'dart:ui' as ui show Color, Paint;
+import 'dart:ui' as ui show Color, Paint, TextDirection, TextAlign;
 import 'package:flutter/material.dart' as material show Colors;
+import 'package:flutter/painting.dart' as painting show TextStyle;
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
@@ -31,12 +32,14 @@ class ChartOptions {
 
   /// Color defaults
   ui.Color gridLinesColor = material.Colors.grey;
-  ui.Color xLabelsColor = material.Colors
-      .grey; // or const ui.Color(0xFFEEEEEE)
+  ui.Color xLabelsColor = material.Colors.grey; // const ui.Color(0xFFEEEEEE)
 
-  /// Length of ticks around the grid rectangle.
+  /// Length of the ticks around the grid rectangle.
+  ///
+  /// Each tick indicates a center of a label (X on the top and bottom,
+  /// Y on the left and righ)
   /// Autolayout can increase these lengths, to fit labels below them.
-  double xTopMinTicksHeight = 6.0; // todo -1 check if not applied?
+  double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
   double yRightMinTicksWidth = 6.0;
   double xBottomMinTicksHeight = 6.0;
   double yLeftMinTicksWidth = 6.0;
@@ -75,6 +78,17 @@ class ChartOptions {
   /// as a common option in case there is some future overlap use on other
   /// chart types.
   bool firstDataRowPaintedFirst = true;
+
+  /// Text style for both X and Y labels.
+  ///
+  /// The (future) iterative layouter can change this default for labels to fit.
+  painting.TextStyle labelTextStyle = new painting.TextStyle(
+    color: material.Colors.grey[600],
+    fontSize: 14.0,);
+
+  ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
+  ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
+  double           labelTextScaleFactor = 1.0;
 
   /// todo -1 remove, replace with formatter outright
   String yLabelUnits = "";
