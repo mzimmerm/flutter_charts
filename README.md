@@ -1,49 +1,48 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. Table of contents&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TOC">TOC</span></span></a></li>
-<li><a href="#sec-2">2. Flutter Charts - an introduction</a></li>
-<li><a href="#sec-3">3. Sample Flutter Charts application output</a></li>
-<li><a href="#sec-4">4. Known packages, libraries and apps that use this this flutter_charts package</a></li>
-<li><a href="#sec-5">5. Flutter Charts - an overview: data, options, classes</a></li>
-<li><a href="#sec-6">6. Experimenting with Flutter Charts: Using the included sample app flutter_charts_sample_app.dart</a></li>
-<li><a href="#sec-7">7. Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts</a>
-<ul>
-<li><a href="#sec-7-1">7.1. Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.</a></li>
-<li><a href="#sec-7-2">7.2. User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,</a></li>
-<li><a href="#sec-7-3">7.3. User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels</a></li>
-</ul>
-</li>
-<li><a href="#sec-8">8. VerticalBar Chart - one more example, showing positive/negative stacks:</a>
-<ul>
-<li><a href="#sec-8-1">8.1. User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels</a></li>
-</ul>
-</li>
-<li><a href="#sec-9">9. Bugs status</a></li>
-<li><a href="#sec-10">10. Future enhancements and work</a></li>
-<li><a href="#sec-11">11. <span class="todo TODO">TODO</span> Terminology and Selected Classes</a></li>
-<li><a href="#sec-12">12. Internal notes</a>
-<ul>
-<li><a href="#sec-12-1">12.1. <span class="done DONE">DONE</span> Add ability to create a Table of Contents to README.org</a></li>
-<li><a href="#sec-12-2">12.2. <span class="todo TODO">TODO</span> Conversion of README.org to README.md - steps</a></li>
-<li><a href="#sec-12-3">12.3. <span class="todo TODO">TODO</span> Add link to known client packages</a></li>
-<li><a href="#sec-12-4">12.4. <span class="todo TODO">TODO</span> <b>Flutter_charts publish workflow</b>  - Publish flutter_charts on pub</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
+- [Table of contents     :TOC:<a id="sec-1" name="sec-1"></a>](#table-of-contents-----toca-idsec-1-namesec-1a)
+- [Flutter Charts - How to include the flutter\_charts library in your application<a id="sec-2" name="sec-2"></a>](#flutter-charts---how-to-include-the-fluttercharts-library-in-your-applicationa-idsec-2-namesec-2a)
+- [An example of Flutter Chart output<a id="sec-3" name="sec-3"></a>](#an-example-of-flutter-chart-outputa-idsec-3-namesec-3a)
+- [Known packages, libraries and apps that use this this flutter\_charts package<a id="sec-4" name="sec-4"></a>](#known-packages-libraries-and-apps-that-use-this-this-fluttercharts-packagea-idsec-4-namesec-4a)
+- [Flutter Charts - an overview: data, options, classes<a id="sec-5" name="sec-5"></a>](#flutter-charts---an-overview-data-options-classesa-idsec-5-namesec-5a)
+- [Experimenting with Flutter Charts: Using the included example app `file:example/lib/main.dart`<a id="sec-6" name="sec-6"></a>](#experimenting-with-flutter-charts-using-the-included-example-app-fileexamplelibmaindarta-idsec-6-namesec-6a)
+- [Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts<a id="sec-7" name="sec-7"></a>](#flutter-charts---examples-linechart-and-verticalbarchart-code-and-resulting-chartsa-idsec-7-namesec-7a)
+    - [Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.<a id="sec-7-1" name="sec-7-1"></a>](#random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labelsa-idsec-7-1-namesec-7-1a)
+    - [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,<a id="sec-7-2" name="sec-7-2"></a>](#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labelsa-idsec-7-2-namesec-7-2a)
+    - [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels<a id="sec-7-3" name="sec-7-3"></a>](#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labelsa-idsec-7-3-namesec-7-3a)
+- [VerticalBar Chart - one more example, showing positive/negative stacks:<a id="sec-8" name="sec-8"></a>](#verticalbar-chart---one-more-example-showing-positivenegative-stacksa-idsec-8-namesec-8a)
+    - [User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels<a id="sec-8-1" name="sec-8-1"></a>](#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labelsa-idsec-8-1-namesec-8-1a)
+- [Bugs status<a id="sec-9" name="sec-9"></a>](#bugs-statusa-idsec-9-namesec-9a)
+- [Future enhancements and work<a id="sec-10" name="sec-10"></a>](#future-enhancements-and-worka-idsec-10-namesec-10a)
+- [TODO Terminology and Selected Classes<a id="sec-11" name="sec-11"></a>](#todo-terminology-and-selected-classesa-idsec-11-namesec-11a)
+- [Internal notes<a id="sec-12" name="sec-12"></a>](#internal-notesa-idsec-12-namesec-12a)
+    - [DONE Add ability to create a Table of Contents to README.org<a id="sec-12-1" name="sec-12-1"></a>](#done-add-ability-to-create-a-table-of-contents-to-readmeorga-idsec-12-1-namesec-12-1a)
+    - [Adding images to README.org<a id="sec-12-2" name="sec-12-2"></a>](#adding-images-to-readmeorga-idsec-12-2-namesec-12-2a)
+    - [Pub - Publishing workflow on <https://pub.dartlang.org><a id="sec-12-3" name="sec-12-3"></a>](#pub---publishing-workflow-on-httpspubdartlangorga-idsec-12-3-namesec-12-3a)
+        - [Notes:<a id="sec-12-3-1" name="sec-12-3-1"></a>](#notesa-idsec-12-3-1-namesec-12-3-1a)
+        - [IF **README.md** needs change<a id="sec-12-3-2" name="sec-12-3-2"></a>](#if-readmemd-needs-changea-idsec-12-3-2-namesec-12-3-2a)
+        - [**pubspec.yaml** - Increase version number<a id="sec-12-3-3" name="sec-12-3-3"></a>](#pubspecyaml---increase-version-numbera-idsec-12-3-3-namesec-12-3-3a)
+        - [`cd flutter_charts; flutter packages pub upgrade`<a id="sec-12-3-4" name="sec-12-3-4"></a>](#cd-fluttercharts-flutter-packages-pub-upgradea-idsec-12-3-4-namesec-12-3-4a)
+        - [`cd flutter_charts; flutter packages pub get`<a id="sec-12-3-5" name="sec-12-3-5"></a>](#cd-fluttercharts-flutter-packages-pub-geta-idsec-12-3-5-namesec-12-3-5a)
+        - [Test included app from IntelliJ<a id="sec-12-3-6" name="sec-12-3-6"></a>](#test-included-app-from-intellija-idsec-12-3-6-namesec-12-3-6a)
+        - [`git push`<a id="sec-12-3-7" name="sec-12-3-7"></a>](#git-pusha-idsec-12-3-7-namesec-12-3-7a)
+        - [**README.md** on <https://github.com/mzimmerm/flutter_charts> - check if looks ok<a id="sec-12-3-8" name="sec-12-3-8"></a>](#readmemd-on-httpsgithubcommzimmermfluttercharts---check-if-looks-oka-idsec-12-3-8-namesec-12-3-8a)
+        - [`flutter packages pub publish --dry-run`<a id="sec-12-3-9" name="sec-12-3-9"></a>](#flutter-packages-pub-publish---dry-runa-idsec-12-3-9-namesec-12-3-9a)
+        - [`flutter packages pub publish`<a id="sec-12-3-10" name="sec-12-3-10"></a>](#flutter-packages-pub-publisha-idsec-12-3-10-namesec-12-3-10a)
+        - [Check <https://pub.dartlang.org/packages/flutter_charts><a id="sec-12-3-11" name="sec-12-3-11"></a>](#check-httpspubdartlangorgpackagesflutterchartsa-idsec-12-3-11-namesec-12-3-11a)
+        - [Test the package that was just published<a id="sec-12-3-12" name="sec-12-3-12"></a>](#test-the-package-that-was-just-publisheda-idsec-12-3-12-namesec-12-3-12a)
+
+<!-- markdown-toc end -->
 
 # Table of contents     :TOC:<a id="sec-1" name="sec-1"></a>
 
--   Flutter Charts - an introduction (See section )
--   Sample Flutter Charts application output (See section )
+-   Flutter Charts - How to include the flutter\_charts library in your application (See section )
+-   An example of Flutter Chart output (See section )
 -   Known packages, libraries and apps that use this this flutter\_charts package (See section )
 -   Flutter Charts - an overview: data, options, classes (See section )
--   Experimenting with Flutter Charts: Using the included sample app flutter\_charts\_sample\_app.dart (See section )
--   Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts (See section )
+-   Experimenting with Flutter Charts: Using the included example app `file:example/lib/main.dart` (See section )
+-   Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts (See section )
     -   Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels. (See section )
     -   User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels, (See section )
     -   User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels (See section )
@@ -54,31 +53,30 @@
 -   Terminology and Selected Classes (See section )
 -   Internal notes (See section )
     -   Add ability to create a Table of Contents to README.org (See section )
-    -   Conversion of README.org to README.md - steps (See section )
-    -   Add link to known client packages (See section )
-    -   **Flutter\_charts publish workflow**  - Publish flutter\_charts on pub (See section )
+    -   Adding images to README.org (See section )
+    -   Pub - Publishing workflow on <https://pub.dartlang.org> (See section )
 
-# Flutter Charts - an introduction<a id="sec-2" name="sec-2"></a>
+# Flutter Charts - How to include the flutter\_charts library in your application<a id="sec-2" name="sec-2"></a>
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
 
-It is published on pub in 
+The package is published on pub for inclusion in your application's `pubspec.yaml`: The *Installing* tab on <https://pub.dartlang.org/packages/flutter_charts> contains instructions on how to include the *flutter\_charts* package in your application.
 
-You may want to study the included sample app `flutter_charts_sample_app.dart` to build your application using Flutter Charts. The sample app shows how a Flutter Chart can be included in a Flutter application.
+# An example of Flutter Chart output<a id="sec-3" name="sec-3"></a>
 
-# Sample Flutter Charts application output<a id="sec-3" name="sec-3"></a>
+There is one example application in flutter\_charts: `example/lib/main.dart`. It shows how a Flutter Chart can be included in a Flutter application.
 
-There is one sample application in flutter\_charts: example/chart/chart\_usage\_example.dart. You can run the application using one of the methods (6, 7) in the paragraph below.
+You can run the example application using one of the methods (6, 7) in the paragraph below.
 
-This application is also used as a base to show several possible sample charts in the paragraphs below. Two samples:
+This application is also used as a base to show several sample charts in the paragraphs below.
 
 Vertical Bar Chart (Column Chart)
 
-![img](doc/readme_images/README.org_20171102_154245_27063qmN.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_154245_27063qmN.png)
 
 Point and Line Chart (Line Chart)
 
-![img](doc/readme_images/README.org_20171102_154329_270633wT.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_154329_270633wT.png)
 
 Output uses semi-random data. You can click the blue + button to rerun chart with a different dataset.
 
@@ -104,7 +102,7 @@ Before we show several examples of charts, a few notes.
     -   Series legends
 -   Currently the only purpose of `RandomChartData` is for use in the examples below. To be clear, `RandomChartData` Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
-# Experimenting with Flutter Charts: Using the included sample app flutter\_charts\_sample\_app.dart<a id="sec-6" name="sec-6"></a>
+# Experimenting with Flutter Charts: Using the included example app `file:example/lib/main.dart`<a id="sec-6" name="sec-6"></a>
 
 There are multiple ways to experiment with Flutter Charts from your computer. We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
 
@@ -130,12 +128,12 @@ There are multiple ways to experiment with Flutter Charts from your computer. We
 6.  Run Flutter Charts demo app from command line (this will work in both method 4. and method 5.)
     
         cd DIRECTORY_OF_CHOICE/flutter_charts 
-        flutter run example/chart/flutter_charts_sample_app.dart
+        flutter run example/lib/main.dart
 
 7.  (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
-    -   Start IntelliJ IDE, create a project in the `DIRECTORY_OF_CHOICE/flutter_charts` start an Android emulator, then click on the Run button in Intellij (which should see the flutter\_charts\_sample\_app)
+    -   Start IntelliJ IDE, create a project in the `DIRECTORY_OF_CHOICE/flutter_charts` start an Android emulator, then click on the Run button in Intellij (which should show the `file:example/lib/main.dart` in the run button).
 
-# Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts<a id="sec-7" name="sec-7"></a>
+# Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts<a id="sec-7" name="sec-7"></a>
 
 Flutter Charts code allow to define the following data elements:
 
@@ -179,16 +177,14 @@ Flutter Charts code allow to define the following data elements:
 </tbody>
 </table>
 
-The samples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
+The examples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
 
-The chart images were obtained by substituting the code snippet to the `example/chart/flutter_charts_sample_app.dart` code. 
+The chart images were obtained by substituting the code snippet to the `file:example/lib/main.dart` code. 
 
 ## Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.<a id="sec-7-1" name="sec-7-1"></a>
 
 This example shows that Data-Generated Y labels is the default.  
 Flutter Charts support reasonably intelligently generated Y Labels from data, including dealing with negatives.
-
-The example charts in this section are equivalent to those shown in "Sample Flutter Charts Application Output".
 
 Code in `defineOptionsAndData()`:
 
@@ -200,11 +196,11 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](doc/readme_images/README.org_20171102_172324_27063E7Z.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_172324_27063E7Z.png)
 
 Result vertical bar chart:
 
-![img](doc/readme_images/README.org_20171102_173422_27063ePm.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_173422_27063ePm.png)
 
 ## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,<a id="sec-7-2" name="sec-7-2"></a>
 
@@ -232,11 +228,11 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
 
 Result vertical bar chart:
 
-![img](doc/readme_images/README.org_20171102_180915_270634jy.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180915_270634jy.png)
 
 ## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels<a id="sec-7-3" name="sec-7-3"></a>
 
@@ -288,12 +284,12 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](doc/readme_images/README.org_20171102_191037_27063qtB.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_191037_27063qtB.png)
 (Disclaimer: Not actually measured)
 
 Result vertical bar chart: Here the Y values should be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
 
-![img](doc/readme_images/README.org_20171102_191138_2706333H.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_191138_2706333H.png)
 (Disclaimer: Not actually measured)
 
 # VerticalBar Chart - one more example, showing positive/negative stacks:<a id="sec-8" name="sec-8"></a>
@@ -340,7 +336,7 @@ Code in `defineOptionsAndData()`:
 
 Result vertical bar chart:
 
-![img](doc/readme_images/README.org_20171102_195745_27063ECO.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_195745_27063ECO.png)
 
 (there is a bug here,see Known Bugs)
 
@@ -385,31 +381,73 @@ Enhancements:
 
 ## DONE Add ability to create a Table of Contents to README.org<a id="sec-12-1" name="sec-12-1"></a>
 
--   Install toc-org package
--   Add to init.el
+-   [X] Install toc-org package
+-   [X] Add to init.el
     
         (if (require 'toc-org nil t)
           (add-hook 'org-mode-hook 'toc-org-enable)
         (warn "toc-org not found"))
--   Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
--   So nothing special need be done after the above is configured.
+-   [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
+-   [X] So nothing special need be done after the above is configured.
 
-## TODO Conversion of README.org to README.md - steps<a id="sec-12-2" name="sec-12-2"></a>
+## Adding images to README.org<a id="sec-12-2" name="sec-12-2"></a>
 
-## TODO Add link to known client packages<a id="sec-12-3" name="sec-12-3"></a>
+-   [ ] <https://pub.dartlang.org> does not allow storing images.
+-   [ ] Add / move new images to `flutter_charts/doc/readme_images`
+-   [ ] org file, change image links to look like ![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_154245_27063qmN.png)~
 
-## TODO **Flutter\_charts publish workflow**  - Publish flutter\_charts on pub<a id="sec-12-4" name="sec-12-4"></a>
+## Pub - Publishing workflow on <https://pub.dartlang.org><a id="sec-12-3" name="sec-12-3"></a>
 
--   [ ] **If needed**: Change and save README.org if applicable. This updates the TOC.
--   [ ] **If needed**: Convert README.org to README.md  - Just C-c C-e m m
--   [ ] increase `version:` in pubspec.yaml
--   [ ] `cd flutter_charts; flutter packages pub upgrade`
--   [ ] `cd flutter_charts; flutter packages pub get`
--   [ ] \*Test included app from Idea~
--   [ ] `git push`
--   [ ] `flutter packages pub publish --dry-run`
--   [ ] `flutter packages pub publish`
--   [ ] Check <https://pub.dartlang.org/packages/flutter_charts>
--   [ ] Optionally, **test the flutter\_charts\_sample\_app** - this tests the published package
-    -   [ ] `cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run`
--
+### Notes:<a id="sec-12-3-1" name="sec-12-3-1"></a>
+
+1.  Pub requires the following file in project to show the correct tabs on pub
+
+    1.  Tab README.md    - Needs the file
+    
+    2.  Tab CHANGELOG.md - Needs the file
+    
+    3.  Tab Example      - this tab appears if the project file `file:flutter_charts/example/lib/main.dart` exists
+    
+    4.  Tab Installing   - shows automatically
+
+### IF **README.md** needs change<a id="sec-12-3-2" name="sec-12-3-2"></a>
+
+1.  **README.org**: make sure image links point to `flutter_charts/doc/readme_images`
+
+2.  **README.org**: Conversion steps to **README.md**
+
+    To convert **README.org** to **README.md**, we need to do a few extra steps for README.md image links to be readable on <https://pub.dartlang.org>.
+    
+    1.  Note: Org file which has :TOC: in heading, generates TOC on every save.
+    2.  **README.org**: Export org to md: `C-c C-e m m` in the org file to create the generated md file
+    3.  **README.md**: Delete generated TOC
+    4.  **README.md**: Generate md-native TOC:
+        -   Cursor on top
+        -   `M-x: markdown-toc/generate-toc`
+    5.  **README.md**: Fix image links in the README.md - links must look like this:
+        
+            -![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+            +![img](https://github.com/mzimmerm/flutter_charts/raw/master/https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+    6.  **README.md**: This is achieved with: `replace-string https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ https://github.com/mzimmerm/flutter_charts/raw/master/https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/`
+
+### **pubspec.yaml** - Increase version number<a id="sec-12-3-3" name="sec-12-3-3"></a>
+
+### `cd flutter_charts; flutter packages pub upgrade`<a id="sec-12-3-4" name="sec-12-3-4"></a>
+
+### `cd flutter_charts; flutter packages pub get`<a id="sec-12-3-5" name="sec-12-3-5"></a>
+
+### Test included app from IntelliJ<a id="sec-12-3-6" name="sec-12-3-6"></a>
+
+### `git push`<a id="sec-12-3-7" name="sec-12-3-7"></a>
+
+### **README.md** on <https://github.com/mzimmerm/flutter_charts> - check if looks ok<a id="sec-12-3-8" name="sec-12-3-8"></a>
+
+### `flutter packages pub publish --dry-run`<a id="sec-12-3-9" name="sec-12-3-9"></a>
+
+### `flutter packages pub publish`<a id="sec-12-3-10" name="sec-12-3-10"></a>
+
+### Check <https://pub.dartlang.org/packages/flutter_charts><a id="sec-12-3-11" name="sec-12-3-11"></a>
+
+### Test the package that was just published<a id="sec-12-3-12" name="sec-12-3-12"></a>
+
+1.  `cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run`

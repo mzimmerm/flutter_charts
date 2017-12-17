@@ -45,7 +45,7 @@ void main() {
   //
   //  So, eventually, the loading of binding.dart, and it's runApp() function
   //  in MyApp is achieved this way:
-  //    1) flutter_charts_sample_app.dart of MyApp has
+  //    1) This file (example/lib/main.dart) has
   //        - import 'package:flutter/material.dart' (references PROJ/packages/flutter/lib/material.dart)
   //    2) material.dart has
   //        - export 'widgets.dart'; (references same dir        PROJ/packages/flutter/lib/widgets.dart)
@@ -115,24 +115,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-      "Fall",
-      "Winter"];
-    _chartData.dataRows = [
-      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
-      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0, ],
-      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
-      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0, ],
-    ];
-    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
 
-  /* 5 Demonstrate order of painting when dataRows lines are on top of each othr
+  /* 5 Demonstrate order of painting lines on the line chart,
+       when dataRows lines are on top of each other
+
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -154,7 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
    */
 
-   /* 4
+   /* 4 Basic simpliest demo
+
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();

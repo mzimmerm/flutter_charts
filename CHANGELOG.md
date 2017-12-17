@@ -1,4 +1,8 @@
-# v0.1.5 (2017-12-03)
+# v0.1.7 (2017-12-17)
+
+Fixed README.md error - images failing to show (https://github.com/mzimmerm/flutter_charts/issues/8)
+
+# v0.1.6 (2017-12-03)
 
 ## Implemented change in https://github.com/mzimmerm/flutter_charts/issues/5  - allows to set paint on line chart hotspot circles
 Added the following new line chart options in `charts/line/options.dart`
@@ -43,6 +47,7 @@ This version finally fixed issue https://github.com/mzimmerm/flutter_charts/issu
 
 - Only changes in documentation. Also publishing using `flutter packages pub publish` instead of previously incorrect `pub publish` which resulted in a package that reports error on clients' getting the package using `flutter pub get`. Hopefully this change will fix the issue. Below is the full error this new version is trying to fix:
 
+The following log is from a test app in https://github.com/mzimmerm/flutter_charts_sample_app. It is mostly relevant as a documentation of the issue, client apps can ignore this.
 ```
 flutter_charts_sample_app> flutter pub get      
 Running "flutter packages get" in flutter_charts_sample_app...      

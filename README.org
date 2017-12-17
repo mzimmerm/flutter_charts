@@ -1,12 +1,13 @@
- #+OPTIONS: toc:3
+#+OPTIONS: toc:3
+#+TODO: TODO IN-PROGRESS LATER DONE
 
 * Table of contents :TOC:
-- [[#flutter-charts---an-introduction][Flutter Charts - an introduction]]
-- [[#sample-flutter-charts-application-output][Sample Flutter Charts application output]]
+- [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
+- [[#an-example-of-flutter-chart-output][An example of Flutter Chart output]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
 - [[#flutter-charts---an-overview-data-options-classes][Flutter Charts - an overview: data, options, classes]]
-- [[#experimenting-with-flutter-charts-using-the-included-sample-app-flutter_charts_sample_appdart][Experimenting with Flutter Charts: Using the included sample app flutter_charts_sample_app.dart]]
-- [[#flutter-charts---samples-linechart-and-verticalbarchart-code-and-resulting-charts][Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts]]
+- [[#experimenting-with-flutter-charts-using-the-included-example-app-fileexamplelibmaindart][Experimenting with Flutter Charts: Using the included example app ~file:example/lib/main.dart~]]
+- [[#flutter-charts---examples-linechart-and-verticalbarchart-code-and-resulting-charts][Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts]]
   - [[#random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels][Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
@@ -17,23 +18,22 @@
 - [[#terminology-and-selected-classes][Terminology and Selected Classes]]
 - [[#internal-notes][Internal notes]]
   - [[#add-ability-to-create-a-table-of-contents-to-readmeorg][Add ability to create a Table of Contents to README.org]]
-  - [[#conversion-of-readmeorg-to-readmemd---steps][Conversion of README.org to README.md - steps]]
-  - [[#add-link-to-known-client-packages][Add link to known client packages]]
-  - [[#flutter_charts-publish-workflow----publish-flutter_charts-on-pub][*Flutter_charts publish workflow*  - Publish flutter_charts on pub]]
+  - [[#adding-images-to-readmeorg][Adding images to README.org]]
+  - [[#pub---publishing-workflow-on-httpspubdartlangorg][Pub - Publishing workflow on https://pub.dartlang.org]]
 
-* Flutter Charts - an introduction
+* Flutter Charts - How to include the flutter_charts library in your application
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
 
-It is published on pub in 
+The package is published on pub for inclusion in your application's ~pubspec.yaml~: The /Installing/ tab on https://pub.dartlang.org/packages/flutter_charts contains instructions on how to include the /flutter_charts/ package in your application.
 
-You may want to study the included sample app ~flutter_charts_sample_app.dart~ to build your application using Flutter Charts. The sample app shows how a Flutter Chart can be included in a Flutter application.
+* An example of Flutter Chart output
 
-* Sample Flutter Charts application output
+There is one example application in flutter_charts: ~example/lib/main.dart~. It shows how a Flutter Chart can be included in a Flutter application.
 
-There is one sample application in flutter_charts: example/chart/chart_usage_example.dart. You can run the application using one of the methods (6, 7) in the paragraph below.
+You can run the example application using one of the methods (6, 7) in the paragraph below.
 
-This application is also used as a base to show several possible sample charts in the paragraphs below. Two samples:
+This application is also used as a base to show several sample charts in the paragraphs below.
 
 
 Vertical Bar Chart (Column Chart)
@@ -68,7 +68,7 @@ Before we show several examples of charts, a few notes.
   - Series legends  
 - Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
-* Experimenting with Flutter Charts: Using the included sample app flutter_charts_sample_app.dart
+* Experimenting with Flutter Charts: Using the included example app ~file:example/lib/main.dart~
 
 There are multiple ways to experiment with Flutter Charts from your computer. We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
 
@@ -97,13 +97,13 @@ There are multiple ways to experiment with Flutter Charts from your computer. We
 
    #+BEGIN_SRC sh
    cd DIRECTORY_OF_CHOICE/flutter_charts 
-   flutter run example/chart/flutter_charts_sample_app.dart 
+   flutter run example/lib/main.dart 
    #+END_SRC
 
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
-  - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should see the flutter_charts_sample_app)
+  - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:example/lib/main.dart~ in the run button).
 
-* Flutter Charts - samples: LineChart and VerticalBarChart. Code and resulting charts
+* Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts
 
 Flutter Charts code allow to define the following data elements:
 
@@ -113,17 +113,15 @@ Flutter Charts code allow to define the following data elements:
 | /Data Rows Legends/        | User-Provided or Random         |
 | /Y Labels/                 | User-Provided or Data-Generated |
 
-The samples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
+The examples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
 
-The chart images were obtained by substituting the code snippet to the ~example/chart/flutter_charts_sample_app.dart~ code. 
+The chart images were obtained by substituting the code snippet to the ~file:example/lib/main.dart~ code. 
 
 
 ** Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 
 This example shows that Data-Generated Y labels is the default.  
 Flutter Charts support reasonably intelligently generated Y Labels from data, including dealing with negatives.
-
-The example charts in this section are equivalent to those shown in "Sample Flutter Charts Application Output".
 
 Code in ~defineOptionsAndData()~:
 
@@ -326,30 +324,58 @@ Enhancements:
 * Internal notes
 
 ** DONE Add ability to create a Table of Contents to README.org
-- Install toc-org package
-- Add to init.el
+- [X] Install toc-org package
+- [X] Add to init.el
   #+BEGIN_SRC elisp
   (if (require 'toc-org nil t)
     (add-hook 'org-mode-hook 'toc-org-enable)
   (warn "toc-org not found"))
   #+END_SRC
-- Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
-- So nothing special need be done after the above is configured.
-** TODO Conversion of README.org to README.md - steps
-** TODO Add link to known client packages
+- [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
+- [X] So nothing special need be done after the above is configured.
 
-** TODO *Flutter_charts publish workflow*  - Publish flutter_charts on pub
-- [ ] *If needed*: Change and save README.org if applicable. This updates the TOC.
-- [ ] *If needed*: Convert README.org to README.md  - Just C-c C-e m m
-- [ ] increase ~version:~ in pubspec.yaml 
-- [ ] ~cd flutter_charts; flutter packages pub upgrade~ 
-- [ ] ~cd flutter_charts; flutter packages pub get~ 
-- [ ] *Test included app from Idea~ 
-- [ ] ~git push~
-- [ ] ~flutter packages pub publish --dry-run~
-- [ ] ~flutter packages pub publish~
-- [ ] Check https://pub.dartlang.org/packages/flutter_charts
-- [ ] Optionally, *test the flutter_charts_sample_app* - this tests the published package
-  - [ ] ~cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run~
-- 
+** Adding images to README.org
+- [ ] https://pub.dartlang.org does not allow storing images.
+- [ ] Add / move new images to ~flutter_charts/doc/readme_images~
+- [ ] org file, change image links to look like [[~file:doc/readme_images/README.org_20171102_154245_27063qmN.png]]~
+** Pub - Publishing workflow on https://pub.dartlang.org
+*** Notes:
+**** Pub requires the following file in project to show the correct tabs on pub
+***** Tab README.md    - Needs the file
+***** Tab CHANGELOG.md - Needs the file
+***** Tab Example      - this tab appears if the project file ~file:flutter_charts/example/lib/main.dart~ exists
+***** Tab Installing   - shows automatically
+*** IF *README.md* needs change
+**** *README.org*: make sure image links point to ~flutter_charts/doc/readme_images~
+**** *README.org*: Conversion steps to *README.md* 
+
+To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
+
+1. Note: Org file which has :TOC: in heading, generates TOC on every save.
+2. *README.org*: Export org to md: ~C-c C-e m m~ in the org file to create the generated md file
+3. *README.md*: Delete generated TOC
+4. *README.md*: Generate md-native TOC:
+   -  Cursor on top
+   -  ~M-x: markdown-toc/generate-toc~
+5. *README.md*: Fix image links in the README.md - links must look like this:
+   #+BEGIN_SRC markdown
+   -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
+   +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+   #+END_SRC
+6. *README.md*: This is achieved with: ~replace-string doc/readme_images/ https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
+*** *pubspec.yaml*: - Increase version number
+*** *CHANGELOG.md*: - Add comment section for new version
+***  ~cd flutter_charts; flutter packages pub upgrade~
+***  ~cd flutter_charts; flutter packages pub get~
+***  Test included app from IntelliJ
+***  ~git push~
+***  *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links have a full path
+***  ~flutter packages pub publish --dry-run~
+***  ~flutter packages pub publish~
+***  Check https://pub.dartlang.org/packages/flutter_charts
+***  Test the package that was just published
+****  ~cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run~
+
+
+
 
