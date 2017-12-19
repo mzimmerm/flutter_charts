@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Color, Paint, TextDirection, TextAlign;
 import 'package:flutter/material.dart' as material show Colors;
-import 'package:flutter/painting.dart' as painting show TextStyle;
+import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
@@ -82,7 +82,7 @@ class ChartOptions {
   /// Text style for both X and Y labels.
   ///
   /// The (future) iterative layouter can change this default for labels to fit.
-  painting.TextStyle labelTextStyle = new painting.TextStyle(
+  widgets.TextStyle labelTextStyle = new widgets.TextStyle(
     color: material.Colors.grey[600],
     fontSize: 14.0,);
 

@@ -1,5 +1,4 @@
-import 'package:flutter/widgets.dart' as widgets show TextPainter;
-import 'package:flutter/painting.dart' as painting
+import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
 import 'package:flutter/material.dart' as material show Colors;
 import 'dart:ui' as ui;
@@ -16,7 +15,7 @@ class LabelPainter {
     _options = options;
   }
 
-  /// Paints the passed string using a [painting.TextPainter].
+  /// Paints the passed string using a [widgets.TextPainter].
   ///
   /// For the passed string , obtains a new TextPainter that can be used
   /// both for measuring and drawing.
@@ -24,16 +23,15 @@ class LabelPainter {
   /// For the measured values to correspond the drawn sizes,
   /// all size related styling is included.
   ///
-  /// Returns a layed-out `textPainter` instance of [painting.TextPainter],
+  /// Returns a layed-out `textPainter` instance of [widgets.TextPainter],
   /// which can paint itself on `canvas`, with top-left position at `offset`,
   /// using `textPainter.paint(canvas, offset)`.
   widgets.TextPainter textPainterForLabel(String string) {
-    // todo -1 move hardcoded fontSize and textScaleFactor below to options.
-    var text = new painting.TextSpan(
+    var text = new widgets.TextSpan(
       text: string,
       style: _options.labelTextStyle, // All labels share one style object
     );
-    var textPainter = new painting.TextPainter(
+    var textPainter = new widgets.TextPainter(
       text: text,
       textDirection: _options.labelTextDirection,
       textAlign: _options.labelTextAlign, // center text in available space

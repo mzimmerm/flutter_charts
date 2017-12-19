@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint;
 import 'dart:math' as math show max, min;
 
-import 'package:flutter/painting.dart' as painting show TextPainter;
+import 'package:flutter/widgets.dart' as widgets show TextPainter;
 
 import 'package:flutter_charts/src/util/label_painter.dart';
 
@@ -438,13 +438,13 @@ class YLayouter {
     }
     _yLabelsContainerWidth = outputs
             .map((var output) => output.painter)
-            .map((painting.TextPainter painter) => painter.size.width)
+            .map((widgets.TextPainter painter) => painter.size.width)
             .reduce(math.max) +
         2 * _chartLayouter.options.yLabelsPadLR;
 
     _yLabelsMaxHeight = outputs
         .map((var output) => output.painter)
-        .map((painting.TextPainter painter) => painter.size.height)
+        .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
 
@@ -545,7 +545,7 @@ class YLayouter {
 ///     to the top of the available [chartArea].
 class YLayouterOutput {
   /// Painter configured to paint one label
-  painting.TextPainter painter;
+  widgets.TextPainter painter;
 
   ///  y offset of Y label middle point.
   ///
@@ -658,7 +658,7 @@ class XLayouter {
     // xlabels area without padding
     _xLabelsContainerHeight = outputs
         .map((var output) => output.painter)
-        .map((painting.TextPainter painter) => painter.size.height)
+        .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
 
@@ -670,7 +670,7 @@ class XLayouter {
 /// All positions are relative to the left of the container of x labels
 class XLayouterOutput {
   /// Painter configured to paint one label
-  painting.TextPainter painter;
+  widgets.TextPainter painter;
 
   /// The x offset of vertical grid line in the middle of column.
   ///
@@ -768,7 +768,7 @@ class LegendLayouter {
 
     var legendMax = ui.Size.zero;
     for (var index in legendSeqs) {
-      painting.TextPainter p = new LabelPainter(options: options)
+      widgets.TextPainter p = new LabelPainter(options: options)
           .textPainterForLabel(dataRowsLegends[index]);
       legendMax = new ui.Size(math.max(legendMax.width, p.width),
           math.max(legendMax.height, p.height));
@@ -779,7 +779,7 @@ class LegendLayouter {
         math.max(legendMax.height, indicatorHeight) + 2 * containerMarginTB);
     // Layout legend core: for each row, create and position
     //   - and indicator rectangle and it's paint
-    //   - lable painter
+    //   - label painter
     for (var index in legendSeqs) {
       var legendOutput = new LegendLayouterOutput();
 
@@ -808,16 +808,25 @@ class LegendLayouter {
   }
 }
 
-/// A Wrapper of [LegendLayouter] members that can be used by clients
-/// to layout the chart legend container.
+/// Represents one layed out item of the legend: [indicatorRect] is
+/// the rectangle for the color indicator, the [labelPainter] is a layed out
+/// [widgets.TextPainter] for the label text.
 ///
-/// All positions are relative to the left of the container.
+/// Painters can paint this object in a loop similar to
+/// ```
+/// void drawLegend(ui.Canvas canvas) {
+///    for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
+///      legend.labelPainter.paint(canvas, legend.labelOffset);
+///      canvas.drawRect(legend.indicatorRect, legend.indicatorPaint); }}
+/// ```
+///
+/// All positions are relative to the left of the [LegendLayouter]'s container.
 class LegendLayouterOutput {
   // sequence in outputs
   int sequence;
 
   /// Painter configured to paint each legend label
-  painting.TextPainter labelPainter;
+  widgets.TextPainter labelPainter;
 
   ///  rectangle of the legend color square series indicator
   ui.Rect indicatorRect;

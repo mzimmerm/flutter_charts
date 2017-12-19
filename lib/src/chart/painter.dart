@@ -14,7 +14,7 @@ import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
 /// which paints each column with the data representing elements -
 /// lines, or rectangles.
 ///
-/// Itself an extension of flutter's [CustomPainter] which provides the
+/// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class ChartPainter extends widgets.CustomPainter {
 
@@ -114,7 +114,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
   /// Optionally paint series in reverse order (first to last vs last to first)
   ///
-  /// See [ChartOptions.firstDataRowPaintedFirst]
+  /// See [ChartOptions.firstDataRowPaintedFirst].
   List<presenters.Presenter> optionalPaintOrderReverse(List<presenters.Presenter> presenters) {
     var options = this.layouter.options;
     if (options.firstDataRowPaintedFirst) {
