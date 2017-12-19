@@ -10,9 +10,24 @@ import 'package:flutter_charts/src/chart/options.dart';
 class LabelPainter {
   /// Options allow to configure certain sizes, colors, and layout.
   ChartOptions _options;
+  widgets.TextStyle _labelTextStyle;
+  ui.TextDirection _labelTextDirection;
+  ui.TextAlign _labelTextAlign;
+  double _labelTextScaleFactor;
 
-  LabelPainter({ChartOptions options}) {
+  LabelPainter({
+    ChartOptions options,
+    widgets.TextStyle labelTextStyle,
+    ui.TextDirection labelTextDirection,
+    ui.TextAlign labelTextAlign,
+    double labelTextScaleFactor,
+  }) {
     _options = options;
+
+    _labelTextStyle = labelTextStyle;
+    _labelTextDirection = labelTextDirection;
+    _labelTextAlign = labelTextAlign;
+    _labelTextScaleFactor = labelTextScaleFactor;
   }
 
   /// Paints the passed string using a [widgets.TextPainter].
@@ -29,13 +44,13 @@ class LabelPainter {
   widgets.TextPainter textPainterForLabel(String string) {
     var text = new widgets.TextSpan(
       text: string,
-      style: _options.labelTextStyle, // All labels share one style object
+      style: _labelTextStyle, // All labels share one style object
     );
     var textPainter = new widgets.TextPainter(
       text: text,
-      textDirection: _options.labelTextDirection,
-      textAlign: _options.labelTextAlign, // center text in available space
-      textScaleFactor: _options.labelTextScaleFactor,
+      textDirection: _labelTextDirection,
+      textAlign: _labelTextAlign, // center text in available space
+      textScaleFactor: _labelTextScaleFactor,
     ); //  textScaleFactor does nothing ??
 
     textPainter.layout(); // minWidth:100.0, maxWidth: 300.0

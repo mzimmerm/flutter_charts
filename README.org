@@ -347,6 +347,10 @@ Result vertical bar chart:
 - [ ] Clip chart to not paint outside area provided by Flutter app. 
 - [ ] Clip labels and legends not to run into the neighbor, if too long.
 
+ labelTextStyle: _options.labelTextStyle,
+      labelTextDirection: _options.labelTextDirection,
+      labelTextAlign: _options.labelTextAlign, // center text in available space
+      labelTextScaleFactor: _options.labelTextScaleFactor,
 
 ** Enhancements:
 

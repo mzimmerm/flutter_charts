@@ -14,7 +14,6 @@ import '../util/range.dart';
 import '../util/util.dart' as util;
 import '../util/line_presenter.dart' as line_presenter;
 
-
 /// Layouters calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
@@ -25,7 +24,6 @@ import '../util/line_presenter.dart' as line_presenter;
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
 abstract class ChartLayouter {
-
   /// ##### Abstract methods or sub-implemented getters
 
   /// Makes presenters, the visuals painted on each chart column that
@@ -168,12 +166,12 @@ abstract class ChartLayouter {
 
     xOutputs = xLayouter.outputs.map((var output) {
       var xOutput = new XLayouterOutput();
-      xOutput.painter            = output.painter;
-      xOutput.vertGridLineX      = xLayouterAbsX + output.vertGridLineX;
-      xOutput.leftVertGridLineX  = xLayouterAbsX + output.leftVertGridLineX;
+      xOutput.painter = output.painter;
+      xOutput.vertGridLineX = xLayouterAbsX + output.vertGridLineX;
+      xOutput.leftVertGridLineX = xLayouterAbsX + output.leftVertGridLineX;
       xOutput.rightVertGridLineX = xLayouterAbsX + output.rightVertGridLineX;
-      xOutput.tickX              = xLayouterAbsX + output.tickX;
-      xOutput.labelLeftX         = xLayouterAbsX + output.labelLeftX;
+      xOutput.tickX = xLayouterAbsX + output.tickX;
+      xOutput.labelLeftX = xLayouterAbsX + output.labelLeftX;
       return xOutput;
     }).toList();
 
@@ -282,8 +280,7 @@ abstract class ChartLayouter {
 
     // For stacked, we need to add last righ grid line
     if (isStacked && lastOutput != null) {
-      vertGridLines.add(
-        new line_presenter.LinePresenter(
+      vertGridLines.add(new line_presenter.LinePresenter(
           from: new ui.Offset(
             lastOutput.rightVertGridLineX,
             this.vertGridLinesFromY,
@@ -292,8 +289,7 @@ abstract class ChartLayouter {
             lastOutput.rightVertGridLineX,
             this.vertGridLinesToY,
           ),
-          paint: gridLinesPaint(options))
-      );
+          paint: gridLinesPaint(options)));
     }
 
     return vertGridLines;
@@ -318,8 +314,8 @@ abstract class ChartLayouter {
   // todo 0  some getters from here are not needed? Mostly those with "Abs"
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label)
-  List<double> get xTicksXs
-      => xOutputs.map((var output) => output.tickX).toList();
+  List<double> get xTicksXs =>
+      xOutputs.map((var output) => output.tickX).toList();
 
   double get xyLayoutersAbsY => math.max(
       _yLabelsMaxHeight / 2 + _legendContainerHeight,
@@ -473,7 +469,7 @@ class YLayouter {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
     }
 
-    List<num> yLabelsDividedInYDataRange =  new List();
+    List<num> yLabelsDividedInYDataRange = new List();
     for (var yIndex in seq) {
       yLabelsDividedInYDataRange.add(dataRange.min + dataStepHeight * yIndex);
     }
@@ -516,12 +512,19 @@ class YLayouter {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
     _chartLayouter.yScaler = yScaler;
+    ChartOptions options = _chartLayouter.options;
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       double topY = labelInfo.scaledLabelValue;
       var output = new YLayouterOutput();
       // textPainterForLabel calls [TextPainter.layout]
-      output.painter = new LabelPainter(options: _chartLayouter.options)
+      output.painter = new LabelPainter(
+        options: _chartLayouter.options,
+        labelTextStyle: options.labelTextStyle,
+        labelTextDirection: options.labelTextDirection,
+        labelTextAlign: options.labelTextAlign, // center text
+        labelTextScaleFactor: options.labelTextScaleFactor,
+      )
           .textPainterForLabel(labelInfo.formattedYLabel);
       output.horizGridLineY = topY;
       output.labelTopY = topY - output.painter.height / 2;
@@ -625,31 +628,43 @@ class XLayouter {
   ///
   /// Label width includes spacing on each side.
   layout() {
+    double yTicksWidth = _chartLayouter.options.yLeftMinTicksWidth +
+        _chartLayouter.options.yRightMinTicksWidth;
 
-    double yTicksWidth = _chartLayouter.options.yLeftMinTicksWidth + _chartLayouter.options.yRightMinTicksWidth;
-
-    double labelMaxAllowedWidth = (_availableWidth - yTicksWidth)
-        / _xLabels.length;
+    double labelMaxAllowedWidth =
+        (_availableWidth - yTicksWidth) / _xLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
 
     var seq = new Iterable.generate(_xLabels.length, (i) => i); // 0 .. length-1
 
+    ChartOptions options = _chartLayouter.options;
+
     for (var xIndex in seq) {
       // double leftX = _gridStepWidth * xIndex;
       var xOutput = new XLayouterOutput();
-      xOutput.painter = new LabelPainter(options: _chartLayouter.options)
+      xOutput.painter = new LabelPainter(
+        options: _chartLayouter.options,
+        labelTextStyle: options.labelTextStyle,
+        labelTextDirection: options.labelTextDirection,
+        labelTextAlign: options.labelTextAlign, // center text
+        labelTextScaleFactor: options.labelTextScaleFactor,
+      )
           .textPainterForLabel(_xLabels[xIndex]);
 
-      double halfLabelWidth      =  xOutput.painter.width / 2;
-      double halfStepWidth       = _gridStepWidth / 2;
-      double atIndexOffset       = _gridStepWidth * xIndex;
-      xOutput.tickX              = halfStepWidth + atIndexOffset + _chartLayouter.options.yLeftMinTicksWidth; // Start stepping after painting left Y tick
-      double columnLeftX         = xOutput.tickX - halfStepWidth;
-      double columnRightX        = xOutput.tickX + halfStepWidth;
-      xOutput.labelLeftX         = xOutput.tickX - halfLabelWidth; // center tickX and label on same center
-      xOutput.vertGridLineX      = xOutput.tickX;
-      xOutput.leftVertGridLineX  = columnLeftX;
+      double halfLabelWidth = xOutput.painter.width / 2;
+      double halfStepWidth = _gridStepWidth / 2;
+      double atIndexOffset = _gridStepWidth * xIndex;
+      xOutput.tickX = halfStepWidth +
+          atIndexOffset +
+          _chartLayouter.options
+              .yLeftMinTicksWidth; // Start stepping after painting left Y tick
+      double columnLeftX = xOutput.tickX - halfStepWidth;
+      double columnRightX = xOutput.tickX + halfStepWidth;
+      xOutput.labelLeftX = xOutput.tickX -
+          halfLabelWidth; // center tickX and label on same center
+      xOutput.vertGridLineX = xOutput.tickX;
+      xOutput.leftVertGridLineX = columnLeftX;
       xOutput.rightVertGridLineX = columnRightX;
 
       outputs.add(xOutput);
@@ -661,7 +676,6 @@ class XLayouter {
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
-
 }
 
 /// A Wrapper of [XLayouter] members that can be used by clients
@@ -759,8 +773,8 @@ class LegendLayouter {
     double legendItemWidth =
         (_availableWidth - 2 * containerMarginLR) / dataRowsLegends.length;
 
-    var legendSeqs =
-        new Iterable.generate(dataRowsLegends.length, (i) => i); // 0 .. length-1
+    var legendSeqs = new Iterable.generate(
+        dataRowsLegends.length, (i) => i); // 0 .. length-1
 
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
@@ -768,7 +782,13 @@ class LegendLayouter {
 
     var legendMax = ui.Size.zero;
     for (var index in legendSeqs) {
-      widgets.TextPainter p = new LabelPainter(options: options)
+      widgets.TextPainter p = new LabelPainter(
+        options: options,
+        labelTextStyle: options.labelTextStyle,
+        labelTextDirection: options.labelTextDirection,
+        labelTextAlign: options.labelTextAlign, // center text
+        labelTextScaleFactor: options.labelTextScaleFactor,
+      )
           .textPainterForLabel(dataRowsLegends[index]);
       legendMax = new ui.Size(math.max(legendMax.width, p.width),
           math.max(legendMax.height, p.height));
@@ -777,13 +797,20 @@ class LegendLayouter {
     // Now we know legend container -size.height (width is unused)
     _size = new ui.Size(legendMax.width,
         math.max(legendMax.height, indicatorHeight) + 2 * containerMarginTB);
+
     // Layout legend core: for each row, create and position
     //   - and indicator rectangle and it's paint
     //   - label painter
     for (var index in legendSeqs) {
       var legendOutput = new LegendLayouterOutput();
 
-      legendOutput.labelPainter = new LabelPainter(options: options)
+      legendOutput.labelPainter = new LabelPainter(
+        options: options,
+        labelTextStyle: options.labelTextStyle,
+        labelTextDirection: options.labelTextDirection,
+        labelTextAlign: options.labelTextAlign, // center text
+        labelTextScaleFactor: options.labelTextScaleFactor,
+      )
           .textPainterForLabel(dataRowsLegends[index]);
 
       double indicatorX = legendItemWidth * index + containerMarginLR;
@@ -800,8 +827,8 @@ class LegendLayouter {
       legendOutput.labelOffset = new ui.Offset(labelLeftX, labelTopY);
 
       legendOutput.indicatorPaint = new ui.Paint();
-      legendOutput.indicatorPaint.color =
-          _chartLayouter.data.dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
+      legendOutput.indicatorPaint.color = _chartLayouter.data
+          .dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
 
       outputs.add(legendOutput);
     }
@@ -1081,7 +1108,10 @@ class PointsColumn {
 
   /// Column Utility for iterating over all points in order
   Iterable allPoints() {
-    return []..addAll(points)..addAll(stackedNegativePoints)..addAll(stackedPositivePoints);
+    return []
+      ..addAll(points)
+      ..addAll(stackedNegativePoints)
+      ..addAll(stackedPositivePoints);
   }
 }
 
@@ -1220,8 +1250,7 @@ class PointsColumns {
     return flat;
   }
 
-  PointsColumn pointsColumnAt({int columnIndex}) =>
-      pointsColumns[columnIndex];
+  PointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
 
   StackableValuePoint pointAt({int columnIndex, int rowIndex}) =>
       pointsColumns[columnIndex].points[rowIndex];
