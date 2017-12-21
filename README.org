@@ -15,7 +15,6 @@
   - [[#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
 - [[#bugs-status][Bugs status]]
 - [[#enhancements-in-progress-or-planned][Enhancements in progress or planned]]
-  - [[#bug-fixes][Bug fixes:]]
   - [[#enhancements][Enhancements:]]
 - [[#terminology-and-selected-classes][Terminology and Selected Classes]]
 - [[#internal-notes][Internal notes]]
@@ -295,8 +294,12 @@ Result vertical bar chart:
 - [ ] 
 * Enhancements in progress or planned
 
-** Bug fixes:
+** Enhancements:
 
+*** IN-PROGRESS Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+
+
+- [ ] layouters: Replace all places using Iterabel.generate with a simple loop.
 - [X] Note only: Labels printed and layed out using *LabelPainter* in label_painter. this is used in
   - [X] LegendLayouter
   - [X] XLayouter
@@ -314,20 +317,25 @@ Result vertical bar chart:
   - [-] Legend
     - [ ] Next clip text (left justify and clip)
     - [X] LegendLayouter, LegendLayouterOutput
-    - [ ] LegendLayouter layout - extract inside to layoutCore (code start with "var legendMax = ui.Size.zero;" - so layout calls layoutCore()
+    - [X] LegendLayouter layout - extract inside to layoutCore (code start with "var legendMax = ui.Size.zero;" - so layout calls layoutCore()
     - [ ] test
+  - [ ] *LegendLayouter, remove iterables and replace with fixed lists*
+  - [ ] test
   - [ ] LegendLayouter, new methods
-    - [ ] List<LegendLayouterOutput> overflownLayouterOutputs
+    - [ ] evalLabelPaintersForTooBig
+      - [ ] Look for textPainterForLabel in LegendLayouter
+
+      - [ ] just create new LabelPainter for each series
     - [ ] void layoutUntilFitsParent() - 
       - [ ] Decrease text size to min scale 0.5 original: 1, 0.75, 0.5
       - [ ] size = 1
       - [ ] call layoutCore
-      - [ ] call overflownLayouterOutputs
-      - [ ] if overflownLayouterOutputs.isNotEmpty()
+      - [ ] call evalLabelPaintersForTooBig
+      - [ ] if evalLabelPaintersForTooBig.isNotEmpty()
         - [ ] size = 0.75
         - [ ] call layoutCore
-        - [ ] call overflownLayouterOutputs
-        - [ ] if overflownLayouterOutputs.isNotEmpty()
+        - [ ] callevalLabelPaintersForTooBig
+        - [ ] if evalLabelPaintersForTooBig.isNotEmpty()
           - [ ] trimLayouterOutputLabels = on all outputs, go to each, and if the output.labelPainter overflows, left justify it and trim , collect and return the trimmed outputs
     - [ ] Now, from layout, call layoutUntilFitsParent instead of layoutCore
   
@@ -351,20 +359,16 @@ Result vertical bar chart:
       labelTextDirection: _options.labelTextDirection,
       labelTextAlign: _options.labelTextAlign, // center text in available space
       labelTextScaleFactor: _options.labelTextScaleFactor,
-
-** Enhancements:
-
-
-- [ ] For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max. 
-- [ ] Create a document / image showing layout and spacing - show option variables on image
-- [ ] Simple:
-  - [ ] Add options to hide the grid (keep axes) 
-  - [ ] Add options to hide  axes (if axes not shown, labels should not show?)
-  - [ ] Decrease option for default spacing around the Y axis.
-- [ ] First, probably need to provide tooltips
-- [ ] Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
-- [ ] Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
-- [ ] Next, add ability to invert X and Y axis (values on horizontal axis)
+*** TODO For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+*** TODO Create a document / image showing layout and spacing - show option variables on image
+*** TODO Simple:
+**** TODO Add options to hide the grid (keep axes)
+**** TODO Add options to hide  axes (if axes not shown, labels should not show?)
+**** TODO Decrease option for default spacing around the Y axis.
+*** TODO First, probably need to provide tooltips
+*** TODO Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
+*** TODO Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
+*** TODO Next, add ability to invert X and Y axis (values on horizontal axis)
 
 * TODO Terminology and Selected Classes
 
