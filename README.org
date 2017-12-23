@@ -299,11 +299,12 @@ Result vertical bar chart:
 *** IN-PROGRESS Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
 
 
-- [ ] layouters: Replace all places using Iterabel.generate with a simple loop.
 - [X] Note only: Labels printed and layed out using *LabelPainter* in label_painter. this is used in
   - [X] LegendLayouter
   - [X] XLayouter
   - [X] YLayouter
+- [ ] *layouters: Replace all places using Iterable.generate with a simple loop*.
+- [ ] Test everything works
 - [ ] Changes refactoring needed ahead
 
   - [ ] LabelPainter must accept AND HAVE MEMBERS all sizing outside options: textDirection, textAlign, textScaleFactor, labelTextStyle (KEEP THIS ONE ON OPTIONS DEFAULT)

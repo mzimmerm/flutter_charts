@@ -1,5 +1,4 @@
-import 'dart:ui' as ui
-    show Size, Offset, Rect, Paint, TextAlign, TextDirection;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint, TextAlign, TextDirection;
 
 import 'dart:math' as math show max, min;
 
@@ -517,6 +516,14 @@ class YLayouter {
     _chartLayouter.yScaler = yScaler;
     ChartOptions options = _chartLayouter.options;
 
+    // Initially all LabelPainters share same text style object from options.
+    LabelTextModifier textModifier = new LabelTextModifier(
+      labelTextStyle: options.labelTextStyle,
+      labelTextDirection: options.labelTextDirection,
+      labelTextAlign: options.labelTextAlign, // center text
+      labelTextScaleFactor: options.labelTextScaleFactor,
+    );
+
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       double topY = labelInfo.scaledLabelValue;
       var output = new YLayouterOutput();
@@ -524,13 +531,17 @@ class YLayouter {
       output.painter = new LabelPainter(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
-        options: _chartLayouter.options,
+        labelTextModifier: textModifier,
+        /* todo -3 remove
+        new LabelTextModifier(
         labelTextStyle: options.labelTextStyle,
         labelTextDirection: options.labelTextDirection,
         labelTextAlign: options.labelTextAlign, // center text
         labelTextScaleFactor: options.labelTextScaleFactor,
+        )
+        */
       )
-          .textPainterForLabel();
+          .layoutTextPainter();
       output.horizGridLineY = topY;
       output.labelTopY = topY - output.painter.height / 2;
       outputs.add(output);
@@ -645,19 +656,23 @@ class XLayouter {
 
     ChartOptions options = _chartLayouter.options;
 
+    // Initially all LabelPainters share same text style object from options.
+    LabelTextModifier textModifier = new LabelTextModifier(
+      labelTextStyle: options.labelTextStyle,
+      labelTextDirection: options.labelTextDirection,
+      labelTextAlign: options.labelTextAlign, // center text
+      labelTextScaleFactor: options.labelTextScaleFactor,
+    );
+
     for (var xIndex in seq) {
       // double leftX = _gridStepWidth * xIndex;
       var xOutput = new XLayouterOutput();
       xOutput.painter = new LabelPainter(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        options: _chartLayouter.options,
-        labelTextStyle: options.labelTextStyle,
-        labelTextDirection: options.labelTextDirection,
-        labelTextAlign: options.labelTextAlign, // center text
-        labelTextScaleFactor: options.labelTextScaleFactor,
+        labelTextModifier: textModifier,
       )
-          .textPainterForLabel();
+          .layoutTextPainter();
 
       double halfLabelWidth = xOutput.painter.width / 2;
       double halfStepWidth = _gridStepWidth / 2;
@@ -781,6 +796,13 @@ class LegendLayouter {
     );
 
     // todo -3 Call the layoutUntilFitsParent here
+    // Initially all LabelPainters share same text style object from options.
+    LabelTextModifier textModifier = new LabelTextModifier(
+      labelTextStyle: options.labelTextStyle,
+      labelTextDirection: options.labelTextDirection,
+      labelTextAlign: options.labelTextAlign, // center text
+      labelTextScaleFactor: options.labelTextScaleFactor,
+    );
 
     var legendSeqs = new Iterable.generate(
         dataRowsLegends.length, (i) => i); // 0 .. length-1
@@ -794,13 +816,9 @@ class LegendLayouter {
       widgets.TextPainter p = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
-        options: options,
-        labelTextStyle: options.labelTextStyle,
-        labelTextDirection: options.labelTextDirection,
-        labelTextAlign: options.labelTextAlign, // center text
-        labelTextScaleFactor: options.labelTextScaleFactor,
+        labelTextModifier: textModifier,
       )
-          .textPainterForLabel();
+          .layoutTextPainter();
       maxItemSize = new ui.Size(math.max(maxItemSize.width, p.width),
           math.max(maxItemSize.height, p.height));
     }
@@ -812,8 +830,18 @@ class LegendLayouter {
         math.max(maxItemSize.height, itemSizing.indicatorHeight) +
             2 * itemSizing.containerMarginTB);
 
+/* todo -3 this is not needed to repeat
+    // Initially all LabelPainters share same text style object from options.
+    textModifier = new LabelTextModifier(
+      labelTextStyle: options.labelTextStyle,
+      labelTextDirection: options.labelTextDirection,
+      labelTextAlign: options.labelTextAlign, // center text
+      labelTextScaleFactor: options.labelTextScaleFactor,
+    );
+*/
+
     // Layout legend core: for each row, create and position
-    //   - and indicator rectangle and it's paint
+    //   - an indicator rectangle and it's paint
     //   - label painter
     for (var index in legendSeqs) {
       var legendOutput = new LegendLayouterOutput();
@@ -821,13 +849,9 @@ class LegendLayouter {
       legendOutput.labelPainter = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
-        options: options,
-        labelTextStyle: options.labelTextStyle,
-        labelTextDirection: options.labelTextDirection,
-        labelTextAlign: options.labelTextAlign, // center text
-        labelTextScaleFactor: options.labelTextScaleFactor,
+        labelTextModifier: textModifier,
       )
-          .textPainterForLabel();
+          .layoutTextPainter();
 
       double indicatorX =
           itemSizing.legendItemWidth * index + itemSizing.containerMarginLR;
@@ -838,8 +862,9 @@ class LegendLayouter {
       legendOutput.indicatorRect = new ui.Offset(indicatorX, indicatorTop) &
           new ui.Size(itemSizing.indicatorWidth, itemSizing.indicatorHeight);
 
-      double labelLeftX =
-          indicatorX + itemSizing.indicatorWidth + itemSizing.indicatorToLegendPad;
+      double labelLeftX = indicatorX +
+          itemSizing.indicatorWidth +
+          itemSizing.indicatorToLegendPad;
 
       double labelTopY = (_size.height - legendOutput.labelPainter.height) / 2;
       legendOutput.labelOffset = new ui.Offset(labelLeftX, labelTopY);
@@ -925,10 +950,14 @@ class LegendLayouterOutput {
 /// Lays out a list of labels horizontally, evenly sized, and evenly spaced.
 ///
 /// The motivation for this class is to layout labels when
-/// the horizontal (X) space is restricted. Layout is done by ensuring a
-/// labels fit within the space by
-/// by decreasing font size, tilting the labels, or skipping some labels,
+/// the horizontal (X) space is restricted. Layout is forced to fit
+/// by ensuring labels fit within the X direction space
+/// by decreasing the font size, tilting the labels, or skipping some labels,
 /// or (last resource??) trimming the labels.
+///
+/// todo -1: No attempt is made to decrease Y direction size (height), but if
+/// the passed [_maxHeight] is finite, a validity check is made
+/// if the actual layed out height is within the passed height.
 ///
 /// Instances are created from a label list; each label is
 /// wrapped as a [LabelPainter] instance. All member [LabelPainter] instances
@@ -940,59 +969,99 @@ class LegendLayouterOutput {
 /// style to fit a defined width.
 ///
 /// Provides methods to
-///   - Layout individual [labelPainters], for the purpose of
+///   - Layout member labelPainters, for the purpose of
 ///   finding if they overflow their even size width.
 ///   - Change text style for all labels (by setting members and applying
 ///   them on the member [labelPainters].
 ///   - Layout the container by laying out the contained [labelPainters]
 ///   - Query size needed to paint each [labelPainters] and the whole container.
-class HorizontalLabelsContainer {
-
+class FixedWidthHorizontalLabelsContainer {
   List<String> _labels;
+
   /// Wrappers for label strings
   List<LabelPainter> _labelPainters;
+
   /// Width of container. This is the fixed width this container
   /// must fill
-  double _containerWidth;
+  double _width;
+
+  double _maxHeight = double.INFINITY;
+
+  double _calculatedHeight;
+
   ChartOptions _options;
+
   /// Padding left of the leftmost label
   double _leftPad;
+
   /// Padding between each label
   double _betweenPad;
+
   /// Padding right of the rightmost label
   double _rightPad;
-  /// Calculated allocated label width
-  double get perLabelWidth {
-    double perLabelWidth =
-    (_containerWidth -
-        (
-        _leftPad
-        + (_labels.length - 1) * _betweenPad
-        + _rightPad
-        )
-    )
-        / _labels.length;
-    if (perLabelWidth <= 0.0) { throw new StateError("Container does not leave space for labels."); }
-    return perLabelWidth;
-  }
+
+  bool _layoutClean = false;
+
 
   widgets.TextStyle labelTextStyle;
   ui.TextDirection labelTextDirection;
   ui.TextAlign labelTextAlign;
   double labelTextScaleFactor;
 
+  /// Calculated allocated label width
+  double get allocatedLabelWidth {
+    double perLabelWidth = (_width -
+            (_leftPad + (_labels.length - 1) * _betweenPad + _rightPad)) /
+        _labels.length;
+    if (perLabelWidth <= 0.0) {
+      throw new StateError("Container does not leave space for labels.");
+    }
+    return perLabelWidth;
+  }
+
+  // todo -3
+  /*
+  double get layedoutHeight {
+
+  };
+  */
+
+  /// Validate height of this container against constructor [_maxHeight].
+  /// todo -3
+  double get validateHeight {
+    if (_maxHeight != double.INFINITY) {
+      if (_maxHeight - _calculatedHeight > util.epsilon) {
+        throw new StateError("Invalid size: ${_maxHeight},  ${_calculatedHeight}");
+      }
+      return _calculatedHeight;
+    }
+    throw new StateError("Do not need to ask.");
+  }
+
+
   bool isTooBig = true; // transient layout helper
 
-  HorizontalLabelsContainer({
+  /// Constructs the container that must fit into a fixed boundary
+  /// defined by the [width] parameter.
+  ///
+  /// Constraints
+  ///   - [_width] must be set to a finite value
+  ///     (not double.INFINITY). todo -2 add condition
+  ///   -  [_maxHeight] is optional; it may be INFINITY (in most cases would be).
+  ///      If not INFINITY, a validation is performed for height overflow todo -2 add condition
+  ///
+  FixedWidthHorizontalLabelsContainer({
     List<String> labels,
-    double containerWidth,
+    double width,
+    double maxHeight,
     ChartOptions options,
     double leftPad,
     double betweenPad,
     double rightPad,
   }) {
     _labels = labels;
-    _containerWidth = containerWidth;
+    _width = width;
+    _maxHeight = maxHeight; // optional
     _options = options;
     _leftPad = leftPad;
     _betweenPad = betweenPad;
@@ -1004,73 +1073,65 @@ class HorizontalLabelsContainer {
     // All member [LabelPainter] instances
     //   in [labelPainters] share the text properties (style, direction, align etc.)
     //   of this parent instance
-    _options=options;
-    labelTextStyle=options.labelTextStyle;
-    labelTextDirection=options.labelTextDirection;
-    labelTextAlign=options.labelTextAlign; // center text
-    labelTextScaleFactor=options.labelTextScaleFactor;
+    _options = options;
 
+    // Initially all LabelPainters share same text style object from options.
+    LabelTextModifier textModifier = new LabelTextModifier(
+      labelTextStyle: options.labelTextStyle,
+      labelTextDirection: options.labelTextDirection,
+      labelTextAlign: options.labelTextAlign, // center text
+      labelTextScaleFactor: options.labelTextScaleFactor,
+    );
     _labelPainters = labels.map((label) {
-       return new LabelPainter(
-        options: options,
-        labelTextStyle: labelTextStyle,
-        labelTextDirection: labelTextDirection,
-        labelTextAlign: labelTextAlign, // center text
-        labelTextScaleFactor: labelTextScaleFactor,
+      return new LabelPainter(
+        label: label,
+        labelMaxWidth: allocatedLabelWidth,
+        labelTextModifier: textModifier,
       );
     }).toList();
 
-/* AAAAAAAAAAAAAAAAA
-    for (var index in legendSeqs) {
-      var legendOutput = new LegendLayouterOutput();
-
-      legendOutput.labelPainter = new LabelPainter(
-        label: dataRowsLegends[index],
-        labelMaxWidth: double.INFINITY,
-        options: options,
-        labelTextStyle: options.labelTextStyle,
-        labelTextDirection: options.labelTextDirection,
-        labelTextAlign: options.labelTextAlign, // center text
-        labelTextScaleFactor: options.labelTextScaleFactor,
-      )
-          .textPainterForLabel(dataRowsLegends[index]);
-
-      double indicatorX =
-          itemSizing.legendItemWidth * index + itemSizing.containerMarginLR;
-
-      // height-wise center both indicatorRect and label around common
-      // middle in  _size.height / 2
-      double indicatorTop = (_size.height - itemSizing.indicatorHeight) / 2;
-      legendOutput.indicatorRect = new ui.Offset(indicatorX, indicatorTop) &
-      new ui.Size(itemSizing.indicatorWidth, itemSizing.indicatorHeight);
-
-      double labelLeftX =
-          indicatorX + itemSizing.indicatorWidth + itemSizing.indicatorToLegendPad;
-
-      double labelTopY = (_size.height - legendOutput.labelPainter.height) / 2;
-      legendOutput.labelOffset = new ui.Offset(labelLeftX, labelTopY);
-
-      legendOutput.indicatorPaint = new ui.Paint();
-      legendOutput.indicatorPaint.color = _chartLayouter.data
-          .dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
-
-      outputs.add(legendOutput);
-    }
-
-    /////////////////////
-*/
-
+    // Note: This class does not keep the LabelTextModifier,
+    //       just passes it to member LabelPainters
   }
-/// Provides methods to
-///   - Layout individual [labelPainters], for the purpose of
-///   finding if they overflow their even size width.
 
-///   - Change text style for all labels (by setting members and applying
-///   them on the member [labelPainters].
-///   - Layout the container by laying out the contained [labelPainters]
-///   - Query size needed to paint each [labelPainters] and the whole container.
+  /// Provides methods to
+  ///   - Layout individual [labelPainters], for the purpose of
+  ///   finding if they overflow their even size width.
+  ///
+  /// anyLabelOverflows() - must be called after layoutIndividualLabels()
+  ///
 
-  // todo -3 add all method signatures first, implement next
+  ///   - Change text style for all labels (by setting members and applying
+  ///   them on the member [labelPainters].
+  ///   - Layout the container by laying out the contained [labelPainters].
+  ///   This should layout to maxWidth, and throw exception on overflow.
+  ///   - Query size needed to paint each [labelPainters] and the whole container.
+
+// todo -3 add all method signatures first, implement next
+  /// - layout the container with each label at evenly spaced positions
+  void layoutQuaranteeFitFirstTiltNextDecreaseFontNextSkipNextTrim() {
+    // todo -3
+    // call doesLayoutToMaxWidthOverflow on all labelPainters
+    // if at least one overflows, tilt all labels by -70 degrees
+    // etc.
+  }
+
+  /// Layout member [_labelPainters] forcing the max width and
+  /// check for overflow.
+  ///
+  /// Returns `true` if at least one element of [_labelPainters] overflows,
+  /// `false` otherwise.
+  ///
+  /// As a sideeffect, if false is returned, all  [_labelPainters] were
+  /// layoued out, and can be painted.
+  bool _doesLayoutToMaxWidthOverflow() {
+    // same as label_painted, on all
+    return _labelPainters.any((labelPainter) {
+      labelPainter.doesLayoutToMaxWidthOverflow();
+    });
+  }
+
+  ///
 }
 
 /// Structural "backplane" model for chart layout.

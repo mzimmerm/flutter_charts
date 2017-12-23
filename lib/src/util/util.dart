@@ -57,3 +57,5 @@ List<List> transpose(List<List> colsInRows) {
   return rowsInCols;
 }
 
+double get epsilon => 0.000001;
+
