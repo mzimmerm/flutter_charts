@@ -390,7 +390,7 @@ class Poly {
   }
 
   int _geOnePower(decimal.Decimal tester) {
-    if (tester < _one) throw new Exception("${tester} Failed: tester < 1.0");
+    if (tester < _one) throw new Exception("$tester Failed: tester < 1.0");
     int power = -1;
     while (tester >= _one) {
       tester = tester / _ten;

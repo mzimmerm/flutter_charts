@@ -517,11 +517,11 @@ class YLayouter {
     ChartOptions options = _chartLayouter.options;
 
     // Initially all LabelPainters share same text style object from options.
-    LabelTextModifier textModifier = new LabelTextModifier(
-      labelTextStyle: options.labelTextStyle,
-      labelTextDirection: options.labelTextDirection,
-      labelTextAlign: options.labelTextAlign, // center text
-      labelTextScaleFactor: options.labelTextScaleFactor,
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: options.labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
     );
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
@@ -531,7 +531,7 @@ class YLayouter {
       output.painter = new LabelPainter(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
-        labelTextModifier: textModifier,
+        labelStyle: labelStyle,
         /* todo -3 remove
         new LabelTextModifier(
         labelTextStyle: options.labelTextStyle,
@@ -657,11 +657,11 @@ class XLayouter {
     ChartOptions options = _chartLayouter.options;
 
     // Initially all LabelPainters share same text style object from options.
-    LabelTextModifier textModifier = new LabelTextModifier(
-      labelTextStyle: options.labelTextStyle,
-      labelTextDirection: options.labelTextDirection,
-      labelTextAlign: options.labelTextAlign, // center text
-      labelTextScaleFactor: options.labelTextScaleFactor,
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: options.labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
     );
 
     for (var xIndex in seq) {
@@ -670,7 +670,7 @@ class XLayouter {
       xOutput.painter = new LabelPainter(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTextModifier: textModifier,
+        labelStyle: labelStyle,
       )
           .layoutTextPainter();
 
@@ -797,11 +797,11 @@ class LegendLayouter {
 
     // todo -3 Call the layoutUntilFitsParent here
     // Initially all LabelPainters share same text style object from options.
-    LabelTextModifier textModifier = new LabelTextModifier(
-      labelTextStyle: options.labelTextStyle,
-      labelTextDirection: options.labelTextDirection,
-      labelTextAlign: options.labelTextAlign, // center text
-      labelTextScaleFactor: options.labelTextScaleFactor,
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: options.labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
     );
 
     var legendSeqs = new Iterable.generate(
@@ -816,7 +816,7 @@ class LegendLayouter {
       widgets.TextPainter p = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
-        labelTextModifier: textModifier,
+        labelStyle: labelStyle,
       )
           .layoutTextPainter();
       maxItemSize = new ui.Size(math.max(maxItemSize.width, p.width),
@@ -832,7 +832,7 @@ class LegendLayouter {
 
 /* todo -3 this is not needed to repeat
     // Initially all LabelPainters share same text style object from options.
-    textModifier = new LabelTextModifier(
+    labelStyle = new LabelTextModifier(
       labelTextStyle: options.labelTextStyle,
       labelTextDirection: options.labelTextDirection,
       labelTextAlign: options.labelTextAlign, // center text
@@ -849,7 +849,7 @@ class LegendLayouter {
       legendOutput.labelPainter = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
-        labelTextModifier: textModifier,
+        labelStyle: labelStyle,
       )
           .layoutTextPainter();
 
@@ -955,7 +955,7 @@ class LegendLayouterOutput {
 /// by decreasing the font size, tilting the labels, or skipping some labels,
 /// or (last resource??) trimming the labels.
 ///
-/// todo -1: No attempt is made to decrease Y direction size (height), but if
+/// todo -2: No attempt is made to decrease Y direction size (height), but if
 /// the passed [_maxHeight] is finite, a validity check is made
 /// if the actual layed out height is within the passed height.
 ///
@@ -1002,17 +1002,11 @@ class FixedWidthHorizontalLabelsContainer {
 
   bool _layoutClean = false;
 
-
-  widgets.TextStyle labelTextStyle;
-  ui.TextDirection labelTextDirection;
-  ui.TextAlign labelTextAlign;
-  double labelTextScaleFactor;
-
   /// Calculated allocated label width
   double get allocatedLabelWidth {
-    double perLabelWidth = (_width -
-            (_leftPad + (_labels.length - 1) * _betweenPad + _rightPad)) /
-        _labels.length;
+    double perLabelWidth =
+        (_width - (_leftPad + (_labels.length - 1) * _betweenPad + _rightPad)) /
+            _labels.length;
     if (perLabelWidth <= 0.0) {
       throw new StateError("Container does not leave space for labels.");
     }
@@ -1031,13 +1025,12 @@ class FixedWidthHorizontalLabelsContainer {
   double get validateHeight {
     if (_maxHeight != double.INFINITY) {
       if (_maxHeight - _calculatedHeight > util.epsilon) {
-        throw new StateError("Invalid size: ${_maxHeight},  ${_calculatedHeight}");
+        throw new StateError("Invalid size: $_maxHeight,  $_calculatedHeight");
       }
       return _calculatedHeight;
     }
     throw new StateError("Do not need to ask.");
   }
-
 
   bool isTooBig = true; // transient layout helper
 
@@ -1076,17 +1069,17 @@ class FixedWidthHorizontalLabelsContainer {
     _options = options;
 
     // Initially all LabelPainters share same text style object from options.
-    LabelTextModifier textModifier = new LabelTextModifier(
-      labelTextStyle: options.labelTextStyle,
-      labelTextDirection: options.labelTextDirection,
-      labelTextAlign: options.labelTextAlign, // center text
-      labelTextScaleFactor: options.labelTextScaleFactor,
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: options.labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
     );
     _labelPainters = labels.map((label) {
       return new LabelPainter(
         label: label,
         labelMaxWidth: allocatedLabelWidth,
-        labelTextModifier: textModifier,
+        labelStyle: labelStyle,
       );
     }).toList();
 
@@ -1111,7 +1104,7 @@ class FixedWidthHorizontalLabelsContainer {
   /// - layout the container with each label at evenly spaced positions
   void layoutQuaranteeFitFirstTiltNextDecreaseFontNextSkipNextTrim() {
     // todo -3
-    // call doesLayoutToMaxWidthOverflow on all labelPainters
+    // call layoutAndCheckOverflow on all labelPainters
     // if at least one overflows, tilt all labels by -70 degrees
     // etc.
   }
@@ -1124,14 +1117,26 @@ class FixedWidthHorizontalLabelsContainer {
   ///
   /// As a sideeffect, if false is returned, all  [_labelPainters] were
   /// layoued out, and can be painted.
-  bool _doesLayoutToMaxWidthOverflow() {
+  bool _layoutAndCheckOverflow() {
     // same as label_painted, on all
     return _labelPainters.any((labelPainter) {
-      labelPainter.doesLayoutToMaxWidthOverflow();
+      labelPainter.layoutAndCheckOverflow();
     });
   }
 
-  ///
+  /// Apply new text style and layout, then check if
+  /// any member of [_labelPainters] overflows.
+  /// returns `true` if at least one overflows.
+  bool _applyStyleThenLayoutAndCheckOverflow({
+    LabelStyle labelStyle,
+  }) {
+    // Here need to process all painters, as we want to apply style to all.
+    _labelPainters.forEach((labelPainter) {
+      labelPainter.applyStyleThenLayoutAndCheckOverflow(
+          labelStyle: labelStyle);
+    });
+    return _labelPainters.any((labelPainter) {labelPainter.isOverflowing;});
+  }
 }
 
 /// Structural "backplane" model for chart layout.

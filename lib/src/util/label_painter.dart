@@ -9,51 +9,57 @@ import 'package:flutter_charts/src/chart/options.dart';
 ///
 /// Most members are mutable so that clients can experiment with different
 /// ways to set text style, until the label fits a predefined allowed size.
+///
+/// Note: All methods (and constructor) of this class always calls
+///       layout, as a result, [_overflowsMaxWidth] can be always asked,
+///       there is no need to check for "needs layout" or similar.
 class LabelPainter {
-  String label;
-  double labelMaxWidth;
+  String _label;
+  double _labelMaxWidth;
   widgets.TextPainter textPainter;
-  bool _overflowsMaxWidth = true; // transient layout helper
+  bool isOverflowing = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
-  bool _needLayout; // todo -3 use same name as in layouters.
-
   /// Allows to configure certain sizes, colors, and layout.
-  LabelTextModifier _labelTextModifier;
+  LabelStyle _labelStyle;
   // todo -2 add to signature if boundaries overflown
   ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
   LabelPainter({
     String label,
     double labelMaxWidth,
-    LabelTextModifier labelTextModifier,
+    LabelStyle labelStyle,
   }) {
-    label = label;
-    labelMaxWidth = labelMaxWidth;
-    _needLayout = true;
-    _labelTextModifier = labelTextModifier;
+    this._label = label;
+    this._labelMaxWidth = labelMaxWidth;
+    this._labelStyle = labelStyle;
 
     var text = new widgets.TextSpan(
       text: label,
-      style: _labelTextModifier
-          .labelTextStyle, // All labels share one style object
+      style: _labelStyle
+          .textStyle, // All labels share one style object
     );
     textPainter = new widgets.TextPainter(
       text: text,
-      textDirection: _labelTextModifier.labelTextDirection,
+      textDirection: _labelStyle.textDirection,
       textAlign:
-          _labelTextModifier.labelTextAlign, // center text in available space
-      textScaleFactor: _labelTextModifier.labelTextScaleFactor,
+          _labelStyle.textAlign, // center text in available space
+      textScaleFactor: _labelStyle.textScaleFactor,
     ); //  textScaleFactor does nothing ??
+
+    // Make sure to call layout - this instance is always "clean"
+    //   without need to call layout or introducing _isLayoutNeeded
+    layoutAndCheckOverflow();
   }
 
-  void modifyTextStyle({LabelTextModifier labelTextModifier}) {
-    _needLayout = true;
-    _labelTextModifier = labelTextModifier;
+  bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
+    _labelStyle = labelStyle;
+    bool doesOverflow = layoutAndCheckOverflow();
+    return doesOverflow;
   }
 
-  /// Lays out, for later painting, the member [label] string
+  /// Lays out, for later painting, the member [_label] string
   /// using the member [textPainter].
   ///
   /// For the measured values to correspond the drawn sizes,
@@ -61,15 +67,16 @@ class LabelPainter {
   ///
   /// Returns the layed-out member [textPainter]
   /// instance of [widgets.TextPainter],
-  /// which can later paint itself (with the [label]) on `canvas`,
+  /// which can later paint itself (with the [_label]) on `canvas`,
   /// using `textPainter.paint(canvas, offset)`.
+  /// todo -2 this needs removed
   widgets.TextPainter layoutTextPainter() {
     textPainter.layout(); // minWidth:100.0, maxWidth: 300.0
 
     return textPainter;
   }
 
-  /// Lays out the member label [_label] text
+  /// Lays out the member [_label] text
   /// specifying the maximum allowed width [_labelMaxWidth],
   /// then tests if the label fits the width.
   ///
@@ -80,36 +87,37 @@ class LabelPainter {
   /// text overflow if any, will NOT be shown on
   /// the subsequent `textPainter.paint(canvas)` call.
   /// Label text will be croped.
-  bool doesLayoutToMaxWidthOverflow() {
+  bool layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
-    textPainter.layout(maxWidth: labelMaxWidth);
+    textPainter.layout(maxWidth: _labelMaxWidth);
     _constraintSize = textPainter.size;
 
     // todo -2 check if constraintSize
 
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      _overflowsMaxWidth = true;
+      isOverflowing = true;
     } else {
-      _overflowsMaxWidth = false;
+      isOverflowing = false;
     }
 
-    return _overflowsMaxWidth;
+    return isOverflowing;
   }
 }
 
-/// Value class grouping text styles that may change
-/// [LabelPainter] and affect it's layout.
-class LabelTextModifier {
-  widgets.TextStyle labelTextStyle;
-  ui.TextDirection labelTextDirection;
-  ui.TextAlign labelTextAlign;
-  double labelTextScaleFactor;
+/// Class for value objects which group the text styles that may affect
+/// [LabelPainter]'s instances layout.
+/// todo -3 rename to LabelStyleModifier
+class LabelStyle {
+  widgets.TextStyle textStyle;
+  ui.TextDirection textDirection;
+  ui.TextAlign textAlign;
+  double textScaleFactor;
 
-  LabelTextModifier({
-    widgets.TextStyle this.labelTextStyle,
-    ui.TextDirection this.labelTextDirection,
-    ui.TextAlign this.labelTextAlign,
-    double this.labelTextScaleFactor,
+  LabelStyle({
+    widgets.TextStyle this.textStyle,
+    ui.TextDirection this.textDirection,
+    ui.TextAlign this.textAlign,
+    double this.textScaleFactor,
   });
 }
