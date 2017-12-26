@@ -37,14 +37,12 @@ class LabelPainter {
 
     var text = new widgets.TextSpan(
       text: label,
-      style: _labelStyle
-          .textStyle, // All labels share one style object
+      style: _labelStyle.textStyle, // All labels share one style object
     );
     textPainter = new widgets.TextPainter(
       text: text,
       textDirection: _labelStyle.textDirection,
-      textAlign:
-          _labelStyle.textAlign, // center text in available space
+      textAlign: _labelStyle.textAlign, // center in available space
       textScaleFactor: _labelStyle.textScaleFactor,
     ); //  textScaleFactor does nothing ??
 
@@ -107,7 +105,6 @@ class LabelPainter {
 
 /// Class for value objects which group the text styles that may affect
 /// [LabelPainter]'s instances layout.
-/// todo -3 rename to LabelStyleModifier
 class LabelStyle {
   widgets.TextStyle textStyle;
   ui.TextDirection textDirection;

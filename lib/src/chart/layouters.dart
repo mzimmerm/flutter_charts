@@ -532,14 +532,6 @@ class YLayouter {
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
-        /* todo -3 remove
-        new LabelTextModifier(
-        labelTextStyle: options.labelTextStyle,
-        labelTextDirection: options.labelTextDirection,
-        labelTextAlign: options.labelTextAlign, // center text
-        labelTextScaleFactor: options.labelTextScaleFactor,
-        )
-        */
       )
           .layoutTextPainter();
       output.horizGridLineY = topY;
@@ -830,16 +822,6 @@ class LegendLayouter {
         math.max(maxItemSize.height, itemSizing.indicatorHeight) +
             2 * itemSizing.containerMarginTB);
 
-/* todo -3 this is not needed to repeat
-    // Initially all LabelPainters share same text style object from options.
-    labelStyle = new LabelTextModifier(
-      labelTextStyle: options.labelTextStyle,
-      labelTextDirection: options.labelTextDirection,
-      labelTextAlign: options.labelTextAlign, // center text
-      labelTextScaleFactor: options.labelTextScaleFactor,
-    );
-*/
-
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
     //   - label painter
@@ -1002,6 +984,9 @@ class FixedWidthHorizontalLabelsContainer {
 
   bool _layoutClean = false;
 
+  // TODO -4 STORING LABELSTYLE AS MEMBER IS TEMPORARY WHILE WE ARE PLUGGING FixedWidthHorizontalLabelsContainer TO X LABELS AND LEGEND LAYOUT, LAYOUTING ONCE
+  LabelStyle _labelStyle;
+
   /// Calculated allocated label width
   double get allocatedLabelWidth {
     double perLabelWidth =
@@ -1075,6 +1060,8 @@ class FixedWidthHorizontalLabelsContainer {
       textAlign: options.labelTextAlign, // center text
       textScaleFactor: options.labelTextScaleFactor,
     );
+    this._labelStyle = labelStyle;
+
     _labelPainters = labels.map((label) {
       return new LabelPainter(
         label: label,
@@ -1103,10 +1090,15 @@ class FixedWidthHorizontalLabelsContainer {
 // todo -3 add all method signatures first, implement next
   /// - layout the container with each label at evenly spaced positions
   void layoutQuaranteeFitFirstTiltNextDecreaseFontNextSkipNextTrim() {
+
+    // TODO -4 FOR NOW, JUST LAYOUT, ONCE, NOT CHECKING FOR OVERFLOW
+    _applyStyleThenLayoutAndCheckOverflow( labelStyle: _labelStyle);
+
     // todo -3
     // call layoutAndCheckOverflow on all labelPainters
     // if at least one overflows, tilt all labels by -70 degrees
     // etc.
+
   }
 
   /// Layout member [_labelPainters] forcing the max width and
@@ -1135,7 +1127,8 @@ class FixedWidthHorizontalLabelsContainer {
       labelPainter.applyStyleThenLayoutAndCheckOverflow(
           labelStyle: labelStyle);
     });
-    return _labelPainters.any((labelPainter) {labelPainter.isOverflowing;});
+    // todo -4: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelPainters.any((labelPainter) {labelPainter.isOverflowing;});
+    return false;
   }
 }
 
