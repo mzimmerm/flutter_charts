@@ -67,12 +67,15 @@ class LabelPainter {
   /// instance of [widgets.TextPainter],
   /// which can later paint itself (with the [_label]) on `canvas`,
   /// using `textPainter.paint(canvas, offset)`.
-  /// todo -2 this needs removed
+  /// todo -3 this needs removed
+  ///
+  /*
   widgets.TextPainter layoutTextPainter() {
     textPainter.layout(); // minWidth:100.0, maxWidth: 300.0
 
     return textPainter;
   }
+  */
 
   /// Lays out the member [_label] text
   /// specifying the maximum allowed width [_labelMaxWidth],

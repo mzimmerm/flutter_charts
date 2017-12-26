@@ -436,13 +436,13 @@ class YLayouter {
     }
     _yLabelsContainerWidth = outputs
             .map((var output) => output.painter)
-            .map((widgets.TextPainter painter) => painter.size.width)
+            .map((LabelPainter labelPainter) => labelPainter.textPainter.size.width)
             .reduce(math.max) +
         2 * _chartLayouter.options.yLabelsPadLR;
 
     _yLabelsMaxHeight = outputs
         .map((var output) => output.painter)
-        .map((widgets.TextPainter painter) => painter.size.height)
+        .map((LabelPainter labelPainter) => labelPainter.textPainter.size.height)
         .reduce(math.max);
   }
 
@@ -532,10 +532,11 @@ class YLayouter {
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
-      )
-          .layoutTextPainter();
+      );
+      widgets.TextPainter textPainter = output.painter.textPainter;
+      textPainter.layout();
       output.horizGridLineY = topY;
-      output.labelTopY = topY - output.painter.height / 2;
+      output.labelTopY = topY - textPainter.height / 2;
       outputs.add(output);
     }
   }
@@ -556,7 +557,7 @@ class YLayouter {
 ///     to the top of the available [chartArea].
 class YLayouterOutput {
   /// Painter configured to paint one label
-  widgets.TextPainter painter;
+  LabelPainter painter;
 
   ///  y offset of Y label middle point.
   ///
@@ -663,10 +664,11 @@ class XLayouter {
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
-      )
-          .layoutTextPainter();
+      );
+      widgets.TextPainter textPainter = xOutput.painter.textPainter;
+      textPainter.layout();
 
-      double halfLabelWidth = xOutput.painter.width / 2;
+      double halfLabelWidth = textPainter.width / 2;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
       xOutput.tickX = halfStepWidth +
@@ -686,7 +688,7 @@ class XLayouter {
 
     // xlabels area without padding
     _xLabelsContainerHeight = outputs
-        .map((var output) => output.painter)
+        .map((var output) => output.painter.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -698,7 +700,7 @@ class XLayouter {
 /// All positions are relative to the left of the container of x labels
 class XLayouterOutput {
   /// Painter configured to paint one label
-  widgets.TextPainter painter;
+  LabelPainter painter;
 
   /// The x offset of vertical grid line in the middle of column.
   ///
@@ -805,14 +807,15 @@ class LegendLayouter {
 
     var maxItemSize = ui.Size.zero;
     for (var index in legendSeqs) {
-      widgets.TextPainter p = new LabelPainter(
+      LabelPainter labelPainter = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
-      )
-          .layoutTextPainter();
-      maxItemSize = new ui.Size(math.max(maxItemSize.width, p.width),
-          math.max(maxItemSize.height, p.height));
+      );
+      labelPainter.textPainter.layout();
+      widgets.TextPainter textPainter = labelPainter.textPainter;
+      maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
+          math.max(maxItemSize.height, textPainter.height));
     }
 
     // Now we know legend container size.width and height (width is unused)
@@ -832,8 +835,9 @@ class LegendLayouter {
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
-      )
-          .layoutTextPainter();
+      );
+      widgets.TextPainter textPainter = legendOutput.labelPainter.textPainter;
+      textPainter.layout();
 
       double indicatorX =
           itemSizing.legendItemWidth * index + itemSizing.containerMarginLR;
@@ -848,7 +852,7 @@ class LegendLayouter {
           itemSizing.indicatorWidth +
           itemSizing.indicatorToLegendPad;
 
-      double labelTopY = (_size.height - legendOutput.labelPainter.height) / 2;
+      double labelTopY = (_size.height - textPainter.height) / 2;
       legendOutput.labelOffset = new ui.Offset(labelLeftX, labelTopY);
 
       legendOutput.indicatorPaint = new ui.Paint();
@@ -917,7 +921,7 @@ class LegendLayouterOutput {
   int sequence;
 
   /// Painter configured to paint each legend label
-  widgets.TextPainter labelPainter;
+  LabelPainter labelPainter;
 
   ///  rectangle of the legend color square series indicator
   ui.Rect indicatorRect;

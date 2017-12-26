@@ -87,7 +87,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
     for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
       // todo 0 : move / keep label coords in layouter
       var offset = new ui.Offset(xLayouterOutput.labelLeftX, layouter.xLabelsAbsY);
-      widgets.TextPainter textPainter = xLayouterOutput.painter;
+      widgets.TextPainter textPainter = xLayouterOutput.painter.textPainter;
       textPainter.paint(canvas, offset);
     }
   }
@@ -100,14 +100,14 @@ abstract class ChartPainter extends widgets.CustomPainter {
         layouter.yLabelsAbsX,
         yLabel.labelTopY,
       );
-      widgets.TextPainter textPainter = yLabel.painter;
+      widgets.TextPainter textPainter = yLabel.painter.textPainter;
       textPainter.paint(canvas, offset);
     }
   }
 
   void drawLegend(ui.Canvas canvas) {
     for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
-      legend.labelPainter.paint(canvas, legend.labelOffset);
+      legend.labelPainter.textPainter.paint(canvas, legend.labelOffset);
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
     }
   }
