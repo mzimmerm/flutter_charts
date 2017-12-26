@@ -168,7 +168,7 @@ abstract class ChartLayouter {
 
     xOutputs = xLayouter.outputs.map((var output) {
       var xOutput = new XLayouterOutput();
-      xOutput.painter = output.painter;
+      xOutput.labelPainter = output.labelPainter;
       xOutput.vertGridLineX = xLayouterAbsX + output.vertGridLineX;
       xOutput.leftVertGridLineX = xLayouterAbsX + output.leftVertGridLineX;
       xOutput.rightVertGridLineX = xLayouterAbsX + output.rightVertGridLineX;
@@ -204,7 +204,7 @@ abstract class ChartLayouter {
 
     yOutputs = yLayouter.outputs.map((var output) {
       var yOutput = new YLayouterOutput();
-      yOutput.painter = output.painter;
+      yOutput.labelPainter = output.labelPainter;
       yOutput.horizGridLineY = output.horizGridLineY;
       yOutput.labelTopY = output.labelTopY;
       return yOutput;
@@ -435,13 +435,13 @@ class YLayouter {
       layoutAutomatically();
     }
     _yLabelsContainerWidth = outputs
-            .map((var output) => output.painter)
+            .map((var output) => output.labelPainter)
             .map((LabelPainter labelPainter) => labelPainter.textPainter.size.width)
             .reduce(math.max) +
         2 * _chartLayouter.options.yLabelsPadLR;
 
     _yLabelsMaxHeight = outputs
-        .map((var output) => output.painter)
+        .map((var output) => output.labelPainter)
         .map((LabelPainter labelPainter) => labelPainter.textPainter.size.height)
         .reduce(math.max);
   }
@@ -528,12 +528,12 @@ class YLayouter {
       double topY = labelInfo.scaledLabelValue;
       var output = new YLayouterOutput();
       // textPainterForLabel calls [TextPainter.layout]
-      output.painter = new LabelPainter(
+      output.labelPainter = new LabelPainter(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      widgets.TextPainter textPainter = output.painter.textPainter;
+      widgets.TextPainter textPainter = output.labelPainter.textPainter;
       textPainter.layout();
       output.horizGridLineY = topY;
       output.labelTopY = topY - textPainter.height / 2;
@@ -557,7 +557,7 @@ class YLayouter {
 ///     to the top of the available [chartArea].
 class YLayouterOutput {
   /// Painter configured to paint one label
-  LabelPainter painter;
+  LabelPainter labelPainter;
 
   ///  y offset of Y label middle point.
   ///
@@ -660,12 +660,12 @@ class XLayouter {
     for (var xIndex in seq) {
       // double leftX = _gridStepWidth * xIndex;
       var xOutput = new XLayouterOutput();
-      xOutput.painter = new LabelPainter(
+      xOutput.labelPainter = new LabelPainter(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      widgets.TextPainter textPainter = xOutput.painter.textPainter;
+      widgets.TextPainter textPainter = xOutput.labelPainter.textPainter;
       textPainter.layout();
 
       double halfLabelWidth = textPainter.width / 2;
@@ -688,7 +688,7 @@ class XLayouter {
 
     // xlabels area without padding
     _xLabelsContainerHeight = outputs
-        .map((var output) => output.painter.textPainter)
+        .map((var output) => output.labelPainter.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -700,7 +700,7 @@ class XLayouter {
 /// All positions are relative to the left of the container of x labels
 class XLayouterOutput {
   /// Painter configured to paint one label
-  LabelPainter painter;
+  LabelPainter labelPainter;
 
   /// The x offset of vertical grid line in the middle of column.
   ///

@@ -104,6 +104,8 @@ class LabelPainter {
 
     return isOverflowing;
   }
+
+  
 }
 
 /// Class for value objects which group the text styles that may affect
