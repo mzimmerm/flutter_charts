@@ -99,7 +99,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
       xLayouterOutput.paint(canvas);
     }
   }
-
+/* todo -4
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
     for (common.YLayouterOutput yLayouterOutput in layouter.yOutputs) {
@@ -112,6 +112,15 @@ abstract class ChartPainter extends widgets.CustomPainter {
       textPainter.paint(canvas, offset);
     }
   }
+*/
+
+  void drawYLabels(ui.Canvas canvas) {
+    // Draw y axis labels on the left
+    for (common.YLayouterOutput yLayouterOutput in layouter.yOutputs) {
+      yLayouterOutput.paint(canvas);
+    }
+  }
+
 
   void drawLegend(ui.Canvas canvas) {
     for (common.LegendLayouterOutput legend in layouter.legendOutputs) {

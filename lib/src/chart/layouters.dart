@@ -209,6 +209,7 @@ abstract class ChartLayouter {
 
     // ### 6. Recalculate offsets for this Area layouter
 
+    /* todo -4
     yOutputs = yLayouter.outputs.map((var output) {
       var yOutput = new YLayouterOutput();
       yOutput.labelPainter = output.labelPainter;
@@ -216,6 +217,11 @@ abstract class ChartLayouter {
       yOutput.labelTopY = output.labelTopY;
       return yOutput;
     }).toList();
+  */
+    yLayouter.outputs.forEach((YLayouterOutput yOutput) {
+      yOutput.applyOffsetInParent(new ui.Offset(yLabelsAbsX, 0.0));
+    });
+    yOutputs = yLayouter.outputs;
 
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
@@ -577,6 +583,24 @@ class YLayouterOutput {
 
   ///  y offset of Y label top point.
   double labelTopY;
+
+  /// Absolute offset in chart
+  ui.Offset _offset;
+
+  // todo -4
+  /// Apply offset in parent. This call positions the X Label (this instance)
+  /// to the absolute position in the chart's available size
+  void applyOffsetInParent(ui.Offset offset) {
+    this.horizGridLineY += offset.dy; // offset.dy is 0
+    this.labelTopY += offset.dy;
+    // Duplicated info
+    this._offset = new ui.Offset(offset.dx, this.labelTopY);
+  }
+
+  void paint(ui.Canvas canvas) {
+    labelPainter.textPainter.paint(canvas, _offset);
+  }
+
 }
 
 /// Auto-layouter of chart in the independent (X) axis direction.
@@ -744,9 +768,6 @@ class XLayouterOutput {
 
   ///  x offset of X label left point .
   double labelLeftX;
-
-  /// Offset in parent
-  ui.Offset _offsetInParent; // todo -3 probably remove, no need to keep
 
   /// Absolute offset in chart
   ui.Offset _offset;
