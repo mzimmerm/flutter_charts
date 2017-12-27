@@ -459,7 +459,7 @@ class YLayouter {
     }
 
     List<num> yLabelsDividedInYDataRange = new List();
-    for (var yIndex in seq) {
+    for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
       yLabelsDividedInYDataRange.add(dataRange.min + dataStepHeight * yIndex);
     }
 
