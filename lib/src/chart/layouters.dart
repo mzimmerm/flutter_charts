@@ -121,9 +121,8 @@ abstract class ChartLayouter {
     legendLayouter.layout();
     _legendContainerHeight = legendLayouter._size.height;
 
-    // print(" _legendContainerHeight = ${_legendContainerHeight}");
-
-    legendOutputs = legendLayouter.outputs.map((var output) {
+    /* todo -3
+    legendOutputs = legendLayouter.outputs.map((LegendLayouterOutput output) {
       var legendOutput = new LegendLayouterOutput();
       legendOutput.labelPainter = output.labelPainter;
       legendOutput.indicatorPaint = output.indicatorPaint;
@@ -131,6 +130,12 @@ abstract class ChartLayouter {
       legendOutput.labelOffset = output.labelOffset;
       return legendOutput;
     }).toList();
+    */
+
+    legendLayouter.outputs.forEach((LegendLayouterOutput legendLayouterOutput) {
+      legendLayouterOutput.applyOffsetInParent(new ui.Offset(0.0, 0.0));
+    });
+    legendOutputs = legendLayouter.outputs;
 
     // ### 3. Ask [YLayouter] to provide Y label container width.
     //        This provides the remaining width
@@ -588,7 +593,7 @@ class YLayouterOutput {
   ui.Offset _offset;
 
   // todo -4
-  /// Apply offset in parent. This call positions the X Label (this instance)
+  /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyOffsetInParent(ui.Offset offset) {
     this.horizGridLineY += offset.dy; // offset.dy is 0
@@ -985,6 +990,24 @@ class LegendLayouterOutput {
 
   ///  offset of legend label
   ui.Offset labelOffset;
+
+  /// Absolute offset in chart
+  ui.Offset _offset;
+
+  /// Apply offset in parent. This call positions the X Label (this instance)
+  /// to the absolute position in the chart's available size
+  void applyOffsetInParent(ui.Offset offset) {
+    this.labelOffset += offset;
+
+    // Duplicated info
+    this._offset = new ui.Offset(this.labelOffset.dx, this.labelOffset.dy);
+  }
+
+  void paint(ui.Canvas canvas) {
+    labelPainter.textPainter.paint(canvas, this._offset);
+    canvas.drawRect(this.indicatorRect, this.indicatorPaint);
+  }
+
 }
 
 /// Lays out a list of labels horizontally, evenly sized, and evenly spaced.

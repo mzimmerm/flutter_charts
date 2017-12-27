@@ -121,11 +121,17 @@ abstract class ChartPainter extends widgets.CustomPainter {
     }
   }
 
-
+/* todo -4
   void drawLegend(ui.Canvas canvas) {
     for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
       legend.labelPainter.textPainter.paint(canvas, legend.labelOffset);
       canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
+    }
+  }
+ */
+  void drawLegend(ui.Canvas canvas) {
+    for (common.LegendLayouterOutput legendLayouterOutput in layouter.legendOutputs) {
+      legendLayouterOutput.paint(canvas);
     }
   }
 

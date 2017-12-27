@@ -306,23 +306,19 @@ Result vertical bar chart:
 - [-] LayouterOutput classes - 
   - [-] add methods applyOffsetInParent(Offset offset). 
     - [X] XLayouter
-    - [ ] YLayouter
+    - [X] YLayouter
     - [ ] LegendLayouter
   - [-] add method paint(Canvas canvas)
     - [X] XLayouter
-    - [ ] YLayouter
-    - [ ] LegendLayouter
-  - [-] add Offset _offsetInParent
-    - [X] XLayouter
-    - [ ] YLayouter
+    - [X] YLayouter
     - [ ] LegendLayouter
   - [-] Make calls to applyOffsetInParent - This is at places where xOutputs, yOutputs, layouterOutputs are created!
     - [X] XLayouter
-    - [ ] YLayouter
+    - [X] YLayouter
     - [ ] LegendLayouter
   - [-] Make calls to paint - this is in painter
     - [X] XLayouter
-    - [ ] YLayouter
+    - [X] YLayouter
     - [ ] LegendLayouter
   - [ ] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
     - [ ] XLayouter
