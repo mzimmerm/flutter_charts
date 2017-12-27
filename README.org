@@ -304,26 +304,35 @@ Result vertical bar chart:
   - [X] YLayouter
   - [X] LegendLayouter
 - [-] LayouterOutput classes - 
-  - [-] add methods applyOffsetInParent(Offset offset). 
+  - [X] add methods applyOffsetInParent(Offset offset). 
     - [X] XLayouter
     - [X] YLayouter
-    - [ ] LegendLayouter
-  - [-] add method paint(Canvas canvas)
+    - [X] LegendLayouter
+  - [X] add method paint(Canvas canvas)
     - [X] XLayouter
     - [X] YLayouter
-    - [ ] LegendLayouter
-  - [-] Make calls to applyOffsetInParent - This is at places where xOutputs, yOutputs, layouterOutputs are created!
+    - [X] LegendLayouter
+  - [X] Make calls to applyOffsetInParent - This is at places where xOutputs, yOutputs, layouterOutputs are created!
     - [X] XLayouter
     - [X] YLayouter
-    - [ ] LegendLayouter
-  - [-] Make calls to paint - this is in painter
+    - [X] LegendLayouter
+  - [X] Make calls to paint - this is in painter
     - [X] XLayouter
     - [X] YLayouter
-    - [ ] LegendLayouter
-  - [ ] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
-    - [ ] XLayouter
-    - [ ] YLayouter
-    - [ ] LegendLayouter
+    - [X] LegendLayouter
+  - [-] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
+    - [X] XLayouter
+      - [X] XLayouterOutput -> XLayoutPainter
+      - [X] xLayouterOutput -> xLayoutPainter
+      - [X] xOutputs -> xLayoutPainters
+    - [X] YLayouter
+      - [X] YLayouterOutput -> YLayoutPainter
+      - [X] yLayouterOutput -> yLayoutPainter
+      - [X] yOutputs -> yLayoutPainters
+    - [-] LegendLayouter
+      - [X] LegendLayouterOutput -> LegendLayoutPainter
+      - [X] legendLayouterOutput -> legendLayoutPainter
+      - [ ] legendOutputs -> legendLayoutPainters
   - [ ] Make LayouterPainter members private.
 
 - [ ] *layouters: Replace all places using Iterable.generate with a simple loop*.

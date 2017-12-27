@@ -82,56 +82,23 @@ abstract class ChartPainter extends widgets.CustomPainter {
     );
   }
 
-  /* todo -4
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
-    for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
-      // todo -3 : move / keep label coords in layouter
-      var offset = new ui.Offset(xLayouterOutput.labelLeftX, layouter.xLabelsAbsY);
-      widgets.TextPainter textPainter = xLayouterOutput.labelPainter.textPainter;
-      textPainter.paint(canvas, offset);
+    for (common.XLayoutPainter xLayoutPainter in layouter.xLayoutPainters) {
+      xLayoutPainter.paint(canvas);
     }
   }
-  */
-  void drawXLabels(ui.Canvas canvas) {
-    // Draw x axis labels on bottom
-    for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
-      xLayouterOutput.paint(canvas);
-    }
-  }
-/* todo -4
-  void drawYLabels(ui.Canvas canvas) {
-    // Draw y axis labels on the left
-    for (common.YLayouterOutput yLayouterOutput in layouter.yOutputs) {
-      // todo -3 : move / keep label coords in layouter
-      var offset = new ui.Offset(
-        layouter.yLabelsAbsX,
-        yLayouterOutput.labelTopY,
-      );
-      widgets.TextPainter textPainter = yLayouterOutput.labelPainter.textPainter;
-      textPainter.paint(canvas, offset);
-    }
-  }
-*/
 
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
-    for (common.YLayouterOutput yLayouterOutput in layouter.yOutputs) {
-      yLayouterOutput.paint(canvas);
+    for (common.YLayoutPainter yLayoutPainter in layouter.yLayoutPainters) {
+      yLayoutPainter.paint(canvas);
     }
   }
 
-/* todo -4
   void drawLegend(ui.Canvas canvas) {
-    for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
-      legend.labelPainter.textPainter.paint(canvas, legend.labelOffset);
-      canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
-    }
-  }
- */
-  void drawLegend(ui.Canvas canvas) {
-    for (common.LegendLayouterOutput legendLayouterOutput in layouter.legendOutputs) {
-      legendLayouterOutput.paint(canvas);
+    for (common.LegendLayoutPainter legendLayoutPainter in layouter.legendLayoutPainters) {
+      legendLayoutPainter.paint(canvas);
     }
   }
 
