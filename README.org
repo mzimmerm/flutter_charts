@@ -303,7 +303,7 @@ Result vertical bar chart:
   - [X] XLayouter
   - [X] YLayouter
   - [X] LegendLayouter
-- [-] LayouterOutput classes - 
+- [X] LayouterOutput classes - 
   - [X] add methods applyOffsetInParent(Offset offset). 
     - [X] XLayouter
     - [X] YLayouter
@@ -320,7 +320,7 @@ Result vertical bar chart:
     - [X] XLayouter
     - [X] YLayouter
     - [X] LegendLayouter
-  - [-] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
+  - [X] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
     - [X] XLayouter
       - [X] XLayouterOutput -> XLayoutPainter
       - [X] xLayouterOutput -> xLayoutPainter
@@ -329,11 +329,11 @@ Result vertical bar chart:
       - [X] YLayouterOutput -> YLayoutPainter
       - [X] yLayouterOutput -> yLayoutPainter
       - [X] yOutputs -> yLayoutPainters
-    - [-] LegendLayouter
+    - [X] LegendLayouter
       - [X] LegendLayouterOutput -> LegendLayoutPainter
       - [X] legendLayouterOutput -> legendLayoutPainter
-      - [ ] legendOutputs -> legendLayoutPainters
-  - [ ] Make LayouterPainter members private.
+      - [X] legendOutputs -> legendLayoutPainters
+  - [X] Make LayouterPainter members private.
 
 - [ ] *layouters: Replace all places using Iterable.generate with a simple loop*.
 - [ ] Test everything works

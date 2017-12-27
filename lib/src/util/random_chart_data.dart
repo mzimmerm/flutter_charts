@@ -55,7 +55,8 @@ class RandomChartData extends ChartData {
       'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
     ];
 
-    for (var xIndex in new Iterable.generate(_numXLabels, (i) => i)) {
+    // for (var xIndex in new Iterable.generate(_numXLabels, (i) => i)) {
+    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsMonths[xIndex % 12]);
     }
   }
@@ -65,7 +66,7 @@ class RandomChartData extends ChartData {
       'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'
     ];
 
-    for (var xIndex in new Iterable.generate(_numXLabels, (i) => i)) {
+    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsDows[xIndex % 7]);
     }
   }
@@ -115,7 +116,7 @@ class RandomChartData extends ChartData {
     int maxYValue = 4;
     double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
 
-    for (var rowIndex in new Iterable.generate(_numDataRows, (i) => i)) {
+    for (var rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
       dataRows.add(
           _oneDataRow(
               rgen: rgen,

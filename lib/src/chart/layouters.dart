@@ -452,8 +452,9 @@ class YLayouter {
         (yAxisRange.max - yAxisRange.min) / (yLabels.length - 1);
 
     List<num> yLabelsDividedInYAxisRange = new List();
-    var seq = new Iterable.generate(yLabels.length, (i) => i); // 0 .. length-1
-    for (var yIndex in seq) {
+    //var seq = new Iterable.generate(yLabels.length, (i) => i); // 0 .. length-1
+    //for (var yIndex in seq) {
+    for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
     }
 
@@ -651,8 +652,6 @@ class XLayouter {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    var seq = new Iterable.generate(_xLabels.length, (i) => i); // 0 .. length-1
-
     ChartOptions options = _chartLayouter.options;
 
     // Initially all LabelPainters share same text style object from options.
@@ -663,7 +662,7 @@ class XLayouter {
       textScaleFactor: options.labelTextScaleFactor,
     );
 
-    for (var xIndex in seq) {
+    for (var xIndex = 0; xIndex < _xLabels.length; xIndex++) {
       // double leftX = _gridStepWidth * xIndex;
       var xOutput = new XLayoutPainter();
       xOutput._labelPainter = new LabelPainter(
@@ -824,15 +823,12 @@ class LegendLayouter {
       textScaleFactor: options.labelTextScaleFactor,
     );
 
-    var legendSeqs = new Iterable.generate(
-        dataRowsLegends.length, (i) => i); // 0 .. length-1
-
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
     // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
 
     var maxItemSize = ui.Size.zero;
-    for (var index in legendSeqs) {
+    for (var index = 0; index < dataRowsLegends.length; index++) {
       LabelPainter labelPainter = new LabelPainter(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
@@ -854,7 +850,7 @@ class LegendLayouter {
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
     //   - label painter
-    for (var index in legendSeqs) {
+    for (var index = 0; index < dataRowsLegends.length; index++) {
       var legendOutput = new LegendLayoutPainter();
 
       legendOutput._labelPainter = new LabelPainter(
