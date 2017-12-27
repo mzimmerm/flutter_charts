@@ -1,4 +1,5 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, TextAlign, TextDirection;
+import 'dart:ui' as ui
+    show Size, Offset, Rect, Paint, TextAlign, TextDirection, Canvas;
 
 import 'dart:math' as math show max, min;
 
@@ -166,6 +167,7 @@ abstract class ChartLayouter {
     xLayouter.layout();
     this.xLayouter = xLayouter;
 
+    /* todo -4
     xOutputs = xLayouter.outputs.map((var output) {
       var xOutput = new XLayouterOutput();
       xOutput.labelPainter = output.labelPainter;
@@ -176,6 +178,11 @@ abstract class ChartLayouter {
       xOutput.labelLeftX = xLayouterAbsX + output.labelLeftX;
       return xOutput;
     }).toList();
+    */
+    xLayouter.outputs.forEach((XLayouterOutput xOutput) {
+      xOutput.applyOffsetInParent(new ui.Offset(xLayouterAbsX, xLabelsAbsY));
+    });
+    xOutputs = xLayouter.outputs;
 
     // ### 5. Second call to YLayouter is needed, as available height for Y
     //        is only known after XLayouter provided height of xLabels
@@ -330,7 +337,7 @@ abstract class ChartLayouter {
 
   double get horizGridLinesFromX => _yLabelsContainerWidth;
 
-  // todo 0 replace this simple by width of the XLaouter!
+  // todo -3 replace this simply by the width of the XLaouter!
   double get horizGridLinesToX =>
       xOutputs.map((var output) => output.vertGridLineX).reduce(math.max) +
       yRightTicksWidth;
@@ -632,10 +639,13 @@ class XLayouter {
 
   /// Lays out the chart in horizontal (x) direction.
 
-  /// Evenly divids available width to all labels.
+  /// Evenly divides the available width to all labels.
   /// First / Last vertical line is at the center of first / last label,
   ///
   /// Label width includes spacing on each side.
+  ///
+  /// In X direction, the X labels parent offset is 0.0  starts on the very
+  /// left of the rectangle available for the chart.
   layout() {
     double yTicksWidth = _chartLayouter.options.yLeftMinTicksWidth +
         _chartLayouter.options.yRightMinTicksWidth;
@@ -678,7 +688,7 @@ class XLayouter {
       double columnLeftX = xOutput.tickX - halfStepWidth;
       double columnRightX = xOutput.tickX + halfStepWidth;
       xOutput.labelLeftX = xOutput.tickX -
-          halfLabelWidth; // center tickX and label on same center
+          halfLabelWidth; // tickX and label have same center
       xOutput.vertGridLineX = xOutput.tickX;
       xOutput.leftVertGridLineX = columnLeftX;
       xOutput.rightVertGridLineX = columnRightX;
@@ -734,6 +744,29 @@ class XLayouterOutput {
 
   ///  x offset of X label left point .
   double labelLeftX;
+
+  /// Offset in parent
+  ui.Offset _offsetInParent; // todo -3 probably remove, no need to keep
+
+  /// Absolute offset in chart
+  ui.Offset _offset;
+
+  /// Apply offset in parent. This call positions the X Label (this instance)
+  /// to the absolute position in the chart's available size
+  void applyOffsetInParent(ui.Offset offset) {
+    this.vertGridLineX += offset.dx;
+    this.leftVertGridLineX += offset.dx;
+    this.rightVertGridLineX += offset.dx;
+    this.tickX += offset.dx;
+    this.labelLeftX += offset.dx;
+
+    // Duplicated info
+    this._offset = new ui.Offset(this.labelLeftX, offset.dy);
+  }
+
+  void paint(ui.Canvas canvas) {
+    labelPainter.textPainter.paint(canvas, _offset);
+  }
 }
 
 /// Lays out the legend area for the chart.

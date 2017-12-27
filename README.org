@@ -300,9 +300,36 @@ Result vertical bar chart:
 
 
 - [X] Note only: Labels printed and layed out using *LabelPainter* in label_painter. this is used in
-  - [X] LegendLayouter
   - [X] XLayouter
   - [X] YLayouter
+  - [X] LegendLayouter
+- [-] LayouterOutput classes - 
+  - [-] add methods applyOffsetInParent(Offset offset). 
+    - [X] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [-] add method paint(Canvas canvas)
+    - [X] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [-] add Offset _offsetInParent
+    - [X] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [-] Make calls to applyOffsetInParent - This is at places where xOutputs, yOutputs, layouterOutputs are created!
+    - [X] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [-] Make calls to paint - this is in painter
+    - [X] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [ ] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
+    - [ ] XLayouter
+    - [ ] YLayouter
+    - [ ] LegendLayouter
+  - [ ] Make LayouterPainter members private.
+
 - [ ] *layouters: Replace all places using Iterable.generate with a simple loop*.
 - [ ] Test everything works
 - [ ] Changes refactoring needed ahead

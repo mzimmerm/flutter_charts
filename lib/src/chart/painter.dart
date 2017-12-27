@@ -82,25 +82,33 @@ abstract class ChartPainter extends widgets.CustomPainter {
     );
   }
 
+  /* todo -4
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
     for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
-      // todo 0 : move / keep label coords in layouter
+      // todo -3 : move / keep label coords in layouter
       var offset = new ui.Offset(xLayouterOutput.labelLeftX, layouter.xLabelsAbsY);
       widgets.TextPainter textPainter = xLayouterOutput.labelPainter.textPainter;
       textPainter.paint(canvas, offset);
     }
   }
+  */
+  void drawXLabels(ui.Canvas canvas) {
+    // Draw x axis labels on bottom
+    for (common.XLayouterOutput xLayouterOutput in layouter.xOutputs) {
+      xLayouterOutput.paint(canvas);
+    }
+  }
 
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
-    for (common.YLayouterOutput yLabel in layouter.yOutputs) {
-      // todo 0 : move / keep label coords in layouter
+    for (common.YLayouterOutput yLayouterOutput in layouter.yOutputs) {
+      // todo -3 : move / keep label coords in layouter
       var offset = new ui.Offset(
         layouter.yLabelsAbsX,
-        yLabel.labelTopY,
+        yLayouterOutput.labelTopY,
       );
-      widgets.TextPainter textPainter = yLabel.labelPainter.textPainter;
+      widgets.TextPainter textPainter = yLayouterOutput.labelPainter.textPainter;
       textPainter.paint(canvas, offset);
     }
   }
