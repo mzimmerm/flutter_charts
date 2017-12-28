@@ -24,9 +24,9 @@ class LineChartPainter extends ChartPainter {
         line_presenters.LineAndHotspotPresenter presenterCast =
             presenter as line_presenters.LineAndHotspotPresenter;
         canvas.drawLine(
-          presenterCast.linePresenter.from,
-          presenterCast.linePresenter.to,
-          presenterCast.linePresenter.paint,
+          presenterCast.linePresenter.lineFrom,
+          presenterCast.linePresenter.lineTo,
+          presenterCast.linePresenter.linePaint,
         );
         canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,
             presenterCast.outerPaint);

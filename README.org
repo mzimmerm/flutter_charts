@@ -298,7 +298,6 @@ Result vertical bar chart:
 
 *** IN-PROGRESS Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
 
-
 - [X] Note only: Labels printed and layed out using *LabelPainter* in label_painter. this is used in
   - [X] XLayouter
   - [X] YLayouter
@@ -335,8 +334,50 @@ Result vertical bar chart:
       - [X] legendOutputs -> legendLayoutPainters
   - [X] Make LayouterPainter members private.
 
-- [ ] *layouters: Replace all places using Iterable.generate with a simple loop*.
-- [ ] Test everything works
+- [X] layouters: Replace all places using Iterable.generate with a simple loop.
+- [X] Test everything works
+- [-] Separate creation of xLayoutPainters and xGrid
+  - [X] new class *XGridLinesLayoutPainter*
+  - [ ] ChartLayouter new member *xGridLinesLayoutPainter*, replaces *horizGridLines*
+  - [ ] start creating XGridLinesLayoutPainter during creation of xLayoutPainters -
+  - [ ] separate creation of xLayoutPainters and xGrid
+    - [ ] new class *XLinePresenter* extends LinePresenter
+    - [ ] XLinePresenter - move all relevant members from XLayoutPainter
+  - [ ] Whenever a new XLayoutPainter is created:
+   
+    - [ ] create a new *YGridLinesLayoutPainter.yLinePresenter*
+
+    - [ ] At that point, 
+
+      - [ ] !!! must set the *YGridLinesLayoutPainter.yLinePresenter* lineFrom and lineTo to same values as in *get vertGridLines* !!!!!
+
+      - [ ] must call applyParentOffset
+  - [ ] *XGridLineLayoutPainter* has:
+    - [ ] *xLinePresenters*
+    - [ ] *applyParentOffset*
+    - [ ] *paint*
+
+  - [ ]  start creating horizGridLines from XGridLineLayoutPainter
+
+  - [ ]  paint XGridLineLayoutPainter instead of using horizGridLines.
+  
+- [ ] Separate creation of yLayoutPainters and yGrid
+
+- [ ] test all works
+
+- [ ] rename YLayoutPainter to YLabelPainter
+- [ ] rename XLayoutPainter to XLabelPainter
+- [ ] rename yOutput to yLabelPainter
+- [ ] rename xOutput to xLabelPainter
+
+- [ ] HorizontalFixedWidthAutoScaledLabelsContainer add method applyParentOffset, pass to LabelPainters
+
+- [ ] create class XLayoutContainter extends HorizontalFixedWidthAutoScaledLabelsContainer
+
+  - [ ] member painters XLayoutPainter s
+
+- [ ] X axis: wrap painters (XLayoutPainter), to 
+
 - [ ] Changes refactoring needed ahead
 
   - [ ] LabelPainter must accept AND HAVE MEMBERS all sizing outside options: textDirection, textAlign, textScaleFactor, labelTextStyle (KEEP THIS ONE ON OPTIONS DEFAULT)
@@ -371,6 +412,8 @@ Result vertical bar chart:
         - [ ] if evalLabelPaintersForTooBig.isNotEmpty()
           - [ ] trimLayouterOutputLabels = on all outputs, go to each, and if the output.labelPainter overflows, left justify it and trim , collect and return the trimmed outputs
     - [ ] Now, from layout, call layoutUntilFitsParent instead of layoutCore
+
+- [ ] Move label_painter.dart from util to the chart dirs somewhere
   
 - [ ] TEST
 - [ ] NOTE: in painter:
@@ -387,6 +430,90 @@ Result vertical bar chart:
 - 
 - [ ] Clip chart to not paint outside area provided by Flutter app. 
 - [ ] Clip labels and legends not to run into the neighbor, if too long.
+
+
+// todo -5
+class YGridLinesLayoutPainter {
+
+  List<YLinePresenter> yLinePresenters = new List();
+
+  /// Apply offset in parent. This call positions the Y Label (this instance)
+  /// to the absolute position in the chart's available size
+  void applyParentOffset(ui.Offset offset) {
+    yLinePresenters.forEach((yLinePresenter) => yLinePresenter.applyParentOffset(offset));
+  }
+
+  void paint(ui.Canvas canvas) {
+    yLinePresenters.forEach((yLinePresenter) => yLinePresenter.paint(canvas));
+  }
+
+
+}
+
+// todo -5
+class YLinePresenter eytends line_presenter.LinePresenter {
+
+  /// Constructor from parent
+  YLinePresenter({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
+
+    this.linePaint = linePaint;
+    this.lineFrom = lineFrom;
+    this.lineTo = lineTo;
+  }
+
+
+  /// The y offset of horizical grid line in the middle of column.
+  ///
+  /// On all chart types, this is the same as [_tickY] - allows
+  /// to draw a line in the middle of the column (middle of label).
+  ///
+  /// Generally intended to be used on charts showing data as points
+  /// (e.g. line charts), but not on bucket type charts such as bar chart.
+  ///
+  /// On some chart types, [_horizGridLineY] may not be drawn;
+  /// [_leftHorizGridLineY] and [_rightHorizGridLineY] may be used instead.
+  double _horizGridLineY;
+
+  /// The y offset of horizical grid line on the left border of the chart column.
+  ///
+  /// See discussion in [_horizGridLineY].
+  double _leftHorizGridLineY;
+
+  /// The y offset of horizical grid line on the right border of the chart column.
+  ///
+  /// See discussion in [_horizGridLineY].
+  double _rightHorizGridLineY;
+
+  /// The y offset of point that should
+  /// show a "tick dash" for the label center on the y axis (unused).
+  ///
+  /// Equal to the y offset of Y label middle point.
+  ///
+  /// First "tick dash" is on the first label, last on the last label.
+  double _tickY;
+
+  /// Absolute offset in chart
+  ui.Offset _offset;
+
+  /// Apply offset in parent. This call positions the Y Label (this instance)
+  /// to the absolute position in the chart's available size
+  void applyParentOffset(ui.Offset offset) {
+    _horizGridLineY += offset.dy;
+    _leftHorizGridLineY += offset.dy;
+    _rightHorizGridLineY += offset.dy;
+    _tickY += offset.dy;
+
+    // Duplicated info
+    _offset = new ui.Offset(_tickY, offset.dy);
+  }
+
+  void paint(ui.Canvas canvas) {
+    // todo -5
+  }
+
+}
+
+
 
  labelTextStyle: _options.labelTextStyle,
       labelTextDirection: _options.labelTextDirection,

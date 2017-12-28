@@ -72,14 +72,23 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
   void drawGrid(ui.Canvas canvas) {
 
-    // draw horizontal and vertical grid
-    layouter.horizGridLines.forEach((linePresenter) =>
-        canvas.drawLine(linePresenter.from, linePresenter.to, linePresenter.paint)
-    );
+    // draw horizontal grid
+    layouter.xGridLinesLayoutPainter.paint(canvas);
 
-    layouter.vertGridLines.forEach((linePresenter) =>
-        canvas.drawLine(linePresenter.from, linePresenter.to, linePresenter.paint)
+    /* todo -5
+    layouter.horizGridLines.forEach((linePresenter) =>
+        canvas.drawLine(linePresenter.lineFrom, linePresenter.lineTo, linePresenter.linePaint)
     );
+    */
+
+    // draw vertical grid
+    layouter.yGridLinesLayoutPainter.paint(canvas);
+
+    /* todo -5
+    layouter.vertGridLines.forEach((linePresenter) =>
+        canvas.drawLine(linePresenter.lineFrom, linePresenter.lineTo, linePresenter.linePaint)
+    );
+    */
   }
 
   void drawXLabels(ui.Canvas canvas) {

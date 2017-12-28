@@ -49,9 +49,9 @@ class LineAndHotspotPresenter extends Presenter {
     ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     linePresenter = new line_presenter.LinePresenter(
-      from: fromPoint,
-      to: toPoint,
-      paint: rowDataPaint..strokeWidth = options.lineStrokeWidth
+      lineFrom: fromPoint,
+      lineTo: toPoint,
+      linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth
     );
     offsetPoint = fromPoint; // point is the left (from) end of the line
     innerPaint = options.hotspotInnerPaint;

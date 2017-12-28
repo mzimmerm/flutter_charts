@@ -1,17 +1,17 @@
 import 'dart:ui' as ui show Offset, Paint;
 
 
-/// Manages [from] and [to] positions and [paint] for a line segment.
+/// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 /// todo 0 rename - not a presenter, just manages values. move to chart
 class LinePresenter {
-  ui.Paint paint;
-  ui.Offset from;
-  ui.Offset to;
+  ui.Paint linePaint;
+  ui.Offset lineFrom;
+  ui.Offset lineTo;
 
-  LinePresenter({ui.Offset from, ui.Offset to, ui.Paint paint}) {
+  LinePresenter({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
 
-    this.paint = paint;
-    this.from = from;
-    this.to = to;
+    this.linePaint = linePaint;
+    this.lineFrom = lineFrom;
+    this.lineTo = lineTo;
   }
 }
