@@ -367,8 +367,8 @@ Result vertical bar chart:
 
 - [ ] rename YLayoutPainter to YLabelPainter
 - [ ] rename XLayoutPainter to XLabelPainter
-- [ ] rename yOutput to yLabelPainter
-- [ ] rename xOutput to xLabelPainter
+- [ ] rename yLayoutPainter to yLabelPainter
+- [ ] rename xLayoutPainter to xLabelPainter
 
 - [ ] HorizontalFixedWidthAutoScaledLabelsContainer add method applyParentOffset, pass to LabelPainters
 
