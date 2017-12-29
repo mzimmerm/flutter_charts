@@ -47,7 +47,7 @@ class ChartOptions {
   // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
 
   /// Pad space around X labels.
-  double xLabelsPadTB = 24.0; // todo -9 12.0; // top and bottom
+  double xLabelsPadTB = 24.0; // todo -6 12.0; // top and bottom
   double xLabelsPadLR = 12.0; // left and right - Unused
 
   /// Pad space around Y labels.
