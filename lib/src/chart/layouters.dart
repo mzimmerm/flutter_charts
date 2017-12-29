@@ -212,7 +212,7 @@ abstract class ChartLayouter {
 
     xLayouter.painters.forEach((XLayoutPainter xLayoutPainter) {
       xLayoutPainter
-          .applyParentOffset(new ui.Offset(yContainerSize.width, xLabelsAbsY));
+          .applyParentOffset(new ui.Offset(yContainerSize.width, xContainerOffset.dy));
     });
 
     // ### 5. Second call to YLayouter is needed, as available height for Y
@@ -298,8 +298,6 @@ abstract class ChartLayouter {
           ),
           linePaint: gridLinesPaint(this.options));
 
-      lastYLinePresenter = yLinePresenter;
-
       yLinePresenter._tickX = xLayouterResult.tickX;
       yLinePresenter._vertGridLineX = xLayouterResult.vertGridLineX;
       yLinePresenter._leftVertGridLineX = xLayouterResult.leftVertGridLineX;
@@ -308,10 +306,21 @@ abstract class ChartLayouter {
 
       // For each xLayoutPainter, add a new vertical grid line - yGrid line.
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
+
+      lastYLinePresenter = yLinePresenter;
     }
 
     // For stacked, we need to add last right vertical yGrid line
     if (this.isStacked && lastYLinePresenter != null) {
+
+      int lastIndex = xLayoutPainters.length - 1;
+      var lastXLayoutPainter = xLayoutPainters.elementAt(lastIndex);
+
+      XLayouterResult xLayouterResult = this.xLayouter.getXLayouterResult(
+        xLayoutPainter: lastXLayoutPainter,
+        xLayoutPainterIndex: lastIndex,
+      );
+
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(
             lastYLinePresenter._rightVertGridLineX,
@@ -322,11 +331,18 @@ abstract class ChartLayouter {
             this.vertGridLinesToY,
           ),
           linePaint: gridLinesPaint(options));
+
+      yLinePresenter._tickX = xLayouterResult.tickX;
+      yLinePresenter._vertGridLineX = xLayouterResult.vertGridLineX;
+      yLinePresenter._leftVertGridLineX = xLayouterResult.leftVertGridLineX;
+      yLinePresenter._rightVertGridLineX = xLayouterResult.rightVertGridLineX;
+      //  yLinePresenter._labelLeftX = xLayouterResult.labelLeftX;
+
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
     }
 
     // todo -6 finish this or comment - offset is likely applied in the calls
-    this.yGridLinesLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
+    this.yGridLinesLayoutPainter.applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
 
     // ### 7.2 Horizontal Grid (xGrid) layout:
 
@@ -573,11 +589,12 @@ abstract class ChartLayouter {
 
   // todo -8 remove double get yLabelsAbsX => options.yLabelsPadLR;
 
+  /* todo -8 remove
   double get xLabelsAbsY =>
       chartArea.height -
 // todo -8 remove:      (xLayouter._xLabelsContainerHeight + options.xLabelsPadTB);
       (xContainerSize.height + options.xLabelsPadTB);
-
+*/
   double get yLabelsMaxHeight => yLayouter._yLabelsMaxHeight;
 
   double get gridStepWidth => xLayouter._gridStepWidth;
@@ -863,7 +880,7 @@ class YLayoutPainter {
   double _labelTopY; // todo -9 this is duplicated in XLinePresenter. Remove it from there.
 
   /// Absolute offset in chart
-  ui.Offset _offset;
+  ui.Offset _offset = ui.Offset.zero;
 
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
@@ -871,11 +888,11 @@ class YLayoutPainter {
     /* todo -5
     _horizGridLineY += offset.dy; // offset.dy is 0
     */
+    _offset += offset;
     _labelTopY += offset.dy;
 
     // Duplicated info
-    //_offset = new ui.Offset(offset.dx, _labelTopY);
-    _offset = new ui.Offset(offset.dx, _labelTopY);
+    _offset = new ui.Offset(_offset.dx, _labelTopY);
   }
 
   void paint(ui.Canvas canvas) {
@@ -1109,6 +1126,10 @@ class XLayouter {
           .yLinePresenters
           .add(yLinePresenter);
       */
+      // Move xLayoutPainter down by option value inside XLayouter
+
+      xLayoutPainter.applyParentOffset(new ui.Offset(0.0, options.xLabelsPadTB)); // todo -9: y=options.xLabelsPadTB
+
       painters.add(xLayoutPainter);
     }
 
@@ -1264,10 +1285,10 @@ class XLayoutPainter {
   ///            We need to set parent offset on _labelPainter,
   ///            and this member should be used only to check with _labelPainter
   ///            for correctness.
-  double _labelLeftX;
+  double _labelLeftX;// todo -9 this is duplicated in YLinePresenter. Remove it from there.
 
   /// Absolute offset in chart
-  ui.Offset _offset;
+  ui.Offset _offset = ui.Offset.zero;
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
@@ -1278,10 +1299,11 @@ class XLayoutPainter {
     _rightVertGridLineX += offset.dx;
     _tickX += offset.dx;
     */
+    _offset += offset;
     _labelLeftX += offset.dx;
 
     // Duplicated info
-    _offset = new ui.Offset(_labelLeftX, offset.dy);
+    _offset = new ui.Offset(_labelLeftX, _offset.dy);
   }
 
   void paint(ui.Canvas canvas) {
@@ -1354,6 +1376,9 @@ class YLinePresenter extends line_presenter.LinePresenter {
     _leftVertGridLineX += offset.dx;
     _rightVertGridLineX += offset.dx;
     _tickX += offset.dx;
+
+    this.lineFrom += offset; // translate
+    this.lineTo += offset;
 
     // Duplicated info
     _offset = new ui.Offset(_tickX, offset.dy);
