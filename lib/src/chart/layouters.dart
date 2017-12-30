@@ -55,8 +55,11 @@ abstract class ChartLayouter {
   ChartOptions options;
   ChartData data;
   ui.Size chartArea;
-  double yAxisAbsMin; // todo -6 make consistent
-  double yAxisAbsMax; // todo -6 make consistent
+  /* todo -7
+  double yAxisMin; // todo -6 make consistent
+  double yAxisMax; // todo -6 make consistent
+  */
+
   LegendLayouter legendLayouter;
   YLayouter yLayouter;
   XLayouter xLayouter;
@@ -159,14 +162,24 @@ abstract class ChartLayouter {
 
     var yLayouterFirst = new YLayouter(
       chartLayouter: this,
-      yAxisAbsMin: yContainerHeight,
-      yAxisAbsMax: 0.0,
+      mustFillSize: new ui.Size(0.0, yContainerHeight),
+      yLabelsMaxHeightFromFirstLayout: 0.0,
+      /* todo -7
+      yAxisMin: yContainerHeight,
+      yAxisMax: 0.0,
+      */
       isFirst: true,
     );
 
     // print("   ### YLayouter #1: before layout: ${yLayouterFirst}");
 
     yLayouterFirst.layout();
+
+    double yLabelsMaxHeightFromFirstLayout = yLayouterFirst.yLayoutPainters
+        .map((var yLayoutPainter) => yLayoutPainter._labelPainter)
+        .map(
+            (LabelPainter labelPainter) => labelPainter.textPainter.size.height)
+        .reduce(math.max);
 
     this.yLayouter = yLayouterFirst;
 
@@ -191,7 +204,7 @@ abstract class ChartLayouter {
     xLayouter.layout();
     this.xLayouter = xLayouter;
 
-    xLayoutPainters = xLayouter.painters;
+    xLayoutPainters = xLayouter.xLayoutPainters;
 
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
     xContainerSize = new ui.Size(xContainerWidth,
@@ -200,9 +213,9 @@ abstract class ChartLayouter {
         yContainerSize.width, chartArea.height - xContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-    xLayouter.painters.forEach((XLayoutPainter xLayoutPainter) {
-      xLayoutPainter
-          .applyParentOffset(new ui.Offset(yContainerSize.width, xContainerOffset.dy));
+    xLayouter.xLayoutPainters.forEach((XLayoutPainter xLayoutPainter) {
+      xLayoutPainter.applyParentOffset(
+          new ui.Offset(yContainerSize.width, xContainerOffset.dy));
     });
 
     // ### 5. Second call to YLayouter is needed, as available height for Y
@@ -211,17 +224,30 @@ abstract class ChartLayouter {
     //        The y axis absolute min and max are used to scale data values
     //        to the y axis.
 
-    this.yAxisAbsMin = chartArea.height -
+    /* todo -7
+    this.yAxisMin = chartArea.height -
         (options.xBottomMinTicksHeight +
             xContainerSize.height +
             2 * options.xLabelsPadTB);
 
-    this.yAxisAbsMax = yAxisAbsMaxFunc;
+    this.yAxisMax = yAxisAbsMaxFunc;
 
     var yLayouter = new YLayouter(
       chartLayouter: this,
-      yAxisAbsMin: yAxisAbsMin, // todo -6 jut pick up from this
-      yAxisAbsMax: yAxisAbsMax, // todo -6 jut pick up from this
+      yAxisMin: yAxisMin, // todo -6 jut pick up from this
+      yAxisMax: yAxisMax, // todo -6 jut pick up from this
+      isFirst: false,
+    );
+    */
+
+    // On the second real layout, make sure mustFill only down to
+    //   the top of the XLayouter area.
+    var yLayouter = new YLayouter(
+      chartLayouter: this,
+      mustFillSize: new ui.Size(0.0, yContainerHeight - xContainerSize.height),
+      yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
+      // yAxisMin: yAxisMin, // todo -6 jut pick up from this
+      // yAxisMax: yAxisMax, // todo -6 jut pick up from this
       isFirst: false,
     );
 
@@ -244,12 +270,12 @@ abstract class ChartLayouter {
 
     // ### 6. Recalculate offsets for this Area layouter
 
-    yLayouter.painters.forEach((YLayoutPainter yLayoutPainter) {
+    yLayouter.yLayoutPainters.forEach((YLayoutPainter yLayoutPainter) {
       yLayoutPainter.applyParentOffset(
           new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
     });
 
-    yLayoutPainters = yLayouter.painters;
+    yLayoutPainters = yLayouter.yLayoutPainters;
 
     // ### 7. Layout grid - calculate X and Y positions of grid.
     // This must be done here after X and Y are layed out.
@@ -301,14 +327,13 @@ abstract class ChartLayouter {
 
     // For stacked, we need to add last right vertical yGrid line
     if (this.isStacked && lastYLinePresenter != null) {
-
       int lastIndex = xLayoutPainters.length - 1;
       var lastXLayoutPainter = xLayoutPainters.elementAt(lastIndex);
 
       XLayouterResult xLayouterResult = this.xLayouter.getXLayouterResult(
-        xLayoutPainter: lastXLayoutPainter,
-        xLayoutPainterIndex: lastIndex,
-      );
+            xLayoutPainter: lastXLayoutPainter,
+            xLayoutPainterIndex: lastIndex,
+          );
 
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(
@@ -331,7 +356,9 @@ abstract class ChartLayouter {
     }
 
     // todo -6 finish this or comment - offset is likely applied in the calls
-    this.yGridLinesLayoutPainter.applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
+    this
+        .yGridLinesLayoutPainter
+        .applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
 
     // ### 7.2 Horizontal Grid (xGrid) layout:
 
@@ -352,25 +379,24 @@ abstract class ChartLayouter {
     int yIndex = 0;
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
-      double topY = labelInfo.scaledLabelValue; // todo -5 why not used?
+      // yTickY is the date value scaled
+      // to interval (yAxisMin, yAxisMax). Label center should be placed there.
+      double yTickY = labelInfo.scaledLabelValue; // todo -5 why not used?
       var yLayoutPainter = yLayoutPainters.elementAt(yIndex);
 
-      if (!this.yLayouter._isFirst) { //  todo -6 is this needed?
-        double horizGridLineY = topY;
+      if (!this.yLayouter._isFirst) {
+        //  todo -6 is this needed?
+        double horizGridLineY = yTickY;
         double labelTopY =
-            topY - yLayoutPainter._labelPainter.textPainter.height / 2;
+            yTickY - yLayoutPainter._labelPainter.textPainter.height / 2;
         XLinePresenter xLinePresenter = new XLinePresenter(
-            lineFrom: new ui.Offset(
-              this.horizGridLinesFromX,
-              horizGridLineY,
-            ),
-            lineTo: new ui.Offset(
-              this.horizGridLinesToX,
-              horizGridLineY,
-            ),
-            linePaint: gridLinesPaint(options));
+          lineFrom: new ui.Offset(0.0, horizGridLineY),
+          // todo -6 x includes yRightTicksWidth,
+          lineTo: new ui.Offset(chartGridContainerSize.width, horizGridLineY),
+          linePaint: gridLinesPaint(options),
+        );
 
-        xLinePresenter._horizGridLineY = topY;
+        xLinePresenter._horizGridLineY = yTickY;
         xLinePresenter._labelTopY = labelTopY;
 
         // For each new added y label (yLayoutPainter),
@@ -380,8 +406,8 @@ abstract class ChartLayouter {
       yIndex++;
     }
 
-    // todo -5 finish this - offset is likely applied in the calls
-    this.xGridLinesLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
+    // todo -9 finish this - offset is likely applied in the calls
+    this.xGridLinesLayoutPainter.applyParentOffset(chartGridContainerOffset);
 
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
@@ -438,28 +464,31 @@ abstract class ChartLayouter {
       .map((var yLinePresenter) => yLinePresenter._tickX)
       .toList();
 
+  /* todo -7 remove
   double get yAxisAbsMaxFunc => math.max(
       yLayouter._yLabelsMaxHeight / 2 +
           legendContainerSize
-              .height, // todo -6 this max is nonsense, just usse the first term
+              .height, // todo -6 this max is nonsense, just use the first term
       options.xTopPaddingAboveTicksHeight);
+  */
 
   double get yRightTicksWidth =>
       math.max(options.yRightMinTicksWidth, xLayouter._gridStepWidth / 2);
 
+  /* todo -7 remove
   double get horizGridLinesFromX => chartGridContainerOffset.dx;
 
   double get horizGridLinesToX =>
       chartGridContainerOffset.dx +
       chartGridContainerSize.width; // todo -6 this includes yRightTicksWidth
-
+  */
 
   double get vertGridLinesFromY => chartGridContainerOffset.dy;
 
   double get vertGridLinesToY =>
       chartGridContainerOffset.dy + chartGridContainerSize.height;
 
-  double get yLabelsMaxHeight => yLayouter._yLabelsMaxHeight;
+  // todo -7 remove: double get yLabelsMaxHeight => yLayouter._yLabelsMaxHeight; // todo -7 eliminate method
 
   double get gridStepWidth => xLayouter._gridStepWidth;
 }
@@ -493,43 +522,58 @@ class YLayouter {
   // ### calculated values
 
   /// Results of laying out the Y axis labels, usable by clients.
-  List<YLayoutPainter> painters = new List();
+  List<YLayoutPainter> yLayoutPainters = new List();
 
   double _yLabelsContainerWidth;
-  double _yLabelsMaxHeight;
+  ui.Size _mustFillSize;
+  double _yLabelsMaxHeightFromFirstLayout;
 
+  /* todo -7
   double _yAxisAbsMin;
   double _yAxisAbsMax;
+*/
 
   // first layouter ignores grid entirely
   bool _isFirst;
 
   /// Constructor of the layouter for the Y axis labels.
   /// The parameter [chartLayouter] provides this [YLayouter] access to it's
-  /// parent layouter. Other parameters - [yAxisAbsMin] and [yAxisAbsMax] -
+  /// parent layouter.
+  ///
+  /// Other parameters - [yAxisMin] and [yAxisMax] -
   /// define constraints it the Y direction.
   ///
-  /// [yAxisAbsMin]  and [yAxisAbsMax] should be passed the minimum
+  /// [yAxisMin]  and [yAxisMax] should be passed the minimum
   /// and maximum Y coordinates within (0.0, [chartLayouter.chartArea.height]).
   /// The min and max are interpreted as coordinates of the bottom and top
   /// of the area the layouter uses.
+  ///
+  /// This layouter uses the full height range of ([yAxisMin], [yAxisMax]),
+  /// and takes as much width as needed for Y labels to be painted.
   ///
   /// "Abs" in the naming refers to coordinates within the
   /// "absolute" area [chartLayouter.chartArea]
   /// provided by Flutter for the [ChartPainter].
   ///
-  /// This layouter uses the full height range of ([yAxisAbsMin], [yAxisAbsMax]),
-  /// and takes as much width as needed for Y labels to be painted.
+
   ///
   YLayouter({
     ChartLayouter chartLayouter,
-    double yAxisAbsMin,
-    double yAxisAbsMax,
+    ui.Size mustFillSize,
+    double yLabelsMaxHeightFromFirstLayout,
+    /* todo -7
+    double yAxisMin,
+    double yAxisMax,
+    */
     bool isFirst,
   }) {
     _chartLayouter = chartLayouter;
-    _yAxisAbsMin = yAxisAbsMin;
-    _yAxisAbsMax = yAxisAbsMax;
+    _mustFillSize = mustFillSize;
+    _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
+    /* todo -7
+    _yAxisAbsMin = yAxisMin;
+    _yAxisAbsMax = yAxisMax;
+    */
     _isFirst = isFirst;
   }
 
@@ -545,27 +589,34 @@ class YLayouter {
   /// [YLayouter._yLabelsContainerWidth] provides remaining available
   /// horizontal space for the [GridLayouter] and [XLayouter].
   void layout() {
+    // todo -7 vvv
+    // todo -9: mustFillSize - max of yLabel height, and the 2 paddings
+    double yAxisMin = _mustFillSize.height -
+        (_chartLayouter.options.xBottomMinTicksHeight +
+            2 * _chartLayouter.options.xLabelsPadTB);
+
+    // todo -6 this max is a nonsense, just use the first term
+    double yAxisMax =
+        // todo -7: legendContainerSize.height + yLayouter._yLabelsMaxHeight / 2;
+        _yLabelsMaxHeightFromFirstLayout /
+            2; // todo -9: max of this and some padding
+    // todo -7 ^^^
+
     if (_chartLayouter.options.useUserProvidedYLabels) {
-      layoutManually();
+      layoutManually(yAxisMin, yAxisMax);
     } else {
-      layoutAutomatically();
+      layoutAutomatically(yAxisMin, yAxisMax);
     }
-    _yLabelsContainerWidth = painters
+    _yLabelsContainerWidth = yLayoutPainters
             .map((var yLayoutPainter) => yLayoutPainter._labelPainter)
             .map((LabelPainter labelPainter) =>
                 labelPainter.textPainter.size.width)
             .reduce(math.max) +
         2 * _chartLayouter.options.yLabelsPadLR;
-
-    _yLabelsMaxHeight = painters
-        .map((var yLayoutPainter) => yLayoutPainter._labelPainter)
-        .map(
-            (LabelPainter labelPainter) => labelPainter.textPainter.size.height)
-        .reduce(math.max);
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
-  void layoutManually() {
+  void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData = _chartLayouter.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
@@ -578,7 +629,7 @@ class YLayouter {
     double dataStepHeight =
         (dataRange.max - dataRange.min) / (yLabels.length - 1);
 
-    Interval yAxisRange = new Interval(_yAxisAbsMin, _yAxisAbsMax);
+    Interval yAxisRange = new Interval(yAxisMin, yAxisMax);
 
     double gridStepHeight =
         (yAxisRange.max - yAxisRange.min) / (yLabels.length - 1);
@@ -598,8 +649,8 @@ class YLayouter {
     var yScaler = new YScalerAndLabelFormatter(
         dataRange: dataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
-        toScaleMin: _yAxisAbsMin,
-        toScaleMax: _yAxisAbsMax,
+        toScaleMin: yAxisMin,
+        toScaleMax: yAxisMax,
         chartOptions: _chartLayouter.options);
 
     yScaler.setLabelValuesForManualLayout(
@@ -612,8 +663,8 @@ class YLayouter {
 
   /// Generates scaled and spaced Y labels from data, then auto layouts
   /// them on the Y axis according to data range [range] and display
-  /// range [_yAxisAbsMin] to [_yAxisAbsMax].
-  void layoutAutomatically() {
+  /// range [yAxisMin] to [yAxisMax].
+  void layoutAutomatically(double yAxisMin, double yAxisMax) {
     List<double> flatData = _chartLayouter.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
@@ -624,7 +675,9 @@ class YLayouter {
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
-        toScaleMin: _yAxisAbsMin, toScaleMax: _yAxisAbsMax);
+      toScaleMin: yAxisMin,
+      toScaleMax: yAxisMax,
+    );
 
     _commonLayout(yScaler);
   }
@@ -642,11 +695,39 @@ class YLayouter {
       textAlign: options.labelTextAlign, // center text
       textScaleFactor: options.labelTextScaleFactor,
     );
-
-    // YLayouter.painters are created from  yScaler.labelInfos,
+    // Create Y Labels (yLayoutPainters)
+    // yLayoutPainters are created from  yScaler.labelInfos,
     //   NOT this._chartLayouter.xGridLinesLayoutPainter.
     for (LabelInfo labelInfo in yScaler.labelInfos) {
-      double topY = labelInfo.scaledLabelValue; // todo -6 wrap to common like getXResult
+      double yTickY = labelInfo.scaledLabelValue;
+      var yLayoutPainter = new YLayoutPainter();
+      yLayoutPainter._labelPainter = new LabelPainter(
+        label: labelInfo.formattedYLabel,
+        labelMaxWidth: double.INFINITY,
+        labelStyle: labelStyle,
+      );
+      double labelTopY =
+          yTickY - yLayoutPainter._labelPainter.textPainter.height / 2;
+
+      /* todo -9 remove
+      yLayoutPainter._labelTopY = yTickY;
+      */
+      yLayoutPainter.yTickY = yTickY - labelTopY;
+
+      // Move the contained LabelPainter to correct position
+      yLayoutPainter.applyParentOffset(new ui.Offset(0.0, labelTopY));
+
+      yLayoutPainter._labelPainter.textPainter.layout();
+
+      yLayoutPainters.add(yLayoutPainter);
+
+/* todo -9
+    // Create Y Labels (yLayoutPainters)
+    // yLayoutPainters are created from  yScaler.labelInfos,
+    //   NOT this._chartLayouter.xGridLinesLayoutPainter.
+    for (LabelInfo labelInfo in yScaler.labelInfos) {
+      double yTickY =
+          labelInfo.scaledLabelValue;
       var yLayoutPainter = new YLayoutPainter();
       // textPainterForLabel calls [TextPainter.layout]
       yLayoutPainter._labelPainter = new LabelPainter(
@@ -654,20 +735,21 @@ class YLayouter {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      double labelTopY =
-          topY - yLayoutPainter._labelPainter.textPainter.height / 2;  // todo -6 labelTopY unused
-      yLayoutPainter._labelTopY = topY;
-      widgets.TextPainter textPainter =
-          yLayoutPainter._labelPainter.textPainter;
-      textPainter.layout();
+      double labelTopY = yTickY -
+          yLayoutPainter._labelPainter.textPainter.height /
+              2; // todo -6 labelTopY unused
+      yLayoutPainter._labelTopY = yTickY;
 
-      painters.add(yLayoutPainter);
+      yLayoutPainter._labelPainter.textPainter.layout();
+
+      yLayoutPainters.add(yLayoutPainter);
+  */
+
     }
   }
 
   String toString() {
-    return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}" +
-        ", _yLabelsMaxHeight = ${_yLabelsMaxHeight}";
+    return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}";
   }
 }
 
@@ -692,8 +774,21 @@ class YLayoutPainter {
   /// but y labels can be skipped.
   double _horizGridLineY;
 */
+/* todo -9 remove,  same in XLayoutPainter
   ///  y offset of Y label top point.
-  double _labelTopY; // todo -6 this is duplicated in XLinePresenter. Remove it from there.
+  double
+      _labelTopY; // todo -6 this is duplicated in XLinePresenter. Remove it from there.
+*/
+
+  ///  y offset of Y label middle point.
+  ///
+  ///  Also is the y offset of point that should
+  /// show a "tick dash" for the label center on the y axis.
+  ///
+  /// First "tick dash" is on the first label, last on the last label,
+  /// but y labels can be skipped.
+  ///
+  double yTickY;
 
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
@@ -701,14 +796,13 @@ class YLayoutPainter {
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    /* todo -6
-    _horizGridLineY += offset.dy; // offset.dy is 0
-    */
+    // todo -9 remove, same in XLayoutPainter: _labelTopY += offset.dy;
+
     _offset += offset;
-    _labelTopY += offset.dy;
+    yTickY += offset.dy;
 
     // Duplicated info
-    _offset = new ui.Offset(_offset.dx, _labelTopY);
+    // todo -9 remove, same in XLayoutPainter: _offset = new ui.Offset(_offset.dx, _labelTopY);
   }
 
   void paint(ui.Canvas canvas) {
@@ -752,7 +846,7 @@ class XLinePresenter extends line_presenter.LinePresenter {
   double _labelTopY;
 
   /// Absolute offset in chart
-  ui.Offset _offset;
+  ui.Offset _offset = ui.Offset.zero;
 
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
@@ -760,8 +854,13 @@ class XLinePresenter extends line_presenter.LinePresenter {
     _horizGridLineY += offset.dy;
     _labelTopY += offset.dy;
 
+    this.lineFrom += offset; // translate
+    this.lineTo += offset;
+
+    _offset += offset;
+
     // Duplicated info
-    _offset = new ui.Offset(offset.dx, _labelTopY);
+    _offset = new ui.Offset(_offset.dx, _labelTopY);
   }
 
   void paint(ui.Canvas canvas) {
@@ -806,7 +905,7 @@ class XLayouter {
   // ### calculated values
 
   /// Results of laying out the x axis labels, usabel by clients.
-  List<XLayoutPainter> painters = new List();
+  List<XLayoutPainter> xLayoutPainters = new List();
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
@@ -872,13 +971,14 @@ class XLayouter {
       xLayoutPainter._labelLeftX = xLayouterResult.labelLeftX;
 
       // Move xLayoutPainter down by option value inside XLayouter
-      xLayoutPainter.applyParentOffset(new ui.Offset(0.0, options.xLabelsPadTB)); // todo -6: y=options.xLabelsPadTB
+      xLayoutPainter.applyParentOffset(new ui.Offset(
+          0.0, options.xLabelsPadTB)); // todo -6: y=options.xLabelsPadTB
 
-      painters.add(xLayoutPainter);
+      xLayoutPainters.add(xLayoutPainter);
     }
 
     // xlabels area without padding
-    _xLabelsMaxHeight = painters
+    _xLabelsMaxHeight = xLayoutPainters
         .map((var xLayoutPainter) => xLayoutPainter._labelPainter.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
@@ -983,7 +1083,8 @@ class XLayoutPainter {
   ///            We need to set parent offset on _labelPainter,
   ///            and this member should be used only to check with _labelPainter
   ///            for correctness.
-  double _labelLeftX;// todo -6 this is duplicated in YLinePresenter. Remove it from there.
+  double
+      _labelLeftX; // todo -6 this is duplicated in YLinePresenter. Remove it from there.
 
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
@@ -997,8 +1098,9 @@ class XLayoutPainter {
     _rightVertGridLineX += offset.dx;
     _tickX += offset.dx;
     */
-    _offset += offset;
     _labelLeftX += offset.dx;
+
+    _offset += offset;
 
     // Duplicated info
     _offset = new ui.Offset(_labelLeftX, _offset.dy);
@@ -1063,7 +1165,7 @@ class YLinePresenter extends line_presenter.LinePresenter {
   double _tickX;
 
   /// Absolute offset in chart
-  ui.Offset _offset;
+  ui.Offset _offset = ui.Offset.zero;
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
@@ -1076,8 +1178,10 @@ class YLinePresenter extends line_presenter.LinePresenter {
     this.lineFrom += offset; // translate
     this.lineTo += offset;
 
+    _offset += offset; // todo -9
+
     // Duplicated info
-    _offset = new ui.Offset(_tickX, offset.dy);
+    _offset = new ui.Offset(_tickX, _offset.dy); // todo -9 should be _offset
   }
 
   void paint(ui.Canvas canvas) {
@@ -1263,7 +1367,6 @@ class LegendItemSizing {
 ///
 /// All positions are relative to the left of the [LegendLayouter]'s container.
 class LegendLayoutPainter {
-
   // todo -4
 
   /// Painter configured to paint each legend label
