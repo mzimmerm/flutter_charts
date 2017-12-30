@@ -376,6 +376,9 @@ abstract class ChartLayouter {
     //        bars, points  and lines, etc, depending on the chart type.
 
     scalePointsColumns();
+    // todo -9 in x direction, something already applies offset
+    applyParentOffsetOnPointsColumns(
+        new ui.Offset(0.0, chartGridContainerOffset.dy));
     setupPresentersColumns();
   }
 
@@ -393,6 +396,10 @@ abstract class ChartLayouter {
   /// values.
   void scalePointsColumns() {
     this.pointsColumns.scale();
+  }
+
+  void applyParentOffsetOnPointsColumns(ui.Offset offset) {
+    this.pointsColumns.applyParentOffset(offset);
   }
 
   /// Creates from [ChartData] (model for this layouter),
@@ -622,6 +629,7 @@ class YLayouter {
     // yLayoutPainters are created from  yScaler.labelInfos,
     //   NOT this._chartLayouter.xGridLinesLayoutPainter.
     for (LabelInfo labelInfo in yScaler.labelInfos) {
+      // yTickY is both scaled data value and vertical (Y) center of the label.
       double yTickY = labelInfo.scaledLabelValue;
       var yLayoutPainter = new YLayoutPainter();
       yLayoutPainter._labelPainter = new LabelPainter(
@@ -1569,6 +1577,20 @@ class StackableValuePoint {
     return this;
   }
 
+  void applyParentOffset(ui.Offset offset) {
+    // only apply on scaled values, those have chart coordinates that are painted.
+    // todo -9 is this needed? : StackableValuePoint predecessorPoint;
+
+    /// Scaled values. All set lazily after [scale]
+    scaledX += offset.dx;
+    scaledY += offset.dy;
+    fromScaledY += offset.dy;
+    toScaledY += offset.dy;
+
+    scaledFrom += offset;
+    scaledTo += offset;
+  }
+
   /// Copy - clone of this object unstacked. Does not allow to clone if
   /// already stacked.
   ///
@@ -1776,6 +1798,17 @@ class PointsColumns {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _layouter.xTicksXs[col];
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
+      });
+      col++;
+    });
+  }
+
+  void applyParentOffset(ui.Offset offset) {
+    int col = 0;
+    pointsColumns.forEach((PointsColumn column) {
+      column.allPoints().forEach((StackableValuePoint point) {
+        double scaledX = _layouter.xTicksXs[col];
+        point.applyParentOffset(offset);
       });
       col++;
     });
