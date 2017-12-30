@@ -274,7 +274,7 @@ abstract class ChartLayouter {
           ),
           linePaint: gridLinesPaint(this.options));
 
-      yLinePresenter._tickX = xLayouterResult.tickX;
+      yLinePresenter._xTickX = xLayouterResult.xTickX;
       yLinePresenter._vertGridLineX = xLayouterResult.vertGridLineX;
       yLinePresenter._leftVertGridLineX = xLayouterResult.leftVertGridLineX;
       yLinePresenter._rightVertGridLineX = xLayouterResult.rightVertGridLineX;
@@ -307,7 +307,7 @@ abstract class ChartLayouter {
           ),
           linePaint: gridLinesPaint(options));
 
-      yLinePresenter._tickX = xLayouterResult.tickX;
+      yLinePresenter._xTickX = xLayouterResult.xTickX;
       yLinePresenter._vertGridLineX = xLayouterResult.vertGridLineX;
       yLinePresenter._leftVertGridLineX = xLayouterResult.leftVertGridLineX;
       yLinePresenter._rightVertGridLineX = xLayouterResult.rightVertGridLineX;
@@ -416,11 +416,11 @@ abstract class ChartLayouter {
   }
 
   // todo 0 document these methods
-  // todo 0  some getters from here are not needed? Mostly those with "Abs"
+  // todo -9  some getters from here are not needed?
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label)
   List<double> get xTicksXs => yGridLinesLayoutPainter.yLinePresenters
-      .map((var yLinePresenter) => yLinePresenter._tickX)
+      .map((var yLinePresenter) => yLinePresenter._xTickX)
       .toList();
 
   double get yRightTicksWidth =>
@@ -872,7 +872,7 @@ class XLayouter {
     double leftVertGridLineX = columnLeftX;
     double rightVertGridLineX = columnRightX;
 
-    xLayouterResult.tickX = tickX;
+    xLayouterResult.xTickX = tickX;
     xLayouterResult.vertGridLineX = vertGridLineX;
     xLayouterResult.leftVertGridLineX = leftVertGridLineX;
     xLayouterResult.rightVertGridLineX = rightVertGridLineX;
@@ -887,7 +887,7 @@ class XLayouter {
 /// Must be created in [XLayouter.layout] and
 /// any methods called after [XLayouter.layout].
 class XLayouterResult {
-  double tickX;
+  double xTickX;
   double vertGridLineX;
   double leftVertGridLineX;
   double rightVertGridLineX;
@@ -902,45 +902,18 @@ class XLayoutPainter {
   /// Painter configured to paint one label
   LabelPainter _labelPainter;
 
-  /* todo -6
-  /// The x offset of vertical grid line in the middle of column.
-  ///
-  /// On all chart types, this is the same as [_tickX] - allows
-  /// to draw a line in the middle of the column (middle of label).
-  ///
-  /// Generally intended to be used on charts showing data as points
-  /// (e.g. line charts), but not on bucket type charts such as bar chart.
-  ///
-  /// On some chart types, [_vertGridLineX] may not be drawn;
-  /// [_leftVertGridLineX] and [_rightVertGridLineX] may be used instead.
-  double _vertGridLineX;
-
-  /// The x offset of vertical grid line on the left border of the chart column.
-  ///
-  /// See discussion in [_vertGridLineX].
-  double _leftVertGridLineX;
-
-  /// The x offset of vertical grid line on the right border of the chart column.
-  ///
-  /// See discussion in [_vertGridLineX].
-  double _rightVertGridLineX;
-
-  /// The x offset of point that should
-  /// show a "tick dash" for the label center on the x axis (unused).
-  ///
-  /// Equal to the x offset of X label middle point.
-  ///
-  /// First "tick dash" is on the first label, last on the last label.
-  double _tickX;
-*/
   ///  x offset of X label left point .
   /// todo -9 - _labelLeftX is used as parent Offset, but not set
   ///            at the time parentOffset is called.
   ///            We need to set parent offset on _labelPainter,
   ///            and this member should be used only to check with _labelPainter
   ///            for correctness.
-  double
-      _labelLeftX; // todo -6 this is duplicated in YLinePresenter. Remove it from there.
+  ///
+
+  // todo -9 this is duplicated in YLinePresenter. Remove it from there.
+  // todo -9 remove from here, manage only via offsets.
+
+  double _labelLeftX;
 
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
@@ -984,9 +957,11 @@ class YLinePresenter extends line_presenter.LinePresenter {
     this.lineTo = lineTo;
   }
 
+  // todo -9 remove all members and manage everything through offsets.
+
   /// The x offset of vertical grid line in the middle of column.
   ///
-  /// On all chart types, this is the same as [_tickX] - allows
+  /// On all chart types, this is the same as [_xTickX] - allows
   /// to draw a line in the middle of the column (middle of label).
   ///
   /// Generally intended to be used on charts showing data as points
@@ -1012,7 +987,8 @@ class YLinePresenter extends line_presenter.LinePresenter {
   /// Equal to the x offset of X label middle point.
   ///
   /// First "tick dash" is on the first label, last on the last label.
-  double _tickX;
+  /// todo -9 remove and only manage in XLayoutPainter!!
+  double _xTickX;
 
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
@@ -1023,7 +999,7 @@ class YLinePresenter extends line_presenter.LinePresenter {
     _vertGridLineX += offset.dx;
     _leftVertGridLineX += offset.dx;
     _rightVertGridLineX += offset.dx;
-    _tickX += offset.dx;
+    _xTickX += offset.dx;
 
     this.lineFrom += offset; // translate
     this.lineTo += offset;
@@ -1031,7 +1007,7 @@ class YLinePresenter extends line_presenter.LinePresenter {
     _offset += offset; // todo -9
 
     // Duplicated info
-    _offset = new ui.Offset(_tickX, _offset.dy);
+    _offset = new ui.Offset(_xTickX, _offset.dy);
   }
 
   void paint(ui.Canvas canvas) {
