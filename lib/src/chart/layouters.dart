@@ -144,10 +144,12 @@ abstract class ChartLayouter {
 
     legendLayouter.layout();
 
+    /* todo -7
     legendLayouter.painters.forEach((legendLayoutPainter) {
       legendLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
     });
     legendLayoutPainters = legendLayouter.painters;
+    */
 
     // todo -5 vvv
     legendContainerSize = legendLayouter._size;
@@ -213,10 +215,12 @@ abstract class ChartLayouter {
         yContainerSize.width, chartArea.height - xContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+    /* todo -7 remove
     xLayouter.xLayoutPainters.forEach((XLayoutPainter xLayoutPainter) {
       xLayoutPainter.applyParentOffset(
           new ui.Offset(yContainerSize.width, xContainerOffset.dy));
     });
+    */
 
     // ### 5. Second call to YLayouter is needed, as available height for Y
     //        is only known after XLayouter provided height of xLabels
@@ -270,11 +274,12 @@ abstract class ChartLayouter {
 
     // ### 6. Recalculate offsets for this Area layouter
 
+    /* todo -7
     yLayouter.yLayoutPainters.forEach((YLayoutPainter yLayoutPainter) {
       yLayoutPainter.applyParentOffset(
           new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
     });
-
+    */
     yLayoutPainters = yLayouter.yLayoutPainters;
 
     // ### 7. Layout grid - calculate X and Y positions of grid.
@@ -355,10 +360,12 @@ abstract class ChartLayouter {
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
     }
 
-    // todo -6 finish this or comment - offset is likely applied in the calls
+    /* todo -7 remove
+    // todo -9 finish this or comment - offset is likely applied in the calls
     this
         .yGridLinesLayoutPainter
         .applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
+    */
 
     // ### 7.2 Horizontal Grid (xGrid) layout:
 
@@ -371,10 +378,21 @@ abstract class ChartLayouter {
       assert(yScaler.labelInfos.length == yLayoutPainters.length);
     }
 
-    // YLayouter.painters are created from  yScaler.labelInfos,
-    //   NOT this._chartLayouter.xGridLinesLayoutPainter.
-    // for (var yIndex = 0; yIndex < yLayoutPainters.length; yIndex++) {
-    //   var yLayoutPainter = yLayoutPainters.elementAt(yIndex);
+    // Position the horizontal xGrid at mid-points of labels at yTickY.
+    for (var yIndex = 0; yIndex < yLayoutPainters.length; yIndex++) {
+      var yLayoutPainter = yLayoutPainters.elementAt(yIndex);
+      double yTickY = yLayoutPainter.yTickY;
+      XLinePresenter xLinePresenter = new XLinePresenter(
+          lineFrom: new ui.Offset(0.0, yTickY),
+          lineTo: new ui.Offset(chartGridContainerSize.width, yTickY),
+          linePaint: gridLinesPaint(this.options));
+
+      // For each new added y label (yLayoutPainter),
+      //   also add a new horizontal grid line - xGrid line.
+      this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
+    }
+
+    /* todo -7
 
     int yIndex = 0;
 
@@ -405,10 +423,40 @@ abstract class ChartLayouter {
       }
       yIndex++;
     }
+    */
+
+    /* todo -7
+    // todo -9 finish this - offset is likely applied in the calls
+    this.xGridLinesLayoutPainter.applyParentOffset(chartGridContainerOffset);
+    */
+
+    //////////////////////////////////////////////////////////////////////
+    // At the end, but before scalePointsColumns/setupPresentersColumns,
+    //   move the individual chart areas to their offsets.
+    legendLayouter.legendLayoutPainters.forEach((legendLayoutPainter) {
+      legendLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
+    });
+    legendLayoutPainters = legendLayouter.legendLayoutPainters;
+
+    xLayouter.xLayoutPainters.forEach((XLayoutPainter xLayoutPainter) {
+      xLayoutPainter.applyParentOffset(
+          new ui.Offset(yContainerSize.width, xContainerOffset.dy));
+    });
+
+    yLayouter.yLayoutPainters.forEach((YLayoutPainter yLayoutPainter) {
+      yLayoutPainter.applyParentOffset(
+          new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
+    });
+
+    // todo -9 finish this - offset is likely applied in the calls
+    this
+        .yGridLinesLayoutPainter
+        .applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
 
     // todo -9 finish this - offset is likely applied in the calls
     this.xGridLinesLayoutPainter.applyParentOffset(chartGridContainerOffset);
 
+    //////////////////////////////////////////////////////////////////////
     // ### Layout done. After layout, we can calculate absolute positions
     //     of where to draw data points, data lines and data bars
 
@@ -720,31 +768,6 @@ class YLayouter {
       yLayoutPainter._labelPainter.textPainter.layout();
 
       yLayoutPainters.add(yLayoutPainter);
-
-/* todo -9
-    // Create Y Labels (yLayoutPainters)
-    // yLayoutPainters are created from  yScaler.labelInfos,
-    //   NOT this._chartLayouter.xGridLinesLayoutPainter.
-    for (LabelInfo labelInfo in yScaler.labelInfos) {
-      double yTickY =
-          labelInfo.scaledLabelValue;
-      var yLayoutPainter = new YLayoutPainter();
-      // textPainterForLabel calls [TextPainter.layout]
-      yLayoutPainter._labelPainter = new LabelPainter(
-        label: labelInfo.formattedYLabel,
-        labelMaxWidth: double.INFINITY,
-        labelStyle: labelStyle,
-      );
-      double labelTopY = yTickY -
-          yLayoutPainter._labelPainter.textPainter.height /
-              2; // todo -6 labelTopY unused
-      yLayoutPainter._labelTopY = yTickY;
-
-      yLayoutPainter._labelPainter.textPainter.layout();
-
-      yLayoutPainters.add(yLayoutPainter);
-  */
-
     }
   }
 
@@ -833,17 +856,8 @@ class XLinePresenter extends line_presenter.LinePresenter {
     this.lineTo = lineTo;
   }
 
-  ///  y offset of Y label middle point.
-  ///
-  ///  Also is the y offset of point that should
-  /// show a "tick dash" for the label center on the y axis.
-  ///
-  /// First "tick dash" is on the first label, last on the last label,
-  /// but y labels can be skipped.
-  double _horizGridLineY;
-
   ///  y offset of Y label top point.
-  double _labelTopY;
+  // todo -9 double _labelTopY; // todo -9 remove this - see YLinePresenter or YLayoutPainter
 
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
@@ -851,8 +865,7 @@ class XLinePresenter extends line_presenter.LinePresenter {
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    _horizGridLineY += offset.dy;
-    _labelTopY += offset.dy;
+    // todo -9 _labelTopY += offset.dy;
 
     this.lineFrom += offset; // translate
     this.lineTo += offset;
@@ -860,7 +873,8 @@ class XLinePresenter extends line_presenter.LinePresenter {
     _offset += offset;
 
     // Duplicated info
-    _offset = new ui.Offset(_offset.dx, _labelTopY);
+// todo -9    _offset = new ui.Offset(_offset.dx, _labelTopY);
+
   }
 
   void paint(ui.Canvas canvas) {
@@ -1209,7 +1223,7 @@ class LegendLayouter {
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendLayoutPainter> painters = new List();
+  List<LegendLayoutPainter> legendLayoutPainters = new List();
 
   /// Constructor gives this layouter access to it's
   /// layouting Area [chartLayouter], giving it [availableWidth],
@@ -1309,7 +1323,7 @@ class LegendLayouter {
       legendOutput._indicatorPaint.color = _chartLayouter.data
           .dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
 
-      painters.add(legendOutput);
+      legendLayoutPainters.add(legendOutput);
     }
   }
 
