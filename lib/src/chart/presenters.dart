@@ -21,7 +21,6 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 /// on a line chart this is a point with line connecting to the next
 /// value point.
 class Presenter {
-
   StackableValuePoint point;
   StackableValuePoint nextRightColumnValuePoint;
   int rowIndex;
@@ -31,14 +30,15 @@ class Presenter {
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,}) {
+    ChartLayouter layouter,
+  }) {
     this.point = point;
     this.nextRightColumnValuePoint = nextRightColumnValuePoint;
     this.rowIndex = rowIndex;
-    this.layouter = layouter; // todo 0 do we need to store the layouter, or just pass?
+    this.layouter =
+        layouter; // todo 0 do we need to store the layouter, or just pass?
   }
 }
-
 
 /// Manages and presents one "visual column" on the chart.
 ///
@@ -46,8 +46,6 @@ class Presenter {
 /// shows all data value at that label, each value in one instance of
 /// [Presenter].
 class PresentersColumn {
-
-
   List<Presenter> presenters = new List();
   List<Presenter> positivePresenters = new List();
   List<Presenter> negativePresenters = new List();
@@ -79,12 +77,19 @@ class PresentersColumn {
         layouter: layouter);
   }
 
-  void _createPresentersInColumn({List fromPoints, List toPresenters, PointsColumn pointsColumn, PresenterCreator presenterCreator, ChartLayouter layouter,}) {
+  void _createPresentersInColumn({
+    List fromPoints,
+    List toPresenters,
+    PointsColumn pointsColumn,
+    PresenterCreator presenterCreator,
+    ChartLayouter layouter,
+  }) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
       // todo -1 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
-      var nextRightColumnValuePoint =
-      pointsColumn.nextRightPointsColumn != null ? pointsColumn.nextRightPointsColumn.points[rowIndex] : null;
+      var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
+          ? pointsColumn.nextRightPointsColumn.points[rowIndex]
+          : null;
 
       Presenter presenter = presenterCreator.createPointPresenter(
         point: point,
@@ -117,7 +122,6 @@ class PresentersColumn {
 ///   manages a link to the [PresentersColumn] on it's right, allowing
 ///   walk without the [presentersColumns] list. todo 0 consider if this is needed
 class PresentersColumns {
-
   List<PresentersColumn> presentersColumns = new List();
 
   PresentersColumns({
@@ -138,7 +142,6 @@ class PresentersColumns {
       leftPresentersColumn = presentersColumn;
     });
   }
-
 }
 
 /// Maker of Presenter instances.
@@ -151,11 +154,12 @@ class PresentersColumns {
 /// The concrete creators make [LineAndHotspotPresenter], [VerticalBarPresenter]
 /// and other concrete instances, depending on the chart type.
 abstract class PresenterCreator {
-
   /// The layouter is generally needed for the creation of Presenters, as
   /// presenters may need some layout values.
   ChartLayouter _layouter;
-  PresenterCreator({ChartLayouter layouter,})  {
+  PresenterCreator({
+    ChartLayouter layouter,
+  }) {
     this._layouter = layouter;
   }
 
@@ -165,6 +169,4 @@ abstract class PresenterCreator {
     int rowIndex,
     ChartLayouter layouter,
   });
-
 }
-
