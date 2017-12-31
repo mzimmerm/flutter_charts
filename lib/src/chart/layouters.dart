@@ -285,13 +285,26 @@ abstract class ChartLayouter {
         isStacked: this.isStacked);
   }
 
-  // todo -9  some getters from here are not needed?
-
-  /// X coordinates of x ticks (x tick - middle of column, also middle of label)
-  List<double> get xTicksXs =>
+  /// X coordinates of x ticks (x tick - middle of column, also middle of label).
+  /// Once [XLayouter.layout] and [YLayouter.layout] are complete,
+  /// this list drives the layout of [DataContainer].
+  ///
+  /// See [XLayoutPainter.xTickX] for details.
+  List<double> get xTickXs =>
       xLayouter.xLayoutPainters
           .map((var xLayoutPainter) => xLayoutPainter.xTickX)
           .toList();
+
+  /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
+  /// Once [XLayouter.layout] and [YLayouter.layout] are complete,
+  /// this list drives the layout of [DataContainer].
+  ///
+  /// See [YLayoutPainter.yTickY] for details.
+  List<double> get yTickYs {
+    return yLayouter.yLayoutPainters
+        .map((var yLayoutPainter) => yLayoutPainter.yTickY)
+        .toList();
+  }
 
   double get gridStepWidth => xLayouter._gridStepWidth;
 }
@@ -912,7 +925,7 @@ class DataContainer extends LayouterPainterContainer {
   }
 
   void _layoutGrid() {
-    // Name vars that are needed from members, passed to constructor
+    // Vars that layout needs from the [_chartLayouter] passed to constructor
     ChartOptions options = _chartLayouter.options;
     List<XLayoutPainter> xLayoutPainters = _chartLayouter.xLayoutPainters;
     List<YLayoutPainter> yLayoutPainters = _chartLayouter.yLayoutPainters;
@@ -921,6 +934,7 @@ class DataContainer extends LayouterPainterContainer {
     bool isStacked = _chartLayouter.isStacked;
     YScalerAndLabelFormatter yScaler = _chartLayouter.yScaler;
     double xGridStep = _chartLayouter.gridStepWidth;
+    ChartLayouter chartLayouter = _chartLayouter;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -928,15 +942,13 @@ class DataContainer extends LayouterPainterContainer {
     // create one [YLinePresenter] and add it to [yGridLinesLayoutPainter]
 
     this.yGridLinesLayoutPainter = new YGridLinesLayoutPainter();
-    XLayoutPainter lastXLayoutPainter;
 
-    for (var xIndex = 0; xIndex < xLayoutPainters.length; xIndex++) {
-      var xLayoutPainter = xLayoutPainters.elementAt(xIndex);
-      lastXLayoutPainter = xLayoutPainter;
+    chartLayouter.xTickXs.forEach((xTickX) {
+
       // Add vertical yGrid line in the middle or on the left
       double x = isStacked
-          ? xLayoutPainter.xTickX - xGridStep / 2
-          : xLayoutPainter.xTickX;
+          ? xTickX - xGridStep / 2
+          : xTickX;
 
       YLinePresenter yLinePresenter = new YLinePresenter(
         lineFrom: new ui.Offset(x, 0.0),
@@ -944,19 +956,37 @@ class DataContainer extends LayouterPainterContainer {
         linePaint: gridLinesPaint(options),
       );
 
-      // For each xLayoutPainter, add a new vertical grid line - yGrid line.
+      // Add a new vertical grid line - yGrid line.
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
-    }
+    });
 
     // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && lastXLayoutPainter != null) {
-      double x = lastXLayoutPainter.xTickX + xGridStep / 2;
+    if (isStacked && chartLayouter.xTickXs.isNotEmpty) {
+      double x = chartLayouter.xTickXs.last + xGridStep / 2;
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(x, 0.0),
           lineTo:   new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
     }
+
+    // ### 2. Horizontal Grid (xGrid) layout:
+
+    // Iterate yLabels and for each add a horizontal grid line
+    // When iterating Y labels, also create the horizontal lines - xGridLines
+    this.xGridLinesLayoutPainter = new XGridLinesLayoutPainter();
+
+    // Position the horizontal xGrid at mid-points of labels at yTickY.
+    chartLayouter.yTickYs.forEach((yTickY) {
+      XLinePresenter xLinePresenter = new XLinePresenter(
+          lineFrom: new ui.Offset(0.0, yTickY),
+          lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
+          linePaint: gridLinesPaint(options));
+
+      // Add a new horizontal grid line - xGrid line.
+      this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
+    });
+/* todo -10
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
@@ -976,6 +1006,9 @@ class DataContainer extends LayouterPainterContainer {
       //   also add a new horizontal grid line - xGrid line.
       this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
     }
+
+ */
+
   }
 
   void applyParentOffset(ui.Offset offset) {
@@ -1869,7 +1902,7 @@ class PointsColumns {
     int col = 0;
     pointsColumns.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = _layouter.xTicksXs[col];
+        double scaledX = _layouter.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
       });
       col++;
