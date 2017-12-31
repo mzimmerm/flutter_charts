@@ -253,24 +253,12 @@ abstract class ChartLayouter {
           heightExpansionStyle: ExpansionStyle.TryFill),
     );
 
+    // dataContainer layout() must be called before applyParentOffset()
+    //   to ensure the correct order of
+    //   scalePointsColumns (first) and setupPresentersColumns (second)
     this.dataContainer.layout();
 
-    //////////////// todo -10 - move to DataContainer
-    /*
-    // ### 8. Here, scale the [pointsColumns] to the chart scale,
-    //        calculate and create the chart presenters for
-    //        bars, points  and lines, etc, depending on the chart type.
-    scalePointsColumns();
-
-    applyParentOffsetOnPointsColumns(dataContainerOffset);
-    // ### Layout done. After layout, we can calculate absolute positions
-    //     of where to draw data points, data lines and data bars
-    setupPresentersColumns();
-    */
-    ////////////////
-    //////////////////////////////////////////////////////////////////////
-    // At the end, but before scalePointsColumns/setupPresentersColumns,
-    //   move the individual chart areas to their offsets.
+    // At the end, move the individual chart areas to their offsets.
     legendLayouter.legendLayoutPainters.forEach((legendLayoutPainter) {
       legendLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
     });
@@ -288,7 +276,6 @@ abstract class ChartLayouter {
 
     this.dataContainer.applyParentOffset(dataContainerOffset);
 
-    //////////////////////////////////////////////////////////////////////
   }
 
   /// Create member [pointsColumns] from data rows [data.dataRows].
@@ -302,7 +289,6 @@ abstract class ChartLayouter {
 
 
 
-  // todo 0 document these methods
   // todo -9  some getters from here are not needed?
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label)
@@ -970,7 +956,10 @@ class DataContainer extends LayouterPainterContainer {
 
   void layout() {
     _layoutGrid();
-    _layoutPointsAndPresentersColumns();
+
+    // Scale the [pointsColumns] to the [YLayouter] 's scale.
+    // Must be called before
+    scalePointsColumns();
   }
   void _layoutGrid() {
     // Name vars that are needed from members, passed to constructor
@@ -1064,7 +1053,6 @@ class DataContainer extends LayouterPainterContainer {
       double yTickY = yLayoutPainter.yTickY;
       XLinePresenter xLinePresenter = new XLinePresenter(
           lineFrom: new ui.Offset(0.0, yTickY),
-// todo -7 remove          lineTo: new ui.Offset(dataContainerSize.width, yTickY),
           lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
           linePaint: gridLinesPaint(options));
 
@@ -1072,55 +1060,7 @@ class DataContainer extends LayouterPainterContainer {
       //   also add a new horizontal grid line - xGrid line.
       this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
     }
-
-    // ### 1. Layout the grid
-
-    // ### 2. Layout the data: bars or lines
   }
-
-  void _layoutPointsAndPresentersColumns() {
-
-    //////////////// todo -10 - move to DataContainer
-    // ### 8. Here, scale the [pointsColumns] to the chart scale,
-    //        calculate and create the chart presenters for
-    //        bars, points  and lines, etc, depending on the chart type.
-    _scalePointsColumns();
-
-
-  }
-
-  /// Scales all data stored in leafs of columns and rows
-  /// as [StackableValuePoint]. Depending on whether we are layouting
-  /// a stacked or unstacked chart, scaling is done on stacked or unstacked
-  /// values.
-  void _scalePointsColumns() {
-    _chartLayouter.pointsColumns.scale();
-  }
-
-  void _applyParentOffsetOnPointsColumns(ui.Offset offset) {
-    _chartLayouter.pointsColumns.applyParentOffset(offset);
-  }
-
-  /// Creates from [ChartData] (model for this layouter),
-  /// columns of leaf values encapsulated as [StackableValuePoint]s,
-  /// and from the values, the columns of leaf presenters,
-  /// encapsulated as [Presenter]s.
-  ///
-  /// The resulting elements (points and presenters) are
-  /// stored in member [presentersColumns].
-  /// This is a core method that must run at the end of layout.
-  /// Painters use the created leaf presenters directly to draw lines, points,
-  /// and bars from the presenters' prepared ui elements:
-  /// lines, points, bars, etc.
-
-  void _setupPresentersColumns() {
-    this.presentersColumns = new PresentersColumns(
-      pointsColumns: _chartLayouter.pointsColumns,
-      layouter: _chartLayouter,
-      presenterCreator: _chartLayouter.presenterCreator,
-    );
-  }
-
 
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
@@ -1131,13 +1071,13 @@ class DataContainer extends LayouterPainterContainer {
     // draw vertical grid
     this.yGridLinesLayoutPainter.applyParentOffset(offset);
 
-    // todo -10 move here applying offset of lines and bars.
-    _applyParentOffsetOnPointsColumns(offset);
+    // Apply offset of lines and bars.
+    _chartLayouter.pointsColumns.applyParentOffset(offset);
 
-    // todo -10: _applyParentOffsetOnPointsColumns(dataContainerOffset);
-    // ### Layout done. After layout, we can calculate absolute positions
-    //     of where to draw data points, data lines and data bars
-    _setupPresentersColumns();
+    // Any time offset of [_chartLayouter.pointsColumns] has changed,
+    //   we have to recreate the absolute positions
+    //   of where to draw data points, data lines and data bars.
+    setupPresentersColumns();
 
   }
 
@@ -1155,6 +1095,42 @@ class DataContainer extends LayouterPainterContainer {
 
     // todo -10 move here painting of lines and bars.
   }
+
+  // ##### Scaling and layout of [_chartLayouter.pointsColumns]
+  //       and [presentersColumns]
+
+
+  /// Scales all data stored in leafs of columns and rows
+  /// as [StackableValuePoint]. Depending on whether we are layouting
+  /// a stacked or unstacked chart, scaling is done on stacked or unstacked
+  /// values.
+  ///
+  /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
+  /// uses the  absolute scaled [_chartLayouter.pointsColumns].
+  void scalePointsColumns() {
+    _chartLayouter.pointsColumns.scale();
+  }
+
+  /// Creates from [ChartData] (model for this layouter),
+  /// columns of leaf values encapsulated as [StackableValuePoint]s,
+  /// and from the values, the columns of leaf presenters,
+  /// encapsulated as [Presenter]s.
+  ///
+  /// The resulting elements (points and presenters) are
+  /// stored in member [presentersColumns].
+  /// This is a core method that must run at the end of layout.
+  /// Painters use the created leaf presenters directly to draw lines, points,
+  /// and bars from the presenters' prepared ui elements:
+  /// lines, points, bars, etc.
+
+  void setupPresentersColumns() {
+    this.presentersColumns = new PresentersColumns(
+      pointsColumns: _chartLayouter.pointsColumns,
+      layouter: _chartLayouter,
+      presenterCreator: _chartLayouter.presenterCreator,
+    );
+  }
+
 }
 
 class XGridLinesLayoutPainter {
