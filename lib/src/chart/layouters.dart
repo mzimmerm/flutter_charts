@@ -378,17 +378,19 @@ abstract class ChartLayouter {
           new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
     });
 
-    // todo -9 finish this - offset is likely applied in the calls
+    /* todo -9
     this
         .dataContainer
         .yGridLinesLayoutPainter
         .applyParentOffset(new ui.Offset(yContainerSize.width, 0.0));
 
-    // todo -9 finish this - offset is likely applied in the calls
     this
         .dataContainer
         .xGridLinesLayoutPainter
         .applyParentOffset(dataContainerOffset);
+        */
+
+    this.dataContainer.applyParentOffset(dataContainerOffset);
 
     //////////////////////////////////////////////////////////////////////
     // ### Layout done. After layout, we can calculate absolute positions
@@ -456,11 +458,6 @@ abstract class ChartLayouter {
 
   double get yRightTicksWidth =>
       math.max(options.yRightMinTicksWidth, xLayouter._gridStepWidth / 2);
-
-  double get vertGridLinesFromY => dataContainerOffset.dy; // todo -10
-
-  double get vertGridLinesToY => // todo -10
-      dataContainerOffset.dy + dataContainerSize.height;
 
   double get gridStepWidth => xLayouter._gridStepWidth;
 }
@@ -1002,7 +999,7 @@ class LayoutExpansion {
   }
 }
 
-/// Contains and manages each base block on the chart. The basic chart block
+/// Lays out, moves, and paints each base block on the chart. The basic chart block
 /// are:
 ///   - [ChartContainer] - the whole chart
 ///   - [LegendContainer] - manages the legend
@@ -1019,8 +1016,10 @@ class LayoutExpansion {
 ///
 /// Roles:
 ///   - Constructor: a paramater named [layoutExpansion] is required
-///   - Layouter: through the [layout] method
-///   - Painter: through the [paint] method
+///   - Layouter: through the [layout] method.
+///   - Translator (in X and Y direction): through the [applyParentOffset]
+///     method.
+///   - Painter: through the [paint] method.
 ///
 /// Note on Lifecycle of [LayouterPainterContainer] : objects should be such that
 ///       after construction, methods should be called in the order declared
@@ -1037,6 +1036,11 @@ abstract class LayouterPainterContainer {
   /// The containing layouter.
   ChartLayouter _chartLayouter;
 
+  /// Maintains current offset, a sum of all offsets
+  /// passed in subsequent calls to [applyParentOffset] during object
+  /// lifetime.
+  ui.Offset _offset = ui.Offset.zero;
+
   /// [layoutExpansion] defines
   LayouterPainterContainer({
     ChartLayouter chartLayouter,
@@ -1048,16 +1052,45 @@ abstract class LayouterPainterContainer {
 
   void layout();
 
-  void applyParentOffset(ui.Offset offset);
+  void applyParentOffset(ui.Offset offset) {
+    _offset += offset;
+  }
 
   ui.Size get layoutSize;
+
+  /// Answers the requested expansion sizes.
+  ///
+  /// Before layout, clients may need to ask for expansion,
+  /// as that gives a reliabel pre-layout size in directions
+  /// where [ExpansionStyle == ExpansionStyle.TryFill]
+  LayoutExpansion get layoutExpansion => _layoutExpansion;
+
+  double get containerHeight {
+    if (layoutExpansion.heightExpansionStyle != ExpansionStyle.TryFill) {
+      throw new StateError(
+          "Before layout, cannot ask for height if style is not ${ExpansionStyle.TryFill}. " +
+              "If asking after layout, call [layoutSize]");
+    }
+
+    return layoutExpansion.height;
+  }
+
+  double get containerWidth {
+    if (layoutExpansion.widthExpansionStyle != ExpansionStyle.TryFill) {
+      throw new StateError(
+          "Before layout, cannot ask for width if style is not ${ExpansionStyle.TryFill}. " +
+              "If asking after layout, call [layoutSize]");
+    }
+
+    return layoutExpansion.width;
+  }
 
   void paint(ui.Canvas canvas);
 }
 
-/// Manages the area which displays:
-///   - data as bar chart, line chart, or other chart type
-///   - grid (this includes the X and Y axis).
+/// Manages the core chart area which displays:
+///   - the data as bar chart, line chart, or other chart type
+///   - the grid (this includes the X and Y axis).
 class DataContainer extends LayouterPainterContainer {
   DataContainer({
     ChartLayouter chartLayouter,
@@ -1102,15 +1135,10 @@ class DataContainer extends LayouterPainterContainer {
           : xLayouterResult.vertGridLineX;
 
       YLinePresenter yLinePresenter = new YLinePresenter(
-          lineFrom: new ui.Offset(
-            x,
-            this._chartLayouter.vertGridLinesFromY,
-          ),
-          lineTo: new ui.Offset(
-            x,
-            this._chartLayouter.vertGridLinesToY,
-          ),
-          linePaint: gridLinesPaint(options));
+        lineFrom: new ui.Offset(x, 0.0),
+        lineTo: new ui.Offset(x, containerHeight),
+        linePaint: gridLinesPaint(options),
+      );
 
       yLinePresenter._xTickX = xLayouterResult.xTickX;
       yLinePresenter._vertGridLineX = xLayouterResult.vertGridLineX;
@@ -1135,13 +1163,11 @@ class DataContainer extends LayouterPainterContainer {
 
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(
-            lastYLinePresenter._rightVertGridLineX,
-            this._chartLayouter.vertGridLinesFromY,
-          ),
+              lastYLinePresenter._rightVertGridLineX,
+              0.0),
           lineTo: new ui.Offset(
-            lastYLinePresenter._rightVertGridLineX,
-            this._chartLayouter.vertGridLinesToY,
-          ),
+              lastYLinePresenter._rightVertGridLineX,
+              containerHeight),
           linePaint: gridLinesPaint(options));
 
       yLinePresenter._xTickX = xLayouterResult.xTickX;
@@ -1185,7 +1211,15 @@ class DataContainer extends LayouterPainterContainer {
   }
 
   void applyParentOffset(ui.Offset offset) {
-    // todo -10
+    super.applyParentOffset(offset);
+
+    // Move all container atomic elements - lines, labels, circles etc
+    this.xGridLinesLayoutPainter.applyParentOffset(offset);
+
+    // draw vertical grid
+    this.yGridLinesLayoutPainter.applyParentOffset(offset);
+
+    // todo -10 move here applying offset of lines and bars.
   }
 
   ui.Size get layoutSize {
