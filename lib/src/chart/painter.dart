@@ -72,11 +72,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
   void drawGrid(ui.Canvas canvas) {
 
-    // draw horizontal grid
-    layouter.xGridLinesLayoutPainter.paint(canvas);
-
-    // draw vertical grid
-    layouter.yGridLinesLayoutPainter.paint(canvas);
+    // draw horizontal and vertical grid and data
+    layouter.dataContainer.paint(canvas);
 
   }
 
