@@ -288,20 +288,10 @@ abstract class ChartLayouter {
   // todo -9  some getters from here are not needed?
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label)
-  /* todo -10
-  List<double> get xTicksXs =>
-      dataContainer.yGridLinesLayoutPainter.yLinePresenters
-          .map((var yLinePresenter) => yLinePresenter._xTickX)
-          .toList();
-  */
   List<double> get xTicksXs =>
       xLayouter.xLayoutPainters
           .map((var xLayoutPainter) => xLayoutPainter.xTickX)
           .toList();
-
-
-  double get yRightTicksWidth =>
-      math.max(options.yRightMinTicksWidth, xLayouter._gridStepWidth / 2);
 
   double get gridStepWidth => xLayouter._gridStepWidth;
 }
@@ -512,8 +502,6 @@ class YLayouter {
       // Move the contained LabelPainter to correct position
       yLayoutPainter.applyParentOffset(new ui.Offset(0.0, labelTopY));
 
-       // todo -10 : yLayoutPainter._labelPainter.textPainter.layout(); // todo -10 : should this be before textPainter.height?????
-
       yLayoutPainters.add(yLayoutPainter);
     }
   }
@@ -694,15 +682,7 @@ class XLayouter {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      /* todo -10
-      XLayouterResult xLayouterResult = getXLayouterResult(
-        xLayoutPainter: xLayoutPainter,
-        xLayoutPainterIndex: xIndex,
-      );
-      */
 
-
-// todo -10 vvvvvvvvvvvvvvv
       // core of X layout calcs - lay out label and find middle
       var textPainter = xLayoutPainter._labelPainter.textPainter;
       textPainter.layout();
@@ -714,23 +694,13 @@ class XLayouter {
           atIndexOffset +
           _chartLayouter.options
               .yLeftMinTicksWidth; // Start stepping after painting left Y tick
-      double labelLeftX = xTickX - halfLabelWidth; // same center of tickX, label
+      double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
 
       xLayoutPainter.xTickX = xTickX - labelLeftX;
-
-// todo -10 ^^^^^^^^^^^^^^^
-
-
-
-      // todo -10: xLayoutPainter._labelLeftX = xLayouterResult.labelLeftX;
 
       // Move xLayoutPainter down by option value inside XLayouter
       xLayoutPainter.applyParentOffset(new ui.Offset(
           labelLeftX, options.xLabelsPadTB));
-      /* todo -10
-      xLayoutPainter.applyParentOffset(new ui.Offset(
-          0.0, options.xLabelsPadTB));
-      */
 
       xLayoutPainters.add(xLayoutPainter);
     }
@@ -741,51 +711,6 @@ class XLayouter {
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
-
-  /* todo -10
-  /// Calculates X positions for xTick and xGrid lines,
-  /// given a layed out [xLayoutPainter] and it's index [xLayoutPainterIndex].
-  ///
-  /// Must be called after [XLayouter.layout], as it relies on
-  /// member [_gridStepWidth] to be set.
-  XLayouterResult getXLayouterResult({
-    XLayoutPainter xLayoutPainter,
-    int xLayoutPainterIndex,
-  }) {
-    var xLayouterResult = new XLayouterResult();
-
-    widgets.TextPainter textPainter = xLayoutPainter._labelPainter.textPainter;
-    textPainter
-        .layout(); // todo -5 this should not be needed as long as layed out
-
-    double halfLabelWidth = textPainter.width / 2;
-    double halfStepWidth = _gridStepWidth / 2;
-    double atIndexOffset = _gridStepWidth * xLayoutPainterIndex;
-    // todo -6 use temp for tickX and assign at the end
-    double tickX = halfStepWidth +
-        atIndexOffset +
-        _chartLayouter.options
-            .yLeftMinTicksWidth; // Start stepping after painting left Y tick
-    double columnLeftX = tickX - halfStepWidth;
-    double columnRightX = tickX + halfStepWidth;
-    double labelLeftX = tickX - halfLabelWidth; // same center of tickX, label
-    xLayoutPainter._labelLeftX = labelLeftX; // todo -6 this should not be here
-
-    xLayouterResult.xTickX = tickX;
-    xLayouterResult.labelLeftX = labelLeftX;
-
-    return xLayouterResult;
-  }
-  */
-}
-
-/// Value class that allows to recalculate x label and tick positions,
-/// given minimal info from layed out labels.
-/// Must be created in [XLayouter.layout] and
-/// any methods called after [XLayouter.layout].
-class XLayouterResult {
-  double xTickX;
-  double labelLeftX;
 }
 
 /// A Wrapper of [XLayouter] members that can be used by clients
@@ -796,19 +721,23 @@ class XLayoutPainter {
   /// Painter configured to paint one label
   LabelPainter _labelPainter;
 
-  ///  x offset of X label left point .
-  /// todo -9 - _labelLeftX is used as parent Offset, but not set
-  ///            at the time parentOffset is called.
-  ///            We need to set parent offset on _labelPainter,
-  ///            and this member should be used only to check with _labelPainter
-  ///            for correctness.
+  /// The X position of point that should
+  /// show a "tick dash" for the label center on the x axis.
   ///
-
-  // todo -9 this is duplicated in YLinePresenter. Remove it from there.
-  // todo -9 remove from here, manage only via offsets.
-
-// todo -10:  double _labelLeftX;
-
+  /// Notes:
+  ///   - This is same as the X-scaled position of the X value
+  ///   (only relevant for measured X variable,
+  ///   for ordinal X variable, the X value is simply made evenly
+  ///   spaced across X available space).
+  ///   - Also same as the position of middle of X label wrapped
+  /// in [_labelPainter].
+  ///
+  /// The actual value changes after applying parent offset
+  /// by [applyParentOffset].
+  ///
+  /// Equal to the x offset of X label middle point.
+  ///
+  /// First "tick dash" is on the first label, last on the last label.
   double xTickX;
 
   /// Absolute offset in chart
@@ -817,12 +746,8 @@ class XLayoutPainter {
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    // todo -10: _labelLeftX += offset.dx;
     xTickX += offset.dx;
-
     _offset += offset;
-
-   // todo -10:  _offset = new ui.Offset(_labelLeftX, _offset.dy);
   }
 
   void paint(ui.Canvas canvas) {
@@ -870,9 +795,9 @@ class LayoutExpansion {
 ///   - [LegendContainer] - manages the legend
 ///   - [YContainer] - manages the Y labels layout, which defines:
 ///     - Y axis label sizes
-///     - Y positions of Y axis labels, defined as yTickYs.
-///       yTicksYs are the Y points on which data values
-///       are displayed and on which the Y labels are centered.
+///     - Y positions of Y axis labels, defined as yTickY.
+///       yTicksY s are the Y points of scaled data values
+///       and also Y points on which the Y labels are centered.
 ///   - [XContainer] - Equivalent to YContainer, but manages X direction
 ///     layout and labels.
 ///   - [DataContainer] - manages the area which displays:
@@ -997,30 +922,18 @@ class DataContainer extends LayouterPainterContainer {
     YScalerAndLabelFormatter yScaler = _chartLayouter.yScaler;
     double xGridStep = _chartLayouter.gridStepWidth;
 
-    // Loop over the already layed out X labels in [xLayoutPainters],
-    // and for each, create one [YLinePresenter] and add it to
-    // [yGridLinesLayoutPainter]
+    // ### 1. Vertical Grid (yGrid) layout:
 
-    // When iterating X labels, also create the vertical lines - yGridLines
+    // For each already layed out X labels in [xLayoutPainters],
+    // create one [YLinePresenter] and add it to [yGridLinesLayoutPainter]
+
     this.yGridLinesLayoutPainter = new YGridLinesLayoutPainter();
     XLayoutPainter lastXLayoutPainter;
 
     for (var xIndex = 0; xIndex < xLayoutPainters.length; xIndex++) {
       var xLayoutPainter = xLayoutPainters.elementAt(xIndex);
       lastXLayoutPainter = xLayoutPainter;
-
-      /* todo -10
-      XLayouterResult xLayouterResult = xLayouter.getXLayouterResult(
-        xLayoutPainter: xLayoutPainter,
-        xLayoutPainterIndex: xIndex,
-      );
-      */
       // Add vertical yGrid line in the middle or on the left
-      /* todo -10
-      double x = isStacked
-          ? xLayouterResult.leftVertGridLineX
-          : xLayouterResult.vertGridLineX;
-      */
       double x = isStacked
           ? xLayoutPainter.xTickX - xGridStep / 2
           : xLayoutPainter.xTickX;
@@ -1031,51 +944,20 @@ class DataContainer extends LayouterPainterContainer {
         linePaint: gridLinesPaint(options),
       );
 
-      // todo -10 yLinePresenter._xTickX = xLayouterResult.xTickX;
-
       // For each xLayoutPainter, add a new vertical grid line - yGrid line.
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
     }
 
     // For stacked, we need to add last right vertical yGrid line
     if (isStacked && lastXLayoutPainter != null) {
-      int lastIndex = xLayoutPainters.length - 1;
-      // todo -10 var lastXLayoutPainter = xLayoutPainters.elementAt(lastIndex);
-
       double x = lastXLayoutPainter.xTickX + xGridStep / 2;
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(x, 0.0),
           lineTo:   new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-
-      // todo -10: yLinePresenter._xTickX = lastXLayoutPainter.xTickX;
-
       this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
     }
-    /* todo -10
-    if (isStacked && lastYLinePresenter != null) {
-      int lastIndex = xLayoutPainters.length - 1;
-      var lastXLayoutPainter = xLayoutPainters.elementAt(lastIndex);
-
-      XLayouterResult xLayouterResult = xLayouter.getXLayouterResult(
-        xLayoutPainter: lastXLayoutPainter,
-        xLayoutPainterIndex: lastIndex,
-      );
-
-
-      double x = xLayouterResult.xTickX + xGridStep / 2;
-      YLinePresenter yLinePresenter = new YLinePresenter(
-          lineFrom: new ui.Offset(x, 0.0),
-          lineTo:   new ui.Offset(x, containerHeight),
-          linePaint: gridLinesPaint(options));
-
-      yLinePresenter._xTickX = xLayouterResult.xTickX;
-
-      this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
-    }
-    */
-
-    // ### 7.2 Horizontal Grid (xGrid) layout:
+    // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
@@ -1191,31 +1073,16 @@ class YLinePresenter extends line_presenter.LinePresenter {
     this.lineTo = lineTo;
   }
 
-  // todo -9 remove all members and manage everything through offsets.
-
-  /// The x offset of point that should
-  /// show a "tick dash" for the label center on the x axis (unused).
-  ///
-  /// Equal to the x offset of X label middle point.
-  ///
-  /// First "tick dash" is on the first label, last on the last label.
-  /// todo -9 remove and only manage in XLayoutPainter!!
-  // todo -10 double _xTickX;
-
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    // todo -10 _xTickX += offset.dx;
-
     this.lineFrom += offset; // translate
     this.lineTo += offset;
 
     _offset += offset;
-
-   // todo -10  _offset = new ui.Offset(_xTickX, _offset.dy);
   }
 
   void paint(ui.Canvas canvas) {
@@ -1336,7 +1203,7 @@ class LegendLayouter {
           itemSizing.indicatorWidth +
           itemSizing.indicatorToLegendPad;
 
-      // todo -9 labelTopY Is all this needed?
+      // todo -3 labelTopY Is all this needed?
       double labelTopY = (_size.height - textPainter.height) / 2;
       legendOutput._labelOffset = new ui.Offset(labelLeftX, labelTopY);
 
@@ -1348,7 +1215,7 @@ class LegendLayouter {
     }
   }
 
-  /// todo -3 finish and document
+  /// todo -4 finish and document
 /*
   List<LegendLayouterOutput> overflownOutputs() {
     this.outputs.where((output) {output.labelPainter.})
@@ -2013,7 +1880,7 @@ class PointsColumns {
     int col = 0;
     pointsColumns.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = _layouter.xTicksXs[col];
+        // todo -10: double scaledX = _layouter.xTicksXs[col];
         point.applyParentOffset(offset);
       });
       col++;

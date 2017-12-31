@@ -121,7 +121,7 @@ class PresentersColumn {
 ///   - Each [PresentersColumn] element of [presentersColumns]
 ///   manages a link to the [PresentersColumn] on it's right, allowing
 ///   walk without the [presentersColumns] list. todo 0 consider if this is needed
-///   todo -9 consider extend List and remoe the member
+///   todo -9 consider extend List and remove the member
 class PresentersColumns {
   List<PresentersColumn> presentersColumns = new List();
 
