@@ -17,7 +17,7 @@ import '../bar/presenters.dart' as bar_presenters;
 class VerticalBarChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    var presentersColumns = this.layouter.presentersColumns.presentersColumns;
+    var presentersColumns = this.layouter.dataContainer.presentersColumns.presentersColumns;
     presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       // todo 1 do not repeat loop, collapse to one construct
 

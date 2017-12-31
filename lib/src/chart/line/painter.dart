@@ -16,7 +16,7 @@ import '../painter.dart';
 class LineChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    var presentersColumns = this.layouter.presentersColumns.presentersColumns;
+    var presentersColumns = this.layouter.dataContainer.presentersColumns.presentersColumns;
     presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       var presenterList = presentersColumn.presenters;
       presenterList = optionalPaintOrderReverse(presenterList);
