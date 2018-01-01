@@ -152,7 +152,7 @@ abstract class ChartContainer {
     yContainerFirst.layout();
 
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelContainers
-        .map((var yLabelContainer) => yLabelContainer._labelContainer)
+        .map((var yLabelContainer) => yLabelContainer)
         .map((LabelContainer labelContainer) =>
             labelContainer.textPainter.size.height)
         .reduce(math.max);
@@ -383,7 +383,7 @@ class YContainer {
       layoutAutomatically(yAxisMin, yAxisMax);
     }
     _yLabelsContainerWidth = yLabelContainers
-            .map((var yLabelContainer) => yLabelContainer._labelContainer)
+            .map((var yLabelContainer) => yLabelContainer)
             .map((LabelContainer labelContainer) =>
                 labelContainer.textPainter.size.width)
             .reduce(math.max) +
@@ -473,15 +473,14 @@ class YContainer {
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       double yTickY = labelInfo.scaledLabelValue;
-      var yLabelContainer = new YLabelContainer();
-      yLabelContainer._labelContainer = new LabelContainer(
+      var yLabelContainer = new YLabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      yLabelContainer._labelContainer.textPainter.layout();
+      yLabelContainer.textPainter.layout();
       double labelTopY =
-          yTickY - yLabelContainer._labelContainer.textPainter.height / 2;
+          yTickY - yLabelContainer.textPainter.height / 2;
 
       yLabelContainer.yTickY = yTickY - labelTopY;
 
@@ -505,9 +504,7 @@ class YContainer {
 ///     the container of y labels
 ///   - If owner is Area [ChartContainer], all positions are relative
 ///     to the top of the available [chartArea].
-class YLabelContainer {
-  /// Painter configured to paint one label
-  LabelContainer _labelContainer;
+class YLabelContainer  extends LabelContainer {
 
   ///  y offset of Y label middle point.
   ///
@@ -522,6 +519,12 @@ class YLabelContainer {
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
 
+  YLabelContainer({
+    String label,
+    double labelMaxWidth,
+    LabelStyle labelStyle,
+  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
+
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
@@ -530,7 +533,7 @@ class YLabelContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    _labelContainer.textPainter.paint(canvas, _offset);
+    this.textPainter.paint(canvas, _offset);
   }
 }
 
@@ -661,16 +664,14 @@ class XContainer {
 
     for (var xIndex = 0; xIndex < _xLabels.length; xIndex++) {
       // double leftX = _gridStepWidth * xIndex;
-      var xLabelContainer = new XLabelContainer();
-
-      xLabelContainer._labelContainer = new LabelContainer(
+      var xLabelContainer = new XLabelContainer(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
 
       // core of X layout calcs - lay out label and find middle
-      var textPainter = xLabelContainer._labelContainer.textPainter;
+      var textPainter = xLabelContainer.textPainter;
       textPainter.layout();
 
       double halfLabelWidth = textPainter.width / 2;
@@ -694,7 +695,7 @@ class XContainer {
     // xlabels area without padding
     _xLabelsMaxHeight = xLabelContainers
         .map((var xLabelContainer) =>
-            xLabelContainer._labelContainer.textPainter)
+            xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -704,9 +705,8 @@ class XContainer {
 /// to layout x labels container.
 ///
 /// All positions are relative to the left of the container of x labels
-class XLabelContainer {
-  /// Painter configured to paint one label
-  LabelContainer _labelContainer;
+class XLabelContainer extends LabelContainer {
+
 
   /// The X position of point that should
   /// show a "tick dash" for the label center on the x axis.
@@ -717,10 +717,9 @@ class XLabelContainer {
   ///   for ordinal X variable, the X value is simply made evenly
   ///   spaced across X available space).
   ///   - Also same as the position of middle of X label wrapped
-  /// in [_labelContainer].
+  ///   in this [textPainter].
   ///
-  /// The actual value changes after applying parent offset
-  /// by [applyParentOffset].
+  /// The actual value changes after call to [applyParentOffset].
   ///
   /// Equal to the x offset of X label middle point.
   ///
@@ -730,6 +729,12 @@ class XLabelContainer {
   /// Absolute offset in chart
   ui.Offset _offset = ui.Offset.zero;
 
+  XLabelContainer({
+    String label,
+    double labelMaxWidth,
+    LabelStyle labelStyle,
+  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
+
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
@@ -738,7 +743,7 @@ class XLabelContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    _labelContainer.textPainter.paint(canvas, _offset);
+    this.textPainter.paint(canvas, _offset);
   }
 }
 
@@ -1152,15 +1157,13 @@ class LegendContainer {
     //   - an indicator rectangle and it's paint
     //   - label painter
     for (var index = 0; index < dataRowsLegends.length; index++) {
-      var legendLabelContainer = new LegendLabelContainer();
-
-      legendLabelContainer._labelContainer = new LabelContainer(
+      var legendLabelContainer = new LegendLabelContainer(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
       widgets.TextPainter textPainter =
-          legendLabelContainer._labelContainer.textPainter;
+          legendLabelContainer.textPainter;
       textPainter.layout();
 
       double indicatorX =
@@ -1179,7 +1182,6 @@ class LegendContainer {
 
       // todo -10 labelTopY Is all this needed?
       double labelTopY = (_size.height - textPainter.height) / 2;
-// todo -10      legendLabelContainer._labelOffset = new ui.Offset(labelLeftX, labelTopY);
       legendLabelContainer._offset = new ui.Offset(labelLeftX, labelTopY);
 
       legendLabelContainer._indicatorPaint = new ui.Paint();
@@ -1236,7 +1238,7 @@ class LegendItemSizing {
 }
 
 /// Represents one layed out item of the legend: [_indicatorRect] is
-/// the rectangle for the color indicator, the [_labelContainer] is a layed out
+/// the rectangle for the color indicator, this [textPainter] is a layed out
 /// [widgets.TextPainter] for the label text.
 ///
 /// Painters can paint this object in a loop similar to
@@ -1248,11 +1250,7 @@ class LegendItemSizing {
 /// ```
 ///
 /// All positions are relative to the left of the [LegendContainer]'s container.
-class LegendLabelContainer {
-  // todo -4
-
-  /// Painter configured to paint each legend label
-  LabelContainer _labelContainer;
+class LegendLabelContainer extends LabelContainer {
 
   ///  rectangle of the legend color square series indicator
   ui.Rect _indicatorRect;
@@ -1260,24 +1258,23 @@ class LegendLabelContainer {
   /// Paint used to paint the indicator
   ui.Paint _indicatorPaint;
 
-  ///  offset of legend label
-// todo -10  ui.Offset _labelOffset;
-
   /// Absolute offset in chart
   ui.Offset _offset;
+
+  LegendLabelContainer({
+    String label,
+    double labelMaxWidth,
+    LabelStyle labelStyle,
+  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
     _offset += offset;
-    // todo -10   _labelOffset += offset;
-
-    // Duplicated info
-// todo -10    _offset = new ui.Offset(_labelOffset.dx, _labelOffset.dy);
   }
 
   void paint(ui.Canvas canvas) {
-    _labelContainer.textPainter.paint(canvas, _offset);
+    this.textPainter.paint(canvas, _offset);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 }
