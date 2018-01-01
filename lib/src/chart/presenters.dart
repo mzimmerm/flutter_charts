@@ -3,6 +3,9 @@ import 'dart:ui' as ui show Paint, PaintingStyle;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'layouters.dart';
 
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection
+  show CustomList;
+
 // todo -1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
   ui.Paint paint = new ui.Paint();
@@ -120,10 +123,8 @@ class PresentersColumn {
 /// Notes:
 ///   - Each [PresentersColumn] element of [presentersColumns]
 ///   manages a link to the [PresentersColumn] on it's right, allowing
-///   walk without the [presentersColumns] list. todo 0 consider if this is needed
-///   todo -9 consider extend List and remove the member
-class PresentersColumns {
-  List<PresentersColumn> presentersColumns = new List();
+///   walk without the [presentersColumns] list.
+class PresentersColumns extends custom_collection.CustomList {
 
   PresentersColumns({
     PointsColumns pointsColumns,
@@ -138,14 +139,15 @@ class PresentersColumns {
         layouter: layouter,
         presenterCreator: presenterCreator,
       );
-      presentersColumns.add(presentersColumn);
+      this.add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
       leftPresentersColumn = presentersColumn;
     });
   }
 }
 
-/// Maker of Presenter instances.
+
+/// Maker of [Presenter] instances.
 ///
 /// It's core method [createPointPresenter] creates [Presenter]s,
 /// the visuals painted on each chart column that

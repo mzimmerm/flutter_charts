@@ -40,9 +40,13 @@ abstract class ChartLayouter {
 
   /// ##### Subclasses - aware members.
 
-  /// Points columns are managed in ChartLayouter, because they are needed
-  /// during Y layout. But their parent offset, and their use to create
-  /// presentersColumns is managed in [DataContainer]
+  /// Keeps data values grouped in columns.
+  ///
+  /// This column grouped data instance is managed here in the [ChartLayouter],
+  /// (immediate owner of [YLayouter] and [DataContainer])
+  /// as their data points are needed both during [YLayouter.layout]
+  /// to calculate scaling, and also in [DataContainer.layout] to create
+  /// [PresentersColumns] instance.
   PointsColumns pointsColumns;
 
   bool isStacked;
@@ -986,29 +990,6 @@ class DataContainer extends LayouterPainterContainer {
       // Add a new horizontal grid line - xGrid line.
       this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
     });
-/* todo -10
-    // ### 2. Horizontal Grid (xGrid) layout:
-
-    // Iterate yLabels and for each add a horizontal grid line
-    // When iterating Y labels, also create the horizontal lines - xGridLines
-    this.xGridLinesLayoutPainter = new XGridLinesLayoutPainter();
-
-    // Position the horizontal xGrid at mid-points of labels at yTickY.
-    for (var yIndex = 0; yIndex < yLayoutPainters.length; yIndex++) {
-      var yLayoutPainter = yLayoutPainters.elementAt(yIndex);
-      double yTickY = yLayoutPainter.yTickY;
-      XLinePresenter xLinePresenter = new XLinePresenter(
-          lineFrom: new ui.Offset(0.0, yTickY),
-          lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
-          linePaint: gridLinesPaint(options));
-
-      // For each new added y label (yLayoutPainter),
-      //   also add a new horizontal grid line - xGrid line.
-      this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
-    }
-
- */
-
   }
 
   void applyParentOffset(ui.Offset offset) {
@@ -1814,21 +1795,29 @@ class PointsColumn {
 /// Represents coordinates of [ChartData.dataRows], scaled to Y axis, inverted,
 /// and stacked (if the type of chart requires stacking).
 ///
-/// Passed to presenters, which paint the values in areas above labels,
+/// Passed to [Presenter] instances, which use this instance's data to
+/// paint the values in areas above labels,
 /// in the appropriate presentation (point and line chart, column chart, etc)
 ///
-/// Manages value point structure as column based (currently only supported)
-/// or row based.
+/// Manages value point structure as column based (currently supported)
+/// or row based (not supported).
+///
+/// A (single instance per chart) is used to create [PresentersColumns]
+/// instance, managed in [DataContainer].
+/// todo -10 extend list and remove the pointsColumns member.
 class PointsColumns {
+  //\/Data points managed row - first. Internal only, not used in chart.
   List<List<StackableValuePoint>> _pointsRows;
+  /// Data points managed column - first. Internal only, not used in chart.
   List<List<StackableValuePoint>> _pointsColumns;
   ChartLayouter _layouter;
+  /// Data points managed column - first. Used to display data in chart.
   List<PointsColumn> pointsColumns;
+  /// True if chart type presents values stacked.
   bool _isStacked;
 
-  /// Creates [_pointsRows] with the same structure and values as
-  /// the passed [dataRows]. Then transposes the [_pointsRows]
-  /// to [_pointsColumns].
+  /// Constructor creates the public [pointsColumns] member with the same structure and values as
+  /// the passed [layouter.data.dataRows].
   PointsColumns({
     ChartLayouter layouter,
     PresenterCreator presenterCreator,
@@ -1840,6 +1829,9 @@ class PointsColumns {
 
     ChartData chartData = layouter.data;
 
+    // Transposes the passed data in [layouter.data.dataRows]
+    // to [_pointsRows] to [_pointsColumns].
+    ///
     // Manages "predecessor in stack" points - each element is the per column point
     // below the currently processed point. The currently processed point is
     // (potentially) stacked on it's predecessor.
@@ -1913,7 +1905,6 @@ class PointsColumns {
     int col = 0;
     pointsColumns.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
-        // todo -10: double scaledX = _layouter.xTicksXs[col];
         point.applyParentOffset(offset);
       });
       col++;
