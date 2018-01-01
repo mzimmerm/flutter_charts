@@ -239,9 +239,8 @@ abstract class ChartContainer {
     this.dataContainer.layout();
 
     // At the end, move the individual chart areas to their offsets.
-    // todo -10 Need to call correct offset?
     legendContainer.legendLabelContainers.forEach((legendLabelContainer) {
-      legendLabelContainer.applyParentOffset(new ui.Offset(0.0, 0.0));
+      legendLabelContainer.applyParentOffset(legendContainerOffset);
     });
 
     xContainer.xLabelContainers.forEach((XLabelContainer xLabelContainer) {
@@ -514,9 +513,6 @@ class YLabelContainer extends LabelContainer {
   ///
   double yTickY;
 
-  /// Absolute offset in chart
-  ui.Offset _offset = ui.Offset.zero;
-
   YLabelContainer({
     String label,
     double labelMaxWidth,
@@ -531,13 +527,10 @@ class YLabelContainer extends LabelContainer {
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    _offset += offset;
+    super.applyParentOffset(offset);
     yTickY += offset.dy;
   }
 
-  void paint(ui.Canvas canvas) {
-    this.textPainter.paint(canvas, _offset);
-  }
 }
 
 class YGridLinesContainerPainter {
@@ -726,9 +719,6 @@ class XLabelContainer extends LabelContainer {
   /// First "tick dash" is on the first label, last on the last label.
   double xTickX;
 
-  /// Absolute offset in chart
-  ui.Offset _offset = ui.Offset.zero;
-
   XLabelContainer({
     String label,
     double labelMaxWidth,
@@ -743,13 +733,11 @@ class XLabelContainer extends LabelContainer {
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
+    super.applyParentOffset(offset);
     xTickX += offset.dx;
-    _offset += offset;
+   //  _offset += offset;
   }
 
-  void paint(ui.Canvas canvas) {
-    this.textPainter.paint(canvas, _offset);
-  }
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
@@ -843,7 +831,11 @@ abstract class Container {
     _offset += offset;
   }
 
+  /// Size after [layout] has been called.
   ui.Size get layoutSize;
+
+  /// Provides access to offset for extension's [paint] methods.
+  ui.Offset get offset => _offset;
 
   /// Answers the requested expansion sizes.
   ///
@@ -1261,9 +1253,6 @@ class LegendLabelContainer extends LabelContainer {
   /// Paint used to paint the indicator
   ui.Paint _indicatorPaint;
 
-  /// Absolute offset in chart
-  ui.Offset _offset;
-
   LegendLabelContainer({
     String label,
     double labelMaxWidth,
@@ -1275,12 +1264,7 @@ class LegendLabelContainer extends LabelContainer {
           labelStyle: labelStyle,
         );
 
-  /// Apply offset in parent. This call positions the X Label (this instance)
-  /// to the absolute position in the chart's available size
-  void applyParentOffset(ui.Offset offset) {
-    _offset += offset;
-  }
-
+  /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
     this.textPainter.paint(canvas, _offset);
     canvas.drawRect(_indicatorRect, _indicatorPaint);

@@ -1,8 +1,10 @@
 import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
 import 'package:flutter/material.dart' as material show Colors;
-import 'dart:ui' as ui show TextAlign, TextDirection, Size;
+import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas;
 import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/chart/container.dart'
+    as flutter_charts_container show Container;
 
 /// Provides ability to paint one label anywhere on the chart,
 /// in Labels, Axis, Titles, etc.
@@ -13,7 +15,7 @@ import 'package:flutter_charts/src/chart/options.dart';
 /// Note: All methods (and constructor) of this class always calls
 ///       layout, as a result, [_overflowsMaxWidth] can be always asked,
 ///       there is no need to check for "needs layout" or similar.
-class LabelContainer {
+class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
   widgets.TextPainter textPainter;
@@ -26,6 +28,11 @@ class LabelContainer {
   // todo -2 add to signature if boundaries overflown
   ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
+  /// Constructs instance for a label, it's text style, and layed out label'
+  /// maximum width.
+  ///
+  /// Does not set parent container's [_layoutExpansion] and [_parentContainer].
+  /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     String label,
     double labelMaxWidth,
@@ -83,6 +90,21 @@ class LabelContainer {
 
     return isOverflowing;
   }
+
+  /// Implementors of method in superclass [Container].
+  void paint(ui.Canvas canvas) {
+    this.textPainter.paint(canvas, offset);
+  }
+
+  /// Implementors of method in superclass [Container].
+  void layout() {
+    textPainter.layout();
+    _unconstrainedSize = textPainter.size;
+  }
+
+  /// Implementors of method in superclass [Container].
+  ui.Size get layoutSize =>
+      _constraintSize != null ? _constraintSize : _unconstrainedSize;
 }
 
 /// Class for value objects which group the text styles that may affect
