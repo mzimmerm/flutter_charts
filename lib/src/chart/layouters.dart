@@ -1,6 +1,9 @@
 import 'dart:ui' as ui
     show Size, Offset, Rect, Paint, TextAlign, TextDirection, Canvas;
 
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection
+  show CustomList;
+
 import 'dart:math' as math show max, min;
 
 import 'package:flutter/widgets.dart' as widgets
@@ -1805,18 +1808,18 @@ class PointsColumn {
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
 /// todo -10 extend list and remove the pointsColumns member.
-class PointsColumns {
+class PointsColumns extends custom_collection.CustomList  {
   //\/Data points managed row - first. Internal only, not used in chart.
-  List<List<StackableValuePoint>> _pointsRows;
+  List<List<StackableValuePoint>> _valuePointArrInRows;
   /// Data points managed column - first. Internal only, not used in chart.
-  List<List<StackableValuePoint>> _pointsColumns;
+  List<List<StackableValuePoint>> _valuePointArrInColumns;
   ChartLayouter _layouter;
   /// Data points managed column - first. Used to display data in chart.
-  List<PointsColumn> pointsColumns;
+  // todo -10: List<PointsColumn> pointsColumns;
   /// True if chart type presents values stacked.
   bool _isStacked;
 
-  /// Constructor creates the public [pointsColumns] member with the same structure and values as
+  /// Constructor creates a [PointsColumns] instance from values in
   /// the passed [layouter.data.dataRows].
   PointsColumns({
     ChartLayouter layouter,
@@ -1824,17 +1827,17 @@ class PointsColumns {
     bool isStacked,
   }) {
     _layouter = layouter;
-    _pointsRows = new List();
+    _valuePointArrInRows = new List();
     _isStacked = isStacked;
 
     ChartData chartData = layouter.data;
 
-    // Transposes the passed data in [layouter.data.dataRows]
-    // to [_pointsRows] to [_pointsColumns].
+    /// Transposes the passed data in [layouter.data.dataRows]
+    /// to [_valuePointArrInRows] to [_valuePointArrInColumns].
     ///
-    // Manages "predecessor in stack" points - each element is the per column point
-    // below the currently processed point. The currently processed point is
-    // (potentially) stacked on it's predecessor.
+    /// Manages "predecessor in stack" points - each element is the per column point
+    /// below the currently processed point. The currently processed point is
+    /// (potentially) stacked on it's predecessor.
     List<StackableValuePoint> rowOfPredecessorPoints =
         new List(chartData.dataRows[0].length); // todo 0 deal with no data rows
     for (int col = 0; col < rowOfPredecessorPoints.length; col++)
@@ -1843,7 +1846,7 @@ class PointsColumns {
     for (int row = 0; row < chartData.dataRows.length; row++) {
       List<num> dataRow = chartData.dataRows[row];
       List<StackableValuePoint> pointsRow = new List<StackableValuePoint>();
-      _pointsRows.add(pointsRow);
+      _valuePointArrInRows.add(pointsRow);
       // int col = 0;
       // dataRow.forEach((var colValue) {
       StackableValuePoint predecessorPoint;
@@ -1862,20 +1865,23 @@ class PointsColumns {
         rowOfPredecessorPoints[col] = thisPoint;
       }
     }
-    _pointsRows.toList();
-    _pointsColumns = util.transpose(_pointsRows);
+    _valuePointArrInRows.toList();
+    _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
 
-    // convert "column oriented" List<List<StackableValuePoint>> _pointsColumns
-    // to public List<ValuePointsColumn> pointsColumns
+    /// convert "column oriented" _valuePointArrInColumns
+    /// to public List<ValuePointsColumn> pointsColumns todo -10
     PointsColumn leftColumn;
-    pointsColumns = new List();
+    // todo -10: pointsColumns = new List();
+    List<PointsColumn> pointsColumns = new List();
 
-    _pointsColumns.forEach((List<StackableValuePoint> columnPoints) {
+    _valuePointArrInColumns.forEach((List<StackableValuePoint> columnPoints) {
       var pointsColumn = new PointsColumn(points: columnPoints);
-      pointsColumns.add(pointsColumn);
+      // todo -10: pointsColumns.add(pointsColumn);
+      this.add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
     });
+
   }
 
   /// Scales this object's column values managed in [pointsColumns].
@@ -1888,11 +1894,12 @@ class PointsColumns {
   ///   - Iterates this object's [pointsColumns], then the contained
   ///   [PointsColumn.points], and scales each point by
   ///   applying its [StackableValuePoint.scale] method.
-  ///   - No scaling of the internal representation stored in [_pointsRows]
-  ///   or [_pointsColumns].
+  ///   - No scaling of the internal representation stored in [_valuePointArrInRows]
+  ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    pointsColumns.forEach((PointsColumn column) {
+    // todo -10:pointsColumns.forEach((PointsColumn column) {
+    this.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _layouter.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
@@ -1903,7 +1910,8 @@ class PointsColumns {
 
   void applyParentOffset(ui.Offset offset) {
     int col = 0;
-    pointsColumns.forEach((PointsColumn column) {
+    // todo -10: pointsColumns.forEach((PointsColumn column) {
+    this.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
@@ -1924,7 +1932,8 @@ class PointsColumns {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    pointsColumns.forEach((PointsColumn column) {
+    // todo -10:pointsColumns.forEach((PointsColumn column) {
+    this.forEach((PointsColumn column) {
       column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
@@ -1937,19 +1946,24 @@ class PointsColumns {
   /// Use in layouters for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    pointsColumns.forEach((PointsColumn column) {
-      column.stackedNegativePoints.forEach((StackableValuePoint point) {
-        flat.add(point.toY);
+    // todo -10: pointsColumns.forEach((PointsColumn column) {
+    this.forEach((PointsColumn column) {
+        column.stackedNegativePoints.forEach((StackableValuePoint point) {
+          flat.add(point.toY);
+        });
+        column.stackedPositivePoints.forEach((StackableValuePoint point) {
+          flat.add(point.toY);
+        });
       });
-      column.stackedPositivePoints.forEach((StackableValuePoint point) {
-        flat.add(point.toY);
-      });
-    });
-    return flat;
-  }
+      return flat;
+    }
 
+  /* todo -10
   PointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
 
   StackableValuePoint pointAt({int columnIndex, int rowIndex}) =>
       pointsColumns[columnIndex].points[rowIndex];
+  */
+
+
 }
