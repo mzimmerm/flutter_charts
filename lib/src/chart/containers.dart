@@ -147,15 +147,14 @@ abstract class ChartContainer {
           height: yContainerHeight,
           heightExpansionStyle: ExpansionStyle.TryFill),
       yLabelsMaxHeightFromFirstLayout: 0.0,
-      isFirst: true,
     );
 
     yContainerFirst.layout();
 
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelContainers
-        .map((var yLabelContainer) => yLabelContainer._labelPainter)
-        .map(
-            (LabelPainter labelPainter) => labelPainter.textPainter.size.height)
+        .map((var yLabelContainer) => yLabelContainer._labelContainer)
+        .map((LabelContainer labelContainer) =>
+            labelContainer.textPainter.size.height)
         .reduce(math.max);
 
     this.yContainer = yContainerFirst;
@@ -203,7 +202,6 @@ abstract class ChartContainer {
           height: yContainerHeight - xContainerSize.height,
           heightExpansionStyle: ExpansionStyle.TryFill),
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
-      isFirst: false,
     );
 
     // print("   ### YContainer #2: before layout: ${yContainer}");
@@ -226,7 +224,7 @@ abstract class ChartContainer {
     // This must be done here after X and Y are layed out.
 
     this.dataContainer = new DataContainer(
-      chartContainer: this,
+      parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width - yContainerSize.width,
           widthExpansionStyle: ExpansionStyle.TryFill,
@@ -241,6 +239,7 @@ abstract class ChartContainer {
     this.dataContainer.layout();
 
     // At the end, move the individual chart areas to their offsets.
+    // todo -10 Need to call correct offset?
     legendContainer.legendLabelContainers.forEach((legendLabelContainer) {
       legendLabelContainer.applyParentOffset(new ui.Offset(0.0, 0.0));
     });
@@ -325,9 +324,6 @@ class YContainer {
   LayoutExpansion _layoutExpansion;
   double _yLabelsMaxHeightFromFirstLayout;
 
-  // first container ignores grid entirely
-  bool _isFirst;
-
   /// Constructor of the container for the Y axis labels.
   /// The parameter [chartContainer] provides this [YContainer] access to it's
   /// parent container.
@@ -353,12 +349,10 @@ class YContainer {
     ChartContainer chartContainer,
     LayoutExpansion layoutExpansion,
     double yLabelsMaxHeightFromFirstLayout,
-    bool isFirst,
   }) {
     _chartContainer = chartContainer;
     _layoutExpansion = layoutExpansion;
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
-    _isFirst = isFirst;
   }
 
   /// Lays out the area containing the Y axis labels.
@@ -389,9 +383,9 @@ class YContainer {
       layoutAutomatically(yAxisMin, yAxisMax);
     }
     _yLabelsContainerWidth = yLabelContainers
-            .map((var yLabelContainer) => yLabelContainer._labelPainter)
-            .map((LabelPainter labelPainter) =>
-                labelPainter.textPainter.size.width)
+            .map((var yLabelContainer) => yLabelContainer._labelContainer)
+            .map((LabelContainer labelContainer) =>
+                labelContainer.textPainter.size.width)
             .reduce(math.max) +
         2 * _chartContainer.options.yLabelsPadLR;
   }
@@ -400,8 +394,6 @@ class YContainer {
   void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData = _chartContainer.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
-
-    // print("flatData=$flatData");
 
     List<String> yLabels = _chartContainer.data.yLabels;
 
@@ -469,7 +461,7 @@ class YContainer {
     _chartContainer.yScaler = yScaler;
     ChartOptions options = _chartContainer.options;
 
-    // Initially all LabelPainters share same text style object from options.
+    // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
       textDirection: options.labelTextDirection,
@@ -482,18 +474,18 @@ class YContainer {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       double yTickY = labelInfo.scaledLabelValue;
       var yLabelContainer = new YLabelContainer();
-      yLabelContainer._labelPainter = new LabelPainter(
+      yLabelContainer._labelContainer = new LabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      yLabelContainer._labelPainter.textPainter.layout();
+      yLabelContainer._labelContainer.textPainter.layout();
       double labelTopY =
-          yTickY - yLabelContainer._labelPainter.textPainter.height / 2;
+          yTickY - yLabelContainer._labelContainer.textPainter.height / 2;
 
       yLabelContainer.yTickY = yTickY - labelTopY;
 
-      // Move the contained LabelPainter to correct position
+      // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(new ui.Offset(0.0, labelTopY));
 
       yLabelContainers.add(yLabelContainer);
@@ -515,7 +507,7 @@ class YContainer {
 ///     to the top of the available [chartArea].
 class YLabelContainer {
   /// Painter configured to paint one label
-  LabelPainter _labelPainter;
+  LabelContainer _labelContainer;
 
   ///  y offset of Y label middle point.
   ///
@@ -538,7 +530,7 @@ class YLabelContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    _labelPainter.textPainter.paint(canvas, _offset);
+    _labelContainer.textPainter.paint(canvas, _offset);
   }
 }
 
@@ -592,7 +584,7 @@ class XLinePresenter extends line_presenter.LinePresenter {
 ///   - Containers may use Painters, for example for text (`TextSpan`),
 ///     for which we do not know any sizing needed for the Containers,
 ///     until we call `TextPainter(text: textSpan).layout()`.
-///     provided by LabelPainter.textPainterForLabel(String string)
+///     provided by LabelContainer.textPainterForLabel(String string)
 ///   - todo add iterations that allow layout size to be negotiated.
 ///     The above requires a Area container or similar object, that can ask
 ///     this object to recalculate
@@ -612,7 +604,7 @@ class XContainer {
 
   // ### input values
 
-  List<String> _xLabels; // todo -6 remove. Replace by painters.labelPainter
+  List<String> _xLabels; // todo -6 remove. Replace by painters.labelContainer
   double _availableWidth;
 
   // ### calculated values
@@ -659,7 +651,7 @@ class XContainer {
 
     ChartOptions options = _chartContainer.options;
 
-    // Initially all LabelPainters share same text style object from options.
+    // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
       textDirection: options.labelTextDirection,
@@ -671,14 +663,14 @@ class XContainer {
       // double leftX = _gridStepWidth * xIndex;
       var xLabelContainer = new XLabelContainer();
 
-      xLabelContainer._labelPainter = new LabelPainter(
+      xLabelContainer._labelContainer = new LabelContainer(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
 
       // core of X layout calcs - lay out label and find middle
-      var textPainter = xLabelContainer._labelPainter.textPainter;
+      var textPainter = xLabelContainer._labelContainer.textPainter;
       textPainter.layout();
 
       double halfLabelWidth = textPainter.width / 2;
@@ -701,7 +693,8 @@ class XContainer {
 
     // xlabels area without padding
     _xLabelsMaxHeight = xLabelContainers
-        .map((var xLabelContainer) => xLabelContainer._labelPainter.textPainter)
+        .map((var xLabelContainer) =>
+            xLabelContainer._labelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -713,7 +706,7 @@ class XContainer {
 /// All positions are relative to the left of the container of x labels
 class XLabelContainer {
   /// Painter configured to paint one label
-  LabelPainter _labelPainter;
+  LabelContainer _labelContainer;
 
   /// The X position of point that should
   /// show a "tick dash" for the label center on the x axis.
@@ -724,7 +717,7 @@ class XLabelContainer {
   ///   for ordinal X variable, the X value is simply made evenly
   ///   spaced across X available space).
   ///   - Also same as the position of middle of X label wrapped
-  /// in [_labelPainter].
+  /// in [_labelContainer].
   ///
   /// The actual value changes after applying parent offset
   /// by [applyParentOffset].
@@ -745,25 +738,27 @@ class XLabelContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    _labelPainter.textPainter.paint(canvas, _offset);
+    _labelContainer.textPainter.paint(canvas, _offset);
   }
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
 
-/// Defines how a container layout should expand the container in a direction.
+/// Defines how a container [layout] should expand the container in a direction.
 ///
 /// Direction can be "width" or "height".
 ///
 /// Generally,
-///   - If direction style is [TryFill], container should use all
-/// available length in the direction. This is intended to fill a predefined
-/// available length, such as show X axis labels
+///   - If direction style is [TryFill], the container should use all
+///     available length in the direction (that is, [width] or [height].
+///     This is intended to fill a predefined
+///     available length, such as show X axis labels
 ///   - If direction style is [GrowDoNotFill], container should use as much space
-///   as needed in the direction, but stop well before the available length.
-///   The "well before" is not really defined here.
-///   This is intended to for example layout Y axis in X direction,
-///   where we want to put the data container to the right of the Y labels.
+///     as needed in the direction, but stop well before the available length.
+///     The "well before" is not really defined here.
+///     This is intended to for example layout Y axis in X direction,
+///     where we want to put the data container to the right of the Y labels.
+///
 ///
 class LayoutExpansion {
   double width;
@@ -812,11 +807,7 @@ class LayoutExpansion {
 ///       here.
 ///
 abstract class Container {
-  /// External size enforced by external container.
-  ///
-  ///   - If width or height is non zero, the container must not exceed it (although, generally,
-  /// containers will fill the whole width or height).
-  ///   - If width or height is zero, the container can
+  /// External size enforced by the parent container.
   LayoutExpansion _layoutExpansion;
 
   /// The containing container.
@@ -891,12 +882,12 @@ class DataContainer extends Container {
   PresentersColumns presentersColumns;
 
   DataContainer({
-    ChartContainer chartContainer,
+    ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
   })
       : super(
           layoutExpansion: layoutExpansion,
-          parentContainer: chartContainer,
+          parentContainer: parentContainer,
         ) {}
 
   void layout() {
@@ -982,7 +973,7 @@ class DataContainer extends Container {
   }
 
   ui.Size get layoutSize {
-    // todo -7: Check that layed out size (looking into all members)
+    // todo -7: assert that layed out size (looking into all members)
     //          is same as the pre-layout size returned here
     return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
   }
@@ -1116,10 +1107,6 @@ class LegendContainer {
   ///
   /// Evenly divides available width to all legend items.
   layout() {
-    layoutCore();
-  }
-
-  layoutCore() {
     ChartOptions options = _chartContainer.options;
     List<String> dataRowsLegends = _chartContainer.data.dataRowsLegends;
     LegendItemSizing itemSizing = new LegendItemSizing(
@@ -1129,7 +1116,7 @@ class LegendContainer {
     );
 
     // todo -3 Call the layoutUntilFitsParent here
-    // Initially all LabelPainters share same text style object from options.
+    // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
       textDirection: options.labelTextDirection,
@@ -1143,13 +1130,13 @@ class LegendContainer {
 
     var maxItemSize = ui.Size.zero;
     for (var index = 0; index < dataRowsLegends.length; index++) {
-      LabelPainter labelPainter = new LabelPainter(
+      LabelContainer labelContainer = new LabelContainer(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      labelPainter.textPainter.layout();
-      widgets.TextPainter textPainter = labelPainter.textPainter;
+      labelContainer.textPainter.layout();
+      widgets.TextPainter textPainter = labelContainer.textPainter;
       maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
           math.max(maxItemSize.height, textPainter.height));
     }
@@ -1167,13 +1154,13 @@ class LegendContainer {
     for (var index = 0; index < dataRowsLegends.length; index++) {
       var legendLabelContainer = new LegendLabelContainer();
 
-      legendLabelContainer._labelPainter = new LabelPainter(
+      legendLabelContainer._labelContainer = new LabelContainer(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
       widgets.TextPainter textPainter =
-          legendLabelContainer._labelPainter.textPainter;
+          legendLabelContainer._labelContainer.textPainter;
       textPainter.layout();
 
       double indicatorX =
@@ -1190,9 +1177,10 @@ class LegendContainer {
           itemSizing.indicatorWidth +
           itemSizing.indicatorToLegendPad;
 
-      // todo -3 labelTopY Is all this needed?
+      // todo -10 labelTopY Is all this needed?
       double labelTopY = (_size.height - textPainter.height) / 2;
-      legendLabelContainer._labelOffset = new ui.Offset(labelLeftX, labelTopY);
+// todo -10      legendLabelContainer._labelOffset = new ui.Offset(labelLeftX, labelTopY);
+      legendLabelContainer._offset = new ui.Offset(labelLeftX, labelTopY);
 
       legendLabelContainer._indicatorPaint = new ui.Paint();
       legendLabelContainer._indicatorPaint.color = _chartContainer.data
@@ -1205,7 +1193,7 @@ class LegendContainer {
   /// todo -4 finish and document
 /*
   List<LegendLabelContainer> overflownLabelContainers() {
-    this.outputs.where((output) {output.labelPainter.})
+    this.outputs.where((output) {output.labelContainer.})
   }
   */
 }
@@ -1248,14 +1236,14 @@ class LegendItemSizing {
 }
 
 /// Represents one layed out item of the legend: [_indicatorRect] is
-/// the rectangle for the color indicator, the [_labelPainter] is a layed out
+/// the rectangle for the color indicator, the [_labelContainer] is a layed out
 /// [widgets.TextPainter] for the label text.
 ///
 /// Painters can paint this object in a loop similar to
 /// ```
 /// void drawLegend(ui.Canvas canvas) {
 ///    for (common.LegendLabelContainer legend in container.legendLabelContainers) {
-///      legend.labelPainter.paint(canvas, legend.labelOffset);
+///      legend.labelContainer.paint(canvas, legend.labelOffset);
 ///      canvas.drawRect(legend.indicatorRect, legend.indicatorPaint); }}
 /// ```
 ///
@@ -1264,7 +1252,7 @@ class LegendLabelContainer {
   // todo -4
 
   /// Painter configured to paint each legend label
-  LabelPainter _labelPainter;
+  LabelContainer _labelContainer;
 
   ///  rectangle of the legend color square series indicator
   ui.Rect _indicatorRect;
@@ -1273,7 +1261,7 @@ class LegendLabelContainer {
   ui.Paint _indicatorPaint;
 
   ///  offset of legend label
-  ui.Offset _labelOffset;
+// todo -10  ui.Offset _labelOffset;
 
   /// Absolute offset in chart
   ui.Offset _offset;
@@ -1281,14 +1269,15 @@ class LegendLabelContainer {
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    _labelOffset += offset;
+    _offset += offset;
+    // todo -10   _labelOffset += offset;
 
     // Duplicated info
-    _offset = new ui.Offset(_labelOffset.dx, _labelOffset.dy);
+// todo -10    _offset = new ui.Offset(_labelOffset.dx, _labelOffset.dy);
   }
 
   void paint(ui.Canvas canvas) {
-    _labelPainter.textPainter.paint(canvas, _offset);
+    _labelContainer.textPainter.paint(canvas, _offset);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 }
@@ -1310,26 +1299,26 @@ class LegendLabelContainer {
 /// if the actual layed out height is within the passed height.
 ///
 /// Instances are created from a label list; each label is
-/// wrapped as a [LabelPainter] instance. All member [LabelPainter] instances
-/// in [labelPainters] share the text properties (style, direction, align etc.)
+/// wrapped as a [LabelContainer] instance. All member [LabelContainer] instances
+/// in [labelContainers] share the text properties (style, direction, align etc.)
 /// of this parent instance
 ///
-/// The initial text style of member [labelPainters] is from [ChartOptions].
+/// The initial text style of member [labelContainers] is from [ChartOptions].
 /// The motivation is that a calling auto-fit program will change the text
 /// style to fit a defined width.
 ///
 /// Provides methods to
-///   - Layout member labelPainters, for the purpose of
+///   - Layout member labelContainers, for the purpose of
 ///   finding if they overflow their even size width.
 ///   - Change text style for all labels (by setting members and applying
-///   them on the member [labelPainters].
-///   - Layout the container by laying out the contained [labelPainters]
-///   - Query size needed to paint each [labelPainters] and the whole container.
+///   them on the member [labelContainers].
+///   - Layout the container by laying out the contained [labelContainers]
+///   - Query size needed to paint each [labelContainers] and the whole container.
 class HorizontalFixedWidthAutoScaledLabelsContainer {
   List<String> _labels;
 
   /// Wrappers for label strings
-  List<LabelPainter> _labelPainters;
+  List<LabelContainer> _labelContainers;
 
   /// Width of container. This is the fixed width this container
   /// must fill
@@ -1400,6 +1389,8 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
   ///   -  [_maxHeight] is optional; it may be INFINITY (in most cases would be).
   ///      If not INFINITY, a validation is performed for height overflow todo -2 add condition
   ///
+  /// Note: This class does not keep the LabelStyle,
+  ///       just passes it to member [LabelContainer]s.
   HorizontalFixedWidthAutoScaledLabelsContainer({
     List<String> labels,
     double width,
@@ -1418,14 +1409,14 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
     _rightPad = rightPad;
 
     // Instance is created from a label list; each label is
-    //   wrapped as a [LabelPainter] instance.
-    // The initial text style of member [labelPainters] is from [ChartOptions].
-    // All member [LabelPainter] instances
-    //   in [labelPainters] share the text properties (style, direction, align etc.)
+    //   wrapped as a [LabelContainer] instance.
+    // The initial text style of member [labelContainers] is from [ChartOptions].
+    // All member [LabelContainer] instances
+    //   in [labelContainers] share the text properties (style, direction, align etc.)
     //   of this parent instance
     _options = options;
 
-    // Initially all LabelPainters share same text style object from options.
+    // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
       textDirection: options.labelTextDirection,
@@ -1434,69 +1425,67 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
     );
     _labelStyle = labelStyle;
 
-    _labelPainters = labels.map((label) {
-      return new LabelPainter(
+    _labelContainers = labels.map((label) {
+      return new LabelContainer(
         label: label,
         labelMaxWidth: allocatedLabelWidth,
         labelStyle: labelStyle,
       );
     }).toList();
-
-    // Note: This class does not keep the LabelTextModifier,
-    //       just passes it to member LabelPainters
   }
 
   /// Provides methods to
-  ///   - Layout individual [labelPainters], for the purpose of
+  ///   - Layout individual [labelContainers], for the purpose of
   ///   finding if they overflow their even size width.
   ///
   /// anyLabelOverflows() - must be called after layoutIndividualLabels()
   ///
 
   ///   - Change text style for all labels (by setting members and applying
-  ///   them on the member [labelPainters].
-  ///   - Layout the container by laying out the contained [labelPainters].
+  ///   them on the member [labelContainers].
+  ///   - Layout the container by laying out the contained [labelContainers].
   ///   This should layout to maxWidth, and throw exception on overflow.
-  ///   - Query size needed to paint each [labelPainters] and the whole container.
+  ///   - Query size needed to paint each [labelContainers] and the whole container.
 
-// todo -3 add all method signatures first, implement next
+  /// todo -3 add all method signatures first, implement next
   /// - layout the container with each label at evenly spaced positions
   void layoutQuaranteeFitFirstTiltNextDecreaseFontNextSkipNextTrim() {
     // TODO -4 FOR NOW, JUST LAYOUT, ONCE, NOT CHECKING FOR OVERFLOW
     _applyStyleThenLayoutAndCheckOverflow(labelStyle: _labelStyle);
 
     // todo -3
-    // call layoutAndCheckOverflow on all labelPainters
+    // call layoutAndCheckOverflow on all labelContainers
     // if at least one overflows, tilt all labels by -70 degrees
     // etc.
   }
 
-  /// Layout member [_labelPainters] forcing the max width and
+  /// Layout member [_labelContainers] forcing the max width and
   /// check for overflow.
   ///
-  /// Returns `true` if at least one element of [_labelPainters] overflows,
+  /// Returns `true` if at least one element of [_labelContainers] overflows,
   /// `false` otherwise.
   ///
-  /// As a sideeffect, if false is returned, all  [_labelPainters] were
+  /// As a sideeffect, if false is returned, all  [_labelContainers] were
   /// layoued out, and can be painted.
   bool _layoutAndCheckOverflow() {
     // same as label_painted, on all
-    return _labelPainters.any((labelPainter) {
-      labelPainter.layoutAndCheckOverflow();
+    return _labelContainers.any((labelContainer) {
+      labelContainer.layoutAndCheckOverflow();
     });
   }
 
   /// Apply new text style and layout, then check if
-  /// any member of [_labelPainters] overflows.
+  /// any member of [_labelContainers] overflows.
   /// returns `true` if at least one overflows.
   bool _applyStyleThenLayoutAndCheckOverflow({
     LabelStyle labelStyle,
   }) {
     // Here need to process all painters, as we want to apply style to all.
-    _labelPainters.forEach((labelPainter) {
-      labelPainter.applyStyleThenLayoutAndCheckOverflow(labelStyle: labelStyle);
+    _labelContainers.forEach((labelContainer) {
+      labelContainer.applyStyleThenLayoutAndCheckOverflow(
+          labelStyle: labelStyle);
     });
-    // todo -4: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelPainters.any((labelPainter) {labelPainter.isOverflowing;});
+    // todo -4: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelContainers.any((labelContainer) {labelContainer.isOverflowing;});
     return false;
   }
 }

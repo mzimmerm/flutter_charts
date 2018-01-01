@@ -13,7 +13,7 @@ import 'package:flutter_charts/src/chart/options.dart';
 /// Note: All methods (and constructor) of this class always calls
 ///       layout, as a result, [_overflowsMaxWidth] can be always asked,
 ///       there is no need to check for "needs layout" or similar.
-class LabelPainter {
+class LabelContainer {
   String _label;
   double _labelMaxWidth;
   widgets.TextPainter textPainter;
@@ -26,7 +26,7 @@ class LabelPainter {
   // todo -2 add to signature if boundaries overflown
   ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
-  LabelPainter({
+  LabelContainer({
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
@@ -57,27 +57,7 @@ class LabelPainter {
     return doesOverflow;
   }
 
-  /// Lays out, for later painting, the member [_label] string
-  /// using the member [textPainter].
-  ///
-  /// For the measured values to correspond the drawn sizes,
-  /// all size related styling is included.
-  ///
-  /// Returns the layed-out member [textPainter]
-  /// instance of [widgets.TextPainter],
-  /// which can later paint itself (with the [_label]) on `canvas`,
-  /// using `textPainter.paint(canvas, offset)`.
-  /// todo -3 this needs removed
-  ///
-  /*
-  widgets.TextPainter layoutTextPainter() {
-    textPainter.layout(); // minWidth:100.0, maxWidth: 300.0
-
-    return textPainter;
-  }
-  */
-
-  /// Lays out the member [_label] text
+  /// Lays out for later painting, the member [_label] text
   /// specifying the maximum allowed width [_labelMaxWidth],
   /// then tests if the label fits the width.
   ///
@@ -94,8 +74,7 @@ class LabelPainter {
     textPainter.layout(maxWidth: _labelMaxWidth);
     _constraintSize = textPainter.size;
 
-    // todo -2 check if constraintSize
-
+    // todo -3 change 1.0 pixels for epsilon
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
       isOverflowing = true;
     } else {
@@ -104,12 +83,10 @@ class LabelPainter {
 
     return isOverflowing;
   }
-
-
 }
 
 /// Class for value objects which group the text styles that may affect
-/// [LabelPainter]'s instances layout.
+/// [LabelContainer]'s instances layout.
 class LabelStyle {
   widgets.TextStyle textStyle;
   ui.TextDirection textDirection;

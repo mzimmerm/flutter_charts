@@ -296,93 +296,20 @@ Result vertical bar chart:
 
 ** Enhancements:
 
+*** IN-PROGRESS Put all chart elements on the base class Container
+
+
 *** IN-PROGRESS Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
-
-- [X] Note only: Labels printed and layed out using *LabelPainter* in label_painter. this is used in
-  - [X] XLayouter
-  - [X] YLayouter
-  - [X] LegendLayouter
-- [X] LayouterOutput classes - 
-  - [X] add methods applyOffsetInParent(Offset offset). 
-    - [X] XLayouter
-    - [X] YLayouter
-    - [X] LegendLayouter
-  - [X] add method paint(Canvas canvas)
-    - [X] XLayouter
-    - [X] YLayouter
-    - [X] LegendLayouter
-  - [X] Make calls to applyOffsetInParent - This is at places where xOutputs, yOutputs, layouterOutputs are created!
-    - [X] XLayouter
-    - [X] YLayouter
-    - [X] LegendLayouter
-  - [X] Make calls to paint - this is in painter
-    - [X] XLayouter
-    - [X] YLayouter
-    - [X] LegendLayouter
-  - [X] Rename LayouterOutput classes LayouterPainter and move the ability to paint there 
-    - [X] XLayouter
-      - [X] XLayouterOutput -> XLayoutPainter
-      - [X] xLayouterOutput -> xLayoutPainter
-      - [X] xOutputs -> xLayoutPainters
-    - [X] YLayouter
-      - [X] YLayouterOutput -> YLayoutPainter
-      - [X] yLayouterOutput -> yLayoutPainter
-      - [X] yOutputs -> yLayoutPainters
-    - [X] LegendLayouter
-      - [X] LegendLayouterOutput -> LegendLayoutPainter
-      - [X] legendLayouterOutput -> legendLayoutPainter
-      - [X] legendOutputs -> legendLayoutPainters
-  - [X] Make LayouterPainter members private.
-
-- [X] layouters: Replace all places using Iterable.generate with a simple loop.
-- [X] Test everything works
-- [-] Separate creation of xLayoutPainters and xGrid
-  - [X] new class *XGridLinesLayoutPainter*
-  - [ ] ChartLayouter new member *xGridLinesLayoutPainter*, replaces *horizGridLines*
-  - [ ] start creating XGridLinesLayoutPainter during creation of xLayoutPainters -
-  - [ ] separate creation of xLayoutPainters and xGrid
-    - [ ] new class *XLinePresenter* extends LinePresenter
-    - [ ] XLinePresenter - move all relevant members from XLayoutPainter
-  - [ ] Whenever a new XLayoutPainter is created:
-   
-    - [ ] create a new *YGridLinesLayoutPainter.yLinePresenter*
-
-    - [ ] At that point, 
-
-      - [ ] !!! must set the *YGridLinesLayoutPainter.yLinePresenter* lineFrom and lineTo to same values as in *get vertGridLines* !!!!!
-
-      - [ ] must call applyParentOffset
-  - [ ] *XGridLineLayoutPainter* has:
-    - [ ] *xLinePresenters*
-    - [ ] *applyParentOffset*
-    - [ ] *paint*
-
-  - [ ]  start creating horizGridLines from XGridLineLayoutPainter
-
-  - [ ]  paint XGridLineLayoutPainter instead of using horizGridLines.
-  
-- [ ] Separate creation of yLayoutPainters and yGrid
-
-- [ ] test all works
-
-- [ ] rename YLayoutPainter to YLabelPainter
-- [ ] rename XLayoutPainter to XLabelPainter
-- [ ] rename yLayoutPainter to yLabelPainter
-- [ ] rename xLayoutPainter to xLabelPainter
 
 - [ ] HorizontalFixedWidthAutoScaledLabelsContainer add method applyParentOffset, pass to LabelPainters
 
-- [ ] create class XLayoutContainter extends HorizontalFixedWidthAutoScaledLabelsContainer
+- [ ] ? create class XLayoutContainter extends HorizontalFixedWidthAutoScaledLabelsContainer
 
   - [ ] member painters XLayoutPainter s
-
-- [ ] X axis: wrap painters (XLayoutPainter), to 
 
 - [ ] Changes refactoring needed ahead
 
   - [ ] LabelPainter must accept AND HAVE MEMBERS all sizing outside options: textDirection, textAlign, textScaleFactor, labelTextStyle (KEEP THIS ONE ON OPTIONS DEFAULT)
-
-  - [ ] REfactor this loop: widgets.TextPainter p = new LabelPainter(options: options) to accept sizing outside options, starting with options
 
 - [-] Make X, Y labels and legend labels not to run into the neighbor, if too long.
   - [ ] X
@@ -416,18 +343,6 @@ Result vertical bar chart:
 - [ ] Move label_painter.dart from util to the chart dirs somewhere
   
 - [ ] TEST
-- [ ] NOTE: in painter:
-    #+BEGIN_SRC dart
-      void drawLegend(ui.Canvas canvas) {
-        for (common.LegendLayouterOutput legend in layouter.legendOutputs) {
-          legend.labelPainter.paint(canvas, legend.labelOffset);
-          canvas.drawRect(legend.indicatorRect, legend.indicatorPaint);
-        }
-      }
-    #+END_SRC
- 
-  - [ ] Above, the legend is made 
-- 
 - [ ] Clip chart to not paint outside area provided by Flutter app. 
 - [ ] Clip labels and legends not to run into the neighbor, if too long.
 
