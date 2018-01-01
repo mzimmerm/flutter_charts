@@ -17,7 +17,6 @@ import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
 /// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class ChartPainter extends widgets.CustomPainter {
-
   /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
@@ -33,6 +32,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   setContainer(common.ChartContainer container) {
     this.container = container;
   }
+
   /// Paints the chart area - the legend in [drawLegend],
   /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
   /// and the data values, column by column, in [drawPresentersColumns].
@@ -71,28 +71,27 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   void drawGrid(ui.Canvas canvas) {
-
     // draw horizontal and vertical grid
     container.dataContainer.paint(canvas);
-
   }
 
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
-    for (common.XLabelContainer xLabelContainer in container.xLabelContainers) {
+    for (var xLabelContainer in container.xContainer.xLabelContainers) {
       xLabelContainer.paint(canvas);
     }
   }
 
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
-    for (common.YLabelContainer yLabelContainer in container.yLabelContainers) {
+    for (var yLabelContainer in container.yContainer.yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
   }
 
   void drawLegend(ui.Canvas canvas) {
-    for (common.LegendLabelContainer legendLabelContainer in container.legendLabelContainers) {
+    for (var legendLabelContainer
+        in container.legendContainer.legendLabelContainers) {
       legendLabelContainer.paint(canvas);
     }
   }
@@ -100,7 +99,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Optionally paint series in reverse order (first to last vs last to first)
   ///
   /// See [ChartOptions.firstDataRowPaintedFirst].
-  List<presenters.Presenter> optionalPaintOrderReverse(List<presenters.Presenter> presenters) {
+  List<presenters.Presenter> optionalPaintOrderReverse(
+      List<presenters.Presenter> presenters) {
     var options = this.container.options;
     if (options.firstDataRowPaintedFirst) {
       presenters = presenters.reversed.toList();
@@ -112,4 +112,3 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// or bars/columns, stacked or grouped (bar/column charts).
   void drawPresentersColumns(ui.Canvas canvas);
 }
-
