@@ -3,9 +3,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 
 import 'package:flutter_charts/flutter_charts.dart' as common;
-import 'containers.dart' as containers;
+import 'container.dart' as containers;
 
-import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
+import 'package:flutter_charts/src/chart/presenter.dart' as presenters;
 
 /// [ChartPainter] does the core of painting the chart,
 /// in it's core method [paint].

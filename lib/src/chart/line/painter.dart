@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
-import '../presenters.dart' as presenters;
-import '../line/presenters.dart' as line_presenters;
+import '../presenter.dart' as presenters;
+import '../line/presenter.dart' as line_presenters;
 
 import '../painter.dart';
 

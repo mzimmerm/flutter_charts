@@ -2,9 +2,9 @@ import 'dart:ui' as ui show Offset, Paint;
 
 import 'package:flutter/material.dart' as material;
 
-import '../presenters.dart';
+import '../presenter.dart';
 import 'package:flutter_charts/src/chart/line/options.dart';
-import '../containers.dart';
+import '../container.dart';
 import '../../util/line_presenter.dart' as line_presenter;
 
 

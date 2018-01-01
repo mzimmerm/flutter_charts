@@ -1,7 +1,7 @@
 
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../line/containers.dart' as line_containers;
+import '../line/container.dart' as line_containers;
 import '../line/painter.dart' as painter show LineChartPainter;
 
 

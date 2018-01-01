@@ -9,12 +9,12 @@ import 'dart:math' as math show max, min;
 import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
 
-import 'package:flutter_charts/src/util/label_painter.dart';
+import 'package:flutter_charts/src/util/label_container.dart';
 
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
 
-import 'presenters.dart'; // V
+import 'presenter.dart'; // V
 
 import '../util/range.dart';
 import '../util/util.dart' as util;

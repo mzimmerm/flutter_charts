@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 
 import '../painter.dart';
-import '../presenters.dart' as presenters;
+import '../presenter.dart' as presenters;
 
-import '../bar/presenters.dart' as bar_presenters;
+import '../bar/presenter.dart' as bar_presenters;
 
 /// Paints the columns of the bar chart.
 ///

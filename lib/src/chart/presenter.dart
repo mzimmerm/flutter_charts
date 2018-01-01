@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Paint, PaintingStyle;
 
 import 'package:flutter_charts/src/chart/options.dart';
-import 'containers.dart';
+import 'container.dart';
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
   show CustomList;

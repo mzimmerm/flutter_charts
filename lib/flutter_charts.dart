@@ -71,11 +71,11 @@
 /// Export path starts after lib, whether using
 ///   'package:flutter_charts' format or 'src/' format.
 ///
-export 'package:flutter_charts/src/util/label_painter.dart';
+export 'package:flutter_charts/src/util/label_container.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 
 export 'src/chart/data.dart';
-export 'src/chart/containers.dart';
+export 'src/chart/container.dart';
 
 export 'package:flutter_charts/src/chart/options.dart';
 
@@ -84,12 +84,12 @@ export 'src/util/range.dart';
 
 export 'src/chart/line/chart.dart';
 export 'src/chart/line/painter.dart';
-export 'src/chart/line/containers.dart';
+export 'src/chart/line/container.dart';
 export 'src/chart/line/options.dart';
 
 export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
-export 'src/chart/bar/containers.dart';
+export 'src/chart/bar/container.dart';
 export 'src/chart/bar/options.dart';
 
 export 'src/util/random_chart_data.dart';
