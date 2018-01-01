@@ -16,6 +16,7 @@
 - [[#bugs-status][Bugs status]]
 - [[#enhancements-in-progress-or-planned][Enhancements in progress or planned]]
   - [[#enhancements][Enhancements:]]
+  - [[#refactorings][Refactorings]]
 - [[#terminology-and-selected-classes][Terminology and Selected Classes]]
 - [[#internal-notes][Internal notes]]
   - [[#add-ability-to-create-a-table-of-contents-to-readmeorg][Add ability to create a Table of Contents to README.org]]
@@ -293,7 +294,6 @@ Result vertical bar chart:
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
 - [ ] 
 * Enhancements in progress or planned
-
 ** Enhancements:
 
 *** IN-PROGRESS Put all chart elements on the base class Container
@@ -444,6 +444,9 @@ class YLinePresenter eytends line_presenter.LinePresenter {
 *** TODO Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
 *** TODO Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
 *** TODO Next, add ability to invert X and Y axis (values on horizontal axis)
+** Refactorings
+*** Introduce Mixin Layoutable by applyParentOffset()
+*** Introduce Mixin Paintable by paint()
 
 * TODO Terminology and Selected Classes
 

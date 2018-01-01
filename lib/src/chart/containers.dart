@@ -479,8 +479,7 @@ class YContainer {
         labelStyle: labelStyle,
       );
       yLabelContainer.textPainter.layout();
-      double labelTopY =
-          yTickY - yLabelContainer.textPainter.height / 2;
+      double labelTopY = yTickY - yLabelContainer.textPainter.height / 2;
 
       yLabelContainer.yTickY = yTickY - labelTopY;
 
@@ -504,8 +503,7 @@ class YContainer {
 ///     the container of y labels
 ///   - If owner is Area [ChartContainer], all positions are relative
 ///     to the top of the available [chartArea].
-class YLabelContainer  extends LabelContainer {
-
+class YLabelContainer extends LabelContainer {
   ///  y offset of Y label middle point.
   ///
   ///  Also is the y offset of point that should
@@ -523,7 +521,12 @@ class YLabelContainer  extends LabelContainer {
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
-  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
+  })
+      : super(
+          label: label,
+          labelMaxWidth: labelMaxWidth,
+          labelStyle: labelStyle,
+        );
 
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
@@ -694,8 +697,7 @@ class XContainer {
 
     // xlabels area without padding
     _xLabelsMaxHeight = xLabelContainers
-        .map((var xLabelContainer) =>
-            xLabelContainer.textPainter)
+        .map((var xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -706,8 +708,6 @@ class XContainer {
 ///
 /// All positions are relative to the left of the container of x labels
 class XLabelContainer extends LabelContainer {
-
-
   /// The X position of point that should
   /// show a "tick dash" for the label center on the x axis.
   ///
@@ -733,7 +733,12 @@ class XLabelContainer extends LabelContainer {
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
-  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
+  })
+      : super(
+          label: label,
+          labelMaxWidth: labelMaxWidth,
+          labelStyle: labelStyle,
+        );
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
@@ -1162,8 +1167,7 @@ class LegendContainer {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      widgets.TextPainter textPainter =
-          legendLabelContainer.textPainter;
+      widgets.TextPainter textPainter = legendLabelContainer.textPainter;
       textPainter.layout();
 
       double indicatorX =
@@ -1251,7 +1255,6 @@ class LegendItemSizing {
 ///
 /// All positions are relative to the left of the [LegendContainer]'s container.
 class LegendLabelContainer extends LabelContainer {
-
   ///  rectangle of the legend color square series indicator
   ui.Rect _indicatorRect;
 
@@ -1265,7 +1268,12 @@ class LegendLabelContainer extends LabelContainer {
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
-  }) : super(label: label, labelMaxWidth: labelMaxWidth, labelStyle: labelStyle,);
+  })
+      : super(
+          label: label,
+          labelMaxWidth: labelMaxWidth,
+          labelStyle: labelStyle,
+        );
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
