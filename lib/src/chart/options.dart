@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
 /// related, may be overriden or adjusted by the chart auto-layout,
-/// see [SimpleChartLayouter].
+/// see [SimpleChartContainer].
 class ChartOptions {
 
   /// Defines how to create and layout chart's Y labels: either from user
@@ -82,7 +82,7 @@ class ChartOptions {
 
   /// Text style for both X and Y labels.
   ///
-  /// The (future) iterative layouter can change this default for labels to fit.
+  /// The (future) iterative container can change this default for labels to fit.
   widgets.TextStyle labelTextStyle = new widgets.TextStyle(
     color: material.Colors.grey[600],
     fontSize: 14.0,);

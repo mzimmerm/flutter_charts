@@ -1,7 +1,7 @@
 
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../line/layouters.dart' as line_layouters;
+import '../line/containers.dart' as line_containers;
 import '../line/painter.dart' as painter show LineChartPainter;
 
 
@@ -9,8 +9,8 @@ import '../line/painter.dart' as painter show LineChartPainter;
 ///
 /// It extends [CustomPaint] which is the flutter widget
 /// that provides a canvas on which to draw during the paint phase.
-/// The core override is to set the concrete [ChartLayouter], and
-/// it's [ChartLayouter.isStacked] setting.
+/// The core override is to set the concrete [ChartContainer], and
+/// it's [ChartContainer.isStacked] setting.
 ///
 /// Note: The [LineChart] constructor shows how to call a super
 ///       with named parameters. The super's [CustomPaint] single constructor is
@@ -25,7 +25,7 @@ class LineChart extends widgets.CustomPaint {
     widgets.CustomPainter foregroundPainter,
     widgets.Size size: widgets.Size.zero,
     widgets.Widget child,
-    line_layouters.LineChartLayouter layouter,
+    line_containers.LineChartContainer container,
   })
       : super(
     key: key,
@@ -34,7 +34,7 @@ class LineChart extends widgets.CustomPaint {
     size: size,
     child: child,
   ) {
-    layouter.isStacked = false;
-    painter.setLayouter(layouter);
+    container.isStacked = false;
+    painter.setContainer(container);
   }
 }

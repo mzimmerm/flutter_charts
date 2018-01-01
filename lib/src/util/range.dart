@@ -223,7 +223,7 @@ class YScalerAndLabelFormatter {
 
   /// Self-scales the Y label values in [labelInfos] to the scale
   /// of the available chart size.
-  /// todo 1 maybe make private and wrap - need for manual layout - better, create method for manual layout and move code from layouters here
+  /// todo 1 maybe make private and wrap - need for manual layout - better, create method for manual layout and move code from containers here
   void scaleLabelInfos() {
     labelInfos.forEach((var labelInfo) =>
         labelInfo._scaleLabelValue()
@@ -252,7 +252,7 @@ class YScalerAndLabelFormatter {
   /// Format labels in a way suitable for presentation on the Y axis.
   ///
   /// [ChartOptions] allow for customization.
-  /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from layouters here
+  /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
   void makeLabelsPresentable() {
     labelInfos.forEach((labelInfo) {
       labelInfo.formattedYLabel =

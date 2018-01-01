@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 
 import 'package:flutter_charts/flutter_charts.dart' as common;
-import 'layouters.dart' as layouters;
+import 'containers.dart' as containers;
 
 import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
 
@@ -18,10 +18,10 @@ import 'package:flutter_charts/src/chart/presenters.dart' as presenters;
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class ChartPainter extends widgets.CustomPainter {
 
-  /// Layouter provides the auto-layout of chart elements.
+  /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  layouters.ChartLayouter layouter;
+  containers.ChartContainer container;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -30,14 +30,14 @@ abstract class ChartPainter extends widgets.CustomPainter {
   // note: data should be same for all charts,  options differ
   ChartPainter();
 
-  setLayouter(common.ChartLayouter layouter) {
-    this.layouter = layouter;
+  setContainer(common.ChartContainer container) {
+    this.container = container;
   }
   /// Paints the chart area - the legend in [drawLegend],
   /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
   /// and the data values, column by column, in [drawPresentersColumns].
   ///
-  /// Starts with a call to [ChartLayouter.layout], then painting
+  /// Starts with a call to [ChartContainer.layout], then painting
   /// according to the calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
     // print(" ### Size: paint(): passed size = ${size}");
@@ -49,8 +49,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
       return;
     }
 
-    layouter.chartArea = size;
-    layouter.layout();
+    container.chartArea = size;
+    container.layout();
 
     drawGrid(canvas);
     drawYLabels(canvas);
@@ -73,27 +73,27 @@ abstract class ChartPainter extends widgets.CustomPainter {
   void drawGrid(ui.Canvas canvas) {
 
     // draw horizontal and vertical grid
-    layouter.dataContainer.paint(canvas);
+    container.dataContainer.paint(canvas);
 
   }
 
   void drawXLabels(ui.Canvas canvas) {
     // Draw x axis labels on bottom
-    for (common.XLayoutPainter xLayoutPainter in layouter.xLayoutPainters) {
-      xLayoutPainter.paint(canvas);
+    for (common.XLabelContainer xLabelContainer in container.xLabelContainers) {
+      xLabelContainer.paint(canvas);
     }
   }
 
   void drawYLabels(ui.Canvas canvas) {
     // Draw y axis labels on the left
-    for (common.YLayoutPainter yLayoutPainter in layouter.yLayoutPainters) {
-      yLayoutPainter.paint(canvas);
+    for (common.YLabelContainer yLabelContainer in container.yLabelContainers) {
+      yLabelContainer.paint(canvas);
     }
   }
 
   void drawLegend(ui.Canvas canvas) {
-    for (common.LegendLayoutPainter legendLayoutPainter in layouter.legendLayoutPainters) {
-      legendLayoutPainter.paint(canvas);
+    for (common.LegendLabelContainer legendLabelContainer in container.legendLabelContainers) {
+      legendLabelContainer.paint(canvas);
     }
   }
 
@@ -101,7 +101,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   ///
   /// See [ChartOptions.firstDataRowPaintedFirst].
   List<presenters.Presenter> optionalPaintOrderReverse(List<presenters.Presenter> presenters) {
-    var options = this.layouter.options;
+    var options = this.container.options;
     if (options.firstDataRowPaintedFirst) {
       presenters = presenters.reversed.toList();
     }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' as material;
 
 import '../presenters.dart';
 import 'package:flutter_charts/src/chart/line/options.dart';
-import '../layouters.dart';
+import '../containers.dart';
 import '../../util/line_presenter.dart' as line_presenter;
 
 
@@ -31,19 +31,19 @@ class LineAndHotspotPresenter extends Presenter {
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,
+    ChartContainer container,
   })
       : super(
     point: point,
     nextRightColumnValuePoint: nextRightColumnValuePoint,
     rowIndex: rowIndex,
-    layouter: layouter,
+    container: container,
   ){
-    var options = layouter.options as LineChartOptions;
+    var options = container.options as LineChartOptions;
 
     // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = new ui.Paint();
-    rowDataPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
+    rowDataPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
@@ -67,19 +67,19 @@ class LineAndHotspotPresenter extends Presenter {
 /// See [PresenterCreator].
 class LineAndHotspotLeafCreator extends PresenterCreator {
 
-  LineAndHotspotLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
+  LineAndHotspotLeafCreator({ChartContainer container,}) : super(container: container);
 
   Presenter createPointPresenter({
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,
+    ChartContainer container,
   }) {
     return new LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      layouter: layouter,
+      container: container,
     );
   }
 

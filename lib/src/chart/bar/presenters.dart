@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Rect, Offset, Paint;
 
 import '../presenters.dart';
-import '../layouters.dart';
+import '../containers.dart';
 
 /// Presenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
@@ -17,20 +17,20 @@ class VerticalBarPresenter extends Presenter {
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,})
+    ChartContainer container,})
       : super(
     point: point,
     nextRightColumnValuePoint: nextRightColumnValuePoint,
     rowIndex: rowIndex,
-    layouter: layouter,
+    container: container,
   ){
     // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = new ui.Paint();
-    dataRowPaint.color = layouter.data.dataRowsColors[rowIndex % layouter.data.dataRowsColors.length];
+    dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset barMidBottom     = point.scaledFrom;
     ui.Offset barMidTop        = point.scaledTo;
-    double    barWidth         = layouter.gridStepWidth * layouter.options.gridStepWidthPortionUsedByAtomicPresenter;
+    double    barWidth         = container.gridStepWidth * container.options.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop       = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom   = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -45,19 +45,19 @@ class VerticalBarPresenter extends Presenter {
 /// See [PresenterCreator].
 class VerticalBarLeafCreator extends PresenterCreator {
 
-  VerticalBarLeafCreator({ChartLayouter layouter,}) : super(layouter: layouter);
+  VerticalBarLeafCreator({ChartContainer container,}) : super(container: container);
 
   Presenter createPointPresenter({
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,
+    ChartContainer container,
   }) {
     return new VerticalBarPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      layouter: layouter,
+      container: container,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Paint, PaintingStyle;
 
 import 'package:flutter_charts/src/chart/options.dart';
-import 'layouters.dart';
+import 'containers.dart';
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
   show CustomList;
@@ -27,19 +27,19 @@ class Presenter {
   StackableValuePoint point;
   StackableValuePoint nextRightColumnValuePoint;
   int rowIndex;
-  ChartLayouter layouter;
+  ChartContainer container;
 
   Presenter({
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,
+    ChartContainer container,
   }) {
     this.point = point;
     this.nextRightColumnValuePoint = nextRightColumnValuePoint;
     this.rowIndex = rowIndex;
-    this.layouter =
-        layouter; // todo 0 do we need to store the layouter, or just pass?
+    this.container =
+        container; // todo 0 do we need to store the container, or just pass?
   }
 }
 
@@ -56,7 +56,7 @@ class PresentersColumn {
 
   PresentersColumn({
     PointsColumn pointsColumn,
-    ChartLayouter layouter,
+    ChartContainer container,
     PresenterCreator presenterCreator,
   }) {
     // setup the contained presenters from points
@@ -65,19 +65,19 @@ class PresentersColumn {
         toPresenters: this.presenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        layouter: layouter);
+        container: container);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
         toPresenters: this.positivePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        layouter: layouter);
+        container: container);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
         toPresenters: this.negativePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        layouter: layouter);
+        container: container);
   }
 
   void _createPresentersInColumn({
@@ -85,7 +85,7 @@ class PresentersColumn {
     List toPresenters,
     PointsColumn pointsColumn,
     PresenterCreator presenterCreator,
-    ChartLayouter layouter,
+    ChartContainer container,
   }) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
@@ -98,7 +98,7 @@ class PresentersColumn {
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: point.dataRowIndex,
-        layouter: layouter,
+        container: container,
       );
       toPresenters.add(presenter);
       rowIndex++;
@@ -128,7 +128,7 @@ class PresentersColumns extends custom_collection.CustomList {
 
   PresentersColumns({
     PointsColumns pointsColumns,
-    ChartLayouter layouter,
+    ChartContainer container,
     PresenterCreator presenterCreator,
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
@@ -136,7 +136,7 @@ class PresentersColumns extends custom_collection.CustomList {
     pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
-        layouter: layouter,
+        container: container,
         presenterCreator: presenterCreator,
       );
       this.add(presentersColumn);
@@ -157,19 +157,19 @@ class PresentersColumns extends custom_collection.CustomList {
 /// The concrete creators make [LineAndHotspotPresenter], [VerticalBarPresenter]
 /// and other concrete instances, depending on the chart type.
 abstract class PresenterCreator {
-  /// The layouter is generally needed for the creation of Presenters, as
+  /// The container is generally needed for the creation of Presenters, as
   /// presenters may need some layout values.
-  ChartLayouter _layouter;
+  ChartContainer _container;
   PresenterCreator({
-    ChartLayouter layouter,
+    ChartContainer container,
   }) {
-    this._layouter = layouter;
+    this._container = container;
   }
 
   Presenter createPointPresenter({
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartLayouter layouter,
+    ChartContainer container,
   });
 }

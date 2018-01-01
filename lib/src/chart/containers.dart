@@ -20,16 +20,16 @@ import '../util/range.dart';
 import '../util/util.dart' as util;
 import '../util/line_presenter.dart' as line_presenter;
 
-/// Layouters calculate coordinates of chart points
+/// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
-/// Creates a simple chart layouter and call all needed [layout] methods.
+/// Creates a simple chart container and call all needed [layout] methods.
 ///
 /// Terms used:
 ///   - `absolute positions` refer to positions
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-abstract class ChartLayouter {
+abstract class ChartContainer {
   /// ##### Abstract methods or sub-implemented getters
 
   /// Makes presenters, the visuals painted on each chart column that
@@ -37,7 +37,7 @@ abstract class ChartLayouter {
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PresenterCreator] and [Presenter] for more details.
-  /// todo 1 : There may be a question "why does a layouter need to
+  /// todo 1 : There may be a question "why does a container need to
   /// know about Presenter, albeit indirectly?
   PresenterCreator presenterCreator;
 
@@ -45,9 +45,9 @@ abstract class ChartLayouter {
 
   /// Keeps data values grouped in columns.
   ///
-  /// This column grouped data instance is managed here in the [ChartLayouter],
-  /// (immediate owner of [YLayouter] and [DataContainer])
-  /// as their data points are needed both during [YLayouter.layout]
+  /// This column grouped data instance is managed here in the [ChartContainer],
+  /// (immediate owner of [YContainer] and [DataContainer])
+  /// as their data points are needed both during [YContainer.layout]
   /// to calculate scaling, and also in [DataContainer.layout] to create
   /// [PresentersColumns] instance.
   PointsColumns pointsColumns;
@@ -58,15 +58,15 @@ abstract class ChartLayouter {
   ChartData data;
   ui.Size chartArea;
 
-  LegendLayouter legendLayouter;
-  YLayouter yLayouter;
-  XLayouter xLayouter;
+  LegendContainer legendContainer;
+  YContainer yContainer;
+  XContainer xContainer;
   DataContainer dataContainer;
 
   // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
   /// Notes:
   ///   - The *ContainerSizes members are defined external maximums.
-  ///       Layouters always fill the containers external maximums,
+  ///       Containers always fill the containers external maximums,
   ///       so *ContainerSize also equals the containers' layed out size.
   ///   - The *ContainerSizes members include padding and margin
   ///   - The *ContainerOffset is where *ContainerSize (including pad and
@@ -85,39 +85,39 @@ abstract class ChartLayouter {
 
   // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-  /// This layouter stores positions in the [GuidingPoints] instance,
+  /// This container stores positions in the [GuidingPoints] instance,
   /// and uses its members as "guiding points" where it's child layouts should
   /// draw themselves.
   // todo future GuidingPoints _guidingPoints;
 
-  /// [xLayoutPainters] and [yLayoutPainters] hold on the X and Y Layouters output,
+  /// [xLabelContainers] and [yLabelContainers] hold on the X and Y Containers output,
   /// maintain all points in absolute positions.
   ///
-  /// Initialized in case the corresponding layouter does not run
+  /// Initialized in case the corresponding container does not run
   /// (e.g. no X, Y axis, no legend)
-  List<XLayoutPainter> xLayoutPainters = new List();
-  List<YLayoutPainter> yLayoutPainters = new List();
-  List<LegendLayoutPainter> legendLayoutPainters = new List();
+  List<XLabelContainer> xLabelContainers = new List();
+  List<YLabelContainer> yLabelContainers = new List();
+  List<LegendLabelContainer> legendLabelContainers = new List();
 
   /// Scaler of data values to values on the Y axis.
   YScalerAndLabelFormatter yScaler;
 
-  /// Simple Layouter for a simple flutter chart.
+  /// Simple Container for a simple flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
-  ///   - [YLayouter] area manages and lays out the Y labels area, by calculating
+  ///   - [YContainer] area manages and lays out the Y labels area, by calculating
   ///     sizes required for Y labels (in both X and Y direction).
-  ///     The [YLayouter]
-  ///   - [XLayouter] area manages and lays out the
+  ///     The [YContainer]
+  ///   - [XContainer] area manages and lays out the
   ///     - X labels area, and the
   ///     - grid area.
   ///     In the X direction, takes up all space left after the
-  ///     YLayouter layes out the  Y labels area, that is, full width
-  ///     minus [YLayouter.yLabelsContainerWidth].
+  ///     YContainer layes out the  Y labels area, that is, full width
+  ///     minus [YContainer.yLabelsContainerWidth].
   ///     In the Y direction, takes
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
-  ChartLayouter({
+  ChartContainer({
     ui.Size chartArea,
     ChartData chartData,
     ChartOptions chartOptions,
@@ -135,26 +135,26 @@ abstract class ChartLayouter {
 
     // ### 2. Layout the legends on top
 
-    LegendLayouter legendLayouter = new LegendLayouter(
-      chartLayouter: this,
+    LegendContainer legendContainer = new LegendContainer(
+      chartContainer: this,
       availableWidth: chartArea.width,
     );
 
-    legendLayouter.layout();
+    legendContainer.layout();
 
     // todo -5 vvv
-    legendContainerSize = legendLayouter._size;
+    legendContainerSize = legendContainer._size;
     legendContainerOffset = new ui.Offset(0.0, 0.0);
     // todo -5 ^^^
 
-    // ### 3. Ask [YLayouter] to provide Y label container width.
+    // ### 3. Ask [YContainer] to provide Y label container width.
     //        This provides the remaining width
-    //        left for the [XLayouter] (grid and X axis) to use.
+    //        left for the [XContainer] (grid and X axis) to use.
     //        The y axis absolute min and max is not relevant in this first call.
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
-    var yLayouterFirst = new YLayouter(
-      chartLayouter: this,
+    var yContainerFirst = new YContainer(
+      chartContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
           widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
@@ -164,58 +164,58 @@ abstract class ChartLayouter {
       isFirst: true,
     );
 
-    // print("   ### YLayouter #1: before layout: ${yLayouterFirst}");
+    // print("   ### YContainer #1: before layout: ${yContainerFirst}");
 
-    yLayouterFirst.layout();
+    yContainerFirst.layout();
 
-    double yLabelsMaxHeightFromFirstLayout = yLayouterFirst.yLayoutPainters
-        .map((var yLayoutPainter) => yLayoutPainter._labelPainter)
+    double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelContainers
+        .map((var yLabelContainer) => yLabelContainer._labelPainter)
         .map(
             (LabelPainter labelPainter) => labelPainter.textPainter.size.height)
         .reduce(math.max);
 
-    this.yLayouter = yLayouterFirst;
+    this.yContainer = yContainerFirst;
 
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
     yContainerSize =
-        new ui.Size(yLayouterFirst._yLabelsContainerWidth, yContainerHeight);
+        new ui.Size(yContainerFirst._yLabelsContainerWidth, yContainerHeight);
     yContainerOffset = new ui.Offset(0.0, legendContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
     // ### 4. Knowing the width required by Y axis
-    //        (from first [YLayouter.layout] call), we can layout X labels
-    //        and grid in X direction, by calling [XLayouter.layout].
+    //        (from first [YContainer.layout] call), we can layout X labels
+    //        and grid in X direction, by calling [XContainer.layout].
     //        We do not give it the available height, although height may be
     //        marginally relevant (if there was not enough height for x labels).
     double xContainerWidth = chartArea.width - yContainerSize.width;
-    var xLayouter = new XLayouter(
-        chartLayouter: this,
+    var xContainer = new XContainer(
+        chartContainer: this,
         // todo 0 add padding, from options
         availableWidth: xContainerWidth);
 
-    // print("   ### XLayouter");
-    xLayouter.layout();
-    this.xLayouter = xLayouter;
+    // print("   ### XContainer");
+    xContainer.layout();
+    this.xContainer = xContainer;
 
-    xLayoutPainters = xLayouter.xLayoutPainters;
+    xLabelContainers = xContainer.xLabelContainers;
 
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
     xContainerSize = new ui.Size(xContainerWidth,
-        xLayouter._xLabelsMaxHeight + 2 * options.xLabelsPadTB);
+        xContainer._xLabelsMaxHeight + 2 * options.xLabelsPadTB);
     xContainerOffset = new ui.Offset(
         yContainerSize.width, chartArea.height - xContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-    // ### 5. Second call to YLayouter is needed, as available height for Y
-    //        is only known after XLayouter provided height of xLabels
+    // ### 5. Second call to YContainer is needed, as available height for Y
+    //        is only known after XContainer provided height of xLabels
     //        on the bottom .
     //        The [yLabelsMaxHeightFromFirstLayout] are used to scale
     //        data values to the y axis, and put labels on ticks.
 
-    // On the second real layout, make sure YLayouter expand down only to
-    //   the top of the XLayouter area.
-    var yLayouter = new YLayouter(
-      chartLayouter: this,
+    // On the second real layout, make sure YContainer expand down only to
+    //   the top of the XContainer area.
+    var yContainer = new YContainer(
+      chartContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
           widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
@@ -225,10 +225,10 @@ abstract class ChartLayouter {
       isFirst: false,
     );
 
-    // print("   ### YLayouter #2: before layout: ${yLayouter}");
-    yLayouter.layout();
+    // print("   ### YContainer #2: before layout: ${yContainer}");
+    yContainer.layout();
 
-    this.yLayouter = yLayouter;
+    this.yContainer = yContainer;
 
     // Note: yContainerSize and yContainerOffset did not change
 
@@ -242,16 +242,16 @@ abstract class ChartLayouter {
         new ui.Offset(yContainerSize.width, legendContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-    // ### 6. Recalculate offsets for this Area layouter
+    // ### 6. Recalculate offsets for this Area container
 
-    yLayoutPainters = yLayouter.yLayoutPainters;
+    yLabelContainers = yContainer.yLabelContainers;
 
     // ### 7. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done here after X and Y are layed out.
 
     this.dataContainer = new DataContainer(
-      chartLayouter: this,
+      chartContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width - yContainerSize.width,
           widthExpansionStyle: ExpansionStyle.TryFill,
@@ -266,18 +266,18 @@ abstract class ChartLayouter {
     this.dataContainer.layout();
 
     // At the end, move the individual chart areas to their offsets.
-    legendLayouter.legendLayoutPainters.forEach((legendLayoutPainter) {
-      legendLayoutPainter.applyParentOffset(new ui.Offset(0.0, 0.0));
+    legendContainer.legendLabelContainers.forEach((legendLabelContainer) {
+      legendLabelContainer.applyParentOffset(new ui.Offset(0.0, 0.0));
     });
-    legendLayoutPainters = legendLayouter.legendLayoutPainters;
+    legendLabelContainers = legendContainer.legendLabelContainers;
 
-    xLayouter.xLayoutPainters.forEach((XLayoutPainter xLayoutPainter) {
-      xLayoutPainter.applyParentOffset(
+    xContainer.xLabelContainers.forEach((XLabelContainer xLabelContainer) {
+      xLabelContainer.applyParentOffset(
           new ui.Offset(yContainerSize.width, xContainerOffset.dy));
     });
 
-    yLayouter.yLayoutPainters.forEach((YLayoutPainter yLayoutPainter) {
-      yLayoutPainter.applyParentOffset(
+    yContainer.yLabelContainers.forEach((YLabelContainer yLabelContainer) {
+      yLabelContainer.applyParentOffset(
           new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
     });
 
@@ -287,101 +287,101 @@ abstract class ChartLayouter {
   /// Create member [pointsColumns] from data rows [data.dataRows].
   void setupPointsColumns() {
     this.pointsColumns = new PointsColumns(
-        layouter: this,
+        container: this,
         presenterCreator: this.presenterCreator,
         isStacked: this.isStacked);
   }
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label).
-  /// Once [XLayouter.layout] and [YLayouter.layout] are complete,
+  /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
-  /// See [XLayoutPainter.xTickX] for details.
+  /// See [XLabelContainer.xTickX] for details.
   List<double> get xTickXs =>
-      xLayouter.xLayoutPainters
-          .map((var xLayoutPainter) => xLayoutPainter.xTickX)
+      xContainer.xLabelContainers
+          .map((var xLabelContainer) => xLabelContainer.xTickX)
           .toList();
 
   /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
-  /// Once [XLayouter.layout] and [YLayouter.layout] are complete,
+  /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
-  /// See [YLayoutPainter.yTickY] for details.
+  /// See [YLabelContainer.yTickY] for details.
   List<double> get yTickYs {
-    return yLayouter.yLayoutPainters
-        .map((var yLayoutPainter) => yLayoutPainter.yTickY)
+    return yContainer.yLabelContainers
+        .map((var yLabelContainer) => yLabelContainer.yTickY)
         .toList();
   }
 
-  double get gridStepWidth => xLayouter._gridStepWidth;
+  double get gridStepWidth => xContainer._gridStepWidth;
 }
 
-/// Auto-layouter of the area containing Y axis labels.
+/// Auto-container of the area containing Y axis labels.
 ///
-/// The primary direction of this layouter is "Y", which means
-/// this layouter will use all vertical (Y) space available.
+/// The primary direction of this container is "Y", which means
+/// this container will use all vertical (Y) space available.
 ///
-/// In the horizontal (X) direction, this layouter will use limited width -
+/// In the horizontal (X) direction, this container will use limited width -
 /// as much width as needed to display Y labels, Y axis, and spacing.
 ///
-/// See the constructor [YLayouter] for description of parameters that define
+/// See the constructor [YContainer] for description of parameters that define
 /// the available vertical space.
 ///
-/// Out of calls to all layouter's [layout] by the parent
-/// [ChartLayouter.layout], the call to this object's [layout] is second,
-/// after [LegendLayouter.layout].
+/// Out of calls to all container's [layout] by the parent
+/// [ChartContainer.layout], the call to this object's [layout] is second,
+/// after [LegendContainer.layout].
 ///
-/// See [YLayouter.layout] for description
-/// of how this [YLayouter.layout] calculates [YLayouter._yLabelsContainerWidth],
-/// the width taken by this layouter for the Y axis labels, and what
+/// See [YContainer.layout] for description
+/// of how this [YContainer.layout] calculates [YContainer._yLabelsContainerWidth],
+/// the width taken by this container for the Y axis labels, and what
 /// it means for the remaining space.
 ///
-class YLayouter {
-  /// The containing layouter.
-  ChartLayouter _chartLayouter;
+class YContainer {
+  /// The containing container.
+  ChartContainer _chartContainer;
 
   // ### input values
 
   // ### calculated values
 
   /// Results of laying out the Y axis labels, usable by clients.
-  List<YLayoutPainter> yLayoutPainters = new List();
+  List<YLabelContainer> yLabelContainers = new List();
 
   double _yLabelsContainerWidth;
   LayoutExpansion _layoutExpansion;
   double _yLabelsMaxHeightFromFirstLayout;
 
-  // first layouter ignores grid entirely
+  // first container ignores grid entirely
   bool _isFirst;
 
-  /// Constructor of the layouter for the Y axis labels.
-  /// The parameter [chartLayouter] provides this [YLayouter] access to it's
-  /// parent layouter.
+  /// Constructor of the container for the Y axis labels.
+  /// The parameter [chartContainer] provides this [YContainer] access to it's
+  /// parent container.
   ///
   /// Other parameters - [yAxisMin] and [yAxisMax] -
   /// define constraints it the Y direction.
   ///
   /// [yAxisMin]  and [yAxisMax] should be passed the minimum
-  /// and maximum Y coordinates within (0.0, [chartLayouter.chartArea.height]).
+  /// and maximum Y coordinates within (0.0, [chartContainer.chartArea.height]).
   /// The min and max are interpreted as coordinates of the bottom and top
-  /// of the area the layouter uses.
+  /// of the area the container uses.
   ///
-  /// This layouter uses the full height range of ([yAxisMin], [yAxisMax]),
+  /// This container uses the full height range of ([yAxisMin], [yAxisMax]),
   /// and takes as much width as needed for Y labels to be painted.
   ///
   /// "Abs" in the naming refers to coordinates within the
-  /// "absolute" area [chartLayouter.chartArea]
+  /// "absolute" area [chartContainer.chartArea]
   /// provided by Flutter for the [ChartPainter].
   ///
 
   ///
-  YLayouter({
-    ChartLayouter chartLayouter,
+  YContainer({
+    ChartContainer chartContainer,
     LayoutExpansion layoutExpansion,
     double yLabelsMaxHeightFromFirstLayout,
     bool isFirst,
   }) {
-    _chartLayouter = chartLayouter;
+    _chartContainer = chartContainer;
     _layoutExpansion = layoutExpansion;
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
     _isFirst = isFirst;
@@ -389,47 +389,47 @@ class YLayouter {
 
   /// Lays out the area containing the Y axis labels.
   ///
-  /// Out of calls to all layouter's [layout] by the parent
-  /// [ChartLayouter.layout], the call to this object's [layout] is second,
-  /// after [LegendLayouter.layout].
-  /// This [YLayouter.layout] calculates [YLayouter._yLabelsContainerWidth],
-  /// the width taken by this layouter for the Y axis labels.
+  /// Out of calls to all container's [layout] by the parent
+  /// [ChartContainer.layout], the call to this object's [layout] is second,
+  /// after [LegendContainer.layout].
+  /// This [YContainer.layout] calculates [YContainer._yLabelsContainerWidth],
+  /// the width taken by this container for the Y axis labels.
   ///
-  /// The remaining horizontal width of [ChartLayouter.chartArea] minus
-  /// [YLayouter._yLabelsContainerWidth] provides remaining available
-  /// horizontal space for the [GridLayouter] and [XLayouter].
+  /// The remaining horizontal width of [ChartContainer.chartArea] minus
+  /// [YContainer._yLabelsContainerWidth] provides remaining available
+  /// horizontal space for the [GridContainer] and [XContainer].
   void layout() {
     // todo -7: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo -7 flip Min and Max and find a place which reverses
     double yAxisMin = _layoutExpansion.height -
-        (_chartLayouter.options.xBottomMinTicksHeight +
-            2 * _chartLayouter.options.xLabelsPadTB);
+        (_chartContainer.options.xBottomMinTicksHeight +
+            2 * _chartContainer.options.xLabelsPadTB);
 
     // todo -7: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
-    if (_chartLayouter.options.useUserProvidedYLabels) {
+    if (_chartContainer.options.useUserProvidedYLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
     }
-    _yLabelsContainerWidth = yLayoutPainters
-            .map((var yLayoutPainter) => yLayoutPainter._labelPainter)
+    _yLabelsContainerWidth = yLabelContainers
+            .map((var yLabelContainer) => yLabelContainer._labelPainter)
             .map((LabelPainter labelPainter) =>
                 labelPainter.textPainter.size.width)
             .reduce(math.max) +
-        2 * _chartLayouter.options.yLabelsPadLR;
+        2 * _chartContainer.options.yLabelsPadLR;
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _chartLayouter.pointsColumns
+    List<double> flatData = _chartContainer.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
     // print("flatData=$flatData");
 
-    List<String> yLabels = _chartLayouter.data.yLabels;
+    List<String> yLabels = _chartContainer.data.yLabels;
 
     var dataRange =
         new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
@@ -458,7 +458,7 @@ class YLayouter {
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: yAxisMin,
         toScaleMax: yAxisMax,
-        chartOptions: _chartLayouter.options);
+        chartOptions: _chartContainer.options);
 
     yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYDataRange,
@@ -472,13 +472,13 @@ class YLayouter {
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _chartLayouter.pointsColumns
+    List<double> flatData = _chartContainer.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
     // print("flatData=$flatData");
 
     Range range = new Range(
-        values: flatData, chartOptions: _chartLayouter.options, maxLabels: 10);
+        values: flatData, chartOptions: _chartContainer.options, maxLabels: 10);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
@@ -492,8 +492,8 @@ class YLayouter {
   void _commonLayout(YScalerAndLabelFormatter yScaler) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _chartLayouter.yScaler = yScaler;
-    ChartOptions options = _chartLayouter.options;
+    _chartContainer.yScaler = yScaler;
+    ChartOptions options = _chartContainer.options;
 
     // Initially all LabelPainters share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
@@ -502,27 +502,27 @@ class YLayouter {
       textAlign: options.labelTextAlign, // center text
       textScaleFactor: options.labelTextScaleFactor,
     );
-    // Create Y Labels (yLayoutPainters)
-    // yLayoutPainters are created from  yScaler.labelInfos positions.
+    // Create Y Labels (yLabelContainers)
+    // yLabelContainers are created from  yScaler.labelInfos positions.
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       double yTickY = labelInfo.scaledLabelValue;
-      var yLayoutPainter = new YLayoutPainter();
-      yLayoutPainter._labelPainter = new LabelPainter(
+      var yLabelContainer = new YLabelContainer();
+      yLabelContainer._labelPainter = new LabelPainter(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      yLayoutPainter._labelPainter.textPainter.layout();
+      yLabelContainer._labelPainter.textPainter.layout();
       double labelTopY =
-          yTickY - yLayoutPainter._labelPainter.textPainter.height / 2;
+          yTickY - yLabelContainer._labelPainter.textPainter.height / 2;
 
-      yLayoutPainter.yTickY = yTickY - labelTopY;
+      yLabelContainer.yTickY = yTickY - labelTopY;
 
       // Move the contained LabelPainter to correct position
-      yLayoutPainter.applyParentOffset(new ui.Offset(0.0, labelTopY));
+      yLabelContainer.applyParentOffset(new ui.Offset(0.0, labelTopY));
 
-      yLayoutPainters.add(yLayoutPainter);
+      yLabelContainers.add(yLabelContainer);
     }
   }
 
@@ -531,15 +531,15 @@ class YLayouter {
   }
 }
 
-/// A Wrapper of [YLayouter] members that can be used by clients
+/// A Wrapper of [YContainer] members that can be used by clients
 /// to layout y labels container.
 
 /// Generally, the owner of this object decides what the offsets are:
-///   - If owner is YLayouter, all positions are relative to the top of
+///   - If owner is YContainer, all positions are relative to the top of
 ///     the container of y labels
-///   - If owner is Area [ChartLayouter], all positions are relative
+///   - If owner is Area [ChartContainer], all positions are relative
 ///     to the top of the available [chartArea].
-class YLayoutPainter {
+class YLabelContainer {
   /// Painter configured to paint one label
   LabelPainter _labelPainter;
 
@@ -568,7 +568,7 @@ class YLayoutPainter {
   }
 }
 
-class YGridLinesLayoutPainter {
+class YGridLinesContainerPainter {
   List<YLinePresenter> yLinePresenters = new List();
 
   /// Apply offset in parent. This call positions the Y Label (this instance)
@@ -607,7 +607,7 @@ class XLinePresenter extends line_presenter.LinePresenter {
   }
 }
 
-/// Auto-layouter of chart in the independent (X) axis direction.
+/// Auto-container of chart in the independent (X) axis direction.
 ///
 /// Number of independent (X) values (length of each data row)
 /// is assumed to be the same as number of
@@ -615,12 +615,12 @@ class XLinePresenter extends line_presenter.LinePresenter {
 ///
 /// Note:
 ///   - As a byproduct this lays out the X labels in their container.
-///   - Layouters may use Painters, for example for text (`TextSpan`),
-///     for which we do not know any sizing needed for the Layouters,
+///   - Containers may use Painters, for example for text (`TextSpan`),
+///     for which we do not know any sizing needed for the Containers,
 ///     until we call `TextPainter(text: textSpan).layout()`.
 ///     provided by LabelPainter.textPainterForLabel(String string)
 ///   - todo add iterations that allow layout size to be negotiated.
-///     The above requires a Area layouter or similar object, that can ask
+///     The above requires a Area container or similar object, that can ask
 ///     this object to recalculate
 ///     - skip labels to fit
 ///     - rotate labels to fit
@@ -632,9 +632,9 @@ class XLinePresenter extends line_presenter.LinePresenter {
 ///   - Number of labels is the same as number of independent (X) axis points
 ///     for all values
 
-class XLayouter {
-  /// The containing layouter.
-  ChartLayouter _chartLayouter;
+class XContainer {
+  /// The containing container.
+  ChartContainer _chartContainer;
 
   // ### input values
 
@@ -644,24 +644,24 @@ class XLayouter {
   // ### calculated values
 
   /// Results of laying out the x axis labels, usabel by clients.
-  List<XLayoutPainter> xLayoutPainters = new List();
+  List<XLabelContainer> xLabelContainers = new List();
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
 
-  /// Constructor gives this layouter access to it's
-  /// layouting Area [chartLayouter], giving it [availableWidth],
-  /// which is currently the full [chartLayouter.chartArea] width.
+  /// Constructor gives this container access to it's
+  /// layouting Area [chartContainer], giving it [availableWidth],
+  /// which is currently the full [chartContainer.chartArea] width.
   ///
-  /// This layouter uses the full [availableWidth], and takes as
+  /// This container uses the full [availableWidth], and takes as
   /// much height as needed for X labels to be painted.
   ///
-  XLayouter({
-    ChartLayouter chartLayouter,
+  XContainer({
+    ChartContainer chartContainer,
     double availableWidth,
   }) {
-    _chartLayouter = chartLayouter;
-    _xLabels = _chartLayouter.data.xLabels;
+    _chartContainer = chartContainer;
+    _xLabels = _chartContainer.data.xLabels;
     _availableWidth = availableWidth;
   }
 
@@ -675,15 +675,15 @@ class XLayouter {
   /// In X direction, the X labels parent offset is 0.0  starts on the very
   /// left of the rectangle available for the chart.
   layout() {
-    double yTicksWidth = _chartLayouter.options.yLeftMinTicksWidth +
-        _chartLayouter.options.yRightMinTicksWidth;
+    double yTicksWidth = _chartContainer.options.yLeftMinTicksWidth +
+        _chartContainer.options.yRightMinTicksWidth;
 
     double labelMaxAllowedWidth =
         (_availableWidth - yTicksWidth) / _xLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    ChartOptions options = _chartLayouter.options;
+    ChartOptions options = _chartContainer.options;
 
     // Initially all LabelPainters share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
@@ -695,16 +695,16 @@ class XLayouter {
 
     for (var xIndex = 0; xIndex < _xLabels.length; xIndex++) {
       // double leftX = _gridStepWidth * xIndex;
-      var xLayoutPainter = new XLayoutPainter();
+      var xLabelContainer = new XLabelContainer();
 
-      xLayoutPainter._labelPainter = new LabelPainter(
+      xLabelContainer._labelPainter = new LabelPainter(
         label: _xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
 
       // core of X layout calcs - lay out label and find middle
-      var textPainter = xLayoutPainter._labelPainter.textPainter;
+      var textPainter = xLabelContainer._labelPainter.textPainter;
       textPainter.layout();
 
       double halfLabelWidth = textPainter.width / 2;
@@ -712,32 +712,32 @@ class XLayouter {
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX = halfStepWidth +
           atIndexOffset +
-          _chartLayouter.options
+          _chartContainer.options
               .yLeftMinTicksWidth; // Start stepping after painting left Y tick
       double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
 
-      xLayoutPainter.xTickX = xTickX - labelLeftX;
+      xLabelContainer.xTickX = xTickX - labelLeftX;
 
-      // Move xLayoutPainter down by option value inside XLayouter
-      xLayoutPainter.applyParentOffset(new ui.Offset(
+      // Move xLabelContainer down by option value inside XContainer
+      xLabelContainer.applyParentOffset(new ui.Offset(
           labelLeftX, options.xLabelsPadTB));
 
-      xLayoutPainters.add(xLayoutPainter);
+      xLabelContainers.add(xLabelContainer);
     }
 
     // xlabels area without padding
-    _xLabelsMaxHeight = xLayoutPainters
-        .map((var xLayoutPainter) => xLayoutPainter._labelPainter.textPainter)
+    _xLabelsMaxHeight = xLabelContainers
+        .map((var xLabelContainer) => xLabelContainer._labelPainter.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
 }
 
-/// A Wrapper of [XLayouter] members that can be used by clients
+/// A Wrapper of [XContainer] members that can be used by clients
 /// to layout x labels container.
-
+///
 /// All positions are relative to the left of the container of x labels
-class XLayoutPainter {
+class XLabelContainer {
   /// Painter configured to paint one label
   LabelPainter _labelPainter;
 
@@ -780,10 +780,10 @@ enum ExpansionStyle { TryFill, GrowDoNotFill }
 /// Defines how a layout should expand in a direction.
 ///
 /// Generally,
-///   - If direction style is [TryFill], layouter should use all
+///   - If direction style is [TryFill], container should use all
 /// available length in the direction. This is intended to fill a predefined
 /// available length, such as show X axis labels
-///   - If direction style is [GrowDoNotFill], layouter should use as much space
+///   - If direction style is [GrowDoNotFill], container should use as much space
 ///   as needed in the direction, but stop well before the available length.
 ///   The "well before" is not really defined here.
 ///   This is intended to for example layout Y axis in X direction,
@@ -826,25 +826,25 @@ class LayoutExpansion {
 ///
 /// Roles:
 ///   - Constructor: a paramater named [layoutExpansion] is required
-///   - Layouter: through the [layout] method.
+///   - Container: through the [layout] method.
 ///   - Translator (in X and Y direction): through the [applyParentOffset]
 ///     method.
 ///   - Painter: through the [paint] method.
 ///
-/// Note on Lifecycle of [LayouterPainterContainer] : objects should be such that
+/// Note on Lifecycle of [ContainerPainterContainer] : objects should be such that
 ///       after construction, methods should be called in the order declared
 ///       here.
 ///
-abstract class LayouterPainterContainer {
-  /// External size enforced by external layouter.
+abstract class ContainerPainterContainer {
+  /// External size enforced by external container.
   ///
   ///   - If width or height is non zero, the container must not exceed it (although, generally,
   /// containers will fill the whole width or height).
   ///   - If width or height is zero, the container can
   LayoutExpansion _layoutExpansion;
 
-  /// The containing layouter.
-  ChartLayouter _chartLayouter;
+  /// The containing container.
+  ChartContainer _chartContainer;
 
   /// Maintains current offset, a sum of all offsets
   /// passed in subsequent calls to [applyParentOffset] during object
@@ -852,12 +852,12 @@ abstract class LayouterPainterContainer {
   ui.Offset _offset = ui.Offset.zero;
 
   /// [layoutExpansion] defines
-  LayouterPainterContainer({
-    ChartLayouter chartLayouter,
+  ContainerPainterContainer({
+    ChartContainer chartContainer,
     LayoutExpansion layoutExpansion,
   }) {
     _layoutExpansion = layoutExpansion;
-    _chartLayouter = chartLayouter;
+    _chartContainer = chartContainer;
   }
 
   void layout();
@@ -901,9 +901,9 @@ abstract class LayouterPainterContainer {
 /// Manages the core chart area which displays:
 ///   - the data as bar chart, line chart, or other chart type
 ///   - the grid (this includes the X and Y axis).
-class DataContainer extends LayouterPainterContainer {
-  XGridLinesLayoutPainter xGridLinesLayoutPainter;
-  YGridLinesLayoutPainter yGridLinesLayoutPainter;
+class DataContainer extends ContainerPainterContainer {
+  XGridLinesContainerPainter xGridLinesContainerPainter;
+  YGridLinesContainerPainter yGridLinesContainerPainter;
 
   /// Columns of presenters.
   ///
@@ -911,46 +911,46 @@ class DataContainer extends LayouterPainterContainer {
   ///   - points and lines in line chart
   ///   - bars (stacked or grouped) in bar chart
   ///
-  /// todo 0 replace with getters; see if members can be made private,  manipulated via YLayouterOutput.
+  /// todo 0 replace with getters; see if members can be made private,  manipulated via YContainerOutput.
   PresentersColumns presentersColumns;
 
   DataContainer({
-    ChartLayouter chartLayouter,
+    ChartContainer chartContainer,
     LayoutExpansion layoutExpansion,
   })
       : super(
           layoutExpansion: layoutExpansion,
-          chartLayouter: chartLayouter,
+          chartContainer: chartContainer,
         ) {}
 
   void layout() {
     _layoutGrid();
 
-    // Scale the [pointsColumns] to the [YLayouter] 's scale.
+    // Scale the [pointsColumns] to the [YContainer] 's scale.
     // Must be called before
     scalePointsColumns();
   }
 
   void _layoutGrid() {
-    // Vars that layout needs from the [_chartLayouter] passed to constructor
-    ChartOptions options = _chartLayouter.options;
-    List<XLayoutPainter> xLayoutPainters = _chartLayouter.xLayoutPainters;
-    List<YLayoutPainter> yLayoutPainters = _chartLayouter.yLayoutPainters;
-    XLayouter xLayouter = _chartLayouter.xLayouter;
-    YLayouter yLayouter = _chartLayouter.yLayouter;
-    bool isStacked = _chartLayouter.isStacked;
-    YScalerAndLabelFormatter yScaler = _chartLayouter.yScaler;
-    double xGridStep = _chartLayouter.gridStepWidth;
-    ChartLayouter chartLayouter = _chartLayouter;
+    // Vars that layout needs from the [_chartContainer] passed to constructor
+    ChartOptions options = _chartContainer.options;
+    List<XLabelContainer> xLabelContainers = _chartContainer.xLabelContainers;
+    List<YLabelContainer> yLabelContainers = _chartContainer.yLabelContainers;
+    XContainer xContainer = _chartContainer.xContainer;
+    YContainer yContainer = _chartContainer.yContainer;
+    bool isStacked = _chartContainer.isStacked;
+    YScalerAndLabelFormatter yScaler = _chartContainer.yScaler;
+    double xGridStep = _chartContainer.gridStepWidth;
+    ChartContainer chartContainer = _chartContainer;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
-    // For each already layed out X labels in [xLayoutPainters],
-    // create one [YLinePresenter] and add it to [yGridLinesLayoutPainter]
+    // For each already layed out X labels in [xLabelContainers],
+    // create one [YLinePresenter] and add it to [yGridLinesContainerPainter]
 
-    this.yGridLinesLayoutPainter = new YGridLinesLayoutPainter();
+    this.yGridLinesContainerPainter = new YGridLinesContainerPainter();
 
-    chartLayouter.xTickXs.forEach((xTickX) {
+    chartContainer.xTickXs.forEach((xTickX) {
 
       // Add vertical yGrid line in the middle or on the left
       double x = isStacked
@@ -964,34 +964,34 @@ class DataContainer extends LayouterPainterContainer {
       );
 
       // Add a new vertical grid line - yGrid line.
-      this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
+      this.yGridLinesContainerPainter.yLinePresenters.add(yLinePresenter);
     });
 
     // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && chartLayouter.xTickXs.isNotEmpty) {
-      double x = chartLayouter.xTickXs.last + xGridStep / 2;
+    if (isStacked && chartContainer.xTickXs.isNotEmpty) {
+      double x = chartContainer.xTickXs.last + xGridStep / 2;
       YLinePresenter yLinePresenter = new YLinePresenter(
           lineFrom: new ui.Offset(x, 0.0),
           lineTo:   new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-      this.yGridLinesLayoutPainter.yLinePresenters.add(yLinePresenter);
+      this.yGridLinesContainerPainter.yLinePresenters.add(yLinePresenter);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    this.xGridLinesLayoutPainter = new XGridLinesLayoutPainter();
+    this.xGridLinesContainerPainter = new XGridLinesContainerPainter();
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    chartLayouter.yTickYs.forEach((yTickY) {
+    chartContainer.yTickYs.forEach((yTickY) {
       XLinePresenter xLinePresenter = new XLinePresenter(
           lineFrom: new ui.Offset(0.0, yTickY),
           lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
-      this.xGridLinesLayoutPainter.xLinePresenters.add(xLinePresenter);
+      this.xGridLinesContainerPainter.xLinePresenters.add(xLinePresenter);
     });
   }
 
@@ -999,15 +999,15 @@ class DataContainer extends LayouterPainterContainer {
     super.applyParentOffset(offset);
 
     // Move all container atomic elements - lines, labels, circles etc
-    this.xGridLinesLayoutPainter.applyParentOffset(offset);
+    this.xGridLinesContainerPainter.applyParentOffset(offset);
 
     // draw vertical grid
-    this.yGridLinesLayoutPainter.applyParentOffset(offset);
+    this.yGridLinesContainerPainter.applyParentOffset(offset);
 
     // Apply offset of lines and bars.
-    _chartLayouter.pointsColumns.applyParentOffset(offset);
+    _chartContainer.pointsColumns.applyParentOffset(offset);
 
-    // Any time offset of [_chartLayouter.pointsColumns] has changed,
+    // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
     setupPresentersColumns();
@@ -1021,18 +1021,18 @@ class DataContainer extends LayouterPainterContainer {
 
   void paint(ui.Canvas canvas) {
     // draw horizontal grid
-    this.xGridLinesLayoutPainter.paint(canvas);
+    this.xGridLinesContainerPainter.paint(canvas);
 
     // draw vertical grid
-    this.yGridLinesLayoutPainter.paint(canvas);
+    this.yGridLinesContainerPainter.paint(canvas);
 
-    // todo -7 move here painting of lines and bars.
+    // todo -77 move here painting of lines and bars.
     //         Look at VerticalBarChartPainter extends ChartPainter
     //         and rename drawPresentersColumns to paint
     //         But needs to take care of some things
   }
 
-  // ##### Scaling and layout methods of [_chartLayouter.pointsColumns]
+  // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
   //       and [presentersColumns]
 
   /// Scales all data stored in leafs of columns and rows
@@ -1041,12 +1041,12 @@ class DataContainer extends LayouterPainterContainer {
   /// values.
   ///
   /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
-  /// uses the  absolute scaled [_chartLayouter.pointsColumns].
+  /// uses the  absolute scaled [_chartContainer.pointsColumns].
   void scalePointsColumns() {
-    _chartLayouter.pointsColumns.scale();
+    _chartContainer.pointsColumns.scale();
   }
 
-  /// Creates from [ChartData] (model for this layouter),
+  /// Creates from [ChartData] (model for this container),
   /// columns of leaf values encapsulated as [StackableValuePoint]s,
   /// and from the values, the columns of leaf presenters,
   /// encapsulated as [Presenter]s.
@@ -1060,14 +1060,14 @@ class DataContainer extends LayouterPainterContainer {
 
   void setupPresentersColumns() {
     this.presentersColumns = new PresentersColumns(
-      pointsColumns: _chartLayouter.pointsColumns,
-      layouter: _chartLayouter,
-      presenterCreator: _chartLayouter.presenterCreator,
+      pointsColumns: _chartContainer.pointsColumns,
+      container: _chartContainer,
+      presenterCreator: _chartContainer.presenterCreator,
     );
   }
 }
 
-class XGridLinesLayoutPainter {
+class XGridLinesContainerPainter {
   List<XLinePresenter> xLinePresenters = new List();
 
   /// Apply offset in parent. This call positions the X Label (this instance)
@@ -1115,9 +1115,9 @@ class YLinePresenter extends line_presenter.LinePresenter {
 ///
 /// Currently, each individual legend item is given the same size.
 /// This is not very efficient but simple, so legend text should be short
-class LegendLayouter {
-  /// The containing layouter.
-  ChartLayouter _chartLayouter;
+class LegendContainer {
+  /// The containing container.
+  ChartContainer _chartContainer;
 
   double _availableWidth;
 
@@ -1127,20 +1127,20 @@ class LegendLayouter {
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendLayoutPainter> legendLayoutPainters = new List();
+  List<LegendLabelContainer> legendLabelContainers = new List();
 
-  /// Constructor gives this layouter access to it's
-  /// layouting Area [chartLayouter], giving it [availableWidth],
+  /// Constructor gives this container access to it's
+  /// layouting Area [chartContainer], giving it [availableWidth],
   /// which is currently the full width of the [chartArea].
   ///
-  /// This layouter uses the full [availableWidth], and takes as
+  /// This container uses the full [availableWidth], and takes as
   /// much height as needed for legend labels to be painted.
   ///
-  LegendLayouter({
-    ChartLayouter chartLayouter,
+  LegendContainer({
+    ChartContainer chartContainer,
     double availableWidth,
   }) {
-    _chartLayouter = chartLayouter;
+    _chartContainer = chartContainer;
     _availableWidth = availableWidth;
   }
 
@@ -1152,8 +1152,8 @@ class LegendLayouter {
   }
 
   layoutCore() {
-    ChartOptions options = _chartLayouter.options;
-    List<String> dataRowsLegends = _chartLayouter.data.dataRowsLegends;
+    ChartOptions options = _chartContainer.options;
+    List<String> dataRowsLegends = _chartContainer.data.dataRowsLegends;
     LegendItemSizing itemSizing = new LegendItemSizing(
       options: options,
       availableWidth: _availableWidth,
@@ -1197,7 +1197,7 @@ class LegendLayouter {
     //   - an indicator rectangle and it's paint
     //   - label painter
     for (var index = 0; index < dataRowsLegends.length; index++) {
-      var legendOutput = new LegendLayoutPainter();
+      var legendOutput = new LegendLabelContainer();
 
       legendOutput._labelPainter = new LabelPainter(
         label: dataRowsLegends[index],
@@ -1225,16 +1225,16 @@ class LegendLayouter {
       legendOutput._labelOffset = new ui.Offset(labelLeftX, labelTopY);
 
       legendOutput._indicatorPaint = new ui.Paint();
-      legendOutput._indicatorPaint.color = _chartLayouter.data
-          .dataRowsColors[index % _chartLayouter.data.dataRowsColors.length];
+      legendOutput._indicatorPaint.color = _chartContainer.data
+          .dataRowsColors[index % _chartContainer.data.dataRowsColors.length];
 
-      legendLayoutPainters.add(legendOutput);
+      legendLabelContainers.add(legendOutput);
     }
   }
 
   /// todo -4 finish and document
 /*
-  List<LegendLayouterOutput> overflownOutputs() {
+  List<LegendContainerOutput> overflownOutputs() {
     this.outputs.where((output) {output.labelPainter.})
   }
   */
@@ -1284,13 +1284,13 @@ class LegendItemSizing {
 /// Painters can paint this object in a loop similar to
 /// ```
 /// void drawLegend(ui.Canvas canvas) {
-///    for (common.LegendLayouterOutput legend in layouter.legendLayoutPainters) {
+///    for (common.LegendContainerOutput legend in container.legendLabelContainers) {
 ///      legend.labelPainter.paint(canvas, legend.labelOffset);
 ///      canvas.drawRect(legend.indicatorRect, legend.indicatorPaint); }}
 /// ```
 ///
-/// All positions are relative to the left of the [LegendLayouter]'s container.
-class LegendLayoutPainter {
+/// All positions are relative to the left of the [LegendContainer]'s container.
+class LegendLabelContainer {
   // todo -4
 
   /// Painter configured to paint each legend label
@@ -1533,13 +1533,13 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
 /// Structural "backplane" model for chart layout.
 ///
 /// Maintains positions (offsets) of a minimum set of *significant points* in layout.
-/// Significant points are those at which the main layouter will paint
-/// it's layouter children, such as: top-left of the Y axis labels,
+/// Significant points are those at which the main container will paint
+/// it's container children, such as: top-left of the Y axis labels,
 /// top-left of the X axis labels, top-left of the data grid and other points.
 /// The significant points are scaled and positioned in
 /// the coordinates of ChartPainter.
 ///
-/// SimpleChartLayouter stores positions in this instance,
+/// SimpleChartContainer stores positions in this instance,
 /// and use its members as "guiding points" where it's child layouts should
 /// draw themselves.
 class GuidingPoints {
@@ -1556,7 +1556,7 @@ class LayoutValues {
   List<num> yUnscaledGridValues;
 
   /// Y values of grid (also centers of Y labels),
-  /// scaled to the main layouter coordinates.
+  /// scaled to the main container coordinates.
   List<num> yGridValues;
 }
 
@@ -1635,7 +1635,7 @@ class StackableValuePoint {
   ///
   /// Points are constructed unstacked. Depending on chart type,
   /// a later processing can stack points using this method
-  /// (if chart type is [ChartLayouter.isStacked].
+  /// (if chart type is [ChartContainer.isStacked].
   StackableValuePoint stackOnAnother(StackableValuePoint predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
     return this.stack();
@@ -1815,25 +1815,25 @@ class PointsColumns extends custom_collection.CustomList  {
   List<List<StackableValuePoint>> _valuePointArrInRows;
   /// Data points managed column - first. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInColumns;
-  /// Parent chart layouter.
-  ChartLayouter _layouter;
+  /// Parent chart container.
+  ChartContainer _container;
   /// True if chart type presents values stacked.
   bool _isStacked;
 
   /// Constructor creates a [PointsColumns] instance from values in
-  /// the passed [layouter.data.dataRows].
+  /// the passed [container.data.dataRows].
   PointsColumns({
-    ChartLayouter layouter,
+    ChartContainer container,
     PresenterCreator presenterCreator,
     bool isStacked,
   }) {
-    _layouter = layouter;
+    _container = container;
     _valuePointArrInRows = new List();
     _isStacked = isStacked;
 
-    ChartData chartData = layouter.data;
+    ChartData chartData = container.data;
 
-    /// Transposes the passed data in [layouter.data.dataRows]
+    /// Transposes the passed data in [container.data.dataRows]
     /// to [_valuePointArrInRows] to [_valuePointArrInColumns].
     ///
     /// Manages "predecessor in stack" points - each element is the per column point
@@ -1898,8 +1898,8 @@ class PointsColumns extends custom_collection.CustomList  {
     int col = 0;
     this.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = _layouter.xTickXs[col];
-        point.scale(scaledX: scaledX, yScaler: _layouter.yScaler);
+        double scaledX = _container.xTickXs[col];
+        point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
       col++;
     });
@@ -1921,7 +1921,7 @@ class PointsColumns extends custom_collection.CustomList  {
 
   /// Flattens values of all unstacked data points.
   ///
-  /// Use in layouters for unstacked charts (e.g. line chart)
+  /// Use in containers for unstacked charts (e.g. line chart)
   List<num> flattenUnstackedPointsYValues() {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
@@ -1936,7 +1936,7 @@ class PointsColumns extends custom_collection.CustomList  {
 
   /// Flattens values of all stacked data points.
   ///
-  /// Use in layouters for stacked charts (e.g. VerticalBar chart)
+  /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
     this.forEach((PointsColumn column) {

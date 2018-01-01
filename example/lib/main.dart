@@ -308,14 +308,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(),
-      layouter: new LineChartLayouter(
+      container: new LineChartContainer(
           chartData: _chartData,
           chartOptions: _lineChartOptions),
     );
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(),
-      layouter: new VerticalBarChartLayouter(
+      container: new VerticalBarChartContainer(
           chartData: _chartData,
           chartOptions: _verticalBarChartOptions),
     );
