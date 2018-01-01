@@ -1722,6 +1722,10 @@ class StackableValuePoint {
 
 /// A column of value points, with support for stacked type charts.
 ///
+/// Represents one column of data across [ChartData.dataRows],
+/// scaled to Y axis, inverted, and stacked
+/// (if the type of chart requires stacking).
+///
 /// Supports to convert the raw data values from the data rows,
 /// into values that are either
 ///   - unstacked (such as in the line chart),  in which case it manages
@@ -1795,8 +1799,7 @@ class PointsColumn {
   }
 }
 
-/// Represents coordinates of [ChartData.dataRows], scaled to Y axis, inverted,
-/// and stacked (if the type of chart requires stacking).
+/// A list of [PointsColumn] instances.
 ///
 /// Passed to [Presenter] instances, which use this instance's data to
 /// paint the values in areas above labels,
@@ -1807,15 +1810,13 @@ class PointsColumn {
 ///
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
-/// todo -10 extend list and remove the pointsColumns member.
 class PointsColumns extends custom_collection.CustomList  {
   //\/Data points managed row - first. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInRows;
   /// Data points managed column - first. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInColumns;
+  /// Parent chart layouter.
   ChartLayouter _layouter;
-  /// Data points managed column - first. Used to display data in chart.
-  // todo -10: List<PointsColumn> pointsColumns;
   /// True if chart type presents values stacked.
   bool _isStacked;
 
@@ -1869,14 +1870,11 @@ class PointsColumns extends custom_collection.CustomList  {
     _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
 
     /// convert "column oriented" _valuePointArrInColumns
-    /// to public List<ValuePointsColumn> pointsColumns todo -10
+    /// to a column, and add the columns to this instance
     PointsColumn leftColumn;
-    // todo -10: pointsColumns = new List();
-    List<PointsColumn> pointsColumns = new List();
 
     _valuePointArrInColumns.forEach((List<StackableValuePoint> columnPoints) {
       var pointsColumn = new PointsColumn(points: columnPoints);
-      // todo -10: pointsColumns.add(pointsColumn);
       this.add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
@@ -1898,7 +1896,6 @@ class PointsColumns extends custom_collection.CustomList  {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    // todo -10:pointsColumns.forEach((PointsColumn column) {
     this.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _layouter.xTickXs[col];
@@ -1909,13 +1906,10 @@ class PointsColumns extends custom_collection.CustomList  {
   }
 
   void applyParentOffset(ui.Offset offset) {
-    int col = 0;
-    // todo -10: pointsColumns.forEach((PointsColumn column) {
     this.forEach((PointsColumn column) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
-      col++;
     });
   }
 
@@ -1932,7 +1926,6 @@ class PointsColumns extends custom_collection.CustomList  {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    // todo -10:pointsColumns.forEach((PointsColumn column) {
     this.forEach((PointsColumn column) {
       column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
@@ -1946,7 +1939,6 @@ class PointsColumns extends custom_collection.CustomList  {
   /// Use in layouters for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    // todo -10: pointsColumns.forEach((PointsColumn column) {
     this.forEach((PointsColumn column) {
         column.stackedNegativePoints.forEach((StackableValuePoint point) {
           flat.add(point.toY);
@@ -1957,13 +1949,4 @@ class PointsColumns extends custom_collection.CustomList  {
       });
       return flat;
     }
-
-  /* todo -10
-  PointsColumn pointsColumnAt({int columnIndex}) => pointsColumns[columnIndex];
-
-  StackableValuePoint pointAt({int columnIndex, int rowIndex}) =>
-      pointsColumns[columnIndex].points[rowIndex];
-  */
-
-
 }
