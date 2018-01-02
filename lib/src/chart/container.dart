@@ -885,7 +885,7 @@ class DataContainer extends Container {
       );
 
       // Add a new vertical grid line - yGrid line.
-      this.yGridLinesContainer._lineContainers.add(yLineContainer);
+      this.yGridLinesContainer.addLine(yLineContainer);
     });
 
     // For stacked, we need to add last right vertical yGrid line
@@ -895,7 +895,7 @@ class DataContainer extends Container {
           lineFrom: new ui.Offset(x, 0.0),
           lineTo: new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-      this.yGridLinesContainer._lineContainers.add(yLineContainer);
+      this.yGridLinesContainer.addLine(yLineContainer);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
@@ -990,6 +990,10 @@ class DataContainer extends Container {
 
 class GridLinesContainer extends Container {
   List<LineContainer> _lineContainers = new List();
+
+  void addLine(LineContainer lineContainer) {
+    _lineContainers.add(lineContainer);
+  }
 
   // #####  Implementors of method in superclass [Container].
 
