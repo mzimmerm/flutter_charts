@@ -832,8 +832,8 @@ abstract class Container {
 ///   - the data as bar chart, line chart, or other chart type
 ///   - the grid (this includes the X and Y axis).
 class DataContainer extends Container {
-  XGridLinesContainerPainter xGridLinesContainerPainter;
-  YGridLinesContainerPainter yGridLinesContainerPainter;
+  GridLinesContainer xGridLinesContainer;
+  GridLinesContainer yGridLinesContainer;
 
   /// Columns of presenters.
   ///
@@ -870,9 +870,9 @@ class DataContainer extends Container {
     // ### 1. Vertical Grid (yGrid) layout:
 
     // For each already layed out X labels in [xLabelContainers],
-    // create one [LineContainer] and add it to [yGridLinesContainerPainter]
+    // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    this.yGridLinesContainerPainter = new YGridLinesContainerPainter();
+    this.yGridLinesContainer = new GridLinesContainer();
 
     chartContainer.xTickXs.forEach((xTickX) {
       // Add vertical yGrid line in the middle or on the left
@@ -885,7 +885,7 @@ class DataContainer extends Container {
       );
 
       // Add a new vertical grid line - yGrid line.
-      this.yGridLinesContainerPainter._yLineContainers.add(yLineContainer);
+      this.yGridLinesContainer._lineContainers.add(yLineContainer);
     });
 
     // For stacked, we need to add last right vertical yGrid line
@@ -895,14 +895,14 @@ class DataContainer extends Container {
           lineFrom: new ui.Offset(x, 0.0),
           lineTo: new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-      this.yGridLinesContainerPainter._yLineContainers.add(yLineContainer);
+      this.yGridLinesContainer._lineContainers.add(yLineContainer);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    this.xGridLinesContainerPainter = new XGridLinesContainerPainter();
+    this.xGridLinesContainer = new GridLinesContainer();
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
     chartContainer.yTickYs.forEach((yTickY) {
@@ -912,7 +912,7 @@ class DataContainer extends Container {
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
-      this.xGridLinesContainerPainter._xLineContainers.add(xLineContainer);
+      this.xGridLinesContainer._lineContainers.add(xLineContainer);
     });
   }
 
@@ -920,10 +920,10 @@ class DataContainer extends Container {
     super.applyParentOffset(offset);
 
     // Move all container atomic elements - lines, labels, circles etc
-    this.xGridLinesContainerPainter.applyParentOffset(offset);
+    this.xGridLinesContainer.applyParentOffset(offset);
 
     // draw vertical grid
-    this.yGridLinesContainerPainter.applyParentOffset(offset);
+    this.yGridLinesContainer.applyParentOffset(offset);
 
     // Apply offset of lines and bars.
     _parentContainer.pointsColumns.applyParentOffset(offset);
@@ -942,10 +942,10 @@ class DataContainer extends Container {
 
   void paint(ui.Canvas canvas) {
     // draw horizontal grid
-    this.xGridLinesContainerPainter.paint(canvas);
+    this.xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    this.yGridLinesContainerPainter.paint(canvas);
+    this.yGridLinesContainer.paint(canvas);
 
     // todo -77 move here painting of lines and bars.
     //         Look at VerticalBarChartPainter extends ChartPainter
@@ -988,50 +988,23 @@ class DataContainer extends Container {
   }
 }
 
-class XGridLinesContainerPainter extends Container {
-  List<LineContainer> _xLineContainers = new List();
-
-  // #####  Implementors of method in superclass [Container].
-
-    void layout() {
-      _xLineContainers.forEach((lineContainer) => lineContainer.layout());
-    }
-
-  /// Overriden from super. Applies offset on all members.
-  void applyParentOffset(ui.Offset offset) {
-    _xLineContainers
-        .forEach((xLineContainer) => xLineContainer.applyParentOffset(offset));
-  }
-
-  void paint(ui.Canvas canvas) {
-    _xLineContainers.forEach((xLineContainer) => xLineContainer.paint(canvas));
-  }
-
-  /// Implementor of method in superclass [Container].
-  ///
-  /// Return the size of the outhermost rectangle which contains all lines
-  ///   in the member _xLineContainers.
-  // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  ui.Size get layoutSize => throw new StateError("todo -3 implement this.");
-}
-
-class YGridLinesContainerPainter {
-  List<LineContainer> _yLineContainers = new List();
+class GridLinesContainer extends Container {
+  List<LineContainer> _lineContainers = new List();
 
   // #####  Implementors of method in superclass [Container].
 
   void layout() {
-    _yLineContainers.forEach((lineContainer) => lineContainer.layout());
+    _lineContainers.forEach((lineContainer) => lineContainer.layout());
   }
 
   /// Overriden from super. Applies offset on all members.
   void applyParentOffset(ui.Offset offset) {
-    _yLineContainers
-        .forEach((xLineContainer) => xLineContainer.applyParentOffset(offset));
+    _lineContainers
+        .forEach((lineContainer) => lineContainer.applyParentOffset(offset));
   }
 
   void paint(ui.Canvas canvas) {
-    _yLineContainers.forEach((xLineContainer) => xLineContainer.paint(canvas));
+    _lineContainers.forEach((lineContainer) => lineContainer.paint(canvas));
   }
 
   /// Implementor of method in superclass [Container].
@@ -1041,8 +1014,6 @@ class YGridLinesContainerPainter {
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
   ui.Size get layoutSize => throw new StateError("todo -3 implement this.");
 }
-
-
 
 /// Lays out the legend area for the chart.
 ///
