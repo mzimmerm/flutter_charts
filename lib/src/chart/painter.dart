@@ -98,10 +98,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   void drawLegend(ui.Canvas canvas) {
-    for (var legendLabelContainer
-        in container.legendContainer.legendLabelContainers) {
-      legendLabelContainer.paint(canvas);
-    }
+    container.legendContainer.paint(canvas);
   }
 
   /// Optionally paint series in reverse order (first to last vs last to first)

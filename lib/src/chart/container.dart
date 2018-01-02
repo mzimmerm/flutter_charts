@@ -64,24 +64,6 @@ abstract class ChartContainer {
   DataContainer dataContainer;
 
   // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
-  /// Notes:
-  ///   - The *ContainerSizes members are defined external maximums.
-  ///       Containers always fill the containers external maximums,
-  ///       so *ContainerSize also equals the containers' layed out size.
-  ///   - The *ContainerSizes members include padding and margin
-  ///   - The *ContainerOffset is where *ContainerSize (including pad and
-  ///   margin) start.
-  ui.Size legendContainerSize;
-  ui.Offset legendContainerOffset;
-
-  ui.Size xContainerSize;
-  ui.Offset xContainerOffset;
-
-  ui.Size yContainerSize;
-  ui.Offset yContainerOffset;
-
-  ui.Size dataContainerSize;
-  ui.Offset dataContainerOffset;
 
   // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -114,6 +96,22 @@ abstract class ChartContainer {
   }
 
   layout() {
+    // Sizes and offsets of the Base areas.
+    //   - The *ContainerSize are calculated by layouting children,
+    //     up to LayoutExpansion
+    //   - The *ContainerSize members include padding and margin
+
+    ui.Size legendContainerSize;
+    ui.Offset legendContainerOffset;
+
+    ui.Size xContainerSize;
+    ui.Offset xContainerOffset;
+
+    ui.Size yContainerSize;
+    ui.Offset yContainerOffset;
+
+    ui.Offset dataContainerOffset;
+
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -121,15 +119,26 @@ abstract class ChartContainer {
 
     // ### 2. Layout the legends on top
 
+    /* todo -10
     legendContainer = new LegendContainer(
       chartContainer: this,
       availableWidth: chartArea.width,
     );
+    */
+    legendContainer = new LegendContainer(
+      parentContainer: this,
+      layoutExpansion: new LayoutExpansion(
+          width: chartArea.width,
+          widthExpansionStyle: ExpansionStyle.TryFill,
+          height: chartArea.height,
+          heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
+    );
+
 
     legendContainer.layout();
 
     // todo -5 vvv
-    // todo -9 : Need to replace with layoutSize
+    // todo -9 : Need to replace with layoutSize - only _size.height is ever used
     legendContainerSize = legendContainer._size;
     legendContainerOffset = new ui.Offset(0.0, 0.0);
     // todo -5 ^^^
@@ -188,7 +197,6 @@ abstract class ChartContainer {
           heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
     );
 
-
     xContainer.layout();
 
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
@@ -226,10 +234,12 @@ abstract class ChartContainer {
 
     // Calculate what is left for the grid
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
+    /* todo -10
     dataContainerSize = new ui.Size(
         chartArea.width - yContainerSize.width,
         chartArea.height -
             (legendContainerSize.height + xContainerSize.height));
+            */
     dataContainerOffset =
         new ui.Offset(yContainerSize.width, legendContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -256,9 +266,12 @@ abstract class ChartContainer {
     this.dataContainer.layout();
 
     // At the end, move the individual chart areas to their offsets.
+    legendContainer.applyParentOffset(legendContainerOffset);
+    /* todo -10
     legendContainer.legendLabelContainers.forEach((legendLabelContainer) {
       legendLabelContainer.applyParentOffset(legendContainerOffset);
     });
+    */
 
     xContainer.applyParentOffset(xContainerOffset);
     /* todo -10
@@ -307,19 +320,18 @@ abstract class ChartContainer {
 
 /// Container of the Y axis labels.
 ///
-/// See the constructor [YContainer] for description of parameters that define
-/// the available vertical space.
-///
-/// See the [layout] method for description of calculating the
-/// [_yLabelsContainerWidth], the width taken by this container
-/// for the Y axis labels, and what it means for the remaining space.
+/// This [ChartAreaContainer] operates as follows:
+/// - Vertically available space is all used (filled).
+/// - Horizontally available space is used only as much as needed.
+/// The amount is decided by the Y labels width, and padding.
+/// - See [layout] and [layoutSize] for resulting size calculations.
+/// - See the [XContainer] constructor for the assumption on [LayoutExpansion].
 
 class YContainer extends ChartAreaContainer {
-
   /// Containers of Y labels.
   ///
   /// The actual Y labels values are always generated
-  /// todo 0-future-minor : this is not true now for user defined
+  /// todo 0-future-minor : above is not true now for user defined labels
   List<YLabelContainer> _yLabelContainers = new List();
 
   double _yLabelsContainerWidth;
@@ -328,23 +340,17 @@ class YContainer extends ChartAreaContainer {
 
   /// Constructs the container that holds Y labels.
   ///
-  /// The passed [layoutExpansion] is (assumed) to define the ability to
-  /// expand during [layout] as follows:
-  ///   - The primary direction of this container as "Y direction". That is, this
-  ///   container will use all vertical (Y) space available from the
-  ///   [layoutExpansion].
-  ///   - In the horizontal (X) direction, this container will use limited width -
-  ///   as much width as needed to display Y labels, and padding.
-  ///
+  /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
+  /// all available vertical space, and only use necessary horizontal space.
   YContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
     double yLabelsMaxHeightFromFirstLayout,
-  }) : super(
-  layoutExpansion: layoutExpansion,
-  parentContainer: parentContainer,
-  )
-  {
+  })
+      : super(
+          layoutExpansion: layoutExpansion,
+          parentContainer: parentContainer,
+        ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
   }
 
@@ -360,7 +366,6 @@ class YContainer extends ChartAreaContainer {
   /// [YContainer._yLabelsContainerWidth] provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   void layout() {
-
     // [yAxisMin] and [yAxisMax] define end points of the Y axis.
     // todo -7: layoutExpansion - max of yLabel height, and the 2 paddings
 
@@ -439,7 +444,9 @@ class YContainer extends ChartAreaContainer {
     // print("flatData=$flatData");
 
     Range range = new Range(
-        values: flatData, chartOptions: _parentContainer.options, maxLabels: 10);
+        values: flatData,
+        chartOptions: _parentContainer.options,
+        maxLabels: 10);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
@@ -480,7 +487,7 @@ class YContainer extends ChartAreaContainer {
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(
-          new ui.Offset(_parentContainer.options.yLabelsPadLR, labelTopY),
+        new ui.Offset(_parentContainer.options.yLabelsPadLR, labelTopY),
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -510,9 +517,8 @@ class YContainer extends ChartAreaContainer {
   double get yLabelsMaxHeight => _yLabelContainers
       .map((var yLabelContainer) => yLabelContainer)
       .map((LabelContainer labelContainer) =>
-  labelContainer.textPainter.size.height)
+          labelContainer.textPainter.size.height)
       .reduce(math.max);
-
 
   String toString() {
     return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}";
@@ -555,27 +561,19 @@ class YLabelContainer extends LabelContainer {
     super.applyParentOffset(offset);
     yTickY += offset.dy;
   }
-
 }
 
 /// Container of the X axis labels.
 ///
-/// See the constructor [XContainer] for description of parameters that define
-/// the available vertical space.
-///
-/// See the [layout] method for description of calculating the
-/// [_availableWidth], the width taken by this container
-/// for the Y axis labels, and what it means for the remaining space.
-///
-/// Assumes:
-///   - Number of labels is the same as number of independent (X) axis points
-///     for all values
-///
-///   - todo 0-future-medium :add iterations for layout to auto-fit.
+/// This [ChartAreaContainer] operates as follows:
+/// - Horizontally available space is all used (filled).
+/// - Vertically available space is used only as much as needed.
+/// The amount is decided by the X labels height, and padding.
+/// - See [layout] and [layoutSize] for resulting size calculations.
+/// - See the [XContainer] constructor for the assumption on [LayoutExpansion].
 
 class XContainer extends ChartAreaContainer {
-
-  double _availableWidth;
+  double _availableWidth; // todo -9 this seems unused
 
   // todo -10 List<String> _xLabels; // todo -10 remove. Replace by painters.labelContainer
   //  Represents Y labels.
@@ -586,14 +584,8 @@ class XContainer extends ChartAreaContainer {
 
   /// Constructs the container that holds X labels.
   ///
-  /// The passed [layoutExpansion] is (assumed) to define the ability to
-  /// expand during [layout] as follows:
-  ///   - The primary direction of this container as "X direction". That is, this
-  ///   container will use all horizontal (X) space available from the
-  ///   [layoutExpansion].
-  ///   - In the vertical (Y) direction, this container will use limited width -
-  ///   as much width as needed to display X labels and their padding.
-  ///
+  /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
 /* todo -10
   XContainer({
     ChartContainer parentContainer,
@@ -607,17 +599,17 @@ class XContainer extends ChartAreaContainer {
   XContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-  }) : super(
-    layoutExpansion: layoutExpansion,
-    parentContainer: parentContainer,
-  );
+  })
+      : super(
+          layoutExpansion: layoutExpansion,
+          parentContainer: parentContainer,
+        );
   /* todo -10
   {
     _availableWidth = layoutExpansion.width;
   _xLabels = _parentContainer.data.xLabels;
   }
 */
-
 
   /// Lays out the chart in horizontal (x) direction.
 
@@ -629,7 +621,6 @@ class XContainer extends ChartAreaContainer {
   /// In X direction, the X labels parent offset is 0.0  starts on the very
   /// left of the rectangle available for the chart.
   layout() {
-
     List<String> xLabels = _parentContainer.data.xLabels;
 
     double yTicksWidth = _parentContainer.options.yLeftMinTicksWidth +
@@ -667,8 +658,7 @@ class XContainer extends ChartAreaContainer {
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX = halfStepWidth +
           atIndexOffset +
-          _parentContainer.options
-              .yLeftMinTicksWidth; // Start stepping after painting left Y tick
+          _parentContainer.options.yLeftMinTicksWidth;
       double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
 
       xLabelContainer.xTickX = xTickX - labelLeftX;
@@ -687,7 +677,6 @@ class XContainer extends ChartAreaContainer {
         .reduce(math.max);
   }
 
-
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
@@ -705,8 +694,8 @@ class XContainer extends ChartAreaContainer {
 
     // todo -8 check this, fix layout sizes
     var options = _parentContainer.options;
-    return new ui.Size(_layoutExpansion.width,
-        _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
+    return new ui.Size(
+        _layoutExpansion.width, _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
   }
 
   void paint(ui.Canvas canvas) {
@@ -714,7 +703,6 @@ class XContainer extends ChartAreaContainer {
       xLabelContainer.paint(canvas);
     }
   }
-
 }
 
 /// A Wrapper of [XContainer] members that can be used by clients
@@ -756,9 +744,8 @@ class XLabelContainer extends LabelContainer {
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
     xTickX += offset.dx;
-   //  _offset += offset;
+    //  _offset += offset;
   }
-
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
@@ -873,7 +860,6 @@ abstract class Container {
   void paint(ui.Canvas canvas);
 }
 
-
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
 ///   - [ChartContainer] - the whole chart
@@ -904,19 +890,18 @@ abstract class ChartAreaContainer extends Container {
   ChartAreaContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-  }) : super(layoutExpansion: layoutExpansion) {
+  })
+      : super(layoutExpansion: layoutExpansion) {
     _parentContainer = parentContainer;
   }
 
   ChartContainer get parentContainer => _parentContainer;
 }
 
-
 /// Manages the core chart area which displays, overlayed:
 ///   - Data - as columns of bar chart, line chart, or other chart type
 ///   - The grid (this includes the X and Y axis).
 class DataContainer extends ChartAreaContainer {
-
   GridLinesContainer _xGridLinesContainer;
   GridLinesContainer _yGridLinesContainer;
 
@@ -1020,8 +1005,6 @@ class DataContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    // todo 0-layout: assert that layed out size (looking into all members)
-    //          is same as the pre-layout size returned here
     return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
   }
 
@@ -1110,46 +1093,65 @@ class GridLinesContainer extends Container {
 /// has a color square and text, which describes one data row (that is,
 /// one data series).
 ///
-/// Currently, each individual legend item is given the same size.
-/// This is not very efficient but simple, so legend text should be short
-class LegendContainer {
-  /// The containing container.
-  ChartContainer _chartContainer;
+/// Currently, each individual legend item is given the same size, so legends
+/// texts should be short.
+///
+/// This [ChartAreaContainer] operates as follows:
+/// - Horizontally available space is all used (filled).
+/// - Vertically available space is used only as much as needed.
+/// The amount is decided by the labels and series indicators height, and padding.
 
-  double _availableWidth;
+class LegendContainer extends ChartAreaContainer {
+  // todo -10 double _availableWidth;
 
   /// Offset-free size contains the whole layed out area of legend.
-  ui.Size _size;
+  ui.Size _size; // todo -9 replace with layoutSize
 
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendLabelContainer> legendLabelContainers = new List();
+  List<LegendLabelContainer> _legendLabelContainers = new List();
 
-  /// Constructor gives this container access to it's
-  /// layouting Area [chartContainer], giving it [availableWidth],
-  /// which is currently the full width of the [chartArea].
+  /// Constructs the container that holds the data series legends labels and
+  /// color indicators.
   ///
-  /// This container uses the full [availableWidth], and takes as
-  /// much height as needed for legend labels to be painted.
-  ///
+  /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
+/* todo -10
   LegendContainer({
-    ChartContainer chartContainer,
+    ChartContainer parentContainer,
     double availableWidth,
   }) {
-    _chartContainer = chartContainer;
+    _parentContainer = parentContainer;
     _availableWidth = availableWidth;
   }
+  */
+  LegendContainer({
+    ChartContainer parentContainer,
+    LayoutExpansion layoutExpansion,
+    double availableWidth,
+  })
+      : super(
+          layoutExpansion: layoutExpansion,
+          parentContainer: parentContainer,
+        );
+  /* todo -10
+  {
+    _availableWidth = availableWidth;
+  }
+  */
+
 
   /// Lays out the legend area.
   ///
   /// Evenly divides available width to all legend items.
   layout() {
-    ChartOptions options = _chartContainer.options;
-    List<String> dataRowsLegends = _chartContainer.data.dataRowsLegends;
+    ChartOptions options = _parentContainer.options;
+    List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
     LegendItemSizing itemSizing = new LegendItemSizing(
       options: options,
-      availableWidth: _availableWidth,
+// todo -10:      availableWidth: _availableWidth,
+      availableWidth: _layoutExpansion.width,
       numLegendItems: dataRowsLegends.length,
     );
 
@@ -1212,17 +1214,40 @@ class LegendContainer {
           itemSizing.indicatorWidth +
           itemSizing.indicatorToLegendPad;
 
-      // todo -10 labelTopY Is all this needed?
+      // todo -9 labelTopY etc - Is all this needed?
       double labelTopY = (_size.height - textPainter.height) / 2;
-      legendLabelContainer._offset = new ui.Offset(labelLeftX, labelTopY);
+      // todo -10 legendLabelContainer._offset = new ui.Offset(labelLeftX, labelTopY);
+      legendLabelContainer.applyParentOffset(new ui.Offset(labelLeftX, labelTopY));
 
       legendLabelContainer._indicatorPaint = new ui.Paint();
-      legendLabelContainer._indicatorPaint.color = _chartContainer.data
-          .dataRowsColors[index % _chartContainer.data.dataRowsColors.length];
+      legendLabelContainer._indicatorPaint.color = _parentContainer.data
+          .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
-      legendLabelContainers.add(legendLabelContainer);
+      _legendLabelContainers.add(legendLabelContainer);
     }
   }
+
+  void applyParentOffset(ui.Offset offset) {
+
+    // super not really needed - only child containers are offset.
+    super.applyParentOffset(offset);
+
+    _legendLabelContainers.forEach((LegendLabelContainer legendLabelContainer) {
+      legendLabelContainer.applyParentOffset(offset);
+    });
+  }
+
+  ui.Size get layoutSize {
+    return new ui.Size(
+        _layoutExpansion.width, _size.height);
+  }
+
+  void paint(ui.Canvas canvas) {
+    for (var legendLabelContainer in _legendLabelContainers) {
+      legendLabelContainer.paint(canvas);
+    }
+  }
+
 
   /// todo -4 finish and document
 /*
