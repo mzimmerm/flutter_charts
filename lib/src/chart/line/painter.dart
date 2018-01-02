@@ -23,11 +23,13 @@ class LineChartPainter extends ChartPainter {
       presenterList.forEach((presenters.Presenter presenter) {
         line_presenters.LineAndHotspotPresenter presenterCast =
             presenter as line_presenters.LineAndHotspotPresenter;
+        // todo -10 Call Container.paint
         canvas.drawLine(
-          presenterCast.linePresenter.lineFrom,
-          presenterCast.linePresenter.lineTo,
-          presenterCast.linePresenter.linePaint,
+          presenterCast.lineContainer.lineFrom,
+          presenterCast.lineContainer.lineTo,
+          presenterCast.lineContainer.linePaint,
         );
+        // todo -10 Add circle as Container object to system
         canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,
             presenterCast.outerPaint);
         canvas.drawCircle(presenterCast.offsetPoint, presenterCast.innerRadius,

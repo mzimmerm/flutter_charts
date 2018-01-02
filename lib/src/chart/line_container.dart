@@ -3,8 +3,6 @@ import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-/// todo -10 rename to LineContainer
-/// todo -10 move to chart
 class LineContainer extends flutter_charts_container.Container {
   ui.Paint linePaint;
   ui.Offset lineFrom;
@@ -27,8 +25,7 @@ class LineContainer extends flutter_charts_container.Container {
     throw new StateError("No need to call layout on ${this.runtimeType}.");
   }
 
-  /// Apply offset in parent. This call positions the Y Label (this instance)
-  /// to the absolute position in the chart's available size
+  /// Override method in superclass [Container].
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
     this.lineFrom += offset;
