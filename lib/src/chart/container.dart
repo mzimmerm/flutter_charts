@@ -828,9 +828,9 @@ abstract class Container {
   void paint(ui.Canvas canvas);
 }
 
-/// Manages the core chart area which displays:
-///   - the data as bar chart, line chart, or other chart type
-///   - the grid (this includes the X and Y axis).
+/// Manages the core chart area which displays, overlayed:
+///   - Data - as columns of bar chart, line chart, or other chart type
+///   - The grid (this includes the X and Y axis).
 class DataContainer extends Container {
   GridLinesContainer xGridLinesContainer;
   GridLinesContainer yGridLinesContainer;
