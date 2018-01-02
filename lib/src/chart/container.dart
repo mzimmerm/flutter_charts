@@ -129,6 +129,7 @@ abstract class ChartContainer {
     legendContainer.layout();
 
     // todo -5 vvv
+    // todo -9 : Need to replace with layoutSize
     legendContainerSize = legendContainer._size;
     legendContainerOffset = new ui.Offset(0.0, 0.0);
     // todo -5 ^^^
@@ -151,28 +152,24 @@ abstract class ChartContainer {
 
     yContainerFirst.layout();
 
+    /* todo -10
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelContainers
         .map((var yLabelContainer) => yLabelContainer)
         .map((LabelContainer labelContainer) =>
             labelContainer.textPainter.size.height)
         .reduce(math.max);
+        */
+    double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
 
     this.yContainer = yContainerFirst;
 
     // todo -5 vvvvvvvvvvvvvvvvvvvvvvvv
-    /* todo -10
-    yContainerSize =
-        new ui.Size(yContainerFirst._yLabelsContainerWidth, yContainerHeight);
-    */
     yContainerSize = yContainer.layoutSize;
     yContainerOffset = new ui.Offset(0.0, legendContainerSize.height);
     // todo -5 ^^^^^^^^^^^^^^^^^^^^^^^^
 
     // ### 4. Knowing the width required by Y axis
-    //        (from first [YContainer.layout] call), we can layout X labels
-    //        and grid in X direction, by calling [XContainer.layout].
-    //        We do not give it the available height, although height may be
-    //        marginally relevant (if there was not enough height for x labels).
+    //        (from first [YContainer.layout] call).
     // todo -10 double xContainerWidth = chartArea.width - yContainerSize.width;
 
     /* todo -10
@@ -271,12 +268,6 @@ abstract class ChartContainer {
     });
     */
 
-    /* todo -10
-    yContainer.yLabelContainers.forEach((YLabelContainer yLabelContainer) {
-      yLabelContainer.applyParentOffset(
-          new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
-    });
-    */
     yContainer.applyParentOffset(yContainerOffset);
 
     this.dataContainer.applyParentOffset(dataContainerOffset);
@@ -296,7 +287,7 @@ abstract class ChartContainer {
   /// this list drives the layout of [DataContainer].
   ///
   /// See [XLabelContainer.xTickX] for details.
-  List<double> get xTickXs => xContainer.xLabelContainers
+  List<double> get xTickXs => xContainer._xLabelContainers
       .map((var xLabelContainer) => xLabelContainer.xTickX)
       .toList();
 
@@ -306,7 +297,7 @@ abstract class ChartContainer {
   ///
   /// See [YLabelContainer.yTickY] for details.
   List<double> get yTickYs {
-    return yContainer.yLabelContainers
+    return yContainer._yLabelContainers
         .map((var yLabelContainer) => yLabelContainer.yTickY)
         .toList();
   }
@@ -329,7 +320,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// The actual Y labels values are always generated
   /// todo 0-future-minor : this is not true now for user defined
-  List<YLabelContainer> yLabelContainers = new List();
+  List<YLabelContainer> _yLabelContainers = new List();
 
   double _yLabelsContainerWidth;
   LayoutExpansion _layoutExpansion;
@@ -386,7 +377,7 @@ class YContainer extends ChartAreaContainer {
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
     }
-    _yLabelsContainerWidth = yLabelContainers
+    _yLabelsContainerWidth = _yLabelContainers
             .map((var yLabelContainer) => yLabelContainer)
             .map((LabelContainer labelContainer) =>
                 labelContainer.textPainter.size.width)
@@ -492,7 +483,7 @@ class YContainer extends ChartAreaContainer {
           new ui.Offset(_parentContainer.options.yLabelsPadLR, labelTopY),
       );
 
-      yLabelContainers.add(yLabelContainer);
+      _yLabelContainers.add(yLabelContainer);
     }
   }
 
@@ -500,7 +491,7 @@ class YContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    yLabelContainers.forEach((YLabelContainer yLabelContainer) {
+    _yLabelContainers.forEach((YLabelContainer yLabelContainer) {
       yLabelContainer.applyParentOffset(offset);
     });
   }
@@ -510,10 +501,18 @@ class YContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    for (var yLabelContainer in yLabelContainers) {
+    for (var yLabelContainer in _yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
   }
+
+  // todo -9 is this right?
+  double get yLabelsMaxHeight => _yLabelContainers
+      .map((var yLabelContainer) => yLabelContainer)
+      .map((LabelContainer labelContainer) =>
+  labelContainer.textPainter.size.height)
+      .reduce(math.max);
+
 
   String toString() {
     return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}";
@@ -578,9 +577,9 @@ class XContainer extends ChartAreaContainer {
 
   double _availableWidth;
 
-  List<String> _xLabels; // todo -10 remove. Replace by painters.labelContainer
+  // todo -10 List<String> _xLabels; // todo -10 remove. Replace by painters.labelContainer
   //  Represents Y labels.
-  List<XLabelContainer> xLabelContainers = new List();
+  List<XLabelContainer> _xLabelContainers = new List();
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
@@ -638,7 +637,6 @@ class XContainer extends ChartAreaContainer {
 
     double labelMaxAllowedWidth =
         (_layoutExpansion.width - yTicksWidth) / xLabels.length;
-// todo -10    (_availableWidth - yTicksWidth) / _xLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
 
@@ -679,11 +677,11 @@ class XContainer extends ChartAreaContainer {
       xLabelContainer
           .applyParentOffset(new ui.Offset(labelLeftX, options.xLabelsPadTB));
 
-      xLabelContainers.add(xLabelContainer);
+      _xLabelContainers.add(xLabelContainer);
     }
 
     // xlabels area without padding
-    _xLabelsMaxHeight = xLabelContainers
+    _xLabelsMaxHeight = _xLabelContainers
         .map((var xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
@@ -694,27 +692,25 @@ class XContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    xLabelContainers.forEach((XLabelContainer xLabelContainer) {
+    _xLabelContainers.forEach((XLabelContainer xLabelContainer) {
       xLabelContainer.applyParentOffset(offset);
     });
   }
 
   ui.Size get layoutSize {
-    // todo -10 from main laout:
-    /*
+    /* todo -10 from main laout:
         xContainerSize = new ui.Size(xContainerWidth,
         xContainer._xLabelsMaxHeight + 2 * options.xLabelsPadTB);
      */
+
     // todo -8 check this, fix layout sizes
     var options = _parentContainer.options;
     return new ui.Size(_layoutExpansion.width,
         _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
-
-    // todo -10 copied from Y return new ui.Size(_yLabelsContainerWidth, _layoutExpansion.height);
   }
 
   void paint(ui.Canvas canvas) {
-    for (var xLabelContainer in xLabelContainers) {
+    for (var xLabelContainer in _xLabelContainers) {
       xLabelContainer.paint(canvas);
     }
   }
@@ -920,6 +916,7 @@ abstract class ChartAreaContainer extends Container {
 ///   - Data - as columns of bar chart, line chart, or other chart type
 ///   - The grid (this includes the X and Y axis).
 class DataContainer extends ChartAreaContainer {
+
   GridLinesContainer _xGridLinesContainer;
   GridLinesContainer _yGridLinesContainer;
 
@@ -1023,7 +1020,7 @@ class DataContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    // todo -7: assert that layed out size (looking into all members)
+    // todo 0-layout: assert that layed out size (looking into all members)
     //          is same as the pre-layout size returned here
     return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
   }
