@@ -91,18 +91,20 @@ class LabelContainer extends flutter_charts_container.Container {
     return isOverflowing;
   }
 
-  /// Implementors of method in superclass [Container].
+  // #####  Implementors of method in superclass [Container].
+
+  /// Implementor of method in superclass [Container].
   void paint(ui.Canvas canvas) {
     this.textPainter.paint(canvas, offset);
   }
 
-  /// Implementors of method in superclass [Container].
+  /// Implementor of method in superclass [Container].
   void layout() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
   }
 
-  /// Implementors of method in superclass [Container].
+  /// Implementor of method in superclass [Container].
   ui.Size get layoutSize =>
       _constraintSize != null ? _constraintSize : _unconstrainedSize;
 }

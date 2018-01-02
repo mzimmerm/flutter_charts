@@ -18,7 +18,7 @@ import 'presenter.dart'; // V
 
 import '../util/range.dart';
 import '../util/util.dart' as util;
-import '../util/line_presenter.dart' as line_presenter;
+import '../util/line_container.dart' as line_presenter;
 
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -534,41 +534,26 @@ class YLabelContainer extends LabelContainer {
 }
 
 class YGridLinesContainerPainter {
-  List<YLinePresenter> yLinePresenters = new List();
+  List<YLineContainer> yLineContainers = new List();
 
   /// Apply offset in parent. This call positions the Y Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    yLinePresenters
-        .forEach((yLinePresenter) => yLinePresenter.applyParentOffset(offset));
+    yLineContainers
+        .forEach((yLineContainer) => yLineContainer.applyParentOffset(offset));
   }
 
   void paint(ui.Canvas canvas) {
-    yLinePresenters.forEach((yLinePresenter) => yLinePresenter.paint(canvas));
+    yLineContainers.forEach((yLineContainer) => yLineContainer.paint(canvas));
   }
 }
 
-class XLinePresenter extends line_presenter.LinePresenter {
+class XLineContainer extends line_presenter.LineContainer {
   /// Constructor from parent
-  XLinePresenter({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
+  XLineContainer({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
     this.linePaint = linePaint;
     this.lineFrom = lineFrom;
     this.lineTo = lineTo;
-  }
-
-  /// Absolute offset in chart
-  ui.Offset _offset = ui.Offset.zero;
-
-  /// Apply offset in parent. This call positions the Y Label (this instance)
-  /// to the absolute position in the chart's available size
-  void applyParentOffset(ui.Offset offset) {
-    this.lineFrom += offset; // translate
-    this.lineTo += offset;
-    _offset += offset;
-  }
-
-  void paint(ui.Canvas canvas) {
-    canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
   }
 }
 
@@ -896,7 +881,6 @@ class DataContainer extends Container {
     _layoutGrid();
 
     // Scale the [pointsColumns] to the [YContainer] 's scale.
-    // Must be called before
     scalePointsColumns();
   }
 
@@ -910,7 +894,7 @@ class DataContainer extends Container {
     // ### 1. Vertical Grid (yGrid) layout:
 
     // For each already layed out X labels in [xLabelContainers],
-    // create one [YLinePresenter] and add it to [yGridLinesContainerPainter]
+    // create one [YLineContainer] and add it to [yGridLinesContainerPainter]
 
     this.yGridLinesContainerPainter = new YGridLinesContainerPainter();
 
@@ -918,24 +902,24 @@ class DataContainer extends Container {
       // Add vertical yGrid line in the middle or on the left
       double x = isStacked ? xTickX - xGridStep / 2 : xTickX;
 
-      YLinePresenter yLinePresenter = new YLinePresenter(
+      YLineContainer yLineContainer = new YLineContainer(
         lineFrom: new ui.Offset(x, 0.0),
         lineTo: new ui.Offset(x, containerHeight),
         linePaint: gridLinesPaint(options),
       );
 
       // Add a new vertical grid line - yGrid line.
-      this.yGridLinesContainerPainter.yLinePresenters.add(yLinePresenter);
+      this.yGridLinesContainerPainter.yLineContainers.add(yLineContainer);
     });
 
     // For stacked, we need to add last right vertical yGrid line
     if (isStacked && chartContainer.xTickXs.isNotEmpty) {
       double x = chartContainer.xTickXs.last + xGridStep / 2;
-      YLinePresenter yLinePresenter = new YLinePresenter(
+      YLineContainer yLineContainer = new YLineContainer(
           lineFrom: new ui.Offset(x, 0.0),
           lineTo: new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-      this.yGridLinesContainerPainter.yLinePresenters.add(yLinePresenter);
+      this.yGridLinesContainerPainter.yLineContainers.add(yLineContainer);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
@@ -946,13 +930,13 @@ class DataContainer extends Container {
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
     chartContainer.yTickYs.forEach((yTickY) {
-      XLinePresenter xLinePresenter = new XLinePresenter(
+      XLineContainer xLineContainer = new XLineContainer(
           lineFrom: new ui.Offset(0.0, yTickY),
           lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
-      this.xGridLinesContainerPainter.xLinePresenters.add(xLinePresenter);
+      this.xGridLinesContainerPainter.xLineContainers.add(xLineContainer);
     });
   }
 
@@ -1029,42 +1013,26 @@ class DataContainer extends Container {
 }
 
 class XGridLinesContainerPainter {
-  List<XLinePresenter> xLinePresenters = new List();
+  List<XLineContainer> xLineContainers = new List();
 
   /// Apply offset in parent. This call positions the X Label (this instance)
   /// to the absolute position in the chart's available size
   void applyParentOffset(ui.Offset offset) {
-    xLinePresenters
-        .forEach((xLinePresenter) => xLinePresenter.applyParentOffset(offset));
+    xLineContainers
+        .forEach((xLineContainer) => xLineContainer.applyParentOffset(offset));
   }
 
   void paint(ui.Canvas canvas) {
-    xLinePresenters.forEach((xLinePresenter) => xLinePresenter.paint(canvas));
+    xLineContainers.forEach((xLineContainer) => xLineContainer.paint(canvas));
   }
 }
 
-class YLinePresenter extends line_presenter.LinePresenter {
+class YLineContainer extends line_presenter.LineContainer {
   /// Constructor from parent
-  YLinePresenter({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
+  YLineContainer({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
     this.linePaint = linePaint;
     this.lineFrom = lineFrom;
     this.lineTo = lineTo;
-  }
-
-  /// Absolute offset in chart
-  ui.Offset _offset = ui.Offset.zero;
-
-  /// Apply offset in parent. This call positions the X Label (this instance)
-  /// to the absolute position in the chart's available size
-  void applyParentOffset(ui.Offset offset) {
-    this.lineFrom += offset; // translate
-    this.lineTo += offset;
-
-    _offset += offset;
-  }
-
-  void paint(ui.Canvas canvas) {
-    canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
   }
 }
 

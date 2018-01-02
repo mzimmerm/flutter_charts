@@ -5,7 +5,7 @@ import 'package:flutter/material.dart' as material;
 import '../presenter.dart';
 import 'package:flutter_charts/src/chart/line/options.dart';
 import '../container.dart';
-import '../../util/line_presenter.dart' as line_presenter;
+import '../../util/line_container.dart' as line_presenter;
 
 
 /// Presenter of the atomic/leaf element of one data point on the
@@ -18,7 +18,7 @@ import '../../util/line_presenter.dart' as line_presenter;
 /// which is next in the [PresentersColumn.presenters] list.
 class LineAndHotspotPresenter extends Presenter {
 
-  line_presenter.LinePresenter linePresenter;
+  line_presenter.LineContainer linePresenter;
   ui.Offset offsetPoint; // offset where the data point will be painted
   ui.Paint innerPaint;
   ui.Paint outerPaint;
@@ -48,7 +48,7 @@ class LineAndHotspotPresenter extends Presenter {
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
-    linePresenter = new line_presenter.LinePresenter(
+    linePresenter = new line_presenter.LineContainer(
       lineFrom: fromPoint,
       lineTo: toPoint,
       linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth
