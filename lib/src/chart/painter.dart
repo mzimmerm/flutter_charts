@@ -83,10 +83,14 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   void drawYLabels(ui.Canvas canvas) {
+    /* todo -10
     // Draw y axis labels on the left
     for (var yLabelContainer in container.yContainer.yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
+    */
+    // Draw y axis labels on the left
+    container.yContainer.paint(canvas);
   }
 
   void drawLegend(ui.Canvas canvas) {

@@ -295,7 +295,12 @@ Result vertical bar chart:
 - [ ] 
 * Enhancements in progress or planned
 ** Enhancements:
+*** TODO Define order of layout in chart top container:
 
+///
+/// Out of calls to all container's [layout] by the parent
+/// [ChartContainer.layout], the call to this object's [layout] is second,
+/// after [LegendContainer.layout].
 *** IN-PROGRESS Put all chart elements on the base class Container
 
 

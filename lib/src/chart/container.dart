@@ -140,7 +140,7 @@ abstract class ChartContainer {
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
     var yContainerFirst = new YContainer(
-      chartContainer: this,
+      parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
           widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
@@ -195,7 +195,7 @@ abstract class ChartContainer {
     // On the second real layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
     this.yContainer = new YContainer(
-      chartContainer: this,
+      parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
           widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
@@ -248,10 +248,14 @@ abstract class ChartContainer {
           new ui.Offset(yContainerSize.width, xContainerOffset.dy));
     });
 
+    /* todo -10
     yContainer.yLabelContainers.forEach((YLabelContainer yLabelContainer) {
       yLabelContainer.applyParentOffset(
           new ui.Offset(options.yLabelsPadLR, yContainerOffset.dy));
     });
+    */
+    // todo -10 this may be wrong, fix this.
+    yContainer.applyParentOffset(yContainerOffset);
 
     this.dataContainer.applyParentOffset(dataContainerOffset);
   }
@@ -288,7 +292,7 @@ abstract class ChartContainer {
   double get gridStepWidth => xContainer._gridStepWidth;
 }
 
-/// 7. ##### Auto-container of the area containing Y axis labels.
+/// Container of the Y axis labels.
 ///
 /// The primary direction of this container is "Y", which means
 /// this container will use all vertical (Y) space available.
@@ -299,58 +303,29 @@ abstract class ChartContainer {
 /// See the constructor [YContainer] for description of parameters that define
 /// the available vertical space.
 ///
-/// Out of calls to all container's [layout] by the parent
-/// [ChartContainer.layout], the call to this object's [layout] is second,
-/// after [LegendContainer.layout].
-///
 /// See [YContainer.layout] for description
 /// of how this [YContainer.layout] calculates [YContainer._yLabelsContainerWidth],
 /// the width taken by this container for the Y axis labels, and what
 /// it means for the remaining space.
 ///
-class YContainer {
-  /// The containing container.
-  ChartContainer _chartContainer;
+class YContainer extends ChartAreaContainer {
 
-  // ### input values
-
-  // ### calculated values
-
-  /// Results of laying out the Y axis labels, usable by clients.
+  /// Represents Y labels.
   List<YLabelContainer> yLabelContainers = new List();
 
   double _yLabelsContainerWidth;
   LayoutExpansion _layoutExpansion;
   double _yLabelsMaxHeightFromFirstLayout;
 
-  /// Constructor of the container for the Y axis labels.
-  /// The parameter [chartContainer] provides this [YContainer] access to it's
-  /// parent container.
-  ///
-  /// Other parameters - [yAxisMin] and [yAxisMax] -
-  /// define constraints it the Y direction.
-  ///
-  /// [yAxisMin]  and [yAxisMax] should be passed the minimum
-  /// and maximum Y coordinates within (0.0, [chartContainer.chartArea.height]).
-  /// The min and max are interpreted as coordinates of the bottom and top
-  /// of the area the container uses.
-  ///
-  /// This container uses the full height range of ([yAxisMin], [yAxisMax]),
-  /// and takes as much width as needed for Y labels to be painted.
-  ///
-  /// "Abs" in the naming refers to coordinates within the
-  /// "absolute" area [chartContainer.chartArea]
-  /// provided by Flutter for the [ChartPainter].
-  ///
-
-  ///
   YContainer({
-    ChartContainer chartContainer,
+    ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
     double yLabelsMaxHeightFromFirstLayout,
-  }) {
-    _chartContainer = chartContainer;
-    _layoutExpansion = layoutExpansion;
+  }) : super(
+  layoutExpansion: layoutExpansion,
+  parentContainer: parentContainer,
+  )
+  {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
   }
 
@@ -366,17 +341,19 @@ class YContainer {
   /// [YContainer._yLabelsContainerWidth] provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   void layout() {
+
+    // [yAxisMin] and [yAxisMax] define end points of the Y axis.
     // todo -7: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo -7 flip Min and Max and find a place which reverses
     double yAxisMin = _layoutExpansion.height -
-        (_chartContainer.options.xBottomMinTicksHeight +
-            2 * _chartContainer.options.xLabelsPadTB);
+        (_parentContainer.options.xBottomMinTicksHeight +
+            2 * _parentContainer.options.xLabelsPadTB);
 
     // todo -7: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
-    if (_chartContainer.options.useUserProvidedYLabels) {
+    if (_parentContainer.options.useUserProvidedYLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
@@ -386,15 +363,15 @@ class YContainer {
             .map((LabelContainer labelContainer) =>
                 labelContainer.textPainter.size.width)
             .reduce(math.max) +
-        2 * _chartContainer.options.yLabelsPadLR;
+        2 * _parentContainer.options.yLabelsPadLR;
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _chartContainer.pointsColumns
+    List<double> flatData = _parentContainer.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
-    List<String> yLabels = _chartContainer.data.yLabels;
+    List<String> yLabels = _parentContainer.data.yLabels;
 
     var dataRange =
         new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
@@ -423,7 +400,7 @@ class YContainer {
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: yAxisMin,
         toScaleMax: yAxisMax,
-        chartOptions: _chartContainer.options);
+        chartOptions: _parentContainer.options);
 
     yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYDataRange,
@@ -437,13 +414,13 @@ class YContainer {
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _chartContainer.pointsColumns
+    List<double> flatData = _parentContainer.pointsColumns
         .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
 
     // print("flatData=$flatData");
 
     Range range = new Range(
-        values: flatData, chartOptions: _chartContainer.options, maxLabels: 10);
+        values: flatData, chartOptions: _parentContainer.options, maxLabels: 10);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
@@ -457,8 +434,8 @@ class YContainer {
   void _commonLayout(YScalerAndLabelFormatter yScaler) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _chartContainer.yScaler = yScaler;
-    ChartOptions options = _chartContainer.options;
+    _parentContainer.yScaler = yScaler;
+    ChartOptions options = _parentContainer.options;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
@@ -483,11 +460,41 @@ class YContainer {
       yLabelContainer.yTickY = yTickY - labelTopY;
 
       // Move the contained LabelContainer to correct position
-      yLabelContainer.applyParentOffset(new ui.Offset(0.0, labelTopY));
+// todo -10      yLabelContainer.applyParentOffset(new ui.Offset(0.0, labelTopY));
+      yLabelContainer.applyParentOffset(
+          new ui.Offset(_parentContainer.options.yLabelsPadLR, labelTopY),
+      );
 
       yLabelContainers.add(yLabelContainer);
     }
   }
+
+  // todo -10 vvvvvvv
+  void applyParentOffset(ui.Offset offset) {
+    // super not really needed - only child containers are offset.
+    super.applyParentOffset(offset);
+
+    yLabelContainers.forEach((YLabelContainer yLabelContainer) {
+      yLabelContainer.applyParentOffset(offset);
+    });
+  }
+
+  ui.Size get layoutSize {
+    // todo -10 this is copied, fix
+    // todo -7: assert that layed out size (looking into all members)
+    //          is same as the pre-layout size returned here
+    // return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+    return new ui.Size(_yLabelsContainerWidth, _layoutExpansion.height);
+  }
+
+  void paint(ui.Canvas canvas) {
+    // todo -10
+    for (var yLabelContainer in yLabelContainers) {
+      yLabelContainer.paint(canvas);
+    }
+  }
+
+  // ^^^^^^^^^^^^^^^
 
   String toString() {
     return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}";
@@ -740,19 +747,10 @@ class LayoutExpansion {
 }
 
 /// Base class which manages, lays out, moves, and paints
-/// each base block on the chart. The basic chart blocks are:
-///   - [ChartContainer] - the whole chart
-///   - [LegendContainer] - manages the legend
-///   - [YContainer] - manages the Y labels layout, which defines:
-///     - Y axis label sizes
-///     - Y positions of Y axis labels, defined as yTickY.
-///       yTicksY s are the Y points of scaled data values
-///       and also Y points on which the Y labels are centered.
-///   - [XContainer] - Equivalent to YContainer, but manages X direction
-///     layout and labels.
-///   - [DataContainer] - manages the area which displays:
-///     - data as bar chart, line chart, or other chart type.
-///     - grid (this includes the X and Y axis).
+/// graphical elements on the chart, for example individual
+/// labels, but also a collection of labels.
+///
+/// This base class manages
 ///
 /// Roles:
 ///   - Constructor: a paramater named [layoutExpansion] is required
@@ -769,21 +767,15 @@ abstract class Container {
   /// External size enforced by the parent container.
   LayoutExpansion _layoutExpansion;
 
-  /// The containing container.
-  ChartContainer _parentContainer;
-
   /// Maintains current offset, a sum of all offsets
   /// passed in subsequent calls to [applyParentOffset] during object
   /// lifetime.
   ui.Offset _offset = ui.Offset.zero;
 
-  /// [layoutExpansion] defines
   Container({
-    ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
   }) {
     _layoutExpansion = layoutExpansion;
-    _parentContainer = parentContainer;
   }
 
   void layout();
@@ -828,12 +820,51 @@ abstract class Container {
   void paint(ui.Canvas canvas);
 }
 
+
+/// Base class which manages, lays out, moves, and paints
+/// each top level block on the chart. The basic top level chart blocks are:
+///   - [ChartContainer] - the whole chart
+///   - [LegendContainer] - manages the legend
+///   - [YContainer] - manages the Y labels layout, which defines:
+///     - Y axis label sizes
+///     - Y positions of Y axis labels, defined as yTickY.
+///       yTicksY s are the Y points of scaled data values
+///       and also Y points on which the Y labels are centered.
+///   - [XContainer] - Equivalent to YContainer, but manages X direction
+///     layout and labels.
+///   - [DataContainer] - manages the area which displays:
+///     - Data as bar chart, line chart, or other chart type.
+///     - Grid (this includes the X and Y axis).
+///
+/// See [Container] for discussion of roles of this class.
+/// This extension of  [Container] has the added ability
+/// to access the container's parent, which is handled by
+/// [parentContainer].
+abstract class ChartAreaContainer extends Container {
+  /// The chart top level.
+  ///
+  /// Departure from a top down approach, this allows to
+  /// access the parent [ChartContainer], which has (currently)
+  /// members needed by children.
+  ChartContainer _parentContainer;
+
+  ChartAreaContainer({
+    ChartContainer parentContainer,
+    LayoutExpansion layoutExpansion,
+  }) : super(layoutExpansion: layoutExpansion) {
+    _parentContainer = parentContainer;
+  }
+
+  ChartContainer get parentContainer => _parentContainer;
+}
+
+
 /// Manages the core chart area which displays, overlayed:
 ///   - Data - as columns of bar chart, line chart, or other chart type
 ///   - The grid (this includes the X and Y axis).
-class DataContainer extends Container {
-  GridLinesContainer xGridLinesContainer;
-  GridLinesContainer yGridLinesContainer;
+class DataContainer extends ChartAreaContainer {
+  GridLinesContainer _xGridLinesContainer;
+  GridLinesContainer _yGridLinesContainer;
 
   /// Columns of presenters.
   ///
@@ -851,7 +882,7 @@ class DataContainer extends Container {
       : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
-        ) {}
+        );
 
   void layout() {
     _layoutGrid();
@@ -862,17 +893,17 @@ class DataContainer extends Container {
 
   void _layoutGrid() {
     // Vars that layout needs from the [_chartContainer] passed to constructor
-    ChartOptions options = _parentContainer.options;
-    bool isStacked = _parentContainer.isStacked;
-    double xGridStep = _parentContainer.gridStepWidth;
-    ChartContainer chartContainer = _parentContainer;
+    ChartOptions options = parentContainer.options;
+    bool isStacked = parentContainer.isStacked;
+    double xGridStep = parentContainer.gridStepWidth;
+    ChartContainer chartContainer = parentContainer;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
     // For each already layed out X labels in [xLabelContainers],
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    this.yGridLinesContainer = new GridLinesContainer();
+    this._yGridLinesContainer = new GridLinesContainer();
 
     chartContainer.xTickXs.forEach((xTickX) {
       // Add vertical yGrid line in the middle or on the left
@@ -885,7 +916,7 @@ class DataContainer extends Container {
       );
 
       // Add a new vertical grid line - yGrid line.
-      this.yGridLinesContainer.addLine(yLineContainer);
+      this._yGridLinesContainer.addLine(yLineContainer);
     });
 
     // For stacked, we need to add last right vertical yGrid line
@@ -895,14 +926,14 @@ class DataContainer extends Container {
           lineFrom: new ui.Offset(x, 0.0),
           lineTo: new ui.Offset(x, containerHeight),
           linePaint: gridLinesPaint(options));
-      this.yGridLinesContainer.addLine(yLineContainer);
+      this._yGridLinesContainer.addLine(yLineContainer);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    this.xGridLinesContainer = new GridLinesContainer();
+    this._xGridLinesContainer = new GridLinesContainer();
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
     chartContainer.yTickYs.forEach((yTickY) {
@@ -912,7 +943,7 @@ class DataContainer extends Container {
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
-      this.xGridLinesContainer._lineContainers.add(xLineContainer);
+      this._xGridLinesContainer._lineContainers.add(xLineContainer);
     });
   }
 
@@ -920,13 +951,13 @@ class DataContainer extends Container {
     super.applyParentOffset(offset);
 
     // Move all container atomic elements - lines, labels, circles etc
-    this.xGridLinesContainer.applyParentOffset(offset);
+    this._xGridLinesContainer.applyParentOffset(offset);
 
     // draw vertical grid
-    this.yGridLinesContainer.applyParentOffset(offset);
+    this._yGridLinesContainer.applyParentOffset(offset);
 
     // Apply offset of lines and bars.
-    _parentContainer.pointsColumns.applyParentOffset(offset);
+    parentContainer.pointsColumns.applyParentOffset(offset);
 
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
@@ -942,10 +973,10 @@ class DataContainer extends Container {
 
   void paint(ui.Canvas canvas) {
     // draw horizontal grid
-    this.xGridLinesContainer.paint(canvas);
+    this._xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    this.yGridLinesContainer.paint(canvas);
+    this._yGridLinesContainer.paint(canvas);
 
     // todo -77 move here painting of lines and bars.
     //         Look at VerticalBarChartPainter extends ChartPainter
@@ -962,9 +993,9 @@ class DataContainer extends Container {
   /// values.
   ///
   /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
-  /// uses the  absolute scaled [_parentContainer.pointsColumns].
+  /// uses the  absolute scaled [parentContainer.pointsColumns].
   void scalePointsColumns() {
-    _parentContainer.pointsColumns.scale();
+    parentContainer.pointsColumns.scale();
   }
 
   /// Creates from [ChartData] (model for this container),
@@ -981,9 +1012,9 @@ class DataContainer extends Container {
 
   void setupPresentersColumns() {
     this.presentersColumns = new PresentersColumns(
-      pointsColumns: _parentContainer.pointsColumns,
-      container: _parentContainer,
-      presenterCreator: _parentContainer.presenterCreator,
+      pointsColumns: parentContainer.pointsColumns,
+      container: parentContainer,
+      presenterCreator: parentContainer.presenterCreator,
     );
   }
 }
