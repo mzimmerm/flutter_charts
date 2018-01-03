@@ -76,23 +76,11 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }
 
   void drawXLabels(ui.Canvas canvas) {
-    /* todo -10
-    // Draw x axis labels on bottom
-    for (var xLabelContainer in container.xContainer.xLabelContainers) {
-      xLabelContainer.paint(canvas);
-    }
-    */
     // Draw x axis labels
     container.xContainer.paint(canvas);
   }
 
   void drawYLabels(ui.Canvas canvas) {
-    /* todo -10
-    // Draw y axis labels on the left
-    for (var yLabelContainer in container.yContainer.yLabelContainers) {
-      yLabelContainer.paint(canvas);
-    }
-    */
     // Draw y axis labels
     container.yContainer.paint(canvas);
   }
