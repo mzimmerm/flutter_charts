@@ -41,9 +41,9 @@ class ChartOptions {
   /// Autolayout can increase these lengths, to fit labels below them.
   // todo -3 deprecate instead of removing
   // double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
+  double yLeftMinTicksWidth = 6.0;
   double yRightMinTicksWidth = 6.0;
   double xBottomMinTicksHeight = 6.0;
-  double yLeftMinTicksWidth = 6.0;
 
   // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
 
@@ -63,7 +63,7 @@ class ChartOptions {
   /// together with data series name (legend name).
   double legendColorIndicatorWidth = 20.0;
   double legendColorIndicatorPaddingLR = 1.0;
-  double legendContainerMarginLR = 12.0;
+  double legendContainerMarginLR = 12.0; // keep 12.0, looks better unaligned
   double legendContainerMarginTB = 6.0;
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
