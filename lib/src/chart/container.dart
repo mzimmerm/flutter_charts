@@ -280,13 +280,13 @@ class YContainer extends ChartAreaContainer {
   /// [YContainer._yLabelsContainerWidth] provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   void layout() {
-    // [yAxisMin] and [yAxisMax] define end points of the Y axis.
+    // yAxisMin and yAxisMax define end points of the Y axis, in the YContainer
+    //   coordinates.
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
     double yAxisMin = _layoutExpansion.height -
-        (_parentContainer.options.xBottomMinTicksHeight +
-            2 * _parentContainer.options.xLabelsPadTB);
+        (_parentContainer.options.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
@@ -311,30 +311,30 @@ class YContainer extends ChartAreaContainer {
 
     List<String> yLabels = _parentContainer.data.yLabels;
 
-    var dataRange =
+    var yDataRange =
         new Interval(flatData.reduce(math.min), flatData.reduce(math.max));
     double dataStepHeight =
-        (dataRange.max - dataRange.min) / (yLabels.length - 1);
+        (yDataRange.max - yDataRange.min) / (yLabels.length - 1);
 
     Interval yAxisRange = new Interval(yAxisMin, yAxisMax);
 
-    double gridStepHeight =
+    double yGridStepHeight =
         (yAxisRange.max - yAxisRange.min) / (yLabels.length - 1);
 
     List<num> yLabelsDividedInYAxisRange = new List();
     //var seq = new Iterable.generate(yLabels.length, (i) => i); // 0 .. length-1
     //for (var yIndex in seq) {
     for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
-      yLabelsDividedInYAxisRange.add(yAxisRange.min + gridStepHeight * yIndex);
+      yLabelsDividedInYAxisRange.add(yAxisRange.min + yGridStepHeight * yIndex);
     }
 
     List<num> yLabelsDividedInYDataRange = new List();
     for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
-      yLabelsDividedInYDataRange.add(dataRange.min + dataStepHeight * yIndex);
+      yLabelsDividedInYDataRange.add(yDataRange.min + dataStepHeight * yIndex);
     }
 
     var yScaler = new YScalerAndLabelFormatter(
-        dataRange: dataRange,
+        dataRange: yDataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: yAxisMin,
         toScaleMax: yAxisMax,
@@ -451,8 +451,15 @@ class YContainer extends ChartAreaContainer {
 class YLabelContainer extends LabelContainer {
   /// Position of the Y data value, scaled to Y axis.
   ///
-  /// Not affected by call to [applyParentOffset] -
-  /// Always positioned relative to YContainer (parent of this YLabelContainer).
+  /// [yTickY]'s value is not affected by call to [applyParentOffset]. It is
+  /// calculated during parent's [YContainer] (parent of this YLabelContainer),
+  /// as a result, it remains positioned in the [YContainer]'s coordinates.
+  /// Any objects using [yTickY] as it's end point
+  /// (for example grid line's end point), should apply
+  /// the parent offset to themselves. The reason for this behavior is for
+  /// the [yTickY]'s value to live after  [YContainer]'s layout,
+  /// and adding parent offset, so the  [yTickY]'s value can be used in the
+  /// grid layout, without reversing any offsets.
   ///
   /// Also the y offset of the Y label middle point
   /// (before label's parent offset).
@@ -602,8 +609,8 @@ class XLabelContainer extends LabelContainer {
   /// The X position of point that should
   /// show a "tick dash" for the label center on the x axis.
   ///
-  /// Not affected by call to [applyParentOffset] -
-  /// Always positioned relative to XContainer (parent of this XLabelContainer).
+  /// [xTickX]'s value is not affected by call to [applyParentOffset].
+  /// See [YLabelContainer.yTickY] documentation for details and reason.
   ///
   /// Notes:
   ///   - This is same as the X-scaled position of the X value
@@ -997,7 +1004,7 @@ class LegendContainer extends ChartAreaContainer {
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendLabelContainer> _legendLabelContainers = new List();
+  List<LegendItemContainer> _legendLabelContainers = new List();
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
@@ -1060,12 +1067,12 @@ class LegendContainer extends ChartAreaContainer {
     //   - an indicator rectangle and it's paint
     //   - label painter
     for (var index = 0; index < dataRowsLegends.length; index++) {
-      var legendLabelContainer = new LegendLabelContainer(
+      var legendItemContainer = new LegendItemContainer(
         label: dataRowsLegends[index],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      widgets.TextPainter textPainter = legendLabelContainer.textPainter;
+      widgets.TextPainter textPainter = legendItemContainer.textPainter;
       textPainter.layout();
 
       double indicatorX =
@@ -1074,7 +1081,7 @@ class LegendContainer extends ChartAreaContainer {
       // height-wise center both indicatorRect and label around common
       // middle in  _size.height / 2
       double indicatorTop = (_layoutHeight - itemSizing.indicatorHeight) / 2;
-      legendLabelContainer._indicatorRect = new ui.Offset(
+      legendItemContainer._indicatorRect = new ui.Offset(
               indicatorX, indicatorTop) &
           new ui.Size(itemSizing.indicatorWidth, itemSizing.indicatorHeight);
 
@@ -1082,16 +1089,15 @@ class LegendContainer extends ChartAreaContainer {
           itemSizing.indicatorWidth +
           itemSizing.indicatorToLegendPad;
 
-      // todo -9 labelTopY etc - Is all this needed?
       double labelTopY = (_layoutHeight - textPainter.height) / 2;
-      legendLabelContainer
+      legendItemContainer
           .applyParentOffset(new ui.Offset(labelLeftX, labelTopY));
 
-      legendLabelContainer._indicatorPaint = new ui.Paint();
-      legendLabelContainer._indicatorPaint.color = _parentContainer.data
+      legendItemContainer._indicatorPaint = new ui.Paint();
+      legendItemContainer._indicatorPaint.color = _parentContainer.data
           .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
-      _legendLabelContainers.add(legendLabelContainer);
+      _legendLabelContainers.add(legendItemContainer);
     }
   }
 
@@ -1099,8 +1105,8 @@ class LegendContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _legendLabelContainers.forEach((LegendLabelContainer legendLabelContainer) {
-      legendLabelContainer.applyParentOffset(offset);
+    _legendLabelContainers.forEach((LegendItemContainer legendItemContainer) {
+      legendItemContainer.applyParentOffset(offset);
     });
   }
 
@@ -1109,8 +1115,8 @@ class LegendContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    for (var legendLabelContainer in _legendLabelContainers) {
-      legendLabelContainer.paint(canvas);
+    for (var legendItemContainer in _legendLabelContainers) {
+      legendItemContainer.paint(canvas);
     }
   }
 
@@ -1159,27 +1165,16 @@ class LegendItemSizing {
       legendItemWidth - (indicatorWidth + 2 * containerMarginLR);
 }
 
-/// Represents one layed out item of the legend: [_indicatorRect] is
-/// the rectangle for the color indicator, this [textPainter] is a layed out
-/// [widgets.TextPainter] for the label text.
-///
-/// Painters can paint this object in a loop similar to
-/// ```
-/// void drawLegend(ui.Canvas canvas) {
-///    for (common.LegendLabelContainer legend in container.legendLabelContainers) {
-///      legend.labelContainer.paint(canvas, legend.labelOffset);
-///      canvas.drawRect(legend.indicatorRect, legend.indicatorPaint); }}
-/// ```
-///
-/// All positions are relative to the left of the [LegendContainer]'s container.
-class LegendLabelContainer extends LabelContainer {
+/// Represents one layed out item of the legend:  The rectangle for the color
+/// indicator, [_indicatorRect], followed by the series label text.
+class LegendItemContainer extends LabelContainer {
   ///  rectangle of the legend color square series indicator
   ui.Rect _indicatorRect;
 
   /// Paint used to paint the indicator
   ui.Paint _indicatorPaint;
 
-  LegendLabelContainer({
+  LegendItemContainer({
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
@@ -1656,10 +1651,10 @@ class PointsColumn {
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
 class PointsColumns extends custom_collection.CustomList {
-  //\/Data points managed row - first. Internal only, not used in chart.
+  ///Data points managed row - major. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInRows;
 
-  /// Data points managed column - first. Internal only, not used in chart.
+  /// Data points managed column - major. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInColumns;
 
   /// Parent chart container.

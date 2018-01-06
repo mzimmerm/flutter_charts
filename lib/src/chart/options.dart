@@ -47,13 +47,15 @@ class ChartOptions {
 
   // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
 
-  /// Pad space around X labels.
-  double xLabelsPadTB = 24.0; // todo -9:  12.0; // top and bottom
-  double xLabelsPadLR = 12.0; // left and right - Unused
+  /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
+  double xLabelsPadTB = 6.0; // top and bottom
+  /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
+  double xLabelsPadLR = 40.0; // todo 0 unused.
 
-  /// Pad space around Y labels.
-  double yLabelsPadTB = 12.0; // todo 0 unused
-  double yLabelsPadLR = 4.0;
+  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
+  double yLabelsPadTB = 40.0; // todo 0 unused.
+  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
+  double yLabelsPadLR = 6.0;
 
   /// Series color indicator size - the "Series color indicator"
   /// is the square that shows the color of each dataRow

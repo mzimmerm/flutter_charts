@@ -6,7 +6,6 @@ import 'util.dart' as util;
 /// Scalable range, supporting creation of scaled x and y axis labels.
 ///
 class Range {
-
   // ### Public api
 
   // ### Private api
@@ -18,32 +17,36 @@ class Range {
   /// The auto-label generator [makeLabelsFromData] can decrease this but not increase. todo 00 - move to options
   int _maxLabels;
 
-
   /// Constructs a scalable range from a list of passed [values].
   ///
   /// Given a list of [values] (to show on Y axis),
   /// [makeLabelsFromData] creates labels evenly distributed to cover the range of values,
   /// trying to not waste space, and show only relevant labels, in
   /// decimal steps.
-  Range({List<num> values, ChartOptions chartOptions, int maxLabels = 10,}) {
+  Range({
+    List<num> values,
+    ChartOptions chartOptions,
+    int maxLabels = 10,
+  }) {
     _values = values;
     // todo 1 maxLabels does not work. Enable and add to test
     _maxLabels = maxLabels;
     _options = chartOptions;
   }
 
-  /// superior and inferior closure -
-  Interval get _closure =>
-      new Interval(
-          _values.reduce(math.min), _values.reduce(math.max), true, true);
+  /// superior and inferior closure - min and max of values
+  Interval get _closure => new Interval(
+      _values.reduce(math.min), _values.reduce(math.max), true, true);
 
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
   ///
   /// The [toScaleMin] and [toScaleMax] are the display scale,
   /// for example the range of Y axis positions between bottom and top.
-  YScalerAndLabelFormatter makeLabelsFromDataOnScale(
-      {double toScaleMin, double toScaleMax,}) {
+  YScalerAndLabelFormatter makeLabelsFromDataOnScale({
+    double toScaleMin,
+    double toScaleMax,
+  }) {
     num min = _closure.min;
     num max = _closure.max;
     num diff = max - min;
@@ -93,7 +96,8 @@ class Range {
     // Labels are (obviously) unscaled, that is, on the scale of data,
     // not the displayed pixels scale.
 
-    List<num> labels = _distributeLabelsIn(new Interval(from, to)); // todo 0 pull only once (see below)
+    List<num> labels = _distributeLabelsIn(
+        new Interval(from, to)); // todo 0 pull only once (see below)
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
 
@@ -172,7 +176,6 @@ class Range {
 
     return labels;
   }
-
 }
 
 /// Encapsulating Y axis scaling (dataRange scaling to available pixels)
@@ -200,7 +203,8 @@ class YScalerAndLabelFormatter {
     List<num> valueOnLabels,
     double toScaleMin,
     double toScaleMax,
-    ChartOptions chartOptions,}) {
+    ChartOptions chartOptions,
+  }) {
     this.dataRange = dataRange;
     this.labelInfos =
         valueOnLabels.map((value) => new LabelInfo(value, this)).toList();
@@ -211,12 +215,14 @@ class YScalerAndLabelFormatter {
 
   /// Scales [value]
   ///   - from the own scale, given be the merged data and label intervals
-  ///     in [labelAndDataRangeMerged]
+  ///   calculated in [labelAndDataRangeMerged]
   ///   - to the Y axis scale defined by [_toScaleMin], [_toScaleMax].
   double scaleY({double value}) {
-    return util.scaleValue(value: value.toDouble(),
-        ownScaleMin: labelAndDataRangeMerged.min.toDouble(),
-        ownScaleMax: labelAndDataRangeMerged.max.toDouble(),
+    Interval mergedOwnScale = labelValuesAndDataRangesMerged;
+    return util.scaleValue(
+        value: value.toDouble(),
+        ownScaleMin: mergedOwnScale.min.toDouble(),
+        ownScaleMax: mergedOwnScale.max.toDouble(),
         toScaleMin: _toScaleMin,
         toScaleMax: _toScaleMax);
   }
@@ -225,9 +231,7 @@ class YScalerAndLabelFormatter {
   /// of the available chart size.
   /// todo 1 maybe make private and wrap - need for manual layout - better, create method for manual layout and move code from containers here
   void scaleLabelInfos() {
-    labelInfos.forEach((var labelInfo) =>
-        labelInfo._scaleLabelValue()
-    );
+    labelInfos.forEach((var labelInfo) => labelInfo._scaleLabelValue());
 
     if (_toScaleMin > _toScaleMax) {
       // we are inverting scales, so invert labels.
@@ -236,7 +240,8 @@ class YScalerAndLabelFormatter {
   }
 
   /// Manual layout helper, forces values and scaled values.
-  void setLabelValuesForManualLayout({List labelValues, List scaledLabelValues, List formattedYLabels})  {
+  void setLabelValuesForManualLayout(
+      {List labelValues, List scaledLabelValues, List formattedYLabels}) {
     for (int i = 0; i < labelValues.length; i++) {
       labelInfos[i].labelValue = labelValues[i];
       labelInfos[i].scaledLabelValue = scaledLabelValues[i];
@@ -255,8 +260,7 @@ class YScalerAndLabelFormatter {
   /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
   void makeLabelsPresentable() {
     labelInfos.forEach((labelInfo) {
-      labelInfo.formattedYLabel =
-          _options.valueToLabel(labelInfo.labelValue);
+      labelInfo.formattedYLabel = _options.valueToLabel(labelInfo.labelValue);
     });
   }
 
@@ -264,21 +268,22 @@ class YScalerAndLabelFormatter {
 
   /// Extracts unscaled values of labels from [labelInfos].
   List<num> get labelValues =>
-      labelInfos.map((labelInfo) => labelInfo.labelValue)
-          .toList();
+      labelInfos.map((labelInfo) => labelInfo.labelValue).toList();
 
-  /// Constructs an interval of [labelValues] from their min / max.
-  Interval get labelRange =>
-      new Interval(labelValues.reduce(math.min), labelValues.reduce(math.max));
 
   /// Constructs interval which is a merge (outer bound) of
-  /// [labelRange] and [dataRange].
+  /// two ranges: the labels range stored in [ labelValues]
+  /// and the [dataRange].
   ///
   /// Typically, [labelRange] and [dataRange] overlap but are not subset
   /// of one another - but that will in the future change in some
   /// cases, as defined by [ChartOptions].
-  Interval get labelAndDataRangeMerged => labelRange.merge(dataRange);
-
+  ///
+  /// **The returned [Interval] is intended to be used as the full extend
+  /// of the unscaled Y axis.**
+  Interval get labelValuesAndDataRangesMerged =>
+      new Interval(labelValues.reduce(math.min), labelValues.reduce(math.max))
+          .merge(dataRange);
 }
 
 /// Manages labels and their values: scaled in , unscaled, and presented (formatted)
@@ -299,8 +304,6 @@ class YScalerAndLabelFormatter {
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
 
 class LabelInfo {
-  LabelInfo(this.labelValue, this.parentScaler);
-
   YScalerAndLabelFormatter parentScaler;
 
   /// Unscaled label value, ([labelValues] are on the scale of data).
@@ -315,6 +318,10 @@ class LabelInfo {
   ///
   /// [scaledLabelValue]s are on the scale of y axis length.
   num scaledLabelValue;
+
+  /// Constructs from value at the label, using scaler which keeps dataRange
+  /// and axisRange (min, max).
+  LabelInfo(this.labelValue, this.parentScaler);
 
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
@@ -369,10 +376,9 @@ class Poly {
   int get floorAtMaxPower =>
       (numToDec(coeffAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
 
-  int get ceilAtMaxPower =>
-      ((numToDec(coeffAtMaxPower) + dec('1')) *
+  int get ceilAtMaxPower => ((numToDec(coeffAtMaxPower) + dec('1')) *
           numToDec(math.pow(10, maxPower)))
-          .toInt();
+      .toInt();
 
   /// Position of first significant non zero digit.
   ///
