@@ -12,9 +12,23 @@ import 'package:flutter_charts/src/chart/container.dart'
 /// Most members are mutable so that clients can experiment with different
 /// ways to set text style, until the label fits a predefined allowed size.
 ///
-/// Note: All methods (and constructor) of this class always calls
-///       layout, as a result, [_overflowsMaxWidth] can be always asked,
-///       there is no need to check for "needs layout" or similar.
+/// Notes:
+///   - Instances manage the text to be presented as label,
+///   and create a member [textPainter], instance of [widgets.TextPainter]
+///   from the label. The contained [textPainter] is used for all layout
+///   and painting.
+///   - All methods (and constructor) of this class always call
+///   [textPainter.layout] immediately after a change.
+///   Consequently,  there is no need to check for
+///   a "needs layout" method - the underlying [textPainter]
+///   is always layed out, ready to be painted.
+///   - Because the underlying [textPainter] is always
+///     - Created using [widgets.TextPainter.ellipses]
+///     - Layed out using [textPainter.layout(maxWidth:)]
+///   , the label can **never be painted overflowing it's allocated size
+///   [_labelMaxWidth].
+///   - [isOverflowing] can be asked but this is information only.
+///      .
 class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
@@ -28,7 +42,7 @@ class LabelContainer extends flutter_charts_container.Container {
   // todo -2 add to signature if boundaries overflown
   ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
-  /// Constructs instance for a label, it's text style, and layed out label'
+  /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
   /// Does not set parent container's [_layoutExpansion] and [_parentContainer].
@@ -51,30 +65,41 @@ class LabelContainer extends flutter_charts_container.Container {
       textDirection: _labelStyle.textDirection,
       textAlign: _labelStyle.textAlign, // center in available space
       textScaleFactor: _labelStyle.textScaleFactor,
+      ellipsis: "...", // forces a single line - without it, wraps at width
     ); //  textScaleFactor does nothing ??
 
     // Make sure to call layout - this instance is always "clean"
     //   without need to call layout or introducing _isLayoutNeeded
+    layout();
+  }
+
+  // #####  Implementors of method in superclass [Container].
+
+  /// Implementor of method in superclass [Container].
+  void paint(ui.Canvas canvas) {
+    this.textPainter.paint(canvas, offset);
+  }
+
+  /// Implementor of method in superclass [Container].
+  void layout() {
+    // todo -10 layoutSimple();
+    // todo -10 layoutAndCheckOverflow();
     layoutAndCheckOverflow();
   }
 
-  bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
-    _labelStyle = labelStyle;
-    bool doesOverflow = layoutAndCheckOverflow();
-    return doesOverflow;
-  }
+  // ##### Internal methods
 
   /// Lays out for later painting, the member [_label] text
   /// specifying the maximum allowed width [_labelMaxWidth],
   /// then tests if the label fits the width.
   ///
   /// Returns `true` if label would overflow, `false` otherwise.
-  ///
+  /// todo -10 comment improve
   /// Because the final layout is using
   /// `textPainter.layout(maxWidth: _labelMaxWidth)`,
   /// text overflow if any, will NOT be shown on
   /// the subsequent `textPainter.paint(canvas)` call.
-  /// Label text will be croped.
+  /// Label text will be cropped.
   bool layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
@@ -91,15 +116,15 @@ class LabelContainer extends flutter_charts_container.Container {
     return isOverflowing;
   }
 
-  // #####  Implementors of method in superclass [Container].
-
-  /// Implementor of method in superclass [Container].
-  void paint(ui.Canvas canvas) {
-    this.textPainter.paint(canvas, offset);
+  // todo -4
+  bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
+    _labelStyle = labelStyle;
+    bool doesOverflow = layoutAndCheckOverflow();
+    return doesOverflow;
   }
 
-  /// Implementor of method in superclass [Container].
-  void layout() {
+
+  void layoutSimple() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
   }

@@ -395,7 +395,8 @@ class YContainer extends ChartAreaContainer {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      yLabelContainer.textPainter.layout();
+      // todo -10: yLabelContainer.textPainter.layout();
+      yLabelContainer.layout();
       double labelTopY = yTickY - yLabelContainer.textPainter.height / 2;
 
       yLabelContainer.yTickY = yTickY;
@@ -551,7 +552,8 @@ class XContainer extends ChartAreaContainer {
 
       // core of X layout calcs - lay out label and find middle
       var textPainter = xLabelContainer.textPainter;
-      textPainter.layout();
+      // todo -10: textPainter.layout();
+      xLabelContainer.layout();
 
       double halfLabelWidth = textPainter.width / 2;
       double halfStepWidth = _gridStepWidth / 2;
@@ -572,7 +574,7 @@ class XContainer extends ChartAreaContainer {
 
     // xlabels area without padding
     _xLabelsMaxHeight = _xLabelContainers
-        .map((var xLabelContainer) => xLabelContainer.textPainter)
+        .map((xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
   }
@@ -1004,7 +1006,7 @@ class LegendContainer extends ChartAreaContainer {
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendItemContainer> _legendLabelContainers = new List();
+  List<LegendItemContainer> _legendItemContainers = new List();
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
@@ -1023,7 +1025,7 @@ class LegendContainer extends ChartAreaContainer {
 
   /// Lays out the legend area.
   ///
-  /// Evenly divides available width to all legend items.
+  /// Evenly divides the [availableWidth] to all legend items.
   layout() {
     ChartOptions options = _parentContainer.options;
     List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
@@ -1053,7 +1055,8 @@ class LegendContainer extends ChartAreaContainer {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      labelContainer.textPainter.layout();
+      // todo -10 labelContainer.textPainter.layout();
+      labelContainer.layout();
       widgets.TextPainter textPainter = labelContainer.textPainter;
       maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
           math.max(maxItemSize.height, textPainter.height));
@@ -1073,7 +1076,8 @@ class LegendContainer extends ChartAreaContainer {
         labelStyle: labelStyle,
       );
       widgets.TextPainter textPainter = legendItemContainer.textPainter;
-      textPainter.layout();
+      // todo -10 textPainter.layout();
+      legendItemContainer.layout();
 
       double indicatorX =
           itemSizing.legendItemWidth * index + itemSizing.containerMarginLR;
@@ -1097,7 +1101,7 @@ class LegendContainer extends ChartAreaContainer {
       legendItemContainer._indicatorPaint.color = _parentContainer.data
           .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
-      _legendLabelContainers.add(legendItemContainer);
+      _legendItemContainers.add(legendItemContainer);
     }
   }
 
@@ -1105,7 +1109,7 @@ class LegendContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _legendLabelContainers.forEach((LegendItemContainer legendItemContainer) {
+    _legendItemContainers.forEach((LegendItemContainer legendItemContainer) {
       legendItemContainer.applyParentOffset(offset);
     });
   }
@@ -1115,12 +1119,12 @@ class LegendContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    for (var legendItemContainer in _legendLabelContainers) {
+    for (var legendItemContainer in _legendItemContainers) {
       legendItemContainer.paint(canvas);
     }
   }
 
-  /// todo -4 finish and document
+  /// todo -3 finish and document
 /*
   List<LegendLabelContainer> overflownLabelContainers() {
     this.outputs.where((output) {output.labelContainer.})
@@ -1344,6 +1348,7 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
     }).toList();
   }
 
+/* todo -10 put this section back
   /// Provides methods to
   ///   - Layout individual [labelContainers], for the purpose of
   ///   finding if they overflow their even size width.
@@ -1395,9 +1400,10 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
       labelContainer.applyStyleThenLayoutAndCheckOverflow(
           labelStyle: labelStyle);
     });
-    // todo -4: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelContainers.any((labelContainer) {labelContainer.isOverflowing;});
+    // todo -3: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelContainers.any((labelContainer) {labelContainer.isOverflowing;});
     return false;
   }
+  */
 }
 
 /// Represents values and coordinates of one presented atom of data (x and y).

@@ -295,14 +295,9 @@ Result vertical bar chart:
 - [ ] 
 * Enhancements in progress or planned
 ** Enhancements:
-*** TODO Define order of layout in chart top container:
+*** TextPainter notes
 
-///
-/// Out of calls to all container's [layout] by the parent
-/// [ChartContainer.layout], the call to this object's [layout] is second,
-/// after [LegendContainer.layout].
-*** IN-PROGRESS Put all chart elements on the base class Container
-
+If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
 
 *** IN-PROGRESS Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
 
