@@ -59,8 +59,7 @@ abstract class ChartContainer {
   ui.Size chartArea;
 
   /// Base Areas of chart.
-// todo -10  LegendContainer legendContainer;
-  LegendContainerNew legendContainer;
+  LegendContainer legendContainer;
   YContainer yContainer;
   XContainer xContainer;
   DataContainer dataContainer;
@@ -100,19 +99,7 @@ abstract class ChartContainer {
     setupPointsColumns();
 
     // ### 2. Layout the legends on top
-
-    /* todo -10:
     legendContainer = new LegendContainer(
-      parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width,
-          widthExpansionStyle: ExpansionStyle.TryFill,
-          height: chartArea.height,
-          heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
-    );
-     */
-
-    legendContainer = new LegendContainerNew(
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
@@ -718,16 +705,13 @@ class LayoutExpansion {
 
   LayoutExpansion cloneWith({double width, double height}) {
     height ??= _height;
-    width  ?? _width;
+    width ?? _width;
     return new LayoutExpansion(
-      width: width,
-      widthExpansionStyle: _widthExpansionStyle,
-      height: height,
-      heightExpansionStyle: _heightExpansionStyle
-    );
+        width: width,
+        widthExpansionStyle: _widthExpansionStyle,
+        height: height,
+        heightExpansionStyle: _heightExpansionStyle);
   }
-
-
 }
 
 /// Base class which manages, lays out, moves, and paints
@@ -1028,225 +1012,11 @@ class GridLinesContainer extends Container {
   ui.Size get layoutSize => throw new StateError("todo -3 implement this.");
 }
 
-/// Lays out the legend area for the chart.
-///
-/// The legend area contains individual legend items. Each legend item
-/// has a color square and text, which describes one data row (that is,
-/// one data series).
-///
-/// Currently, each individual legend item is given the same size, so legends
-/// texts should be short.
-///
-/// This [ChartAreaContainer] operates as follows:
-/// - Horizontally available space is all used (filled).
-/// - Vertically available space is used only as much as needed.
-/// The used amount is given by the maximum label or series indicator height,
-/// plus extra spacing.
-
-class LegendContainer extends ChartAreaContainer {
-  // todo -9 delete
-  /// Offset-free size contains the whole layed out area of legend.
-  double _layoutHeight;
-
-  // ### calculated values
-
-  /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendItemContainer> _legendItemContainers = new List();
-
-  /// Constructs the container that holds the data series legends labels and
-  /// color indicators.
-  ///
-  /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
-  LegendContainer({
-    ChartContainer parentContainer,
-    LayoutExpansion layoutExpansion,
-    double availableWidth,
-  })
-      : super(
-          layoutExpansion: layoutExpansion,
-          parentContainer: parentContainer,
-        );
-
-  /// Lays out the legend area.
-  ///
-  /// Evenly divides the [availableWidth] to all legend items.
-  layout() {
-    ChartOptions options = _parentContainer.options;
-    List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
-    LegendItemSizing itemSizing = new LegendItemSizing(
-      options: options,
-      availableWidth: _layoutExpansion._width,
-      numLegendItems: dataRowsLegends.length,
-    );
-
-    // todo -3 Call the layoutUntilFitsParent here
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = new LabelStyle(
-      textStyle: options.labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
-      textScaleFactor: options.labelTextScaleFactor,
-    );
-
-    // First paint all legends, to figure out max height of legends to center all
-    // legends label around common center.
-    // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
-
-    var maxItemSize = ui.Size.zero;
-    for (var index = 0; index < dataRowsLegends.length; index++) {
-      LabelContainer labelContainer = new LabelContainer(
-        label: dataRowsLegends[index],
-        labelMaxWidth: double.INFINITY,
-        labelStyle: labelStyle,
-      );
-      labelContainer.layout();
-      widgets.TextPainter textPainter = labelContainer.textPainter;
-      maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
-          math.max(maxItemSize.height, textPainter.height));
-    }
-
-    // Now we know legend container height (width is unused)
-    _layoutHeight = math.max(maxItemSize.height, itemSizing.indicatorHeight) +
-        2 * itemSizing.containerMarginTB;
-
-    // Layout legend core: for each row, create and position
-    //   - an indicator rectangle and it's paint
-    //   - label painter
-    for (var index = 0; index < dataRowsLegends.length; index++) {
-      var legendItemContainer = new LegendItemContainer(
-        label: dataRowsLegends[index],
-        labelMaxWidth: double.INFINITY,
-        labelStyle: labelStyle,
-      );
-      widgets.TextPainter textPainter = legendItemContainer.textPainter;
-      legendItemContainer.layout();
-
-      double indicatorX =
-          itemSizing.legendItemWidth * index + itemSizing.containerMarginLR;
-
-      // height-wise center both indicatorRect and label around common
-      // middle in  _size.height / 2
-      double indicatorTop = (_layoutHeight - itemSizing.indicatorHeight) / 2;
-      legendItemContainer._indicatorRect = new ui.Offset(
-              indicatorX, indicatorTop) &
-          new ui.Size(itemSizing.indicatorWidth, itemSizing.indicatorHeight);
-
-      double labelLeftX = indicatorX +
-          itemSizing.indicatorWidth +
-          itemSizing.indicatorToLabelPad;
-
-      double labelTopY = (_layoutHeight - textPainter.height) / 2;
-      legendItemContainer
-          .applyParentOffset(new ui.Offset(labelLeftX, labelTopY));
-
-      legendItemContainer._indicatorPaint = new ui.Paint();
-      legendItemContainer._indicatorPaint.color = _parentContainer.data
-          .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
-
-      _legendItemContainers.add(legendItemContainer);
-    }
-  }
-
-  void applyParentOffset(ui.Offset offset) {
-    // super not really needed - only child containers are offset.
-    super.applyParentOffset(offset);
-
-    _legendItemContainers.forEach((LegendItemContainer legendItemContainer) {
-      legendItemContainer.applyParentOffset(offset);
-    });
-  }
-
-  ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion._width, _layoutHeight);
-  }
-
-  void paint(ui.Canvas canvas) {
-    for (var legendItemContainer in _legendItemContainers) {
-      legendItemContainer.paint(canvas);
-    }
-  }
-
-  /// todo -3 finish and document
-/*
-  List<LegendLabelContainer> overflownLabelContainers() {
-    this.outputs.where((output) {output.labelContainer.})
-  }
-  */
-}
-
-/// A value class, manages the maximum boundaries of one legend item :
-/// one color square + legend text.
-class LegendItemSizing {
-  // todo -9 delete
-  ChartOptions _options;
-  double _availableWidth;
-  int _numLegendItems;
-
-  /// Maximum boundaries of one legend item : one color square + legend text
-  LegendItemSizing({
-    ChartOptions options,
-    double availableWidth,
-    int numLegendItems,
-  }) {
-    _options = options;
-    _availableWidth = availableWidth;
-    _numLegendItems = numLegendItems;
-  }
-
-  double get indicatorToLabelPad => _options.legendColorIndicatorPaddingLR;
-
-  double get indicatorWidth => _options.legendColorIndicatorWidth;
-
-  double get indicatorHeight => indicatorWidth;
-
-  double get containerMarginTB => _options.legendContainerMarginTB;
-
-  double get containerMarginLR => _options.legendContainerMarginLR;
-
-// todo -10 move this to LegendContainerNew and pass to LegendItemContainerNew
-// todo -10      this should be layoutExpansion.width
-// Allocated width of one color square + legend text (one legend item)
-  double get legendItemWidth =>
-      (_availableWidth - 2 * containerMarginLR) / _numLegendItems;
-
-  // Allocated width of one legend text
-  double get legendLabelWidth =>
-      legendItemWidth - (indicatorWidth + 2 * containerMarginLR);
-}
-
-/// Represents one layed out item of the legend:  The rectangle for the color
-/// indicator, [_indicatorRect], followed by the series label text.
-class LegendItemContainer extends LabelContainer {
-  ///  rectangle of the legend color square series indicator
-  ui.Rect _indicatorRect;
-
-  /// Paint used to paint the indicator
-  ui.Paint _indicatorPaint;
-
-  LegendItemContainer({
-    String label,
-    double labelMaxWidth,
-    LabelStyle labelStyle,
-  })
-      : super(
-          label: label,
-          labelMaxWidth: labelMaxWidth,
-          labelStyle: labelStyle,
-        );
-
-  /// Overriden super's [paint] to also paint the rectangle indicator square.
-  void paint(ui.Canvas canvas) {
-    this.textPainter.paint(canvas, _offset);
-    canvas.drawRect(_indicatorRect, _indicatorPaint);
-  }
-}
-
 // vvv ////////////////////////////////////////////////////////////////////////////
 
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
-class LegendItemContainerNew extends Container {
+class LegendItemContainer extends Container {
   /// Container of label
   LabelContainer _labelContainer;
 
@@ -1258,94 +1028,93 @@ class LegendItemContainerNew extends Container {
 
   ChartOptions _options;
 
-  double squareSize; // todo -10 make private RENAME to indicatorSquareSide
-
-  double indicatorToLabelPad; // todo -10 make private
-
-  double indicatorX; // todo -10 make private
-  double containerMarginTB;
-
-  double containerMarginLR;
-
-  get labelMaxWidth =>
-      _layoutExpansion.width -
-      (2 * containerMarginLR + squareSize + indicatorToLabelPad);
-
+  LabelStyle _labelStyle;
+  String _label;
   ui.Size _layoutSize;
 
-  LegendItemContainerNew({
+  LegendItemContainer({
     String label,
-    // todo -10 double labelMaxWidth,
     LabelStyle labelStyle,
     ui.Paint indicatorPaint,
     ChartOptions options,
-    LayoutExpansion layoutExpansion, // todo -10 set in parent
+    LayoutExpansion layoutExpansion,
     ChartContainer parentContainer,
   })
       : super(
           layoutExpansion: layoutExpansion,
-          // todo -9 not needed here? parentContainer: parentContainer,
         ) {
-    _options = options;
-    squareSize = _options.legendColorIndicatorWidth;
-    indicatorToLabelPad = _options.legendColorIndicatorPaddingLR;
-    containerMarginTB = _options.legendContainerMarginTB;
-    containerMarginLR = _options.legendContainerMarginLR;
-    _labelContainer = new LabelContainer(
-      label: label,
-      // todo -10  labelMaxWidth: labelMaxWidth,
-      labelMaxWidth: labelMaxWidth,
-      labelStyle: labelStyle,
-    );
-    indicatorX = _options.legendContainerMarginLR;
+
+    // We want to only create as much as we can in layout for clarity,
+    // as a price, need to hold on on label and style from constructor
+    _label = label;
+    _labelStyle = labelStyle;
     _indicatorPaint = indicatorPaint;
     _options = options;
-    _layoutExpansion = layoutExpansion; // todo -10 move to parent
+    _layoutExpansion = layoutExpansion;
+
     // There is no need to create the _indicatorRect in the constructor,
     // as layout will move it, recreating it.
     // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
   void layout() {
-    // Layout the legend item flowing from the left:
-    //   layout the _labelContainer - this also provides height
-    //   Create the _indicatorRect.
-    //   Place the _indicatorRect on the left, with left pad
-    //   Place _labelContainer next.
-    //   Center _labelContainer and _indicatorRect
+
+    // Save a few repeated values, calculated the width giben to LabelContainer,
+    //   and create the LabelContainer.
+    double indicatorSquareSide = _options.legendColorIndicatorWidth;
+    double indicatorToLabelPad = _options.legendColorIndicatorPaddingLR;
+    double containerMarginTB = _options.legendContainerMarginTB;
+    double containerMarginLR = _options.legendContainerMarginLR;
+    double labelMaxWidth = _layoutExpansion.width -
+      (2 * containerMarginLR + indicatorSquareSide + indicatorToLabelPad);
+
+    _labelContainer = new LabelContainer(
+      label: _label,
+      labelMaxWidth: labelMaxWidth,
+      labelStyle: _labelStyle,
+    );
+
+    // Layout legend item elements (indicator, pad, label) flowing from left:
+
+    // 1. layout the _labelContainer - this also provides height
     _labelContainer.layout();
 
     ui.Size labelContainerSize = _labelContainer.layoutSize;
-    // Place the indicator and label on same horizontal Y level
+    // 2. Y Center the indicator and label on same horizontal Y level
     //   ind stands for "indicator" - the series color indicator square
     double indAndLabelCenterY = math.max(
           labelContainerSize.height,
-          squareSize,
+          indicatorSquareSide,
         ) /
         2.0;
-    double indOffsetY = indAndLabelCenterY - squareSize / 2.0;
+    double indOffsetY = indAndLabelCenterY - indicatorSquareSide / 2.0;
     double labelOffsetY = indAndLabelCenterY - labelContainerSize.height / 2.0;
 
     // Add Padding of this container to both indicator and label Y positions
     indOffsetY += containerMarginTB;
     labelOffsetY += containerMarginTB;
 
-    // Calc the X offset to both indicator and label
+    // 3. Calc the X offset to both indicator and label, so indicator is left,
+    //    then padding, then the label
     double indOffsetX = containerMarginLR;
-    double labelOffsetX = indOffsetX + squareSize + indicatorToLabelPad;
+    double labelOffsetX = indOffsetX + indicatorSquareSide + indicatorToLabelPad;
 
+    // 4. Create the indicator square, and place it within this container
+    //   (this is applyParentOffset for the indicator, if it was an object)
     _indicatorRect = new ui.Rect.fromLTWH(
       indOffsetX,
       indOffsetY,
-      squareSize,
-      squareSize,
+      indicatorSquareSide,
+      indicatorSquareSide,
     );
+
+    // 5. Place the label within this container
     _labelContainer.applyParentOffset(new ui.Offset(
       labelOffsetX,
       labelOffsetY,
     ));
 
-    // And store the height on member
+    // 6. And store the height on member
     _layoutSize = new ui.Size(
       2 * containerMarginLR +
           _indicatorRect.width +
@@ -1356,27 +1125,17 @@ class LegendItemContainerNew extends Container {
     );
 
     // Make sure we fit all available width
-    /* todo -9 this fails
-    assert((_layoutSize.width - _layoutExpansion.width).abs() <
-        1.0); // todo -3 within epsilon
-    */
-
-    // todo -10 move to parent caller _indicatorPaint = new ui.Paint();
-    // todo -10 move to parent caller vv
-    //this._indicatorPaint.color = _parentContainer.data
-    //    .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
+    assert(_layoutExpansion.width + 1.0 >= _layoutSize.width);  // todo -3 within epsilon
   }
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-// todo -10    this.textPainter.paint(canvas, _offset);
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
-    // todo -10
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
     _labelContainer.applyParentOffset(offset);
   }
@@ -1399,21 +1158,19 @@ class LegendItemContainerNew extends Container {
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
 
-class LegendContainerNew extends ChartAreaContainer {
-  /// Offset-free size contains the whole layed out area of legend.
-  double _layoutHeight;
+class LegendContainer extends ChartAreaContainer {
 
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  List<LegendItemContainerNew> _legendItemContainers = new List();
+  List<LegendItemContainer> _legendItemContainers;
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   ///
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
-  LegendContainerNew({
+  LegendContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
     double availableWidth,
@@ -1429,11 +1186,6 @@ class LegendContainerNew extends ChartAreaContainer {
   layout() {
     ChartOptions options = _parentContainer.options;
     List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
-    LegendItemSizing itemSizing = new LegendItemSizing(
-      options: options,
-      availableWidth: _layoutExpansion._width,
-      numLegendItems: dataRowsLegends.length,
-    );
 
     // todo -3 Call the layoutUntilFitsParent here
     // Initially all [LabelContainer]s share same text style object from options.
@@ -1448,26 +1200,9 @@ class LegendContainerNew extends ChartAreaContainer {
     // legends label around common center.
     // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
 
-// todo -10 this loop vvvv seem NOT NEEDED
-
-    var maxItemSize = ui.Size.zero;
-    for (var index = 0; index < dataRowsLegends.length; index++) {
-      LabelContainer labelContainer = new LabelContainer(
-        label: dataRowsLegends[index],
-        labelMaxWidth: double.INFINITY,
-        labelStyle: labelStyle,
-      );
-      labelContainer.layout();
-      widgets.TextPainter textPainter = labelContainer.textPainter;
-      maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
-          math.max(maxItemSize.height, textPainter.height));
-    }
-    // Now we know legend container height (width is unused)
-    _layoutHeight = math.max(maxItemSize.height, itemSizing.indicatorHeight) +
-        2 * itemSizing.containerMarginTB;
-// todo -10 ^^^^
-
     double legendItemWidth = layoutExpansion.width / dataRowsLegends.length;
+
+    _legendItemContainers = new List<LegendItemContainer>();
 
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
@@ -1477,14 +1212,14 @@ class LegendContainerNew extends ChartAreaContainer {
       indicatorPaint.color = _parentContainer.data
           .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
-      var legendItemContainer = new LegendItemContainerNew(
+      var legendItemContainer = new LegendItemContainer(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
         indicatorPaint: indicatorPaint,
         options: options,
         layoutExpansion: this.layoutExpansion.cloneWith(
-          width: legendItemWidth,
-        ),
+              width: legendItemWidth,
+            ),
       );
 
       legendItemContainer.layout();
@@ -1504,13 +1239,18 @@ class LegendContainerNew extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _legendItemContainers.forEach((LegendItemContainerNew legendItemContainer) {
+    _legendItemContainers.forEach((LegendItemContainer legendItemContainer) {
       legendItemContainer.applyParentOffset(offset);
     });
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion._width, _layoutHeight);
+    return new ui.Size(
+      _layoutExpansion._width,
+      _legendItemContainers
+          .map((legendItemContainer) => legendItemContainer.layoutSize.height)
+          .reduce(math.max),
+    );
   }
 
   void paint(ui.Canvas canvas) {
@@ -1681,7 +1421,7 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
     }).toList();
   }
 
-/* todo -10 put this section back
+/* todo -4 put this section back
   /// Provides methods to
   ///   - Layout individual [labelContainers], for the purpose of
   ///   finding if they overflow their even size width.
