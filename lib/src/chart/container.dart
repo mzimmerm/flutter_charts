@@ -1012,8 +1012,6 @@ class GridLinesContainer extends Container {
   ui.Size get layoutSize => throw new StateError("todo -3 implement this.");
 }
 
-// vvv ////////////////////////////////////////////////////////////////////////////
-
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
 class LegendItemContainer extends Container {
@@ -1043,7 +1041,6 @@ class LegendItemContainer extends Container {
       : super(
           layoutExpansion: layoutExpansion,
         ) {
-
     // We want to only create as much as we can in layout for clarity,
     // as a price, need to hold on on label and style from constructor
     _label = label;
@@ -1058,15 +1055,13 @@ class LegendItemContainer extends Container {
   }
 
   void layout() {
-
     // Save a few repeated values, calculated the width giben to LabelContainer,
     //   and create the LabelContainer.
     double indicatorSquareSide = _options.legendColorIndicatorWidth;
-    double indicatorToLabelPad = _options.legendColorIndicatorPaddingLR;
-    double containerMarginTB = _options.legendContainerMarginTB;
-    double containerMarginLR = _options.legendContainerMarginLR;
+    double indicatorToLabelPad = _options.legendItemIndicatorToLabelPad;
+    double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
     double labelMaxWidth = _layoutExpansion.width -
-      (2 * containerMarginLR + indicatorSquareSide + indicatorToLabelPad);
+        (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
 
     _labelContainer = new LabelContainer(
       label: _label,
@@ -1090,14 +1085,11 @@ class LegendItemContainer extends Container {
     double indOffsetY = indAndLabelCenterY - indicatorSquareSide / 2.0;
     double labelOffsetY = indAndLabelCenterY - labelContainerSize.height / 2.0;
 
-    // Add Padding of this container to both indicator and label Y positions
-    indOffsetY += containerMarginTB;
-    labelOffsetY += containerMarginTB;
-
     // 3. Calc the X offset to both indicator and label, so indicator is left,
     //    then padding, then the label
-    double indOffsetX = containerMarginLR;
-    double labelOffsetX = indOffsetX + indicatorSquareSide + indicatorToLabelPad;
+    double indOffsetX = 0.0; // indicator starts on the left
+    double labelOffsetX =
+        indOffsetX + indicatorSquareSide + indicatorToLabelPad;
 
     // 4. Create the indicator square, and place it within this container
     //   (this is applyParentOffset for the indicator, if it was an object)
@@ -1114,18 +1106,21 @@ class LegendItemContainer extends Container {
       labelOffsetY,
     ));
 
-    // 6. And store the height on member
+    // 6. And store the layout size on member
     _layoutSize = new ui.Size(
-      2 * containerMarginLR +
-          _indicatorRect.width +
+      _indicatorRect.width +
           indicatorToLabelPad +
-          _labelContainer.layoutSize.width,
-      math.max(labelContainerSize.height, _indicatorRect.height) +
-          2 * containerMarginTB,
+          _labelContainer.layoutSize.width +
+          betweenLegendItemsPadding,
+      math.max(
+        labelContainerSize.height,
+        _indicatorRect.height,
+      ),
     );
 
     // Make sure we fit all available width
-    assert(_layoutExpansion.width + 1.0 >= _layoutSize.width);  // todo -3 within epsilon
+    assert(_layoutExpansion.width + 1.0 >=
+        _layoutSize.width); // todo -3 within epsilon
   }
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
@@ -1159,11 +1154,12 @@ class LegendItemContainer extends Container {
 /// plus extra spacing.
 
 class LegendContainer extends ChartAreaContainer {
-
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
   List<LegendItemContainer> _legendItemContainers;
+
+  ui.Size _layoutSize;
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
@@ -1185,6 +1181,9 @@ class LegendContainer extends ChartAreaContainer {
   /// Evenly divides the [availableWidth] to all legend items.
   layout() {
     ChartOptions options = _parentContainer.options;
+    double containerMarginTB = options.legendContainerMarginTB;
+    double containerMarginLR = options.legendContainerMarginLR;
+
     List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
 
     // todo -3 Call the layoutUntilFitsParent here
@@ -1192,7 +1191,7 @@ class LegendContainer extends ChartAreaContainer {
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
       textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
+      textAlign: options.legendTextAlign, // keep left, close to indicator
       textScaleFactor: options.labelTextScaleFactor,
     );
 
@@ -1200,7 +1199,8 @@ class LegendContainer extends ChartAreaContainer {
     // legends label around common center.
     // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
 
-    double legendItemWidth = layoutExpansion.width / dataRowsLegends.length;
+    double legendItemWidth = (layoutExpansion.width - 2.0 * containerMarginLR) /
+        dataRowsLegends.length;
 
     _legendItemContainers = new List<LegendItemContainer>();
 
@@ -1226,13 +1226,22 @@ class LegendContainer extends ChartAreaContainer {
 
       legendItemContainer.applyParentOffset(
         new ui.Offset(
-          index * legendItemWidth,
-          0.0,
+          containerMarginLR + index * legendItemWidth,
+          containerMarginTB,
         ),
       );
 
       _legendItemContainers.add(legendItemContainer);
     }
+
+    _layoutSize = new ui.Size(
+      _layoutExpansion._width,
+      _legendItemContainers
+              .map((legendItemContainer) =>
+                  legendItemContainer.layoutSize.height)
+              .reduce(math.max) +
+          (2.0 * containerMarginTB),
+    );
   }
 
   void applyParentOffset(ui.Offset offset) {
@@ -1245,12 +1254,7 @@ class LegendContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(
-      _layoutExpansion._width,
-      _legendItemContainers
-          .map((legendItemContainer) => legendItemContainer.layoutSize.height)
-          .reduce(math.max),
-    );
+    return _layoutSize;
   }
 
   void paint(ui.Canvas canvas) {
@@ -1266,8 +1270,6 @@ class LegendContainer extends ChartAreaContainer {
   }
   */
 }
-
-// ^^^ ////////////////////////////////////////////////////////////////////////////
 
 /// Lays out a list of labels horizontally,
 /// makes labels evenly sized, and evenly spaced.

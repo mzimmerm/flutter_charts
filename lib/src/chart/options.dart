@@ -57,14 +57,26 @@ class ChartOptions {
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
   double yLabelsPadLR = 6.0;
 
-  /// Series color indicator size - the "Series color indicator"
-  /// is the square that shows the color of each dataRow
-  /// (color of lines or bars)
-  /// together with data series name (legend name).
+  // Series color indicator size - the "Series color indicator"
+  // is the square that shows the color of each dataRow
+  // (color of lines or bars)
+  // together with data series name (legend name).
+
+  /// Margin on the left/right of the LegendContainer
+  double legendContainerMarginLR = 8.0; // keep 12.0, looks better unaligned
+
+  /// Margin on the top/bottom of the LegendContainer
+  double legendContainerMarginTB = 4.0;
+
+  /// Between each legend item pairs (indicator + label)
+  double betweenLegendItemsPadding = 4.0;
+
+  /// Width of the colored square, indicator of each dataRow
   double legendColorIndicatorWidth = 20.0;
-  double legendColorIndicatorPaddingLR = 1.0;
-  double legendContainerMarginLR = 12.0; // keep 12.0, looks better unaligned
-  double legendContainerMarginTB = 6.0;
+
+  /// Between square indicator, to label
+  double legendItemIndicatorToLabelPad = 2.0;
+
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
@@ -91,6 +103,7 @@ class ChartOptions {
 
   ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
   ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
+  ui.TextAlign     legendTextAlign      = ui.TextAlign.left; // indicator close
   double           labelTextScaleFactor = 1.0;
 
   /// todo -1 remove, replace with formatter outright
