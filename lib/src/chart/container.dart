@@ -59,7 +59,8 @@ abstract class ChartContainer {
   ui.Size chartArea;
 
   /// Base Areas of chart.
-  LegendContainer legendContainer;
+// todo -10  LegendContainer legendContainer;
+  LegendContainerNew legendContainer;
   YContainer yContainer;
   XContainer xContainer;
   DataContainer dataContainer;
@@ -93,7 +94,6 @@ abstract class ChartContainer {
   }
 
   layout() {
-
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -101,7 +101,18 @@ abstract class ChartContainer {
 
     // ### 2. Layout the legends on top
 
+    /* todo -10:
     legendContainer = new LegendContainer(
+      parentContainer: this,
+      layoutExpansion: new LayoutExpansion(
+          width: chartArea.width,
+          widthExpansionStyle: ExpansionStyle.TryFill,
+          height: chartArea.height,
+          heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
+    );
+     */
+
+    legendContainer = new LegendContainerNew(
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
@@ -197,7 +208,6 @@ abstract class ChartContainer {
 
     dataContainer.layout();
     dataContainer.applyParentOffset(dataContainerOffset);
-
   }
 
   /// Create member [pointsColumns] from [data.dataRows].
@@ -285,7 +295,7 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = _layoutExpansion.height -
+    double yAxisMin = _layoutExpansion._height -
         (_parentContainer.options.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
@@ -395,7 +405,6 @@ class YContainer extends ChartAreaContainer {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      // todo -10: yLabelContainer.textPainter.layout();
       yLabelContainer.layout();
       double labelTopY = yTickY - yLabelContainer.textPainter.height / 2;
 
@@ -420,7 +429,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_yLabelsContainerWidth, _layoutExpansion.height);
+    return new ui.Size(_yLabelsContainerWidth, _layoutExpansion._height);
   }
 
   void paint(ui.Canvas canvas) {
@@ -528,7 +537,7 @@ class XContainer extends ChartAreaContainer {
         _parentContainer.options.yRightMinTicksWidth;
 
     double labelMaxAllowedWidth =
-        (_layoutExpansion.width - yTicksWidth) / xLabels.length;
+        (_layoutExpansion._width - yTicksWidth) / xLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
 
@@ -552,7 +561,6 @@ class XContainer extends ChartAreaContainer {
 
       // core of X layout calcs - lay out label and find middle
       var textPainter = xLabelContainer.textPainter;
-      // todo -10: textPainter.layout();
       xLabelContainer.layout();
 
       double halfLabelWidth = textPainter.width / 2;
@@ -592,7 +600,7 @@ class XContainer extends ChartAreaContainer {
     // todo 0-layout check this, fix layout sizes
     var options = _parentContainer.options;
     return new ui.Size(
-        _layoutExpansion.width, _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
+        _layoutExpansion._width, _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
   }
 
   void paint(ui.Canvas canvas) {
@@ -607,7 +615,6 @@ class XContainer extends ChartAreaContainer {
 ///
 /// All positions are relative to the left of the container of x labels
 class XLabelContainer extends LabelContainer {
-
   /// The X position of point that should
   /// show a "tick dash" for the label center on the x axis.
   ///
@@ -664,23 +671,63 @@ enum ExpansionStyle { TryFill, GrowDoNotFill }
 ///
 ///
 class LayoutExpansion {
-  double width;
-  ExpansionStyle widthExpansionStyle;
-  double height;
-  ExpansionStyle heightExpansionStyle;
+  double _width;
+  ExpansionStyle _widthExpansionStyle;
+  double _height;
+  ExpansionStyle _heightExpansionStyle;
 
-  LayoutExpansion(
-      {this.width,
-      this.widthExpansionStyle,
-      this.height,
-      this.heightExpansionStyle}) {
-    if (this.width <= 0.0) {
-      throw new StateError("Invalid width $width");
+  LayoutExpansion({
+    double width,
+    ExpansionStyle widthExpansionStyle,
+    double height,
+    ExpansionStyle heightExpansionStyle,
+  }) {
+    _width = width;
+    _widthExpansionStyle = widthExpansionStyle;
+    _height = height;
+    _heightExpansionStyle = heightExpansionStyle;
+    if (this._width <= 0.0) {
+      throw new StateError("Invalid width $_width");
     }
-    if (this.height <= 0.0) {
-      throw new StateError("Invalid height $height");
+    if (this._height <= 0.0) {
+      throw new StateError("Invalid height $_height");
     }
   }
+
+  double get height {
+    if (_heightExpansionStyle != ExpansionStyle.TryFill) {
+      throw new StateError(
+          "Before layout, cannot ask for height if style is not ${ExpansionStyle
+              .TryFill}. " +
+              "If asking after layout, call [layoutSize]");
+    }
+
+    return _height;
+  }
+
+  double get width {
+    if (_widthExpansionStyle != ExpansionStyle.TryFill) {
+      throw new StateError(
+          "Before layout, cannot ask for width if style is not ${ExpansionStyle
+              .TryFill}. " +
+              "If asking after layout, call [layoutSize]");
+    }
+
+    return _width;
+  }
+
+  LayoutExpansion cloneWith({double width, double height}) {
+    height ??= _height;
+    width  ?? _width;
+    return new LayoutExpansion(
+      width: width,
+      widthExpansionStyle: _widthExpansionStyle,
+      height: height,
+      heightExpansionStyle: _heightExpansionStyle
+    );
+  }
+
+
 }
 
 /// Base class which manages, lays out, moves, and paints
@@ -715,8 +762,16 @@ abstract class Container {
     _layoutExpansion = layoutExpansion;
   }
 
+  // ##### Abstract methods to implement
+
   void layout();
 
+  void paint(ui.Canvas canvas);
+
+  /// Allow a parent container to move this Container.
+  ///
+  /// Override if parent move needs to propagate to internals of
+  /// this [Container].
   void applyParentOffset(ui.Offset offset) {
     _offset += offset;
   }
@@ -735,26 +790,15 @@ abstract class Container {
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
   double get containerHeight {
-    if (layoutExpansion.heightExpansionStyle != ExpansionStyle.TryFill) {
-      throw new StateError(
-          "Before layout, cannot ask for height if style is not ${ExpansionStyle.TryFill}. " +
-              "If asking after layout, call [layoutSize]");
-    }
-
     return layoutExpansion.height;
   }
 
   double get containerWidth {
-    if (layoutExpansion.widthExpansionStyle != ExpansionStyle.TryFill) {
-      throw new StateError(
-          "Before layout, cannot ask for width if style is not ${ExpansionStyle.TryFill}. " +
-              "If asking after layout, call [layoutSize]");
-    }
-
     return layoutExpansion.width;
   }
 
-  void paint(ui.Canvas canvas);
+// todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
+
 }
 
 /// Base class which manages, lays out, moves, and paints
@@ -875,7 +919,7 @@ class DataContainer extends ChartAreaContainer {
     chartContainer.yTickYs.forEach((yTickY) {
       LineContainer xLineContainer = new LineContainer(
           lineFrom: new ui.Offset(0.0, yTickY),
-          lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
+          lineTo: new ui.Offset(this._layoutExpansion._width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
@@ -892,7 +936,7 @@ class DataContainer extends ChartAreaContainer {
     // draw vertical grid
     this._yGridLinesContainer.applyParentOffset(offset);
 
-    // Apply offset of lines and bars.
+    // Apply offset to lines and bars.
     parentContainer.pointsColumns.applyParentOffset(offset);
 
     // Any time offset of [_chartContainer.pointsColumns] has changed,
@@ -902,7 +946,7 @@ class DataContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+    return new ui.Size(_layoutExpansion._width, _layoutExpansion._height);
   }
 
   void paint(ui.Canvas canvas) {
@@ -1000,6 +1044,7 @@ class GridLinesContainer extends Container {
 /// plus extra spacing.
 
 class LegendContainer extends ChartAreaContainer {
+  // todo -9 delete
   /// Offset-free size contains the whole layed out area of legend.
   double _layoutHeight;
 
@@ -1031,7 +1076,7 @@ class LegendContainer extends ChartAreaContainer {
     List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
     LegendItemSizing itemSizing = new LegendItemSizing(
       options: options,
-      availableWidth: _layoutExpansion.width,
+      availableWidth: _layoutExpansion._width,
       numLegendItems: dataRowsLegends.length,
     );
 
@@ -1055,7 +1100,6 @@ class LegendContainer extends ChartAreaContainer {
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
-      // todo -10 labelContainer.textPainter.layout();
       labelContainer.layout();
       widgets.TextPainter textPainter = labelContainer.textPainter;
       maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
@@ -1076,7 +1120,6 @@ class LegendContainer extends ChartAreaContainer {
         labelStyle: labelStyle,
       );
       widgets.TextPainter textPainter = legendItemContainer.textPainter;
-      // todo -10 textPainter.layout();
       legendItemContainer.layout();
 
       double indicatorX =
@@ -1091,7 +1134,7 @@ class LegendContainer extends ChartAreaContainer {
 
       double labelLeftX = indicatorX +
           itemSizing.indicatorWidth +
-          itemSizing.indicatorToLegendPad;
+          itemSizing.indicatorToLabelPad;
 
       double labelTopY = (_layoutHeight - textPainter.height) / 2;
       legendItemContainer
@@ -1115,7 +1158,7 @@ class LegendContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion.width, _layoutHeight);
+    return new ui.Size(_layoutExpansion._width, _layoutHeight);
   }
 
   void paint(ui.Canvas canvas) {
@@ -1135,6 +1178,7 @@ class LegendContainer extends ChartAreaContainer {
 /// A value class, manages the maximum boundaries of one legend item :
 /// one color square + legend text.
 class LegendItemSizing {
+  // todo -9 delete
   ChartOptions _options;
   double _availableWidth;
   int _numLegendItems;
@@ -1150,7 +1194,7 @@ class LegendItemSizing {
     _numLegendItems = numLegendItems;
   }
 
-  double get indicatorToLegendPad => _options.legendColorIndicatorPaddingLR;
+  double get indicatorToLabelPad => _options.legendColorIndicatorPaddingLR;
 
   double get indicatorWidth => _options.legendColorIndicatorWidth;
 
@@ -1160,7 +1204,9 @@ class LegendItemSizing {
 
   double get containerMarginLR => _options.legendContainerMarginLR;
 
-  // Allocated width of one color square + legend text (one legend item)
+// todo -10 move this to LegendContainerNew and pass to LegendItemContainerNew
+// todo -10      this should be layoutExpansion.width
+// Allocated width of one color square + legend text (one legend item)
   double get legendItemWidth =>
       (_availableWidth - 2 * containerMarginLR) / _numLegendItems;
 
@@ -1195,6 +1241,293 @@ class LegendItemContainer extends LabelContainer {
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 }
+
+// vvv ////////////////////////////////////////////////////////////////////////////
+
+/// Represents one layed out item of the legend:  The rectangle for the color
+/// indicator, [_indicatorRect], followed by the series label text.
+class LegendItemContainerNew extends Container {
+  /// Container of label
+  LabelContainer _labelContainer;
+
+  /// Tectangle of the legend color square series indicator
+  ui.Rect _indicatorRect;
+
+  /// Paint used to paint the indicator
+  ui.Paint _indicatorPaint;
+
+  ChartOptions _options;
+
+  double squareSize; // todo -10 make private RENAME to indicatorSquareSide
+
+  double indicatorToLabelPad; // todo -10 make private
+
+  double indicatorX; // todo -10 make private
+  double containerMarginTB;
+
+  double containerMarginLR;
+
+  get labelMaxWidth =>
+      _layoutExpansion.width -
+      (2 * containerMarginLR + squareSize + indicatorToLabelPad);
+
+  ui.Size _layoutSize;
+
+  LegendItemContainerNew({
+    String label,
+    // todo -10 double labelMaxWidth,
+    LabelStyle labelStyle,
+    ui.Paint indicatorPaint,
+    ChartOptions options,
+    LayoutExpansion layoutExpansion, // todo -10 set in parent
+    ChartContainer parentContainer,
+  })
+      : super(
+          layoutExpansion: layoutExpansion,
+          // todo -9 not needed here? parentContainer: parentContainer,
+        ) {
+    _options = options;
+    squareSize = _options.legendColorIndicatorWidth;
+    indicatorToLabelPad = _options.legendColorIndicatorPaddingLR;
+    containerMarginTB = _options.legendContainerMarginTB;
+    containerMarginLR = _options.legendContainerMarginLR;
+    _labelContainer = new LabelContainer(
+      label: label,
+      // todo -10  labelMaxWidth: labelMaxWidth,
+      labelMaxWidth: labelMaxWidth,
+      labelStyle: labelStyle,
+    );
+    indicatorX = _options.legendContainerMarginLR;
+    _indicatorPaint = indicatorPaint;
+    _options = options;
+    _layoutExpansion = layoutExpansion; // todo -10 move to parent
+    // There is no need to create the _indicatorRect in the constructor,
+    // as layout will move it, recreating it.
+    // So _indicatorPaint is argument, _indicatorRect is created in layout().
+  }
+
+  void layout() {
+    // Layout the legend item flowing from the left:
+    //   layout the _labelContainer - this also provides height
+    //   Create the _indicatorRect.
+    //   Place the _indicatorRect on the left, with left pad
+    //   Place _labelContainer next.
+    //   Center _labelContainer and _indicatorRect
+    _labelContainer.layout();
+
+    ui.Size labelContainerSize = _labelContainer.layoutSize;
+    // Place the indicator and label on same horizontal Y level
+    //   ind stands for "indicator" - the series color indicator square
+    double indAndLabelCenterY = math.max(
+          labelContainerSize.height,
+          squareSize,
+        ) /
+        2.0;
+    double indOffsetY = indAndLabelCenterY - squareSize / 2.0;
+    double labelOffsetY = indAndLabelCenterY - labelContainerSize.height / 2.0;
+
+    // Add Padding of this container to both indicator and label Y positions
+    indOffsetY += containerMarginTB;
+    labelOffsetY += containerMarginTB;
+
+    // Calc the X offset to both indicator and label
+    double indOffsetX = containerMarginLR;
+    double labelOffsetX = indOffsetX + squareSize + indicatorToLabelPad;
+
+    _indicatorRect = new ui.Rect.fromLTWH(
+      indOffsetX,
+      indOffsetY,
+      squareSize,
+      squareSize,
+    );
+    _labelContainer.applyParentOffset(new ui.Offset(
+      labelOffsetX,
+      labelOffsetY,
+    ));
+
+    // And store the height on member
+    _layoutSize = new ui.Size(
+      2 * containerMarginLR +
+          _indicatorRect.width +
+          indicatorToLabelPad +
+          _labelContainer.layoutSize.width,
+      math.max(labelContainerSize.height, _indicatorRect.height) +
+          2 * containerMarginTB,
+    );
+
+    // Make sure we fit all available width
+    /* todo -9 this fails
+    assert((_layoutSize.width - _layoutExpansion.width).abs() <
+        1.0); // todo -3 within epsilon
+    */
+
+    // todo -10 move to parent caller _indicatorPaint = new ui.Paint();
+    // todo -10 move to parent caller vv
+    //this._indicatorPaint.color = _parentContainer.data
+    //    .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
+  }
+
+  /// Overriden super's [paint] to also paint the rectangle indicator square.
+  void paint(ui.Canvas canvas) {
+// todo -10    this.textPainter.paint(canvas, _offset);
+    _labelContainer.paint(canvas);
+    canvas.drawRect(_indicatorRect, _indicatorPaint);
+  }
+
+  void applyParentOffset(ui.Offset offset) {
+    super.applyParentOffset(offset);
+    // todo -10
+    _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
+    _labelContainer.applyParentOffset(offset);
+  }
+
+  ui.Size get layoutSize => _layoutSize;
+}
+
+/// Lays out the legend area for the chart.
+///
+/// The legend area contains individual legend items. Each legend item
+/// has a color square and text, which describes one data row (that is,
+/// one data series).
+///
+/// Currently, each individual legend item is given the same size, so legends
+/// texts should be short.
+///
+/// This [ChartAreaContainer] operates as follows:
+/// - Horizontally available space is all used (filled).
+/// - Vertically available space is used only as much as needed.
+/// The used amount is given by the maximum label or series indicator height,
+/// plus extra spacing.
+
+class LegendContainerNew extends ChartAreaContainer {
+  /// Offset-free size contains the whole layed out area of legend.
+  double _layoutHeight;
+
+  // ### calculated values
+
+  /// Results of laying out the legend labels. Each member is one series label.
+  List<LegendItemContainerNew> _legendItemContainers = new List();
+
+  /// Constructs the container that holds the data series legends labels and
+  /// color indicators.
+  ///
+  /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
+  LegendContainerNew({
+    ChartContainer parentContainer,
+    LayoutExpansion layoutExpansion,
+    double availableWidth,
+  })
+      : super(
+          layoutExpansion: layoutExpansion,
+          parentContainer: parentContainer,
+        );
+
+  /// Lays out the legend area.
+  ///
+  /// Evenly divides the [availableWidth] to all legend items.
+  layout() {
+    ChartOptions options = _parentContainer.options;
+    List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
+    LegendItemSizing itemSizing = new LegendItemSizing(
+      options: options,
+      availableWidth: _layoutExpansion._width,
+      numLegendItems: dataRowsLegends.length,
+    );
+
+    // todo -3 Call the layoutUntilFitsParent here
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: options.labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
+    );
+
+    // First paint all legends, to figure out max height of legends to center all
+    // legends label around common center.
+    // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
+
+// todo -10 this loop vvvv seem NOT NEEDED
+
+    var maxItemSize = ui.Size.zero;
+    for (var index = 0; index < dataRowsLegends.length; index++) {
+      LabelContainer labelContainer = new LabelContainer(
+        label: dataRowsLegends[index],
+        labelMaxWidth: double.INFINITY,
+        labelStyle: labelStyle,
+      );
+      labelContainer.layout();
+      widgets.TextPainter textPainter = labelContainer.textPainter;
+      maxItemSize = new ui.Size(math.max(maxItemSize.width, textPainter.width),
+          math.max(maxItemSize.height, textPainter.height));
+    }
+    // Now we know legend container height (width is unused)
+    _layoutHeight = math.max(maxItemSize.height, itemSizing.indicatorHeight) +
+        2 * itemSizing.containerMarginTB;
+// todo -10 ^^^^
+
+    double legendItemWidth = layoutExpansion.width / dataRowsLegends.length;
+
+    // Layout legend core: for each row, create and position
+    //   - an indicator rectangle and it's paint
+    //   - label painter
+    for (var index = 0; index < dataRowsLegends.length; index++) {
+      ui.Paint indicatorPaint = new ui.Paint();
+      indicatorPaint.color = _parentContainer.data
+          .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
+
+      var legendItemContainer = new LegendItemContainerNew(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+        layoutExpansion: this.layoutExpansion.cloneWith(
+          width: legendItemWidth,
+        ),
+      );
+
+      legendItemContainer.layout();
+
+      legendItemContainer.applyParentOffset(
+        new ui.Offset(
+          index * legendItemWidth,
+          0.0,
+        ),
+      );
+
+      _legendItemContainers.add(legendItemContainer);
+    }
+  }
+
+  void applyParentOffset(ui.Offset offset) {
+    // super not really needed - only child containers are offset.
+    super.applyParentOffset(offset);
+
+    _legendItemContainers.forEach((LegendItemContainerNew legendItemContainer) {
+      legendItemContainer.applyParentOffset(offset);
+    });
+  }
+
+  ui.Size get layoutSize {
+    return new ui.Size(_layoutExpansion._width, _layoutHeight);
+  }
+
+  void paint(ui.Canvas canvas) {
+    for (var legendItemContainer in _legendItemContainers) {
+      legendItemContainer.paint(canvas);
+    }
+  }
+
+  /// todo -3 finish and document
+/*
+  List<LegendLabelContainer> overflownLabelContainers() {
+    this.outputs.where((output) {output.labelContainer.})
+  }
+  */
+}
+
+// ^^^ ////////////////////////////////////////////////////////////////////////////
 
 /// Lays out a list of labels horizontally,
 /// makes labels evenly sized, and evenly spaced.

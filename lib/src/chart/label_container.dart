@@ -22,13 +22,7 @@ import 'package:flutter_charts/src/chart/container.dart'
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [textPainter]
 ///   is always layed out, ready to be painted.
-///   - Because the underlying [textPainter] is always
-///     - Created using [widgets.TextPainter.ellipses]
-///     - Layed out using [textPainter.layout(maxWidth:)]
-///   , the label can **never be painted overflowing it's allocated size
-///   [_labelMaxWidth].
-///   - [isOverflowing] can be asked but this is information only.
-///      .
+
 class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
@@ -82,8 +76,8 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Implementor of method in superclass [Container].
   void layout() {
-    // todo -10 layoutSimple();
-    // todo -10 layoutAndCheckOverflow();
+    // todo -3 consider option: layoutSimple();
+    // todo -3 consider option:  layoutAndCheckOverflow();
     layoutAndCheckOverflow();
   }
 
@@ -94,12 +88,14 @@ class LabelContainer extends flutter_charts_container.Container {
   /// then tests if the label fits the width.
   ///
   /// Returns `true` if label would overflow, `false` otherwise.
-  /// todo -10 comment improve
-  /// Because the final layout is using
-  /// `textPainter.layout(maxWidth: _labelMaxWidth)`,
-  /// text overflow if any, will NOT be shown on
-  /// the subsequent `textPainter.paint(canvas)` call.
-  /// Label text will be cropped.
+  ///
+  /// Implementation and Behaviour:
+  ///   - Because the underlying [textPainter] is always
+  ///     - created using [widgets.TextPainter.ellipses]
+  ///     - and layed out using `textPainter.layout(maxWidth:)`
+  ///   the subsequent `textPainter.paint(canvas)` call paints the label
+  ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
+  ///   - [isOverflowing] can be asked but this is information only.
   bool layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
