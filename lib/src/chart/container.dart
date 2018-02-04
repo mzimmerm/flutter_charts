@@ -210,19 +210,19 @@ abstract class ChartContainer {
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
-  /// See [XLabelContainer.xTickX] for details.
+  /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get xTickXs => xContainer._xLabelContainers
-      .map((var xLabelContainer) => xLabelContainer.xTickX)
+      .map((var xLabelContainer) => xLabelContainer.parentOffsetTick)
       .toList();
 
   /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
-  /// See [YLabelContainer.yTickY] for details.
+  /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get yTickYs {
     return yContainer._yLabelContainers
-        .map((var yLabelContainer) => yLabelContainer.yTickY)
+        .map((var yLabelContainer) => yLabelContainer.parentOffsetTick)
         .toList();
   }
 
@@ -243,7 +243,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// The actual Y labels values are always generated
   /// todo 0-future-minor : above is not true now for user defined labels
-  List<YLabelContainer> _yLabelContainers = new List();
+  List<AxisLabelContainer> _yLabelContainers = new List();
 
   double _yLabelsContainerWidth;
   LayoutExpansion _layoutExpansion;
@@ -387,7 +387,7 @@ class YContainer extends ChartAreaContainer {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       // It is kept alway relative to the immediate container - YContainer
       double yTickY = labelInfo.scaledLabelValue;
-      var yLabelContainer = new YLabelContainer(
+      var yLabelContainer = new AxisLabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
@@ -395,7 +395,7 @@ class YContainer extends ChartAreaContainer {
       yLabelContainer.layout();
       double labelTopY = yTickY - yLabelContainer.textPainter.height / 2;
 
-      yLabelContainer.yTickY = yTickY;
+      yLabelContainer.parentOffsetTick = yTickY;
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(
@@ -410,7 +410,7 @@ class YContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _yLabelContainers.forEach((YLabelContainer yLabelContainer) {
+    _yLabelContainers.forEach((AxisLabelContainer yLabelContainer) {
       yLabelContainer.applyParentOffset(offset);
     });
   }
@@ -437,38 +437,44 @@ class YContainer extends ChartAreaContainer {
   }
 }
 
-/// A Wrapper of [YContainer] members that can be used by clients
-/// to layout y labels.
+/// Extension of [LabelContainer] that can be used by clients
+/// to create and layout labels on X and Y axis.
 ///
 /// Generally, the owner of this object decides what the offsets are:
-///   - If owner is YContainer, all positions are relative to the top of
+///   - If owner is a [YContainer], all positions are relative to the top of
 ///     the container of y labels
+///   - If owner is a [XContainer] All positions are relative to the left
+///     of the container of x labels
 ///   - If owner is Area [ChartContainer], all positions are relative
 ///     to the top of the available [chartArea].
-class YLabelContainer extends LabelContainer {
-  /// Position of the Y data value, scaled to Y axis.
+///
+class AxisLabelContainer extends LabelContainer {
+
+  /// UI coordinate of the "axis tick mark", which represent the
+  /// X or Y data value.
   ///
-  /// [yTickY]'s value is not affected by call to [applyParentOffset]. It is
-  /// calculated during parent's [YContainer] (parent of this YLabelContainer),
+  /// [parentOffsetTick]'s value is not affected by call to [applyParentOffset].
+  /// It is calculated during parent's [YContainer] [layout] method,
   /// as a result, it remains positioned in the [YContainer]'s coordinates.
-  /// Any objects using [yTickY] as it's end point
+  /// Any objects using [parentOffsetTick] as it's end point
   /// (for example grid line's end point), should apply
   /// the parent offset to themselves. The reason for this behavior is for
-  /// the [yTickY]'s value to live after  [YContainer]'s layout,
-  /// and adding parent offset, so the  [yTickY]'s value can be used in the
+  /// the [parentOffsetTick]'s value to live after [YContainer]'s layout,
+  /// so the  [parentOffsetTick]'s value can be used in the
   /// grid layout, without reversing any offsets.
   ///
-  /// Also the y offset of the Y label middle point
+  /// Also the X or Y offset of the X or Y label middle point
   /// (before label's parent offset).
   ///
-  /// Also the "tick dash" for the label center on the y axis.
+  /// Also the "tick dash" for the label center on the X or Y axis.
   ///
   /// First "tick dash" is on the first label, last on the last label,
-  /// but y labels can be skipped (tick dashes should not).
+  /// but both x and y label containers can be skipped
+  /// (tick dashes should not?).
   ///
-  double yTickY;
+  double parentOffsetTick;
 
-  YLabelContainer({
+  AxisLabelContainer({
     String label,
     double labelMaxWidth,
     LabelStyle labelStyle,
@@ -495,7 +501,7 @@ class YLabelContainer extends LabelContainer {
 
 class XContainer extends ChartAreaContainer {
   /// X labels.
-  List<XLabelContainer> _xLabelContainers = new List();
+  List<AxisLabelContainer> _xLabelContainers = new List();
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
@@ -538,9 +544,10 @@ class XContainer extends ChartAreaContainer {
       textScaleFactor: options.labelTextScaleFactor,
     );
 
+    // Core layout loop, creates a AxisLabelContainer from each xLabel,
+    //   and lays out the XLabelContainers along X in _gridStepWidth increments.
     for (var xIndex = 0; xIndex < xLabels.length; xIndex++) {
-      // double leftX = _gridStepWidth * xIndex;
-      var xLabelContainer = new XLabelContainer(
+      var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
@@ -558,7 +565,7 @@ class XContainer extends ChartAreaContainer {
           _parentContainer.options.yLeftMinTicksWidth;
       double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
 
-      xLabelContainer.xTickX = xTickX;
+      xLabelContainer.parentOffsetTick = xTickX;
 
       // Move xLabelContainer down by option value inside XContainer
       xLabelContainer
@@ -578,7 +585,7 @@ class XContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _xLabelContainers.forEach((XLabelContainer xLabelContainer) {
+    _xLabelContainers.forEach((AxisLabelContainer xLabelContainer) {
       xLabelContainer.applyParentOffset(offset);
     });
   }
@@ -594,48 +601,6 @@ class XContainer extends ChartAreaContainer {
     for (var xLabelContainer in _xLabelContainers) {
       xLabelContainer.paint(canvas);
     }
-  }
-}
-
-/// A Wrapper of [XContainer] members that can be used by clients
-/// to layout x labels container.
-///
-/// All positions are relative to the left of the container of x labels
-class XLabelContainer extends LabelContainer {
-  /// The X position of point that should
-  /// show a "tick dash" for the label center on the x axis.
-  ///
-  /// [xTickX]'s value is not affected by call to [applyParentOffset].
-  /// See [YLabelContainer.yTickY] documentation for details and reason.
-  ///
-  /// Notes:
-  ///   - This is same as the X-scaled position of the X value
-  ///   (only relevant for measured X variable,
-  ///   for ordinal X variable, the X value is simply made evenly
-  ///   spaced across X available space).
-  ///   - Also same as the position of middle of X label wrapped
-  ///   in this [textPainter] (but never offset by the parent of
-  ///   XLabelContainer).
-  ///
-  /// Equal to the x offset of X label middle point.
-  ///
-  /// First "tick dash" is on the first label, last on the last label.
-  ///
-  double xTickX;
-
-  XLabelContainer({
-    String label,
-    double labelMaxWidth,
-    LabelStyle labelStyle,
-  })
-      : super(
-          label: label,
-          labelMaxWidth: labelMaxWidth,
-          labelStyle: labelStyle,
-        );
-
-  void applyParentOffset(ui.Offset offset) {
-    super.applyParentOffset(offset);
   }
 }
 
@@ -1348,13 +1313,6 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
     return perLabelWidth;
   }
 
-  // todo -3
-  /*
-  double get layedoutHeight {
-
-  };
-  */
-
   /// Validate height of this container against constructor [_maxHeight].
   /// todo -3
   double get validateHeight {
@@ -1380,6 +1338,7 @@ class HorizontalFixedWidthAutoScaledLabelsContainer {
   ///
   /// Note: This class does not keep the LabelStyle,
   ///       just passes it to member [LabelContainer]s.
+  ///       // todo -10
   HorizontalFixedWidthAutoScaledLabelsContainer({
     List<String> labels,
     double width,

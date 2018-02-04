@@ -76,8 +76,7 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Implementor of method in superclass [Container].
   void layout() {
-    // todo -3 consider option: layoutSimple();
-    // todo -3 consider option:  layoutAndCheckOverflow();
+    // todo -3 consider option: layoutSimple() vs. layoutAndCheckOverflow();
     layoutAndCheckOverflow();
   }
 
