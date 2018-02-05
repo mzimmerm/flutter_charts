@@ -437,59 +437,6 @@ class YContainer extends ChartAreaContainer {
   }
 }
 
-/// Extension of [LabelContainer] that can be used by clients
-/// to create and layout labels on X and Y axis.
-///
-/// Generally, the owner of this object decides what the offsets are:
-///   - If owner is a [YContainer], all positions are relative to the top of
-///     the container of y labels
-///   - If owner is a [XContainer] All positions are relative to the left
-///     of the container of x labels
-///   - If owner is Area [ChartContainer], all positions are relative
-///     to the top of the available [chartArea].
-///
-class AxisLabelContainer extends LabelContainer {
-
-  /// UI coordinate of the "axis tick mark", which represent the
-  /// X or Y data value.
-  ///
-  /// [parentOffsetTick]'s value is not affected by call to [applyParentOffset].
-  /// It is calculated during parent's [YContainer] [layout] method,
-  /// as a result, it remains positioned in the [YContainer]'s coordinates.
-  /// Any objects using [parentOffsetTick] as it's end point
-  /// (for example grid line's end point), should apply
-  /// the parent offset to themselves. The reason for this behavior is for
-  /// the [parentOffsetTick]'s value to live after [YContainer]'s layout,
-  /// so the  [parentOffsetTick]'s value can be used in the
-  /// grid layout, without reversing any offsets.
-  ///
-  /// Also the X or Y offset of the X or Y label middle point
-  /// (before label's parent offset).
-  ///
-  /// Also the "tick dash" for the label center on the X or Y axis.
-  ///
-  /// First "tick dash" is on the first label, last on the last label,
-  /// but both x and y label containers can be skipped
-  /// (tick dashes should not?).
-  ///
-  double parentOffsetTick;
-
-  AxisLabelContainer({
-    String label,
-    double labelMaxWidth,
-    LabelStyle labelStyle,
-  })
-      : super(
-          label: label,
-          labelMaxWidth: labelMaxWidth,
-          labelStyle: labelStyle,
-        );
-
-  void applyParentOffset(ui.Offset offset) {
-    super.applyParentOffset(offset);
-  }
-}
-
 /// Container of the X axis labels.
 ///
 /// This [ChartAreaContainer] operates as follows:
@@ -506,6 +453,11 @@ class XContainer extends ChartAreaContainer {
   double _xLabelsMaxHeight;
   double _gridStepWidth;
 
+  int    _layoutDepth = 0;
+  int    _maxLayoutDepth = 0;
+  DefaultLabelReLayoutStrategy _layoutStrategy = new DefaultLabelReLayoutStrategy();
+
+  // todo -10: get _labelTextStyle =>
   /// Constructs the container that holds X labels.
   ///
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
@@ -524,17 +476,17 @@ class XContainer extends ChartAreaContainer {
   /// Evenly divides the available width to all labels (spacing included).
   /// First / Last vertical line is at the center of first / last label.
   layout() {
+    ChartOptions options = _parentContainer.options;
+
     List<String> xLabels = _parentContainer.data.xLabels;
 
-    double yTicksWidth = _parentContainer.options.yLeftMinTicksWidth +
-        _parentContainer.options.yRightMinTicksWidth;
+    double yTicksWidth =
+        options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
 
     double labelMaxAllowedWidth =
         (_layoutExpansion._width - yTicksWidth) / xLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
-
-    ChartOptions options = _parentContainer.options;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
@@ -560,9 +512,8 @@ class XContainer extends ChartAreaContainer {
       double halfLabelWidth = textPainter.width / 2;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
-      double xTickX = halfStepWidth +
-          atIndexOffset +
-          _parentContainer.options.yLeftMinTicksWidth;
+      double xTickX =
+          halfStepWidth + atIndexOffset + options.yLeftMinTicksWidth;
       double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
 
       xLabelContainer.parentOffsetTick = xTickX;
@@ -579,7 +530,37 @@ class XContainer extends ChartAreaContainer {
         .map((xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
+
+    _layoutDepth = _layoutDepth + 1;
+
+    // todo -10
+    /*
+    if (isOverflowinghWidth) {
+      if (_layoutDepth > _maxLayoutDepth) {
+        throw new StateError("_layoutDepth=$_layoutDepth. Giving up")
+      }
+
+    }
+    */
   }
+
+  _reLayoutRotateLabels() {
+    // todo -10
+
+  }
+  _reLayoutDecreaseLabelFont() {
+    // todo -10
+
+    // Just decrease font and call layout again
+
+  }
+  _reLayoutSkipLabels() {
+    // todo -10
+
+    // Most advanced; Keep list of labels, but only display every nth
+
+  }
+
 
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
@@ -605,6 +586,32 @@ class XContainer extends ChartAreaContainer {
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
+
+enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels}
+
+class DefaultLabelReLayoutStrategy {
+
+  int get maxDepth => 4;
+
+  atDepth(int depth) {
+    switch(depth) {
+      case 1:
+        LabelReLayout.DecreaseLabelFont;
+        break;
+      case 2:
+        LabelReLayout.DecreaseLabelFont;
+        break;
+      case 3:
+        LabelReLayout.RotateLabels;
+        break;
+      case 4:
+        LabelReLayout.SkipLabels;
+        break;
+      default:
+        throw new StateError("Invalid depth $depth")
+    }
+  }
+}
 
 /// Defines how a container [layout] should expand the container in a direction.
 ///

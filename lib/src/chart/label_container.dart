@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
 import 'package:flutter/material.dart' as material show Colors;
-import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas;
+import 'dart:ui' as ui
+    show TextAlign, TextDirection, Size, Canvas, Offset;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
@@ -27,7 +28,7 @@ class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
   widgets.TextPainter textPainter;
-  bool isOverflowing = true;
+  bool _isOverflowingWidth = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
@@ -94,7 +95,7 @@ class LabelContainer extends flutter_charts_container.Container {
   ///     - and layed out using `textPainter.layout(maxWidth:)`
   ///   the subsequent `textPainter.paint(canvas)` call paints the label
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
-  ///   - [isOverflowing] can be asked but this is information only.
+  ///   - [_isOverflowingWidth] can be asked but this is information only.
   bool layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
@@ -103,12 +104,12 @@ class LabelContainer extends flutter_charts_container.Container {
 
     // todo -3 change 1.0 pixels for epsilon
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      isOverflowing = true;
+      _isOverflowingWidth = true;
     } else {
-      isOverflowing = false;
+      _isOverflowingWidth = false;
     }
 
-    return isOverflowing;
+    return _isOverflowingWidth;
   }
 
   // todo -4
@@ -127,6 +128,16 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Implementor of method in superclass [Container].
   ui.Size get layoutSize =>
       _constraintSize != null ? _constraintSize : _unconstrainedSize;
+
+  /// Answers if container overflows is't allocated size
+  /// defined in [labelMaxWidth].
+  ///
+  /// Allows parent containers to set some overflow affecting
+  /// member, and re-layout
+  bool get isOverflowinWidth => _isOverflowingWidth; // todo -10 change to Mixin
+
+  // todo -10 change to Mixin: void setOverflowAffectingParameter();
+
 }
 
 /// Class for value objects which group the text styles that may affect
@@ -144,3 +155,61 @@ class LabelStyle {
     double this.textScaleFactor,
   });
 }
+
+/// Extension of [LabelContainer] with it's center position in
+/// immediate parent's coordinates, managed in [parentOffsetTick]
+/// (which can be thought of as a position of the tick showing
+/// the label's value position on axis).
+///
+/// Can be used by clients to create and layout labels on X and Y axis.
+///
+/// Generally, the owner (immediate parent) of this object decides what
+/// the offsets are:
+///   - If owner is a [YContainer], all positions are relative to the top of
+///     the container of y labels
+///   - If owner is a [XContainer] All positions are relative to the left
+///     of the container of x labels
+///   - If owner is Area [ChartContainer], all positions are relative
+///     to the top of the available [chartArea].
+///
+class AxisLabelContainer extends LabelContainer {
+  /// UI coordinate of the "axis tick mark", which represent the
+  /// X or Y data value.
+  ///
+  /// [parentOffsetTick]'s value is not affected by call to [applyParentOffset].
+  /// It is calculated during parent's [YContainer] [layout] method,
+  /// as a result, it remains positioned in the [YContainer]'s coordinates.
+  /// Any objects using [parentOffsetTick] as it's end point
+  /// (for example grid line's end point), should apply
+  /// the parent offset to themselves. The reason for this behavior is for
+  /// the [parentOffsetTick]'s value to live after [YContainer]'s layout,
+  /// so the  [parentOffsetTick]'s value can be used in the
+  /// grid layout, without reversing any offsets.
+  ///
+  /// Also the X or Y offset of the X or Y label middle point
+  /// (before label's parent offset).
+  ///
+  /// Also the "tick dash" for the label center on the X or Y axis.
+  ///
+  /// First "tick dash" is on the first label, last on the last label,
+  /// but both x and y label containers can be skipped
+  /// (tick dashes should not?).
+  ///
+  double parentOffsetTick;
+
+  AxisLabelContainer({
+    String label,
+    double labelMaxWidth,
+    LabelStyle labelStyle,
+  })
+      : super(
+    label: label,
+    labelMaxWidth: labelMaxWidth,
+    labelStyle: labelStyle,
+  );
+
+  void applyParentOffset(ui.Offset offset) {
+    super.applyParentOffset(offset);
+  }
+}
+

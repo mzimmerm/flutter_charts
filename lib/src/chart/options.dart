@@ -22,17 +22,17 @@ class ChartOptions {
   ///     a limited number of Y labels from data, so that Y labels do not
   ///     crowd, and little Y space is wasted on top.
 
-  bool useUserProvidedYLabels = false;
+  final bool useUserProvidedYLabels = false;
 
   /// Shows largest value on very top of the chart grid, to save space.
-  bool largestValuePointOnVeryTop = true; // false not supported yet
+  final bool largestValuePointOnVeryTop = true; // false not supported yet
 
   /// Number of grid lines and y axis labels. Not implemented
-  int maxNumYLabels = 4;
+  final int maxNumYLabels = 4;
 
   /// Color defaults
-  ui.Color gridLinesColor = material.Colors.grey;
-  ui.Color xLabelsColor = material.Colors.grey; // const ui.Color(0xFFEEEEEE)
+  final ui.Color gridLinesColor = material.Colors.grey;
+  final ui.Color xLabelsColor = material.Colors.grey; // const ui.Color(0xFFEEEEEE)
 
   /// Length of the ticks around the grid rectangle.
   ///
@@ -41,21 +41,21 @@ class ChartOptions {
   /// Autolayout can increase these lengths, to fit labels below them.
   // todo -3 deprecate instead of removing
   // double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
-  double yLeftMinTicksWidth = 6.0;
-  double yRightMinTicksWidth = 6.0;
-  double xBottomMinTicksHeight = 6.0;
+  final double yLeftMinTicksWidth = 6.0;
+  final double yRightMinTicksWidth = 6.0;
+  final double xBottomMinTicksHeight = 6.0;
 
   // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
-  double xLabelsPadTB = 6.0; // top and bottom
+  final double xLabelsPadTB = 6.0; // top and bottom
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
-  double xLabelsPadLR = 40.0; // todo 0 unused.
+  final double xLabelsPadLR = 40.0; // todo 0 unused.
 
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
-  double yLabelsPadTB = 40.0; // todo 0 unused.
+  final double yLabelsPadTB = 40.0; // todo 0 unused.
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
-  double yLabelsPadLR = 6.0;
+  final double yLabelsPadLR = 6.0;
 
   // Series color indicator size - the "Series color indicator"
   // is the square that shows the color of each dataRow
@@ -63,19 +63,19 @@ class ChartOptions {
   // together with data series name (legend name).
 
   /// Margin on the left/right of the LegendContainer
-  double legendContainerMarginLR = 8.0; // keep 12.0, looks better unaligned
+  final double legendContainerMarginLR = 8.0; // keep 12.0, looks better unaligned
 
   /// Margin on the top/bottom of the LegendContainer
-  double legendContainerMarginTB = 4.0;
+  final double legendContainerMarginTB = 4.0;
 
   /// Between each legend item pairs (indicator + label)
-  double betweenLegendItemsPadding = 4.0;
+  final double betweenLegendItemsPadding = 4.0;
 
   /// Width of the colored square, indicator of each dataRow
-  double legendColorIndicatorWidth = 20.0;
+  final double legendColorIndicatorWidth = 20.0;
 
   /// Between square indicator, to label
-  double legendItemIndicatorToLabelPad = 2.0;
+  final double legendItemIndicatorToLabelPad = 2.0;
 
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
@@ -83,7 +83,7 @@ class ChartOptions {
   /// For example, for the bar chart, this represents the portion of one
   /// label width along X axis,
   /// which displays the bars (grouped or stacked).
-  double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
+  final double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
 
   /// Controls the order the painter paints [ChartData.dataRows].
   /// Motivation: Oh the line chart, if two data rows have same values,
@@ -92,22 +92,24 @@ class ChartOptions {
   /// While so far only makes a difference on the line chart, this is defined
   /// as a common option in case there is some future overlap use on other
   /// chart types.
-  bool firstDataRowPaintedFirst = true;
+  final bool firstDataRowPaintedFirst = true;
+
+  static double labelFontSize = 14.0;
 
   /// Text style for both X and Y labels.
   ///
   /// The (future) iterative container can change this default for labels to fit.
-  widgets.TextStyle labelTextStyle = new widgets.TextStyle(
+  final widgets.TextStyle labelTextStyle = new widgets.TextStyle(
     color: material.Colors.grey[600],
-    fontSize: 14.0,);
+    fontSize: labelFontSize,);
 
-  ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
-  ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
-  ui.TextAlign     legendTextAlign      = ui.TextAlign.left; // indicator close
-  double           labelTextScaleFactor = 1.0;
+  final ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
+  final ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
+  final ui.TextAlign     legendTextAlign      = ui.TextAlign.left; // indicator close
+  final double           labelTextScaleFactor = 1.0;
 
   /// todo -1 remove, replace with formatter outright
-  String yLabelUnits = "";
+  final String yLabelUnits = "";
 
   String toLabel(String label) => label + yLabelUnits;
 
