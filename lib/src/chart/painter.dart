@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 
 import 'package:flutter_charts/flutter_charts.dart' as common;
@@ -49,6 +50,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
       return;
     }
 
+    // set background: canvas.drawPaint(new ui.Paint()..color = material.Colors.green);
+
     container.chartArea = size;
     container.layout();
 
@@ -59,7 +62,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
     drawPresentersColumns(canvas); // bars (bar chart), lines and points (line)
 
     // clip canvas to size - this does nothing
-    canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
+    // todo -1: WOW. THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
+    // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
   }
 
   /// Implementing abstract in super.

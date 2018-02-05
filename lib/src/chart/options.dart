@@ -94,13 +94,15 @@ class ChartOptions {
   /// chart types.
   final bool firstDataRowPaintedFirst = true;
 
-  static double labelFontSize = 14.0;
+  final double labelFontSize = 14.0;
+
+  final ui.Color labelTextColor = material.Colors.grey[600];
 
   /// Text style for both X and Y labels.
   ///
   /// The (future) iterative container can change this default for labels to fit.
-  final widgets.TextStyle labelTextStyle = new widgets.TextStyle(
-    color: material.Colors.grey[600],
+  widgets.TextStyle get labelTextStyle => new widgets.TextStyle(
+    color: labelTextColor,
     fontSize: labelFontSize,);
 
   final ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;

@@ -448,14 +448,19 @@ class YContainer extends ChartAreaContainer {
 
 class XContainer extends ChartAreaContainer {
   /// X labels.
-  List<AxisLabelContainer> _xLabelContainers = new List();
+  List<AxisLabelContainer> _xLabelContainers;
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
 
   int    _layoutDepth = 0;
-  int    _maxLayoutDepth = 0;
+  final int   _maxLayoutDepth = 4;
   DefaultLabelReLayoutStrategy _layoutStrategy = new DefaultLabelReLayoutStrategy();
+
+  /// Members related to re-layout (iterative layout).
+  /// The values are incremental, each re-layout "accumulates" changes
+  /// from previous layouts
+  double _labelFontSize;
 
   // todo -10: get _labelTextStyle =>
   /// Constructs the container that holds X labels.
@@ -476,6 +481,10 @@ class XContainer extends ChartAreaContainer {
   /// Evenly divides the available width to all labels (spacing included).
   /// First / Last vertical line is at the center of first / last label.
   layout() {
+
+    // First clear any children that could be created on nested re-layout
+    _xLabelContainers = new List();
+
     ChartOptions options = _parentContainer.options;
 
     List<String> xLabels = _parentContainer.data.xLabels;
@@ -488,9 +497,15 @@ class XContainer extends ChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
+    // todo -10 labelTextStyle
+    widgets.TextStyle labelTextStyle = new widgets.TextStyle(
+      color: options.labelTextStyle.color,
+      fontSize: _labelFontSize,
+    );
+
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
-      textStyle: options.labelTextStyle,
+      textStyle: labelTextStyle,
       textDirection: options.labelTextDirection,
       textAlign: options.labelTextAlign, // center text
       textScaleFactor: options.labelTextScaleFactor,
@@ -534,33 +549,56 @@ class XContainer extends ChartAreaContainer {
     _layoutDepth = _layoutDepth + 1;
 
     // todo -10
-    /*
-    if (isOverflowinghWidth) {
+
+    // Check for contained labels overflow; if any does overflow,
+    //   call re-layout according to strategy.
+    reLayout(options);
+  }
+
+  void reLayout(ChartOptions options) {
+    if (true) {// todo -10 isOverflowinghWidth) {
+
       if (_layoutDepth > _maxLayoutDepth) {
-        throw new StateError("_layoutDepth=$_layoutDepth. Giving up")
+        // todo -10 throw new StateError("_layoutDepth=$_layoutDepth. Giving up");
+        return;
       }
 
+      switch(_layoutStrategy.atDepth(_layoutDepth)) {
+        case LabelReLayout.DecreaseLabelFont:
+          _reLayoutDecreaseLabelFont(options);
+          break;
+        case LabelReLayout.RotateLabels:
+          _reLayoutRotateLabels(options);
+          break;
+        case LabelReLayout.SkipLabels:
+          _reLayoutSkipLabels(options);
+          break;
+      }
+      return;
     }
-    */
   }
 
-  _reLayoutRotateLabels() {
+
+  void _reLayoutRotateLabels(ChartOptions options) {
     // todo -10
-
+    layout();
   }
-  _reLayoutDecreaseLabelFont() {
+
+  void _reLayoutDecreaseLabelFont(ChartOptions options) {
     // todo -10
 
     // Just decrease font and call layout again
-
+    _labelFontSize ??= options.labelFontSize;
+    _labelFontSize *= _layoutStrategy.decreaseLabelFontRatio;
+    layout();
   }
-  _reLayoutSkipLabels() {
+
+  void _reLayoutSkipLabels(ChartOptions options) {
     // todo -10
 
     // Most advanced; Keep list of labels, but only display every nth
-
+    layout();
   }
-
 
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
@@ -593,22 +631,24 @@ class DefaultLabelReLayoutStrategy {
 
   int get maxDepth => 4;
 
-  atDepth(int depth) {
+  double decreaseLabelFontRatio = 0.75;
+
+  LabelReLayout atDepth(int depth) {
     switch(depth) {
       case 1:
-        LabelReLayout.DecreaseLabelFont;
+        return LabelReLayout.DecreaseLabelFont;
         break;
       case 2:
-        LabelReLayout.DecreaseLabelFont;
+        return LabelReLayout.DecreaseLabelFont;
         break;
       case 3:
-        LabelReLayout.RotateLabels;
+        return LabelReLayout.RotateLabels;
         break;
       case 4:
-        LabelReLayout.SkipLabels;
+        return LabelReLayout.SkipLabels;
         break;
       default:
-        throw new StateError("Invalid depth $depth")
+        throw new StateError("Invalid depth $depth");
     }
   }
 }
