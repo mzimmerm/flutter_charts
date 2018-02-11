@@ -547,7 +547,9 @@ class XContainer extends ChartAreaContainer {
 
     // todo -10
 
-    // Iterative call to this layout method!.
+    // This achieves auto-layout of labels to fit along X axis.
+    // Iterative call to this layout method, until fit or max depth is reached,
+    //   whichever comes first.
     _reLayoutStrategy.reLayout();
   }
 
@@ -597,7 +599,7 @@ class DefaultLabelReLayoutStrategy {
   /// from previous layouts
   double       _labelFontSize;
   int          _reLayoutsCounter = 0;
-  int          showEveryNthLabel = 2; // todo -10 make available to clients
+  int          _showEveryNthLabel = 2; // todo -10 make available to clients
   final int    _maxReLayouts = 5;// todo -10 make available to clients
 
   DefaultLabelReLayoutStrategy({Container container, ChartOptions options}) {

@@ -78,7 +78,7 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Implementor of method in superclass [Container].
   void layout() {
     // todo -3 consider option: layoutSimple() vs. layoutAndCheckOverflow();
-    layoutAndCheckOverflow();
+    _layoutAndCheckOverflow();
   }
 
   // ##### Internal methods
@@ -96,13 +96,13 @@ class LabelContainer extends flutter_charts_container.Container {
   ///   the subsequent `textPainter.paint(canvas)` call paints the label
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
   ///   - [_isOverflowingWidth] can be asked but this is information only.
-  bool layoutAndCheckOverflow() {
+  bool _layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
     textPainter.layout(maxWidth: _labelMaxWidth);
     _constraintSize = textPainter.size;
 
-    // todo -3 change 1.0 pixels for epsilon
+    // todo -3 change 1.0 pixels for epsilon or maybe just remove
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
       _isOverflowingWidth = true;
     } else {
@@ -115,7 +115,7 @@ class LabelContainer extends flutter_charts_container.Container {
   // todo -4
   bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
     _labelStyle = labelStyle;
-    bool doesOverflow = layoutAndCheckOverflow();
+    bool doesOverflow = _layoutAndCheckOverflow();
     return doesOverflow;
   }
 
