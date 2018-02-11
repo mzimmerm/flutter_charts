@@ -156,12 +156,16 @@ class LabelStyle {
   });
 }
 
-/// Extension of [LabelContainer] with it's center position in
-/// immediate parent's coordinates, managed in [parentOffsetTick]
-/// (which can be thought of as a position of the tick showing
-/// the label's value position on axis).
+/// Subclass of [LabelContainer] is extended with member [parentOffsetTick],
+/// which maintains the container's center position in
+/// immediate parent's coordinates.
 ///
-/// Can be used by clients to create and layout labels on X and Y axis.
+/// [parentOffsetTick] can be thought of as position of the "tick" showing
+/// the label's value on axis - the immediate parent
+/// decides whether this position represents X or Y.
+///
+/// Can be used by clients to create, layout, and center labels on X and Y axis,
+/// and the label's graph "ticks".
 ///
 /// Generally, the owner (immediate parent) of this object decides what
 /// the offsets are:

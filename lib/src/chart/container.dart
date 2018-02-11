@@ -453,14 +453,8 @@ class XContainer extends ChartAreaContainer {
   double _xLabelsMaxHeight;
   double _gridStepWidth;
 
-  int    _layoutDepth = 0;
-  final int   _maxLayoutDepth = 4;
-  DefaultLabelReLayoutStrategy _layoutStrategy = new DefaultLabelReLayoutStrategy();
 
-  /// Members related to re-layout (iterative layout).
-  /// The values are incremental, each re-layout "accumulates" changes
-  /// from previous layouts
-  double _labelFontSize;
+  DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
   // todo -10: get _labelTextStyle =>
   /// Constructs the container that holds X labels.
@@ -474,7 +468,12 @@ class XContainer extends ChartAreaContainer {
       : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
-        );
+        ) {
+    _reLayoutStrategy = new DefaultLabelReLayoutStrategy(
+        container: this,
+      options: parentContainer.options,
+    );
+  }
 
   /// Lays out the chart in horizontal (x) direction.
   ///
@@ -500,7 +499,7 @@ class XContainer extends ChartAreaContainer {
     // todo -10 labelTextStyle
     widgets.TextStyle labelTextStyle = new widgets.TextStyle(
       color: options.labelTextStyle.color,
-      fontSize: _labelFontSize,
+      fontSize: _reLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -546,58 +545,10 @@ class XContainer extends ChartAreaContainer {
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
 
-    _layoutDepth = _layoutDepth + 1;
-
     // todo -10
 
-    // Check for contained labels overflow; if any does overflow,
-    //   call re-layout according to strategy.
-    reLayout(options);
-  }
-
-  void reLayout(ChartOptions options) {
-    if (true) {// todo -10 isOverflowinghWidth) {
-
-      if (_layoutDepth > _maxLayoutDepth) {
-        // todo -10 throw new StateError("_layoutDepth=$_layoutDepth. Giving up");
-        return;
-      }
-
-      switch(_layoutStrategy.atDepth(_layoutDepth)) {
-        case LabelReLayout.DecreaseLabelFont:
-          _reLayoutDecreaseLabelFont(options);
-          break;
-        case LabelReLayout.RotateLabels:
-          _reLayoutRotateLabels(options);
-          break;
-        case LabelReLayout.SkipLabels:
-          _reLayoutSkipLabels(options);
-          break;
-      }
-      return;
-    }
-  }
-
-
-  void _reLayoutRotateLabels(ChartOptions options) {
-    // todo -10
-    layout();
-  }
-
-  void _reLayoutDecreaseLabelFont(ChartOptions options) {
-    // todo -10
-
-    // Just decrease font and call layout again
-    _labelFontSize ??= options.labelFontSize;
-    _labelFontSize *= _layoutStrategy.decreaseLabelFontRatio;
-    layout();
-  }
-
-  void _reLayoutSkipLabels(ChartOptions options) {
-    // todo -10
-
-    // Most advanced; Keep list of labels, but only display every nth
-    layout();
+    // Iterative call to this layout method!.
+    _reLayoutStrategy.reLayout();
   }
 
   void applyParentOffset(ui.Offset offset) {
@@ -627,9 +578,34 @@ enum ExpansionStyle { TryFill, GrowDoNotFill }
 
 enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels}
 
+/// Strategy of achieving that labels "fit" on the X axis.
+///
+/// Strategy defines a sequence of steps, such as
+/// [LabelReLayout.DecreaseLabelFont], [LabelReLayout.SkipLabels], etc,
+/// which are taken to achieve that labels "fit".
+///
+/// The steps are repeated at most [maxReLayouts] times.
+/// If a "fit" is not achieved on last step, the last step is repeated
+/// until [maxReLayouts] is reached.
 class DefaultLabelReLayoutStrategy {
 
-  int get maxDepth => 4;
+  Container    _container;
+  ChartOptions _options;
+
+  /// Members related to re-layout (iterative layout).
+  /// The values are incremental, each re-layout "accumulates" changes
+  /// from previous layouts
+  double       _labelFontSize;
+  int          _reLayoutsCounter = 0;
+  int          showEveryNthLabel = 2; // todo -10 make available to clients
+  final int    _maxReLayouts = 5;// todo -10 make available to clients
+
+  DefaultLabelReLayoutStrategy({Container container, ChartOptions options}) {
+    _container = container;
+    _options = options;
+  }
+
+  double get labelFontSize => _labelFontSize;
 
   double decreaseLabelFontRatio = 0.75;
 
@@ -648,9 +624,56 @@ class DefaultLabelReLayoutStrategy {
         return LabelReLayout.SkipLabels;
         break;
       default:
-        throw new StateError("Invalid depth $depth");
+        return LabelReLayout.SkipLabels;
     }
   }
+
+  void reLayout() {
+    if (true) {// todo -10 isOverflowinghWidth) {
+
+      _reLayoutsCounter++;
+
+      if (_reLayoutsCounter > _maxReLayouts) {
+        // todo -10 throw new StateError("_layoutDepth=$_layoutDepth. Giving up");
+        return;
+      }
+
+      switch(atDepth(_reLayoutsCounter)) {
+        case LabelReLayout.DecreaseLabelFont:
+          _reLayoutDecreaseLabelFont();
+          break;
+        case LabelReLayout.RotateLabels:
+          _reLayoutRotateLabels();
+          break;
+        case LabelReLayout.SkipLabels:
+          _reLayoutSkipLabels();
+          break;
+      }
+      return;
+    }
+  }
+
+
+  void _reLayoutRotateLabels() {
+    // todo -10
+    _container.layout();
+  }
+
+  void _reLayoutDecreaseLabelFont() {
+
+    // Decrease font and call layout again
+    _labelFontSize ??= _options.labelFontSize;
+    _labelFontSize *= this.decreaseLabelFontRatio;
+    _container.layout();
+  }
+
+  void _reLayoutSkipLabels() {
+    // todo -10
+
+    // Most advanced; Keep list of labels, but only display every nth
+    _container.layout();
+  }
+
 }
 
 /// Defines how a container [layout] should expand the container in a direction.
