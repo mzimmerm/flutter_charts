@@ -4,7 +4,7 @@ import 'dart:ui' as ui
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
 
-import 'dart:math' as math show max, min;
+import 'dart:math' as math show max, min, PI;
 
 import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
@@ -243,7 +243,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// The actual Y labels values are always generated
   /// todo 0-future-minor : above is not true now for user defined labels
-  List<AxisLabelContainer> _yLabelContainers = new List();
+  List<AxisLabelContainer> _yLabelContainers;
 
   double _yLabelsContainerWidth;
   LayoutExpansion _layoutExpansion;
@@ -381,8 +381,10 @@ class YContainer extends ChartAreaContainer {
       textAlign: options.labelTextAlign, // center text
       textScaleFactor: options.labelTextScaleFactor,
     );
-    // Create Y Labels (yLabelContainers)
-    // yLabelContainers are created from  yScaler.labelInfos positions.
+    // Create one Y Label (yLabelContainer) for each labelInfo,
+    // and add to yLabelContainers list.
+    _yLabelContainers = new List();
+
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       // It is kept alway relative to the immediate container - YContainer
@@ -437,6 +439,8 @@ class YContainer extends ChartAreaContainer {
   }
 }
 
+enum LabelDirection { Horizontal, Vertical }
+
 /// Container of the X axis labels.
 ///
 /// This [ChartAreaContainer] operates as follows:
@@ -452,6 +456,7 @@ class XContainer extends ChartAreaContainer {
 
   double _xLabelsMaxHeight;
   double _gridStepWidth;
+  LabelDirection labelDirection = LabelDirection.Vertical; // todo -10
 
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
@@ -480,6 +485,8 @@ class XContainer extends ChartAreaContainer {
   /// Evenly divides the available width to all labels (spacing included).
   /// First / Last vertical line is at the center of first / last label.
   layout() {
+    // Note: the variables terminology (width, height) assumes
+    //       labelDirection = LabelDirection.Horizontal
 
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List();
@@ -519,22 +526,30 @@ class XContainer extends ChartAreaContainer {
         labelStyle: labelStyle,
       );
 
-      // core of X layout calcs - lay out label and find middle
+      // core of X layout calcs - lay out label and find X middle
       var textPainter = xLabelContainer.textPainter;
       xLabelContainer.layout();
 
-      double halfLabelWidth = textPainter.width / 2;
+      double halfLabelWidth = textPainter.size.width / 2;
+      double halfLabelHeight    = textPainter.size.height / 2;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX =
           halfStepWidth + atIndexOffset + options.yLeftMinTicksWidth;
       double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
+      double labelTopY = options.xLabelsPadTB; // down by XContainer padding
 
       xLabelContainer.parentOffsetTick = xTickX;
 
-      // Move xLabelContainer down by option value inside XContainer
-      xLabelContainer
-          .applyParentOffset(new ui.Offset(labelLeftX, options.xLabelsPadTB));
+      // labelLeftTop = label paint start - depends on the label direction.
+      // Optionally override Horizontal values.
+      if (labelDirection == LabelDirection.Vertical) {
+        labelLeftX = xTickX + halfLabelHeight;
+      }
+
+      var labelLeftTop = new ui.Offset(labelLeftX, labelTopY);
+
+      xLabelContainer.applyParentOffset(labelLeftTop);
 
       _xLabelContainers.add(xLabelContainer);
     }
@@ -544,8 +559,6 @@ class XContainer extends ChartAreaContainer {
         .map((xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
-
-    // todo -10
 
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
@@ -570,10 +583,31 @@ class XContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
+    // todo -10
+
+    canvas.save();
+    canvas.rotate(math.PI/2);
+    this.rotateBy90();
+    /////////////////////
     for (var xLabelContainer in _xLabelContainers) {
       xLabelContainer.paint(canvas);
     }
+    ///////////////////////
+    canvas.restore();
+
+    /* todo -10 ori:
+    for (var xLabelContainer in _xLabelContainers) {
+      xLabelContainer.paint(canvas);
+    }
+     */
   }
+
+  void rotateBy90() {
+    for (var xLabelContainer in _xLabelContainers) {
+      xLabelContainer.rotateBy90();
+    }
+  }
+
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
@@ -609,7 +643,7 @@ class DefaultLabelReLayoutStrategy {
 
   double get labelFontSize => _labelFontSize;
 
-  double decreaseLabelFontRatio = 0.75;
+  double decreaseLabelFontRatio = 1.0; // todo -10 : 0.75;
 
   LabelReLayout atDepth(int depth) {
     switch(depth) {
@@ -777,6 +811,9 @@ abstract class Container {
   /// lifetime.
   ui.Offset _offset = ui.Offset.zero;
 
+  /// Provides access to offset for extension's [paint] methods.
+  ui.Offset get offset => _offset;
+
   Container({
     LayoutExpansion layoutExpansion,
   }) {
@@ -789,6 +826,10 @@ abstract class Container {
 
   void paint(ui.Canvas canvas);
 
+  void rotateBy90() {
+    _offset = new ui.Offset( _offset.dy, -1.0 * _offset.dx);
+  }
+
   /// Allow a parent container to move this Container.
   ///
   /// Override if parent move needs to propagate to internals of
@@ -799,9 +840,6 @@ abstract class Container {
 
   /// Size after [layout] has been called.
   ui.Size get layoutSize;
-
-  /// Provides access to offset for extension's [paint] methods.
-  ui.Offset get offset => _offset;
 
   /// Answers the requested expansion sizes.
   ///
@@ -1304,210 +1342,6 @@ class LegendContainer extends ChartAreaContainer {
 /*
   List<LegendLabelContainer> overflownLabelContainers() {
     this.outputs.where((output) {output.labelContainer.})
-  }
-  */
-}
-
-/// Lays out a list of labels horizontally,
-/// makes labels evenly sized, and evenly spaced.
-///
-/// The motivation for this class is to layout labels when
-/// the horizontal (X) space is restricted, and we want to manipulate
-/// the label positions to automatically scale to fit.
-///
-/// Layout is forced to fit
-/// by ensuring all labels fit within the X direction space
-/// by decreasing the font size, tilting the labels, or skipping some labels,
-/// or (last resource??) trimming the labels.
-///
-/// todo -2: No attempt is made to decrease Y direction size (height), but if
-/// the passed [_maxHeight] is finite, a validity check is made
-/// if the actual layed out height is within the passed height.
-///
-/// Instances are created from a label list; each label is
-/// wrapped as a [LabelContainer] instance. All member [LabelContainer] instances
-/// in [labelContainers] share the text properties (style, direction, align etc.)
-/// of this parent instance
-///
-/// The initial text style of member [labelContainers] is from [ChartOptions].
-/// The motivation is that a calling auto-fit program will change the text
-/// style to fit a defined width.
-///
-/// Provides methods to
-///   - Layout member labelContainers, for the purpose of
-///   finding if they overflow their even size width.
-///   - Change text style for all labels (by setting members and applying
-///   them on the member [labelContainers].
-///   - Layout the container by laying out the contained [labelContainers]
-///   - Query size needed to paint each [labelContainers] and the whole container.
-class HorizontalFixedWidthAutoScaledLabelsContainer {
-  List<String> _labels;
-
-  /// Wrappers for label strings
-  List<LabelContainer> _labelContainers;
-
-  /// Width of container. This is the fixed width this container
-  /// must fill
-  double _width;
-
-  double _maxHeight = double.INFINITY;
-
-  double _calculatedHeight;
-
-  ChartOptions _options;
-
-  /// Padding left of the leftmost label
-  double _leftPad;
-
-  /// Padding between each label
-  double _betweenPad;
-
-  /// Padding right of the rightmost label
-  double _rightPad;
-
-  bool _layoutClean = false;
-
-  // TODO -4 STORING LABELSTYLE AS MEMBER IS TEMPORARY WHILE WE ARE PLUGGING FixedWidthHorizontalLabelsContainer TO X LABELS AND LEGEND LAYOUT, LAYOUTING ONCE
-  LabelStyle _labelStyle;
-
-  /// Calculated width allocated to each label.
-  ///
-  /// This width does not depend on text style - it is calculated
-  /// by evenly dividing the available container width (total width, taking
-  /// into account padding) by the number of labels.
-  double get allocatedLabelWidth {
-    double perLabelWidth =
-        (_width - (_leftPad + (_labels.length - 1) * _betweenPad + _rightPad)) /
-            _labels.length;
-    if (perLabelWidth <= 0.0) {
-      throw new StateError("Container does not leave space for labels.");
-    }
-    return perLabelWidth;
-  }
-
-  /// Validate height of this container against constructor [_maxHeight].
-  /// todo -3
-  double get validateHeight {
-    if (_maxHeight != double.INFINITY) {
-      if (_maxHeight - _calculatedHeight > util.epsilon) {
-        throw new StateError("Invalid size: $_maxHeight,  $_calculatedHeight");
-      }
-      return _calculatedHeight;
-    }
-    throw new StateError("Do not need to ask.");
-  }
-
-  bool isTooBig = true; // transient layout helper
-
-  /// Constructs the container that must fit into a fixed boundary
-  /// defined by the [width] parameter.
-  ///
-  /// Constraints
-  ///   - [_width] must be set to a finite value
-  ///     (not double.INFINITY). todo -2 add condition
-  ///   -  [_maxHeight] is optional; it may be INFINITY (in most cases would be).
-  ///      If not INFINITY, a validation is performed for height overflow todo -2 add condition
-  ///
-  /// Note: This class does not keep the LabelStyle,
-  ///       just passes it to member [LabelContainer]s.
-  ///       // todo -10
-  HorizontalFixedWidthAutoScaledLabelsContainer({
-    List<String> labels,
-    double width,
-    double maxHeight,
-    ChartOptions options,
-    double leftPad,
-    double betweenPad,
-    double rightPad,
-  }) {
-    _labels = labels;
-    _width = width;
-    _maxHeight = maxHeight; // optional
-    _options = options;
-    _leftPad = leftPad;
-    _betweenPad = betweenPad;
-    _rightPad = rightPad;
-
-    // Instance is created from a label list; each label is
-    //   wrapped as a [LabelContainer] instance.
-    // The initial text style of member [labelContainers] is from [ChartOptions].
-    // All member [LabelContainer] instances
-    //   in [labelContainers] share the text properties (style, direction, align etc.)
-    //   of this parent instance
-    _options = options;
-
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = new LabelStyle(
-      textStyle: options.labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
-      textScaleFactor: options.labelTextScaleFactor,
-    );
-    _labelStyle = labelStyle;
-
-    _labelContainers = labels.map((label) {
-      return new LabelContainer(
-        label: label,
-        labelMaxWidth: allocatedLabelWidth,
-        labelStyle: labelStyle,
-      );
-    }).toList();
-  }
-
-/* todo -4 put this section back
-  /// Provides methods to
-  ///   - Layout individual [labelContainers], for the purpose of
-  ///   finding if they overflow their even size width.
-  ///
-  /// anyLabelOverflows() - must be called after layoutIndividualLabels()
-  ///
-
-  ///   - Change text style for all labels (by setting members and applying
-  ///   them on the member [labelContainers].
-  ///   - Layout the container by laying out the contained [labelContainers].
-  ///   This should layout to maxWidth, and throw exception on overflow.
-  ///   - Query size needed to paint each [labelContainers] and the whole container.
-
-  /// todo -3 add all method signatures first, implement next
-  /// - layout the container with each label at evenly spaced positions
-  void layoutQuaranteeFitFirstTiltNextDecreaseFontNextSkipNextTrim() {
-    // TODO -4 FOR NOW, JUST LAYOUT, ONCE, NOT CHECKING FOR OVERFLOW
-    _applyStyleThenLayoutAndCheckOverflow(labelStyle: _labelStyle);
-
-    // todo -3
-    // call layoutAndCheckOverflow on all labelContainers
-    // if at least one overflows, tilt all labels by -70 degrees
-    // etc.
-  }
-
-  /// Layout member [_labelContainers] forcing the max width and
-  /// check for overflow.
-  ///
-  /// Returns `true` if at least one element of [_labelContainers] overflows,
-  /// `false` otherwise.
-  ///
-  /// As a sideeffect, if false is returned, all  [_labelContainers] were
-  /// layoued out, and can be painted.
-  bool _layoutAndCheckOverflow() {
-    // same as label_painted, on all
-    return _labelContainers.any((labelContainer) {
-      labelContainer.layoutAndCheckOverflow();
-    });
-  }
-
-  /// Apply new text style and layout, then check if
-  /// any member of [_labelContainers] overflows.
-  /// returns `true` if at least one overflows.
-  bool _applyStyleThenLayoutAndCheckOverflow({
-    LabelStyle labelStyle,
-  }) {
-    // Here need to process all painters, as we want to apply style to all.
-    _labelContainers.forEach((labelContainer) {
-      labelContainer.applyStyleThenLayoutAndCheckOverflow(
-          labelStyle: labelStyle);
-    });
-    // todo -3: PUT THIS BACK. FOR NOW, WE JUST LAYOUT ONCE, NOT CARING ABOUT OVERFLOW: return _labelContainers.any((labelContainer) {labelContainer.isOverflowing;});
-    return false;
   }
   */
 }

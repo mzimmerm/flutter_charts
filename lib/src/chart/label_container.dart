@@ -1,11 +1,14 @@
 import 'package:flutter/widgets.dart' as widgets
-    show TextStyle, TextSpan, TextPainter;
+    show TextStyle, TextSpan, TextPainter, RotatedBox, Container, Transform, Matrix4, Alignment; // todo-10 Container added
 import 'package:flutter/material.dart' as material show Colors;
 import 'dart:ui' as ui
-    show TextAlign, TextDirection, Size, Canvas, Offset;
+    show TextAlign, TextDirection, Size, Canvas, Offset, Color;// todo-10 Color added
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
+
+// todo -1 imports for Transform tests
+import 'dart:math' as math;
 
 /// Provides ability to paint one label anywhere on the chart,
 /// in Labels, Axis, Titles, etc.
@@ -51,6 +54,11 @@ class LabelContainer extends flutter_charts_container.Container {
     this._labelMaxWidth = labelMaxWidth;
     this._labelStyle = labelStyle;
 
+    /*
+    widgets.TextSpan textSpan =  new widgets.TextSpan(
+      text: new widgets.RotatedBox(quarterTurns: 3, child: new ui.TextSpan(text: "aaaa"));
+    );
+    */
     var text = new widgets.TextSpan(
       text: label,
       style: _labelStyle.textStyle, // All labels share one style object
@@ -72,7 +80,9 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Implementor of method in superclass [Container].
   void paint(ui.Canvas canvas) {
+    // todo -10: widgets.RotatedBox rotatedBox = new widgets.RotatedBox(quarterTurns:  3, child: new widgets.Text()); // todo -10
     this.textPainter.paint(canvas, offset);
+    // todo -10: ori: this.textPainter.paint(canvas, offset);
   }
 
   /// Implementor of method in superclass [Container].
@@ -214,6 +224,10 @@ class AxisLabelContainer extends LabelContainer {
 
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
+  }
+
+  void rotateBy90() {
+    super.rotateBy90();
   }
 }
 
