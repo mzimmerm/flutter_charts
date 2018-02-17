@@ -31,7 +31,7 @@ class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
   widgets.TextPainter textPainter;
-  bool _isOverflowingWidth = true;
+  bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
@@ -105,7 +105,7 @@ class LabelContainer extends flutter_charts_container.Container {
   ///     - and layed out using `textPainter.layout(maxWidth:)`
   ///   the subsequent `textPainter.paint(canvas)` call paints the label
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
-  ///   - [_isOverflowingWidth] can be asked but this is information only.
+  ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
   bool _layoutAndCheckOverflow() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
@@ -114,12 +114,12 @@ class LabelContainer extends flutter_charts_container.Container {
 
     // todo -3 change 1.0 pixels for epsilon or maybe just remove
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      _isOverflowingWidth = true;
+      _isOverflowingInLabelDirection = true;
     } else {
-      _isOverflowingWidth = false;
+      _isOverflowingInLabelDirection = false;
     }
 
-    return _isOverflowingWidth;
+    return _isOverflowingInLabelDirection;
   }
 
   // todo -4
@@ -144,7 +144,7 @@ class LabelContainer extends flutter_charts_container.Container {
   ///
   /// Allows parent containers to set some overflow affecting
   /// member, and re-layout
-  bool get isOverflowinWidth => _isOverflowingWidth; // todo -10 change to Mixin
+  bool get isOverflowinWidth => _isOverflowingInLabelDirection; // todo -10 change to Mixin
 
   // todo -10 change to Mixin: void setOverflowAffectingParameter();
 
@@ -178,7 +178,7 @@ class LabelStyle {
 /// and the label's graph "ticks".
 ///
 /// Generally, the owner (immediate parent) of this object decides what
-/// the offsets are:
+/// the [parentOffsetTick]s are:
 ///   - If owner is a [YContainer], all positions are relative to the top of
 ///     the container of y labels
 ///   - If owner is a [XContainer] All positions are relative to the left

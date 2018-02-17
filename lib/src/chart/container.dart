@@ -455,9 +455,10 @@ class XContainer extends ChartAreaContainer {
   List<AxisLabelContainer> _xLabelContainers;
 
   double _xLabelsMaxHeight;
+  double _xLabelsMaxWidth;
   double _gridStepWidth;
-  LabelDirection labelDirection = LabelDirection.Vertical; // todo -10
-
+  LabelDirection _labelDirection = LabelDirection.Horizontal; // todo -10
+  ui.Size _layoutSize;
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
@@ -475,7 +476,7 @@ class XContainer extends ChartAreaContainer {
           parentContainer: parentContainer,
         ) {
     _reLayoutStrategy = new DefaultLabelReLayoutStrategy(
-        container: this,
+      xContainer: this,
       options: parentContainer.options,
     );
   }
@@ -531,20 +532,26 @@ class XContainer extends ChartAreaContainer {
       xLabelContainer.layout();
 
       double halfLabelWidth = textPainter.size.width / 2;
-      double halfLabelHeight    = textPainter.size.height / 2;
+      double halfLabelHeight = textPainter.size.height / 2;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX =
           halfStepWidth + atIndexOffset + options.yLeftMinTicksWidth;
-      double labelLeftX = xTickX - halfLabelWidth; // same center - tickX, label
       double labelTopY = options.xLabelsPadTB; // down by XContainer padding
 
       xLabelContainer.parentOffsetTick = xTickX;
 
+      // tickX and label center are same. From there, calc labelLeft,
+      //   which differs for Horizontal / Vertical layouts.
       // labelLeftTop = label paint start - depends on the label direction.
-      // Optionally override Horizontal values.
-      if (labelDirection == LabelDirection.Vertical) {
-        labelLeftX = xTickX + halfLabelHeight;
+      double labelLeftX;
+      switch (_labelDirection) {
+        case LabelDirection.Horizontal:
+          labelLeftX = xTickX - halfLabelWidth;
+          break;
+        case LabelDirection.Vertical:
+          labelLeftX = xTickX + halfLabelHeight;
+          break;
       }
 
       var labelLeftTop = new ui.Offset(labelLeftX, labelTopY);
@@ -559,6 +566,25 @@ class XContainer extends ChartAreaContainer {
         .map((xLabelContainer) => xLabelContainer.textPainter)
         .map((widgets.TextPainter painter) => painter.size.height)
         .reduce(math.max);
+    _xLabelsMaxWidth = _xLabelContainers
+        .map((xLabelContainer) => xLabelContainer.textPainter)
+        .map((widgets.TextPainter painter) => painter.size.width)
+        .reduce(math.max);
+
+    double xLabelMaxYSize;
+    switch (_labelDirection) {
+      case LabelDirection.Horizontal:
+        xLabelMaxYSize = _xLabelsMaxHeight;
+        break;
+      case LabelDirection.Vertical:
+        xLabelMaxYSize = _xLabelsMaxWidth;
+        break;
+    }
+    // Set the layout size calculated by this layout
+    _layoutSize = new ui.Size(
+      _layoutExpansion._width,
+      xLabelMaxYSize + 2 * options.xLabelsPadTB,
+    );
 
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
@@ -576,30 +602,32 @@ class XContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    // todo 0-layout check this, fix layout sizes
-    var options = _parentContainer.options;
-    return new ui.Size(
-        _layoutExpansion._width, _xLabelsMaxHeight + 2 * options.xLabelsPadTB);
+    return _layoutSize;
   }
 
   void paint(ui.Canvas canvas) {
     // todo -10
 
-    canvas.save();
-    canvas.rotate(math.PI/2);
-    this.rotateBy90();
-    /////////////////////
-    for (var xLabelContainer in _xLabelContainers) {
-      xLabelContainer.paint(canvas);
-    }
-    ///////////////////////
-    canvas.restore();
+    switch (_labelDirection) {
+      case LabelDirection.Vertical:
+        canvas.save();
+        canvas.rotate(math.PI / 2);
+        this.rotateBy90();
 
-    /* todo -10 ori:
+        _paintCore(canvas);
+
+        canvas.restore();
+        break;
+      case LabelDirection.Horizontal:
+        _paintCore(canvas);
+        break;
+    }
+  }
+
+  void _paintCore(ui.Canvas canvas) {
     for (var xLabelContainer in _xLabelContainers) {
       xLabelContainer.paint(canvas);
     }
-     */
   }
 
   void rotateBy90() {
@@ -608,11 +636,16 @@ class XContainer extends ChartAreaContainer {
     }
   }
 
+  /////////////////////////////////////// vvvv todo -11
+  // Add method to check if labels overlap, when Vertical vs Horizontal
+
+  /////////////////////////////////////// ^^^^ todo -11
+
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
 
-enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels}
+enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels }
 
 /// Strategy of achieving that labels "fit" on the X axis.
 ///
@@ -624,20 +657,19 @@ enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels}
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxReLayouts] is reached.
 class DefaultLabelReLayoutStrategy {
-
-  Container    _container;
+  XContainer _xContainer;
   ChartOptions _options;
 
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
   /// from previous layouts
-  double       _labelFontSize;
-  int          _reLayoutsCounter = 0;
-  int          _showEveryNthLabel = 2; // todo -10 make available to clients
-  final int    _maxReLayouts = 5;// todo -10 make available to clients
+  double _labelFontSize;
+  int _reLayoutsCounter = 0;
+  int _showEveryNthLabel = 2; // todo -10 make available to clients
+  final int _maxReLayouts = 5; // todo -10 make available to clients
 
-  DefaultLabelReLayoutStrategy({Container container, ChartOptions options}) {
-    _container = container;
+  DefaultLabelReLayoutStrategy({XContainer xContainer, ChartOptions options}) {
+    _xContainer = xContainer;
     _options = options;
   }
 
@@ -646,7 +678,7 @@ class DefaultLabelReLayoutStrategy {
   double decreaseLabelFontRatio = 1.0; // todo -10 : 0.75;
 
   LabelReLayout atDepth(int depth) {
-    switch(depth) {
+    switch (depth) {
       case 1:
         return LabelReLayout.DecreaseLabelFont;
         break;
@@ -665,7 +697,8 @@ class DefaultLabelReLayoutStrategy {
   }
 
   void reLayout() {
-    if (true) {// todo -10 isOverflowinghWidth) {
+    if (true) {
+      // todo -10 ^^^ if(isOverflowinghWidth) {
 
       _reLayoutsCounter++;
 
@@ -674,12 +707,12 @@ class DefaultLabelReLayoutStrategy {
         return;
       }
 
-      switch(atDepth(_reLayoutsCounter)) {
+      switch (atDepth(_reLayoutsCounter)) {
         case LabelReLayout.DecreaseLabelFont:
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          _reLayoutRotateLabels();
+          _reLayoutRotateLabelsBy90();
           break;
         case LabelReLayout.SkipLabels:
           _reLayoutSkipLabels();
@@ -689,27 +722,25 @@ class DefaultLabelReLayoutStrategy {
     }
   }
 
-
-  void _reLayoutRotateLabels() {
+  void _reLayoutRotateLabelsBy90() {
     // todo -10
-    _container.layout();
+    _xContainer._labelDirection = LabelDirection.Vertical;
+    _xContainer.layout();
   }
 
   void _reLayoutDecreaseLabelFont() {
-
     // Decrease font and call layout again
     _labelFontSize ??= _options.labelFontSize;
     _labelFontSize *= this.decreaseLabelFontRatio;
-    _container.layout();
+    _xContainer.layout();
   }
 
   void _reLayoutSkipLabels() {
     // todo -10
 
     // Most advanced; Keep list of labels, but only display every nth
-    _container.layout();
+    _xContainer.layout();
   }
-
 }
 
 /// Defines how a container [layout] should expand the container in a direction.
@@ -827,7 +858,7 @@ abstract class Container {
   void paint(ui.Canvas canvas);
 
   void rotateBy90() {
-    _offset = new ui.Offset( _offset.dy, -1.0 * _offset.dx);
+    _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
   }
 
   /// Allow a parent container to move this Container.
