@@ -609,6 +609,9 @@ class XContainer extends ChartAreaContainer {
     // todo -10
 
     switch (_labelDirection) {
+      case LabelDirection.Horizontal:
+        _paintCore(canvas);
+        break;
       case LabelDirection.Vertical:
         canvas.save();
         canvas.rotate(math.PI / 2);
@@ -617,9 +620,6 @@ class XContainer extends ChartAreaContainer {
         _paintCore(canvas);
 
         canvas.restore();
-        break;
-      case LabelDirection.Horizontal:
-        _paintCore(canvas);
         break;
     }
   }
@@ -636,9 +636,33 @@ class XContainer extends ChartAreaContainer {
     }
   }
 
-  /////////////////////////////////////// vvvv todo -11
-  // Add method to check if labels overlap, when Vertical vs Horizontal
-
+  /////////////////////////////////////// vvvv todo -11 use this somewhere
+  // Checks the contained labels, represented as [AxisLabelContainer] overlap.
+  //
+  /// Only should be called after [layout]
+  ///
+  /// _gridStepWidth is a limit for each label container width in the X direction.
+  ///
+  /// Labels are layed out evenly, so if any label container size in the X direction
+  /// (width or height, depending on [_labelDirection] overflows _gridStepWidth,
+  /// labels containers [_xLabelContainers] DO overlap.
+        // todo -12 handle skipping - above ^^^ is not true in this case and must be handled.
+  ///
+  /// Identifying overlap is crucial in labels auto-layout
+  ///
+  bool _labelsOverlap() {
+    switch (_labelDirection) {
+      case LabelDirection.Horizontal:
+        if (this._xLabelContainers.any((axisLabelContainer) =>
+        axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
+        break;
+      case LabelDirection.Vertical:
+        if (this._xLabelContainers.any((axisLabelContainer) =>
+            axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
+        break;
+    }
+    return false;
+  }
   /////////////////////////////////////// ^^^^ todo -11
 
 }
@@ -677,7 +701,7 @@ class DefaultLabelReLayoutStrategy {
 
   double decreaseLabelFontRatio = 1.0; // todo -10 : 0.75;
 
-  LabelReLayout atDepth(int depth) {
+  LabelReLayout _atDepth(int depth) {
     switch (depth) {
       case 1:
         return LabelReLayout.DecreaseLabelFont;
@@ -696,9 +720,14 @@ class DefaultLabelReLayoutStrategy {
     }
   }
 
+  /// Core of the auto layout strategy.
+  ///
+  /// If labels in the [_xContainer] overlap, this method takes the
+  /// next prescribed auto-layout action - one of the actions defined in the
+  /// [LabelReLayout] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
+  ///
   void reLayout() {
-    if (true) {
-      // todo -10 ^^^ if(isOverflowinghWidth) {
+    if (_xContainer._labelsOverlap()) {
 
       _reLayoutsCounter++;
 
@@ -707,7 +736,7 @@ class DefaultLabelReLayoutStrategy {
         return;
       }
 
-      switch (atDepth(_reLayoutsCounter)) {
+      switch (_atDepth(_reLayoutsCounter)) {
         case LabelReLayout.DecreaseLabelFont:
           _reLayoutDecreaseLabelFont();
           break;
@@ -879,6 +908,7 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
+  /* todo -11 - remove. use layoutSize instead
   double get containerHeight {
     return layoutExpansion.height;
   }
@@ -886,6 +916,7 @@ abstract class Container {
   double get containerWidth {
     return layoutExpansion.width;
   }
+  */
 
 // todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
 
@@ -981,7 +1012,7 @@ class DataContainer extends ChartAreaContainer {
 
       LineContainer yLineContainer = new LineContainer(
         lineFrom: new ui.Offset(lineX, 0.0),
-        lineTo: new ui.Offset(lineX, containerHeight),
+        lineTo: new ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(options),
       );
 
@@ -994,7 +1025,7 @@ class DataContainer extends ChartAreaContainer {
       double x = chartContainer.xTickXs.last + xGridStep / 2;
       LineContainer yLineContainer = new LineContainer(
           lineFrom: new ui.Offset(x, 0.0),
-          lineTo: new ui.Offset(x, containerHeight),
+          lineTo: new ui.Offset(x, layoutSize.height),
           linePaint: gridLinesPaint(options));
       this._yGridLinesContainer.addLine(yLineContainer);
     }
