@@ -404,14 +404,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  new Text('>>>'),
+                  new Text('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'),
                   // LineChart is CustomPaint:
                   // A widget that provides a canvas on which to draw
                   // during the paint phase.
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart,
+                    child: verticalBarChart,
                   ),
                   new Text('<<<'),
                 ],

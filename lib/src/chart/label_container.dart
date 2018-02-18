@@ -88,8 +88,9 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Implementor of method in superclass [Container].
   void layout() {
     // todo -3 consider option: layoutSimple() vs. layoutAndCheckOverflow();
-    _layoutAndCheckOverflow();
+    _layoutAndCheckOverflowInTextDirection();
   }
+
 
   // ##### Internal methods
 
@@ -97,7 +98,13 @@ class LabelContainer extends flutter_charts_container.Container {
   /// specifying the maximum allowed width [_labelMaxWidth],
   /// then tests if the label fits the width.
   ///
-  /// Returns `true` if label would overflow, `false` otherwise.
+  /// Returns `true` if label would overflow in the direction of text,
+  /// `false` otherwise.
+  ///
+  /// The direction of text is important,  we check for overflow in letters'
+  /// horizontal (length) direction, which is normally along horizontal direction.
+  /// But note that canvas can be rotated, so we may be checking along
+  /// vertical direction in that case.
   ///
   /// Implementation and Behaviour:
   ///   - Because the underlying [textPainter] is always
@@ -106,7 +113,7 @@ class LabelContainer extends flutter_charts_container.Container {
   ///   the subsequent `textPainter.paint(canvas)` call paints the label
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
   ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
-  bool _layoutAndCheckOverflow() {
+  bool _layoutAndCheckOverflowInTextDirection() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
     textPainter.layout(maxWidth: _labelMaxWidth);
@@ -125,7 +132,7 @@ class LabelContainer extends flutter_charts_container.Container {
   // todo -4
   bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
     _labelStyle = labelStyle;
-    bool doesOverflow = _layoutAndCheckOverflow();
+    bool doesOverflow = _layoutAndCheckOverflowInTextDirection();
     return doesOverflow;
   }
 

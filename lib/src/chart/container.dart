@@ -646,7 +646,7 @@ class XContainer extends ChartAreaContainer {
   /// Labels are layed out evenly, so if any label container size in the X direction
   /// (width or height, depending on [_labelDirection] overflows _gridStepWidth,
   /// labels containers [_xLabelContainers] DO overlap.
-        // todo -12 handle skipping - above ^^^ is not true in this case and must be handled.
+  // todo -12 handle skipping - above ^^^ is not true in this case and must be handled.
   ///
   /// Identifying overlap is crucial in labels auto-layout
   ///
@@ -654,7 +654,7 @@ class XContainer extends ChartAreaContainer {
     switch (_labelDirection) {
       case LabelDirection.Horizontal:
         if (this._xLabelContainers.any((axisLabelContainer) =>
-        axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
+            axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
         break;
       case LabelDirection.Vertical:
         if (this._xLabelContainers.any((axisLabelContainer) =>
@@ -728,7 +728,6 @@ class DefaultLabelReLayoutStrategy {
   ///
   void reLayout() {
     if (_xContainer._labelsOverlap()) {
-
       _reLayoutsCounter++;
 
       if (_reLayoutsCounter > _maxReLayouts) {
@@ -874,6 +873,14 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
+  /// If size constraints imposed by parent are too tight,
+  /// some internal calculations of sizes may lead to negative values,
+  /// making painting of this container not possible
+  /// The [doNotPaintOnDistressedSize] allows to specify under such conditions,
+  /// the container will not paint. Note that setting this may provide surprizes,
+  /// instead of exceptions.
+  bool doNotPaintOnDistressedSize = true;
+
   Container({
     LayoutExpansion layoutExpansion,
   }) {
@@ -907,16 +914,6 @@ abstract class Container {
   /// as that gives a reliabel pre-layout size in directions
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
-
-  /* todo -11 - remove. use layoutSize instead
-  double get containerHeight {
-    return layoutExpansion.height;
-  }
-
-  double get containerWidth {
-    return layoutExpansion.width;
-  }
-  */
 
 // todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
 
@@ -1199,7 +1196,10 @@ class LegendItemContainer extends Container {
     double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
     double labelMaxWidth = _layoutExpansion.width -
         (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-
+    if (doNotPaintOnDistressedSize && labelMaxWidth <= 0.0) {
+      _layoutSize = new ui.Size(0.0, 0.0);
+      return;
+    }
     _labelContainer = new LabelContainer(
       label: _label,
       labelMaxWidth: labelMaxWidth,
@@ -1262,11 +1262,15 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
+    if (doNotPaintOnDistressedSize) return;
+
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
+    if (doNotPaintOnDistressedSize) return;
+
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
     _labelContainer.applyParentOffset(offset);
