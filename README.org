@@ -2,6 +2,7 @@
 #+TODO: TODO IN-PROGRESS LATER DONE
 
 * Table of contents :TOC:
+- [[#new-releases---features][New Releases - Features]]
 - [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
 - [[#a-chart-created-using-flutter_charts---an-example][A chart created using flutter_charts - an example]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
@@ -23,6 +24,13 @@
   - [[#adding-images-to-readmeorg][Adding images to README.org]]
   - [[#pub---publishing-workflow-on-httpspubdartlangorg][Pub - Publishing workflow on https://pub.dartlang.org]]
 - [[#removed-code][REMOVED CODE]]
+
+* TODO New Releases - Features
+
+features in latest release (todo number)
+- Iterative auto label layout
+  - Chart automatically indicates X label overlap, and follows with rule-based iterative re-layout. By default, re-layout iterations are:
+    - TODO
 
 * Flutter Charts - How to include the flutter_charts library in your application
 

@@ -457,8 +457,13 @@ class XContainer extends ChartAreaContainer {
   double _xLabelsMaxHeight;
   double _xLabelsMaxWidth;
   double _gridStepWidth;
+  /// Size allocated for shown labels
+  double _shownLabelsStepWidth;
   LabelDirection _labelDirection = LabelDirection.Horizontal; // todo -10
   ui.Size _layoutSize;
+  bool _skippingLabels = false;
+  int _showEveryNthLabel = 1;
+
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
@@ -485,9 +490,11 @@ class XContainer extends ChartAreaContainer {
   ///
   /// Evenly divides the available width to all labels (spacing included).
   /// First / Last vertical line is at the center of first / last label.
+  ///
+  /// Note: the variables terminology (width, height) assumes
+  ///       labelDirection = LabelDirection.Horizontal
   layout() {
-    // Note: the variables terminology (width, height) assumes
-    //       labelDirection = LabelDirection.Horizontal
+
 
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List();
@@ -499,9 +506,15 @@ class XContainer extends ChartAreaContainer {
     double yTicksWidth =
         options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
 
-    double labelMaxAllowedWidth =
-        (_layoutExpansion._width - yTicksWidth) / xLabels.length;
+    double availableWidth = _layoutExpansion._width - yTicksWidth;
 
+    double labelMaxAllowedWidth = availableWidth / xLabels.length;
+
+    /////////////////////// todo -11
+    int numShownLabels = (xLabels.length / _showEveryNthLabel).toInt();
+    _shownLabelsStepWidth = availableWidth / numShownLabels;
+
+    ////////////////////////
     _gridStepWidth = labelMaxAllowedWidth;
 
     // todo -10 labelTextStyle
@@ -520,12 +533,15 @@ class XContainer extends ChartAreaContainer {
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
+
     for (var xIndex = 0; xIndex < xLabels.length; xIndex++) {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelStyle: labelStyle,
       );
+
+      xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
       // core of X layout calcs - lay out label and find X middle
       var textPainter = xLabelContainer.textPainter;
@@ -626,7 +642,7 @@ class XContainer extends ChartAreaContainer {
 
   void _paintCore(ui.Canvas canvas) {
     for (var xLabelContainer in _xLabelContainers) {
-      xLabelContainer.paint(canvas);
+      if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
     }
   }
 
@@ -636,7 +652,11 @@ class XContainer extends ChartAreaContainer {
     }
   }
 
-  /////////////////////////////////////// vvvv todo -11 use this somewhere
+  bool _isLabelOnIndexShown(int xIndex) {
+      if (xIndex % _showEveryNthLabel == 0) return true;
+      return false;
+  }
+
   // Checks the contained labels, represented as [AxisLabelContainer] overlap.
   //
   /// Only should be called after [layout]
@@ -654,17 +674,21 @@ class XContainer extends ChartAreaContainer {
     switch (_labelDirection) {
       case LabelDirection.Horizontal:
         if (this._xLabelContainers.any((axisLabelContainer) =>
-            axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
+            !axisLabelContainer.skipByParent &&
+            axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+          return true;
+        }
         break;
       case LabelDirection.Vertical:
         if (this._xLabelContainers.any((axisLabelContainer) =>
-            axisLabelContainer.layoutSize.width > _gridStepWidth)) return true;
+            !axisLabelContainer.skipByParent &&
+            axisLabelContainer.layoutSize.height > _shownLabelsStepWidth)) {
+          return true;
+        }
         break;
     }
     return false;
   }
-  /////////////////////////////////////// ^^^^ todo -11
-
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
@@ -689,7 +713,14 @@ class DefaultLabelReLayoutStrategy {
   /// from previous layouts
   double _labelFontSize;
   int _reLayoutsCounter = 0;
-  int _showEveryNthLabel = 2; // todo -10 make available to clients
+  int _showEveryNthLabel = 3; // todo -10 make available to clients
+  /// On multiple auto layout iterations, every new iteration skips more labels.
+  /// every iteration, the number of labels skipped is multiplied by
+  /// [_multiplyLabelSkip]. For example, if on first layout,
+  /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
+  /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
+  int _multiplyLabelSkip = 2;
+
   final int _maxReLayouts = 5; // todo -10 make available to clients
 
   DefaultLabelReLayoutStrategy({XContainer xContainer, ChartOptions options}) {
@@ -767,6 +798,11 @@ class DefaultLabelReLayoutStrategy {
     // todo -10
 
     // Most advanced; Keep list of labels, but only display every nth
+    _xContainer._skippingLabels = true;
+    _xContainer._showEveryNthLabel ??= this._showEveryNthLabel;
+    if (_xContainer._showEveryNthLabel != this._showEveryNthLabel) {
+      _xContainer._showEveryNthLabel *= this._multiplyLabelSkip;
+    }
     _xContainer.layout();
   }
 }
@@ -873,13 +909,28 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
+  /// [skipByParent] directs the parent container that this container should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  bool skipByParent = false;
+
+  /// The [skipOnDistressedSize] allows to specify under constraint conditions,
+  /// the container will not paint. Note that setting this may provide surprizes,
+  /// instead of exceptions.
+  ///
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
   /// making painting of this container not possible
-  /// The [doNotPaintOnDistressedSize] allows to specify under such conditions,
-  /// the container will not paint. Note that setting this may provide surprizes,
-  /// instead of exceptions.
-  bool doNotPaintOnDistressedSize = true;
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  ///
+  /// Unlike [skipByParent], which directs the parent to ignore this container,
+  /// [skipOnDistressedSize] is intended to be checked in this containers code
+  /// on some invalid conditions, then it's action applied.
+  bool skipOnDistressedSize = true;
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -1196,7 +1247,7 @@ class LegendItemContainer extends Container {
     double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
     double labelMaxWidth = _layoutExpansion.width -
         (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    if (doNotPaintOnDistressedSize && labelMaxWidth <= 0.0) {
+    if (skipOnDistressedSize && labelMaxWidth <= 0.0) {
       _layoutSize = new ui.Size(0.0, 0.0);
       return;
     }
@@ -1262,14 +1313,14 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-    if (doNotPaintOnDistressedSize) return;
+    if (skipOnDistressedSize) return;
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
-    if (doNotPaintOnDistressedSize) return;
+    if (skipOnDistressedSize) return;
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
