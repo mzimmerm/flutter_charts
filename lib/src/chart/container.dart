@@ -6,6 +6,9 @@ import 'package:flutter_charts/src/util/collection.dart' as custom_collection
 
 import 'dart:math' as math show max, min, PI;
 
+import 'package:vector_math/vector_math.dart' as vector_math
+    show Matrix2, Vector2;
+
 import 'package:flutter/widgets.dart' as widgets
     show TextStyle, TextSpan, TextPainter;
 
@@ -111,7 +114,7 @@ abstract class ChartContainer {
 
     legendContainer.layout();
     ui.Size legendContainerSize = legendContainer.layoutSize;
-    ui.Offset legendContainerOffset = new ui.Offset(0.0, 0.0);
+    ui.Offset legendContainerOffset = ui.Offset.zero;
     legendContainer.applyParentOffset(legendContainerOffset);
 
     // ### 3. Ask [YContainer] to provide Y label container width.
@@ -466,7 +469,21 @@ class XContainer extends ChartAreaContainer {
   ui.Size _layoutSize;
   bool _skippingLabels = false;
   int _showEveryNthLabel = 1;
+
+  /// Matrix prepared with the radians by which labels are tilted.
+  ///
+  /// This is separate from [Canvas._tiltMatrix] which is a tilt on whole
+  /// canvas. This member just stores up tilt for all child labels.
+  vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
+
+  /// In addition to [_labelTiltMatrix], hold on radians for canvas rotation.
   double _labelsTiltRadians = 0.0;
+
+  void set labelsTiltRadiansAndMatrix(double radians) {
+    _labelsTiltRadians = radians;
+    _labelTiltMatrix   = new vector_math.Matrix2.rotation(radians);
+    _labelDirection    = LabelDirection.Tilted;
+  }
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
@@ -513,10 +530,8 @@ class XContainer extends ChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    //////////
     int numShownLabels = (xLabels.length / _showEveryNthLabel).toInt();
     _shownLabelsStepWidth = availableWidth / numShownLabels;
-    ///////// todo -11 - is this ^^^^ unused?
 
     LabelStyle labelStyle = _styleForLabels(options);
 
@@ -533,14 +548,16 @@ class XContainer extends ChartAreaContainer {
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
+      // Before label layout, apply the tilt, although this parent is not tilted
+      xLabelContainer.applyParentTiltMatrix(_labelTiltMatrix);
 
-      // core of X layout calcs - lay out label and find X middle of the
-      //   bounding rectangle
+      // Core of X layout calcs - lay out label to find the size that is takes,
+      //   then find X middle of the bounding rectangle
       xLabelContainer.layout(); // get textPainter sizes, not orientation or pos
 
       var textPainter = xLabelContainer.textPainter;
       ui.Rect labelBound = new ui.Rect.fromPoints(
-          new ui.Offset(0.0, 0.0),
+          ui.Offset.zero,
           new ui.Offset(textPainter.size.width, textPainter.size.height));
       double halfLabelWidth = labelBound.width / 2;
       double halfLabelHeight = labelBound.height / 2;
@@ -640,11 +657,15 @@ class XContainer extends ChartAreaContainer {
         _paintLabelContainers(canvas);
         break;
       case LabelDirection.Tilted:
-        double angle = this._labelsTiltRadians;
-        canvas.save();
-        canvas.rotate(angle);
-        this.rotateLabelsByRadians(_inverseAngle(angle));
+        // todo -12 double angle = _labelsTiltRadians;
+      // todo -12 _labelTiltMatrix = new vector_math.Matrix2.rotation(radians);
 
+        canvas.save();
+        canvas.rotate(_labelsTiltRadians);
+
+        for (var xLabelContainer in _xLabelContainers) {
+          xLabelContainer.tiltLabels();
+        }
         _paintLabelContainers(canvas);
 
         canvas.restore();
@@ -655,13 +676,6 @@ class XContainer extends ChartAreaContainer {
   void _paintLabelContainers(ui.Canvas canvas) {
     for (var xLabelContainer in _xLabelContainers) {
       if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
-    }
-  }
-
-  // todo -12 go over all rotate methods such as this rotateLabelsByRadians
-  void rotateLabelsByRadians(double angle) {
-    for (var xLabelContainer in _xLabelContainers) {
-      xLabelContainer.rotateLabelsByRadians(angle);
     }
   }
 
@@ -788,8 +802,8 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          _xContainer._labelsTiltRadians = math.PI / 2;
-          _reLayoutRotateLabelsByRadians(_xContainer._labelsTiltRadians);
+          double radians = math.PI / 2;
+          _reLayoutRotateLabels(radians);
           break;
         case LabelReLayout.SkipLabels:
           _reLayoutSkipLabels();
@@ -799,10 +813,9 @@ class DefaultLabelReLayoutStrategy {
     }
   }
 
-  void _reLayoutRotateLabelsByRadians(double angle) {
+  void _reLayoutRotateLabels(double radians) {
     // todo -10
-    _xContainer._labelsTiltRadians = angle;
-    _xContainer._labelDirection = LabelDirection.Tilted;
+    _xContainer.labelsTiltRadiansAndMatrix = radians;
     _xContainer.layout();
   }
 
@@ -928,6 +941,17 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
+  // todo -12 todo -11 this vvv need be removed - only serves rotation!!
+  void set offset(ui.Offset offset) => _offset = offset;
+
+  /// Maintains current tiltMatrix, a sum of all tiltMatrixs
+  /// passed in subsequent calls to [applyParentTiltMatrix] during object
+  /// lifetime.
+  vector_math.Matrix2 _tiltMatrix = new vector_math.Matrix2.identity();
+
+  /// Provides access to tiltMatrix for extension's [paint] methods.
+  vector_math.Matrix2 get tiltMatrix => _tiltMatrix;
+
   /// [skipByParent] directs the parent container that this container should not be
   /// painted or layed out - as if it collapsed to zero size.
   ///
@@ -968,15 +992,6 @@ abstract class Container {
     _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
   }
   */
-  void rotateLabelsByRadians(double angle) {
-    // todo -10: This must be rotating by inverse of angle
-    // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
-    // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
-    // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
-    // KEEP: for PI/2: _offset = new ui.Offset(-1.0 * _offset.dy, _offset.dx);
-    _offset = new ui.Offset(
-        _offset.dy, -1.0 * _offset.dx); // rotated PI/2 COUNTERCLOCK WISE
-  }
 
   /// Allow a parent container to move this Container.
   ///
@@ -984,6 +999,12 @@ abstract class Container {
   /// this [Container].
   void applyParentOffset(ui.Offset offset) {
     _offset += offset;
+  }
+
+  /// Tilt may apply to the whole container or only some elements (?)
+  void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
+    if (tiltMatrix == new vector_math.Matrix2.identity()) return;
+    this._tiltMatrix = this._tiltMatrix * tiltMatrix;
   }
 
   /// Size after [layout] has been called.

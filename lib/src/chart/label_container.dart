@@ -8,14 +8,17 @@ import 'package:flutter/widgets.dart' as widgets
         Matrix4,
         Alignment;
 import 'package:flutter/material.dart' as material show Colors;
+
+import 'package:vector_math/vector_math.dart' as vector_math
+    show Matrix2, Vector2;
+
 import 'dart:ui' as ui
     show TextAlign, TextDirection, Size, Canvas, Offset, Rect;
+
 import 'package:flutter_charts/src/chart/options.dart';
+
 import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
-
-// todo -1 imports for Transform tests
-import 'dart:math' as math;
 
 import '../util/geometry.dart' as geometry;
 
@@ -91,14 +94,11 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Implementor of method in superclass [Container].
   void paint(ui.Canvas canvas) {
-    // todo -10: widgets.RotatedBox rotatedBox = new widgets.RotatedBox(quarterTurns:  3, child: new widgets.Text()); // todo -10
     this.textPainter.paint(canvas, offset);
-    // todo -10: ori: this.textPainter.paint(canvas, offset);
   }
 
   /// Implementor of method in superclass [Container].
   void layout() {
-    // todo -3 consider option: layoutSimple() vs. layoutAndCheckOverflow();
     _layoutAndCheckOverflowInTextDirection();
     // Only after layout, we know the envelope of tilted label
     // todo -12 : it is now questionable if the PivotRotatedRect should be Rect
@@ -257,7 +257,26 @@ class AxisLabelContainer extends LabelContainer {
     super.applyParentOffset(offset);
   }
 
-  void rotateLabelsByRadians(double angle) {
-    super.rotateLabelsByRadians(angle);
+  // todo -6 todo -1 document, and likely move up to a class named RotatedContainer or similar
+  void tiltLabels() {
+    // todo -12: This must be rotating by inverse of angle
+    // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
+    // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
+    // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
+    // KEEP: for PI/2: _offset = new ui.Offset(-1.0 * _offset.dy, _offset.dx);
+    /*
+    applyParentOffset(new ui.Offset(
+        offset.dx, - offset.dy)); // rotated PI/2 COUNTERCLOCK WISE
+//    offset.dy, -1.0 * offset.dx)); // rotated PI/2 COUNTERCLOCK WISE
+   */
+
+    // KEEP, works: offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
+
+    /* todo -12
+    offset = geometry.rotateOffset(
+      offset: offset,
+      rotatorMatrix: _labelTiltMatrix);
+      */
+    offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
   }
 }

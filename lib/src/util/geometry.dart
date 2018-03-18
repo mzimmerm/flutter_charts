@@ -13,6 +13,11 @@ vector_math.Vector2 offsetToVector2(ui.Offset offset) =>
 ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
     new ui.Offset(vector.x, vector.y);
 
+ui.Offset rotateOffset({ui.Offset offset, vector_math.Matrix2 rotatorMatrix}) {
+
+  return vector2ToOffset(rotatorMatrix * offsetToVector2(offset));
+}
+
 /// Represents a rotated rectangle with unrotated envelope.
 ///
 /// The corners of rectangle rotated by (about) by -PI/4 are marked as "x" below.
@@ -64,11 +69,11 @@ class PivotRotatedRect {
   /// See [PivotRotatedRect.from({ui.Rect rect, ui.Offset pivot, double radians})]
   /// for details.
   PivotRotatedRect.centerPivotedFrom({ui.Rect rect, double radians}) {
-    /* todo -12
-    if (!(-math.PI <= _radians && _radians <= math.PI)) {
+
+    if (!(-1 * math.PI <= radians && radians <= math.PI)) {
       throw new StateError("angle must be between -PI and +PI");
     }
-    */
+
 
     _radians = radians;
 
@@ -79,7 +84,7 @@ class PivotRotatedRect {
       bottomLeft = rect.bottomLeft;
       bottomRight = rect.bottomRight;
 
-      //return; todo -12
+      return;
     }
 
     // shift = translate rect to coordinates where center = origin of rect
