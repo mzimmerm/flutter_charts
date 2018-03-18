@@ -396,7 +396,7 @@ class YContainer extends ChartAreaContainer {
       var yLabelContainer = new AxisLabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
-        labelTiltRadians: 0.0,
+        labelTiltMatrix: new vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
@@ -542,14 +542,14 @@ class XContainer extends ChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTiltRadians: 0.0,
+        labelTiltMatrix: _labelTiltMatrix,
         labelStyle: labelStyle,
       );
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
       // Before label layout, apply the tilt, although this parent is not tilted
-      xLabelContainer.applyParentTiltMatrix(_labelTiltMatrix);
+      // todo -12 do we need the applyParentTiltMatrix????? xLabelContainer.applyParentTiltMatrix(_labelTiltMatrix);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
       //   then find X middle of the bounding rectangle
@@ -803,6 +803,11 @@ class DefaultLabelReLayoutStrategy {
           break;
         case LabelReLayout.RotateLabels:
           double radians = math.PI / 2;
+          // todo -12
+          //  angle must be in interval `<-math.PI, +math.PI>`
+          if (!(-1 * math.PI <= radians && radians <= math.PI)) {
+            throw new StateError("angle must be between -PI and +PI");
+          }
           _reLayoutRotateLabels(radians);
           break;
         case LabelReLayout.SkipLabels:
@@ -971,9 +976,10 @@ abstract class Container {
   /// appropriate support for collapse to work.
   ///
   /// Unlike [skipByParent], which directs the parent to ignore this container,
-  /// [skipOnDistressedSize] is intended to be checked in this containers code
-  /// on some invalid conditions, then it's action applied.
-  bool skipOnDistressedSize = true;
+  /// [skipOnDistressedSize] is intended to be checked in code
+  /// for some invalid conditions, and if they are reached, bypass painting
+  /// the container.
+  bool skipOnDistressedSize = true; // todo -12 set to true for distress test
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -1305,7 +1311,7 @@ class LegendItemContainer extends Container {
     _labelContainer = new LabelContainer(
       label: _label,
       labelMaxWidth: labelMaxWidth,
-      labelTiltRadians: 0.0,
+      labelTiltMatrix: new vector_math.Matrix2.identity(),
       labelStyle: _labelStyle,
     );
 
@@ -1365,14 +1371,14 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-    if (skipOnDistressedSize) return;
+    if (skipOnDistressedSize) return; // todo -12 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
-    if (skipOnDistressedSize) return;
+    if (skipOnDistressedSize) return; // todo -12 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);

@@ -36,7 +36,7 @@ ui.Offset rotateOffset({ui.Offset offset, vector_math.Matrix2 rotatorMatrix}) {
 ///     +-x------+
 
 class PivotRotatedRect {
-  double _radians;
+  vector_math.Matrix2 _rotatorMatrix;
 
   ui.Offset topLeft;
   ui.Offset topRight;
@@ -46,8 +46,8 @@ class PivotRotatedRect {
   /// The smallest non-rotated rectangle which envelops the rotated rectangle.
   ui.Rect envelopeRect;
 
-  /// Represents a rectangle [rect] rotated around [pivot]
-  /// by angle [rotationAngle].
+  /// Represents a rectangle [rect] rotated around pivot at center of rectangle,
+  /// by [rotatorMatrix] .
   ///
   /// Positive rotations are counter clockwise, as in math.
   ///
@@ -59,25 +59,11 @@ class PivotRotatedRect {
   ///
   /// Currently only pivot = rectangle center is supported.
   ///
-  PivotRotatedRect.from({ui.Rect rect, ui.Offset pivot, double radians}) {
-    throw new StateError("Currently not supported");
-  }
+  PivotRotatedRect.centerPivotedFrom({ui.Rect rect, vector_math.Matrix2 rotatorMatrix}) {
 
-  /// Represents a rectangle [rect] rotated around it's center
-  /// by angle [rotationAngle], which must be in interval `<-math.PI, +math.PI>`.
-  ///
-  /// See [PivotRotatedRect.from({ui.Rect rect, ui.Offset pivot, double radians})]
-  /// for details.
-  PivotRotatedRect.centerPivotedFrom({ui.Rect rect, double radians}) {
+    _rotatorMatrix = rotatorMatrix;
 
-    if (!(-1 * math.PI <= radians && radians <= math.PI)) {
-      throw new StateError("angle must be between -PI and +PI");
-    }
-
-
-    _radians = radians;
-
-    if (_radians == 0.0) {
+    if (_rotatorMatrix == new vector_math.Matrix2.identity()) {
       envelopeRect = rect;
       topLeft = rect.topLeft;
       topRight = rect.topRight;
@@ -96,12 +82,10 @@ class PivotRotatedRect {
     bottomRight = movedToCenterAsOrigin.bottomRight;
 
     // Rotate all corners of the rectangle
-    vector_math.Matrix2 rotM = new vector_math.Matrix2.rotation(radians);
-
-    topLeft = vector2ToOffset(rotM * offsetToVector2(topLeft));
-    topRight = vector2ToOffset(rotM * offsetToVector2(topRight));
-    bottomLeft = vector2ToOffset(rotM * offsetToVector2(bottomLeft));
-    bottomRight = vector2ToOffset(rotM * offsetToVector2(bottomRight));
+    topLeft = vector2ToOffset(_rotatorMatrix * offsetToVector2(topLeft));
+    topRight = vector2ToOffset(_rotatorMatrix * offsetToVector2(topRight));
+    bottomLeft = vector2ToOffset(_rotatorMatrix * offsetToVector2(bottomLeft));
+    bottomRight = vector2ToOffset(_rotatorMatrix * offsetToVector2(bottomRight));
 
     var rotOffsets = [topLeft, topRight, bottomLeft, bottomRight];
 
@@ -125,15 +109,5 @@ class PivotRotatedRect {
     bottomRight = bottomRight + rect.center;
   }
 
-  /// Offset where text painter would consider topLeft when text direction
-  /// in left to right.
-  /// This is the point which needs be rotated by inverse to canvas rotation,
-  ///   when drawing the tilted label text.
-  ui.Offset get adjustOffsetOnCanvasRotate {
-    if (-math.PI / 2 < _radians && _radians <= math.PI / 2) {
-      return topLeft;
-    } else {
-      return topRight;
-    }
-  }
+
 }
