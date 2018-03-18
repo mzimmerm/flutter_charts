@@ -1,14 +1,23 @@
 import 'package:flutter/widgets.dart' as widgets
-    show TextStyle, TextSpan, TextPainter, RotatedBox, Container, Transform, Matrix4, Alignment; // todo-10 Container added
+    show
+        TextStyle,
+        TextSpan,
+        TextPainter,
+        RotatedBox,
+        Transform,
+        Matrix4,
+        Alignment;
 import 'package:flutter/material.dart' as material show Colors;
 import 'dart:ui' as ui
-    show TextAlign, TextDirection, Size, Canvas, Offset, Color;// todo-10 Color added
+    show TextAlign, TextDirection, Size, Canvas, Offset, Rect;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
 
 // todo -1 imports for Transform tests
 import 'dart:math' as math;
+
+import '../util/geometry.dart' as geometry;
 
 /// Provides ability to paint one label anywhere on the chart,
 /// in Labels, Axis, Titles, etc.
@@ -30,13 +39,17 @@ import 'dart:math' as math;
 class LabelContainer extends flutter_charts_container.Container {
   String _label;
   double _labelMaxWidth;
+  double _labelTiltRadians;
   widgets.TextPainter textPainter;
+  geometry.PivotRotatedRect _tiltedLabelEnvelope;
+
   bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
+
   // todo -2 add to signature if boundaries overflown
   ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
@@ -48,17 +61,14 @@ class LabelContainer extends flutter_charts_container.Container {
   LabelContainer({
     String label,
     double labelMaxWidth,
+    double labelTiltRadians,
     LabelStyle labelStyle,
   }) {
     this._label = label;
     this._labelMaxWidth = labelMaxWidth;
+    this._labelTiltRadians = labelTiltRadians;
     this._labelStyle = labelStyle;
 
-    /*
-    widgets.TextSpan textSpan =  new widgets.TextSpan(
-      text: new widgets.RotatedBox(quarterTurns: 3, child: new ui.TextSpan(text: "aaaa"));
-    );
-    */
     var text = new widgets.TextSpan(
       text: label,
       style: _labelStyle.textStyle, // All labels share one style object
@@ -66,7 +76,8 @@ class LabelContainer extends flutter_charts_container.Container {
     textPainter = new widgets.TextPainter(
       text: text,
       textDirection: _labelStyle.textDirection,
-      textAlign: _labelStyle.textAlign, // center in available space
+      textAlign: _labelStyle.textAlign,
+      // center in available space
       textScaleFactor: _labelStyle.textScaleFactor,
       ellipsis: "...", // forces a single line - without it, wraps at width
     ); //  textScaleFactor does nothing ??
@@ -89,8 +100,14 @@ class LabelContainer extends flutter_charts_container.Container {
   void layout() {
     // todo -3 consider option: layoutSimple() vs. layoutAndCheckOverflow();
     _layoutAndCheckOverflowInTextDirection();
+    // Only after layout, we know the envelope of tilted label
+    // todo -12 : it is now questionable if the PivotRotatedRect should be Rect
+    // todo -12 : it seems more natural to make it Offset (and assume it starts at origin, then no moving around needed
+    _tiltedLabelEnvelope = new geometry.PivotRotatedRect.centerPivotedFrom(
+      rect: offset & textPainter.size, // offset & size => Rect
+      radians: this._labelTiltRadians,
+    );
   }
-
 
   // ##### Internal methods
 
@@ -136,7 +153,6 @@ class LabelContainer extends flutter_charts_container.Container {
     return doesOverflow;
   }
 
-
   void layoutSimple() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
@@ -151,9 +167,10 @@ class LabelContainer extends flutter_charts_container.Container {
   ///
   /// Allows parent containers to set some overflow affecting
   /// member, and re-layout
-  bool get isOverflowinWidth => _isOverflowingInLabelDirection; // todo -10 change to Mixin
+  bool get isOverflowinWidth =>
+      _isOverflowingInLabelDirection; // todo -10 change to Mixin
 
-  // todo -10 change to Mixin: void setOverflowAffectingParameter();
+// todo -10 change to Mixin: void setOverflowAffectingParameter();
 
 }
 
@@ -176,6 +193,11 @@ class LabelStyle {
 /// Subclass of [LabelContainer] is extended with member [parentOffsetTick],
 /// which maintains the container's center position in
 /// immediate parent's coordinates.
+///
+/// **This violates independence of parents not knowing
+/// and not needing their children;
+/// here, when used in parent [XContainer], the parent is storing
+/// some of it's properties on children.**
 ///
 /// [parentOffsetTick] can be thought of as position of the "tick" showing
 /// the label's value on axis - the immediate parent
@@ -221,20 +243,21 @@ class AxisLabelContainer extends LabelContainer {
   AxisLabelContainer({
     String label,
     double labelMaxWidth,
+    double labelTiltRadians,
     LabelStyle labelStyle,
   })
       : super(
-    label: label,
-    labelMaxWidth: labelMaxWidth,
-    labelStyle: labelStyle,
-  );
+          label: label,
+          labelMaxWidth: labelMaxWidth,
+          labelTiltRadians: labelTiltRadians,
+          labelStyle: labelStyle,
+        );
 
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
   }
 
-  void rotateBy90() {
-    super.rotateBy90();
+  void rotateLabelsByRadians(double angle) {
+    super.rotateLabelsByRadians(angle);
   }
 }
-

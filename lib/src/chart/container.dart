@@ -18,6 +18,7 @@ import 'presenter.dart'; // V
 
 import '../util/range.dart';
 import '../util/util.dart' as util;
+import '../util/geometry.dart' as geometry;
 import 'package:flutter_charts/src/chart/line_container.dart';
 
 /// Containers calculate coordinates of chart points
@@ -392,6 +393,7 @@ class YContainer extends ChartAreaContainer {
       var yLabelContainer = new AxisLabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
+        labelTiltRadians: 0.0,
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
@@ -439,7 +441,7 @@ class YContainer extends ChartAreaContainer {
   }
 }
 
-enum LabelDirection { Horizontal, Vertical }
+enum LabelDirection { Horizontal, Tilted }
 
 /// Container of the X axis labels.
 ///
@@ -457,13 +459,14 @@ class XContainer extends ChartAreaContainer {
   double _xLabelsMaxHeight;
   double _xLabelsMaxWidth;
   double _gridStepWidth;
+
   /// Size allocated for shown labels
   double _shownLabelsStepWidth;
   LabelDirection _labelDirection = LabelDirection.Horizontal; // todo -10
   ui.Size _layoutSize;
   bool _skippingLabels = false;
   int _showEveryNthLabel = 1;
-
+  double _labelsTiltRadians = 0.0;
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
@@ -494,8 +497,6 @@ class XContainer extends ChartAreaContainer {
   /// Note: the variables terminology (width, height) assumes
   ///       labelDirection = LabelDirection.Horizontal
   layout() {
-
-
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List();
 
@@ -510,26 +511,14 @@ class XContainer extends ChartAreaContainer {
 
     double labelMaxAllowedWidth = availableWidth / xLabels.length;
 
-    /////////////////////// todo -11
-    int numShownLabels = (xLabels.length / _showEveryNthLabel).toInt();
-    _shownLabelsStepWidth = availableWidth / numShownLabels;
-
-    ////////////////////////
     _gridStepWidth = labelMaxAllowedWidth;
 
-    // todo -10 labelTextStyle
-    widgets.TextStyle labelTextStyle = new widgets.TextStyle(
-      color: options.labelTextStyle.color,
-      fontSize: _reLayoutStrategy.labelFontSize,
-    );
+    //////////
+    int numShownLabels = (xLabels.length / _showEveryNthLabel).toInt();
+    _shownLabelsStepWidth = availableWidth / numShownLabels;
+    ///////// todo -11 - is this ^^^^ unused?
 
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = new LabelStyle(
-      textStyle: labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
-      textScaleFactor: options.labelTextScaleFactor,
-    );
+    LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
@@ -538,17 +527,23 @@ class XContainer extends ChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
+        labelTiltRadians: 0.0,
         labelStyle: labelStyle,
       );
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
-      // core of X layout calcs - lay out label and find X middle
-      var textPainter = xLabelContainer.textPainter;
-      xLabelContainer.layout();
 
-      double halfLabelWidth = textPainter.size.width / 2;
-      double halfLabelHeight = textPainter.size.height / 2;
+      // core of X layout calcs - lay out label and find X middle of the
+      //   bounding rectangle
+      xLabelContainer.layout(); // get textPainter sizes, not orientation or pos
+
+      var textPainter = xLabelContainer.textPainter;
+      ui.Rect labelBound = new ui.Rect.fromPoints(
+          new ui.Offset(0.0, 0.0),
+          new ui.Offset(textPainter.size.width, textPainter.size.height));
+      double halfLabelWidth = labelBound.width / 2;
+      double halfLabelHeight = labelBound.height / 2;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX =
@@ -565,7 +560,7 @@ class XContainer extends ChartAreaContainer {
         case LabelDirection.Horizontal:
           labelLeftX = xTickX - halfLabelWidth;
           break;
-        case LabelDirection.Vertical:
+        case LabelDirection.Tilted:
           labelLeftX = xTickX + halfLabelHeight;
           break;
       }
@@ -592,7 +587,7 @@ class XContainer extends ChartAreaContainer {
       case LabelDirection.Horizontal:
         xLabelMaxYSize = _xLabelsMaxHeight;
         break;
-      case LabelDirection.Vertical:
+      case LabelDirection.Tilted:
         xLabelMaxYSize = _xLabelsMaxWidth;
         break;
     }
@@ -606,6 +601,22 @@ class XContainer extends ChartAreaContainer {
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
     _reLayoutStrategy.reLayout();
+  }
+
+  LabelStyle _styleForLabels(ChartOptions options) {
+    widgets.TextStyle labelTextStyle = new widgets.TextStyle(
+      color: options.labelTextStyle.color,
+      fontSize: _reLayoutStrategy.labelFontSize,
+    );
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = new LabelStyle(
+      textStyle: labelTextStyle,
+      textDirection: options.labelTextDirection,
+      textAlign: options.labelTextAlign, // center text
+      textScaleFactor: options.labelTextScaleFactor,
+    );
+    return labelStyle;
   }
 
   void applyParentOffset(ui.Offset offset) {
@@ -626,35 +637,37 @@ class XContainer extends ChartAreaContainer {
 
     switch (_labelDirection) {
       case LabelDirection.Horizontal:
-        _paintCore(canvas);
+        _paintLabelContainers(canvas);
         break;
-      case LabelDirection.Vertical:
+      case LabelDirection.Tilted:
+        double angle = this._labelsTiltRadians;
         canvas.save();
-        canvas.rotate(math.PI / 2);
-        this.rotateBy90();
+        canvas.rotate(angle);
+        this.rotateLabelsByRadians(_inverseAngle(angle));
 
-        _paintCore(canvas);
+        _paintLabelContainers(canvas);
 
         canvas.restore();
         break;
     }
   }
 
-  void _paintCore(ui.Canvas canvas) {
+  void _paintLabelContainers(ui.Canvas canvas) {
     for (var xLabelContainer in _xLabelContainers) {
       if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
     }
   }
 
-  void rotateBy90() {
+  // todo -12 go over all rotate methods such as this rotateLabelsByRadians
+  void rotateLabelsByRadians(double angle) {
     for (var xLabelContainer in _xLabelContainers) {
-      xLabelContainer.rotateBy90();
+      xLabelContainer.rotateLabelsByRadians(angle);
     }
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-      if (xIndex % _showEveryNthLabel == 0) return true;
-      return false;
+    if (xIndex % _showEveryNthLabel == 0) return true;
+    return false;
   }
 
   // Checks the contained labels, represented as [AxisLabelContainer] overlap.
@@ -679,7 +692,7 @@ class XContainer extends ChartAreaContainer {
           return true;
         }
         break;
-      case LabelDirection.Vertical:
+      case LabelDirection.Tilted:
         if (this._xLabelContainers.any((axisLabelContainer) =>
             !axisLabelContainer.skipByParent &&
             axisLabelContainer.layoutSize.height > _shownLabelsStepWidth)) {
@@ -688,6 +701,10 @@ class XContainer extends ChartAreaContainer {
         break;
     }
     return false;
+  }
+
+  double _inverseAngle(double angle) {
+    return -angle;
   }
 }
 
@@ -771,7 +788,8 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          _reLayoutRotateLabelsBy90();
+          _xContainer._labelsTiltRadians = math.PI / 2;
+          _reLayoutRotateLabelsByRadians(_xContainer._labelsTiltRadians);
           break;
         case LabelReLayout.SkipLabels:
           _reLayoutSkipLabels();
@@ -781,9 +799,10 @@ class DefaultLabelReLayoutStrategy {
     }
   }
 
-  void _reLayoutRotateLabelsBy90() {
+  void _reLayoutRotateLabelsByRadians(double angle) {
     // todo -10
-    _xContainer._labelDirection = LabelDirection.Vertical;
+    _xContainer._labelsTiltRadians = angle;
+    _xContainer._labelDirection = LabelDirection.Tilted;
     _xContainer.layout();
   }
 
@@ -944,8 +963,19 @@ abstract class Container {
 
   void paint(ui.Canvas canvas);
 
+  /* todo -10
   void rotateBy90() {
     _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
+  }
+  */
+  void rotateLabelsByRadians(double angle) {
+    // todo -10: This must be rotating by inverse of angle
+    // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
+    // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
+    // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
+    // KEEP: for PI/2: _offset = new ui.Offset(-1.0 * _offset.dy, _offset.dx);
+    _offset = new ui.Offset(
+        _offset.dy, -1.0 * _offset.dx); // rotated PI/2 COUNTERCLOCK WISE
   }
 
   /// Allow a parent container to move this Container.
@@ -1254,6 +1284,7 @@ class LegendItemContainer extends Container {
     _labelContainer = new LabelContainer(
       label: _label,
       labelMaxWidth: labelMaxWidth,
+      labelTiltRadians: 0.0,
       labelStyle: _labelStyle,
     );
 
