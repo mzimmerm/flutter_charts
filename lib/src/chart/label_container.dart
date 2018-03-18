@@ -261,7 +261,6 @@ class AxisLabelContainer extends LabelContainer {
 
   // todo -6 todo -1 document, and likely move up to a class named RotatedContainer or similar
   void tiltLabels() {
-    // todo -12: This must be rotating by inverse of angle
     // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
     // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
     // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
@@ -274,12 +273,11 @@ class AxisLabelContainer extends LabelContainer {
 
     // KEEP, works: offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
 
-    /* todo -12
+    // todo -12 finish
     offset = geometry.rotateOffset(
       offset: offset,
       rotatorMatrix: _labelTiltMatrix);
-      */
-    offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
+
   }
 
   /// Offset where text painter would consider topLeft when text direction

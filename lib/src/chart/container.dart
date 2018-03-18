@@ -481,7 +481,7 @@ class XContainer extends ChartAreaContainer {
 
   void set labelsTiltRadiansAndMatrix(double radians) {
     _labelsTiltRadians = radians;
-    _labelTiltMatrix   = new vector_math.Matrix2.rotation(radians);
+    _labelTiltMatrix   = new vector_math.Matrix2.rotation(-1 * radians);
     _labelDirection    = LabelDirection.Tilted;
   }
 
@@ -553,7 +553,7 @@ class XContainer extends ChartAreaContainer {
 
       // Core of X layout calcs - lay out label to find the size that is takes,
       //   then find X middle of the bounding rectangle
-      xLabelContainer.layout(); // get textPainter sizes, not orientation or pos
+      xLabelContainer.layout(); // get textPainter sizes, not orientation or pos todo -12 NO NEED TO CALL - CONSTRUCTOR DOES THIS
 
       var textPainter = xLabelContainer.textPainter;
       ui.Rect labelBound = new ui.Rect.fromPoints(
@@ -979,7 +979,7 @@ abstract class Container {
   /// [skipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool skipOnDistressedSize = true; // todo -12 set to true for distress test
+  bool skipOnDistressedSize = true; // todo -11 set to true for distress test
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -1371,14 +1371,14 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-    if (skipOnDistressedSize) return; // todo -12 this should not be, only if distress actually happens
+    if (skipOnDistressedSize) return; // todo -11 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
-    if (skipOnDistressedSize) return; // todo -12 this should not be, only if distress actually happens
+    if (skipOnDistressedSize) return; // todo -11 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
