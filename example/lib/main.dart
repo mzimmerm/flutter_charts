@@ -9,7 +9,6 @@ import 'dart:ui' as ui;
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
 
-
 /// Example of simple line chart usage in an application.
 ///
 /// Library note: This file is same level as _lib_ so everything from _lib_ must
@@ -100,22 +99,20 @@ class MyHomePage extends StatefulWidget {
 
 /// State of the page.
 class _MyHomePageState extends State<MyHomePage> {
-
   LineChartOptions _lineChartOptions;
   ChartOptions _verticalBarChartOptions;
 
   ChartData _chartData;
 
-   _MyHomePageState() {
-
-     // defineOptionsAndData();
-
-   }
+  _MyHomePageState() {
+    // defineOptionsAndData();
+  }
 
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
 
   /* 5 Demonstrate order of painting lines on the line chart,
@@ -142,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
    */
 
-   /* 4 Basic simpliest demo
+  /* 4 Basic simpliest demo
 
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
@@ -151,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
    */
 
-   /* 3
+  /* 3
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -173,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
    */
 
-   /* 2
+  /* 2
    void defineOptionsAndData() {
      // This example shows user defined Y Labels.
      //   When setting Y labels by user, the dataRows value scale
@@ -218,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
    }
   */
 
-   /* 1
+  /* 1
    void defineOptionsAndData() {
      // In each column, adding it's absolute values should add to same number:
      // 100 would make more sense, to represent 100% of stocks in each category.
@@ -309,15 +306,13 @@ class _MyHomePageState extends State<MyHomePage> {
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(),
       container: new LineChartContainer(
-          chartData: _chartData,
-          chartOptions: _lineChartOptions),
+          chartData: _chartData, chartOptions: _lineChartOptions),
     );
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(),
       container: new VerticalBarChartContainer(
-          chartData: _chartData,
-          chartOptions: _verticalBarChartOptions),
+          chartData: _chartData, chartOptions: _verticalBarChartOptions),
     );
 
     // [MyHomePage] extends [StatefulWidget].
@@ -398,9 +393,9 @@ class _MyHomePageState extends State<MyHomePage> {
             //  Basically, while "Expanded" only applies stretch in one
             //    direction, another outside "Expanded" with CrossAxisAlignment.stretch
             //    can force the innermost child to be stretched in both directions.
-            new Expanded( // expansion inside Column pulls contents |
-              child:
-              new Row(
+            new Expanded(
+              // expansion inside Column pulls contents |
+              child: new Row(
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -413,7 +408,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   new Expanded(
                     child: verticalBarChart,
                   ),
-// todo -8                  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),
                   new Text('<<<<<<<<<<<<<<<<<<<<<<<<'),
                 ],
               ), //

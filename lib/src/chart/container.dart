@@ -445,8 +445,6 @@ class YContainer extends ChartAreaContainer {
   }
 }
 
-enum LabelDirection { Horizontal, Tilted }
-
 /// Container of the X axis labels.
 ///
 /// This [ChartAreaContainer] operates as follows:
@@ -466,10 +464,7 @@ class XContainer extends ChartAreaContainer {
 
   /// Size allocated for each shown label (>= [_gridStepWidth]
   double _shownLabelsStepWidth;
-  LabelDirection _labelDirection = LabelDirection
-      .Horizontal; // todo -12 remove this, just control using labelTiltRadians option.
   ui.Size _layoutSize;
-  bool _skippingLabels = false; // todo -12 why unused?
   int _showEveryNthLabel = 1;
 
   /// Forward rotation matrix to apply on both Canvas
@@ -490,12 +485,10 @@ class XContainer extends ChartAreaContainer {
     // label is actually tilted in the direction when canvas is rotated back,
     //   so the label tilt is inverse of the canvas tilt
     _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
-    _labelDirection = LabelDirection.Tilted;
   }
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
 
-  // todo -10: get _labelTextStyle =>
   /// Constructs the container that holds X labels.
   ///
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
@@ -519,8 +512,10 @@ class XContainer extends ChartAreaContainer {
   /// Evenly divides the available width to all labels (spacing included).
   /// First / Last vertical line is at the center of first / last label.
   ///
-  /// Note: the variables terminology (width, height) assumes
-  ///       labelDirection = LabelDirection.Horizontal
+  /// The layout is independent of whether the labels are tilted or not,
+  ///   in the sense that all tilting logic is hidden in
+  ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
+
   layout() {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List();
@@ -632,19 +627,18 @@ class XContainer extends ChartAreaContainer {
   void paint(ui.Canvas canvas) {
     // todo -10
 
-    switch (_labelDirection) {
-      case LabelDirection.Horizontal:
-        _paintLabelContainers(canvas);
-        break;
-      case LabelDirection.Tilted:
-        canvas.save();
-        canvas.rotate(-1 * _labelTiltRadians);
+    if (_labelTiltRadians == 0.0) {
+      // Horizontal:
+      _paintLabelContainers(canvas);
+    } else {
+      // Tilted. Must use canvas and offset coordinate rotation
+      canvas.save();
+      canvas.rotate(-1 * _labelTiltRadians);
 
-        _rotateLabelContainersAsCanvas();
-        _paintLabelContainers(canvas);
+      _rotateLabelContainersAsCanvas();
+      _paintLabelContainers(canvas);
 
-        canvas.restore();
-        break;
+      canvas.restore();
     }
   }
 
@@ -665,18 +659,20 @@ class XContainer extends ChartAreaContainer {
     return false;
   }
 
-  // Checks the contained labels, represented as [AxisLabelContainer] overlap.
+  // Checks the contained labels, represented as [AxisLabelContainer],
+  // for overlap.
   //
   /// Only should be called after [layout]
   ///
-  /// _gridStepWidth is a limit for each label container width in the X direction.
+  /// Identifying overlap is crucial in labels auto-layout.
   ///
-  /// Labels are layed out evenly, so if any label container size in the X direction
-  /// (width or height, depending on [_labelDirection] overflows _gridStepWidth,
-  /// labels containers [_xLabelContainers] DO overlap.
-  // todo -8 handle skipping - above ^^^ is not true in this case and must be handled.
+  /// Notes:
+  ///   - [_gridStepWidth] is a limit for each label container width in the X direction.
   ///
-  /// Identifying overlap is crucial in labels auto-layout
+  ///   - Labels are layed out evenly, so if any label container's [layoutSize]
+  ///   in the X direction overflows the [_gridStepWidth],
+  ///   labels containers DO overlap. In such situation, the caller should
+  ///   take action to make labels smaller, tilt, or skip.
   ///
   bool _labelsOverlap() {
     if (this._xLabelContainers.any((axisLabelContainer) =>
@@ -686,10 +682,6 @@ class XContainer extends ChartAreaContainer {
     }
 
     return false;
-  }
-
-  double _inverseAngle(double angle) {
-    return -angle;
   }
 }
 
@@ -806,7 +798,6 @@ class DefaultLabelReLayoutStrategy {
     // todo -10
 
     // Most advanced; Keep list of labels, but only display every nth
-    _xContainer._skippingLabels = true;
     _xContainer._showEveryNthLabel ??= this._showEveryNthLabel;
     if (_xContainer._showEveryNthLabel != this._showEveryNthLabel) {
       _xContainer._showEveryNthLabel *= this._multiplyLabelSkip;
@@ -988,7 +979,7 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-// todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
+  // todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
 
 }
 

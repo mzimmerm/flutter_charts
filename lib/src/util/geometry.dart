@@ -13,7 +13,10 @@ vector_math.Vector2 offsetToVector2(ui.Offset offset) =>
 ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
     new ui.Offset(vector.x, vector.y);
 
-ui.Offset transform({ vector_math.Matrix2 matrix, ui.Offset offset,}) {
+ui.Offset transform({
+  vector_math.Matrix2 matrix,
+  ui.Offset offset,
+}) {
   return vector2ToOffset(matrix * offsetToVector2(offset));
 }
 
@@ -95,7 +98,6 @@ class EnvelopedRotatedRect {
     ui.Rect rect,
     vector_math.Matrix2 rotateMatrix,
   }) {
-
     assert(rotateMatrix != null);
 
     _rotatorMatrix = rotateMatrix;
@@ -142,15 +144,14 @@ class EnvelopedRotatedRect {
     //  (the [topLeft], [topRight], [bottomLeft], [bottomRight]), are then
     // shifted so that the [envelopeRect.topLeft] = [sourceRect.topLeft]
 
-    ui.Offset shift =_sourceRect.topLeft - _envelopeRect.topLeft;
+    ui.Offset shift = _sourceRect.topLeft - _envelopeRect.topLeft;
     _envelopeRect = _envelopeRect.shift(shift);
 
     _topLeft = _topLeft + shift;
     _topRight = _topRight + shift;
     _bottomLeft = _bottomLeft + shift;
     _bottomRight = _bottomRight + shift;
- }
+  }
 
- ui.Size get size => _envelopeRect.size;
-
+  ui.Size get size => _envelopeRect.size;
 }

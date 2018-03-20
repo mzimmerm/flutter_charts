@@ -49,9 +49,9 @@ import 'dart:math' as math show PI;
 ///   is always layed out, ready to be painted.
 
 class LabelContainer extends flutter_charts_container.Container {
-
   /// Label text
   String _label;
+
   /// Max width of label (outside constraint)
   double _labelMaxWidth;
 
@@ -66,13 +66,13 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// [TextPainter] wrapped in this label container. It is the only content.
   widgets.TextPainter textPainter;
+
   /// Minimum envelope around the contained label (and hence, this container).
   /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
-  // todo -12 bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
@@ -132,7 +132,7 @@ class LabelContainer extends flutter_charts_container.Container {
   }
 
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
-    assert (offset == ui.Offset.zero);
+    assert(offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
     return new geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & textPainter.size, // offset & size => Rect
@@ -162,7 +162,6 @@ class LabelContainer extends flutter_charts_container.Container {
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
   ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
   bool _layoutAndCheckOverflowInTextDirection() {
-
     textPainter.layout();
 
     bool isOverflowingHorizontally = false;
@@ -179,68 +178,9 @@ class LabelContainer extends flutter_charts_container.Container {
     return isOverflowingHorizontally;
   }
 
-  /* todo -12 version sort of works
-  bool _layoutAndCheckOverflowInTextDirection() {
-    textPainter.layout();
-    _tiltedLabelEnvelope = _createLabelEnvelope();
-    _unconstrainedSize = _tiltedLabelEnvelope.size;
-
-    textPainter.layout(maxWidth: _labelMaxWidth);
-    _tiltedLabelEnvelope = _createLabelEnvelope();
-    _constraintSize = _tiltedLabelEnvelope.size;
-
-    // todo -3 change 1.0 pixels for epsilon or maybe just remove
-    bool isOverflowingHorizontally;
-    if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      isOverflowingHorizontally = true;
-    } else {
-      isOverflowingHorizontally = false;
-    }
-
-    return isOverflowingHorizontally;
-  }
-   */
-  /* todo -12 replaced
-  bool _layoutAndCheckOverflowInTextDirection() {
-    textPainter.layout();
-    _unconstrainedSize = textPainter.size;
-    textPainter.layout(maxWidth: _labelMaxWidth);
-    _constraintSize = textPainter.size;
-
-    // todo -3 change 1.0 pixels for epsilon or maybe just remove
-    bool isOverflowingInLabelDirection;
-    if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      isOverflowingInLabelDirection = true;
-    } else {
-      isOverflowingInLabelDirection = false;
-    }
-
-    return isOverflowingInLabelDirection;
-  }
-  */
-
-  /* todo -4
-  bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
-    _labelStyle = labelStyle;
-    bool doesOverflow = _layoutAndCheckOverflowInTextDirection();
-    return doesOverflow;
-  }
-  */
-
   /// Implementor of method in superclass [Container].
   ui.Size get layoutSize =>
       _constraintSize != null ? _constraintSize : _unconstrainedSize;
-
-  /* todo -12
-  /// Answers if container overflows is't allocated size
-  /// defined in [labelMaxWidth].
-  ///
-  /// Allows parent containers to set some overflow affecting
-  /// member, and re-layout
-  bool get isOverflowinWidth =>
-      _isOverflowingInLabelDirection; // todo -10 change to Mixin
-  */
-
 }
 
 /// Class for value objects which group the text styles that may affect
@@ -332,7 +272,6 @@ class AxisLabelContainer extends LabelContainer {
   ///
   /// Must be called only in paint()
   void rotateLabelWithCanvas() {
-
     // In paint(), this label's offset is now the "absolute" offset in the chart
     // The point in the tilted rectangle, where [TextPainter] should start
     // painting the label is always topLeft in the envelope.
@@ -346,4 +285,3 @@ class AxisLabelContainer extends LabelContainer {
     );
   }
 }
-
