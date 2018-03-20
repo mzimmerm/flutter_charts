@@ -70,13 +70,6 @@ class EnvelopedRotatedRect {
   /// rotated corners [topLeft] etc) are created.
   get rotatorMatrix => _rotatorMatrix;
 
-  double _rotatorRadians;
-
-  /// Extra info, currently needed in [textTopLeftOnCanvasRotate] to check
-  ///   which corner [TextPainter] shoiuld use on canvas rotate.
-  /// This angle MUST be the angle used to create [rotatorMatrix].
-  // get rotatorRadians => _rotatorRadians;
-
   ui.Rect _sourceRect;
 
   /// The source, unrotated rectangle
@@ -143,17 +136,7 @@ class EnvelopedRotatedRect {
       new ui.Offset(minX, minY),
       new ui.Offset(maxX, maxY),
     );
-    /* todo -12
 
-    // shift = translate both envelopeRect and rotated corners back to the
-    // old center of the rectangle
-    _envelopeRect = _envelopeRect.shift(rect.center);
-
-    _topLeft = _topLeft + rect.center;
-    _topRight = _topRight + rect.center;
-    _bottomLeft = _bottomLeft + rect.center;
-    _bottomRight = _bottomRight + rect.center;
-*/
     //  After rotation and envelope creation, both [envelopeRect]
     //  and the corners of the rotated rectangle
     //  (the [topLeft], [topRight], [bottomLeft], [bottomRight]), are then
@@ -168,44 +151,4 @@ class EnvelopedRotatedRect {
     _bottomRight = _bottomRight + shift;
  }
 
-  /// Offset where text painter would use as "start of text" (topLeft),
-  /// when [ui.TextDirection] in left to right.
-  /// This is the point which needs be rotated by inverse to canvas rotation,
-  ///   when drawing the tilted label text.
-  ui.Offset textTopLeftOnCanvasRotate() {
-    // todo -12
-    /*
-    if (-math.PI / 2 < _rotatorRadians && _rotatorRadians <= math.PI / 2 + 0.1) {
-      return topRight;  // PI/2
-    } else {
-      return bottomLeft; // - PI/2
-    }
-    */
-    return topLeft;
-  }
-
-/*
-  /// By definition, rotation of a vector by a rotation matrix is always around center!!
-  /// (because matrix values are independent on the coordinate system, and vector coordinates are always center)
-  /// 
-  /// todo -1 document and prove that for any 2 pivot (pivot = origin) `o` and `o'` (o prime),
-  ///   R(o) = R(o - o` + o`) = R(o - o`) + R(o')
-  /// so
-  ///   R(o') = R(o) - R(o - o`)
-  ///   R(newOrigin) = R(oldOrigin) - R(oldOrigin - newOrigin) = R(oldOrigin) + R(newOrigin - oldOrigin)
-
-  void changeRotationOriginTo(ui.Offset newOrigin) {
-
-    ui.Offset oldOrigin = _sourceRect.center;
-    ui.Offset rOldOriMinusNewOri = multiply(matrix: _rotatorMatrix, offset: newOrigin - oldOrigin,);
-
-    // now shift all values by rOldOriMinusNewOri
-    _envelopeRect = _envelopeRect.shift(oldOrigin);
-
-    _topLeft = _topLeft + oldOrigin;
-    _topRight = _topRight + oldOrigin;
-    _bottomLeft = _bottomLeft + oldOrigin;
-    _bottomRight = _bottomRight + oldOrigin;
-  }
-*/
 }

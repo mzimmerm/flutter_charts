@@ -666,8 +666,6 @@ class XContainer extends ChartAreaContainer {
         _paintLabelContainers(canvas);
         break;
       case LabelDirection.Tilted:
-        // todo -12 double angle = _labelTiltRadians;
-      // todo -12 _labelTiltMatrix = new vector_math.Matrix2.rotation(radians);
 
         canvas.save();
         canvas.rotate(-1 * _labelTiltRadians);
@@ -706,7 +704,7 @@ class XContainer extends ChartAreaContainer {
   /// Labels are layed out evenly, so if any label container size in the X direction
   /// (width or height, depending on [_labelDirection] overflows _gridStepWidth,
   /// labels containers [_xLabelContainers] DO overlap.
-  // todo -12 handle skipping - above ^^^ is not true in this case and must be handled.
+  // todo -8 handle skipping - above ^^^ is not true in this case and must be handled.
   ///
   /// Identifying overlap is crucial in labels auto-layout
   ///
@@ -820,7 +818,6 @@ class DefaultLabelReLayoutStrategy {
           if (!(-1 * math.PI <= labelTiltRadians && labelTiltRadians <= math.PI)) {
             throw new StateError("angle must be between -PI and +PI");
           }
-          // todo -12
           _reLayoutRotateLabels(labelTiltRadians);
           break;
         case LabelReLayout.SkipLabels:
@@ -959,7 +956,7 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
-  // todo -12 todo -11 this vvv need be removed - only serves rotation!!
+  // todo -8 this setter vvv need be removed - only serves canvas label rotation!!
   void set offset(ui.Offset offset) => _offset = offset;
 
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs

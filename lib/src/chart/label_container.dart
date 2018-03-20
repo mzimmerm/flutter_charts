@@ -70,7 +70,7 @@ class LabelContainer extends flutter_charts_container.Container {
   /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
-  geometry.EnvelopedRotatedRect _tiltedLabelEnvelope; // todo -12
+  geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
   bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
@@ -130,8 +130,6 @@ class LabelContainer extends flutter_charts_container.Container {
     _layoutAndCheckOverflowInTextDirection();
     assert (offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
-    // todo -12 : it is now questionable if the PivotRotatedRect should be Rect
-    // todo -12 : it seems more natural to make it Offset (and assume it starts at origin, then no moving around needed
     _tiltedLabelEnvelope = new geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & textPainter.size, // offset & size => Rect
       rotateMatrix: _labelTiltMatrix,
@@ -288,24 +286,21 @@ class AxisLabelContainer extends LabelContainer {
     super.applyParentOffset(offset);
   }
 
-  // todo -6 todo -1 document, and likely move up to a class named RotatedContainer or similar
+  /// Rotate this label around origin along with Canvas, to achieve label tilt.
+  ///
   /// Must be called only in paint()
   void rotateLabelWithCanvas() {
-    // todo -12 finish and delete comments
-    // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
-    // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
-    // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
-    // KEEP: for PI/2: _offset = new ui.Offset(-1.0 * _offset.dy, _offset.dx);
 
-    // In paint(), offset is now the "absolute" offset in the chart
-    // Find the point stored in the tilted rectangle, where [TextPainter]
-    // should start painting the label
-    // (e.g. topLabel), translate it by offset, and rotate by the tilt matrix
-
+    // In paint(), this label's offset is now the "absolute" offset in the chart
+    // The point in the tilted rectangle, where [TextPainter] should start
+    // painting the label is always topLeft in the envelope.
+    // The envelope is kept at (0,0), so find the full offset of
+    // the [_tiltedLabelEnvelope.topLeft] in the "absolute" coordinates,
+    // then rotate the result with Canvas.
 
     offset = geometry.transform(
       matrix: _canvasTiltMatrix,
-      offset: (offset + _tiltedLabelEnvelope.textTopLeftOnCanvasRotate()),
+      offset: (offset + _tiltedLabelEnvelope.topLeft),
     );
   }
 }

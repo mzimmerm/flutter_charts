@@ -413,7 +413,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   new Expanded(
                     child: verticalBarChart,
                   ),
-// todo -12                  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),
+// todo -8                  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),
                   new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),
                 ],
               ), //
