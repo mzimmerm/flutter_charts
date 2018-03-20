@@ -464,11 +464,12 @@ class XContainer extends ChartAreaContainer {
   double _xLabelsMaxWidth;
   double _gridStepWidth;
 
-  /// Size allocated for shown labels
+  /// Size allocated for each shown label (>= [_gridStepWidth]
   double _shownLabelsStepWidth;
-  LabelDirection _labelDirection = LabelDirection.Horizontal; // todo -10
+  LabelDirection _labelDirection = LabelDirection
+      .Horizontal; // todo -12 remove this, just control using labelTiltRadians option.
   ui.Size _layoutSize;
-  bool _skippingLabels = false;
+  bool _skippingLabels = false; // todo -12 why unused?
   int _showEveryNthLabel = 1;
 
   /// Forward rotation matrix to apply on both Canvas
@@ -678,22 +679,12 @@ class XContainer extends ChartAreaContainer {
   /// Identifying overlap is crucial in labels auto-layout
   ///
   bool _labelsOverlap() {
-    switch (_labelDirection) {
-      case LabelDirection.Horizontal:
-        if (this._xLabelContainers.any((axisLabelContainer) =>
-            !axisLabelContainer.skipByParent &&
-            axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
-          return true;
-        }
-        break;
-      case LabelDirection.Tilted:
-        if (this._xLabelContainers.any((axisLabelContainer) =>
-            !axisLabelContainer.skipByParent &&
-            axisLabelContainer.layoutSize.height > _shownLabelsStepWidth)) {
-          return true;
-        }
-        break;
+    if (this._xLabelContainers.any((axisLabelContainer) =>
+        !axisLabelContainer.skipByParent &&
+        axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+      return true;
     }
+
     return false;
   }
 
