@@ -54,10 +54,16 @@ class LabelContainer extends flutter_charts_container.Container {
   String _label;
   /// Max width of label (outside constraint)
   double _labelMaxWidth;
-  /// Matrix to apply on labels to tilt them
+
+  /// Forward rotation matrix to apply on both Canvas
+  /// AND label envelope's topLeft offset's coordinate (pivoted on origin, once
+  /// all chart offsets are applied to label)
+  /// This is always the inverse of [_labelTiltMatrix].
+  vector_math.Matrix2 _canvasTiltMatrix;
+
+  /// Angle by which label is tilted.
   vector_math.Matrix2 _labelTiltMatrix;
-  /// Radians by which label is tilted. This is extra info, needed for now.
-  double _labelTiltRadians;
+
   /// [TextPainter] wrapped in this label container. It is the only content.
   widgets.TextPainter textPainter;
   /// Minimum envelope around the contained label (and hence, this container).
@@ -85,13 +91,13 @@ class LabelContainer extends flutter_charts_container.Container {
     String label,
     double labelMaxWidth,
     vector_math.Matrix2 labelTiltMatrix,
-    double labelTiltRadians,
+    vector_math.Matrix2 canvasTiltMatrix,
     LabelStyle labelStyle,
   }) {
     this._label = label;
     this._labelMaxWidth = labelMaxWidth;
     this._labelTiltMatrix = labelTiltMatrix;
-    this._labelTiltRadians = labelTiltRadians;
+    this._canvasTiltMatrix = canvasTiltMatrix;
     this._labelStyle = labelStyle;
 
     var text = new widgets.TextSpan(
@@ -128,8 +134,7 @@ class LabelContainer extends flutter_charts_container.Container {
     // todo -12 : it seems more natural to make it Offset (and assume it starts at origin, then no moving around needed
     _tiltedLabelEnvelope = new geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & textPainter.size, // offset & size => Rect
-      rotatorMatrix: _labelTiltMatrix,
-      rotatorRadians: _labelTiltRadians,
+      rotateMatrix: _labelTiltMatrix,
     );
   }
 
@@ -268,14 +273,14 @@ class AxisLabelContainer extends LabelContainer {
     String label,
     double labelMaxWidth,
     vector_math.Matrix2 labelTiltMatrix,
-    double labelTiltRadians,
+    vector_math.Matrix2 canvasTiltMatrix,
     LabelStyle labelStyle,
   })
       : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
-          labelTiltRadians: labelTiltRadians,
+          canvasTiltMatrix: canvasTiltMatrix,
           labelStyle: labelStyle,
         );
 
@@ -285,48 +290,21 @@ class AxisLabelContainer extends LabelContainer {
 
   // todo -6 todo -1 document, and likely move up to a class named RotatedContainer or similar
   /// Must be called only in paint()
-  void rotateOffsetAsCanvas() {
+  void rotateLabelWithCanvas() {
+    // todo -12 finish and delete comments
     // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
     // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
     // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
     // KEEP: for PI/2: _offset = new ui.Offset(-1.0 * _offset.dy, _offset.dx);
-    /*
-    applyParentOffset(new ui.Offset(
-        offset.dx, - offset.dy)); // rotated PI/2 COUNTERCLOCK WISE
-//    offset.dy, -1.0 * offset.dx)); // rotated PI/2 COUNTERCLOCK WISE
-   */
 
-    // KEEP, works: offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
-
-    // todo -12 finish
     // In paint(), offset is now the "absolute" offset in the chart
     // Find the point stored in the tilted rectangle, where [TextPainter]
     // should start painting the label
     // (e.g. topLabel), translate it by offset, and rotate by the tilt matrix
 
-    /*
-    ui.Offset absoluteTextStart = offset + _tiltedLabelEnvelope.textTopLeftOnCanvasRotate();
 
-    offset = geometry.multiply(  matrix: _labelTiltMatrix,
-      offset: absoluteTextStart,
-    );
-    */
-
-    /*
-  ui.Offset absoluteTextStart1 = geometry.multiply(  matrix: _labelTiltMatrix,
-    offset: offset,
-  );
-
-  ui.Offset absoluteTextStart2 = geometry.multiply(  matrix: _labelTiltMatrix,
-    offset: _tiltedLabelEnvelope.textTopLeftOnCanvasRotate(),
-  );
-
-  offset = absoluteTextStart1; // + absoluteTextStart2;
-
-  */
-
-    offset = geometry.multiply(
-      matrix: _labelTiltMatrix,
+    offset = geometry.transform(
+      matrix: _canvasTiltMatrix,
       offset: (offset + _tiltedLabelEnvelope.textTopLeftOnCanvasRotate()),
     );
   }

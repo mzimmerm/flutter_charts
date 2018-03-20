@@ -13,7 +13,7 @@ vector_math.Vector2 offsetToVector2(ui.Offset offset) =>
 ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
     new ui.Offset(vector.x, vector.y);
 
-ui.Offset multiply({ui.Offset offset, vector_math.Matrix2 matrix}) {
+ui.Offset transform({ vector_math.Matrix2 matrix, ui.Offset offset,}) {
   return vector2ToOffset(matrix * offsetToVector2(offset));
 }
 
@@ -88,7 +88,7 @@ class EnvelopedRotatedRect {
   get envelopeRect => _envelopeRect;
 
   /// Represents a rectangle [rect] rotated around pivot at center of rectangle,
-  /// by [rotatorMatrix] .
+  /// by [rotateMatrix] .
   ///
   /// During rotation, a reference to the original rectangle corners
   /// [_topLeft], [_topRight], [_bottomLeft], [_bottomRight] is maintained
@@ -100,21 +100,13 @@ class EnvelopedRotatedRect {
   ///
   EnvelopedRotatedRect.centerRotatedFrom({
     ui.Rect rect,
-    vector_math.Matrix2 rotatorMatrix,
-    double rotatorRadians,
+    vector_math.Matrix2 rotateMatrix,
   }) {
 
-    rotatorMatrix = new vector_math.Matrix2.rotation(-rotatorRadians);
-    assert(rotatorRadians != null);
-    assert(rotatorMatrix != null);
-    //  angle must be in interval `<-math.PI, +math.PI>`
-    if (!(-1 * math.PI <= rotatorRadians && rotatorRadians <= math.PI)) {
-      throw new StateError("angle must be between -PI and +PI");
-    }
+    assert(rotateMatrix != null);
 
-    _rotatorMatrix = rotatorMatrix;
+    _rotatorMatrix = rotateMatrix;
     _sourceRect = rect;
-    _rotatorRadians = rotatorRadians;
 
     if (_rotatorMatrix == new vector_math.Matrix2.identity()) {
       _envelopeRect = rect;
@@ -135,10 +127,10 @@ class EnvelopedRotatedRect {
     _bottomRight = movedToCenterAsOrigin.bottomRight;
 
     // Rotate all corners of the rectangle. Coordinates are the
-    _topLeft = multiply(matrix: _rotatorMatrix, offset: _topLeft);
-    _topRight = multiply(matrix: _rotatorMatrix, offset: _topRight);
-    _bottomLeft = multiply(matrix: _rotatorMatrix, offset: _bottomLeft);
-    _bottomRight = multiply(matrix: _rotatorMatrix, offset: _bottomRight);
+    _topLeft = transform(matrix: _rotatorMatrix, offset: _topLeft);
+    _topRight = transform(matrix: _rotatorMatrix, offset: _topRight);
+    _bottomLeft = transform(matrix: _rotatorMatrix, offset: _bottomLeft);
+    _bottomRight = transform(matrix: _rotatorMatrix, offset: _bottomRight);
 
     var rotOffsets = [_topLeft, _topRight, _bottomLeft, _bottomRight];
 

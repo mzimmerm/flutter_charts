@@ -397,7 +397,7 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelTiltMatrix: new vector_math.Matrix2.identity(),
-        labelTiltRadians: 0.0,
+        canvasTiltMatrix:  new vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
@@ -471,18 +471,24 @@ class XContainer extends ChartAreaContainer {
   bool _skippingLabels = false;
   int _showEveryNthLabel = 1;
 
-  /// Matrix prepared with the radians by which labels are tilted.
-  ///
-  /// This is separate from [Canvas._tiltMatrix] which is a tilt on whole
-  /// canvas. This member just stores up tilt for all child labels.
+  /// Forward rotation matrix to apply on both Canvas
+  /// AND label envelope's topLeft offset's coordinate (pivoted on origin, once
+  /// all chart offsets are applied to label)
+  /// This is always the inverse of [_labelTiltMatrix].
+  vector_math.Matrix2 _canvasTiltMatrix = new vector_math.Matrix2.identity();
+
+  /// Angle by which labels are tilted.
   vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
 
-  /// In addition to [_labelTiltMatrix], hold on radians for canvas rotation.
-  double _labelsTiltRadians = 0.0;
+  /// In addition to the rotation matrices, hold on radians for canvas rotation.
+  double _labelTiltRadians = 0.0;
 
-  void set labelsTiltRadiansAndMatrix(double radians) {
-    _labelsTiltRadians = radians;
-    _labelTiltMatrix   = new vector_math.Matrix2.rotation(radians);
+  void makeTiltMatricesFrom(double labelTiltRadians) {
+    _labelTiltRadians = labelTiltRadians;
+    _canvasTiltMatrix  = new vector_math.Matrix2.rotation(_labelTiltRadians);
+    // label is actually tilted in the direction when canvas is rotated back,
+    //   so the label tilt is inverse of the canvas tilt
+    _labelTiltMatrix   = new vector_math.Matrix2.rotation(-_labelTiltRadians);
     _labelDirection    = LabelDirection.Tilted;
   }
 
@@ -544,7 +550,7 @@ class XContainer extends ChartAreaContainer {
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelTiltMatrix: _labelTiltMatrix,
-        labelTiltRadians: _labelsTiltRadians,
+        canvasTiltMatrix: _canvasTiltMatrix,
         labelStyle: labelStyle,
       );
 
@@ -660,11 +666,11 @@ class XContainer extends ChartAreaContainer {
         _paintLabelContainers(canvas);
         break;
       case LabelDirection.Tilted:
-        // todo -12 double angle = _labelsTiltRadians;
+        // todo -12 double angle = _labelTiltRadians;
       // todo -12 _labelTiltMatrix = new vector_math.Matrix2.rotation(radians);
 
         canvas.save();
-        canvas.rotate(-1 * _labelsTiltRadians);
+        canvas.rotate(-1 * _labelTiltRadians);
 
         _rotateLabelContainersAsCanvas();
         _paintLabelContainers(canvas);
@@ -676,7 +682,7 @@ class XContainer extends ChartAreaContainer {
 
   void _rotateLabelContainersAsCanvas() {
     for (var xLabelContainer in _xLabelContainers) {
-      xLabelContainer.rotateOffsetAsCanvas();
+      xLabelContainer.rotateLabelWithCanvas();
     }
   }
 
@@ -809,9 +815,13 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          double radians = - math.PI / 2;
+          double labelTiltRadians = math.PI / 2;
+          //  angle must be in interval `<-math.PI, +math.PI>`
+          if (!(-1 * math.PI <= labelTiltRadians && labelTiltRadians <= math.PI)) {
+            throw new StateError("angle must be between -PI and +PI");
+          }
           // todo -12
-          _reLayoutRotateLabels(radians);
+          _reLayoutRotateLabels(labelTiltRadians);
           break;
         case LabelReLayout.SkipLabels:
           _reLayoutSkipLabels();
@@ -821,9 +831,9 @@ class DefaultLabelReLayoutStrategy {
     }
   }
 
-  void _reLayoutRotateLabels(double radians) {
+  void _reLayoutRotateLabels(double labelTiltRadians) {
     // todo -10
-    _xContainer.labelsTiltRadiansAndMatrix = radians;
+    _xContainer.makeTiltMatricesFrom( labelTiltRadians );
     _xContainer.layout();
   }
 
@@ -1309,7 +1319,7 @@ class LegendItemContainer extends Container {
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: new vector_math.Matrix2.identity(),
-      labelTiltRadians: 0.0,
+      canvasTiltMatrix: new vector_math.Matrix2.identity(),
       labelStyle: _labelStyle,
     );
 
