@@ -397,7 +397,7 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelTiltMatrix: new vector_math.Matrix2.identity(),
-        canvasTiltMatrix:  new vector_math.Matrix2.identity(),
+        canvasTiltMatrix: new vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
@@ -485,11 +485,11 @@ class XContainer extends ChartAreaContainer {
 
   void makeTiltMatricesFrom(double labelTiltRadians) {
     _labelTiltRadians = labelTiltRadians;
-    _canvasTiltMatrix  = new vector_math.Matrix2.rotation(_labelTiltRadians);
+    _canvasTiltMatrix = new vector_math.Matrix2.rotation(_labelTiltRadians);
     // label is actually tilted in the direction when canvas is rotated back,
     //   so the label tilt is inverse of the canvas tilt
-    _labelTiltMatrix   = new vector_math.Matrix2.rotation(-_labelTiltRadians);
-    _labelDirection    = LabelDirection.Tilted;
+    _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
+    _labelDirection = LabelDirection.Tilted;
   }
 
   DefaultLabelReLayoutStrategy _reLayoutStrategy;
@@ -556,19 +556,10 @@ class XContainer extends ChartAreaContainer {
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
-      // Before label layout, apply the tilt, although this parent is not tilted
-      // todo -12 do we need the applyParentTiltMatrix????? xLabelContainer.applyParentTiltMatrix(_labelTiltMatrix);
-
       // Core of X layout calcs - lay out label to find the size that is takes,
       //   then find X middle of the bounding rectangle
-      xLabelContainer.layout(); // get textPainter sizes, not orientation or pos todo -12 NO NEED TO CALL - CONSTRUCTOR DOES THIS
 
-      var textPainter = xLabelContainer.textPainter;
-      ui.Rect labelBound = new ui.Rect.fromPoints(
-          ui.Offset.zero,
-          new ui.Offset(textPainter.size.width, textPainter.size.height));
-      double halfLabelWidth = labelBound.width / 2;
-      double halfLabelHeight = labelBound.height / 2;
+      ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
       double xTickX =
@@ -577,21 +568,11 @@ class XContainer extends ChartAreaContainer {
 
       xLabelContainer.parentOffsetTick = xTickX;
 
-      // tickX and label center are same. From there, calc labelLeft,
-      //   which differs for Horizontal / Vertical layouts.
-      // labelLeftTop = label paint start - depends on the label direction.
-      double labelLeftX;
-      switch (_labelDirection) {
-        case LabelDirection.Horizontal:
-          labelLeftX = xTickX - halfLabelWidth;
-          break;
-        case LabelDirection.Tilted:
-// todo -12          labelLeftX = xTickX + halfLabelHeight;
-          labelLeftX = xTickX - halfLabelHeight;
-          break;
-      }
-
-      var labelLeftTop = new ui.Offset(labelLeftX, labelTopY);
+      // tickX and label centers are same. labelLeftTop = label paint start.
+      var labelLeftTop = new ui.Offset(
+        xTickX - labelBound.width / 2,
+        labelTopY,
+      );
 
       xLabelContainer.applyParentOffset(labelLeftTop);
 
@@ -600,27 +581,16 @@ class XContainer extends ChartAreaContainer {
 
     // xlabels area without padding
     _xLabelsMaxHeight = _xLabelContainers
-        .map((xLabelContainer) => xLabelContainer.textPainter)
-        .map((widgets.TextPainter painter) => painter.size.height)
+        .map((xLabelContainer) => xLabelContainer.layoutSize.height)
         .reduce(math.max);
     _xLabelsMaxWidth = _xLabelContainers
-        .map((xLabelContainer) => xLabelContainer.textPainter)
-        .map((widgets.TextPainter painter) => painter.size.width)
+        .map((xLabelContainer) => xLabelContainer.layoutSize.width)
         .reduce(math.max);
 
-    double xLabelMaxYSize;
-    switch (_labelDirection) {
-      case LabelDirection.Horizontal:
-        xLabelMaxYSize = _xLabelsMaxHeight;
-        break;
-      case LabelDirection.Tilted:
-        xLabelMaxYSize = _xLabelsMaxWidth;
-        break;
-    }
     // Set the layout size calculated by this layout
     _layoutSize = new ui.Size(
       _layoutExpansion._width,
-      xLabelMaxYSize + 2 * options.xLabelsPadTB,
+      _xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
     // This achieves auto-layout of labels to fit along X axis.
@@ -666,7 +636,6 @@ class XContainer extends ChartAreaContainer {
         _paintLabelContainers(canvas);
         break;
       case LabelDirection.Tilted:
-
         canvas.save();
         canvas.rotate(-1 * _labelTiltRadians);
 
@@ -684,10 +653,10 @@ class XContainer extends ChartAreaContainer {
     }
   }
 
-  void  _paintLabelContainers(canvas) {
-         for (var xLabelContainer in _xLabelContainers) {
-           if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
-        }
+  void _paintLabelContainers(canvas) {
+    for (var xLabelContainer in _xLabelContainers) {
+      if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
+    }
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
@@ -815,7 +784,8 @@ class DefaultLabelReLayoutStrategy {
         case LabelReLayout.RotateLabels:
           double labelTiltRadians = math.PI / 2;
           //  angle must be in interval `<-math.PI, +math.PI>`
-          if (!(-1 * math.PI <= labelTiltRadians && labelTiltRadians <= math.PI)) {
+          if (!(-1 * math.PI <= labelTiltRadians &&
+              labelTiltRadians <= math.PI)) {
             throw new StateError("angle must be between -PI and +PI");
           }
           _reLayoutRotateLabels(labelTiltRadians);
@@ -830,7 +800,7 @@ class DefaultLabelReLayoutStrategy {
 
   void _reLayoutRotateLabels(double labelTiltRadians) {
     // todo -10
-    _xContainer.makeTiltMatricesFrom( labelTiltRadians );
+    _xContainer.makeTiltMatricesFrom(labelTiltRadians);
     _xContainer.layout();
   }
 
@@ -1376,14 +1346,16 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-    if (skipOnDistressedSize) return; // todo -11 this should not be, only if distress actually happens
+    if (skipOnDistressedSize)
+      return; // todo -11 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
   }
 
   void applyParentOffset(ui.Offset offset) {
-    if (skipOnDistressedSize) return; // todo -11 this should not be, only if distress actually happens
+    if (skipOnDistressedSize)
+      return; // todo -11 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);

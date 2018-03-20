@@ -72,7 +72,7 @@ class LabelContainer extends flutter_charts_container.Container {
   /// local coordinates.
   geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
-  bool _isOverflowingInLabelDirection = true;
+  // todo -12 bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
   ui.Size _constraintSize;
 
@@ -128,9 +128,13 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Implementor of method in superclass [Container].
   void layout() {
     _layoutAndCheckOverflowInTextDirection();
+    _tiltedLabelEnvelope = _createLabelEnvelope();
+  }
+
+  geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     assert (offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
-    _tiltedLabelEnvelope = new geometry.EnvelopedRotatedRect.centerRotatedFrom(
+    return new geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & textPainter.size, // offset & size => Rect
       rotateMatrix: _labelTiltMatrix,
     );
@@ -158,37 +162,76 @@ class LabelContainer extends flutter_charts_container.Container {
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
   ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
   bool _layoutAndCheckOverflowInTextDirection() {
+
+    textPainter.layout();
+
+    bool isOverflowingHorizontally = false;
+    _tiltedLabelEnvelope = _createLabelEnvelope();
+    _unconstrainedSize = _tiltedLabelEnvelope.size;
+
+    if (_unconstrainedSize.width > _labelMaxWidth) {
+      isOverflowingHorizontally = true;
+      textPainter.layout(maxWidth: _labelMaxWidth);
+      _tiltedLabelEnvelope = _createLabelEnvelope();
+      _constraintSize = _tiltedLabelEnvelope.size;
+    }
+
+    return isOverflowingHorizontally;
+  }
+
+  /* todo -12 version sort of works
+  bool _layoutAndCheckOverflowInTextDirection() {
+    textPainter.layout();
+    _tiltedLabelEnvelope = _createLabelEnvelope();
+    _unconstrainedSize = _tiltedLabelEnvelope.size;
+
+    textPainter.layout(maxWidth: _labelMaxWidth);
+    _tiltedLabelEnvelope = _createLabelEnvelope();
+    _constraintSize = _tiltedLabelEnvelope.size;
+
+    // todo -3 change 1.0 pixels for epsilon or maybe just remove
+    bool isOverflowingHorizontally;
+    if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
+      isOverflowingHorizontally = true;
+    } else {
+      isOverflowingHorizontally = false;
+    }
+
+    return isOverflowingHorizontally;
+  }
+   */
+  /* todo -12 replaced
+  bool _layoutAndCheckOverflowInTextDirection() {
     textPainter.layout();
     _unconstrainedSize = textPainter.size;
     textPainter.layout(maxWidth: _labelMaxWidth);
     _constraintSize = textPainter.size;
 
     // todo -3 change 1.0 pixels for epsilon or maybe just remove
+    bool isOverflowingInLabelDirection;
     if (_unconstrainedSize.width > _constraintSize.width + 1.0) {
-      _isOverflowingInLabelDirection = true;
+      isOverflowingInLabelDirection = true;
     } else {
-      _isOverflowingInLabelDirection = false;
+      isOverflowingInLabelDirection = false;
     }
 
-    return _isOverflowingInLabelDirection;
+    return isOverflowingInLabelDirection;
   }
+  */
 
-  // todo -4
+  /* todo -4
   bool applyStyleThenLayoutAndCheckOverflow({LabelStyle labelStyle}) {
     _labelStyle = labelStyle;
     bool doesOverflow = _layoutAndCheckOverflowInTextDirection();
     return doesOverflow;
   }
-
-  void layoutSimple() {
-    textPainter.layout();
-    _unconstrainedSize = textPainter.size;
-  }
+  */
 
   /// Implementor of method in superclass [Container].
   ui.Size get layoutSize =>
       _constraintSize != null ? _constraintSize : _unconstrainedSize;
 
+  /* todo -12
   /// Answers if container overflows is't allocated size
   /// defined in [labelMaxWidth].
   ///
@@ -196,8 +239,7 @@ class LabelContainer extends flutter_charts_container.Container {
   /// member, and re-layout
   bool get isOverflowinWidth =>
       _isOverflowingInLabelDirection; // todo -10 change to Mixin
-
-// todo -10 change to Mixin: void setOverflowAffectingParameter();
+  */
 
 }
 

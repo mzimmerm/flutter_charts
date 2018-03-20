@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Rect, Offset;
+import 'dart:ui' as ui show Rect, Offset, Size;
 import 'package:vector_math/vector_math.dart' as vector_math
     show Matrix2, Vector2;
 import 'dart:math' as math show min, max, PI;
@@ -150,5 +150,7 @@ class EnvelopedRotatedRect {
     _bottomLeft = _bottomLeft + shift;
     _bottomRight = _bottomRight + shift;
  }
+
+ ui.Size get size => _envelopeRect.size;
 
 }
