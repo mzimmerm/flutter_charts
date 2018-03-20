@@ -397,6 +397,7 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.INFINITY,
         labelTiltMatrix: new vector_math.Matrix2.identity(),
+        labelTiltRadians: 0.0,
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
@@ -481,7 +482,7 @@ class XContainer extends ChartAreaContainer {
 
   void set labelsTiltRadiansAndMatrix(double radians) {
     _labelsTiltRadians = radians;
-    _labelTiltMatrix   = new vector_math.Matrix2.rotation(-1 * radians);
+    _labelTiltMatrix   = new vector_math.Matrix2.rotation(radians);
     _labelDirection    = LabelDirection.Tilted;
   }
 
@@ -543,6 +544,7 @@ class XContainer extends ChartAreaContainer {
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
         labelTiltMatrix: _labelTiltMatrix,
+        labelTiltRadians: _labelsTiltRadians,
         labelStyle: labelStyle,
       );
 
@@ -578,7 +580,8 @@ class XContainer extends ChartAreaContainer {
           labelLeftX = xTickX - halfLabelWidth;
           break;
         case LabelDirection.Tilted:
-          labelLeftX = xTickX + halfLabelHeight;
+// todo -12          labelLeftX = xTickX + halfLabelHeight;
+          labelLeftX = xTickX - halfLabelHeight;
           break;
       }
 
@@ -661,11 +664,9 @@ class XContainer extends ChartAreaContainer {
       // todo -12 _labelTiltMatrix = new vector_math.Matrix2.rotation(radians);
 
         canvas.save();
-        canvas.rotate(_labelsTiltRadians);
+        canvas.rotate(-1 * _labelsTiltRadians);
 
-        for (var xLabelContainer in _xLabelContainers) {
-          xLabelContainer.tiltLabels();
-        }
+        _rotateLabelContainersAsCanvas();
         _paintLabelContainers(canvas);
 
         canvas.restore();
@@ -673,10 +674,16 @@ class XContainer extends ChartAreaContainer {
     }
   }
 
-  void _paintLabelContainers(ui.Canvas canvas) {
+  void _rotateLabelContainersAsCanvas() {
     for (var xLabelContainer in _xLabelContainers) {
-      if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
+      xLabelContainer.rotateOffsetAsCanvas();
     }
+  }
+
+  void  _paintLabelContainers(canvas) {
+         for (var xLabelContainer in _xLabelContainers) {
+           if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
+        }
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
@@ -728,9 +735,9 @@ enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels }
 
 /// Strategy of achieving that labels "fit" on the X axis.
 ///
-/// Strategy defines a sequence of steps, such as
-/// [LabelReLayout.DecreaseLabelFont], [LabelReLayout.SkipLabels], etc,
-/// which are taken to achieve that labels "fit".
+/// Strategy defines a sequence of steps, each performing a specific strategy
+/// to achieve X labels fit, currently, [LabelReLayout.RotateLabels],
+/// [LabelReLayout.DecreaseLabelFont] and [LabelReLayout.SkipLabels].
 ///
 /// The steps are repeated at most [maxReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
@@ -802,12 +809,8 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          double radians = math.PI / 2;
+          double radians = - math.PI / 2;
           // todo -12
-          //  angle must be in interval `<-math.PI, +math.PI>`
-          if (!(-1 * math.PI <= radians && radians <= math.PI)) {
-            throw new StateError("angle must be between -PI and +PI");
-          }
           _reLayoutRotateLabels(radians);
           break;
         case LabelReLayout.SkipLabels:
@@ -992,12 +995,6 @@ abstract class Container {
   void layout();
 
   void paint(ui.Canvas canvas);
-
-  /* todo -10
-  void rotateBy90() {
-    _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
-  }
-  */
 
   /// Allow a parent container to move this Container.
   ///
@@ -1312,6 +1309,7 @@ class LegendItemContainer extends Container {
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: new vector_math.Matrix2.identity(),
+      labelTiltRadians: 0.0,
       labelStyle: _labelStyle,
     );
 

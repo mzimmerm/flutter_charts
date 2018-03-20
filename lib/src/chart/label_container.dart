@@ -24,8 +24,15 @@ import '../util/geometry.dart' as geometry;
 
 import 'dart:math' as math show PI;
 
-/// Provides ability to paint one label anywhere on the chart,
-/// in Labels, Axis, Titles, etc.
+/// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
+///
+/// The [layoutSize] is exactly that of by the contained
+/// layed out [textPainter] (this [LabelContainer] has no margins, padding,
+/// or additional content in addition to the [textPainter).
+///
+/// However, if this object is tilted, as specified by [_labelTiltMatrix], the
+/// [layoutSize] is determined by the rotated layed out [textPainter]. The
+/// math and [layoutSize] of this tilt is provided by [_tiltedLabelEnvelope].
 ///
 /// Most members are mutable so that clients can experiment with different
 /// ways to set text style, until the label fits a predefined allowed size.
@@ -42,11 +49,22 @@ import 'dart:math' as math show PI;
 ///   is always layed out, ready to be painted.
 
 class LabelContainer extends flutter_charts_container.Container {
+
+  /// Label text
   String _label;
+  /// Max width of label (outside constraint)
   double _labelMaxWidth;
+  /// Matrix to apply on labels to tilt them
   vector_math.Matrix2 _labelTiltMatrix;
+  /// Radians by which label is tilted. This is extra info, needed for now.
+  double _labelTiltRadians;
+  /// [TextPainter] wrapped in this label container. It is the only content.
   widgets.TextPainter textPainter;
-  geometry.PivotRotatedRect _tiltedLabelEnvelope; // todo -12
+  /// Minimum envelope around the contained label (and hence, this container).
+  /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
+  /// that is, the envelope is in label container (and textPainter)
+  /// local coordinates.
+  geometry.EnvelopedRotatedRect _tiltedLabelEnvelope; // todo -12
 
   bool _isOverflowingInLabelDirection = true;
   ui.Size _unconstrainedSize;
@@ -66,12 +84,14 @@ class LabelContainer extends flutter_charts_container.Container {
   LabelContainer({
     String label,
     double labelMaxWidth,
-    vector_math.Matrix2  labelTiltMatrix,
+    vector_math.Matrix2 labelTiltMatrix,
+    double labelTiltRadians,
     LabelStyle labelStyle,
   }) {
     this._label = label;
     this._labelMaxWidth = labelMaxWidth;
     this._labelTiltMatrix = labelTiltMatrix;
+    this._labelTiltRadians = labelTiltRadians;
     this._labelStyle = labelStyle;
 
     var text = new widgets.TextSpan(
@@ -102,12 +122,14 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Implementor of method in superclass [Container].
   void layout() {
     _layoutAndCheckOverflowInTextDirection();
+    assert (offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
     // todo -12 : it is now questionable if the PivotRotatedRect should be Rect
     // todo -12 : it seems more natural to make it Offset (and assume it starts at origin, then no moving around needed
-    _tiltedLabelEnvelope = new geometry.PivotRotatedRect.centerPivotedFrom(
+    _tiltedLabelEnvelope = new geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & textPainter.size, // offset & size => Rect
-      rotatorMatrix: this._labelTiltMatrix,
+      rotatorMatrix: _labelTiltMatrix,
+      rotatorRadians: _labelTiltRadians,
     );
   }
 
@@ -246,12 +268,14 @@ class AxisLabelContainer extends LabelContainer {
     String label,
     double labelMaxWidth,
     vector_math.Matrix2 labelTiltMatrix,
+    double labelTiltRadians,
     LabelStyle labelStyle,
   })
       : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
+          labelTiltRadians: labelTiltRadians,
           labelStyle: labelStyle,
         );
 
@@ -260,7 +284,8 @@ class AxisLabelContainer extends LabelContainer {
   }
 
   // todo -6 todo -1 document, and likely move up to a class named RotatedContainer or similar
-  void tiltLabels() {
+  /// Must be called only in paint()
+  void rotateOffsetAsCanvas() {
     // old: rotated PI/2 COUNTERCLOCK WISE (for canvas rotate + PI/2, always clockwise)
     // KEEP: for PI/2: _offset = new ui.Offset(_offset.dy, -1.0 * _offset.dx);
     // new: rotated PI/2 CLOCK WISE        (for canvas rotate - PI/2, always clockwise)
@@ -274,21 +299,36 @@ class AxisLabelContainer extends LabelContainer {
     // KEEP, works: offset = new ui.Offset( offset.dy, -1.0 * offset.dx);
 
     // todo -12 finish
-    offset = geometry.rotateOffset(
-      offset: offset,
-      rotatorMatrix: _labelTiltMatrix);
+    // In paint(), offset is now the "absolute" offset in the chart
+    // Find the point stored in the tilted rectangle, where [TextPainter]
+    // should start painting the label
+    // (e.g. topLabel), translate it by offset, and rotate by the tilt matrix
 
-  }
+    /*
+    ui.Offset absoluteTextStart = offset + _tiltedLabelEnvelope.textTopLeftOnCanvasRotate();
 
-  /// Offset where text painter would consider topLeft when text direction
-  /// in left to right.
-  /// This is the point which needs be rotated by inverse to canvas rotation,
-  ///   when drawing the tilted label text.
-  ui.Offset adjustOffsetOnCanvasRotate(double angle) {
-    if (-math.PI / 2 < angle && angle <= math.PI / 2) {
-      return _tiltedLabelEnvelope.topLeft;
-    } else {
-      return _tiltedLabelEnvelope.topRight;
-    }
+    offset = geometry.multiply(  matrix: _labelTiltMatrix,
+      offset: absoluteTextStart,
+    );
+    */
+
+    /*
+  ui.Offset absoluteTextStart1 = geometry.multiply(  matrix: _labelTiltMatrix,
+    offset: offset,
+  );
+
+  ui.Offset absoluteTextStart2 = geometry.multiply(  matrix: _labelTiltMatrix,
+    offset: _tiltedLabelEnvelope.textTopLeftOnCanvasRotate(),
+  );
+
+  offset = absoluteTextStart1; // + absoluteTextStart2;
+
+  */
+
+    offset = geometry.multiply(
+      matrix: _labelTiltMatrix,
+      offset: (offset + _tiltedLabelEnvelope.textTopLeftOnCanvasRotate()),
+    );
   }
 }
+
