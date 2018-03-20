@@ -98,6 +98,27 @@ class ChartOptions {
 
   final ui.Color labelTextColor = material.Colors.grey[600];
 
+  // ############## Iterative label layout options
+
+  /// Maximum iterations of label re-layouts, before giving up
+  final int maxReLayouts = 5;
+
+  /// When iterative step decreases font size, use this ratio on every step.
+  final double decreaseLabelFontRatio = 1.0; // todo -4 : 0.75;
+
+  /// When iterative laout step skis labels, this is how many are skiped on
+  ///   the first iteration.
+  final int showEveryNthLabel = 3;
+
+  /// On multiple auto layout iterations, every new iteration skips more labels.
+  /// every iteration, the number of labels skipped is multiplied by
+  /// [_multiplyLabelSkip]. For example, if on first layout,
+  /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
+  /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
+  final int multiplyLabelSkip = 2;
+
+  // ############## Text Style
+
   /// Text style for both X and Y labels.
   ///
   /// The (future) iterative container can change this default for labels to fit.

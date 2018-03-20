@@ -625,8 +625,6 @@ class XContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    // todo -10
-
     if (_labelTiltRadians == 0.0) {
       // Horizontal:
       _paintLabelContainers(canvas);
@@ -707,24 +705,29 @@ class DefaultLabelReLayoutStrategy {
   /// from previous layouts
   double _labelFontSize;
   int _reLayoutsCounter = 0;
-  int _showEveryNthLabel = 3; // todo -10 make available to clients
+  int _showEveryNthLabel;
   /// On multiple auto layout iterations, every new iteration skips more labels.
   /// every iteration, the number of labels skipped is multiplied by
   /// [_multiplyLabelSkip]. For example, if on first layout,
   /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
   /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
-  int _multiplyLabelSkip = 2;
+  int _multiplyLabelSkip;
 
-  final int _maxReLayouts = 5; // todo -10 make available to clients
+  int _maxReLayouts;
+
+  double decreaseLabelFontRatio;
+
+  double get labelFontSize => _labelFontSize;
 
   DefaultLabelReLayoutStrategy({XContainer xContainer, ChartOptions options}) {
     _xContainer = xContainer;
     _options = options;
+    decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
+    _showEveryNthLabel = _options.showEveryNthLabel;
+    _maxReLayouts = _options.maxReLayouts;
+    _multiplyLabelSkip = options.multiplyLabelSkip;
   }
 
-  double get labelFontSize => _labelFontSize;
-
-  double decreaseLabelFontRatio = 1.0; // todo -10 : 0.75;
 
   LabelReLayout _atDepth(int depth) {
     switch (depth) {
@@ -756,7 +759,6 @@ class DefaultLabelReLayoutStrategy {
       _reLayoutsCounter++;
 
       if (_reLayoutsCounter > _maxReLayouts) {
-        // todo -10 throw new StateError("_layoutDepth=$_layoutDepth. Giving up");
         return;
       }
 
@@ -765,7 +767,7 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          double labelTiltRadians = math.PI / 2;
+          double labelTiltRadians = - math.PI / 2;
           //  angle must be in interval `<-math.PI, +math.PI>`
           if (!(-1 * math.PI <= labelTiltRadians &&
               labelTiltRadians <= math.PI)) {
@@ -782,7 +784,6 @@ class DefaultLabelReLayoutStrategy {
   }
 
   void _reLayoutRotateLabels(double labelTiltRadians) {
-    // todo -10
     _xContainer.makeTiltMatricesFrom(labelTiltRadians);
     _xContainer.layout();
   }
@@ -795,8 +796,6 @@ class DefaultLabelReLayoutStrategy {
   }
 
   void _reLayoutSkipLabels() {
-    // todo -10
-
     // Most advanced; Keep list of labels, but only display every nth
     _xContainer._showEveryNthLabel ??= this._showEveryNthLabel;
     if (_xContainer._showEveryNthLabel != this._showEveryNthLabel) {
@@ -908,7 +907,7 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
-  // todo -8 this setter vvv need be removed - only serves canvas label rotation!!
+  // todo -3 this setter vvv need be removed - only serves canvas label rotation!!
   void set offset(ui.Offset offset) => _offset = offset;
 
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
@@ -941,7 +940,7 @@ abstract class Container {
   /// [skipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool skipOnDistressedSize = true; // todo -11 set to true for distress test
+  bool skipOnDistressedSize = true; // todo -4 set to true for distress test
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -979,7 +978,8 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-  // todo -4: Add assertion abstract method in direction where we should fill, that the layout size is same as the expansion size.
+  // todo -3: Add assertion abstract method in direction where we should fill,
+  //          that the layout size is same as the expansion size.
 
 }
 
@@ -1329,7 +1329,7 @@ class LegendItemContainer extends Container {
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
     if (skipOnDistressedSize)
-      return; // todo -11 this should not be, only if distress actually happens
+      return; // todo -4 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
@@ -1337,7 +1337,7 @@ class LegendItemContainer extends Container {
 
   void applyParentOffset(ui.Offset offset) {
     if (skipOnDistressedSize)
-      return; // todo -11 this should not be, only if distress actually happens
+      return; // todo -4 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
@@ -1395,7 +1395,6 @@ class LegendContainer extends ChartAreaContainer {
 
     List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
 
-    // todo -3 Call the layoutUntilFitsParent here
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = new LabelStyle(
       textStyle: options.labelTextStyle,
@@ -1471,13 +1470,6 @@ class LegendContainer extends ChartAreaContainer {
       legendItemContainer.paint(canvas);
     }
   }
-
-  /// todo -3 finish and document
-/*
-  List<LegendLabelContainer> overflownLabelContainers() {
-    this.outputs.where((output) {output.labelContainer.})
-  }
-  */
 }
 
 /// Represents values and coordinates of one presented atom of data (x and y).
