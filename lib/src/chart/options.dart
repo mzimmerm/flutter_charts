@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Color, Paint, TextDirection, TextAlign;
+import 'dart:math' as math show PI;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
+
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
@@ -100,22 +102,26 @@ class ChartOptions {
 
   // ############## Iterative label layout options
 
-  /// Maximum iterations of label re-layouts, before giving up
+  /// General: Maximum iterations of label re-layouts, before giving up
   final int maxReLayouts = 5;
 
-  /// When iterative step decreases font size, use this ratio on every step.
+  /// Font size iteration: When iterative step decreases font size, use this ratio on every step.
   final double decreaseLabelFontRatio = 1.0; // todo -4 : 0.75;
 
-  /// When iterative laout step skis labels, this is how many are skiped on
+  /// Label skip iteration: When iterative laout step skis labels, this is how many are skiped on
   ///   the first iteration.
   final int showEveryNthLabel = 3;
 
   /// On multiple auto layout iterations, every new iteration skips more labels.
   /// every iteration, the number of labels skipped is multiplied by
-  /// [_multiplyLabelSkip]. For example, if on first layout,
-  /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
-  /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
+  /// [multiplyLabelSkip]. For example, if on first layout,
+  /// [showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
+  /// the  [showEveryNthLabel] would be `3 * multiplyLabelSkip`.
   final int multiplyLabelSkip = 2;
+
+  /// Tilt Label iteration: If label do not fit horizontally,
+  ///   they are tilted by this value.
+  final double labelTiltRadians = math.PI / 4;
 
   // ############## Text Style
 

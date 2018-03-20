@@ -767,7 +767,7 @@ class DefaultLabelReLayoutStrategy {
           _reLayoutDecreaseLabelFont();
           break;
         case LabelReLayout.RotateLabels:
-          double labelTiltRadians = - math.PI / 2;
+          double labelTiltRadians = _options.labelTiltRadians;
           //  angle must be in interval `<-math.PI, +math.PI>`
           if (!(-1 * math.PI <= labelTiltRadians &&
               labelTiltRadians <= math.PI)) {
