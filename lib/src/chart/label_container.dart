@@ -27,11 +27,11 @@ import 'dart:math' as math show PI;
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
 /// The [layoutSize] is exactly that of by the contained
-/// layed out [textPainter] (this [LabelContainer] has no margins, padding,
-/// or additional content in addition to the [textPainter).
+/// layed out [_textPainter] (this [LabelContainer] has no margins, padding,
+/// or additional content in addition to the [_textPainter).
 ///
 /// However, if this object is tilted, as specified by [_labelTiltMatrix], the
-/// [layoutSize] is determined by the rotated layed out [textPainter]. The
+/// [layoutSize] is determined by the rotated layed out [_textPainter]. The
 /// math and [layoutSize] of this tilt is provided by [_tiltedLabelEnvelope].
 ///
 /// Most members are mutable so that clients can experiment with different
@@ -39,13 +39,13 @@ import 'dart:math' as math show PI;
 ///
 /// Notes:
 ///   - Instances manage the text to be presented as label,
-///   and create a member [textPainter], instance of [widgets.TextPainter]
-///   from the label. The contained [textPainter] is used for all layout
+///   and create a member [_textPainter], instance of [widgets.TextPainter]
+///   from the label. The contained [_textPainter] is used for all layout
 ///   and painting.
 ///   - All methods (and constructor) of this class always call
-///   [textPainter.layout] immediately after a change.
+///   [_textPainter.layout] immediately after a change.
 ///   Consequently,  there is no need to check for
-///   a "needs layout" method - the underlying [textPainter]
+///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 
 class LabelContainer extends flutter_charts_container.Container {
@@ -55,17 +55,18 @@ class LabelContainer extends flutter_charts_container.Container {
   /// Max width of label (outside constraint)
   double _labelMaxWidth;
 
-  /// Forward rotation matrix to apply on both Canvas
-  /// AND label envelope's topLeft offset's coordinate (pivoted on origin, once
-  /// all chart offsets are applied to label)
+  /// For tilted labels, this is the forward rotation matrix
+  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
+  /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
   vector_math.Matrix2 _canvasTiltMatrix;
 
   /// Angle by which label is tilted.
   vector_math.Matrix2 _labelTiltMatrix;
 
-  /// [TextPainter] wrapped in this label container. It is the only content.
-  widgets.TextPainter textPainter;
+  /// [TextPainter] wrapped in this label container.
+  /// Paints the [_label]. It is the only painted content of this container.
+  widgets.TextPainter _textPainter;
 
   /// Minimum envelope around the contained label (and hence, this container).
   /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
@@ -78,9 +79,6 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
-
-  // todo -2 add to signature if boundaries overflown
-  ui.TextAlign labelTextAlignOnOverflow = ui.TextAlign.left;
 
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
@@ -104,7 +102,7 @@ class LabelContainer extends flutter_charts_container.Container {
       text: label,
       style: _labelStyle.textStyle, // All labels share one style object
     );
-    textPainter = new widgets.TextPainter(
+    _textPainter = new widgets.TextPainter(
       text: text,
       textDirection: _labelStyle.textDirection,
       textAlign: _labelStyle.textAlign,
@@ -122,7 +120,7 @@ class LabelContainer extends flutter_charts_container.Container {
 
   /// Implementor of method in superclass [Container].
   void paint(ui.Canvas canvas) {
-    this.textPainter.paint(canvas, offset);
+    this._textPainter.paint(canvas, offset);
   }
 
   /// Implementor of method in superclass [Container].
@@ -135,7 +133,7 @@ class LabelContainer extends flutter_charts_container.Container {
     assert(offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
     return new geometry.EnvelopedRotatedRect.centerRotatedFrom(
-      rect: offset & textPainter.size, // offset & size => Rect
+      rect: offset & _textPainter.size, // offset & size => Rect
       rotateMatrix: _labelTiltMatrix,
     );
   }
@@ -155,14 +153,14 @@ class LabelContainer extends flutter_charts_container.Container {
   /// vertical direction in that case.
   ///
   /// Implementation and Behaviour:
-  ///   - Because the underlying [textPainter] is always
+  ///   - Because the underlying [_textPainter] is always
   ///     - created using [widgets.TextPainter.ellipses]
   ///     - and layed out using `textPainter.layout(maxWidth:)`
   ///   the subsequent `textPainter.paint(canvas)` call paints the label
   ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
   ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
   bool _layoutAndCheckOverflowInTextDirection() {
-    textPainter.layout();
+    _textPainter.layout();
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
@@ -170,7 +168,7 @@ class LabelContainer extends flutter_charts_container.Container {
 
     if (_unconstrainedSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
-      textPainter.layout(maxWidth: _labelMaxWidth);
+      _textPainter.layout(maxWidth: _labelMaxWidth);
       _tiltedLabelEnvelope = _createLabelEnvelope();
       _constraintSize = _tiltedLabelEnvelope.size;
     }

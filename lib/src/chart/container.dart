@@ -249,8 +249,11 @@ class YContainer extends ChartAreaContainer {
   /// todo 0-future-minor : above is not true now for user defined labels
   List<AxisLabelContainer> _yLabelContainers;
 
-  double _yLabelsContainerWidth;
+  /// private [_layoutSize] is calculated in layout and stored
+  ui.Size _layoutSize;
+
   LayoutExpansion _layoutExpansion;
+
   double _yLabelsMaxHeightFromFirstLayout;
 
   /// Constructs the container that holds Y labels.
@@ -274,11 +277,11 @@ class YContainer extends ChartAreaContainer {
   /// Out of calls to all container's [layout] by the parent
   /// [ChartContainer.layout], the call to this object's [layout] is second,
   /// after [LegendContainer.layout].
-  /// This [YContainer.layout] calculates [YContainer._yLabelsContainerWidth],
+  /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
   /// The remaining horizontal width of [ChartContainer.chartArea] minus
-  /// [YContainer._yLabelsContainerWidth] provides remaining available
+  /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   void layout() {
     // yAxisMin and yAxisMax define end points of the Y axis, in the YContainer
@@ -297,12 +300,13 @@ class YContainer extends ChartAreaContainer {
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
     }
-    _yLabelsContainerWidth = _yLabelContainers
-            .map((var yLabelContainer) => yLabelContainer)
-            .map((LabelContainer labelContainer) =>
-                labelContainer.textPainter.size.width)
+
+    double yLabelsContainerWidth = _yLabelContainers
+            .map((yLabelContainer) => yLabelContainer.layoutSize.width)
             .reduce(math.max) +
         2 * _parentContainer.options.yLabelsPadLR;
+
+    _layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion._height);
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
@@ -401,7 +405,7 @@ class YContainer extends ChartAreaContainer {
         labelStyle: labelStyle,
       );
       yLabelContainer.layout();
-      double labelTopY = yTickY - yLabelContainer.textPainter.height / 2;
+      double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
       yLabelContainer.parentOffsetTick = yTickY;
 
@@ -424,7 +428,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_yLabelsContainerWidth, _layoutExpansion._height);
+    return _layoutSize;
   }
 
   void paint(ui.Canvas canvas) {
@@ -433,16 +437,10 @@ class YContainer extends ChartAreaContainer {
     }
   }
 
-  // todo 0-layout is this right?
   double get yLabelsMaxHeight => _yLabelContainers
-      .map((var yLabelContainer) => yLabelContainer)
-      .map((LabelContainer labelContainer) =>
-          labelContainer.textPainter.size.height)
+      .map((yLabelContainer) => yLabelContainer.layoutSize.height)
       .reduce(math.max);
 
-  String toString() {
-    return ", _yLabelsContainerWidth = ${_yLabelsContainerWidth}";
-  }
 }
 
 /// Container of the X axis labels.
@@ -458,8 +456,6 @@ class XContainer extends ChartAreaContainer {
   /// X labels.
   List<AxisLabelContainer> _xLabelContainers;
 
-  double _xLabelsMaxHeight;
-  double _xLabelsMaxWidth;
   double _gridStepWidth;
 
   /// Size allocated for each shown label (>= [_gridStepWidth]
@@ -467,13 +463,15 @@ class XContainer extends ChartAreaContainer {
   ui.Size _layoutSize;
   int _showEveryNthLabel = 1;
 
-  /// Forward rotation matrix to apply on both Canvas
-  /// AND label envelope's topLeft offset's coordinate (pivoted on origin, once
-  /// all chart offsets are applied to label)
+  /// For tilted labels, this is the forward rotation matrix
+  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
+  /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
+  /// Just passed down to [LabelContainer].
   vector_math.Matrix2 _canvasTiltMatrix = new vector_math.Matrix2.identity();
 
   /// Angle by which labels are tilted.
+  /// Just passed down to [LabelContainer].
   vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
 
   /// In addition to the rotation matrices, hold on radians for canvas rotation.
@@ -576,17 +574,15 @@ class XContainer extends ChartAreaContainer {
     }
 
     // xlabels area without padding
-    _xLabelsMaxHeight = _xLabelContainers
+    double xLabelsMaxHeight = _xLabelContainers
         .map((xLabelContainer) => xLabelContainer.layoutSize.height)
         .reduce(math.max);
-    _xLabelsMaxWidth = _xLabelContainers
-        .map((xLabelContainer) => xLabelContainer.layoutSize.width)
-        .reduce(math.max);
+
 
     // Set the layout size calculated by this layout
     _layoutSize = new ui.Size(
       _layoutExpansion._width,
-      _xLabelsMaxHeight + 2 * options.xLabelsPadTB,
+      xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
     // This achieves auto-layout of labels to fit along X axis.
@@ -626,10 +622,10 @@ class XContainer extends ChartAreaContainer {
 
   void paint(ui.Canvas canvas) {
     if (_labelTiltRadians == 0.0) {
-      // Horizontal:
+      // Horizontal X labels:
       _paintLabelContainers(canvas);
     } else {
-      // Tilted. Must use canvas and offset coordinate rotation
+      // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
       canvas.rotate(-1 * _labelTiltRadians);
 

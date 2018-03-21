@@ -22,6 +22,9 @@ ui.Offset transform({
 
 /// Immutable envelope of a rotated copy of [sourceRect].
 ///
+/// Used to create rotated (tilted) labels on the X axis,
+/// which involves [canvas.rotate()].
+///
 /// The [sourceRect] is rotated around it's center, then enveloped by
 /// it's unrotated (parallel to axes) [envelopeRect]. The corners
 /// of the rotated copy of the [sourceRect] are maintained as
@@ -84,13 +87,15 @@ class EnvelopedRotatedRect {
   get envelopeRect => _envelopeRect;
 
   /// Represents a rectangle [rect] rotated around pivot at center of rectangle,
-  /// by [rotateMatrix] .
+  /// by the [rotateMatrix]. Note that the [rotateMatrix] must be
+  /// rotated by angle inverse to tha the canvas and text is rotated.
+  /// (It is the reverse rotation that defines the [topLeft] of text start!)
   ///
   /// During rotation, a reference to the original rectangle corners
-  /// [_topLeft], [_topRight], [_bottomLeft], [_bottomRight] is maintained
-  /// (even though after rotation
-  /// their meaning may be completely different). This is to allow
-  /// using these objects during oriented text painting.
+  /// [topLeft], [topRight], [bottomLeft], [bottomRight] is maintained
+  ///
+  /// This is to allow canvas-rotated text painting, which requires to
+  /// rotate the label.
   ///
   /// Currently only pivot = rectangle center is supported.
   ///

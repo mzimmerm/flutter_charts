@@ -41,7 +41,6 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Starts with a call to [ChartContainer.layout], then painting
   /// according to the calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
-    // print(" ### Size: paint(): passed size = ${size}");
 
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
