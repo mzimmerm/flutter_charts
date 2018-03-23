@@ -24,7 +24,7 @@ import '../util/util.dart' as util;
 import '../util/geometry.dart' as geometry;
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
-    as iterative;
+    as strategy;
 
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -462,7 +462,6 @@ class XContainer extends ChartAreaContainer {
   /// Size allocated for each shown label (>= [_gridStepWidth]
   double _shownLabelsStepWidth;
   ui.Size _layoutSize;
-  // todo -12 int showEveryNthLabel = 1;
 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
@@ -486,7 +485,7 @@ class XContainer extends ChartAreaContainer {
     _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
   }
 
-  iterative.DefaultLabelReLayoutStrategy _reLayoutStrategy;
+  strategy.DefaultIterativeLabelLayoutStrategy _reLayoutStrategy;
 
   /// Constructs the container that holds X labels.
   ///
@@ -500,7 +499,7 @@ class XContainer extends ChartAreaContainer {
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
         ) {
-    _reLayoutStrategy = new iterative.DefaultLabelReLayoutStrategy(
+    _reLayoutStrategy = new strategy.DefaultIterativeLabelLayoutStrategy(
       xContainer: this,
       options: parentContainer.options,
     );

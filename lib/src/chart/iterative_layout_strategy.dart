@@ -2,18 +2,18 @@ import 'package:flutter_charts/src/chart/container.dart' show XContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'dart:math' as math show PI;
 
-enum LabelReLayout { RotateLabels, DecreaseLabelFont, SkipLabels }
+enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 
 /// Strategy of achieving that labels "fit" on the X axis.
 ///
 /// Strategy defines a sequence of steps, each performing a specific strategy
-/// to achieve X labels fit, currently, [LabelReLayout.RotateLabels],
-/// [LabelReLayout.DecreaseLabelFont] and [LabelReLayout.SkipLabels].
+/// to achieve X labels fit, currently, [LabelFitMethod.RotateLabels],
+/// [LabelFitMethod.DecreaseLabelFont] and [LabelFitMethod.SkipLabels].
 ///
 /// The steps are repeated at most [maxReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxReLayouts] is reached.
-class DefaultLabelReLayoutStrategy {
+class DefaultIterativeLabelLayoutStrategy {
   XContainer _xContainer;
   ChartOptions _options;
 
@@ -38,7 +38,7 @@ class DefaultLabelReLayoutStrategy {
 
   double get labelFontSize => _labelFontSize;
 
-  DefaultLabelReLayoutStrategy({XContainer xContainer, ChartOptions options}) {
+  DefaultIterativeLabelLayoutStrategy({XContainer xContainer, ChartOptions options}) {
     _xContainer = xContainer;
     _options = options;
     decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
@@ -47,22 +47,22 @@ class DefaultLabelReLayoutStrategy {
     _multiplyLabelSkip = options.multiplyLabelSkip;
   }
 
-  LabelReLayout _atDepth(int depth) {
+  LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
-        return LabelReLayout.DecreaseLabelFont;
+        return LabelFitMethod.DecreaseLabelFont;
         break;
       case 2:
-        return LabelReLayout.DecreaseLabelFont;
+        return LabelFitMethod.DecreaseLabelFont;
         break;
       case 3:
-        return LabelReLayout.RotateLabels;
+        return LabelFitMethod.RotateLabels;
         break;
       case 4:
-        return LabelReLayout.SkipLabels;
+        return LabelFitMethod.SkipLabels;
         break;
       default:
-        return LabelReLayout.SkipLabels;
+        return LabelFitMethod.SkipLabels;
     }
   }
 
@@ -70,7 +70,7 @@ class DefaultLabelReLayoutStrategy {
   ///
   /// If labels in the [_xContainer] overlap, this method takes the
   /// next prescribed auto-layout action - one of the actions defined in the
-  /// [LabelReLayout] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
+  /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   void reLayout() {
     if (!_xContainer.labelsOverlap()) {
@@ -85,13 +85,13 @@ class DefaultLabelReLayoutStrategy {
     }
 
     switch (_atDepth(_reLayoutsCounter)) {
-      case LabelReLayout.DecreaseLabelFont:
+      case LabelFitMethod.DecreaseLabelFont:
         _reLayoutDecreaseLabelFont();
         break;
-      case LabelReLayout.RotateLabels:
+      case LabelFitMethod.RotateLabels:
         _reLayoutRotateLabels();
         break;
-      case LabelReLayout.SkipLabels:
+      case LabelFitMethod.SkipLabels:
         _reLayoutSkipLabels();
         break;
     }
@@ -118,10 +118,6 @@ class DefaultLabelReLayoutStrategy {
 
   void _reLayoutSkipLabels() {
     // Most advanced; Keep list of labels, but only display every nth
-// todo -12    _xContainer.showEveryNthLabel ??= this._showEveryNthLabel;
-// todo -12    if (_xContainer.showEveryNthLabel != this._showEveryNthLabel) {
-// todo -12      _xContainer.showEveryNthLabel *= this._multiplyLabelSkip;
-// todo -12    }
     this._showEveryNthLabel *= this._multiplyLabelSkip;
   }
 }
