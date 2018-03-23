@@ -408,7 +408,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   new Expanded(
                     child: verticalBarChart,
                   ),
-                  new Text('<<<<<<<<<<'),
+                  // new Text('<<'), // horizontal
+                  // new Text('<<<<<<'),   // tilted
+                  // new Text('<<<<<<<<<<<'),   // skiped (3)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),   // skiped (2)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),   // gave up
+                  new Text('<<<<<<'),   // tilted
                 ],
               ), //
             ), // Column -> Expanded

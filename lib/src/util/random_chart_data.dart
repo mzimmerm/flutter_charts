@@ -71,11 +71,21 @@ class RandomChartData extends ChartData {
     }
   }
 
+  void _generateXLabelsCount() {
+    List<String> xLabelsDows = [
+      'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'
+    ];
+
+    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
+      xLabels.add(xLabelsDows[xIndex % 7]);
+    }
+  }
+
   /// Generate list of "random" [xLabels] as monthNames or weekday names.
   ///
   ///
    void _generateXLabels() {
-    _generateXLabelsDows();
+    _generateXLabelsCount();
   }
 
   void _generateYLabels() {

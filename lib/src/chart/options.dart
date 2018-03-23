@@ -110,7 +110,7 @@ class ChartOptions {
 
   /// Label skip iteration: When iterative laout step skis labels, this is how many are skiped on
   ///   the first iteration.
-  final int showEveryNthLabel = 3;
+  final int showEveryNthLabel = 1;
 
   /// On multiple auto layout iterations, every new iteration skips more labels.
   /// every iteration, the number of labels skipped is multiplied by
