@@ -464,7 +464,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   ui.Size _layoutSize;
 
 // todo -10 use interface
-  strategy.DefaultIterativeLabelLayoutStrategy _reLayoutStrategy;
+  strategy.LabelLayoutStrategy _reLayoutStrategy;
 
   /// Constructs the container that holds X labels.
   ///
