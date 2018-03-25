@@ -464,7 +464,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   ui.Size _layoutSize;
 
 // todo -10 use interface
-  strategy.LabelLayoutStrategy _reLayoutStrategy;
+  strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
   /// Constructs the container that holds X labels.
   ///
@@ -478,7 +478,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
         ) {
-    _reLayoutStrategy = new strategy.DefaultIterativeLabelLayoutStrategy(
+    _labelLayoutStrategy = new strategy.DefaultIterativeLabelLayoutStrategy(
       container: this,
       options: parentContainer.options,
     );
@@ -510,7 +510,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    int numShownLabels = (xLabels.length / _reLayoutStrategy.showEveryNthLabel)
+    int numShownLabels = (xLabels.length / _labelLayoutStrategy.showEveryNthLabel)
         .toInt(); // todo -10 # move showEveryNthLabel to IterativeLaoytstrategy. Also define common interface, LabelLaoytStrategy, and NonIterave implementation, just taking user input...
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
@@ -523,8 +523,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTiltMatrix:  _reLayoutStrategy.labelTiltMatrix,
-        canvasTiltMatrix: _reLayoutStrategy.canvasTiltMatrix,
+        labelTiltMatrix:  _labelLayoutStrategy.labelTiltMatrix,
+        canvasTiltMatrix: _labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
 
@@ -567,13 +567,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    _reLayoutStrategy.reLayout();
+    _labelLayoutStrategy.reLayout();
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
     widgets.TextStyle labelTextStyle = new widgets.TextStyle(
       color: options.labelTextStyle.color,
-      fontSize: _reLayoutStrategy.labelFontSize,
+      fontSize: _labelLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -600,13 +600,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    if (_reLayoutStrategy.labelTiltRadians == 0.0) {
+    if (_labelLayoutStrategy.labelTiltRadians == 0.0) {
       // Horizontal X labels:
       _paintLabelContainers(canvas);
     } else {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * _reLayoutStrategy.labelTiltRadians);
+      canvas.rotate(-1 * _labelLayoutStrategy.labelTiltRadians);
 
       _rotateLabelContainersAsCanvas();
       _paintLabelContainers(canvas);
@@ -628,7 +628,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-    if (xIndex % _reLayoutStrategy.showEveryNthLabel == 0) return true;
+    if (xIndex % _labelLayoutStrategy.showEveryNthLabel == 0) return true;
     return false;
   }
 

@@ -17,9 +17,9 @@ enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 /// to achieve X labels fit, currently, [LabelFitMethod.RotateLabels],
 /// [LabelFitMethod.DecreaseLabelFont] and [LabelFitMethod.SkipLabels].
 ///
-/// The steps are repeated at most [maxReLayouts] times.
+/// The steps are repeated at most [maxLabelReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
-/// until [maxReLayouts] is reached.
+/// until [maxLabelReLayouts] is reached.
 class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo -10 try implements and reason about it
 
   /// Members related to re-layout (iterative layout).
@@ -38,7 +38,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo 
   /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
   int _multiplyLabelSkip;
 
-  int _maxReLayouts;
+  int _maxLabelReLayouts;
 
   double _decreaseLabelFontRatio;
 
@@ -70,7 +70,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo 
 
     _decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
     _showEveryNthLabel = _options.showEveryNthLabel;
-    _maxReLayouts = _options.maxReLayouts;
+    _maxLabelReLayouts = _options.maxLabelReLayouts;
     _multiplyLabelSkip = options.multiplyLabelSkip;
   }
 
@@ -108,7 +108,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo 
     }
     _reLayoutsCounter++;
 
-    if (_reLayoutsCounter > _maxReLayouts) {
+    if (_reLayoutsCounter > _maxLabelReLayouts) {
       return;
     }
 

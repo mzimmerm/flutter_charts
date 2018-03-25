@@ -104,7 +104,7 @@ class ChartOptions {
 
   /// General: Maximum iterations of label re-layouts, before giving up.
   ///    "giving up" means that labels may show ovelaping
-  final int maxReLayouts = 5;
+  final int maxLabelReLayouts = 5;
 
   /// Font size iteration: When iterative step decreases font size, use this ratio on every step.
   final double decreaseLabelFontRatio = 1.0; // todo -4 : 0.75;

@@ -74,23 +74,24 @@
 export 'package:flutter_charts/src/chart/label_container.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 
-export 'src/chart/data.dart';
-export 'src/chart/container.dart';
+export 'package:flutter_charts/src/util/util.dart';
+export 'package:flutter_charts/src/util/range.dart';
 
+export 'package:flutter_charts/src/chart/data.dart';
+export 'package:flutter_charts/src/chart/container.dart';
+export 'package:flutter_charts/src/chart/iterative_layout_strategy.dart';
 export 'package:flutter_charts/src/chart/options.dart';
 
-export 'src/util/util.dart';
-export 'src/util/range.dart';
+export 'package:flutter_charts/src/chart/line/chart.dart';
+export 'package:flutter_charts/src/chart/line/painter.dart';
+export 'package:flutter_charts/src/chart/line/container.dart';
+export 'package:flutter_charts/src/chart/line/options.dart';
 
-export 'src/chart/line/chart.dart';
-export 'src/chart/line/painter.dart';
-export 'src/chart/line/container.dart';
-export 'src/chart/line/options.dart';
+export 'package:flutter_charts/src/chart/bar/chart.dart';
+export 'package:flutter_charts/src/chart/bar/painter.dart';
+export 'package:flutter_charts/src/chart/bar/container.dart';
+export 'package:flutter_charts/src/chart/bar/options.dart';
 
-export 'src/chart/bar/chart.dart';
-export 'src/chart/bar/painter.dart';
-export 'src/chart/bar/container.dart';
-export 'src/chart/bar/options.dart';
+export 'package:flutter_charts/src/util/random_chart_data.dart';
 
-export 'src/util/random_chart_data.dart';
 
