@@ -453,7 +453,7 @@ class YContainer extends ChartAreaContainer {
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [LayoutExpansion].
 
-class XContainer extends ChartAreaContainer {
+class XContainer extends AdjustableContentChartAreaContainer {
   /// X labels.
   List<AxisLabelContainer> _xLabelContainers;
 
@@ -463,28 +463,7 @@ class XContainer extends ChartAreaContainer {
   double _shownLabelsStepWidth;
   ui.Size _layoutSize;
 
-  /// For tilted labels, this is the forward rotation matrix
-  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
-  /// (pivoted on origin, once all chart offsets are applied to label).
-  /// This is always the inverse of [_labelTiltMatrix].
-  /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 _canvasTiltMatrix = new vector_math.Matrix2.identity();
-
-  /// Angle by which labels are tilted.
-  /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
-
-  /// In addition to the rotation matrices, hold on radians for canvas rotation.
-  double _labelTiltRadians = 0.0;
-
-  void makeTiltMatricesFrom(double labelTiltRadians) {
-    _labelTiltRadians = labelTiltRadians;
-    _canvasTiltMatrix = new vector_math.Matrix2.rotation(_labelTiltRadians);
-    // label is actually tilted in the direction when canvas is rotated back,
-    //   so the label tilt is inverse of the canvas tilt
-    _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
-  }
-
+// todo -10 use interface
   strategy.DefaultIterativeLabelLayoutStrategy _reLayoutStrategy;
 
   /// Constructs the container that holds X labels.
@@ -500,7 +479,7 @@ class XContainer extends ChartAreaContainer {
           parentContainer: parentContainer,
         ) {
     _reLayoutStrategy = new strategy.DefaultIterativeLabelLayoutStrategy(
-      xContainer: this,
+      container: this,
       options: parentContainer.options,
     );
   }
@@ -544,8 +523,8 @@ class XContainer extends ChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTiltMatrix: _labelTiltMatrix,
-        canvasTiltMatrix: _canvasTiltMatrix,
+        labelTiltMatrix:  _reLayoutStrategy.labelTiltMatrix,
+        canvasTiltMatrix: _reLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
 
@@ -621,13 +600,13 @@ class XContainer extends ChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    if (_labelTiltRadians == 0.0) {
+    if (_reLayoutStrategy.labelTiltRadians == 0.0) {
       // Horizontal X labels:
       _paintLabelContainers(canvas);
     } else {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * _labelTiltRadians);
+      canvas.rotate(-1 * _reLayoutStrategy.labelTiltRadians);
 
       _rotateLabelContainersAsCanvas();
       _paintLabelContainers(canvas);
@@ -677,6 +656,26 @@ class XContainer extends ChartAreaContainer {
 
     return false;
   }
+}
+
+/// A marker of container with adjustable contents,
+/// such as labels that can be skipped.
+abstract class AdjustableContent {
+  bool labelsOverlap();
+}
+
+/// Provides ability to connect [LabelLayoutStrategy] to [Container],
+/// (actually currently the [ChartAreaContainer].
+abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
+    implements AdjustableContent {
+  AdjustableContentChartAreaContainer({
+    ChartContainer parentContainer,
+    LayoutExpansion layoutExpansion,
+  })
+      : super(
+          parentContainer: parentContainer,
+          layoutExpansion: layoutExpansion,
+        );
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }
@@ -786,6 +785,7 @@ abstract class Container {
   // todo -3 this setter vvv need be removed - only serves canvas label rotation!!
   void set offset(ui.Offset offset) => _offset = offset;
 
+  // todo -10 move this to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
   /// lifetime.
@@ -838,7 +838,8 @@ abstract class Container {
     _offset += offset;
   }
 
-  /// Tilt may apply to the whole container or only some elements (?)
+  /// Tilt may apply to the whole container.
+  /// todo -10 unused, move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
     if (tiltMatrix == new vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
@@ -854,8 +855,8 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-  // todo -3: Add assertion abstract method in direction where we should fill,
-  //          that the layout size is same as the expansion size.
+// todo -3: Add assertion abstract method in direction where we should fill,
+//          that the layout size is same as the expansion size.
 
 }
 

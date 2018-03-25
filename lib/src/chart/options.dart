@@ -102,7 +102,8 @@ class ChartOptions {
 
   // ############## Iterative label layout options
 
-  /// General: Maximum iterations of label re-layouts, before giving up
+  /// General: Maximum iterations of label re-layouts, before giving up.
+  ///    "giving up" means that labels may show ovelaping
   final int maxReLayouts = 5;
 
   /// Font size iteration: When iterative step decreases font size, use this ratio on every step.

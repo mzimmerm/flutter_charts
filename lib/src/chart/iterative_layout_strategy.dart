@@ -1,5 +1,12 @@
-import 'package:flutter_charts/src/chart/container.dart' show XContainer;
+import 'package:flutter_charts/src/chart/container.dart'
+    show
+        XContainer,
+        Container,
+        AdjustableContent,
+        AdjustableContentChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
+import 'package:vector_math/vector_math.dart' as vector_math
+    show Matrix2, Vector2;
 import 'dart:math' as math show PI;
 
 enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
@@ -13,9 +20,7 @@ enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 /// The steps are repeated at most [maxReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxReLayouts] is reached.
-class DefaultIterativeLabelLayoutStrategy {
-  XContainer _xContainer;
-  ChartOptions _options;
+class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo -10 try implements and reason about it
 
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
@@ -23,6 +28,7 @@ class DefaultIterativeLabelLayoutStrategy {
   double _labelFontSize;
   int _reLayoutsCounter = 0;
   int _showEveryNthLabel;
+
   get showEveryNthLabel => _showEveryNthLabel;
 
   /// On multiple auto layout iterations, every new iteration skips more labels.
@@ -37,10 +43,31 @@ class DefaultIterativeLabelLayoutStrategy {
   double decreaseLabelFontRatio;
 
   double get labelFontSize => _labelFontSize;
+  /// For tilted labels, this is the forward rotation matrix
+  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
+  /// (pivoted on origin, once all chart offsets are applied to label).
+  /// This is always the inverse of [_labelTiltMatrix].
+  /// Just passed down to [LabelContainer]s.
+  vector_math.Matrix2 _canvasTiltMatrix = new vector_math.Matrix2.identity();
 
-  DefaultIterativeLabelLayoutStrategy({XContainer xContainer, ChartOptions options}) {
-    _xContainer = xContainer;
-    _options = options;
+  get canvasTiltMatrix => _canvasTiltMatrix;
+
+  /// Angle by which labels are tilted.
+  /// Just passed down to [LabelContainer]s.
+  vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
+
+  get labelTiltMatrix => _labelTiltMatrix;
+
+  /// In addition to the rotation matrices, hold on radians for canvas rotation.
+  double _labelTiltRadians = 0.0;
+
+  get labelTiltRadians => _labelTiltRadians;
+
+  DefaultIterativeLabelLayoutStrategy({
+    AdjustableContentChartAreaContainer container,
+    ChartOptions options,
+  }) : super(container: container, options: options) {
+
     decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
     _showEveryNthLabel = _options.showEveryNthLabel;
     _maxReLayouts = _options.maxReLayouts;
@@ -50,30 +77,31 @@ class DefaultIterativeLabelLayoutStrategy {
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
-        return LabelFitMethod.DecreaseLabelFont;
-        break;
-      case 2:
-        return LabelFitMethod.DecreaseLabelFont;
-        break;
-      case 3:
         return LabelFitMethod.RotateLabels;
         break;
-      case 4:
+      case 2:
         return LabelFitMethod.SkipLabels;
+        break;
+      case 3:
+        return LabelFitMethod.DecreaseLabelFont;
+        break;
+      case 4:
+        return LabelFitMethod.DecreaseLabelFont;
         break;
       default:
         return LabelFitMethod.SkipLabels;
+        break;
     }
   }
 
   /// Core of the auto layout strategy.
   ///
-  /// If labels in the [_xContainer] overlap, this method takes the
+  /// If labels in the [_container] overlap, this method takes the
   /// next prescribed auto-layout action - one of the actions defined in the
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   void reLayout() {
-    if (!_xContainer.labelsOverlap()) {
+    if (!_container.labelsOverlap()) {
       // if there is no ovelap, no more iterative calls
       //   to layout(). Exits from iterative layout.
       return;
@@ -95,7 +123,7 @@ class DefaultIterativeLabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    _xContainer.layout(); // will call this function back!
+    _container.layout(); // will call this function back!
 
     print("Iterative layout finished after $_reLayoutsCounter iterations.");
   }
@@ -107,7 +135,7 @@ class DefaultIterativeLabelLayoutStrategy {
       throw new StateError("angle must be between -PI and +PI");
     }
 
-    _xContainer.makeTiltMatricesFrom(labelTiltRadians);
+    _makeTiltMatricesFrom(labelTiltRadians); // todo -10
   }
 
   void _reLayoutDecreaseLabelFont() {
@@ -120,4 +148,43 @@ class DefaultIterativeLabelLayoutStrategy {
     // Most advanced; Keep list of labels, but only display every nth
     this._showEveryNthLabel *= this._multiplyLabelSkip;
   }
+
+  void _makeTiltMatricesFrom(double labelTiltRadians) {
+    _labelTiltRadians = labelTiltRadians;
+    _canvasTiltMatrix = new vector_math.Matrix2.rotation(_labelTiltRadians);
+    // label is actually tilted in the direction when canvas is rotated back,
+    //   so the label tilt is inverse of the canvas tilt
+    _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
+  }
+
+}
+
+/// Interface for layout strategies to achieve that labels,
+/// or more generally, some adjustable content "fit" in a container.
+///
+/// Strategy defines a zero or more sequences of steps,
+/// each performing a specific code to achieve labels fit.
+abstract class LabelLayoutStrategy {
+  ChartOptions _options;
+  AdjustableContentChartAreaContainer _container;
+
+  LabelLayoutStrategy({
+    AdjustableContentChartAreaContainer container,
+    ChartOptions options,
+  }) {
+    _options = options;
+    _container = container;
+  }
+
+  /// Core of the auto layout strategy.
+  ///
+  /// Typically called from the [Container]'s [Container.layout]
+  /// method to achieve iterative layout.
+  ///
+  /// Implementations should either not do anything (OnePassLayoutStrategy),
+  /// or check for [_container]'s labels overlap. On overlap,
+  /// it should set some values on [_container]'s labels to
+  /// make them smaller, less dense, tilt, skip etc, and call
+  /// [Container.layout] iteratively.
+  void reLayout();
 }
