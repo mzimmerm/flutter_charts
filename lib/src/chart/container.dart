@@ -92,6 +92,7 @@ abstract class ChartContainer {
     ui.Size chartArea,
     ChartData chartData,
     ChartOptions chartOptions,
+    // todo -10: pass down XContainerLabelLayoutStrategy, also in both supers
   }) {
     this.chartArea = chartArea;
     this.data = chartData;
@@ -150,6 +151,9 @@ abstract class ChartContainer {
           widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height - legendContainerSize.height,
           heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
+      labelLayoutStrategy: new strategy.DefaultIterativeLabelLayoutStrategy(
+        options: this.options,
+      ),
     );
 
     xContainer.layout();
@@ -268,8 +272,8 @@ class YContainer extends ChartAreaContainer {
     double yLabelsMaxHeightFromFirstLayout,
   })
       : super(
-          layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
+          layoutExpansion: layoutExpansion,
         ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
   }
@@ -463,9 +467,6 @@ class XContainer extends AdjustableContentChartAreaContainer {
   double _shownLabelsStepWidth;
   ui.Size _layoutSize;
 
-// todo -10 use interface
-  strategy.LabelLayoutStrategy _labelLayoutStrategy;
-
   /// Constructs the container that holds X labels.
   ///
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
@@ -473,15 +474,14 @@ class XContainer extends AdjustableContentChartAreaContainer {
   XContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
+    strategy.LabelLayoutStrategy labelLayoutStrategy,
   })
       : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
+          labelLayoutStrategy: labelLayoutStrategy,
         ) {
-    _labelLayoutStrategy = new strategy.DefaultIterativeLabelLayoutStrategy(
-      container: this,
-      options: parentContainer.options,
-    );
+    labelLayoutStrategy.onContainer(this);
   }
 
   /// Lays out the chart in horizontal (x) direction.
@@ -510,7 +510,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    int numShownLabels = (xLabels.length / _labelLayoutStrategy.showEveryNthLabel)
+    int numShownLabels = (xLabels.length /
+            labelLayoutStrategy.showEveryNthLabel)
         .toInt(); // todo -10 # move showEveryNthLabel to IterativeLaoytstrategy. Also define common interface, LabelLaoytStrategy, and NonIterave implementation, just taking user input...
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
@@ -523,8 +524,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTiltMatrix:  _labelLayoutStrategy.labelTiltMatrix,
-        canvasTiltMatrix: _labelLayoutStrategy.canvasTiltMatrix,
+        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
+        canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
 
@@ -567,13 +568,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    _labelLayoutStrategy.reLayout();
+    labelLayoutStrategy.reLayout();
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
     widgets.TextStyle labelTextStyle = new widgets.TextStyle(
       color: options.labelTextStyle.color,
-      fontSize: _labelLayoutStrategy.labelFontSize,
+      fontSize: labelLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -600,13 +601,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    if (_labelLayoutStrategy.labelTiltRadians == 0.0) {
+    if (labelLayoutStrategy.labelTiltRadians == 0.0) {
       // Horizontal X labels:
       _paintLabelContainers(canvas);
     } else {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * _labelLayoutStrategy.labelTiltRadians);
+      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
 
       _rotateLabelContainersAsCanvas();
       _paintLabelContainers(canvas);
@@ -628,7 +629,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-    if (xIndex % _labelLayoutStrategy.showEveryNthLabel == 0) return true;
+    if (xIndex % labelLayoutStrategy.showEveryNthLabel == 0) return true;
     return false;
   }
 
@@ -660,6 +661,10 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
+// todo -1 LabelLayoutStrategy should be a member here, not
+//          in AdjustableContentChartAreaContainer
+//          Also, AdjustableContent should be a mixin.
+//          But Dart bug #25742 does not allow mixins with named parameters.
 abstract class AdjustableContent {
   bool labelsOverlap();
 }
@@ -668,14 +673,20 @@ abstract class AdjustableContent {
 /// (actually currently the [ChartAreaContainer].
 abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
     implements AdjustableContent {
+  strategy.LabelLayoutStrategy _labelLayoutStrategy;
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+
   AdjustableContentChartAreaContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
+    strategy.LabelLayoutStrategy labelLayoutStrategy,
   })
       : super(
           parentContainer: parentContainer,
           layoutExpansion: layoutExpansion,
-        );
+        ) {
+    _labelLayoutStrategy = labelLayoutStrategy;
+  }
 }
 
 enum ExpansionStyle { TryFill, GrowDoNotFill }

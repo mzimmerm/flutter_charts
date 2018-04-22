@@ -64,9 +64,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo 
   double get labelTiltRadians => _labelTiltRadians;
 
   DefaultIterativeLabelLayoutStrategy({
-    AdjustableContentChartAreaContainer container,
     ChartOptions options,
-  }) : super(container: container, options: options) {
+  }) : super(options: options) {
 
     _decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
     _showEveryNthLabel = _options.showEveryNthLabel;
@@ -169,11 +168,14 @@ abstract class LabelLayoutStrategy {
   AdjustableContentChartAreaContainer _container;
 
   LabelLayoutStrategy({
-    AdjustableContentChartAreaContainer container,
     ChartOptions options,
   }) {
     _options = options;
-    _container = container;
+  }
+
+  // todo -10 change to setter
+  void onContainer(AdjustableContentChartAreaContainer container) {
+    this._container = container;
   }
 
   /// Core of the auto layout strategy.
