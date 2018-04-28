@@ -17,7 +17,7 @@ class LineChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;
-    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
+    void action(dynamic presentersColumn) {
       var presenterList = presentersColumn.presenters;
       presenterList = optionalPaintOrderReverse(presenterList);
       presenterList.forEach((presenters.Presenter presenter) {
@@ -35,6 +35,8 @@ class LineChartPainter extends ChartPainter {
         canvas.drawCircle(presenterCast.offsetPoint, presenterCast.innerRadius,
             presenterCast.innerPaint);
       });
-    });
+    }
+
+    presentersColumns.forEach(action);
   }
 }
