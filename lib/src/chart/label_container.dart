@@ -22,7 +22,7 @@ import 'package:flutter_charts/src/chart/container.dart'
 
 import '../util/geometry.dart' as geometry;
 
-import 'dart:math' as math show PI;
+import 'dart:math' as math show pi;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///

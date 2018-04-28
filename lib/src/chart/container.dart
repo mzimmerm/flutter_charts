@@ -4,7 +4,7 @@ import 'dart:ui' as ui
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
 
-import 'dart:math' as math show max, min, PI;
+import 'dart:math' as math show max, min, pi;
 
 import 'package:vector_math/vector_math.dart' as vector_math
     show Matrix2, Vector2;
@@ -405,7 +405,7 @@ class YContainer extends ChartAreaContainer {
       double yTickY = labelInfo.scaledLabelValue;
       var yLabelContainer = new AxisLabelContainer(
         label: labelInfo.formattedYLabel,
-        labelMaxWidth: double.INFINITY,
+        labelMaxWidth: double.infinity,
         labelTiltMatrix: new vector_math.Matrix2.identity(),
         canvasTiltMatrix: new vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
@@ -523,7 +523,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
     for (var xIndex = 0; xIndex < xLabels.length; xIndex++) {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
-        labelMaxWidth: double.INFINITY,
+        labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
         canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
@@ -794,7 +794,7 @@ abstract class Container {
   ui.Offset get offset => _offset;
 
   // todo -3 this setter vvv need be removed - only serves canvas label rotation!!
-  void set offset(ui.Offset offset) => _offset = offset;
+  set offset(ui.Offset offset) => _offset = offset;
 
   // todo -10 move this to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
@@ -1698,21 +1698,26 @@ class PointsColumns extends custom_collection.CustomList {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    this.forEach((PointsColumn column) {
+
+    void action(dynamic column) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
       col++;
-    });
+    }
+    
+    this.forEach(action);
   }
 
   void applyParentOffset(ui.Offset offset) {
-    this.forEach((PointsColumn column) {
+    void action(dynamic column) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
-    });
+    }
+
+    this.forEach(action);
   }
 
   List<num> flattenPointsValues() {
@@ -1728,11 +1733,13 @@ class PointsColumns extends custom_collection.CustomList {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    this.forEach((PointsColumn column) {
+    void action(dynamic column) {
       column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
-    });
+    }
+    
+    this.forEach(action);
     return flat;
   }
 
@@ -1741,14 +1748,16 @@ class PointsColumns extends custom_collection.CustomList {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    this.forEach((PointsColumn column) {
+    void action(dynamic column) {
       column.stackedNegativePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
       column.stackedPositivePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
-    });
+    }
+
+    this.forEach(action);
     return flat;
   }
 }

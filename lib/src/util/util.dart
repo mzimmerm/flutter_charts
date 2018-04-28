@@ -35,7 +35,7 @@ double scaleValue(
 }
 
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
-List<List> transpose(List<List> colsInRows) {
+List<List<T>> transpose<T>(List<List<T>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.length == 0) return colsInRows;
 
@@ -43,9 +43,9 @@ List<List> transpose(List<List> colsInRows) {
   if (nCols == 0) throw new StateError("Degenerate matrix");
 
   // Init the transpose to make sure the size is right
-  List<List> rowsInCols = new List(nCols);
+  List<List<T>> rowsInCols = new List(nCols);
   for (int col = 0; col < nCols; col++) {
-    rowsInCols[col] = new List(nRows);
+    rowsInCols[col] = new List<T>(nRows);
   }
 
   // Transpose

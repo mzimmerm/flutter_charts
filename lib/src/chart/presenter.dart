@@ -88,7 +88,7 @@ class PresentersColumn {
     ChartContainer container,
   }) {
     int rowIndex = 0;
-    fromPoints.forEach((StackableValuePoint point) {
+    void action(dynamic point) {
       // todo -1 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn.points[rowIndex]
@@ -102,7 +102,9 @@ class PresentersColumn {
       );
       toPresenters.add(presenter);
       rowIndex++;
-    });
+    }
+    
+    fromPoints.forEach(action);
   }
 }
 
@@ -133,7 +135,8 @@ class PresentersColumns extends custom_collection.CustomList {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
-    pointsColumns.forEach((PointsColumn pointsColumn) {
+
+    void action(dynamic pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,
@@ -142,7 +145,9 @@ class PresentersColumns extends custom_collection.CustomList {
       this.add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
       leftPresentersColumn = presentersColumn;
-    });
+    }
+
+    pointsColumns.forEach(action);
   }
 }
 

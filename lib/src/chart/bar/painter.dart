@@ -18,26 +18,36 @@ class VerticalBarChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;
-    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
-      // todo 1 do not repeat loop, collapse to one construct
 
-      var positivePresenterList = presentersColumn.positivePresenters;
-      positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
-      positivePresenterList.forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast =
-            presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(
-            presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
+    void action(dynamic presentersColumn) {
+          (presenters.PresentersColumn presentersColumn) {
+        // todo 1 do not repeat loop, collapse to one construct
 
-      var negativePresenterList = presentersColumn.negativePresenters;
-      negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
-      negativePresenterList.forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast =
-            presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(
-            presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
-    });
+        var positivePresenterList = presentersColumn.positivePresenters;
+        positivePresenterList =
+            optionalPaintOrderReverse(positivePresenterList);
+        positivePresenterList.forEach((presenters.Presenter presenter) {
+          bar_presenters.VerticalBarPresenter presenterCast =
+          presenter as bar_presenters.VerticalBarPresenter;
+          canvas.drawRect(
+              presenterCast.presentedRect, presenterCast.dataRowPaint);
+        });
+
+        var negativePresenterList = presentersColumn.negativePresenters;
+        negativePresenterList =
+            optionalPaintOrderReverse(negativePresenterList);
+        negativePresenterList.forEach((presenters.Presenter presenter) {
+          bar_presenters.VerticalBarPresenter presenterCast =
+          presenter as bar_presenters.VerticalBarPresenter;
+          canvas.drawRect(
+              presenterCast.presentedRect, presenterCast.dataRowPaint);
+        });
+      };
+    }
+
+    presentersColumns.forEach(action);
+
+
   }
+
 }
