@@ -1670,7 +1670,7 @@ class PointsColumns extends custom_collection.CustomList {
       }
     }
     _valuePointArrInRows.toList();
-    _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
+    _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
 
     /// convert "column oriented" _valuePointArrInColumns
     /// to a column, and add the columns to this instance
@@ -1698,7 +1698,8 @@ class PointsColumns extends custom_collection.CustomList {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    this.forEach((PointsColumn column) {
+    // mz ori: this.forEach((PointsColumn column) {
+      this.forEach(( column) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
@@ -1708,7 +1709,8 @@ class PointsColumns extends custom_collection.CustomList {
   }
 
   void applyParentOffset(ui.Offset offset) {
-    this.forEach((PointsColumn column) {
+    // mz ori: this.forEach((PointsColumn column) {
+      this.forEach(( column) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
@@ -1728,7 +1730,8 @@ class PointsColumns extends custom_collection.CustomList {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    this.forEach((PointsColumn column) {
+    // mz ori: this.forEach((PointsColumn column) {
+    this.forEach(( column) {
       column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
@@ -1741,7 +1744,8 @@ class PointsColumns extends custom_collection.CustomList {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    this.forEach((PointsColumn column) {
+    // mz ori: this.forEach((PointsColumn column) {
+      this.forEach(( column) {
       column.stackedNegativePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });

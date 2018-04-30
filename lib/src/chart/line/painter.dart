@@ -17,7 +17,8 @@ class LineChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;
-    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
+    // mz ori: presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
+      presentersColumns.forEach((presentersColumn) {
       var presenterList = presentersColumn.presenters;
       presenterList = optionalPaintOrderReverse(presenterList);
       presenterList.forEach((presenters.Presenter presenter) {

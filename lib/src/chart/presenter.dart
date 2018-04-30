@@ -81,7 +81,7 @@ class PresentersColumn {
   }
 
   void _createPresentersInColumn({
-    List fromPoints,
+    List<StackableValuePoint> fromPoints,
     List toPresenters,
     PointsColumn pointsColumn,
     PresenterCreator presenterCreator,
@@ -133,7 +133,8 @@ class PresentersColumns extends custom_collection.CustomList {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
-    pointsColumns.forEach((PointsColumn pointsColumn) {
+    // mz ori: pointsColumns.forEach((PointsColumn pointsColumn) {
+      pointsColumns.forEach(( pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,
