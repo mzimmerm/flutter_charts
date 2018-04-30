@@ -92,7 +92,7 @@ abstract class ChartContainer {
     ui.Size chartArea,
     ChartData chartData,
     ChartOptions chartOptions,
-    // todo -10: pass down XContainerLabelLayoutStrategy, also in both supers
+    // todo -11: pass down XContainerLabelLayoutStrategy, also in both supers
   }) {
     this.chartArea = chartArea;
     this.data = chartData;
@@ -363,8 +363,11 @@ class YContainer extends ChartAreaContainer {
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _parentContainer.pointsColumns
-        .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
+    // todo -1 move to common layout, same for manual and auto
+    List<double> flatData = geometry.iterableNumToDouble(
+        _parentContainer.pointsColumns
+        .flattenPointsValues());
+    // .flattenPointsValues() as List<double>; // todo -10 mz ori
 
     // print("flatData=$flatData");
 
@@ -512,7 +515,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
     int numShownLabels = (xLabels.length /
             labelLayoutStrategy.showEveryNthLabel)
-        .toInt(); // todo -10 # move showEveryNthLabel to IterativeLaoytstrategy. Also define common interface, LabelLaoytStrategy, and NonIterave implementation, just taking user input...
+        .toInt(); // todo -11 # move showEveryNthLabel to IterativeLaoytstrategy. Also define common interface, LabelLaoytStrategy, and NonIterave implementation, just taking user input...
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
     LabelStyle labelStyle = _styleForLabels(options);
@@ -796,7 +799,7 @@ abstract class Container {
   // todo -3 this setter vvv need be removed - only serves canvas label rotation!!
   void set offset(ui.Offset offset) => _offset = offset;
 
-  // todo -10 move this to container base, similar to offset and comment as unused
+  // todo -11 move this to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
   /// lifetime.
@@ -850,7 +853,7 @@ abstract class Container {
   }
 
   /// Tilt may apply to the whole container.
-  /// todo -10 unused, move to base class? similar to offset?
+  /// todo -11 unused, move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
     if (tiltMatrix == new vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
@@ -1670,7 +1673,8 @@ class PointsColumns extends custom_collection.CustomList {
       }
     }
     _valuePointArrInRows.toList();
-    _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
+    // todo -10 mz ori _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
+    _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
 
     /// convert "column oriented" _valuePointArrInColumns
     /// to a column, and add the columns to this instance
@@ -1698,9 +1702,10 @@ class PointsColumns extends custom_collection.CustomList {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    // mz ori: this.forEach((PointsColumn column) {
-      this.forEach(( column) {
-      column.allPoints().forEach((StackableValuePoint point) {
+    // todo -10 mz ori: this.forEach((PointsColumn column) {
+    this.forEach(( column) {
+        // todo -10 mz ori:column.allPoints().forEach((StackableValuePoint point) {
+        column.allPoints().forEach(( point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
@@ -1709,9 +1714,10 @@ class PointsColumns extends custom_collection.CustomList {
   }
 
   void applyParentOffset(ui.Offset offset) {
-    // mz ori: this.forEach((PointsColumn column) {
-      this.forEach(( column) {
-      column.allPoints().forEach((StackableValuePoint point) {
+     // todo -10 mz ori: this.forEach((PointsColumn column) {
+     this.forEach(( column) {
+        // todo -10 mz ori: column.allPoints().forEach((StackableValuePoint point) {
+        column.allPoints().forEach(( point) {
         point.applyParentOffset(offset);
       });
     });
@@ -1730,9 +1736,10 @@ class PointsColumns extends custom_collection.CustomList {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    // mz ori: this.forEach((PointsColumn column) {
+    // todo -10 mz ori: this.forEach((PointsColumn column) {
     this.forEach(( column) {
-      column.points.forEach((StackableValuePoint point) {
+      // todo -10 mz ori: column.points.forEach((StackableValuePoint point) {
+      column.points.forEach(( point) {
         flat.add(point.toY);
       });
     });
@@ -1744,12 +1751,14 @@ class PointsColumns extends custom_collection.CustomList {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    // mz ori: this.forEach((PointsColumn column) {
+    // todo -10 mz ori: this.forEach((PointsColumn column) {
       this.forEach(( column) {
-      column.stackedNegativePoints.forEach((StackableValuePoint point) {
+        // todo -10 mz ori: column.stackedNegativePoints.forEach((StackableValuePoint point) {
+        column.stackedNegativePoints.forEach(( point) {
         flat.add(point.toY);
       });
-      column.stackedPositivePoints.forEach((StackableValuePoint point) {
+        // todo -10 mz ori: column.stackedPositivePoints.forEach((StackableValuePoint point) {
+        column.stackedPositivePoints.forEach(( point) {
         flat.add(point.toY);
       });
     });

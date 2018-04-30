@@ -3,6 +3,10 @@ import 'package:decimal/decimal.dart' as decimal;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'util.dart' as util;
 
+// todo -10 mz ori - this library (range.dart) has been modified for Dart 2.0
+//                   using a hack which replaces all List<num> to List<double>
+
+
 /// Scalable range, supporting creation of scaled x and y axis labels.
 ///
 class Range {
@@ -10,7 +14,7 @@ class Range {
 
   // ### Private api
 
-  List<num> _values;
+  List<double> _values;
 
   ChartOptions _options;
 
@@ -24,7 +28,7 @@ class Range {
   /// trying to not waste space, and show only relevant labels, in
   /// decimal steps.
   Range({
-    List<num> values,
+    List<double> values,
     ChartOptions chartOptions,
     int maxLabels = 10,
   }) {
@@ -36,7 +40,8 @@ class Range {
 
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
-      _values.reduce(math.min), _values.reduce(math.max), true, true);
+      _values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true, true);
+  // todo -10 mz ori _values.reduce(math.min), _values.reduce(math.max), true, true);
 
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
@@ -96,7 +101,7 @@ class Range {
     // Labels are (obviously) unscaled, that is, on the scale of data,
     // not the displayed pixels scale.
 
-    List<num> labels = _distributeLabelsIn(
+    List<double> labels = _distributeLabelsIn(
         new Interval(from, to)); // todo 0 pull only once (see below)
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
@@ -124,7 +129,7 @@ class Range {
   ///   2. [Interval] is <0, 299> then labels=[0, 100, 200]
   ///   3. [Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
-  List<num> _distributeLabelsIn(Interval interval) {
+  List<double> _distributeLabelsIn(Interval interval) {
     Poly polyMin = new Poly(from: interval.min);
     Poly polyMax = new Poly(from: interval.max);
 
@@ -137,7 +142,64 @@ class Range {
     int coeffMin = polyMin.coeffAtMaxPower;
     int signMin = polyMin.signum;
 
-    List<num> labels = [];
+    List<double> labels = [];
+    int power = math.max(powerMin, powerMax);
+
+    // todo -1 refactor this and make generic
+    if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+      // both negative or positive
+      if (signMax <= 0) {
+        for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      } else {
+        // signMax >= 0
+        for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      }
+    } else {
+      // min is negative, max is positive - need added logic
+      if (powerMax == powerMin) {
+        for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      } else if (powerMax < powerMin) {
+        for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+          // just one over 0
+          labels.add(l * math.pow(10, power));
+        }
+      } else if (powerMax > powerMin) {
+        for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+          // just one under 0
+          labels.add(l * math.pow(10, power));
+        }
+      } else {
+        throw new Exception("Unexpected power: $powerMin, $powerMax ");
+      }
+    }
+
+    return labels;
+  }
+}
+
+
+/* // todo -10 mz ori 
+// original version before replacing int to double where needed
+  List<double> _distributeLabelsIn(Interval interval) {
+    Poly polyMin = new Poly(from: interval.min);
+    Poly polyMax = new Poly(from: interval.max);
+
+    int powerMax = polyMax.maxPower;
+    int coeffMax = polyMax.coeffAtMaxPower;
+    int signMax = polyMax.signum;
+
+    // using Min makes sense if one or both (min, max) are negative
+    int powerMin = polyMin.maxPower;
+    int coeffMin = polyMin.coeffAtMaxPower;
+    int signMin = polyMin.signum;
+
+    List<double> labels = [];
     int power = math.max(powerMin, powerMax);
 
     // todo 1 refactor this and make generic
@@ -178,6 +240,8 @@ class Range {
   }
 }
 
+ */
+
 /// Encapsulating Y axis scaling (dataRange scaling to available pixels)
 /// and Y Labels creation and formatting.
 class YScalerAndLabelFormatter {
@@ -200,7 +264,7 @@ class YScalerAndLabelFormatter {
 
   YScalerAndLabelFormatter({
     Interval dataRange,
-    List<num> valueOnLabels,
+    List<double> valueOnLabels,
     double toScaleMin,
     double toScaleMax,
     ChartOptions chartOptions,
@@ -267,8 +331,8 @@ class YScalerAndLabelFormatter {
   // ### Helper accessors to collection of LabelInfos
 
   /// Extracts unscaled values of labels from [labelInfos].
-  List<num> get labelValues =>
-      labelInfos.map((labelInfo) => labelInfo.labelValue).toList();
+  List<double> get labelValues =>
+      labelInfos.map((labelInfo) => labelInfo.labelValue.toDouble()).toList();
 
 
   /// Constructs interval which is a merge (outer bound) of
@@ -417,12 +481,15 @@ class Poly {
 }
 
 // todo 0 add tests; also make constant; also add validation for min before max
+// todo -11: parametrize with T
+// todo -10 mz ori replaced num with double
+
 class Interval {
   Interval(this.min, this.max,
       [this.includesMin = true, this.includesMax = true]);
 
-  final num min;
-  final num max;
+  final double min;
+  final double max;
   final bool includesMin;
   final bool includesMax;
 

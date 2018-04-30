@@ -20,7 +20,7 @@ enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 /// The steps are repeated at most [maxLabelReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxLabelReLayouts] is reached.
-class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo -10 try implements and reason about it
+class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy { // todo -11 try implements and reason about it
 
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
@@ -173,7 +173,7 @@ abstract class LabelLayoutStrategy {
     _options = options;
   }
 
-  // todo -10 change to setter
+  // todo -11 change to setter
   void onContainer(AdjustableContentChartAreaContainer container) {
     this._container = container;
   }

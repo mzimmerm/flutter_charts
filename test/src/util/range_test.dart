@@ -63,7 +63,7 @@ void main() {
     Range r;
     YScalerAndLabelFormatter lsf;
 
-    r = new Range(values: [1, 22, 333], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [1.0, 22.0, 333.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     Interval c = lsf.dataRange;
     List<num> labels = lsf.labelValues;
@@ -75,7 +75,7 @@ void main() {
     expect(labels[2], 200.0);
     expect(labels[3], 300.0);
 
-    r = new Range(values: [-1, -22, -333], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [-1.0, -22.0, -333.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
@@ -87,7 +87,7 @@ void main() {
     expect(labels[2], -100.0);
     expect(labels[3], 0.0);
 
-    r = new Range(values: [22, 10, -333], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [22.0, 10.0, -333.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
@@ -100,7 +100,7 @@ void main() {
     expect(labels[3], 0.0);
     expect(labels[4], 100.0);
 
-    r = new Range(values: [-22, -10, 333], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [-22.0, -10.0, 333.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
@@ -113,7 +113,7 @@ void main() {
     expect(labels[3], 200.0);
     expect(labels[4], 300.0);
 
-    r = new Range(values: [-1000, 0, 1000, 2000], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [-1000.0, 0.0, 1000.0, 2000.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
@@ -125,7 +125,7 @@ void main() {
     expect(labels[2], 1000.0);
     expect(labels[3], 2000.0);
 
-    r = new Range(values: [-1000, 0, 1000], chartOptions: options, maxLabels: 0);
+    r = new Range(values: [-1000.0, 0.0, 1000.0], chartOptions: options, maxLabels: 0);
     lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;

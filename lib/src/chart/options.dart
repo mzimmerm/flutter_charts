@@ -41,8 +41,7 @@ class ChartOptions {
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and righ)
   /// Autolayout can increase these lengths, to fit labels below them.
-  // todo -3 deprecate instead of removing
-  // double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
+  @deprecated double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
   final double yLeftMinTicksWidth = 6.0;
   final double yRightMinTicksWidth = 6.0;
   final double xBottomMinTicksHeight = 6.0;

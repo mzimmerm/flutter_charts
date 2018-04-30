@@ -20,7 +20,7 @@ class VerticalBarChartPainter extends ChartPainter {
     presenters.PresentersColumns presentersColumns = this.container.dataContainer.presentersColumns;
 
 
-    // mz ori: presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
+    // todo -10 mz ori: presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       presentersColumns.forEach(( presentersColumn) {
 
       // todo 1 do not repeat loop, collapse to one construct

@@ -160,3 +160,7 @@ class EnvelopedRotatedRect {
 
   ui.Size get size => _envelopeRect.size;
 }
+
+Iterable<double> iterableNumToDouble(Iterable<num> nums) {
+  return nums.map((num aNum) => aNum.toDouble()).toList();
+}

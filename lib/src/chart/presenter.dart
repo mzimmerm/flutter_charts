@@ -133,7 +133,7 @@ class PresentersColumns extends custom_collection.CustomList {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
-    // mz ori: pointsColumns.forEach((PointsColumn pointsColumn) {
+    // todo -10 mz ori: pointsColumns.forEach((PointsColumn pointsColumn) {
       pointsColumns.forEach(( pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,

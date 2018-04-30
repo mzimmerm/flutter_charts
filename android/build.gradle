@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         // mz ori : classpath 'com.android.tools.build:gradle:2.2.3'
         // mz classpath 'com.android.tools.build:gradle:3.0.1'
+        // mz needed for latest Android Studio: classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.android.tools.build:gradle:2.3.3'
     }
 }
