@@ -19,11 +19,9 @@ class VerticalBarChartPainter extends ChartPainter {
   void drawPresentersColumns(ui.Canvas canvas) {
     presenters.PresentersColumns presentersColumns = this.container.dataContainer.presentersColumns;
 
+     presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
 
-    // todo -10 mz ori: presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
-      presentersColumns.forEach(( presentersColumn) {
-
-      // todo 1 do not repeat loop, collapse to one construct
+      // todo -3 do not repeat loop, collapse to one construct
 
       var positivePresenterList = presentersColumn.positivePresenters;
       positivePresenterList = optionalPaintOrderReverse(positivePresenterList);

@@ -3,8 +3,9 @@ import 'package:decimal/decimal.dart' as decimal;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'util.dart' as util;
 
-// todo -10 mz ori - this library (range.dart) has been modified for Dart 2.0
-//                   using a hack which replaces all List<num> to List<double>
+// todo -11 - this library (range.dart) has been modified for Dart 2.0
+//            using a hack which replaces all List<num> to List<double>,
+//            also some int replaced with double
 
 
 /// Scalable range, supporting creation of scaled x and y axis labels.
@@ -41,7 +42,7 @@ class Range {
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
       _values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true, true);
-  // todo -10 mz ori _values.reduce(math.min), _values.reduce(math.max), true, true);
+       // todo -11 _values.reduce(math.min), _values.reduce(math.max), true, true);
 
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
@@ -184,7 +185,7 @@ class Range {
 }
 
 
-/* // todo -10 mz ori 
+/* // todo -11 repla
 // original version before replacing int to double where needed
   List<double> _distributeLabelsIn(Interval interval) {
     Poly polyMin = new Poly(from: interval.min);
@@ -482,7 +483,7 @@ class Poly {
 
 // todo 0 add tests; also make constant; also add validation for min before max
 // todo -11: parametrize with T
-// todo -10 mz ori replaced num with double
+// todo -11: replaced num with double
 
 class Interval {
   Interval(this.min, this.max,

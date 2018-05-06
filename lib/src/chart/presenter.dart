@@ -124,7 +124,7 @@ class PresentersColumn {
 ///   - Each [PresentersColumn] element of [presentersColumns]
 ///   manages a link to the [PresentersColumn] on it's right, allowing
 ///   walk without the [presentersColumns] list.
-class PresentersColumns extends custom_collection.CustomList {
+class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
 
   PresentersColumns({
     PointsColumns pointsColumns,
@@ -133,8 +133,7 @@ class PresentersColumns extends custom_collection.CustomList {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
-    // todo -10 mz ori: pointsColumns.forEach((PointsColumn pointsColumn) {
-      pointsColumns.forEach(( pointsColumn) {
+      pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,

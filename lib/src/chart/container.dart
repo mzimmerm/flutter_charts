@@ -367,9 +367,6 @@ class YContainer extends ChartAreaContainer {
     List<double> flatData = geometry.iterableNumToDouble(
         _parentContainer.pointsColumns
         .flattenPointsValues());
-    // .flattenPointsValues() as List<double>; // todo -10 mz ori
-
-    // print("flatData=$flatData");
 
     Range range = new Range(
         values: flatData,
@@ -1594,7 +1591,7 @@ class PointsColumn {
   }
 
   /// Column Utility for iterating over all points in order
-  Iterable allPoints() {
+  Iterable<StackableValuePoint> allPoints() {
     return []
       ..addAll(points)
       ..addAll(stackedNegativePoints)
@@ -1613,7 +1610,7 @@ class PointsColumn {
 ///
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
-class PointsColumns extends custom_collection.CustomList {
+class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///Data points managed row - major. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInRows;
 
@@ -1673,14 +1670,14 @@ class PointsColumns extends custom_collection.CustomList {
       }
     }
     _valuePointArrInRows.toList();
-    // todo -10 mz ori _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
     _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
+    // also OK: _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
 
     /// convert "column oriented" _valuePointArrInColumns
     /// to a column, and add the columns to this instance
     PointsColumn leftColumn;
 
-    _valuePointArrInColumns.forEach((List<StackableValuePoint> columnPoints) {
+    _valuePointArrInColumns.forEach((columnPoints) {
       var pointsColumn = new PointsColumn(points: columnPoints);
       this.add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
@@ -1702,10 +1699,8 @@ class PointsColumns extends custom_collection.CustomList {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    // todo -10 mz ori: this.forEach((PointsColumn column) {
-    this.forEach(( column) {
-        // todo -10 mz ori:column.allPoints().forEach((StackableValuePoint point) {
-        column.allPoints().forEach(( point) {
+    this.forEach((PointsColumn column) {
+        column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
@@ -1714,10 +1709,8 @@ class PointsColumns extends custom_collection.CustomList {
   }
 
   void applyParentOffset(ui.Offset offset) {
-     // todo -10 mz ori: this.forEach((PointsColumn column) {
-     this.forEach(( column) {
-        // todo -10 mz ori: column.allPoints().forEach((StackableValuePoint point) {
-        column.allPoints().forEach(( point) {
+     this.forEach((PointsColumn column) {
+        column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
     });
@@ -1736,10 +1729,8 @@ class PointsColumns extends custom_collection.CustomList {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
 
     List<num> flat = [];
-    // todo -10 mz ori: this.forEach((PointsColumn column) {
-    this.forEach(( column) {
-      // todo -10 mz ori: column.points.forEach((StackableValuePoint point) {
-      column.points.forEach(( point) {
+    this.forEach((PointsColumn column) {
+      column.points.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
     });
@@ -1751,14 +1742,11 @@ class PointsColumns extends custom_collection.CustomList {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-    // todo -10 mz ori: this.forEach((PointsColumn column) {
-      this.forEach(( column) {
-        // todo -10 mz ori: column.stackedNegativePoints.forEach((StackableValuePoint point) {
-        column.stackedNegativePoints.forEach(( point) {
+      this.forEach((PointsColumn column) {
+        column.stackedNegativePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
-        // todo -10 mz ori: column.stackedPositivePoints.forEach((StackableValuePoint point) {
-        column.stackedPositivePoints.forEach(( point) {
+        column.stackedPositivePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
     });
