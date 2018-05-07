@@ -1,3 +1,40 @@
+# version 0.1.8 (2018-05-????)
+
+## Fixes
+
+### Fixed a bug reported by Lorenzo Tejera, using this data
+
+``` dart
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer"
+    ];
+    _chartData.dataRows = [
+      [1.0, 2.0, 3.0, 4.0],
+      [4.0, 3.0, 5.0, 6.0]
+    ];
+    _chartData.xLabels = ["One", "Two", "Three", "Four"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+```
+
+Reason: These lines of code - revisit when removing need for double data
+
+``` dart
+        if (signMax <= 0) {
+          from = min;
+          to = 0.0; // was 0, caused issues in Interval typed as double.
+        } else {
+          from = 0.0;// was 0, caused issues in Interval typed as double.
+          to = max;
+        }
+```
+
 # v0.1.7 (2017-12-17)
 
 Fixed README.md error - images failing to show (https://github.com/mzimmerm/flutter_charts/issues/8)

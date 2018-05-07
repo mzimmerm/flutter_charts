@@ -86,9 +86,9 @@ class Range {
         // both negative or positive
         if (signMax <= 0) {
           from = min;
-          to = 0;
+          to = 0.0;
         } else {
-          from = 0;
+          from = 0.0;
           to = max;
         }
       } else {

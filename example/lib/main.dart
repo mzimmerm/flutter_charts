@@ -111,9 +111,49 @@ class _MyHomePageState extends State<MyHomePage> {
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer"
+    ];
+    _chartData.dataRows = [
+      [1.0, 2.0, 3.0, 4.0],
+      [4.0, 3.0, 5.0, 6.0]
+    ];
+    _chartData.xLabels = ["One", "Two", "Three", "Four"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+
+  /* 7 Default - Random data
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
     _chartData = new RandomChartData(
         useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
+  */
+
+  /* 6 Test a bug reported by Lonenzo Tejera
+
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer",
+      "Fall",
+      "Winter"];
+    _chartData.dataRows = [
+      [1.0, 2.0, 3.0, 4.0],
+      [4.0, 3.0, 5.0, 6.0]
+    ]
+    _chartData.xLabels =  ["One", "Two", "Three", "Four", "Five"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+   */
 
   /* 5 Demonstrate order of painting lines on the line chart,
        when dataRows lines are on top of each other
