@@ -1,5 +1,9 @@
 # version 0.1.8 (2018-05-????)
 
+## Enhancements
+
+todo
+
 ## Fixes
 
 ### Fixed a bug reported by Lorenzo Tejera, using this data
@@ -23,7 +27,7 @@
   }
 ```
 
-Reason: These lines of code - revisit when removing need for double data
+Reason: This code - revisit when removing need for double data
 
 ``` dart
         if (signMax <= 0) {

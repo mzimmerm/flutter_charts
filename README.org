@@ -1,8 +1,10 @@
 #+OPTIONS: toc:3
-#+TODO: TODO IN-PROGRESS LATER DONE
+#+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 * Table of contents :TOC:
-- [[#new-releases---features][New Releases - Features]]
+- [[#new-in-the-current-release---see-the-changelogmd][New in the current release - see the CHANGELOG.md]]
+  - [[#new-features][New features]]
+  - [[#bug-fixes][Bug fixes]]
 - [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
 - [[#a-chart-created-using-flutter_charts---an-example][A chart created using flutter_charts - an example]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
@@ -15,22 +17,29 @@
 - [[#verticalbar-chart---one-more-example-showing-positivenegative-stacks][VerticalBar Chart - one more example, showing positive/negative stacks:]]
   - [[#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
 - [[#bugs-status][Bugs status]]
-- [[#enhancements-in-progress-or-planned][Enhancements in progress or planned]]
-  - [[#enhancements][Enhancements:]]
+- [[#enhancements][Enhancements]]
+  - [[#enhancements-in-progress-or-planned][Enhancements in progress or planned]]
+  - [[#enhancements-implemented][Enhancements implemented]]
   - [[#refactorings][Refactorings]]
 - [[#terminology-and-selected-classes][Terminology and Selected Classes]]
 - [[#internal-notes][Internal notes]]
+  - [[#new-release-may-2018-todo-now-finish-this-and-remove-section][New release may 2018 todo-now finish this and remove section]]
   - [[#add-ability-to-create-a-table-of-contents-to-readmeorg][Add ability to create a Table of Contents to README.org]]
   - [[#adding-images-to-readmeorg][Adding images to README.org]]
   - [[#pub---publishing-workflow-on-httpspubdartlangorg][Pub - Publishing workflow on https://pub.dartlang.org]]
-- [[#removed-code][REMOVED CODE]]
+- [[#removed-code---todo-now---remove-section][REMOVED CODE - todo-now - remove section]]
 
-* TODO New Releases - Features
+* TODO New in the current release - see the CHANGELOG.md
+** New features
 
 features in latest release (todo number)
 - Iterative auto label layout
   - Chart automatically indicates X label overlap, and follows with rule-based iterative re-layout. By default, re-layout iterations are:
     - TODO
+** Bug fixes 
+    - 
+
+
 
 * Flutter Charts - How to include the flutter_charts library in your application
 
@@ -302,8 +311,8 @@ Result vertical bar chart:
 - [ ] Take a look at the stock charts example. There is a bug reverting series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then,  dataRowsLegends are incorrect. 
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
 - [ ] 
-* Enhancements in progress or planned
-** Enhancements:
+* Enhancements
+** Enhancements in progress or planned
 *** TextPainter notes
 
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
@@ -444,20 +453,29 @@ class YLinePresenter eytends line_presenter.LinePresenter {
       labelTextAlign: _options.labelTextAlign, // center text in available space
       labelTextScaleFactor: _options.labelTextScaleFactor,
 *** TODO For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+*** TODO Data types
+**** Dependent (X value) data types
+***** There should be adapters from any dependent (X value) data types:
+****** Ordinal - x values spaced evenly, only sequence matters
+****** Measured - x values are convertible to numbers
+******* Date types
+******* Number types
+**** Independent (Y value) data types - for now, keep double, can provide converters.
 *** TODO Create a document / image showing layout and spacing - show option variables on image
 *** TODO Simple:
-**** TODO Add options to hide the grid (keep axes)
-**** TODO Add options to hide  axes (if axes not shown, labels should not show?)
-**** TODO Decrease option for default spacing around the Y axis.
+**** Add options to hide the grid (keep axes)
+**** Add options to hide  axes (if axes not shown, labels should not show?)
+**** Decrease option for default spacing around the Y axis.
 *** TODO First, probably need to provide tooltips
 *** TODO Next, a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
-*** TODO Next, re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels.
+.
 *** TODO Next, add ability to invert X and Y axis (values on horizontal axis)
-** Refactorings
+** DONE Enhancements implemented
+*** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
+** TODO Refactorings
 *** Introduce Mixin Layoutable by applyParentOffset()
 *** Introduce Mixin Paintable by paint()
-
-* TODO Terminology and Selected Classes
+* Terminology and Selected Classes
 
 - (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
   - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
@@ -465,6 +483,58 @@ class YLinePresenter eytends line_presenter.LinePresenter {
   - Classes: todo
 
 * Internal notes
+
+** IN-PROGRESS New release may 2018 todo-now finish this and remove section
+
+- [X] Test if works
+- [X] charts, try to set on input, mix of double and int, test if works - create a sample input for it
+- [ ] finish charts - last todo-4, leave -5 for immediate 
+- [ ] implement or remove todos
+  - [ ] -3, -4, -5 ... change the once I want to keep to -10
+  - [ ] look over 00, maybe change to -1
+  - [ ] only keep -1 -2. -3 will become high priority
+  - [ ] rename -10 to -3
+- [ ] Put Legend back - figure out why the stress causes exception - allow silently remove the legend.
+- [ ] add section to charts readme on how to create and run  tests (position of file, what to add to pubspec.yaml, run: 'flutter test' - that is all. Note: also append https://flutter.io/testing/
+  - [ ] add ability to expose IncrementalLayouter
+- [ ] add to readme:
+  - [ ] changes to latest version, screenshots of gradual constraining
+- [ ] run anaylyser, make sure it runs
+- [ ] make sure example exists on pub.dartlang.org
+- [ ] test charts
+- [ ] test charts within flutter_charts_sample_app
+- [ ] release new version
+
+
+*** stack overflow: add question on how to migrate int extensions - note in gitter
+
+
+// todo -10 mz ori
+
+
+Converting some code to 2.0 .. How can one tear-off a specifically typed function in 2.0? My problem is for example:
+
+`_values.reduce(math.min)`
+
+If _values were double in version 1.0x, this is ok. In 2.0 I get:
+
+`type '(num, num) => num' is not a subtype of type '(double, double) => double' of 'combine'`
+
+Here , `combine` I assume is a method in `reduce`. It is probably obvious but eluding me. Thanks.
+
+
+Emulator: 
+- v 24: works.
+- v 25: fails loading!!!
+
+
+@RandalSchwartz : Thanks, that is interesting. I will google for it. Although I am confused what num.max going away would mean, that num also goes away?  `math.max` is defined as:
+
+`external T max<T extends num>(T a, T b);`
+
+It sounds like in the end this is just a type system complaint, I hope we should be able to use a list of num and then do a concrete operations on them, at least if they are all the same type (int or double, which they are) in the data I passed. 
+
+
 
 ** DONE Add ability to create a Table of Contents to README.org
 - [X] Install toc-org package
@@ -477,11 +547,11 @@ class YLinePresenter eytends line_presenter.LinePresenter {
 - [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
 - [X] So nothing special need be done after the above is configured.
 
-** Adding images to README.org
+** TODO Adding images to README.org
 - [ ] https://pub.dartlang.org does not allow storing images.
 - [ ] Add / move new images to ~flutter_charts/doc/readme_images~
 - [ ] org file, change image links to look like [[~file:doc/readme_images/README.org_20171102_154245_27063qmN.png]]~
-** Pub - Publishing workflow on https://pub.dartlang.org
+** DONE Pub - Publishing workflow on https://pub.dartlang.org
 *** Notes:
 **** Pub requires the following file in project to show the correct tabs on pub
 ***** Tab README.md    - Needs the file
@@ -518,7 +588,7 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 ***  Check https://pub.dartlang.org/packages/flutter_charts
 ***  Test the package that was just published
 ****  ~cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run~
-* REMOVED CODE
+* TODO REMOVED CODE - todo-now - remove section 
 #+BEGIN_SRC dart
 /// Lays out a list of labels horizontally,
 /// makes labels evenly sized, and evenly spaced.

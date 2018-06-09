@@ -114,18 +114,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _chartData = new ChartData();
     _chartData.dataRowsLegends = [
       "Spring",
-      "Summer"
-    ];
+      "Summer",
+      "Fall",
+      "Winter"];
     _chartData.dataRows = [
-      [1.0, 2.0, 3.0, 4.0],
-      [4.0, 3.0, 5.0, 6.0]
+      [1.0, 2.0, 3.0, 4.0, 6.0],
+      [4.0, 3.0, 5.0, 6.0, 1.0],
     ];
-    _chartData.xLabels = ["One", "Two", "Three", "Four"];
+    _chartData.xLabels =  ["One", "Two", "Three", "Four", "Five"];
     _chartData.assignDataRowsDefaultColors();
     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
   }
 
-  /* 7 Default - Random data
+  /* LAST - Default - Random data
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -134,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   */
 
-  /* 6 Test a bug reported by Lonenzo Tejera
+  /* 6 Test a bug reported by Lonenzo Tejera - todo -1 - also check Y range that should have more points.
 
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
@@ -146,9 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
       "Fall",
       "Winter"];
     _chartData.dataRows = [
-      [1.0, 2.0, 3.0, 4.0],
-      [4.0, 3.0, 5.0, 6.0]
-    ]
+      [1.0, 2.0, 3.0, 4.0, 6.0],
+      [4.0, 3.0, 5.0, 6.0, 1.0],
+    ];
     _chartData.xLabels =  ["One", "Two", "Three", "Four", "Five"];
     _chartData.assignDataRowsDefaultColors();
     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
