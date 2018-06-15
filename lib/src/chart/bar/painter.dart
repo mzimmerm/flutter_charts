@@ -21,7 +21,7 @@ class VerticalBarChartPainter extends ChartPainter {
 
      presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
 
-      // todo -3 do not repeat loop, collapse to one construct
+      // todo -2 do not repeat loop, collapse to one construct
 
       var positivePresenterList = presentersColumn.positivePresenters;
       positivePresenterList = optionalPaintOrderReverse(positivePresenterList);

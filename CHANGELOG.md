@@ -2,7 +2,21 @@
 
 ## Enhancements
 
-todo
+### Labels auto layout - added pluggable and automated ability to ensure that labels "fit"
+
+This release added the ability to "iteratively auto layout" labels. 
+
+Labels auto layout is a sequence of steps, such as skipping some labels, tilting labels, or decreasing label font, that result in label 'fit' nicely, readably, without overflowing or running into each other.
+
+The ability to auto layout labels is implemented using a pluggable base class `LabelLayoutStrategy`, and a concrete implemented extension `DefaultIterativeLabelLayoutStrategy`. This default implementation of the iterative auto layout achieves that labels, defines a zero or more sequences of steps,
+each performing a specific code to achieve labels fit, such as:
+- Skipping every 2nd label
+- Tilting all labels
+- Decreasing label font size
+
+The term "iterative" in  "iteratively auto layout" refers to the fact the  `LabelLayoutStrategy` repeates the layout steps multiple times, until a good fit is achieved.
+
+The  `LabelLayoutStrategy` and extensions, including the default `DefaultIterativeLabelLayoutStrategy`, are members of containers which implement the `AdjustableContent`, or extend the abstract `AdjustableContentChartAreaContainer`. The term "adjustable content" here refers to ability to adjust sizes of child components, or even remove child components which would overlap in default conditions (sizes, and mumbers). See usages of `_xContainerLabelLayoutStrategy` in the sample app `example/lib/main.dart` for an example how to use custom `LabelLayoutStrategy` extensions. In practice, `AdjustableContent` is only used for multiple potentially overlaping labels. This knowledge is not necessary for most users who are merely using the default (not built in) iterative auto layout provided by the  `AdjustableContentChartAreaContainer`.
 
 ## Fixes
 

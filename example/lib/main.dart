@@ -11,7 +11,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 /// Example of simple line chart usage in an application.
 ///
-/// Library note: This file is same level as _lib_ so everything from _lib_ must
+/// Library note: This file is on the same level as _lib_ so everything from _lib_ must
 /// be imported using the "package:" scheme, e.g.
 /// > import 'package:flutter_charts/flutter_charts.dart';
 void main() {
@@ -101,7 +101,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   LineChartOptions _lineChartOptions;
   ChartOptions _verticalBarChartOptions;
-
+  LabelLayoutStrategy _xContainerLabelLayoutStrategy;
   ChartData _chartData;
 
   _MyHomePageState() {
@@ -111,22 +111,72 @@ class _MyHomePageState extends State<MyHomePage> {
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
+    // If you were to use your own extension of
+    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+    //   this is how to create an instance.
+    // If _xContainerLabelLayoutStrategy
+    //   is not set (remains null), the charts instantiate
+    //   the DefaultIterativeLabelLayoutStrategy.
+    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+      options: _verticalBarChartOptions,
+    );
+    // _xContainerLabelLayoutStrategy = null;
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
+
+  /* ALWAYS ON TOP - DEFAULT - Default - Random data
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
+  */
+
+  /* 9  - Explicit use of DefaultIterativeLabelLayoutStrategy.
+          The _xContainerLabelLayoutStrategy must also work commented out.
+
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    // If you were to use your own extension of
+    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+    //   this is how to create an instance.
+    // If _xContainerLabelLayoutStrategy
+    //   is not set (remains null), the charts instantiate
+    //   the DefaultIterativeLabelLayoutStrategy.
+    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+      options: _verticalBarChartOptions,
+    );
+    // _xContainerLabelLayoutStrategy = null;
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
+   */
+
+  /* 8 - Explicit use of DefaultIterativeLabelLayoutStrategy (see also 9),
+         to show how to use in case extensions are needed
+
+  void defineOptionsAndData() {
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+      options: _verticalBarChartOptions,
+    );
     _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-      "Fall",
-      "Winter"];
+    _chartData.dataRowsLegends = ["Spring", "Summer", "Fall", "Winter"];
     _chartData.dataRows = [
       [1.0, 2.0, 3.0, 4.0, 6.0],
       [4.0, 3.0, 5.0, 6.0, 1.0],
     ];
-    _chartData.xLabels =  ["One", "Two", "Three", "Four", "Five"];
+    _chartData.xLabels = ["One", "Two", "Three", "Four", "Five"];
     _chartData.assignDataRowsDefaultColors();
     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
   }
+   */
 
-  /* LAST - Default - Random data
+  /* 7 - Default - Random data
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
     _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -347,13 +397,19 @@ class _MyHomePageState extends State<MyHomePage> {
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(),
       container: new LineChartContainer(
-          chartData: _chartData, chartOptions: _lineChartOptions),
+        chartData: _chartData, // @required
+        chartOptions: _lineChartOptions, // @required
+        xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
+      ),
     );
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(),
       container: new VerticalBarChartContainer(
-          chartData: _chartData, chartOptions: _verticalBarChartOptions),
+        chartData: _chartData, // @required
+        chartOptions: _verticalBarChartOptions, // @required
+        xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
+      ),
     );
 
     // [MyHomePage] extends [StatefulWidget].
@@ -454,10 +510,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (2)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// gave up
-                  new Text('<<<<<<'),   // tilted
+                  new Text('<<<<<<'), // tilted
                 ],
-              ), //
-            ), // Column -> Expanded
+              ),
+            ),
 
             new Text('^^^^^^:'),
             new RaisedButton(

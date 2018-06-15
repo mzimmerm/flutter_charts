@@ -70,6 +70,9 @@ abstract class ChartContainer {
   XContainer xContainer;
   DataContainer dataContainer;
 
+  // Layout strategy for XContainer labels
+  strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy;
+
   /// Scaler of data values to values on the Y axis.
   YScalerAndLabelFormatter yScaler;
 
@@ -89,14 +92,15 @@ abstract class ChartContainer {
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
   ChartContainer({
-    ui.Size chartArea,
-    ChartData chartData,
-    ChartOptions chartOptions,
-    // todo -11: pass down XContainerLabelLayoutStrategy, also in both supers
+    ui.Size chartArea, // @required
+    ChartData chartData, // @required
+    ChartOptions chartOptions, // @required
+    strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy, // @optional
   }) {
     this.chartArea = chartArea;
     this.data = chartData;
     this.options = chartOptions;
+    this.xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
   }
 
   layout() {
@@ -151,9 +155,11 @@ abstract class ChartContainer {
           widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height - legendContainerSize.height,
           heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
-      labelLayoutStrategy: new strategy.DefaultIterativeLabelLayoutStrategy(
-        options: this.options,
-      ),
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy != null
+          ? xContainerLabelLayoutStrategy
+          : new strategy.DefaultIterativeLabelLayoutStrategy(
+              options: this.options,
+            ),
     );
 
     xContainer.layout();
@@ -270,8 +276,7 @@ class YContainer extends ChartAreaContainer {
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
     double yLabelsMaxHeightFromFirstLayout,
-  })
-      : super(
+  }) : super(
           parentContainer: parentContainer,
           layoutExpansion: layoutExpansion,
         ) {
@@ -318,7 +323,7 @@ class YContainer extends ChartAreaContainer {
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData = _parentContainer.pointsColumns
-        .flattenPointsValues(); // todo -1 move to common layout, same for manual and auto
+        .flattenPointsValues(); // todo -2 move to common layout, same for manual and auto
 
     List<String> yLabels = _parentContainer.data.yLabels;
 
@@ -363,10 +368,9 @@ class YContainer extends ChartAreaContainer {
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
-    // todo -1 move to common layout, same for manual and auto
+    // todo -2 move to common layout, same for manual and auto
     List<double> flatData = geometry.iterableNumToDouble(
-        _parentContainer.pointsColumns
-        .flattenPointsValues());
+        _parentContainer.pointsColumns.flattenPointsValues());
 
     Range range = new Range(
         values: flatData,
@@ -474,14 +478,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
   XContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-    strategy.LabelLayoutStrategy labelLayoutStrategy,
-  })
-      : super(
+    strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+  }) : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
-          labelLayoutStrategy: labelLayoutStrategy,
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    labelLayoutStrategy.onContainer(this);
+    xContainerLabelLayoutStrategy.onContainer(this);
   }
 
   /// Lays out the chart in horizontal (x) direction.
@@ -510,9 +513,12 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    int numShownLabels = (xLabels.length /
-            labelLayoutStrategy.showEveryNthLabel)
-        .toInt(); // todo -11 # move showEveryNthLabel to IterativeLaoytstrategy. Also define common interface, LabelLaoytStrategy, and NonIterave implementation, just taking user input...
+    // todo -2 move showEveryNthLabel to IterativeLaoytstrategy.
+    //        Also define common interface, LabelLayoutStrategy, and NonIterative
+    //        implementation, just taking user input.
+    int numShownLabels =
+        (xLabels.length / xContainerLabelLayoutStrategy.showEveryNthLabel)
+            .toInt();
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
     LabelStyle labelStyle = _styleForLabels(options);
@@ -524,8 +530,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.INFINITY,
-        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
-        canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
+        labelTiltMatrix: xContainerLabelLayoutStrategy.labelTiltMatrix,
+        canvasTiltMatrix: xContainerLabelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
 
@@ -568,13 +574,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    labelLayoutStrategy.reLayout();
+    xContainerLabelLayoutStrategy.reLayout();
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
     widgets.TextStyle labelTextStyle = new widgets.TextStyle(
       color: options.labelTextStyle.color,
-      fontSize: labelLayoutStrategy.labelFontSize,
+      fontSize: xContainerLabelLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -601,13 +607,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    if (labelLayoutStrategy.labelTiltRadians == 0.0) {
+    if (xContainerLabelLayoutStrategy.labelTiltRadians == 0.0) {
       // Horizontal X labels:
       _paintLabelContainers(canvas);
     } else {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
+      canvas.rotate(-1 * xContainerLabelLayoutStrategy.labelTiltRadians);
 
       _rotateLabelContainersAsCanvas();
       _paintLabelContainers(canvas);
@@ -629,7 +635,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-    if (xIndex % labelLayoutStrategy.showEveryNthLabel == 0) return true;
+    if (xIndex % xContainerLabelLayoutStrategy.showEveryNthLabel == 0)
+      return true;
     return false;
   }
 
@@ -661,7 +668,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo -1 LabelLayoutStrategy should be a member here, not
+// todo -2 LabelLayoutStrategy should be a member of AdjustableContect, not
 //          in AdjustableContentChartAreaContainer
 //          Also, AdjustableContent should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
@@ -673,19 +680,19 @@ abstract class AdjustableContent {
 /// (actually currently the [ChartAreaContainer].
 abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
     implements AdjustableContent {
-  strategy.LabelLayoutStrategy _labelLayoutStrategy;
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+  strategy.LabelLayoutStrategy _xContainerLabelLayoutStrategy;
+  strategy.LabelLayoutStrategy get xContainerLabelLayoutStrategy =>
+      _xContainerLabelLayoutStrategy;
 
   AdjustableContentChartAreaContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-    strategy.LabelLayoutStrategy labelLayoutStrategy,
-  })
-      : super(
+    strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+  }) : super(
           parentContainer: parentContainer,
           layoutExpansion: layoutExpansion,
         ) {
-    _labelLayoutStrategy = labelLayoutStrategy;
+    _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
   }
 }
 
@@ -793,10 +800,11 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
-  // todo -3 this setter vvv need be removed - only serves canvas label rotation!!
+  // todo -2 this setter vvv need be removed - only serves canvas label rotation!!
+  //         (?? this may be an old comment)
   void set offset(ui.Offset offset) => _offset = offset;
 
-  // todo -11 move this to container base, similar to offset and comment as unused
+  // todo -2 move _tiltMatrix to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
   /// lifetime.
@@ -812,13 +820,16 @@ abstract class Container {
   /// appropriate support for collapse to work.
   bool skipByParent = false;
 
-  /// The [skipOnDistressedSize] allows to specify under constraint conditions,
-  /// the container will not paint. Note that setting this may provide surprizes,
-  /// instead of exceptions.
-  ///
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this container not possible
+  /// making painting of this container not possible.
+  ///
+  /// Setting the [skipOnDistressedSize] `true` helps to solve such situation.
+  /// It causes the container not be painted
+  /// (skipped during layout) when space is constrained too much
+  /// (not enough space to reasonably paint the container contents).
+  /// Note that setting this to `true` may result
+  /// in surprizing behavior, instead of exceptions.
   ///
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
@@ -827,7 +838,7 @@ abstract class Container {
   /// [skipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool skipOnDistressedSize = true; // todo -4 set to true for distress test
+  bool skipOnDistressedSize = true; // todo -10 set to true for distress test
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -850,7 +861,7 @@ abstract class Container {
   }
 
   /// Tilt may apply to the whole container.
-  /// todo -11 unused, move to base class? similar to offset?
+  /// todo -2 unused? move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
     if (tiltMatrix == new vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
@@ -866,7 +877,7 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-// todo -3: Add assertion abstract method in direction where we should fill,
+// todo -2: Add assertion abstract method in direction where we should fill,
 //          that the layout size is same as the expansion size.
 
 }
@@ -901,8 +912,7 @@ abstract class ChartAreaContainer extends Container {
   ChartAreaContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-  })
-      : super(layoutExpansion: layoutExpansion) {
+  }) : super(layoutExpansion: layoutExpansion) {
     _parentContainer = parentContainer;
   }
 
@@ -928,8 +938,7 @@ class DataContainer extends ChartAreaContainer {
   DataContainer({
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
-  })
-      : super(
+  }) : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
         );
@@ -1095,7 +1104,7 @@ class GridLinesContainer extends Container {
   /// Return the size of the outhermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  ui.Size get layoutSize => throw new StateError("todo -3 implement this.");
+  ui.Size get layoutSize => throw new StateError("todo -2 implement this.");
 }
 
 /// Represents one layed out item of the legend:  The rectangle for the color
@@ -1123,8 +1132,7 @@ class LegendItemContainer extends Container {
     ChartOptions options,
     LayoutExpansion layoutExpansion,
     ChartContainer parentContainer,
-  })
-      : super(
+  }) : super(
           layoutExpansion: layoutExpansion,
         ) {
     // We want to only create as much as we can in layout for clarity,
@@ -1211,13 +1219,13 @@ class LegendItemContainer extends Container {
 
     // Make sure we fit all available width
     assert(_layoutExpansion.width + 1.0 >=
-        _layoutSize.width); // todo -3 within epsilon
+        _layoutSize.width); // todo -2 within epsilon
   }
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
     if (skipOnDistressedSize)
-      return; // todo -4 this should not be, only if distress actually happens
+      return; // todo -10 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
@@ -1225,7 +1233,7 @@ class LegendItemContainer extends Container {
 
   void applyParentOffset(ui.Offset offset) {
     if (skipOnDistressedSize)
-      return; // todo -4 this should not be, only if distress actually happens
+      return; // todo -10 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
@@ -1267,8 +1275,7 @@ class LegendContainer extends ChartAreaContainer {
     ChartContainer parentContainer,
     LayoutExpansion layoutExpansion,
     double availableWidth,
-  })
-      : super(
+  }) : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
         );
@@ -1293,7 +1300,6 @@ class LegendContainer extends ChartAreaContainer {
 
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
-    // (todo -1 - is this ^^^ needed? can text of same font be diff. height)
 
     double legendItemWidth = (layoutExpansion.width - 2.0 * containerMarginLR) /
         dataRowsLegends.length;
@@ -1700,7 +1706,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   void scale() {
     int col = 0;
     this.forEach((PointsColumn column) {
-        column.allPoints().forEach((StackableValuePoint point) {
+      column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
@@ -1709,8 +1715,8 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   }
 
   void applyParentOffset(ui.Offset offset) {
-     this.forEach((PointsColumn column) {
-        column.allPoints().forEach((StackableValuePoint point) {
+    this.forEach((PointsColumn column) {
+      column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
     });
@@ -1742,11 +1748,11 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<num> flattenStackedPointsYValues() {
     List<num> flat = [];
-      this.forEach((PointsColumn column) {
-        column.stackedNegativePoints.forEach((StackableValuePoint point) {
+    this.forEach((PointsColumn column) {
+      column.stackedNegativePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
-        column.stackedPositivePoints.forEach((StackableValuePoint point) {
+      column.stackedPositivePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
     });

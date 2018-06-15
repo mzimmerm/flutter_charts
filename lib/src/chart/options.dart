@@ -106,7 +106,7 @@ class ChartOptions {
   final int maxLabelReLayouts = 5;
 
   /// Font size iteration: When iterative step decreases font size, use this ratio on every step.
-  final double decreaseLabelFontRatio = 1.0; // todo -4 : 0.75;
+  final double decreaseLabelFontRatio = 1.0; // todo -10 : 0.75;
 
   /// Label skip iteration: When iterative laout step skis labels, this is how many are skiped on
   ///   the first iteration.
@@ -137,7 +137,7 @@ class ChartOptions {
   final ui.TextAlign     legendTextAlign      = ui.TextAlign.left; // indicator close
   final double           labelTextScaleFactor = 1.0;
 
-  /// todo -1 remove, replace with formatter outright
+  /// todo -2 remove, replace with formatter outright
   final String yLabelUnits = "";
 
   String toLabel(String label) => label + yLabelUnits;

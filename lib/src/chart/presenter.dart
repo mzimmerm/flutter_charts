@@ -89,7 +89,7 @@ class PresentersColumn {
   }) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
-      // todo -1 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+      // todo -2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn.points[rowIndex]
           : null;
