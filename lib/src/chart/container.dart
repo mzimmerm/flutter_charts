@@ -824,7 +824,7 @@ abstract class Container {
   /// some internal calculations of sizes may lead to negative values,
   /// making painting of this container not possible.
   ///
-  /// Setting the [skipOnDistressedSize] `true` helps to solve such situation.
+  /// Setting the [enableSkipOnDistressedSize] `true` helps to solve such situation.
   /// It causes the container not be painted
   /// (skipped during layout) when space is constrained too much
   /// (not enough space to reasonably paint the container contents).
@@ -835,10 +835,12 @@ abstract class Container {
   /// appropriate support for collapse to work.
   ///
   /// Unlike [skipByParent], which directs the parent to ignore this container,
-  /// [skipOnDistressedSize] is intended to be checked in code
+  /// [enableSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool skipOnDistressedSize = true; // todo -10 set to true for distress test
+  bool enableSkipOnDistressedSize = true; // todo -10 set to true for distress test
+
+  bool _isDistressed = false;
 
   Container({
     LayoutExpansion layoutExpansion,
@@ -1156,7 +1158,8 @@ class LegendItemContainer extends Container {
     double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
     double labelMaxWidth = _layoutExpansion.width -
         (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    if (skipOnDistressedSize && labelMaxWidth <= 0.0) {
+    if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
+      _isDistressed = true;
       _layoutSize = new ui.Size(0.0, 0.0);
       return;
     }
@@ -1224,7 +1227,7 @@ class LegendItemContainer extends Container {
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
-    if (skipOnDistressedSize)
+    if (_isDistressed)
       return; // todo -10 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
@@ -1232,7 +1235,7 @@ class LegendItemContainer extends Container {
   }
 
   void applyParentOffset(ui.Offset offset) {
-    if (skipOnDistressedSize)
+    if (_isDistressed)
       return; // todo -10 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);

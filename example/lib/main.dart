@@ -510,7 +510,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (2)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// gave up
-                  new Text('<<<<<<'), // tilted
+                  new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels)
                 ],
               ),
             ),
