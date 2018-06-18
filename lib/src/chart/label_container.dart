@@ -108,7 +108,7 @@ class LabelContainer extends flutter_charts_container.Container {
       textAlign: _labelStyle.textAlign,
       // center in available space
       textScaleFactor: _labelStyle.textScaleFactor,
-      ellipsis: "...", // forces a single line - without it, wraps at width
+      // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     ); //  textScaleFactor does nothing ??
 
     // Make sure to call layout - this instance is always "clean"

@@ -41,7 +41,7 @@ class LineAndHotspotPresenter extends Presenter {
   ){
     var options = container.options as LineChartOptions;
 
-    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
+    // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = new ui.Paint();
     rowDataPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 

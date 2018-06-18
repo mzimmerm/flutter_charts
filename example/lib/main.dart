@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   */
 
-  /* 6 Test a bug reported by Lonenzo Tejera - todo -1 - also check Y range that should have more points.
+  /* 6 Test a bug reported by Lonenzo Tejera - todo-1 - also check Y range that should have more points.
 
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
@@ -507,10 +507,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   // new Text('<<'), // horizontal
                   // new Text('<<<<<<'),   // tilted
-                  // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (2)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// gave up
-                  new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels)
+                  // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels, legend present)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (shows 2 labels, legend present but text vertical)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
+                  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
                 ],
               ),
             ),

@@ -3,7 +3,7 @@ import 'package:decimal/decimal.dart' as decimal;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'util.dart' as util;
 
-// todo -2 - this library (range.dart) has been modified for Dart 2.0
+// todo-2 - this library (range.dart) has been modified for Dart 2.0
 //            using a hack which replaces all List<num> to List<double>,
 //            also some int replaced with double. Parametrize with T
 
@@ -19,7 +19,7 @@ class Range {
 
   ChartOptions _options;
 
-  // todo -1 - move to options
+  // todo-1 - move to options
   /// The auto-label generator [makeLabelsFromData] can decrease this but not increase.
   int _maxLabels;
 
@@ -42,7 +42,7 @@ class Range {
 
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
-      _values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true, true); // todo -2 remove toDouble after parametrization
+      _values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true, true); // todo-2 remove toDouble after parametrization
 
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
@@ -146,7 +146,7 @@ class Range {
     List<double> labels = [];
     int power = math.max(powerMin, powerMax);
 
-    // todo -1 refactor this and make generic
+    // todo-1 refactor this and make generic
     if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
       // both negative or positive
       if (signMax <= 0) {
@@ -331,7 +331,7 @@ class LabelInfo {
 
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
-    // todo -2 consider what to do about the toDouble() - may want to ensure higher up
+    // todo-2 consider what to do about the toDouble() - may want to ensure higher up
     scaledLabelValue = parentScaler.scaleY(value: labelValue.toDouble());
   }
 
@@ -423,7 +423,7 @@ class Poly {
 }
 
 // todo 0 add tests; also make constant; also add validation for min before max
-// todo -2: replaced num with double,  parametrize with T instead so it works for both
+// todo-2: replaced num with double,  parametrize with T instead so it works for both
 
 class Interval {
   Interval(this.min, this.max,

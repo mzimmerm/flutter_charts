@@ -24,7 +24,7 @@ class VerticalBarPresenter extends Presenter {
     rowIndex: rowIndex,
     container: container,
   ){
-    // todo -1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
+    // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = new ui.Paint();
     dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 

@@ -109,7 +109,7 @@ class RandomChartData extends ChartData {
     }
     if (dataRowsCount > 3) {
       for (int i = 3; i < dataRowsCount; i++) {
-        // todo -1 when large value is generated, it paints outside canvas, fix.
+        // todo-1 when large value is generated, it paints outside canvas, fix.
         int number = new math.Random().nextInt(10000);
         dataRowsLegends.add("OTHER " + number.toString());
       }

@@ -21,7 +21,7 @@ enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxLabelReLayouts] is reached.
 class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
-  // todo -2 try using Mixins
+  // todo-2 try using Mixins
 
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes

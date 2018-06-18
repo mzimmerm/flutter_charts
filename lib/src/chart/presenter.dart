@@ -6,7 +6,7 @@ import 'container.dart';
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
   show CustomList;
 
-// todo -1 refactor - can this be a behavior?
+// todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
   ui.Paint paint = new ui.Paint();
   paint.color = options.gridLinesColor;
@@ -89,7 +89,7 @@ class PresentersColumn {
   }) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
-      // todo -2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+      // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn.points[rowIndex]
           : null;

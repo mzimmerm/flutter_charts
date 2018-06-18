@@ -323,7 +323,7 @@ class YContainer extends ChartAreaContainer {
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData = _parentContainer.pointsColumns
-        .flattenPointsValues(); // todo -2 move to common layout, same for manual and auto
+        .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
     List<String> yLabels = _parentContainer.data.yLabels;
 
@@ -368,7 +368,7 @@ class YContainer extends ChartAreaContainer {
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
-    // todo -2 move to common layout, same for manual and auto
+    // todo-2 move to common layout, same for manual and auto
     List<double> flatData = geometry.iterableNumToDouble(
         _parentContainer.pointsColumns.flattenPointsValues());
 
@@ -513,7 +513,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    // todo -2 move showEveryNthLabel to IterativeLaoytstrategy.
+    // todo-2 move showEveryNthLabel to IterativeLaoytstrategy.
     //        Also define common interface, LabelLayoutStrategy, and NonIterative
     //        implementation, just taking user input.
     int numShownLabels =
@@ -668,7 +668,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo -2 LabelLayoutStrategy should be a member of AdjustableContect, not
+// todo-2 LabelLayoutStrategy should be a member of AdjustableContect, not
 //          in AdjustableContentChartAreaContainer
 //          Also, AdjustableContent should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
@@ -800,11 +800,11 @@ abstract class Container {
   /// Provides access to offset for extension's [paint] methods.
   ui.Offset get offset => _offset;
 
-  // todo -2 this setter vvv need be removed - only serves canvas label rotation!!
+  // todo-2 this setter vvv need be removed - only serves canvas label rotation!!
   //         (?? this may be an old comment)
   void set offset(ui.Offset offset) => _offset = offset;
 
-  // todo -2 move _tiltMatrix to container base, similar to offset and comment as unused
+  // todo-2 move _tiltMatrix to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
   /// lifetime.
@@ -838,7 +838,7 @@ abstract class Container {
   /// [enableSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool enableSkipOnDistressedSize = true; // todo -10 set to true for distress test
+  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
 
   bool _isDistressed = false;
 
@@ -863,7 +863,7 @@ abstract class Container {
   }
 
   /// Tilt may apply to the whole container.
-  /// todo -2 unused? move to base class? similar to offset?
+  /// todo-2 unused? move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
     if (tiltMatrix == new vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
@@ -879,7 +879,7 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-// todo -2: Add assertion abstract method in direction where we should fill,
+// todo-2: Add assertion abstract method in direction where we should fill,
 //          that the layout size is same as the expansion size.
 
 }
@@ -1106,7 +1106,7 @@ class GridLinesContainer extends Container {
   /// Return the size of the outhermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  ui.Size get layoutSize => throw new StateError("todo -2 implement this.");
+  ui.Size get layoutSize => throw new StateError("todo-2 implement this.");
 }
 
 /// Represents one layed out item of the legend:  The rectangle for the color
@@ -1151,7 +1151,7 @@ class LegendItemContainer extends Container {
   }
 
   void layout() {
-    // Save a few repeated values, calculated the width giben to LabelContainer,
+    // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
     double indicatorSquareSide = _options.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendItemIndicatorToLabelPad;
@@ -1222,13 +1222,13 @@ class LegendItemContainer extends Container {
 
     // Make sure we fit all available width
     assert(_layoutExpansion.width + 1.0 >=
-        _layoutSize.width); // todo -2 within epsilon
+        _layoutSize.width); // todo-2 within epsilon
   }
 
   /// Overriden super's [paint] to also paint the rectangle indicator square.
   void paint(ui.Canvas canvas) {
     if (_isDistressed)
-      return; // todo -10 this should not be, only if distress actually happens
+      return; // todo-10 this should not be, only if distress actually happens
 
     _labelContainer.paint(canvas);
     canvas.drawRect(_indicatorRect, _indicatorPaint);
@@ -1236,7 +1236,7 @@ class LegendItemContainer extends Container {
 
   void applyParentOffset(ui.Offset offset) {
     if (_isDistressed)
-      return; // todo -10 this should not be, only if distress actually happens
+      return; // todo-10 this should not be, only if distress actually happens
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
@@ -1433,7 +1433,7 @@ class StackableValuePoint {
   StackableValuePoint stack() {
     this.isStacked = true;
 
-    // todo -1 validate: check if both points y is same sign or zero
+    // todo-1 validate: check if both points y is same sign or zero
     this.fromY = predecessorPoint != null ? predecessorPoint.toY : 0.0;
     this.toY = this.fromY + this.y;
 
@@ -1571,7 +1571,7 @@ class PointsColumn {
   PointsColumn({
     List<StackableValuePoint> points,
   }) {
-    // todo -1 add validation that points are not stacked
+    // todo-1 add validation that points are not stacked
     this.points = points;
 
     this.stackedPositivePoints = this.selectThenCollectStacked(

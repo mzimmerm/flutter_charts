@@ -18,4 +18,5 @@ pubspec.lock
 .emacs.d/
 .gnupg
 
-
+# Private notes, todos, readme
+INTERNAL-GITIGNORE/
