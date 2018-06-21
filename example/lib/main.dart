@@ -510,7 +510,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (shows 2 labels, legend present but text vertical)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
-                  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
+                  new Text('<<<<<<'),// labels do overlap, legend NOT present
                 ],
               ),
             ),

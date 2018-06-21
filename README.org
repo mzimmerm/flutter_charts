@@ -1,13 +1,9 @@
 #+OPTIONS: toc:3
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
-* Table of contents :TOC:
+* Table of contents :TOC:noexport:
 - [[#new-in-the-current-release][New in the current release]]
-  - [[#step-1][Step 1]]
-  - [[#step-2][Step 2]]
-  - [[#step-3][Step 3]]
-  - [[#step-4][Step 4]]
-  - [[#step-5][Step 5]]
+  - [[#illustration-of-the-new-iterative-auto-layout-feature][Illustration of the new "iterative auto layout" feature]]
 - [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
 - [[#a-chart-created-using-flutter_charts---an-example][A chart created using flutter_charts - an example]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
@@ -19,14 +15,10 @@
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
 - [[#verticalbar-chart---one-more-example-showing-positivenegative-stacks][VerticalBar Chart - one more example, showing positive/negative stacks:]]
   - [[#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
-- [[#enhancements-todo][Enhancements todo]]
-  - [[#refactorings][Refactorings]]
-  - [[#enhancements-in-progress-or-planned][Enhancements in progress or planned]]
-- [[#enhancements-implemented][Enhancements implemented]]
-  - [[#re-implement-the-layout-more-generically-and-clearly-space-saving-changes-such-as-tilting-labels][Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels]]
-  - [[#labels-auto-fit-scale-tilt-or-skip-labels-to-fit-using-horizontallabelscontainer][Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*]]
 
-* TODO New in the current release
+* New in the current release
+
+Current release 0.1.8.
 
 See file:CHANGELOG.md for the list of new features and bug fixes in this release.
 
@@ -34,11 +26,15 @@ As noticed in the CHANGELOG, perhaps the most important new feature is the "iter
 
 Labels auto layout is a sequence of steps, such as skipping some labels, tilting labels, or decreasing label font, that result in label 'fit' nicely, readably, without overflowing or running into each other.
 
-Below is an illustration of how the "iteratively auto layout" behaves when less and less horizontal space is available to display the chart. Chart automatically senses the X label overlap, and follows with rule-based iterative re-layout, to prevent labels running into each other.
+** Illustration of the new "iterative auto layout" feature
 
-To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' signs on the right of the chart
+This section illustrates how the auto layout behaves when less and less horizontal space is available to display the chart. 
 
-** Step 1
+Flutter chart library automatically checks for the X label overlap, and follows with rule-based iterative re-layout, to prevent labels running into each other.
+
+To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' signs on the right of the chart.
+
+*** Autolayout step 1
 
 Let's say there are six labels on a chart, and sufficient space to display labels horizontally. The result may look like this:
 
@@ -46,7 +42,7 @@ Let's say there are six labels on a chart, and sufficient space to display label
 
 We can see all x axis labels displayed it full, horizontally oriented.
 
-** Step 2
+*** Autolayout step 2
 
 Next, let us make less available space by taking away some space on the right with a wider text label like this '<<<<<<'
 
@@ -54,14 +50,14 @@ Next, let us make less available space by taking away some space on the right wi
 
 We can see the labels were automatically tilted by angle ~ChartOptions labelTiltRadians~ for the labels to fit.
 
-** Step 3
+*** Autolayout step 3
 Next, let us make even less available space by taking away some space on the right with a wider text label like this '<<<<<<<<<<<'.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-3.png]]
 
-We can see that labels are not only tilted, but also automatically skipped (every 2nd) for labels not to overlap
+We can see that labels are not only tilted, but also automatically skipped (every 2nd) for labels not to overlap.
 
-** Step 4
+*** Autolayout step 4
 
 Next, let us make even less available space some more compared to step 3, with even a wider text label like this '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
 
@@ -69,8 +65,7 @@ Next, let us make even less available space some more compared to step 3, with e
 
 We can see even more labels were skipped for labels to prevent overlap, the chart is showing evey 5th label
 
-
-** Step 5
+*** Autolayout step 5
 
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
 
@@ -343,44 +338,3 @@ Result vertical bar chart:
 [[file:doc/readme_images/README.org_20171102_195745_27063ECO.png]]
 
 (there is a bug here,see Known Bugs)
-* TODO Enhancements todo
-
-** Refactorings
-*** Introduce Mixin Layoutable by applyParentOffset()
-*** Introduce Mixin Paintable by paint()
-** Enhancements in progress or planned
-
-*** Create a document / image showing layout and spacing - show option variables on image
-Also:
-- document applyParentOffset and pull from Container?
-- go over Container and document
-
-
-*** Add org mode based integration build, which allows to run and test all "known/predefined" code scenarios that work. 
-*** To the above org mode base integration build, add ability to "capture self", and compare result as jpeg/svg with known jpeg/svg results
-*** Add formatter for YLabels.
-*** Option additions that control look:
-**** Add options to hide the grid (keep axes)
-**** Add options to hide  axes (if axes not shown, labels should not show?)
-**** Decrease option for default spacing around the Y axis.
-*** Provide tooltip support
-*** Provide a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
-.
-*** Data types
-**** Independent (X value) data types
-***** There should be adapters from any dependent (X value) data types:
-****** Ordinal - x values spaced evenly, only sequence matters
-****** Measured - x values are convertible to numbers
-******* Date types
-******* Number types
-******* Others?
-**** Dependent (Y value) data types - for now, keep double, can provide converters.
-
-*** For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
-*** Next, add ability to invert X and Y axis (values on horizontal axis)
-*** TextPainter notes
-
-If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
-* DONE Enhancements implemented
-** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
-** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*

@@ -1,11 +1,16 @@
 .DS_Store
 .atom/
 .idea
+# .dart_tool directory and .packages file exist after you’ve run pub get. 
+#   Don’t check them into source control.
 .packages
+.dart_tool/
 .pub/
 build/
 ios/.generated/
 packages
+# pubspec.lock file exists after you’ve run pub get. Leave it out of source control 
+#   unless your package is an application package.
 pubspec.lock
 .flutter-plugins
 *.iml
@@ -13,6 +18,9 @@ pubspec.lock
 #  android and ios are needed to run the sample app (on android, not sure about Ios)
 # android
 # ios
+
+# doc/api is created after running dartdoc. Don't check in.
+doc/api/
 
 # misc local
 .emacs.d/
