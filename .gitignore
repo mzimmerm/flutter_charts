@@ -24,6 +24,8 @@ doc/api/
 
 # misc local
 .emacs.d/
+.emacs.d-psession/
+.emacs.d-desktop/
 .gnupg
 
 # Private notes, todos, readme
