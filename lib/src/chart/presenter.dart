@@ -159,12 +159,7 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
 abstract class PresenterCreator {
   /// The container is generally needed for the creation of Presenters, as
   /// presenters may need some layout values.
-  ChartContainer _container;
-  PresenterCreator({
-    ChartContainer container,
-  }) {
-    this._container = container;
-  }
+  PresenterCreator(); // same as  {}
 
   Presenter createPointPresenter({
     StackableValuePoint point,

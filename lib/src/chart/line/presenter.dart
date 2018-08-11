@@ -1,7 +1,5 @@
 import 'dart:ui' as ui show Offset, Paint;
 
-import 'package:flutter/material.dart' as material;
-
 import '../presenter.dart';
 import 'package:flutter_charts/src/chart/line/options.dart';
 import '../container.dart';
@@ -67,7 +65,7 @@ class LineAndHotspotPresenter extends Presenter {
 /// See [PresenterCreator].
 class LineAndHotspotLeafCreator extends PresenterCreator {
 
-  LineAndHotspotLeafCreator({ChartContainer container,}) : super(container: container);
+  LineAndHotspotLeafCreator() : super();
 
   Presenter createPointPresenter({
     StackableValuePoint point,

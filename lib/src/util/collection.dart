@@ -1,10 +1,10 @@
-import 'dart:collection' as collection show ListBase, ListMixin;
+import 'dart:collection' as collection show ListBase;
 
 class CustomList<E> extends collection.ListBase<E> {
   final List<E> delegate = [];
   CustomList();
 
-  void set length(int newLength) {
+  set length(int newLength) {
     delegate.length = newLength;
   }
 

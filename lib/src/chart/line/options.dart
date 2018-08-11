@@ -1,6 +1,6 @@
 import '../options.dart';
 import 'dart:ui' as ui show Paint;
-import 'package:flutter/material.dart' as material show Paint, Colors;
+import 'package:flutter/material.dart' as material show Colors;
 
 class LineChartOptions extends ChartOptions {
 

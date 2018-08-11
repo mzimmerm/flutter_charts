@@ -1,0 +1,483 @@
+#+OPTIONS: toc:3
+#+TODO: TODO IN-PROGRESS LATER DONE NOTE
+
+
+* TODO Bugs to report or ask on Stack Overflow
+
+** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
+
+// todo-10 mz ori
+
+Converting some code to 2.0 .. How can one tear-off a specifically typed function in 2.0? My problem is for example:
+
+`_values.reduce(math.min)`
+
+If _values were double in version 1.0x, this is ok. In 2.0 I get:
+
+`type '(num, num) => num' is not a subtype of type '(double, double) => double' of 'combine'`
+
+Here , `combine` I assume is a method in `reduce`. It is probably obvious but eluding me. Thanks.
+
+
+Emulator: 
+- v 24: works.
+- v 25: fails loading!!!
+
+
+@RandalSchwartz : Thanks, that is interesting. I will google for it. Although I am confused what num.max going away would mean, that num also goes away?  `math.max` is defined as:
+
+`external T max<T extends num>(T a, T b);`
+
+It sounds like in the end this is just a type system complaint, I hope we should be able to use a list of num and then do a concrete operations on them, at least if they are all the same type (int or double, which they are) in the data I passed. 
+
+** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses '...' 
+
+See file:./bug-text-painter-1.png
+See file:./bug-text-painter-2.png
+
+* IN-PROGRESS Flutter Charts Bugs status
+
+- [X] Chart area needs clipping in the application
+- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
+- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
+
+
+* IN-PROGRESS New release may 2018 todo-now finish this and remove section
+
+- [X] Test if works
+- [X] charts, try to set on input, mix of double and int, test if works - create a sample input for it
+- [X] finish charts - last todo-4, leave -5 for immediate 
+- [X] implement or remove todos
+- [X] -3, -4, -5 ... change the once I want to keep to -10
+- [X] look over 00, maybe change to -1
+- [X] only keep -1 -2. -3 will become high priority
+- [X] rename -10 to -3
+- [X] Put Legend back - figure out why the stress causes exception - allow silently remove the legend.
+- [X] add section to charts readme on how to create and run  tests (position of file, what to add to pubspec.yaml, run: 'flutter test' - that is all. Note: also append https://flutter.io/testing/
+- [X] add ability to expose IncrementalLayouter
+- [X] add to readme:
+  - [X] changes to latest version, screenshots of gradual constraining
+- [X] run analyser, make sure it runs
+- [ ] make sure example exists on pub.dartlang.org
+- [ ] test charts
+- [ ] test charts within flutter_charts_sample_app
+- [ ] release new version
+  - [ ] follow steps in the Pub - Publish section
+- [ ] test charts within flutter_charts_sample_app
+
+* How are todos used in code
+- todo-1 long term low priority
+- todo-2 long term higher priority
+- todo-10 release-blocker (created typically during a new work in progress)
+- todo-11, -12 etc - work in progress, higher number is higher priority or more immediate
+
+* NOTE Adding images to README.org
+
+*Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory doc/readme_images, and point to then via github*. 
+
+This is the process of adding images to README.org, which survives conversion to README.md, and publishing on pub:
+
+- [ ] Add an image to README.org using the regular image capture.
+- [ ] Show the image links directly
+- [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
+- [ ] Move the image to flutter_charts ~doc/readme_images~
+- [ ] Change the links in org file by changing =file:= to =file:doc/readme_images/=
+  - [ ] org file, look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
+
+
+* NOTE Pub - Publish : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
+** ~cd flutter_charts; flutter packages upgrade~
+** Test app from IntelliJ
+
+** Run ~flutter test~. Also see  https://flutter.io/testing/
+** Notes:
+*** Pub requires the following file in project to show the correct tabs on pub
+**** Tab README.md    - Needs the file
+**** Tab CHANGELOG.md - Needs the file
+**** Tab Example      - this tab appears if the project file ~file:flutter_charts/example/lib/main.dart~ exists
+**** Tab Installing   - shows automatically
+** IF *README.md* needs change
+*** *README.org*: ! *make sure image links point to flutter_charts ~/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
+*** *README.org*: Conversion steps to *README.md* 
+
+To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
+
+1. Note: Ensure README.org file which has the "Table of contents" heading marked as :TOC:noexport: (e.d. Contents :TOC:noexport:) - this causes the TOC update on every save.
+   - The :noexport: is currently needed , otherwise error Unable to resolve link: "link-converted-from-first-heading"
+2. *README.org*: Export org to md: ~C-c C-e m m~ in the org file to create the generated md file
+3. *README.md*: Delete generated TOC, the whole section named "# Table of Contents" (still needed with :TOC:noexport:)
+4. *README.md*: Generate md-native TOC:
+5. Cursor on top
+6. ~M-x: markdown-toc-generate-toc~
+7. *README.md*: Fix image links in the README.md - links must look like this:
+  #+BEGIN_SRC markdown
+  -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
+  +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+  #+END_SRC
+   - *README.md*: This is achieved with: ~M-x replace-string~ then ~doc/readme_images/~ ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
+** *pubspec.yaml*: - Increase version number "version: 0.1.8"
+** *CHANGELOG.md*: - Add comment section for new version
+** ~git add .; git commit; git push~
+** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links have a full path
+** ~flutter packages pub publish --dry-run~
+** ~flutter packages pub publish~
+** Check https://pub.dartlang.org/packages/flutter_charts
+** Test the package that was just published
+*** ~cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run~
+
+* DONE Add ability to create a Table of Contents to README.org
+- [X] Install toc-org package
+- [X] Add to init.el
+#+BEGIN_SRC elisp
+(if (require 'toc-org nil t)
+(add-hook 'org-mode-hook 'toc-org-enable)
+(warn "toc-org not found"))
+#+END_SRC
+- [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
+- [X] So nothing special need be done after the above is configured.
+ 
+* TODO Enhancements todo
+
+** Refactorings
+*** Introduce Mixin Layoutable by applyParentOffset()
+*** Introduce Mixin Paintable by paint()
+** Enhancements in progress or planned - priority order
+
+*** Create a document / image showing chart layout and spacing - show option variables on image
+Also:
+- document applyParentOffset and pull from Container?
+- go over Container and document
+
+*** Add org mode based integration build, which allows to run and test all "known/predefined" code scenarios that work. 
+*** To the above org mode base integration build, add ability to "capture self", and compare result as jpeg/svg with known jpeg/svg results
+*** Add formatter for YLabels.
+*** Option additions that control look:
+**** Add options to hide the grid (keep axes)
+**** Add options to hide  axes (if axes not shown, labels should not show?)
+**** Decrease option for default spacing around the Y axis.
+*** Provide tooltip support
+*** Provide a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
+.
+*** Data types
+**** Independent (X value) data types
+***** There should be adapters from any dependent (X value) data types:
+****** Ordinal - x values spaced evenly, only sequence matters
+****** Measured - x values are convertible to numbers
+******* Date types
+******* Number types
+******* Others?
+**** Dependent (Y value) data types - for now, keep double, can provide converters.
+
+*** For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+*** Next, add ability to invert X and Y axis (values on horizontal axis)
+*** TextPainter notes
+
+If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
+* DONE Enhancements implemented
+** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
+** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+
+* Terminology and Selected Classes
+
+- (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
+- Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
+- Painter               :: Class which paints to chart to canvas. Terminology and class structure taken from Flutter's Painter and Painting classes.
+- Classes: todo
+
+* Older Notes
+
+** Towards a new, suggested ~InternalChartData~ class - this is the class Flutter Charts will work from at it's core. *This may change significantly.*
+
+First, let me summarize that current (unexpressed) constraints on  the current ~ChartData.dataRows~ - in essence, all corresponding list lengths must be the same:
+
+1) Along the x axis (row wise)   : (each row in dataRows).length is the same 
+2) Along the x axis (row wise)   : (each row in dataRows).length == xLabels.length 
+3) Along the y axis (series wise): dataRows.length == dataRowsColors.length == dataRowsLegends.length
+
+Basically, the ~dataRows~ member assumed to be an array (list of rows of equal length)
+
+So towards the future, the more I was thinking the way the layouting may work, the more I am sure it is best to keep 1) for sure, and maybe 3), but drop 2) for sure to support uneven steps and skipped labels. And in all case I kept arriving at thinking the layouter would eventually convert any ~List<List<Point>>~ to a list of Y values ~List<List<double>>~ and extract the X values under each point so we have List<double> xValues. I would like to note that this structure can be made in all respects equivalent to  ~List<List<Point>>~ - we can always write adaptors in either direction. 
+
+So I'd like to support the internal structure of ChartData as described below, and all external data in different formats/structure would have to provide convertes; this project would probably provide some basic adaptors (I am thinkig to support some basic (e.g. some Higchart type) JSON data formats out of the box.
+
+Next, goals and non-goals of this change.
+
+*Current goals of the ~InternalChartData~ class:*
+
+- Define a data source class used on the the low end of chart layout. 
+- Define the data source class in terms of lowest level primitives: Because in the end, all paint operations operate only with Dart ~double~ (for Y values, and Distanced X points) and Dart ~String~, we only use those primitives.
+- Still allow for a simple, no frills way of clients defining their own X and Y labels directly, similar to the current ~ChartData~ 
+- Provide a sufficient description for data defined as any "reasonable" object to be convertable to  ~InternalChartData~ through adaptors.
+  - Data Adaptor Examples: 
+    - X values is a List<String>, Y values is a  List<double>      => ~InternalChartData~
+    - X and Y values are an array, e.g. List<List<double>>         => ~InternalChartData~
+    - X values is a List<DateTime>, Y values is a  List<double>    => ~InternalChartData~
+- Provide a converter from ~ChartData~ to  ~InternalChartData~
+
+
+*Current non-Goals of the ~InternalChartData~ class. These may become goals later*
+- We can rephrase the simplification of ~double~ (both for X and Y ) in terms of interfaces that allow for *order* and *distance* : let us call them ~OrdinalDimension~ and ~DistancedDimension extends OrdinalDimension~. ~OrdinalDimension~ provides order of it's points,  ~DistancedDimension~ provides distance of it's points. Basically substitute ~double~ everywhere above and is the definition of ~InternalChartData~ with ~OrdinalDimension~ . *BUT I HAVE A TODO HOW TO DO THIS RIGHT*. 
+  - ~double DistancedDimension.distance(DimensionPoint point, DimensionPoint point)~ // must satisfy distance properties
+  - ~int OrdinalDimension.comparePoints(DimensionPoint point, DimensionPoint point)~
+  - ~double DimensionPoint.toDouble()~ - basically, distance from origin on the chart. Required(?) to find a minimum, maximum; We require this for OrdinalDimension as well, where it duplicates order - basically the result is the sequence in a the list of ordered dimension points.
+
+
+For now all members are public but that may change. Also will describe some constructors later.
+
+#+BEGIN_SRC dart
+
+  /// Used internally as a "data source" by Flutter Charts.
+  /// 
+  /// Data sources in other formats should provide adaptors to convert to this 
+  ///   internal format.  
+  /// 
+  /// Data Adaptor Examples (just as an overview): 
+  ///   - X values is a List<String>, Y values is a  List<double>      => ~InternalChartData~
+  ///   - X and Y values are an array, e.g. List<List<double>>         => ~InternalChartData~
+  ///   - X values is a List<DateTime>, Y values is a  List<double>    => ~InternalChartData~
+  ///   - ~ChartData~                                                  => ~InternalChartData~
+  class InternalChartData {
+
+    /// Data defined in terms of the low level primitives - a Dart double.
+
+    List<List<double>> dataRows = new List(); 
+
+    /// Map from x values to xLabel. It's keys and values,
+    /// decide whether the X labels displayed are User-Provided or Data-Generated. 
+    ///
+    /// See the [validateX] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated.
+    ///
+    ///   Below is a summary from [validateX]. This may sound complicated, 
+    ///   it exists to *also allow clients
+    ///   a simple, no frills way of defining their own X labels directly, 
+    ///    similar to the current ~ChartData~ does*.
+    ///
+    /// 1. Overall Requirement of  [xToXLabelMap]: It is required that [xToXLabelMap]
+    ///    contains as many keys as each dataRow length for all [dataRows].
+    ///    *Note: If a client does not care about the actual x points, the client must set the keys
+    ///        in  [xToXLabelMap] to double 1.0, 2.0 ... etc - as if they were List indexes.*
+    ///
+    /// 2. Ensure that label is set on all x points, or none.
+    ///    So all labels or none must be provided as values of the [xToXLabelMap].
+    ///
+    /// 3. If labels are not null on all x keys, those labels will be used on the chart -
+    ///   so this condition is interpreted as:
+    ///   User (Client) provided X labels in [xToXLabelMap],
+    ///     and is requesting those labels to be shown, as "User-Defined labels".
+    ///
+    /// 4. If labels are null on all x keys, this condition is interpreted as:
+    ///    User (Client) did not provide labels in [xToXLabelMap],
+    ///    and is requesting labels to be "Data-Generated". In this case, the
+    ///    formatter [xLabelFormatter] must be provided.
+
+    TreeMap<double, String> xToXLabelMap;
+    
+    /// Converts a x axis data value to a label representing the value at the x axis point.
+    /// Required to create Data-Generated xLabels. 
+    ///
+    /// See the [validateX] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated. 
+
+    String Function(double) xLabelFormatter;
+
+
+    /// Map from y values to yLabel. **The only purpose of [yToYLabelMap] is to chart Ordinal Y values with User-Defined labels**
+    ///
+    /// This is similar to [xToXLabelMap] in structure, but the internal use and
+    /// assumptions differ.    
+    ///
+    /// See the [validateY] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated.
+    /// 
+    ///   Below is a summary from [validateY].
+    ///
+    /// 1. If `yToYLabelMap.length > 0` this condition is interpreted as:
+    ///   User (Client) provided Y abels in [yToYLabelMap],
+    ///     and is requesting those labels to be shown, as "User-Defined labels".
+    ///
+    /// 2. Iff `yToYLabelMap.length == 0` , this condition is interpreted as:
+    ///    User (Client) did not provide labels in [yToYLabelMap],
+    ///    and is requesting labels to be "Data-Generated". In this case, the
+    ///    formatter [yLabelFormatter] must be provided.
+    ///
+    /// 3. Overall Requirement of [yToYLabelMap]: There is no requirement on number of entries 
+    ///     in [yToYLabelMap]. 
+    ///
+    /// 4. If the length of [yToYLabelMap] is not zero, ensure that label is not null on all y points.
+    ///
+    /// 5. Each entry's value shows one label on the Y axis. 
+    ///    
+    /// 6. Each entry's key is scaled to the scale of the outer envelope of [dataRows] and set of [yToYLabelMap.keys],
+    ///    and the `entry.value` is used as label, on Y position corresponding to the point of `entry.key`
+    ///    on the outer envelope.
+    ///
+
+    TreeMap<double, String> yToYLabelMap;
+
+    /// Converts a y axis data value to a label representing the value at the y axis point.
+    /// Required to create Data-Generated yLabels. 
+    ///
+    /// See the [validateY] method which describes how construction of this map
+    ///   affects the labels construction as User-Defined vs. Data-Generated. 
+
+    String Function(double) yLabelFormatter;
+
+
+    /// Legends list. Currently has to be set, but can contain empty Strings
+    ///  (in which case todo 1 -take that as a hint user does not want the legend section).
+
+    List<String> dataRowsLegends = new List();
+
+    /// Colors list. Currently has to be set. todo 1 - If not set, default to reasonable colors.
+
+    List<ui.Color> dataRowsColors = new List<ui.Color>();
+
+
+    ////////////////////////// Added also todo 1 **not planning to implement yet** ////////////////////
+
+    /// - If [true], then the x values keep distances in data: For example, if xs = [1,2,20, 200], 
+    ///   then the (relative, scaled) distances between [1,2,20, 200], are preserved,
+    ///   so that 1,2,20 will be squished on the left. The only chart type where this is allowed
+    ///   is the line chart.
+    ///   This setting mathematically means that we view the x axis values using
+    ///     a proper real value distance as it's distance (in addition to viewing them ordered).
+    /// - If [false], then  then the x values will be "equidistanced": For example, if xs = [1,2,20, 200], 
+    ///   then the (relative, scaled) distances between [1,2,20, 200], are the same,
+    ///   so that 1, 2, 20, 200 will be evently layed out along the x axis.
+    ///   This setting mathematically means that we view the x axis values as ordered (ordinal) labels,
+    ///     ignoring the distance between them (when taken as numbers)
+    ///
+    /// A note: X values [xs] are always ~Ordinal~ (ordered). 
+
+    bool keepXValuesDistances
+    
+  }
+
+  /// Validate the state of values. This code provides a set of rules this object members must satisfy.
+  void _validate() {
+    _validateX();
+    _validateY();
+  }
+
+  void _validateX() {
+
+    if (xToXLabelMap == null) {
+      throw Error("xToXLabelMap must be defined!");
+    }
+
+    for (dataRow in dataRows) {
+      if (dataRow.size != xToXLabelMap.size) {
+        throw Error("Each Data row must be same size as xToXLabelMap");
+      }
+    }  
+    
+    // The setting of either keys or values or both determines the labels construction 
+    //   as User-Defined or Data-Generated.
+    // The section below describes the options and combinations.
+    if (xToXLabelMap.isEmpty()) {
+      // no data, return
+      return;
+    }
+
+    // Overall Requirement of  [xToXLabelMap]: It is required that [xToXLabelMap]
+    //    contains as many keys as each dataRow length for all [dataRows].
+    // *Note: If client does not care about the actual x points, client must set the keys
+    //        in  [xToXLabelMap] to double 1.0, 2.0 ... etc - as if they were List indexes.*
+    
+    // Ensure that label is set on all x points, or none.
+    // So all labels or none must be provided as values of the [xToXLabelMap].
+    if (xToXLabelMap.first.value != null) {
+      xToXLabelMap.each( (x, labelValue) {
+        if (labelValue == null) throw Error(" all labels or none must be provided as values of the [xToXLabelMap]");
+      });
+    }
+    if (xToXLabelMap.first.value == null) {
+      xToXLabelMap.each( (x, labelValue) {
+        if (labelValue != null) throw Error(" all labels or none must be provided as values of the [xToXLabelMap]");
+      });
+    }
+
+    // If labels are not null on all x keys, those labels will be used on the chart -
+    //   so this condition is interpreted as:
+    // User (Client) provided labels in [xToXLabelMap],
+    //   and is requesting those labels to be shown, as "User-Defined labels".
+    if (xToXLabelMap.first.value != null) {
+      // Labels will be User-Defined.
+      if (xLabelFormatter is not null) {
+        throw Error("xToXLabelMap defines User-Defined labels, xLabelFormatter should not be set");
+      }
+    }
+
+    // If labels are null on all x keys, this condition is interpreted as:
+    //  User (Client) did not provide labels in [xToXLabelMap],
+    //   and is requesting labels to be "Data-Generated". In this case, the
+    //   formatter [xLabelFormatter] must be provided.
+    if (xToXLabelMap.first.value == null) {
+      // Labels will be Data-Generated.
+      if (xLabelFormatter is null) {
+        throw Error("xToXLabelMap does not define User-Defined labels. xLabelFormatter must be set, to create Data-Generated x labels.");
+      }
+    }
+  }
+
+#+END_SRC
+
+Also, although "from a separation of data and view" principle I originally put some of the settings that define the chart "view" onto ChartOptions, I plan to move them to ChartData, and InternalChartData.
+
+- [ ] ChartOptions.useUserProvidedYLabels -> ChartData
+- [ ] ChartOptions.yLabelUnits -> ChartData
+- [ ] ChartOptions.toLabel(label) -> ChartData
+- 
+
+** Refactoring todos
+
+1) [ ] Now we manage rowIndex (seriesIndex) in StackableValuePoint as dataRowIndex. So:
+   + Add rowIndex on Presenter (Leaf) as dataRowIndex.
+
+   + [ ] remove rowIndex from everywhere - createPointPresenter (createPresentor) , _createPresentersInColumn - and when it is needed for color, just use the Presenter.dataRowIndex.
+
+2) [ ] Split Function of vertGridLines- *vertGridLines[col].from.dx* serves both to draw grid lines, and ValuePoints. Add, right in XLayouterOutput, a variable for valuePointX - *what is the difference from labelX???*.
+
+3) [ ] Redefine Points and Presenters internal structure, as (from the bottom) double-linked list of points (forms Columns), and double-linked list of Columns (forms PointsColumns = Data) and Presenters (PresentersColumns)
+
+4) [ ] Member privacy issues
+
+   + [ ] ChartPainter.layouter is forced non-private (_) if we want to allow extensibility outside of the chart package (extensibility by clients).
+   + [ ] Go over usage of private accessing private _chartLayouter._options - suspect. But maybe ok
+
+5) [ ] Think of a way to get rid of the need to upcast in baseclass using " as SomeClass" - 2 occurences in "presenter as presenters.PointAndLinePresenter"
+
+6) [ ] I think yAxisAbsMin/Max passed to layouters is switched. Fix it
+
+7) *REMOVE NOISE OF nextRightPointsColumn nextRightColumnValuePoint*
+
+   1) [ ] *nextRightPointsColumn* IS LIKELY UNUSED, REMOVE but check.
+
+   2) [ ] *nextRightColumnValuePoint*  IS LIKELY UNUSED, REMOVE but check.
+
+8) [ ] Create a document definiting sequence of layouters, and what each does
+   - [ ] particular attention to where scaling happents
+9) [ ] *Legend improvements*
+
+   1) [ ] Implement legend as container, with layout that can wrap.
+
+10) [ ] Fix and test formalities, add docs, add examples, resolve versionning and library dependencies and branches, other preps before push to pub
+    + [ ] Test and ensure empty data work.
+    + [ ] *ADD TESTS FOR RANGE, END TO END ETC*
+
+** Consider Change naming conventions to WX, HY, CY, CX so all names are consistent 
+   - whateverOWX (width along x axis    - when context is offset of some other element)
+   - whateverOHY (height along y axis   - when context is offset of some other element)
+   - whateverCX  (X coordinate  )       - if it is just a point
+   - whateverCY  (Y coordinate  )       - if it is just a point
+   - rare use below v
+   - whateverRWX (width along x axis  - when context is rectangle)
+   - whateverRHY (height along y axis  - when context is rectangle)
+   - whateverFromCY (Y coordinate from ) - if it is a point which is part of a line
+   - whateverToCY (Y coordinate to )     - if it is a point which is part of a line
+   - whateverFromCX (Y coordinate from ) - if it is a point which is part of a line
+   - whateverToCX (Y coordinate to )     - if it is a point which is part of a line
+
+
+

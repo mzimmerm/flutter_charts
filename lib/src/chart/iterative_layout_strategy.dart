@@ -1,13 +1,11 @@
 import 'package:flutter_charts/src/chart/container.dart'
     show
-        XContainer,
         Container,
-        AdjustableContent,
         AdjustableContentChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2, Vector2;
-import 'dart:math' as math show PI;
+    show Matrix2;
+import 'dart:math' as math show pi;
 
 enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 
@@ -133,8 +131,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   void _reLayoutRotateLabels() {
     double labelTiltRadians = _options.labelTiltRadians;
-    //  angle must be in interval `<-math.PI, +math.PI>`
-    if (!(-1 * math.PI <= labelTiltRadians && labelTiltRadians <= math.PI)) {
+    //  angle must be in interval `<-math.pi, +math.pi>`
+    if (!(-1 * math.pi <= labelTiltRadians && labelTiltRadians <= math.pi)) {
       throw new StateError("angle must be between -PI and +PI");
     }
 
@@ -177,7 +175,7 @@ abstract class LabelLayoutStrategy {
 
   LabelLayoutStrategy({
     ChartOptions options, // @required
-  }) {}
+  }); // same as {}
 
   void onContainer(AdjustableContentChartAreaContainer container) {
     this._container = container;

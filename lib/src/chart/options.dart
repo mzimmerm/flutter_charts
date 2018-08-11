@@ -1,5 +1,5 @@
-import 'dart:ui' as ui show Color, Paint, TextDirection, TextAlign;
-import 'dart:math' as math show PI;
+import 'dart:ui' as ui show Color, TextDirection, TextAlign;
+import 'dart:math' as math show pi;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
@@ -121,7 +121,7 @@ class ChartOptions {
 
   /// Tilt Label iteration: If label do not fit horizontally,
   ///   they are tilted by this value.
-  final double labelTiltRadians = math.PI / 4;
+  final double labelTiltRadians = math.pi / 4;
 
   // ############## Text Style
 

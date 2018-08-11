@@ -1,16 +1,16 @@
 import 'dart:ui' as ui
-    show Size, Offset, Rect, Paint, TextAlign, TextDirection, Canvas;
+    show Size, Offset, Rect, Paint, Canvas;
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
 
-import 'dart:math' as math show max, min, PI;
+import 'dart:math' as math show max, min;
 
 import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2, Vector2;
+    show Matrix2;
 
 import 'package:flutter/widgets.dart' as widgets
-    show TextStyle, TextSpan, TextPainter;
+    show TextStyle;
 
 import 'package:flutter_charts/src/chart/label_container.dart';
 
@@ -374,8 +374,7 @@ class YContainer extends ChartAreaContainer {
 
     Range range = new Range(
         values: flatData,
-        chartOptions: _parentContainer.options,
-        maxLabels: 10);
+        chartOptions: _parentContainer.options,);
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
@@ -409,7 +408,7 @@ class YContainer extends ChartAreaContainer {
       double yTickY = labelInfo.scaledLabelValue;
       var yLabelContainer = new AxisLabelContainer(
         label: labelInfo.formattedYLabel,
-        labelMaxWidth: double.INFINITY,
+        labelMaxWidth: double.infinity,
         labelTiltMatrix: new vector_math.Matrix2.identity(),
         canvasTiltMatrix: new vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
@@ -516,9 +515,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // todo-2 move showEveryNthLabel to IterativeLaoytstrategy.
     //        Also define common interface, LabelLayoutStrategy, and NonIterative
     //        implementation, just taking user input.
+    /*
     int numShownLabels =
         (xLabels.length / xContainerLabelLayoutStrategy.showEveryNthLabel)
             .toInt();
+    */
+    int numShownLabels =
+        (xLabels.length ~/ xContainerLabelLayoutStrategy.showEveryNthLabel);
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
     LabelStyle labelStyle = _styleForLabels(options);
@@ -529,7 +532,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
     for (var xIndex = 0; xIndex < xLabels.length; xIndex++) {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
-        labelMaxWidth: double.INFINITY,
+        labelMaxWidth: double.infinity,
         labelTiltMatrix: xContainerLabelLayoutStrategy.labelTiltMatrix,
         canvasTiltMatrix: xContainerLabelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
@@ -795,14 +798,7 @@ abstract class Container {
   /// Maintains current offset, a sum of all offsets
   /// passed in subsequent calls to [applyParentOffset] during object
   /// lifetime.
-  ui.Offset _offset = ui.Offset.zero;
-
-  /// Provides access to offset for extension's [paint] methods.
-  ui.Offset get offset => _offset;
-
-  // todo-2 this setter vvv need be removed - only serves canvas label rotation!!
-  //         (?? this may be an old comment)
-  void set offset(ui.Offset offset) => _offset = offset;
+  ui.Offset offset = ui.Offset.zero;
 
   // todo-2 move _tiltMatrix to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
@@ -859,7 +855,7 @@ abstract class Container {
   /// Override if parent move needs to propagate to internals of
   /// this [Container].
   void applyParentOffset(ui.Offset offset) {
-    _offset += offset;
+    this.offset += offset;
   }
 
   /// Tilt may apply to the whole container.
@@ -1660,9 +1656,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       List<num> dataRow = chartData.dataRows[row];
       List<StackableValuePoint> pointsRow = new List<StackableValuePoint>();
       _valuePointArrInRows.add(pointsRow);
-      // int col = 0;
-      // dataRow.forEach((var colValue) {
-      StackableValuePoint predecessorPoint;
       for (int col = 0; col < dataRow.length; col++) {
         num colValue = dataRow[col];
 

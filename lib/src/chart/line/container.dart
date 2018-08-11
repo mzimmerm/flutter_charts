@@ -27,6 +27,6 @@ class LineChartContainer extends ChartContainer {
           chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    presenterCreator = new LineAndHotspotLeafCreator(container: this);
+    presenterCreator = new LineAndHotspotLeafCreator();
   }
 }

@@ -5,10 +5,10 @@
 - [[#new-in-the-current-release][New in the current release]]
   - [[#illustration-of-the-new-iterative-auto-layout-feature][Illustration of the new "iterative auto layout" feature]]
 - [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
-- [[#a-chart-created-using-flutter_charts---an-example][A chart created using flutter_charts - an example]]
+- [[#a-chart-created-using-flutter_charts---example-application][A chart created using flutter_charts - example application]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
 - [[#flutter-charts---an-overview-data-options-classes][Flutter Charts - an overview: data, options, classes]]
-- [[#experimenting-with-flutter-charts-using-the-included-example-app-fileexamplelibmaindart][Experimenting with Flutter Charts: Using the included example app ~file:example/lib/main.dart~]]
+- [[#flutter-beginner-experimenting-with-flutter-using-flutter-charts][Flutter beginner: Experimenting with Flutter using Flutter Charts]]
 - [[#flutter-charts---examples-linechart-and-verticalbarchart-code-and-resulting-charts][Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts]]
   - [[#random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels][Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,]]
@@ -80,13 +80,15 @@ Flutter Charts is a charting library for Flutter, written in Flutter. Currently,
 
 The package is published on pub for inclusion in your application's ~pubspec.yaml~: The /Installing/ tab on https://pub.dartlang.org/packages/flutter_charts contains instructions on how to include the /flutter_charts/ package in your application.
 
-* A chart created using flutter_charts - an example
+* A chart created using flutter_charts - example application
 
 There is an example application in flutter_charts: ~example/lib/main.dart~. It shows how a Flutter Chart can be included in a Flutter application.
 
 You can run the example application using one of the methods (6, 7) in the paragraph below.
 
 This application is also used as a base to show several sample charts in the paragraphs below.
+
+Here we show just two simple sample outputs, a column chart and a line chart.
 
 
 A sample Vertical Bar Chart (Column Chart)
@@ -121,11 +123,13 @@ Before we show several examples of charts, a few notes.
   - Series legends  
 - Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
-* Experimenting with Flutter Charts: Using the included example app ~file:example/lib/main.dart~
+* Flutter beginner: Experimenting with Flutter using Flutter Charts
 
-There are multiple ways to experiment with Flutter Charts from your computer. We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
+This section describes, very briefly with links, how to install Flutter, and the Flutter Charts package.
 
-1. Install Flutter on your computer. See https://flutter.io/ installation section.
+This section We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
+
+1. Install Flutter on your computer. See the installation section on https://flutter.io/.
 2. Clone flutter_charts code from Github to your computer. Needs git client.
  
   #+BEGIN_SRC sh

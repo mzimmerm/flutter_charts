@@ -9,8 +9,8 @@ class RandomChartData extends ChartData {
   bool _useUserProvidedYLabels;
   int _numXLabels;
   int _numDataRows;
-  bool _useMonthNames;
-  int _maxLabelLength;
+  //bool _useMonthNames;
+  //int _maxLabelLength;
   bool _overlapYValues;
 
   /// Generate random data for chart, with number of x labels given by
@@ -29,8 +29,8 @@ class RandomChartData extends ChartData {
     _useUserProvidedYLabels = useUserProvidedYLabels;
     _numXLabels = numXLabels;
     _numDataRows = numDataRows;
-    _useMonthNames = useMonthNames;
-    _maxLabelLength = maxLabelLength;
+    //_useMonthNames = useMonthNames;
+    //_maxLabelLength = maxLabelLength;
     _overlapYValues = overlapYValues;
 
     _generateXLabels();
@@ -46,6 +46,7 @@ class RandomChartData extends ChartData {
     validate();
   }
 
+  /*
   /// Generate list of "random" [xLabels] as monthNames
   ///
   ///
@@ -60,7 +61,9 @@ class RandomChartData extends ChartData {
       xLabels.add(xLabelsMonths[xIndex % 12]);
     }
   }
+  */
 
+  /*
   void _generateXLabelsDows() {
     List<String> xLabelsDows = [
       'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'
@@ -70,6 +73,7 @@ class RandomChartData extends ChartData {
       xLabels.add(xLabelsDows[xIndex % 7]);
     }
   }
+  */
 
   void _generateXLabelsCount() {
     List<String> xLabelsDows = [
@@ -144,10 +148,6 @@ class RandomChartData extends ChartData {
       dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
     }
     return dataRow;
-  }
-
-  List<double> _flattenData() {
-    return this.dataRows.expand((i) => i).toList();
   }
 
 }

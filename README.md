@@ -1,29 +1,28 @@
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
-- [New in the current release](#new-in-the-current-release)
-    - [Illustration of the new "iterative auto layout" feature](#illustration-of-the-new-iterative-auto-layout-feature)
-        - [Autolayout step 1](#autolayout-step-1)
-        - [Autolayout step 2](#autolayout-step-2)
-        - [Autolayout step 3](#autolayout-step-3)
-        - [Autolayout step 4](#autolayout-step-4)
-        - [Autolayout step 5](#autolayout-step-5)
-- [Flutter Charts - How to include the flutter\_charts library in your application](#flutter-charts---how-to-include-the-fluttercharts-library-in-your-application)
-- [A chart created using flutter\_charts - an example](#a-chart-created-using-fluttercharts---an-example)
-- [Known packages, libraries and apps that use this this flutter\_charts package](#known-packages-libraries-and-apps-that-use-this-this-fluttercharts-package)
-- [Flutter Charts - an overview: data, options, classes](#flutter-charts---an-overview-data-options-classes)
-- [Experimenting with Flutter Charts: Using the included example app `file:example/lib/main.dart`](#experimenting-with-flutter-charts-using-the-included-example-app-fileexamplelibmaindart)
-- [Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts](#flutter-charts---examples-linechart-and-verticalbarchart-code-and-resulting-charts)
-    - [Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.](#random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels)
-    - [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,](#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels)
-    - [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels](#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels)
-- [VerticalBar Chart - one more example, showing positive/negative stacks:](#verticalbar-chart---one-more-example-showing-positivenegative-stacks)
-    - [User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels](#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labels)
+# Table of Contents
 
-<!-- markdown-toc end -->
+1.  [New in the current release](#orgc6bc82e)
+    1.  [Illustration of the new "iterative auto layout" feature](#org5844188)
+        1.  [Autolayout step 1](#org908eb52)
+        2.  [Autolayout step 2](#org42945b0)
+        3.  [Autolayout step 3](#org646dcfb)
+        4.  [Autolayout step 4](#orge2115cf)
+        5.  [Autolayout step 5](#org283a53c)
+2.  [Flutter Charts - How to include the flutter\_charts library in your application](#org498c1ac)
+3.  [A chart created using flutter\_charts - example application](#orgbf1b0ea)
+4.  [Known packages, libraries and apps that use this this flutter\_charts package](#org7ca7238)
+5.  [Flutter Charts - an overview: data, options, classes](#orgea29e4e)
+6.  [Flutter beginner: Experimenting with Flutter using Flutter Charts](#org1378383)
+7.  [Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts](#org820bfaf)
+    1.  [Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.](#org8d7944a)
+    2.  [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,](#orgab9b637)
+    3.  [User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels](#orgc5d954a)
+8.  [VerticalBar Chart - one more example, showing positive/negative stacks:](#org31ee3ac)
+    1.  [User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels](#org5aac946)
 
 
-<a id="org84526f5"></a>
+
+<a id="orgc6bc82e"></a>
 
 # New in the current release
 
@@ -36,7 +35,7 @@ As noticed in the CHANGELOG, perhaps the most important new feature is the "iter
 Labels auto layout is a sequence of steps, such as skipping some labels, tilting labels, or decreasing label font, that result in label 'fit' nicely, readably, without overflowing or running into each other.
 
 
-<a id="orga8913e1"></a>
+<a id="org5844188"></a>
 
 ## Illustration of the new "iterative auto layout" feature
 
@@ -47,62 +46,62 @@ Flutter chart library automatically checks for the X label overlap, and follows 
 To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' signs on the right of the chart.
 
 
-<a id="orgba95b1c"></a>
+<a id="org908eb52"></a>
 
 ### Autolayout step 1
 
 Let's say there are six labels on a chart, and sufficient space to display labels horizontally. The result may look like this:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-1.png)
+![img](doc/readme_images/README.org_iterative-layout-step-1.png)
 
 We can see all x axis labels displayed it full, horizontally oriented.
 
 
-<a id="orgf6cb115"></a>
+<a id="org42945b0"></a>
 
 ### Autolayout step 2
 
 Next, let us make less available space by taking away some space on the right with a wider text label like this '<<<<<<'
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-2.png)
+![img](doc/readme_images/README.org_iterative-layout-step-2.png)
 
 We can see the labels were automatically tilted by angle `ChartOptions labelTiltRadians` for the labels to fit.
 
 
-<a id="org549677e"></a>
+<a id="org646dcfb"></a>
 
 ### Autolayout step 3
 
 Next, let us make even less available space by taking away some space on the right with a wider text label like this '<<<<<<<<<<<'.
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-3.png)
+![img](doc/readme_images/README.org_iterative-layout-step-3.png)
 
 We can see that labels are not only tilted, but also automatically skipped (every 2nd) for labels not to overlap.
 
 
-<a id="org5c94d8a"></a>
+<a id="orge2115cf"></a>
 
 ### Autolayout step 4
 
 Next, let us make even less available space some more compared to step 3, with even a wider text label like this '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-4.png)
+![img](doc/readme_images/README.org_iterative-layout-step-4.png)
 
 We can see even more labels were skipped for labels to prevent overlap, the chart is showing evey 5th label
 
 
-<a id="org72f735a"></a>
+<a id="org283a53c"></a>
 
 ### Autolayout step 5
 
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-5.png)
+![img](doc/readme_images/README.org_iterative-layout-step-5.png)
 
 Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as there is not enough horizontal space.
 
 
-<a id="org8c84c40"></a>
+<a id="org498c1ac"></a>
 
 # Flutter Charts - How to include the flutter\_charts library in your application
 
@@ -111,9 +110,9 @@ Flutter Charts is a charting library for Flutter, written in Flutter. Currently,
 The package is published on pub for inclusion in your application's `pubspec.yaml`: The *Installing* tab on <https://pub.dartlang.org/packages/flutter_charts> contains instructions on how to include the *flutter\_charts* package in your application.
 
 
-<a id="org55b0a4d"></a>
+<a id="orgbf1b0ea"></a>
 
-# A chart created using flutter\_charts - an example
+# A chart created using flutter\_charts - example application
 
 There is an example application in flutter\_charts: `example/lib/main.dart`. It shows how a Flutter Chart can be included in a Flutter application.
 
@@ -121,25 +120,27 @@ You can run the example application using one of the methods (6, 7) in the parag
 
 This application is also used as a base to show several sample charts in the paragraphs below.
 
+Here we show just two simple sample outputs, a column chart and a line chart.
+
 A sample Vertical Bar Chart (Column Chart)
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_154245_27063qmN.png)
+![img](doc/readme_images/README.org_20171102_154245_27063qmN.png)
 
 A sample point and Line Chart (Line Chart)
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_154329_270633wT.png)
+![img](doc/readme_images/README.org_20171102_154329_270633wT.png)
 
 The output is generated from semi-random data. You can click the blue + button to rerun the chart with a different set of rows.
 
 
-<a id="orgf741b26"></a>
+<a id="org7ca7238"></a>
 
 # Known packages, libraries and apps that use this this flutter\_charts package
 
 1.  Michael R. Fairhurst's **Language reader app** - see <https://github.com/MichaelRFairhurst/flutter-language-reader-app>
 
 
-<a id="orgdc3918e"></a>
+<a id="orgea29e4e"></a>
 
 # Flutter Charts - an overview: data, options, classes
 
@@ -160,13 +161,15 @@ Before we show several examples of charts, a few notes.
 -   Currently the only purpose of `RandomChartData` is for use in the examples below. To be clear, `RandomChartData` Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
 
-<a id="org2722ece"></a>
+<a id="org1378383"></a>
 
-# Experimenting with Flutter Charts: Using the included example app `file:example/lib/main.dart`
+# Flutter beginner: Experimenting with Flutter using Flutter Charts
 
-There are multiple ways to experiment with Flutter Charts from your computer. We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
+This section describes, very briefly with links, how to install Flutter, and the Flutter Charts package.
 
-1.  Install Flutter on your computer. See <https://flutter.io/> installation section.
+This section We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
+
+1.  Install Flutter on your computer. See the installation section on <https://flutter.io/>.
 2.  Clone flutter\_charts code from Github to your computer. Needs git client.
     
         cd DIRECTORY_OF_CHOICE
@@ -194,7 +197,7 @@ There are multiple ways to experiment with Flutter Charts from your computer. We
     -   Start IntelliJ IDE, create a project in the `DIRECTORY_OF_CHOICE/flutter_charts` start an Android emulator, then click on the Run button in Intellij (which should show the `file:example/lib/main.dart` in the run button).
 
 
-<a id="orga2d3d46"></a>
+<a id="org820bfaf"></a>
 
 # Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts
 
@@ -245,7 +248,7 @@ The examples below show a few alternative code snippets (User-Provided or Random
 The chart images were obtained by substituting the code snippet to the `file:example/lib/main.dart` code. 
 
 
-<a id="orga7af51e"></a>
+<a id="org8d7944a"></a>
 
 ## Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 
@@ -262,14 +265,14 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_172324_27063E7Z.png)
+![img](doc/readme_images/README.org_20171102_172324_27063E7Z.png)
 
 Result vertical bar chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_173422_27063ePm.png)
+![img](doc/readme_images/README.org_20171102_173422_27063ePm.png)
 
 
-<a id="org74775b6"></a>
+<a id="orgab9b637"></a>
 
 ## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
 
@@ -297,14 +300,14 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
 
 Result vertical bar chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180915_270634jy.png)
+![img](doc/readme_images/README.org_20171102_180915_270634jy.png)
 
 
-<a id="orgaaef90b"></a>
+<a id="orgc5d954a"></a>
 
 ## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
@@ -356,21 +359,21 @@ Code in `defineOptionsAndData()`:
 
 Result line chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_191037_27063qtB.png)
+![img](doc/readme_images/README.org_20171102_191037_27063qtB.png)
 (Disclaimer: Not actually measured)
 
 Result vertical bar chart: Here the Y values should be numeric (if any) as manual labeling "Ok", "Higher", High" does not make sense for stacked type charts.
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_191138_2706333H.png)
+![img](doc/readme_images/README.org_20171102_191138_2706333H.png)
 (Disclaimer: Not actually measured)
 
 
-<a id="orgef99860"></a>
+<a id="org31ee3ac"></a>
 
 # VerticalBar Chart - one more example, showing positive/negative stacks:
 
 
-<a id="org844a0b3"></a>
+<a id="org5aac946"></a>
 
 ## User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
@@ -414,7 +417,7 @@ Code in `defineOptionsAndData()`:
 
 Result vertical bar chart:
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_195745_27063ECO.png)
+![img](doc/readme_images/README.org_20171102_195745_27063ECO.png)
 
 (there is a bug here,see Known Bugs)
 

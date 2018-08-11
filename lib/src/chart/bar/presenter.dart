@@ -45,7 +45,7 @@ class VerticalBarPresenter extends Presenter {
 /// See [PresenterCreator].
 class VerticalBarLeafCreator extends PresenterCreator {
 
-  VerticalBarLeafCreator({ChartContainer container,}) : super(container: container);
+  VerticalBarLeafCreator() : super();
 
   Presenter createPointPresenter({
     StackableValuePoint point,

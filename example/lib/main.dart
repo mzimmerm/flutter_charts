@@ -377,12 +377,12 @@ class _MyHomePageState extends State<MyHomePage> {
     // devicePixelRatio = number of device pixels for each logical pixel.
     // note: in all known hardware, size(logicalPixel) > size(devicePixel)
     // note: this is also, practically, never needed
-    double logicalToDevicePixelSize = mediaQueryData.devicePixelRatio;
+    // double logicalToDevicePixelSize = mediaQueryData.devicePixelRatio;
 
     // textScaleFactor = number of font pixels for each logical pixel.
     // note: with some fontSize, if text scale factor is 1.5
     //       => text is 1.5x larger than the font size.
-    double fontScale = mediaQueryData.textScaleFactor;
+    // double fontScale = mediaQueryData.textScaleFactor;
 
     // Let us give the LineChart full width and half of height of window.
     final ui.Size chartLogicalSize =
@@ -394,6 +394,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     defineOptionsAndData();
 
+    /* keep
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(),
       container: new LineChartContainer(
@@ -402,6 +403,7 @@ class _MyHomePageState extends State<MyHomePage> {
         xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
       ),
     );
+    */
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(),
@@ -503,7 +505,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: verticalBarChart,
+                    child: verticalBarChart, // verticalBarChart, lineChart
                   ),
                   // new Text('<<'), // horizontal
                   // new Text('<<<<<<'),   // tilted

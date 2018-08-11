@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 
 import 'package:flutter_charts/flutter_charts.dart' as common;

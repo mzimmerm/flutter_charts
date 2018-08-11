@@ -19,10 +19,6 @@ class Range {
 
   ChartOptions _options;
 
-  // todo-1 - move to options
-  /// The auto-label generator [makeLabelsFromData] can decrease this but not increase.
-  int _maxLabels;
-
   /// Constructs a scalable range from a list of passed [values].
   ///
   /// Given a list of [values] (to show on Y axis),
@@ -32,11 +28,9 @@ class Range {
   Range({
     List<double> values,
     ChartOptions chartOptions,
-    int maxLabels = 10,
   }) {
     _values = values;
     // todo 1 maxLabels does not work. Enable and add to test
-    _maxLabels = maxLabels;
     _options = chartOptions;
   }
 
@@ -55,24 +49,19 @@ class Range {
   }) {
     num min = _closure.min;
     num max = _closure.max;
-    num diff = max - min;
 
     Poly polyMin = new Poly(from: min);
     Poly polyMax = new Poly(from: max);
-    Poly polyDiff = new Poly(from: diff);
 
-    int powerMin = polyMin.maxPower;
     int signMin = polyMin.signum;
-    int powerMax = polyMax.maxPower;
     int signMax = polyMax.signum;
-    int powerDiff = polyDiff.maxPower;
-    int signDiff = polyDiff.signum;
 
     // envelope for all y values
     num from, to;
 
     // Need to handle all combinations of the above (a < b < c etc).
     // There are not that many, because pMin <= pMax and pDiff <= pMax.
+    /* keep
     if (false && powerDiff < powerMin) {
       // todo 1 - enable conditions where y=0 axis is not needed to show,
       //          to allow for details, mainly for lots of values.
@@ -80,6 +69,7 @@ class Range {
       from = polyMin.floorAtMaxPower.toDouble();
       to = polyMax.ceilAtMaxPower.toDouble();
     } else {
+      */
       // for now, always start with min or 0, and end at max (reverse if both negative).
 
       if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
@@ -95,7 +85,7 @@ class Range {
         from = min;
         to = max;
       }
-    }
+    // keep }
 
     // Now make labels, evenly distributed in the from, to range.
     // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
@@ -399,16 +389,6 @@ class Poly {
       return _ltOnePower(_dec);
     }
     return totalLen - fractLen - 1;
-  }
-
-  int _geOnePower(decimal.Decimal tester) {
-    if (tester < _one) throw new Exception("$tester Failed: tester < 1.0");
-    int power = -1;
-    while (tester >= _one) {
-      tester = tester / _ten;
-      power += 1; // power = 0, 1, 2, etc
-    }
-    return power;
   }
 
   int _ltOnePower(decimal.Decimal tester) {
