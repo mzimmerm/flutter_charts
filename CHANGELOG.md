@@ -2,6 +2,10 @@
 
 ## Enhancements
 
+### Making the codebase Dart 2 clean
+
+Made changes to remove any analyser messages with Dart 2.
+
 ### *Labels auto layout* - added pluggable and automated ability to ensure that labels "fit", and do not overlap
  
 This release added the ability to "iteratively auto layout" labels. 

@@ -4,17 +4,15 @@
 * Table of contents :TOC:noexport:
 - [[#new-in-the-current-release][New in the current release]]
   - [[#illustration-of-the-new-iterative-auto-layout-feature][Illustration of the new "iterative auto layout" feature]]
-- [[#flutter-charts---how-to-include-the-flutter_charts-library-in-your-application][Flutter Charts - How to include the flutter_charts library in your application]]
+- [[#how-to-include-the-flutter_charts-library-in-your-application][How to include the flutter_charts library in your application]]
 - [[#a-chart-created-using-flutter_charts---example-application][A chart created using flutter_charts - example application]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
 - [[#flutter-charts---an-overview-data-options-classes][Flutter Charts - an overview: data, options, classes]]
-- [[#flutter-beginner-experimenting-with-flutter-using-flutter-charts][Flutter beginner: Experimenting with Flutter using Flutter Charts]]
 - [[#flutter-charts---examples-linechart-and-verticalbarchart-code-and-resulting-charts][Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts]]
   - [[#random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels][Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
-- [[#verticalbar-chart---one-more-example-showing-positivenegative-stacks][VerticalBar Chart - one more example, showing positive/negative stacks:]]
-  - [[#user-provided-data-y-values-user-provided-x-labels-user-provided-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
+  - [[#verticalbar-chart---one-more-example-showing-positivenegative-stacks][VerticalBar Chart - one more example, showing positive/negative stacks:]]
 
 * New in the current release
 
@@ -22,7 +20,10 @@ Current release 0.1.8.
 
 See file:CHANGELOG.md for the list of new features and bug fixes in this release.
 
-As noticed in the CHANGELOG, perhaps the most important new feature is the "iterative auto layout" of labels. 
+As noted in the CHANGELOG, the two most important new features are:
+
+- Making the codebase Dart 2 clean
+- Adding the "iterative auto layout" of labels. 
 
 Labels auto layout is a sequence of steps, such as skipping some labels, tilting labels, or decreasing label font, that result in label 'fit' nicely, readably, without overflowing or running into each other.
 
@@ -73,8 +74,7 @@ Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<
 
 Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as there is not enough horizontal space.
 
-
-* Flutter Charts - How to include the flutter_charts library in your application
+* How to include the flutter_charts library in your application
 
 Flutter Charts is a charting library for Flutter, written in Flutter. Currently, column chart and line chart are supported.
 
@@ -122,43 +122,6 @@ Before we show several examples of charts, a few notes.
   - Series colors, 
   - Series legends  
 - Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
-
-* Flutter beginner: Experimenting with Flutter using Flutter Charts
-
-This section describes, very briefly with links, how to install Flutter, and the Flutter Charts package.
-
-This section We describe running Flutter Charts in development mode on your device (Android, iOS - follow 1, 2 or 3, 4 and 6), or alternatively on a device emulator (device emulator running from an IDE such as IntelliJ with Android Studio installed - follow 1, 2 or 3, 5, 6 or 7).
-
-1. Install Flutter on your computer. See the installation section on https://flutter.io/.
-2. Clone flutter_charts code from Github to your computer. Needs git client.
- 
-  #+BEGIN_SRC sh
-  cd DIRECTORY_OF_CHOICE
-  git clone https://github.com/mzimmerm/flutter_charts.git
-  # clone will create directory  flutter_charts
-  cd flutter_charts
-  #+END_SRC
-
-3. (Alternative to 2.): Download and unzip flutter_charts code from Github
-   - Browse to  https://github.com/mzimmerm/flutter_charts.git
-   - On the righ top, click on the "Clone or Download" button, then select save Zip, save and extract to  DIRECTORY_OF_CHOICE
-   - cd flutter_charts
-4. Prepare a physical device (must be set to Development Mode) to run applications from your computer. Then connect a android device in development mode to your computer. See https://www.kingoapp.com/root-tutorials/how-to-enable-usb-debugging-mode-on-android.htm 
-
-5. (Alternative to 4.): Prepare and start an Android device emulator on your computer.
-   - Install Android Studio: see https://developer.android.com/studio/index.html
-
-   - Install an IDE such as IntelliJ with Flutter plugin. See https://flutter.io/intellij-setup/
-
-6. Run Flutter Charts demo app from command line (this will work in both method 4. and method 5.)
-
-   #+BEGIN_SRC sh
-   cd DIRECTORY_OF_CHOICE/flutter_charts 
-   flutter run example/lib/main.dart 
-   #+END_SRC
-
-7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
-  - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:example/lib/main.dart~ in the run button).
 
 * Flutter Charts - examples: LineChart and VerticalBarChart. Code and resulting charts
 
@@ -293,9 +256,9 @@ Result vertical bar chart: Here the Y values should be numeric (if any) as manua
 [[file:doc/readme_images/README.org_20171102_191138_2706333H.png]]
 (Disclaimer: Not actually measured)
 
-* VerticalBar Chart - one more example, showing positive/negative stacks:
+** VerticalBar Chart - one more example, showing positive/negative stacks:
 
-** User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
+*** User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
 
 This example has again user defined Y Labels, with a bar chart, using the smart auto-layout of user defined Y Labels. The chart shows negative and positive values similar to %down/%up stock charts.
 
