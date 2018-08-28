@@ -19,6 +19,14 @@ dev_dependencies:
   flutter_test:
     sdk:  flutter
 
+# Without the "environment" section, we get message on
+#   `flutter packages pub publish`:
+# Older versions of pub don't support the Flutter SDK.
+# Make sure your SDK constraint excludes old versions:
+
+environment:
+  sdk: ">=1.19.0 <3.0.0"
+  flutter: ^0.1.2
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #
