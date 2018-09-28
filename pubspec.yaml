@@ -12,8 +12,8 @@ documentation: https://pub.dartlang.org/packages/flutter_charts/doc
 dependencies:
   flutter:
     sdk:  flutter
-  decimal: ">=0.1.4 <0.2.0"
-  vector_math: ^2.0.0
+  decimal: ^0.3.2
+  vector_math: ^2.0.8
 
 dev_dependencies:
   test:
@@ -26,8 +26,7 @@ dev_dependencies:
 # Make sure your SDK constraint excludes old versions:
 
 environment:
-  sdk: ">=1.19.0 <3.0.0"
-#  flutter: ^0.1.2
+  sdk: '>=2.0.0 <3.0.0'
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #
@@ -94,3 +93,4 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+
