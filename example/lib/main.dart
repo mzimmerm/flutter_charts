@@ -388,9 +388,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final ui.Size chartLogicalSize =
         new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
 
-    print(" ### Size: ui.window.physicalSize=${ui.window.physicalSize}, "
-        "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
-        "chartLogicalSize=$chartLogicalSize");
+    // print(" ### Size: ui.window.physicalSize=${ui.window.physicalSize}, "
+    //     "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
+    //     "chartLogicalSize=$chartLogicalSize");
 
     defineOptionsAndData();
 

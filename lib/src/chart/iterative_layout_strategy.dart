@@ -126,7 +126,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
     _container.layout(); // will call this function back!
 
-    print("Iterative layout finished after $_reLayoutsCounter iterations.");
+    // print("Iterative layout finished after $_reLayoutsCounter iterations.");
   }
 
   void _reLayoutRotateLabels() {
