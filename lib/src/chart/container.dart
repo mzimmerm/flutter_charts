@@ -765,7 +765,7 @@ class LayoutExpansion {
 
   LayoutExpansion cloneWith({double width, double height}) {
     height ??= _height;
-    width ?? _width;
+    width ??= _width;
     return new LayoutExpansion(
         width: width,
         widthExpansionStyle: _widthExpansionStyle,

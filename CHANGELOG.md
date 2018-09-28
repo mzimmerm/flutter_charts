@@ -1,3 +1,7 @@
+# version 0.1.9 (2018-09-28)
+
+Compatibility with Dart 2.0
+
 # version 0.1.8 (2018-06-20)
 
 ## Enhancements

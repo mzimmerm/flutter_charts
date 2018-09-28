@@ -37,13 +37,12 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 ** *CHANGELOG.md*: - Add comment section for new version
 ** ~git add .; git commit; git push~
 ** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links have a full path
-** Resolving dependencies the right way - read https://medium.com/flutter-community/quick-tip-resolving-dart-package-version-conflicts-faster-than-ever-582d097f655d
 ** TODO Go over result of flutter pub publish, fix, and create a log of what I did
 
 https://pub.dartlang.org/packages/flutter_charts#-analysis-tab-
-** Go over [[file:~/dev/my-projects-source/public-on-github/dart-experiments/doc/dart-notes.org::*How%20to%20build%20great%20Dart%20and%20Flutter%20packages%20and%20plugins%20https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5][How to build great Dart and Flutter packages and plugins https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5]]
+** TODO Go over [[file:~/dev/my-projects-source/public-on-github/dart-experiments/doc/dart-notes.org::*How%20to%20build%20great%20Dart%20and%20Flutter%20packages%20and%20plugins%20https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5][How to build great Dart and Flutter packages and plugins https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5]]
 
-** TODO Run Dart Analyzer
+** Run Dart Analyzer - ~flutter analyze~
 ** TODO Run Dart Doc creator - this can fail on dependencies, so fix it!
 ** ~flutter packages pub publish --dry-run~
 ** Once the above works:** ~flutter packages pub publish~

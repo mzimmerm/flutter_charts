@@ -4,7 +4,7 @@
 //       Also, material.dart exports many dart files, including widgets.dart,
 //         so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
+// import 'dart:ui' as ui;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
@@ -368,11 +368,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //       but if MediaQuery.of(context) is used, Flutter will guarantee
     //       the build(context) will be called again !
     //        (once non 0 size becomes available)
-    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    // MediaQueryData mediaQueryData = MediaQuery.of(context);
 
     // note: windowLogicalSize = size of the media (screen) in logical pixels
     // note: same as ui.window.physicalSize / ui.window.devicePixelRatio;
-    ui.Size windowLogicalSize = mediaQueryData.size;
+    // ui.Size windowLogicalSize = mediaQueryData.size;
 
     // devicePixelRatio = number of device pixels for each logical pixel.
     // note: in all known hardware, size(logicalPixel) > size(devicePixel)
@@ -385,9 +385,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // double fontScale = mediaQueryData.textScaleFactor;
 
     // Let us give the LineChart full width and half of height of window.
-    final ui.Size chartLogicalSize =
-        new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
-
+    // final ui.Size chartLogicalSize =
+    //     new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
+    //  
     // print(" ### Size: ui.window.physicalSize=${ui.window.physicalSize}, "
     //     "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
     //     "chartLogicalSize=$chartLogicalSize");
