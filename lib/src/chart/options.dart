@@ -3,14 +3,12 @@ import 'dart:math' as math show pi;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
-
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
 /// related, may be overriden or adjusted by the chart auto-layout,
 /// see [SimpleChartContainer].
 class ChartOptions {
-
   /// Defines how to create and layout chart's Y labels: either from user
   /// defined Y labels, or from auto-created Y labels from data.
   ///
@@ -34,14 +32,16 @@ class ChartOptions {
 
   /// Color defaults
   final ui.Color gridLinesColor = material.Colors.grey;
-  final ui.Color xLabelsColor = material.Colors.grey; // const ui.Color(0xFFEEEEEE)
+  final ui.Color xLabelsColor =
+      material.Colors.grey; // const ui.Color(0xFFEEEEEE)
 
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and righ)
   /// Autolayout can increase these lengths, to fit labels below them.
-  @deprecated double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
+  @deprecated
+  double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
   final double yLeftMinTicksWidth = 6.0;
   final double yRightMinTicksWidth = 6.0;
   final double xBottomMinTicksHeight = 6.0;
@@ -64,7 +64,8 @@ class ChartOptions {
   // together with data series name (legend name).
 
   /// Margin on the left/right of the LegendContainer
-  final double legendContainerMarginLR = 8.0; // keep 12.0, looks better unaligned
+  final double legendContainerMarginLR =
+      8.0; // keep 12.0, looks better unaligned
 
   /// Margin on the top/bottom of the LegendContainer
   final double legendContainerMarginTB = 4.0;
@@ -77,7 +78,6 @@ class ChartOptions {
 
   /// Between square indicator, to label
   final double legendItemIndicatorToLabelPad = 2.0;
-
 
   /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
@@ -129,13 +129,14 @@ class ChartOptions {
   ///
   /// The (future) iterative container can change this default for labels to fit.
   widgets.TextStyle get labelTextStyle => new widgets.TextStyle(
-    color: labelTextColor,
-    fontSize: labelFontSize,);
+        color: labelTextColor,
+        fontSize: labelFontSize,
+      );
 
-  final ui.TextDirection labelTextDirection   = ui.TextDirection.ltr;
-  final ui.TextAlign     labelTextAlign       = ui.TextAlign.center;
-  final ui.TextAlign     legendTextAlign      = ui.TextAlign.left; // indicator close
-  final double           labelTextScaleFactor = 1.0;
+  final ui.TextDirection labelTextDirection = ui.TextDirection.ltr;
+  final ui.TextAlign labelTextAlign = ui.TextAlign.center;
+  final ui.TextAlign legendTextAlign = ui.TextAlign.left; // indicator close
+  final double labelTextScaleFactor = 1.0;
 
   /// todo-2 remove, replace with formatter outright
   final String yLabelUnits = "";
@@ -152,5 +153,4 @@ class ChartOptions {
 
     return val + yLabelUnits;
   }
-
 }

@@ -1,14 +1,9 @@
 import 'package:flutter/widgets.dart' as widgets
-    show
-        TextStyle,
-        TextSpan,
-        TextPainter;
+    show TextStyle, TextSpan, TextPainter;
 
-import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2;
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-import 'dart:ui' as ui
-    show TextAlign, TextDirection, Size, Canvas, Offset;
+import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas, Offset;
 
 import 'package:flutter_charts/src/chart/container.dart'
     as flutter_charts_container show Container;
@@ -244,8 +239,7 @@ class AxisLabelContainer extends LabelContainer {
     vector_math.Matrix2 labelTiltMatrix,
     vector_math.Matrix2 canvasTiltMatrix,
     LabelStyle labelStyle,
-  })
-      : super(
+  }) : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,

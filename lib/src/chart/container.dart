@@ -1,16 +1,13 @@
-import 'dart:ui' as ui
-    show Size, Offset, Rect, Paint, Canvas;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
 
 import 'dart:math' as math show max, min;
 
-import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2;
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-import 'package:flutter/widgets.dart' as widgets
-    show TextStyle;
+import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
 import 'package:flutter_charts/src/chart/label_container.dart';
 
@@ -373,8 +370,9 @@ class YContainer extends ChartAreaContainer {
         _parentContainer.pointsColumns.flattenPointsValues());
 
     Range range = new Range(
-        values: flatData,
-        chartOptions: _parentContainer.options,);
+      values: flatData,
+      chartOptions: _parentContainer.options,
+    );
 
     // revert toScaleMin/Max to accomodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
@@ -744,8 +742,7 @@ class LayoutExpansion {
   double get height {
     if (_heightExpansionStyle != ExpansionStyle.TryFill) {
       throw new StateError(
-          "Before layout, cannot ask for height if style is not ${ExpansionStyle
-              .TryFill}. " +
+          "Before layout, cannot ask for height if style is not ${ExpansionStyle.TryFill}. " +
               "If asking after layout, call [layoutSize]");
     }
 
@@ -755,8 +752,7 @@ class LayoutExpansion {
   double get width {
     if (_widthExpansionStyle != ExpansionStyle.TryFill) {
       throw new StateError(
-          "Before layout, cannot ask for width if style is not ${ExpansionStyle
-              .TryFill}. " +
+          "Before layout, cannot ask for width if style is not ${ExpansionStyle.TryFill}. " +
               "If asking after layout, call [layoutSize]");
     }
 
@@ -834,7 +830,8 @@ abstract class Container {
   /// [enableSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
+  bool enableSkipOnDistressedSize =
+      true; // todo-10 set to true for distress test
 
   bool _isDistressed = false;
 

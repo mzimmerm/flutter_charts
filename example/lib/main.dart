@@ -387,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Let us give the LineChart full width and half of height of window.
     // final ui.Size chartLogicalSize =
     //     new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
-    //  
+    //
     // print(" ### Size: ui.window.physicalSize=${ui.window.physicalSize}, "
     //     "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
     //     "chartLogicalSize=$chartLogicalSize");
@@ -410,7 +410,8 @@ class _MyHomePageState extends State<MyHomePage> {
       container: new VerticalBarChartContainer(
         chartData: _chartData, // @required
         chartOptions: _verticalBarChartOptions, // @required
-        xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
+        xContainerLabelLayoutStrategy:
+            _xContainerLabelLayoutStrategy, // @optional
       ),
     );
 
@@ -512,7 +513,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (shows 2 labels, legend present but text vertical)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
-                  new Text('<<<<<<'),// labels do overlap, legend NOT present
+                  new Text('<<<<<<'), // labels do overlap, legend NOT present
                 ],
               ),
             ),

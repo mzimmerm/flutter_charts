@@ -1,10 +1,7 @@
 import 'package:flutter_charts/src/chart/container.dart'
-    show
-        Container,
-        AdjustableContentChartAreaContainer;
+    show Container, AdjustableContentChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
-import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2;
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
 enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }

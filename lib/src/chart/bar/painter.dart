@@ -17,10 +17,10 @@ import '../bar/presenter.dart' as bar_presenters;
 class VerticalBarChartPainter extends ChartPainter {
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
-    presenters.PresentersColumns presentersColumns = this.container.dataContainer.presentersColumns;
+    presenters.PresentersColumns presentersColumns =
+        this.container.dataContainer.presentersColumns;
 
-     presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
-
+    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       // todo-2 do not repeat loop, collapse to one construct
 
       var positivePresenterList = presentersColumn.positivePresenters;
@@ -40,8 +40,6 @@ class VerticalBarChartPainter extends ChartPainter {
         canvas.drawRect(
             presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
-
     });
-
   }
 }

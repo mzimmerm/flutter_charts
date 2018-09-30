@@ -1,3 +1,7 @@
+# version 0.1.10 (2018-09-30)
+
+Corrected formatting, and a few formal changes from pub auto-checking.
+
 # version 0.1.9 (2018-09-28)
 
 Compatibility with Dart 2.0

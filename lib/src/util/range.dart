@@ -7,7 +7,6 @@ import 'util.dart' as util;
 //            using a hack which replaces all List<num> to List<double>,
 //            also some int replaced with double. Parametrize with T
 
-
 /// Scalable range, supporting creation of scaled x and y axis labels.
 ///
 class Range {
@@ -36,7 +35,10 @@ class Range {
 
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
-      _values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true, true); // todo-2 remove toDouble after parametrization
+      _values.reduce(math.min).toDouble(),
+      _values.reduce(math.max).toDouble(),
+      true,
+      true); // todo-2 remove toDouble after parametrization
 
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
@@ -70,21 +72,21 @@ class Range {
       to = polyMax.ceilAtMaxPower.toDouble();
     } else {
       */
-      // for now, always start with min or 0, and end at max (reverse if both negative).
+    // for now, always start with min or 0, and end at max (reverse if both negative).
 
-      if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-        // both negative or positive
-        if (signMax <= 0) {
-          from = min;
-          to = 0.0;
-        } else {
-          from = 0.0;
-          to = max;
-        }
-      } else {
+    if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+      // both negative or positive
+      if (signMax <= 0) {
         from = min;
+        to = 0.0;
+      } else {
+        from = 0.0;
         to = max;
       }
+    } else {
+      from = min;
+      to = max;
+    }
     // keep }
 
     // Now make labels, evenly distributed in the from, to range.
@@ -152,7 +154,9 @@ class Range {
     } else {
       // min is negative, max is positive - need added logic
       if (powerMax == powerMin) {
-        for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+        for (double l = 1.0 * signMin * coeffMin;
+            l <= signMax * coeffMax;
+            l++) {
           labels.add(l * math.pow(10, power));
         }
       } else if (powerMax < powerMin) {
@@ -265,7 +269,6 @@ class YScalerAndLabelFormatter {
   /// Extracts unscaled values of labels from [labelInfos].
   List<double> get labelValues =>
       labelInfos.map((labelInfo) => labelInfo.labelValue.toDouble()).toList();
-
 
   /// Constructs interval which is a merge (outer bound) of
   /// two ranges: the labels range stored in [ labelValues]

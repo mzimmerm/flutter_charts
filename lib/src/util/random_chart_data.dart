@@ -5,7 +5,6 @@ import 'package:flutter_charts/src/chart/data.dart';
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
-
   bool _useUserProvidedYLabels;
   int _numXLabels;
   int _numDataRows;
@@ -77,7 +76,13 @@ class RandomChartData extends ChartData {
 
   void _generateXLabelsCount() {
     List<String> xLabelsDows = [
-      'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'
+      'First',
+      'Second',
+      'Third',
+      'Fourth',
+      'Fifth',
+      'Sixth',
+      'Seventh'
     ];
 
     for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
@@ -88,14 +93,14 @@ class RandomChartData extends ChartData {
   /// Generate list of "random" [xLabels] as monthNames or weekday names.
   ///
   ///
-   void _generateXLabels() {
+  void _generateXLabels() {
     _generateXLabelsCount();
   }
 
   void _generateYLabels() {
     if (_useUserProvidedYLabels) {
       // yLabels = [ "0%", "25%", "50%", "75%", "100%"];
-      yLabels = [ "NONE", "OK", "GOOD", "BETTER", "100%"];
+      yLabels = ["NONE", "OK", "GOOD", "BETTER", "100%"];
     }
   }
 
@@ -131,12 +136,11 @@ class RandomChartData extends ChartData {
     double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
 
     for (var rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
-      dataRows.add(
-          _oneDataRow(
-              rgen: rgen,
-              max: maxYValue,
-              pushUpBy: (rowIndex - 1) * pushUpStep,
-              scale: scale));
+      dataRows.add(_oneDataRow(
+          rgen: rgen,
+          max: maxYValue,
+          pushUpBy: (rowIndex - 1) * pushUpStep,
+          scale: scale));
     }
     // print("Random generator data: ${_flattenData()}.");
   }
@@ -149,5 +153,4 @@ class RandomChartData extends ChartData {
     }
     return dataRow;
   }
-
 }

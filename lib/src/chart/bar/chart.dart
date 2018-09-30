@@ -19,8 +19,7 @@ class VerticalBarChart extends widgets.CustomPaint {
     widgets.Size size: widgets.Size.zero,
     widgets.Widget child,
     bar_containers.VerticalBarChartContainer container,
-  })
-      : super(
+  }) : super(
           key: key,
           painter: painter,
           foregroundPainter: foregroundPainter,

@@ -1,9 +1,7 @@
-
 import 'package:flutter/widgets.dart' as widgets;
 
 import '../line/container.dart' as line_containers;
 import '../line/painter.dart' as painter show LineChartPainter;
-
 
 /// Provides paint for the line chart.
 ///
@@ -27,14 +25,13 @@ class LineChart extends widgets.CustomPaint {
     widgets.Size size: widgets.Size.zero,
     widgets.Widget child,
     line_containers.LineChartContainer container,
-  })
-      : super(
-    key: key,
-    painter: painter,
-    foregroundPainter: foregroundPainter,
-    size: size,
-    child: child,
-  ) {
+  }) : super(
+          key: key,
+          painter: painter,
+          foregroundPainter: foregroundPainter,
+          size: size,
+          child: child,
+        ) {
     container.isStacked = false;
     painter.setContainer(container);
   }

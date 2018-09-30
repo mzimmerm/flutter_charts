@@ -9,7 +9,6 @@ import '../container.dart';
 ///
 /// See [Presenter].
 class VerticalBarPresenter extends Presenter {
-
   ui.Rect presentedRect;
   ui.Paint dataRowPaint;
 
@@ -17,23 +16,25 @@ class VerticalBarPresenter extends Presenter {
     StackableValuePoint point,
     StackableValuePoint nextRightColumnValuePoint,
     int rowIndex,
-    ChartContainer container,})
-      : super(
-    point: point,
-    nextRightColumnValuePoint: nextRightColumnValuePoint,
-    rowIndex: rowIndex,
-    container: container,
-  ){
+    ChartContainer container,
+  }) : super(
+          point: point,
+          nextRightColumnValuePoint: nextRightColumnValuePoint,
+          rowIndex: rowIndex,
+          container: container,
+        ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = new ui.Paint();
-    dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    dataRowPaint.color = container
+        .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
-    ui.Offset barMidBottom     = point.scaledFrom;
-    ui.Offset barMidTop        = point.scaledTo;
-    double    barWidth         = container.gridStepWidth * container.options.gridStepWidthPortionUsedByAtomicPresenter;
+    ui.Offset barMidBottom = point.scaledFrom;
+    ui.Offset barMidTop = point.scaledTo;
+    double barWidth = container.gridStepWidth *
+        container.options.gridStepWidthPortionUsedByAtomicPresenter;
 
-    ui.Offset barLeftTop       = barMidTop.translate(-1 * barWidth / 2, 0.0);
-    ui.Offset barRightBottom   = barMidBottom.translate(1 * barWidth / 2, 0.0);
+    ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
+    ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
 
     presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom);
   }
@@ -44,7 +45,6 @@ class VerticalBarPresenter extends Presenter {
 ///
 /// See [PresenterCreator].
 class VerticalBarLeafCreator extends PresenterCreator {
-
   VerticalBarLeafCreator() : super();
 
   Presenter createPointPresenter({

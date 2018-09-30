@@ -4,7 +4,7 @@ import 'package:flutter_charts/src/chart/options.dart';
 import 'container.dart';
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
-  show CustomList;
+    show CustomList;
 
 // todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
@@ -125,7 +125,6 @@ class PresentersColumn {
 ///   manages a link to the [PresentersColumn] on it's right, allowing
 ///   walk without the [presentersColumns] list.
 class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
-
   PresentersColumns({
     PointsColumns pointsColumns,
     ChartContainer container,
@@ -133,7 +132,7 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn leftPresentersColumn;
-      pointsColumns.forEach((PointsColumn pointsColumn) {
+    pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,
@@ -145,7 +144,6 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
     });
   }
 }
-
 
 /// Maker of [Presenter] instances.
 ///

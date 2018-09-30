@@ -3,7 +3,6 @@ import 'dart:ui' as ui show Color;
 import 'package:flutter/material.dart' as material show Colors;
 
 class ChartData {
-
   /// Data in rows. Each row of data represents one data series.
   ///
   /// Legends per row are managed by [dataRowsLegends].
@@ -45,7 +44,8 @@ class ChartData {
   List<String> yLabels = new List();
 
   void validate() {
-    if (dataRowsLegends.length > 0 && dataRows.length != dataRowsLegends.length) {
+    if (dataRowsLegends.length > 0 &&
+        dataRows.length != dataRowsLegends.length) {
       throw new StateError(" If row legends are defined, their "
           "number must be the same as number of data rows. "
           " [dataRows length: ${dataRows.length}] "
@@ -66,16 +66,15 @@ class ChartData {
   }
 
   double maxData() {
-     return _flattenData().reduce(math.max);
+    return _flattenData().reduce(math.max);
   }
 
   double minData() {
-     return _flattenData().reduce(math.min);
+    return _flattenData().reduce(math.min);
   }
 
   /// Sets up colors first threee data rows (series) explicitly, rest randomly
   void assignDataRowsDefaultColors() {
-
     int dataRowsCount = dataRows.length;
 
     if (dataRowsCount >= 1) {
@@ -91,10 +90,9 @@ class ChartData {
       for (int i = 3; i < dataRowsCount; i++) {
         int colorHex = new math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;
-        dataRowsColors.add(
-            new ui.Color(colorHex + (opacityHex * math.pow(16, 6))));
+        dataRowsColors
+            .add(new ui.Color(colorHex + (opacityHex * math.pow(16, 6))));
       }
     }
   }
-
 }

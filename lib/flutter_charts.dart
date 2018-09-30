@@ -93,5 +93,3 @@ export 'package:flutter_charts/src/chart/bar/container.dart';
 export 'package:flutter_charts/src/chart/bar/options.dart';
 
 export 'package:flutter_charts/src/util/random_chart_data.dart';
-
-
