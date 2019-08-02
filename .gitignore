@@ -22,10 +22,11 @@ pubspec.lock
 # doc/api is created after running dartdoc. Don't check in.
 doc/api/
 
-# misc local
+# misc local ides
 .emacs.d/
 .emacs.d-psession/
 .emacs.d-desktop/
+.projectile
 .gnupg
 
 # Private notes, todos, readme
