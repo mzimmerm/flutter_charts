@@ -12,8 +12,11 @@ publish_to: https://pub.dartlang.org
 dependencies:
   flutter:
     sdk:  flutter
-  decimal: ^0.3.2
-  vector_math: ^2.0.8
+  # opt in to dart null safety
+  # decimal: ^0.3.2
+  # vector_math: ^2.0.8
+  decimal: ^1.0.0
+  vector_math: ^2.1.0
 
 dev_dependencies:
   test:
@@ -26,7 +29,10 @@ dev_dependencies:
 # Make sure your SDK constraint excludes old versions:
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  # opt in to dart null safety
+  # sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
+  
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
 #

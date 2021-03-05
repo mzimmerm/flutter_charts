@@ -1,5 +1,8 @@
 import 'dart:ui' as ui;
 
+// import 'package:flutter_charts/flutter_charts.dart';
+import '../bar/container.dart' as bar_containers; // done-00-nullable-added
+
 import '../painter.dart';
 import '../presenter.dart' as presenters;
 
@@ -15,6 +18,13 @@ import '../bar/presenter.dart' as bar_presenters;
 /// See [ChartPainter]
 
 class VerticalBarChartPainter extends ChartPainter {
+
+  // done-00-nullable-added
+  /// Constructor ensures the [VerticalBarChartPainter] is initialized with 
+  /// the [VerticalBarChartContainer]
+  VerticalBarChartPainter({required bar_containers.VerticalBarChartContainer verticalBarChartContainer})
+      : super(chartContainer: verticalBarChartContainer);
+  
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     presenters.PresentersColumns presentersColumns =

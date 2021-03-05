@@ -14,20 +14,22 @@ import 'package:flutter_charts/src/chart/line_container.dart';
 /// to the [offsetPoint] of the [LineAndHotspotPresenter]
 /// which is next in the [PresentersColumn.presenters] list.
 class LineAndHotspotPresenter extends Presenter {
-  LineContainer lineContainer;
-  ui.Offset offsetPoint; // offset where the data point will be painted
-  ui.Paint innerPaint;
-  ui.Paint outerPaint;
-  double innerRadius;
-  double outerRadius;
-
-  ui.Paint rowDataPaint;
+  // todo-00-nullable-late : added late
+  late LineContainer lineContainer;
+  late ui.Offset offsetPoint; // offset where the data point will be painted
+  late ui.Paint innerPaint;
+  late ui.Paint outerPaint;
+  double innerRadius = 0.0; // todo-00-nullable-added-init-0
+  double outerRadius = 0.0; // todo-00-nullable-added-init-0
+ 
+  late ui.Paint rowDataPaint;
 
   LineAndHotspotPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
+    required StackableValuePoint point,
+  // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
@@ -42,7 +44,9 @@ class LineAndHotspotPresenter extends Presenter {
         .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
-    ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
+    // todo-00-nullable-attention : ori : ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
+    // todo-00-nullable-? : added ? in declaration in  ui.Offset? toPoint
+    ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = new LineContainer(
         lineFrom: fromPoint,
@@ -64,10 +68,11 @@ class LineAndHotspotLeafCreator extends PresenterCreator {
   LineAndHotspotLeafCreator() : super();
 
   Presenter createPointPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
+    required StackableValuePoint point,
+  // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
   }) {
     return new LineAndHotspotPresenter(
       point: point,

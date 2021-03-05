@@ -13,12 +13,12 @@ import '../bar/container.dart' as bar_containers;
 class VerticalBarChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   VerticalBarChart({
-    widgets.Key key,
-    painter.VerticalBarChartPainter painter,
-    widgets.CustomPainter foregroundPainter,
+    widgets.Key? key,
+    required painter.VerticalBarChartPainter painter,
+    widgets.CustomPainter? foregroundPainter,
     widgets.Size size: widgets.Size.zero,
-    widgets.Widget child,
-    bar_containers.VerticalBarChartContainer container,
+    widgets.Widget? child,
+    required bar_containers.VerticalBarChartContainer container,
   }) : super(
           key: key,
           painter: painter,
@@ -27,6 +27,6 @@ class VerticalBarChart extends widgets.CustomPaint {
           child: child,
         ) {
     container.isStacked = true;
-    painter.setContainer(container);
+    // todo-00-nullable-removed: painter.setContainer(container);
   }
 }

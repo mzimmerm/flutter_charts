@@ -97,7 +97,8 @@ class ChartOptions {
 
   final double labelFontSize = 14.0;
 
-  final ui.Color labelTextColor = material.Colors.grey[600];
+  // todo-00-nullable-? : added ?
+  final ui.Color? labelTextColor = material.Colors.grey[600];
 
   // ############## Iterative label layout options
 

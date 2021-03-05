@@ -25,22 +25,24 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 /// value point.
 class Presenter {
   StackableValuePoint point;
-  StackableValuePoint nextRightColumnValuePoint;
+  // todo-00-nullable-? : added ?
+  StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
   ChartContainer container;
 
   Presenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
-  }) {
-    this.point = point;
-    this.nextRightColumnValuePoint = nextRightColumnValuePoint;
-    this.rowIndex = rowIndex;
-    this.container =
-        container; // todo 0 do we need to store the container, or just pass?
-  }
+    required StackableValuePoint point,
+    // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
+  }) :
+    this.point = point,
+    this.nextRightColumnValuePoint = nextRightColumnValuePoint,
+    this.rowIndex = rowIndex,
+    // todo-00 do we need to store the container, or just pass?
+    this.container = container; 
+
 }
 
 /// Manages and presents one "visual column" on the chart.
@@ -49,15 +51,16 @@ class Presenter {
 /// shows all data value at that label, each value in one instance of
 /// [Presenter].
 class PresentersColumn {
-  List<Presenter> presenters = new List();
-  List<Presenter> positivePresenters = new List();
-  List<Presenter> negativePresenters = new List();
-  PresentersColumn nextRightPointsColumn;
+  List<Presenter> presenters = new List.empty(growable: true); // done-00-nullable-list : new List();
+  List<Presenter> positivePresenters = new List.empty(growable: true); // done-00-nullable-list : new List();
+  List<Presenter> negativePresenters = new List.empty(growable: true); // done-00-nullable-list : new List();
+  // todo-00-nullable-? : added ?
+  PresentersColumn? nextRightPointsColumn;
 
   PresentersColumn({
-    PointsColumn pointsColumn,
-    ChartContainer container,
-    PresenterCreator presenterCreator,
+    required PointsColumn pointsColumn,
+    required ChartContainer container,
+    required PresenterCreator presenterCreator,
   }) {
     // setup the contained presenters from points
     _createPresentersInColumn(
@@ -81,19 +84,26 @@ class PresentersColumn {
   }
 
   void _createPresentersInColumn({
-    List<StackableValuePoint> fromPoints,
-    List toPresenters,
-    PointsColumn pointsColumn,
-    PresenterCreator presenterCreator,
-    ChartContainer container,
+    required List<StackableValuePoint> fromPoints,
+    required List toPresenters,
+    required PointsColumn pointsColumn,
+    required PresenterCreator presenterCreator,
+    required ChartContainer container,
   }) {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
       // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+/* todo-00-nullable-attention todo-00-nullable-?
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn.points[rowIndex]
           : null;
+*/
 
+    // todo-00-nullable-attention todo-00-nullable-! added ! in pointsColumn.nextRightPointsColumn!.points[rowIndex]
+      var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
+          ? pointsColumn.nextRightPointsColumn!.points[rowIndex]
+          : null;
+      
       Presenter presenter = presenterCreator.createPointPresenter(
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
@@ -126,12 +136,13 @@ class PresentersColumn {
 ///   walk without the [presentersColumns] list.
 class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   PresentersColumns({
-    PointsColumns pointsColumns,
-    ChartContainer container,
-    PresenterCreator presenterCreator,
+    required PointsColumns pointsColumns,
+    required ChartContainer container,
+    required PresenterCreator presenterCreator,
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
-    PresentersColumn leftPresentersColumn;
+    // todo-00-nullable-? : added ?
+    PresentersColumn? leftPresentersColumn;
     pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
         pointsColumn: pointsColumn,
@@ -160,9 +171,10 @@ abstract class PresenterCreator {
   PresenterCreator(); // same as  {}
 
   Presenter createPointPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
+    required StackableValuePoint point,
+    // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
   });
 }

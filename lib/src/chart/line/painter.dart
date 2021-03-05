@@ -3,6 +3,9 @@ import 'dart:ui' as ui;
 import '../presenter.dart' as presenters;
 import '../line/presenter.dart' as line_presenters;
 
+// import 'package:flutter_charts/flutter_charts.dart';
+import '../line/container.dart' as line_containers; // done-00-nullable-added
+
 import '../painter.dart';
 
 /// Paints the columns of the line chart.
@@ -14,6 +17,13 @@ import '../painter.dart';
 ///
 /// See [ChartPainter]
 class LineChartPainter extends ChartPainter {
+
+  // done-00-nullable-added
+  /// Constructor ensures the [LineChartPainter] is initialized with 
+  /// the [LineChartContainer]
+  LineChartPainter({required line_containers.LineChartContainer lineChartContainer})
+      : super(chartContainer: lineChartContainer);
+  
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;

@@ -18,20 +18,20 @@ class RandomChartData extends ChartData {
   /// If [useMonthNames] is set to false, random
   ///
   RandomChartData({
-    bool useUserProvidedYLabels,
+    required bool useUserProvidedYLabels,
     int numXLabels = 6,
     int numDataRows = 4,
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapYValues = false,
-  }) {
-    _useUserProvidedYLabels = useUserProvidedYLabels;
-    _numXLabels = numXLabels;
-    _numDataRows = numDataRows;
-    //_useMonthNames = useMonthNames;
-    //_maxLabelLength = maxLabelLength;
-    _overlapYValues = overlapYValues;
-
+  }) :
+    _useUserProvidedYLabels = useUserProvidedYLabels,
+    _numXLabels = numXLabels,
+    _numDataRows = numDataRows,
+    //_useMonthNames = useMonthNames,
+    //_maxLabelLength = maxLabelLength,
+    _overlapYValues = overlapYValues
+  {
     _generateXLabels();
 
     _generateYValues();
@@ -126,7 +126,7 @@ class RandomChartData extends ChartData {
   }
 
   void _generateYValues() {
-    dataRows = new List<List<double>>();
+    dataRows = new List.empty(growable: true); // done-00-nullable-list : new List<List<double>>();
 
     double scale = 200.0;
 
@@ -145,9 +145,13 @@ class RandomChartData extends ChartData {
     // print("Random generator data: ${_flattenData()}.");
   }
 
-  List<double> _oneDataRow(
-      {math.Random rgen, int max, double pushUpBy, double scale}) {
-    List<double> dataRow = new List<double>();
+  List<double> _oneDataRow({
+    required math.Random rgen,
+    required int max,
+    required double pushUpBy,
+    required double scale,
+  }) {
+    List<double> dataRow = new List.empty(growable: true);// todo-00-nullable-list : new List<double>();
     for (int i = 0; i < _numXLabels; i++) {
       dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
     }

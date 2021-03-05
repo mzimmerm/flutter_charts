@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas, Size;
 import 'package:flutter_charts/src/chart/container.dart'
-    as flutter_charts_container show Container;
+    as flutter_charts_container show Container, LayoutExpansion;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends flutter_charts_container.Container {
@@ -8,11 +8,17 @@ class LineContainer extends flutter_charts_container.Container {
   ui.Offset lineFrom;
   ui.Offset lineTo;
 
-  LineContainer({ui.Offset lineFrom, ui.Offset lineTo, ui.Paint linePaint}) {
-    this.linePaint = linePaint;
-    this.lineFrom = lineFrom;
-    this.lineTo = lineTo;
-  }
+  // todo-00-nullable-constructor : added layoutExpansion unused()
+  LineContainer({
+    required ui.Offset lineFrom,
+    required ui.Offset lineTo,
+    required ui.Paint linePaint,
+  }) :
+    this.linePaint = linePaint,
+    this.lineFrom = lineFrom,
+    this.lineTo = lineTo,
+  super(layoutExpansion: new flutter_charts_container.LayoutExpansion.unused());
+  
 
   // #####  Implementors of method in superclass [Container].
 

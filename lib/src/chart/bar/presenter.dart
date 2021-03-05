@@ -9,14 +9,16 @@ import '../container.dart';
 ///
 /// See [Presenter].
 class VerticalBarPresenter extends Presenter {
-  ui.Rect presentedRect;
-  ui.Paint dataRowPaint;
+  // todo-00-nullable-late : added late
+  late ui.Rect presentedRect;
+  late ui.Paint dataRowPaint;
 
   VerticalBarPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
+    required StackableValuePoint point,
+    // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
@@ -48,10 +50,11 @@ class VerticalBarLeafCreator extends PresenterCreator {
   VerticalBarLeafCreator() : super();
 
   Presenter createPointPresenter({
-    StackableValuePoint point,
-    StackableValuePoint nextRightColumnValuePoint,
-    int rowIndex,
-    ChartContainer container,
+    required StackableValuePoint point,
+    // todo-00-nullable-? : added ?
+    StackableValuePoint? nextRightColumnValuePoint,
+    required int rowIndex,
+    required ChartContainer container,
   }) {
     return new VerticalBarPresenter(
       point: point,

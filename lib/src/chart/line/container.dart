@@ -15,12 +15,12 @@ import 'presenter.dart';
 /// used to present each data value.
 class LineChartContainer extends ChartContainer {
   LineChartContainer({
-    ui.Size chartArea,
-    ChartData chartData,
-    ChartOptions chartOptions,
-    strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    // done-00-nullable : removed : required ui.Size chartArea,
+    required ChartData chartData,
+    required ChartOptions chartOptions,
+    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
-          chartArea: chartArea,
+          // done-00-nullable : removed : chartArea: chartArea,
           chartData: chartData,
           chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

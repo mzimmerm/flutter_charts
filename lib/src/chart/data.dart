@@ -9,23 +9,23 @@ class ChartData {
   ///
   /// Each element of outer list represents one row.
   /// Alternative name would be "data series".
-  List<List<double>> dataRows = new List();
+  List<List<double>> dataRows = new List.empty(growable: true); // done-00-nullable-list : new List();
 
   /// Provides legends for [dataRows] (data series).
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
-  List<String> dataRowsLegends = new List();
+  List<String> dataRowsLegends = new List.empty(growable: true); // done-00-nullable-list : new List();
 
   /// Colors corresponding to each data row (series) in [ChartData].
-  List<ui.Color> dataRowsColors = new List<ui.Color>();
+  List<ui.Color> dataRowsColors = new List.empty(growable: true); // done-00-nullable-list : new List<ui.Color>();
 
   /// Labels on independent (X) axis.
   ///
   /// It is generally assumed labels are defined,
   /// and their number is the same as number of points
   /// in each row in [dataRows].
-  List<String> xLabels = new List();
+  List<String> xLabels = new List.empty(growable: true); // done-00-nullable-list : new List();
 
   /// Labels on dependent (Y) axis.
   ///
@@ -41,7 +41,7 @@ class ChartData {
   /// This [yLabels] member is used only if
   /// [ChartOptions.useUserProvidedYLabels] is true.
   ///
-  List<String> yLabels = new List();
+  List<String> yLabels = new List.empty(growable: true); // done-00-nullable-list : new List();
 
   void validate() {
     if (dataRowsLegends.length > 0 &&
@@ -90,8 +90,12 @@ class ChartData {
       for (int i = 3; i < dataRowsCount; i++) {
         int colorHex = new math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;
+/* todo-00-nullable-num-cast-to-int : added toInt
         dataRowsColors
             .add(new ui.Color(colorHex + (opacityHex * math.pow(16, 6))));
+*/
+        dataRowsColors
+            .add(new ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
       }
     }
   }

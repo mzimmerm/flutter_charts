@@ -25,13 +25,12 @@ class Range {
   /// trying to not waste space, and show only relevant labels, in
   /// decimal steps.
   Range({
-    List<double> values,
-    ChartOptions chartOptions,
-  }) {
-    _values = values;
+    required List<double> values,
+    required ChartOptions chartOptions,
+  }) :
+    _values = values,
     // todo 1 maxLabels does not work. Enable and add to test
     _options = chartOptions;
-  }
 
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
@@ -46,11 +45,15 @@ class Range {
   /// The [toScaleMin] and [toScaleMax] are the display scale,
   /// for example the range of Y axis positions between bottom and top.
   YScalerAndLabelFormatter makeLabelsFromDataOnScale({
-    double toScaleMin,
-    double toScaleMax,
+    required double toScaleMin,
+    required double toScaleMax,
   }) {
+/* todo-00-nullable-num-to-double
     num min = _closure.min;
     num max = _closure.max;
+*/
+    double min = _closure.min;
+    double max = _closure.max;
 
     Poly polyMin = new Poly(from: min);
     Poly polyMax = new Poly(from: max);
@@ -59,7 +62,10 @@ class Range {
     int signMax = polyMax.signum;
 
     // envelope for all y values
+/* todo-00-nullable-num-to-double
     num from, to;
+ */
+    double from, to;
 
     // Need to handle all combinations of the above (a < b < c etc).
     // There are not that many, because pMin <= pMax and pDiff <= pMax.
@@ -199,25 +205,29 @@ class YScalerAndLabelFormatter {
   ChartOptions _options;
 
   YScalerAndLabelFormatter({
-    Interval dataRange,
-    List<double> valueOnLabels,
-    double toScaleMin,
-    double toScaleMax,
-    ChartOptions chartOptions,
-  }) {
-    this.dataRange = dataRange;
-    this.labelInfos =
-        valueOnLabels.map((value) => new LabelInfo(value, this)).toList();
-    _toScaleMin = toScaleMin;
-    _toScaleMax = toScaleMax;
-    _options = chartOptions;
+    required Interval dataRange,
+    required List<double> valueOnLabels,
+    required double toScaleMin,
+    required double toScaleMax,
+    required ChartOptions chartOptions,
+  })   : this.dataRange = dataRange,
+        // todo-00-nullable: was: new LabelInfo(value, this)).toList()
+        this.labelInfos =
+            valueOnLabels.map((value) => new LabelInfo(value)).toList(),
+        _toScaleMin = toScaleMin,
+        _toScaleMax = toScaleMax,
+        _options = chartOptions {
+    // todo-00-nullable, done-00-nullable : late initialize the parentScaler
+    this.labelInfos.forEach((labelInfo) {
+      labelInfo.parentScaler = this;
+    });
   }
 
   /// Scales [value]
   ///   - from the own scale, given be the merged data and label intervals
   ///   calculated in [labelAndDataRangeMerged]
   ///   - to the Y axis scale defined by [_toScaleMin], [_toScaleMax].
-  double scaleY({double value}) {
+  double scaleY({required double value, }) {
     Interval mergedOwnScale = labelValuesAndDataRangesMerged;
     return util.scaleValue(
         value: value.toDouble(),
@@ -240,8 +250,11 @@ class YScalerAndLabelFormatter {
   }
 
   /// Manual layout helper, forces values and scaled values.
-  void setLabelValuesForManualLayout(
-      {List labelValues, List scaledLabelValues, List formattedYLabels}) {
+  void setLabelValuesForManualLayout({
+    required List labelValues,
+    required List scaledLabelValues,
+    required List formattedYLabels,
+  }) {
     for (int i = 0; i < labelValues.length; i++) {
       labelInfos[i].labelValue = labelValues[i];
       labelInfos[i].scaledLabelValue = scaledLabelValues[i];
@@ -303,7 +316,8 @@ class YScalerAndLabelFormatter {
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
 
 class LabelInfo {
-  YScalerAndLabelFormatter parentScaler;
+  // todo-00-nullable : added late
+  late YScalerAndLabelFormatter parentScaler;
 
   /// Unscaled label value, ([labelValues] are on the scale of data).
   num labelValue;
@@ -311,20 +325,28 @@ class LabelInfo {
   /// Label showing on the Y axis; typically a value with unit.
   ///
   /// Formatted label is just formatted [scaledLabelValue].
-  String formattedYLabel;
+  // todo-00-nullable : added late
+  late String formattedYLabel;
 
   /// Scaled label value.
   ///
   /// [scaledLabelValue]s are on the scale of y axis length.
-  num scaledLabelValue;
+  // todo-00-nullable-num-to-double
+  double scaledLabelValue = 0.0; // todo-00-nullable-added-init-0
 
   /// Constructs from value at the label, using scaler which keeps dataRange
   /// and axisRange (min, max).
-  LabelInfo(this.labelValue, this.parentScaler);
+  LabelInfo(this.labelValue);
+  // todo-00-nullable : removed parentScaler so we can initialize. 
+  //    parentScaler will be set after construction : LabelInfo(this.labelValue, this.parentScaler);
+  
+  
 
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
     // todo-2 consider what to do about the toDouble() - may want to ensure higher up
+    // todo-00-nullable : was: parentScaler.scaleY(value: labelValue.toDouble());
+    // so if parent scaler not set by now, scaledLabelValue remains null.
     scaledLabelValue = parentScaler.scaleY(value: labelValue.toDouble());
   }
 
@@ -350,18 +372,18 @@ class Poly {
   // ### constructors
 
   /// Create
-  Poly({num from}) {
-    _num = from;
-    _dec = dec(_num.toString());
-    _one = numToDec(1); // 1.0
+  Poly({required num from}) :
+    _num = from,
+    _dec = dec(from.toString()),
+    _one = numToDec(1), // 1.0
     _ten = numToDec(10);
-  }
 
   // ### methods
 
-  decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
+  // todo-00-nullable : added static on the 2 methods below
+  static decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
 
-  decimal.Decimal numToDec(num value) => dec(value.toString());
+  static decimal.Decimal numToDec(num value) => dec(value.toString());
 
   int get signum => _dec.signum;
 

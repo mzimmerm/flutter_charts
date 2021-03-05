@@ -14,8 +14,8 @@ ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
     new ui.Offset(vector.x, vector.y);
 
 ui.Offset transform({
-  vector_math.Matrix2 matrix,
-  ui.Offset offset,
+  required vector_math.Matrix2 matrix,
+  required ui.Offset offset,
 }) {
   return vector2ToOffset(matrix * offsetToVector2(offset));
 }
@@ -86,6 +86,7 @@ class EnvelopedRotatedRect {
   /// The smallest non-rotated rectangle which envelops the rotated rectangle.
   get envelopeRect => _envelopeRect;
 
+
   /// Represents a rectangle [rect] rotated around pivot at center of rectangle,
   /// by the [rotateMatrix]. Note that the [rotateMatrix] must be
   /// rotated by angle inverse to tha the canvas and text is rotated.
@@ -99,11 +100,12 @@ class EnvelopedRotatedRect {
   ///
   /// Currently only pivot = rectangle center is supported.
   ///
+/* done-00-nullable
   EnvelopedRotatedRect.centerRotatedFrom({
-    ui.Rect rect,
-    vector_math.Matrix2 rotateMatrix,
+    required ui.Rect rect,
+    required vector_math.Matrix2 rotateMatrix,
   }) {
-    assert(rotateMatrix != null);
+    // done-00-nullable-removed: assert(rotateMatrix != null);
 
     _rotatorMatrix = rotateMatrix;
     _sourceRect = rect;
@@ -115,6 +117,25 @@ class EnvelopedRotatedRect {
       _bottomLeft = rect.bottomLeft;
       _bottomRight = rect.bottomRight;
 
+      return;
+    }
+*/
+  EnvelopedRotatedRect.centerRotatedFrom({
+    required ui.Rect rect,
+    required vector_math.Matrix2 rotateMatrix,
+  })   :
+        // done-00-nullable-removed: assert(rotateMatrix != null);
+        // todo-00-nullable-added : moved here from the identity condition 
+        _rotatorMatrix = rotateMatrix,
+        _sourceRect = rect,
+        _envelopeRect = rect,
+        _topLeft = rect.topLeft,
+        _topRight = rect.topRight,
+        _bottomLeft = rect.bottomLeft,
+        _bottomRight = rect.bottomRight 
+  {
+    if (_rotatorMatrix == new vector_math.Matrix2.identity()) {
+      // already set in initializer, done and return
       return;
     }
 

@@ -19,12 +19,12 @@ import '../line/painter.dart' as painter show LineChartPainter;
 class LineChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   LineChart({
-    widgets.Key key,
-    painter.LineChartPainter painter,
-    widgets.CustomPainter foregroundPainter,
+    widgets.Key? key,
+    required painter.LineChartPainter painter,
+    widgets.CustomPainter? foregroundPainter,
     widgets.Size size: widgets.Size.zero,
-    widgets.Widget child,
-    line_containers.LineChartContainer container,
+    widgets.Widget? child,
+    required line_containers.LineChartContainer container,
   }) : super(
           key: key,
           painter: painter,
@@ -33,6 +33,6 @@ class LineChart extends widgets.CustomPaint {
           child: child,
         ) {
     container.isStacked = false;
-    painter.setContainer(container);
+    // done-00-nullable : painter.setContainer(container);
   }
 }

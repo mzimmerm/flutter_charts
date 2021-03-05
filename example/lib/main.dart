@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful,
   // meaning that it has a State object (defined below) that contains
@@ -98,29 +98,75 @@ class MyHomePage extends StatefulWidget {
 }
 
 /// State of the page.
+/// All members are required, as they are, in turn, required by the
+/// chart constructors.
 class _MyHomePageState extends State<MyHomePage> {
-  LineChartOptions _lineChartOptions;
-  ChartOptions _verticalBarChartOptions;
-  LabelLayoutStrategy _xContainerLabelLayoutStrategy;
-  ChartData _chartData;
+  // done-null-safety : Note: To be able to have non-nullable types on members
+  //   such as _lineChartOptions (and all others here), 2 things need be done:
+  //   1. The member must be initialized with some non-null value,
+  //      either in the definition or in constructor initializer list
+  //   2. If a member is passed to a constructor (see  _MyHomePageState.fromOptionsAndData)
+  //      the constructor value must still be marked "required".
+  //      This serves as a lasso that enforces callers to set the non-null.
+  //      But why Dart would not use the initialized value?
 
-  _MyHomePageState() {
-    // defineOptionsAndData();
+  /// Define options for line chart, if used in the demo.
+  LineChartOptions _lineChartOptions = new LineChartOptions();
+
+  /// Define options for vertical bar chart, if used in the demo
+  ChartOptions _verticalBarChartOptions = new VerticalBarChartOptions();
+
+  // If you were to use your own extension of
+  //           DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+  //           this is how to use it. If _xContainerLabelLayoutStrategy
+  //           is not set (and remains null), the charts instantiate
+  //           the DefaultIterativeLabelLayoutStrategy.
+
+  /// Define Layout strategy go labels. todo-null-safety : this can be null here
+  LabelLayoutStrategy _xContainerLabelLayoutStrategy =
+  new DefaultIterativeLabelLayoutStrategy(
+    options: new VerticalBarChartOptions(),
+  );
+
+  /// Define data to be displayed
+  ChartData _chartData = new RandomChartData(
+      useUserProvidedYLabels: new LineChartOptions().useUserProvidedYLabels);
+
+  /// Default constructor uses member defaults for all options and data.
+  _MyHomePageState();
+
+  /// Constructor sets all options and data.
+  _MyHomePageState.fromOptionsAndData({
+    required LineChartOptions lineChartOptions,
+    required ChartOptions verticalBarChartOptions,
+    required LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    required ChartData chartData,
+  })
+  /* initializer list: an alternative to initializing at the point of definition
+      : _lineChartOptions = new LineChartOptions(),
+        _verticalBarChartOptions = new VerticalBarChartOptions(),
+        _xContainerLabelLayoutStrategy =
+            new DefaultIterativeLabelLayoutStrategy(
+          options: new VerticalBarChartOptions(),
+        ),
+        _chartData = new RandomChartData(
+            useUserProvidedYLabels:
+                new LineChartOptions().useUserProvidedYLabels) 
+  */
+  {
+    _lineChartOptions = lineChartOptions;
+    _verticalBarChartOptions = verticalBarChartOptions;
+    _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
+    _chartData = chartData;
   }
 
+  /// Constructor allows to set only data and keep other values default.
+  _MyHomePageState.fromData({required ChartData chartData}) {
+    _chartData = chartData;
+  }
+
+  /// Define options and data for chart
   void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    // If you were to use your own extension of
-    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-    //   this is how to create an instance.
-    // If _xContainerLabelLayoutStrategy
-    //   is not set (remains null), the charts instantiate
-    //   the DefaultIterativeLabelLayoutStrategy.
-    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-      options: _verticalBarChartOptions,
-    );
-    // _xContainerLabelLayoutStrategy = null;
     _chartData = new RandomChartData(
         useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
@@ -393,28 +439,50 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     defineOptionsAndData();
+    
+    // done-00-nullable: LineChart lineChart = new LineChart(
+    // done-00-nullable:   painter: new LineChartPainter(),
+    // done-00-nullable:   container: new LineChartContainer(
+    // done-00-nullable:     chartData: _chartData, // @required
+    // done-00-nullable:     chartOptions: _lineChartOptions, // @required
+    // done-00-nullable:     xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
+    // done-00-nullable:   ),
+    // done-00-nullable: );
 
-    /* keep
+    // done-00-nullable: VerticalBarChart verticalBarChart = new VerticalBarChart(
+    // done-00-nullable:   painter: new VerticalBarChartPainter(),
+    // done-00-nullable:   container: new VerticalBarChartContainer(
+    // done-00-nullable:     chartData: _chartData, // @required
+    // done-00-nullable:     chartOptions: _verticalBarChartOptions, // @required
+    // done-00-nullable:     xContainerLabelLayoutStrategy:
+    // done-00-nullable:         _xContainerLabelLayoutStrategy, // @optional
+    // done-00-nullable:   ),
+    // done-00-nullable: );
+    
+    LineChartContainer lineChartContainer = new LineChartContainer(
+      chartData: _chartData, // @required
+      chartOptions: _lineChartOptions, // @required
+      xContainerLabelLayoutStrategy:
+      _xContainerLabelLayoutStrategy, // @optional
+    );
+
     LineChart lineChart = new LineChart(
-      painter: new LineChartPainter(),
-      container: new LineChartContainer(
-        chartData: _chartData, // @required
-        chartOptions: _lineChartOptions, // @required
-        xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
-      ),
+      painter: new LineChartPainter(lineChartContainer: lineChartContainer),
+      container: lineChartContainer,
     );
-    */
-
+    
+    VerticalBarChartContainer verticalBarChartContainer = new VerticalBarChartContainer(
+      chartData: _chartData, // @required
+      chartOptions: _verticalBarChartOptions, // @required
+      xContainerLabelLayoutStrategy:
+      _xContainerLabelLayoutStrategy, // @optional
+    );
+    
     VerticalBarChart verticalBarChart = new VerticalBarChart(
-      painter: new VerticalBarChartPainter(),
-      container: new VerticalBarChartContainer(
-        chartData: _chartData, // @required
-        chartOptions: _verticalBarChartOptions, // @required
-        xContainerLabelLayoutStrategy:
-            _xContainerLabelLayoutStrategy, // @optional
-      ),
+      painter: new VerticalBarChartPainter(verticalBarChartContainer: verticalBarChartContainer),
+      container: verticalBarChartContainer,
     );
-
+    
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
@@ -506,14 +574,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: verticalBarChart, // verticalBarChart, lineChart
+                    // todo-00-nullable-last
+                    child: verticalBarChart, // verticalBarChart, lineChart 
                   ),
                   // new Text('<<'), // horizontal
                   // new Text('<<<<<<'),   // tilted
                   // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (shows 2 labels, legend present but text vertical)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
-                  new Text('<<<<<<'), // labels do overlap, legend NOT present
+                  new Text('<<<<<<'), // default: labels do overlap, legend NOT present
                 ],
               ),
             ),

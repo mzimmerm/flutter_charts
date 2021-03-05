@@ -21,9 +21,9 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
   /// from previous layouts
-  double _labelFontSize;
+  double _labelFontSize = 0; // todo-00-nullable-added-init-0
   int _reLayoutsCounter = 0;
-  int _showEveryNthLabel;
+  int _showEveryNthLabel = 0; // todo-00-nullable-added-init-0
 
   int get showEveryNthLabel => _showEveryNthLabel;
 
@@ -32,11 +32,11 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// [_multiplyLabelSkip]. For example, if on first layout,
   /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
   /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
-  int _multiplyLabelSkip;
+  int _multiplyLabelSkip = 0; // todo-00-nullable-added-init-0
 
-  int _maxLabelReLayouts;
+  int _maxLabelReLayouts = 0; // todo-00-nullable-added-init-0
 
-  double _decreaseLabelFontRatio;
+  double _decreaseLabelFontRatio = 0.0;  // todo-00-nullable-added-init-0
 
   double get labelFontSize => _labelFontSize;
 
@@ -61,16 +61,18 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   double get labelTiltRadians => _labelTiltRadians;
 
   DefaultIterativeLabelLayoutStrategy({
-    ChartOptions options,
-  }) : super(
+    required ChartOptions options,
+  }) :
+  // todo-00-nullable-removed : this exists in super, set above : _options = options;
+  // todo-00-nullable : changed _options to options in all below
+        _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
+  _showEveryNthLabel = options.showEveryNthLabel,
+  _maxLabelReLayouts = options.maxLabelReLayouts,
+  _multiplyLabelSkip = options.multiplyLabelSkip,
+        super(
           options: options,
-        ) {
-    _options = options;
-    _decreaseLabelFontRatio = _options.decreaseLabelFontRatio;
-    _showEveryNthLabel = _options.showEveryNthLabel;
-    _maxLabelReLayouts = _options.maxLabelReLayouts;
-    _multiplyLabelSkip = _options.multiplyLabelSkip;
-  }
+        );
+  
 
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {
@@ -167,11 +169,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 ///   - Tilt all labels
 ///   - Decrease label font size
 abstract class LabelLayoutStrategy {
-  ChartOptions _options;
-  AdjustableContentChartAreaContainer _container;
+  // todo-00-nullable-late : added late
+  late ChartOptions _options;
+  late AdjustableContentChartAreaContainer _container;
 
   LabelLayoutStrategy({
-    ChartOptions options, // @required
+    required ChartOptions options, // @required
   }); // same as {}
 
   void onContainer(AdjustableContentChartAreaContainer container) {
