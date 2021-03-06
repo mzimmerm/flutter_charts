@@ -72,7 +72,6 @@ List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsIn
   if (nCols == 0) throw new StateError("Degenerate matrix");
 
   // todo-00-nullable-attention : all section is probably wrong due to non fixed list size
-  // todo-00-nullable-last
   // Init the transpose to make sure the size is right
   // todo-00-nullable-list todo-00-nullable-? : added ? in T? : was : List<List<T>> rowsInCols = new List(nCols);
   List<List<StackableValuePoint>> rowsInCols = new List.filled(nCols, []);

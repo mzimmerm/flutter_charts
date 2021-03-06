@@ -117,10 +117,11 @@ class _MyHomePageState extends State<MyHomePage> {
   ChartOptions _verticalBarChartOptions = new VerticalBarChartOptions();
 
   // If you were to use your own extension of
-  //           DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-  //           this is how to use it. If _xContainerLabelLayoutStrategy
-  //           is not set (and remains null), the charts instantiate
-  //           the DefaultIterativeLabelLayoutStrategy.
+  //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+  //   this is how to create an instance.
+  // If _xContainerLabelLayoutStrategy
+  //   is not set (remains null), the charts instantiate
+  //   the DefaultIterativeLabelLayoutStrategy.
 
   /// Define Layout strategy go labels. todo-null-safety : this can be null here
   LabelLayoutStrategy _xContainerLabelLayoutStrategy =
@@ -139,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
     required ChartOptions verticalBarChartOptions,
+    // todo-00-last : make this optional
     required LabelLayoutStrategy xContainerLabelLayoutStrategy,
     required ChartData chartData,
   })
@@ -575,14 +577,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
                     // todo-00-nullable-last
-                    child: verticalBarChart, // verticalBarChart, lineChart 
+                    child: lineChart, // verticalBarChart, lineChart 
                   ),
                   // new Text('<<'), // horizontal
-                  // new Text('<<<<<<'),   // tilted
-                  // new Text('<<<<<<<<<<<'),   // skiped (shows 3 labels, legend present)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skiped (shows 2 labels, legend present but text vertical)
+                  new Text('<<<<<<'),   // tilted labels, all present
+                  // new Text('<<<<<<<<<<<'),   // skipped (shows 3 labels, legend present)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skipped (shows 2 labels, legend present but text vertical)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
-                  new Text('<<<<<<'), // default: labels do overlap, legend NOT present
                 ],
               ),
             ),

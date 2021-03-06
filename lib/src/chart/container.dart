@@ -206,6 +206,11 @@ abstract class ChartContainer {
       options: this.options,
     );
 */
+    // todo-00-nullable-last
+    xContainerLabelLayoutStrategy =
+    new strategy.DefaultIterativeLabelLayoutStrategy(
+      options: this.options,
+    );
     
     xContainer = new XContainer(
       parentContainer: this,
@@ -603,6 +608,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
         labelStyle: labelStyle,
         layoutExpansion: LayoutExpansion.unused(), // todo-00-nullable : added
       );
+      // force layout. lack of this causes _textPainter._text size to be 0, 1 always.
+      xLabelContainer.layout(); // todo-00-nullable-last todo-00-nullable-added-this-line
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
@@ -675,6 +682,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
     return _layoutSize;
   }
 
+  
+/* todo-00-nullable-last : changing logic that decides if we need to rotate 
   void paint(ui.Canvas canvas) {
     if (xContainerLabelLayoutStrategy.labelTiltRadians == 0.0) {
       // Horizontal X labels:
@@ -688,6 +697,26 @@ class XContainer extends AdjustableContentChartAreaContainer {
       _paintLabelContainers(canvas);
 
       canvas.restore();
+    }
+  }
+*/
+
+  void paint(ui.Canvas canvas) {
+    // todo-00-nullable-last : changing logic that decides if we need to rotate
+
+    // if (xContainerLabelLayoutStrategy.labelTiltRadians == 0.0) {
+    if (xContainerLabelLayoutStrategy.isRotateLabelsReLayout) {
+      // Tilted X labels. Must use canvas and offset coordinate rotation.
+      canvas.save();
+      canvas.rotate(-1 * xContainerLabelLayoutStrategy.labelTiltRadians);
+
+      _rotateLabelContainersAsCanvas();
+      _paintLabelContainers(canvas);
+
+      canvas.restore();
+    } else {
+      // Horizontal X labels, potentially skipped or shrinked
+      _paintLabelContainers(canvas);
     }
   }
 
@@ -1745,7 +1774,7 @@ class PointsColumn {
     required List<StackableValuePoint> points,
     required bool selector(StackableValuePoint point),
   }) {
-    // todo-00-nullable-attention todo-00-last : attention to the whole method
+    // todo-00-nullable-attention  attention to the whole method
     // todo-00-nullable-? : added ?
     StackableValuePoint? predecessorPoint;
     List<StackableValuePoint> selected = this.points.where((point) {
@@ -1839,7 +1868,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
-        // todo-00-nullable-attention todo-00-last
+        // todo-00-nullable-attention 
         var thisPoint = new StackableValuePoint(
             xLabel: "initial", // done-00-nullable : xLabel: null,
             y: colValue.toDouble(),// done-00-nullable : y: colValue,

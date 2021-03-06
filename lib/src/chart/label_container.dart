@@ -60,8 +60,20 @@ class LabelContainer extends flutter_charts_container.Container {
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope; // todo-00-nullable: added late
 
+  /* todo-00-nullable-ori 
+  ui.Size _unconstrainedSize;
+  ui.Size _constraintSize;
+  */
+  /* todo-00-nullable-added-init-size-0 issues with layout of x labels
   ui.Size _unconstrainedSize = ui.Size.zero;
   ui.Size _constraintSize = ui.Size.zero;
+  */
+  // todo-00-nullable-attention todo-00-nullable-last
+  // _unconstrainedSize is always initialized in layout, so can be late,
+  // while _constraintSize may remain null.
+  late ui.Size _unconstrainedSize; // todo-00-nullable-late : added
+  ui.Size? _constraintSize; // todo-00-nullable-? added ?
+  
 
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
@@ -210,8 +222,12 @@ class LabelContainer extends flutter_charts_container.Container {
   }
 
   /// Implementor of method in superclass [Container].
+/* todo-00-nullable-last 
   ui.Size get layoutSize =>
       _constraintSize != null ? _constraintSize : _unconstrainedSize;
+*/
+  ui.Size get layoutSize =>
+      _constraintSize ?? _unconstrainedSize;
 }
 
 /// Class for value objects which group the text styles that may affect
