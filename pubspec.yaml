@@ -19,7 +19,7 @@ dependencies:
   vector_math: ^2.1.0
 
 dev_dependencies:
-  test:
+  test: ^1.16.5
   flutter_test:
     sdk:  flutter
 
@@ -31,7 +31,7 @@ dev_dependencies:
 environment:
   # opt in to dart null safety
   # sdk: '>=2.0.0 <3.0.0'
-  sdk: '>=2.12.0-0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
   
 
 # Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
