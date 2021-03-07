@@ -20,7 +20,7 @@ class LineAndHotspotPresenter extends Presenter {
   late ui.Paint outerPaint;
   double innerRadius = 0.0; // todo-00-last-where-set-can-be-late?
   double outerRadius = 0.0; // todo-00-last-where-set-can-be-late?
- 
+
   late ui.Paint rowDataPaint;
 
   LineAndHotspotPresenter({

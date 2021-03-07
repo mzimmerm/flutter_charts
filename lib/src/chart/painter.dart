@@ -24,8 +24,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
   /// change some elements of chart's layout, colors, and overall look and feel.
-  
-  /// Constructor ensures the [ChartPainter] is initialized with 
+
+  /// Constructor ensures the [ChartPainter] is initialized with
   /// the [ChartContainer]
   ChartPainter({required containers.ChartContainer chartContainer})
       : container = chartContainer;

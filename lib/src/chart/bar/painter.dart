@@ -17,12 +17,13 @@ import '../bar/presenter.dart' as bar_presenters;
 /// See [ChartPainter]
 
 class VerticalBarChartPainter extends ChartPainter {
-
-  /// Constructor ensures the [VerticalBarChartPainter] is initialized with 
+  /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer]
-  VerticalBarChartPainter({required bar_containers.VerticalBarChartContainer verticalBarChartContainer})
+  VerticalBarChartPainter(
+      {required bar_containers.VerticalBarChartContainer
+          verticalBarChartContainer})
       : super(chartContainer: verticalBarChartContainer);
-  
+
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     presenters.PresentersColumns presentersColumns =

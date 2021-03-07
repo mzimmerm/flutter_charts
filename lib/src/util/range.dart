@@ -27,10 +27,9 @@ class Range {
   Range({
     required List<double> values,
     required ChartOptions chartOptions,
-  }) :
-    _values = values,
-    // todo 1 maxLabels does not work. Enable and add to test
-    _options = chartOptions;
+  })   : _values = values,
+        // todo 1 maxLabels does not work. Enable and add to test
+        _options = chartOptions;
 
   /// superior and inferior closure - min and max of values
   Interval get _closure => new Interval(
@@ -219,7 +218,9 @@ class YScalerAndLabelFormatter {
   ///   - from the own scale, given be the merged data and label intervals
   ///   calculated in [labelAndDataRangeMerged]
   ///   - to the Y axis scale defined by [_toScaleMin], [_toScaleMax].
-  double scaleY({required double value, }) {
+  double scaleY({
+    required double value,
+  }) {
     Interval mergedOwnScale = labelValuesAndDataRangesMerged;
     return util.scaleValue(
         value: value.toDouble(),
@@ -326,9 +327,10 @@ class LabelInfo {
   /// Constructs from value at the label, using scaler which keeps dataRange
   /// and axisRange (min, max).
   LabelInfo(this.labelValue);
-  // todo-00-last : removed parentScaler so we can initialize. Can this be improved? 
+
+  // todo-00-last : removed parentScaler so we can initialize. Can this be improved?
   //    parentScaler will be set after construction : LabelInfo(this.labelValue, this.parentScaler);
-  
+
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
     // todo-2 consider what to do about the toDouble() - may want to ensure higher up
@@ -357,10 +359,11 @@ class Poly {
   // ### constructors
 
   /// Create
-  Poly({required num from}) :
-    _dec = dec(from.toString()),
-    _one = numToDec(1), // 1.0
-    _ten = numToDec(10);
+  Poly({required num from})
+      : _dec = dec(from.toString()),
+        _one = numToDec(1),
+        // 1.0
+        _ten = numToDec(10);
 
   // ### methods
 

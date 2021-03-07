@@ -34,13 +34,11 @@ class Presenter {
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartContainer container,
-  }) :
-    this.point = point,
-    this.nextRightColumnValuePoint = nextRightColumnValuePoint,
-    this.rowIndex = rowIndex,
-    // todo-00 do we need to store the container, or just pass?
-    this.container = container; 
-
+  })   : this.point = point,
+        this.nextRightColumnValuePoint = nextRightColumnValuePoint,
+        this.rowIndex = rowIndex,
+        // todo-00 do we need to store the container, or just pass?
+        this.container = container;
 }
 
 /// Manages and presents one "visual column" on the chart.
@@ -90,11 +88,11 @@ class PresentersColumn {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
       // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
-    // todo-00-last : added !. - needed?
+      // todo-00-last : added !. - needed?
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.points[rowIndex]
           : null;
-      
+
       Presenter presenter = presenterCreator.createPointPresenter(
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,

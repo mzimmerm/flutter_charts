@@ -8,6 +8,7 @@ class RandomChartData extends ChartData {
   bool _useUserProvidedYLabels;
   int _numXLabels;
   int _numDataRows;
+
   //bool _useMonthNames;
   //int _maxLabelLength;
   bool _overlapYValues;
@@ -24,14 +25,12 @@ class RandomChartData extends ChartData {
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapYValues = false,
-  }) :
-    _useUserProvidedYLabels = useUserProvidedYLabels,
-    _numXLabels = numXLabels,
-    _numDataRows = numDataRows,
-    //_useMonthNames = useMonthNames,
-    //_maxLabelLength = maxLabelLength,
-    _overlapYValues = overlapYValues
-  {
+  })  : _useUserProvidedYLabels = useUserProvidedYLabels,
+        _numXLabels = numXLabels,
+        _numDataRows = numDataRows,
+        //_useMonthNames = useMonthNames,
+        //_maxLabelLength = maxLabelLength,
+        _overlapYValues = overlapYValues {
     _generateXLabels();
 
     _generateYValues();

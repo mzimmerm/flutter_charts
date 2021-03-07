@@ -19,6 +19,7 @@ dependencies:
   vector_math: ^2.1.0
 
 dev_dependencies:
+  # dart_dev: ^3.0.0 # 'pub run dart_dev' runs analyze, format test 
   test: ^1.16.5
   flutter_test:
     sdk:  flutter

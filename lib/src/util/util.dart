@@ -64,7 +64,8 @@ List<List<T>> transpose<T>(List<List<T>> colsInRows) {
 // todo-00-last: In null safety, I had to replace T with a concrete StackableValuePoint.
 // todo-00-last: can this be improved? This need may be a typing bug in Dart
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
-List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsInRows) {
+List<List<StackableValuePoint>> transpose(
+    List<List<StackableValuePoint>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.length == 0) return colsInRows;
 

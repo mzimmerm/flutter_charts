@@ -20,10 +20,10 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
-  /// from previous layouts. 
+  /// from previous layouts.
   /// For example, _labelFontSize starts with default from options,
   /// later can change by _decreaseLabelFontRatio.
-  /// 
+  ///
   // If _reLayoutDecreaseLabelFont is not called, _labelFontSize is never moved away from 0.0
   // todo-00-last : how come the members do not need neither late, nor init to 0.0?
   double _labelFontSize;
@@ -36,6 +36,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   double get labelTiltRadians => _labelTiltRadians;
 
   bool _isRotateLabelsReLayout = false;
+
   bool get isRotateLabelsReLayout => _isRotateLabelsReLayout;
 
   int _reLayoutsCounter = 0;
@@ -72,31 +73,30 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// Constructor uses default values from [ChartOptions]
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
-  }) :
-        _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
+  })   : _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
         _showEveryNthLabel = options.showEveryNthLabel,
         _maxLabelReLayouts = options.maxLabelReLayouts,
         _multiplyLabelSkip = options.multiplyLabelSkip,
         _labelFontSize = options.labelFontSize,
         _labelTiltRadians = options.labelTiltRadians;
-  
+
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
         return LabelFitMethod.RotateLabels;
-        // todo-00-last-removed-dead-code: break;
+      // todo-00-last-removed-dead-code: break;
       case 2:
         return LabelFitMethod.SkipLabels;
-    // todo-00-last-removed-dead-code: break;
+      // todo-00-last-removed-dead-code: break;
       case 3:
         return LabelFitMethod.DecreaseLabelFont;
-    // todo-00-last-removed-dead-code: break;
+      // todo-00-last-removed-dead-code: break;
       case 4:
         return LabelFitMethod.DecreaseLabelFont;
-    // todo-00-last-removed-dead-code: break;
+      // todo-00-last-removed-dead-code: break;
       default:
         return LabelFitMethod.SkipLabels;
-    // todo-00-last-removed-dead-code: break;
+      // todo-00-last-removed-dead-code: break;
     }
   }
 
@@ -119,7 +119,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
 
     _isRotateLabelsReLayout = false;
-    
+
     switch (_atDepth(_reLayoutsCounter)) {
       case LabelFitMethod.DecreaseLabelFont:
         _reLayoutDecreaseLabelFont();
@@ -163,7 +163,6 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     this._showEveryNthLabel *= this._multiplyLabelSkip;
   }
 }
-
 
 /// Base class for layout strategies.
 ///
@@ -221,5 +220,4 @@ abstract class LabelLayoutStrategy {
   int get showEveryNthLabel => 1;
 
   double get labelFontSize;
-  
 }

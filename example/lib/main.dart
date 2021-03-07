@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Define Layout strategy go labels. todo-null-safety : this can be null here
   LabelLayoutStrategy _xContainerLabelLayoutStrategy =
-  new DefaultIterativeLabelLayoutStrategy(
+      new DefaultIterativeLabelLayoutStrategy(
     options: new VerticalBarChartOptions(),
   );
 
@@ -441,31 +441,31 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     defineOptionsAndData();
-    
+
     LineChartContainer lineChartContainer = new LineChartContainer(
       chartData: _chartData,
       chartOptions: _lineChartOptions,
-      xContainerLabelLayoutStrategy:
-      _xContainerLabelLayoutStrategy,
+      xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
     );
 
     LineChart lineChart = new LineChart(
       painter: new LineChartPainter(lineChartContainer: lineChartContainer),
       container: lineChartContainer,
     );
-    
-    VerticalBarChartContainer verticalBarChartContainer = new VerticalBarChartContainer(
+
+    VerticalBarChartContainer verticalBarChartContainer =
+        new VerticalBarChartContainer(
       chartData: _chartData,
       chartOptions: _verticalBarChartOptions,
-      xContainerLabelLayoutStrategy:
-      _xContainerLabelLayoutStrategy,
+      xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
     );
-    
+
     VerticalBarChart verticalBarChart = new VerticalBarChart(
-      painter: new VerticalBarChartPainter(verticalBarChartContainer: verticalBarChartContainer),
+      painter: new VerticalBarChartPainter(
+          verticalBarChartContainer: verticalBarChartContainer),
       container: verticalBarChartContainer,
     );
-    
+
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
@@ -501,6 +501,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // vertical (the cross axis would be horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // todo-00-last-last : resolve
             new RaisedButton(
               color: Colors.green,
               onPressed: _chartStateChanger,
@@ -557,18 +558,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart, // verticalBarChart, lineChart 
+                    child: lineChart, // verticalBarChart, lineChart
                   ),
                   // new Text('<<'), // horizontal
-                  new Text('<<<<<<'),   // tilted labels, all present
+                  new Text('<<<<<<'),
+                  // tilted labels, all present
                   // new Text('<<<<<<<<<<<'),   // skipped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skipped (shows 2 labels, legend present but text vertical)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
+                  //  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
                 ],
               ),
             ),
 
             new Text('^^^^^^:'),
+            // todo-00-last-last : resolve
             new RaisedButton(
               color: Colors.green,
               onPressed: _chartStateChanger,

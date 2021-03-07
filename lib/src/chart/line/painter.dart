@@ -17,12 +17,12 @@ import '../painter.dart';
 ///
 /// See [ChartPainter]
 class LineChartPainter extends ChartPainter {
-
-  /// Constructor ensures the [LineChartPainter] is initialized with 
+  /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
-  LineChartPainter({required line_containers.LineChartContainer lineChartContainer})
+  LineChartPainter(
+      {required line_containers.LineChartContainer lineChartContainer})
       : super(chartContainer: lineChartContainer);
-  
+
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;

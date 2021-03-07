@@ -64,7 +64,6 @@ class LabelContainer extends flutter_charts_container.Container {
   // while _constraintSize may remain null.
   late ui.Size _unconstrainedSize;
   ui.Size? _constraintSize;
-  
 
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
@@ -81,8 +80,7 @@ class LabelContainer extends flutter_charts_container.Container {
     required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
     required flutter_charts_container.LayoutExpansion layoutExpansion,
-  }) :
-        this._label = label,
+  })   : this._label = label,
         this._labelMaxWidth = labelMaxWidth,
         this._labelTiltMatrix = labelTiltMatrix,
         this._canvasTiltMatrix = canvasTiltMatrix,
@@ -97,10 +95,9 @@ class LabelContainer extends flutter_charts_container.Container {
           // center in available space
           textScaleFactor: labelStyle.textScaleFactor,
           // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-        ), //  textScaleFactor does nothing ??
-       super(layoutExpansion: layoutExpansion)
-  {
-
+        ),
+        //  textScaleFactor does nothing ??
+        super(layoutExpansion: layoutExpansion) {
     // var text = new widgets.TextSpan(
     //   text: label,
     //   style: _labelStyle.textStyle, // All labels share one style object
@@ -180,8 +177,7 @@ class LabelContainer extends flutter_charts_container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  ui.Size get layoutSize =>
-      _constraintSize ?? _unconstrainedSize;
+  ui.Size get layoutSize => _constraintSize ?? _unconstrainedSize;
 }
 
 /// Class for value objects which group the text styles that may affect
@@ -250,14 +246,14 @@ class AxisLabelContainer extends LabelContainer {
   ///
   double parentOffsetTick = 0.0;
 
-  AxisLabelContainer({
-    required String label,
-    required double labelMaxWidth,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required vector_math.Matrix2 canvasTiltMatrix,
-    required LabelStyle labelStyle,
-    required flutter_charts_container.LayoutExpansion layoutExpansion
-  }) : super(
+  AxisLabelContainer(
+      {required String label,
+      required double labelMaxWidth,
+      required vector_math.Matrix2 labelTiltMatrix,
+      required vector_math.Matrix2 canvasTiltMatrix,
+      required LabelStyle labelStyle,
+      required flutter_charts_container.LayoutExpansion layoutExpansion})
+      : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,

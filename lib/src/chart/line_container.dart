@@ -12,12 +12,12 @@ class LineContainer extends flutter_charts_container.Container {
     required ui.Offset lineFrom,
     required ui.Offset lineTo,
     required ui.Paint linePaint,
-  }) :
-    this.linePaint = linePaint,
-    this.lineFrom = lineFrom,
-    this.lineTo = lineTo,
-  super(layoutExpansion: new flutter_charts_container.LayoutExpansion.unused());
-  
+  })   : this.linePaint = linePaint,
+        this.lineFrom = lineFrom,
+        this.lineTo = lineTo,
+        super(
+            layoutExpansion:
+                new flutter_charts_container.LayoutExpansion.unused());
 
   // #####  Implementors of method in superclass [Container].
 
