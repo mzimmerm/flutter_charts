@@ -1,3 +1,7 @@
+# version 0.2.0 (2021-03-07)
+
+Support for null safety.
+
 # version 0.1.10 (2018-09-30)
 
 Corrected formatting, and a few formal changes from pub auto-checking.

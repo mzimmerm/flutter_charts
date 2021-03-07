@@ -16,16 +16,13 @@
 
 * New in the current release
 
-Current release 0.1.8.
+Current release is 0.2.0
 
 See file:CHANGELOG.md for the list of new features and bug fixes in this release.
 
-As noted in the CHANGELOG, the two most important new features are:
+As noted in the CHANGELOG, the most important new features are:
 
-- Making the codebase Dart 2 clean
-- Adding the "iterative auto layout" of labels. 
-
-Labels auto layout is a sequence of steps, such as skipping some labels, tilting labels, or decreasing label font, that result in label 'fit' nicely, readably, without overflowing or running into each other.
+- null safety support
 
 ** Illustration of the new "iterative auto layout" feature
 
