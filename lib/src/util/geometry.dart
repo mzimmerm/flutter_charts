@@ -100,32 +100,10 @@ class EnvelopedRotatedRect {
   ///
   /// Currently only pivot = rectangle center is supported.
   ///
-/* done-00-nullable
-  EnvelopedRotatedRect.centerRotatedFrom({
-    required ui.Rect rect,
-    required vector_math.Matrix2 rotateMatrix,
-  }) {
-    // done-00-nullable-removed: assert(rotateMatrix != null);
-
-    _rotatorMatrix = rotateMatrix;
-    _sourceRect = rect;
-
-    if (_rotatorMatrix == new vector_math.Matrix2.identity()) {
-      _envelopeRect = rect;
-      _topLeft = rect.topLeft;
-      _topRight = rect.topRight;
-      _bottomLeft = rect.bottomLeft;
-      _bottomRight = rect.bottomRight;
-
-      return;
-    }
-*/
   EnvelopedRotatedRect.centerRotatedFrom({
     required ui.Rect rect,
     required vector_math.Matrix2 rotateMatrix,
   })   :
-        // done-00-nullable-removed: assert(rotateMatrix != null);
-        // todo-00-nullable-added : moved here from the identity condition 
         _rotatorMatrix = rotateMatrix,
         _sourceRect = rect,
         _envelopeRect = rect,

@@ -1,5 +1,3 @@
-import 'dart:ui' as ui show Size;
-
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
@@ -15,12 +13,11 @@ import 'presenter.dart';
 /// used to present each data value.
 class VerticalBarChartContainer extends ChartContainer {
   VerticalBarChartContainer({
-    // done-00-nullable : removed : required ui.Size chartArea,
     required ChartData chartData,
     required ChartOptions chartOptions,
+    // todo-00-last make optional
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
-    // done-00-nullable : removed : chartArea: chartArea,
           chartData: chartData,
           chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

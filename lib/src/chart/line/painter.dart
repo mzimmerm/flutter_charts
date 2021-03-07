@@ -4,7 +4,7 @@ import '../presenter.dart' as presenters;
 import '../line/presenter.dart' as line_presenters;
 
 // import 'package:flutter_charts/flutter_charts.dart';
-import '../line/container.dart' as line_containers; // done-00-nullable-added
+import '../line/container.dart' as line_containers;
 
 import '../painter.dart';
 
@@ -18,7 +18,6 @@ import '../painter.dart';
 /// See [ChartPainter]
 class LineChartPainter extends ChartPainter {
 
-  // done-00-nullable-added
   /// Constructor ensures the [LineChartPainter] is initialized with 
   /// the [LineChartContainer]
   LineChartPainter({required line_containers.LineChartContainer lineChartContainer})

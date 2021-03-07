@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart' as widgets; // note: external package
 
-// done-00-nullable-removed-unused: import 'package:flutter_charts/flutter_charts.dart' as common;
 import 'container.dart' as containers;
 
 import 'package:flutter_charts/src/chart/presenter.dart' as presenters;
@@ -25,15 +24,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
   /// change some elements of chart's layout, colors, and overall look and feel.
-
-  // note: data should be same for all charts,  options differ
-  // done-00-nullable-removed, added on extensions: ChartPainter();
-
-  // done-00-nullable-removed setContainer(common.ChartContainer container) {
-  // done-00-nullable-removed   this.container = container;
-  // done-00-nullable-removed }
-
-  // done-00-nullable-added
+  
   /// Constructor ensures the [ChartPainter] is initialized with 
   /// the [ChartContainer]
   ChartPainter({required containers.ChartContainer chartContainer})
@@ -54,9 +45,6 @@ abstract class ChartPainter extends widgets.CustomPainter {
     }
 
     // set background: canvas.drawPaint(new ui.Paint()..color = material.Colors.green);
-
-    // done-00-nullable-passed-size: container.chartArea = size;
-    // done-00-nullable-passed-size: container.layout();
     container.layout(size);
 
     drawGrid(canvas);

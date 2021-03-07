@@ -25,14 +25,12 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 /// value point.
 class Presenter {
   StackableValuePoint point;
-  // todo-00-nullable-? : added ?
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
   ChartContainer container;
 
   Presenter({
     required StackableValuePoint point,
-    // todo-00-nullable-? : added ?
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartContainer container,
@@ -51,10 +49,9 @@ class Presenter {
 /// shows all data value at that label, each value in one instance of
 /// [Presenter].
 class PresentersColumn {
-  List<Presenter> presenters = new List.empty(growable: true); // done-00-nullable-list : new List();
-  List<Presenter> positivePresenters = new List.empty(growable: true); // done-00-nullable-list : new List();
-  List<Presenter> negativePresenters = new List.empty(growable: true); // done-00-nullable-list : new List();
-  // todo-00-nullable-? : added ?
+  List<Presenter> presenters = new List.empty(growable: true);
+  List<Presenter> positivePresenters = new List.empty(growable: true);
+  List<Presenter> negativePresenters = new List.empty(growable: true);
   PresentersColumn? nextRightPointsColumn;
 
   PresentersColumn({
@@ -93,13 +90,7 @@ class PresentersColumn {
     int rowIndex = 0;
     fromPoints.forEach((StackableValuePoint point) {
       // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
-/* todo-00-nullable-attention todo-00-nullable-?
-      var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
-          ? pointsColumn.nextRightPointsColumn.points[rowIndex]
-          : null;
-*/
-
-    // todo-00-nullable-attention todo-00-nullable-! added ! in pointsColumn.nextRightPointsColumn!.points[rowIndex]
+    // todo-00-last : added !. - needed?
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.points[rowIndex]
           : null;
@@ -141,7 +132,6 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
     required PresenterCreator presenterCreator,
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
-    // todo-00-nullable-? : added ?
     PresentersColumn? leftPresentersColumn;
     pointsColumns.forEach((PointsColumn pointsColumn) {
       var presentersColumn = new PresentersColumn(
@@ -172,7 +162,6 @@ abstract class PresenterCreator {
 
   Presenter createPointPresenter({
     required StackableValuePoint point,
-    // todo-00-nullable-? : added ?
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartContainer container,

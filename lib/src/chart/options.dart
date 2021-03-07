@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
-/// related, may be overriden or adjusted by the chart auto-layout,
+/// related, may be overridden or adjusted by the chart auto-layout,
 /// see [SimpleChartContainer].
 class ChartOptions {
   /// Defines how to create and layout chart's Y labels: either from user
@@ -97,7 +97,6 @@ class ChartOptions {
 
   final double labelFontSize = 14.0;
 
-  // todo-00-nullable-? : added ?
   final ui.Color? labelTextColor = material.Colors.grey[600];
 
   // ############## Iterative label layout options

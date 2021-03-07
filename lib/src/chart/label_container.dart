@@ -58,21 +58,12 @@ class LabelContainer extends flutter_charts_container.Container {
   /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
-  late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope; // todo-00-nullable: added late
+  late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
-  /* todo-00-nullable-ori 
-  ui.Size _unconstrainedSize;
-  ui.Size _constraintSize;
-  */
-  /* todo-00-nullable-added-init-size-0 issues with layout of x labels
-  ui.Size _unconstrainedSize = ui.Size.zero;
-  ui.Size _constraintSize = ui.Size.zero;
-  */
-  // todo-00-nullable-attention todo-00-nullable-last
   // _unconstrainedSize is always initialized in layout, so can be late,
   // while _constraintSize may remain null.
-  late ui.Size _unconstrainedSize; // todo-00-nullable-late : added
-  ui.Size? _constraintSize; // todo-00-nullable-? added ?
+  late ui.Size _unconstrainedSize;
+  ui.Size? _constraintSize;
   
 
   /// Allows to configure certain sizes, colors, and layout.
@@ -83,38 +74,6 @@ class LabelContainer extends flutter_charts_container.Container {
   ///
   /// Does not set parent container's [_layoutExpansion] and [_parentContainer].
   /// It is currently assumed clients will not call any methods using them.
-  // done-00-before-nullable: LabelContainer({
-  // done-00-before-nullable:   String label,
-  // done-00-before-nullable:   double labelMaxWidth,
-  // done-00-before-nullable:   vector_math.Matrix2 labelTiltMatrix,
-  // done-00-before-nullable:   vector_math.Matrix2 canvasTiltMatrix,
-  // done-00-before-nullable:   LabelStyle labelStyle,
-  // done-00-before-nullable: }) {
-  // done-00-before-nullable:   this._label = label;
-  // done-00-before-nullable:   this._labelMaxWidth = labelMaxWidth;
-  // done-00-before-nullable:   this._labelTiltMatrix = labelTiltMatrix;
-  // done-00-before-nullable:   this._canvasTiltMatrix = canvasTiltMatrix;
-  // done-00-before-nullable:   this._labelStyle = labelStyle;
-  // done-00-before-nullable:   {
-  // done-00-before-nullable:   
-  // done-00-before-nullable:     var text = new widgets.TextSpan(
-  // done-00-before-nullable:       text: label,
-  // done-00-before-nullable:       style: _labelStyle.textStyle, // All labels share one style object
-  // done-00-before-nullable:     );
-  // done-00-before-nullable:     _textPainter = new widgets.TextPainter(
-  // done-00-before-nullable:     text: text,
-  // done-00-before-nullable:     textDirection: _labelStyle.textDirection,
-  // done-00-before-nullable:     textAlign: _labelStyle.textAlign,
-  // done-00-before-nullable:     // center in available space
-  // done-00-before-nullable:     textScaleFactor: _labelStyle.textScaleFactor,
-  // done-00-before-nullable:     // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-  // done-00-before-nullable:     ); //  textScaleFactor does nothing ??
-  // done-00-before-nullable:   
-  // done-00-before-nullable:     // Make sure to call layout - this instance is always "clean"
-  // done-00-before-nullable:     //   without need to call layout or introducing _isLayoutNeeded
-  // done-00-before-nullable:     layout();
-  // done-00-before-nullable:   }
-
   LabelContainer({
     required String label,
     required double labelMaxWidth,
@@ -139,7 +98,6 @@ class LabelContainer extends flutter_charts_container.Container {
           textScaleFactor: labelStyle.textScaleFactor,
           // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
         ), //  textScaleFactor does nothing ??
-       // todo-00-nullable-super : added call to super
        super(layoutExpansion: layoutExpansion)
   {
 
@@ -222,10 +180,6 @@ class LabelContainer extends flutter_charts_container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-/* todo-00-nullable-last 
-  ui.Size get layoutSize =>
-      _constraintSize != null ? _constraintSize : _unconstrainedSize;
-*/
   ui.Size get layoutSize =>
       _constraintSize ?? _unconstrainedSize;
 }
@@ -294,7 +248,7 @@ class AxisLabelContainer extends LabelContainer {
   /// but both x and y label containers can be skipped
   /// (tick dashes should not?).
   ///
-  double parentOffsetTick = 0.0; // todo-00-nullable-added-init-0
+  double parentOffsetTick = 0.0;
 
   AxisLabelContainer({
     required String label,

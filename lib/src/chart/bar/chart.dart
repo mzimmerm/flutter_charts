@@ -27,6 +27,5 @@ class VerticalBarChart extends widgets.CustomPaint {
           child: child,
         ) {
     container.isStacked = true;
-    // todo-00-nullable-removed: painter.setContainer(container);
   }
 }

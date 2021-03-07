@@ -8,7 +8,6 @@ class LineContainer extends flutter_charts_container.Container {
   ui.Offset lineFrom;
   ui.Offset lineTo;
 
-  // todo-00-nullable-constructor : added layoutExpansion unused()
   LineContainer({
     required ui.Offset lineFrom,
     required ui.Offset lineTo,

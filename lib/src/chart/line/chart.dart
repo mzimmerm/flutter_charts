@@ -33,6 +33,5 @@ class LineChart extends widgets.CustomPaint {
           child: child,
         ) {
     container.isStacked = false;
-    // done-00-nullable : painter.setContainer(container);
   }
 }

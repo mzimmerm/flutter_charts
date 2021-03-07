@@ -126,7 +126,7 @@ class RandomChartData extends ChartData {
   }
 
   void _generateYValues() {
-    dataRows = new List.empty(growable: true); // done-00-nullable-list : new List<List<double>>();
+    dataRows = new List.empty(growable: true);
 
     double scale = 200.0;
 
@@ -151,7 +151,7 @@ class RandomChartData extends ChartData {
     required double pushUpBy,
     required double scale,
   }) {
-    List<double> dataRow = new List.empty(growable: true);// todo-00-nullable-list : new List<double>();
+    List<double> dataRow = new List.empty(growable: true);
     for (int i = 0; i < _numXLabels; i++) {
       dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
     }

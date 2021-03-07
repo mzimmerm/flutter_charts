@@ -442,30 +442,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     defineOptionsAndData();
     
-    // done-00-nullable: LineChart lineChart = new LineChart(
-    // done-00-nullable:   painter: new LineChartPainter(),
-    // done-00-nullable:   container: new LineChartContainer(
-    // done-00-nullable:     chartData: _chartData, // @required
-    // done-00-nullable:     chartOptions: _lineChartOptions, // @required
-    // done-00-nullable:     xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy, // @optional
-    // done-00-nullable:   ),
-    // done-00-nullable: );
-
-    // done-00-nullable: VerticalBarChart verticalBarChart = new VerticalBarChart(
-    // done-00-nullable:   painter: new VerticalBarChartPainter(),
-    // done-00-nullable:   container: new VerticalBarChartContainer(
-    // done-00-nullable:     chartData: _chartData, // @required
-    // done-00-nullable:     chartOptions: _verticalBarChartOptions, // @required
-    // done-00-nullable:     xContainerLabelLayoutStrategy:
-    // done-00-nullable:         _xContainerLabelLayoutStrategy, // @optional
-    // done-00-nullable:   ),
-    // done-00-nullable: );
-    
     LineChartContainer lineChartContainer = new LineChartContainer(
-      chartData: _chartData, // @required
-      chartOptions: _lineChartOptions, // @required
+      chartData: _chartData,
+      chartOptions: _lineChartOptions,
       xContainerLabelLayoutStrategy:
-      _xContainerLabelLayoutStrategy, // @optional
+      _xContainerLabelLayoutStrategy,
     );
 
     LineChart lineChart = new LineChart(
@@ -474,10 +455,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     
     VerticalBarChartContainer verticalBarChartContainer = new VerticalBarChartContainer(
-      chartData: _chartData, // @required
-      chartOptions: _verticalBarChartOptions, // @required
+      chartData: _chartData,
+      chartOptions: _verticalBarChartOptions,
       xContainerLabelLayoutStrategy:
-      _xContainerLabelLayoutStrategy, // @optional
+      _xContainerLabelLayoutStrategy,
     );
     
     VerticalBarChart verticalBarChart = new VerticalBarChart(
@@ -576,7 +557,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    // todo-00-nullable-last
                     child: lineChart, // verticalBarChart, lineChart 
                   ),
                   // new Text('<<'), // horizontal

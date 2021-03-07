@@ -23,9 +23,9 @@ class CustomList<E> extends collection.ListBase<E> {
     delegate[index] = value;
   }
   
-  // todo-00-nullable-attention added
+  /// The [add] method must be overridden for lists that do NOT 
+  /// allow `null` as element.
   void add(E element) {
-    // This implementation only works for lists which allow `null` as element.
     delegate.add(element);
   }
 }

@@ -48,10 +48,6 @@ class Range {
     required double toScaleMin,
     required double toScaleMax,
   }) {
-/* todo-00-nullable-num-to-double
-    num min = _closure.min;
-    num max = _closure.max;
-*/
     double min = _closure.min;
     double max = _closure.max;
 
@@ -62,9 +58,6 @@ class Range {
     int signMax = polyMax.signum;
 
     // envelope for all y values
-/* todo-00-nullable-num-to-double
-    num from, to;
- */
     double from, to;
 
     // Need to handle all combinations of the above (a < b < c etc).
@@ -211,13 +204,12 @@ class YScalerAndLabelFormatter {
     required double toScaleMax,
     required ChartOptions chartOptions,
   })   : this.dataRange = dataRange,
-        // todo-00-nullable: was: new LabelInfo(value, this)).toList()
         this.labelInfos =
             valueOnLabels.map((value) => new LabelInfo(value)).toList(),
         _toScaleMin = toScaleMin,
         _toScaleMax = toScaleMax,
         _options = chartOptions {
-    // todo-00-nullable, done-00-nullable : late initialize the parentScaler
+    // late initialize the parentScaler
     this.labelInfos.forEach((labelInfo) {
       labelInfo.parentScaler = this;
     });
@@ -316,7 +308,6 @@ class YScalerAndLabelFormatter {
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
 
 class LabelInfo {
-  // todo-00-nullable : added late
   late YScalerAndLabelFormatter parentScaler;
 
   /// Unscaled label value, ([labelValues] are on the scale of data).
@@ -325,27 +316,22 @@ class LabelInfo {
   /// Label showing on the Y axis; typically a value with unit.
   ///
   /// Formatted label is just formatted [scaledLabelValue].
-  // todo-00-nullable : added late
   late String formattedYLabel;
 
   /// Scaled label value.
   ///
   /// [scaledLabelValue]s are on the scale of y axis length.
-  // todo-00-nullable-num-to-double
-  double scaledLabelValue = 0.0; // todo-00-nullable-added-init-0
+  double scaledLabelValue = 0.0;
 
   /// Constructs from value at the label, using scaler which keeps dataRange
   /// and axisRange (min, max).
   LabelInfo(this.labelValue);
-  // todo-00-nullable : removed parentScaler so we can initialize. 
+  // todo-00-last : removed parentScaler so we can initialize. Can this be improved? 
   //    parentScaler will be set after construction : LabelInfo(this.labelValue, this.parentScaler);
   
-  
-
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
     // todo-2 consider what to do about the toDouble() - may want to ensure higher up
-    // todo-00-nullable : was: parentScaler.scaleY(value: labelValue.toDouble());
     // so if parent scaler not set by now, scaledLabelValue remains null.
     scaledLabelValue = parentScaler.scaleY(value: labelValue.toDouble());
   }
@@ -364,7 +350,6 @@ class LabelInfo {
 class Poly {
   // ### members
 
-  num _num;
   decimal.Decimal _dec;
   decimal.Decimal _one;
   decimal.Decimal _ten;
@@ -373,14 +358,13 @@ class Poly {
 
   /// Create
   Poly({required num from}) :
-    _num = from,
     _dec = dec(from.toString()),
     _one = numToDec(1), // 1.0
     _ten = numToDec(10);
 
   // ### methods
 
-  // todo-00-nullable : added static on the 2 methods below
+  // todo-00-last : added static on the 2 methods below. can this improve?
   static decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
 
   static decimal.Decimal numToDec(num value) => dec(value.toString());

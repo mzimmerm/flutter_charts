@@ -14,19 +14,17 @@ import 'package:flutter_charts/src/chart/line_container.dart';
 /// to the [offsetPoint] of the [LineAndHotspotPresenter]
 /// which is next in the [PresentersColumn.presenters] list.
 class LineAndHotspotPresenter extends Presenter {
-  // todo-00-nullable-late : added late
   late LineContainer lineContainer;
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
   late ui.Paint outerPaint;
-  double innerRadius = 0.0; // todo-00-nullable-added-init-0
-  double outerRadius = 0.0; // todo-00-nullable-added-init-0
+  double innerRadius = 0.0; // todo-00-last-where-set-can-be-late?
+  double outerRadius = 0.0; // todo-00-last-where-set-can-be-late?
  
   late ui.Paint rowDataPaint;
 
   LineAndHotspotPresenter({
     required StackableValuePoint point,
-  // todo-00-nullable-? : added ?
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartContainer container,
@@ -44,8 +42,6 @@ class LineAndHotspotPresenter extends Presenter {
         .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
-    // todo-00-nullable-attention : ori : ui.Offset toPoint = nextRightColumnValuePoint?.scaledTo;
-    // todo-00-nullable-? : added ? in declaration in  ui.Offset? toPoint
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = new LineContainer(
@@ -69,7 +65,6 @@ class LineAndHotspotLeafCreator extends PresenterCreator {
 
   Presenter createPointPresenter({
     required StackableValuePoint point,
-  // todo-00-nullable-? : added ?
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartContainer container,
