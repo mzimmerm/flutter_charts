@@ -15,7 +15,7 @@ class LineChartContainer extends ChartContainer {
   LineChartContainer({
     required ChartData chartData,
     required ChartOptions chartOptions,
-    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
           chartOptions: chartOptions,

@@ -28,12 +28,12 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
 /// used for painting grid, labels, chart points etc.
 ///
 /// Creates a simple chart container and call all needed [layout] methods.
-/// 
+///
 /// Notes:
-///   - [ChartContainer] and it's extensions, 
-///     such as [LineChartContainer] and [VerticalBarChartContainer] 
+///   - [ChartContainer] and it's extensions,
+///     such as [LineChartContainer] and [VerticalBarChartContainer]
 ///     are the only container which does not extend [Container]
-///   - Related to above point, the [layout(num size)] is unrelated to 
+///   - Related to above point, the [layout(num size)] is unrelated to
 ///     a same name method on [Container].
 ///
 /// Terms used:
@@ -106,16 +106,14 @@ abstract class ChartContainer {
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
   ChartContainer({
-    // todo-00-last-removed-from-here-and-subclasses consider if needed : ui.Size chartArea,
     required ChartData chartData,
     required ChartOptions chartOptions,
-    // todo-00-last make optional
-    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
-  })   :
-        // todo-00-last-attention : was : this.chartArea = chartArea,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  :
         this.data = chartData,
         this.options = chartOptions,
-        this.xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
+        this.xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy ??
+            strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions);
 
   // todo-00-last: now when we added size to layout, should not this be done the same in subclasses?
   // todo-00-last-added : added param chartAreaSize - consider if this is OK with Container interface layout()

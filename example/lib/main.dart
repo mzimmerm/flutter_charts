@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //   the DefaultIterativeLabelLayoutStrategy.
 
   /// Define Layout strategy go labels. todo-null-safety : this can be null here
-  LabelLayoutStrategy _xContainerLabelLayoutStrategy =
+  LabelLayoutStrategy? _xContainerLabelLayoutStrategy =
       new DefaultIterativeLabelLayoutStrategy(
     options: new VerticalBarChartOptions(),
   );
@@ -169,17 +169,17 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
     required ChartOptions verticalBarChartOptions,
-    // todo-00-last : make this optional
-    required LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy,
     required ChartData chartData,
-  })   : _lineChartOptions = lineChartOptions,
+  })   : _chartData = chartData,
+        _lineChartOptions = lineChartOptions,
         _verticalBarChartOptions = verticalBarChartOptions,
-        _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
-        _chartData = chartData;
+        _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
 
   /// Constructor allows to set only data and keep other values default.
-  _MyHomePageState.fromData({required ChartData chartData})
-      : _chartData = chartData;
+  _MyHomePageState.fromData({
+    required ChartData chartData,
+  }) : _chartData = chartData;
 
   /// Define options and data for chart
   void defineOptionsAndData() {

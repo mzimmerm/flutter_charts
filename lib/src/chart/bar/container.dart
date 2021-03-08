@@ -15,8 +15,7 @@ class VerticalBarChartContainer extends ChartContainer {
   VerticalBarChartContainer({
     required ChartData chartData,
     required ChartOptions chartOptions,
-    // todo-00-last make optional
-    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
           chartOptions: chartOptions,
