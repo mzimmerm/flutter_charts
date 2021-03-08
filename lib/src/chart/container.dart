@@ -41,6 +41,27 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
 abstract class ChartContainer {
+  /// [chartArea] is the chart area size of this container.
+  /// In flutter_charts, this is guaranteed to be the same
+  /// area on which the painter will paint.
+  /// See the call to [layout] of this class.
+  /// [chartArea] marked late, as there is virtually no practical situation
+  /// it can be known before runtime; it is required,
+  /// but not set at construction time.
+  late ui.Size chartArea;
+
+  /// Base Areas of chart.
+  late LegendContainer legendContainer;
+  late YContainer yContainer;
+  late XContainer xContainer;
+  late DataContainer dataContainer;
+
+  // Layout strategy for XContainer labels
+  // todo-00-last-last : why is this needed here AND in AdjustableContentChartAreaContainer?
+  strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy;
+
+  /// Scaler of data values to values on the Y axis.
+  late YScalerAndLabelFormatter yScaler;
   /// ##### Abstract methods or subclasses-implemented getters
 
   /// Makes presenters, the visuals painted on each chart column that
@@ -67,29 +88,7 @@ abstract class ChartContainer {
 
   ChartOptions options;
   ChartData data;
-
-  /// [chartArea] is the chart area size of this container.
-  /// In flutter_charts, this is guaranteed to be the same
-  /// area on which the painter will paint.
-  /// See the call to [layout] of this class.
-  /// [chartArea] marked late, as there is virtually no practical situation
-  /// it can be known before runtime; it is required,
-  /// but not set at construction time.
-  late ui.Size chartArea;
-
-  /// Base Areas of chart.
-  late LegendContainer legendContainer;
-
-  late YContainer yContainer;
-  late XContainer xContainer;
-  late DataContainer dataContainer;
-
-  // Layout strategy for XContainer labels
-  strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy;
-
-  /// Scaler of data values to values on the Y axis.
-  late YScalerAndLabelFormatter yScaler;
-
+  
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
@@ -497,6 +496,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   XContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
+    // todo-00-last-last-make-optional
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
           layoutExpansion: layoutExpansion,
@@ -705,6 +705,7 @@ abstract class AdjustableContent {
 /// (actually currently the [ChartAreaContainer].
 abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
     implements AdjustableContent {
+  // todo-00-last-last : why is this needed here AND in top ChartContainer?
   strategy.LabelLayoutStrategy _xContainerLabelLayoutStrategy;
 
   strategy.LabelLayoutStrategy get xContainerLabelLayoutStrategy =>
@@ -713,6 +714,7 @@ abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
   AdjustableContentChartAreaContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
+    // todo-00-last-last-make-optional
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   })   : _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super(
