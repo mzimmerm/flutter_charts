@@ -73,7 +73,7 @@ class ChartData {
     return _flattenData().reduce(math.min);
   }
 
-  /// Sets up colors first threee data rows (series) explicitly, rest randomly
+  /// Sets up colors first three data rows (series) explicitly, rest randomly
   void assignDataRowsDefaultColors() {
     int dataRowsCount = dataRows.length;
 

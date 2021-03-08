@@ -23,10 +23,18 @@ import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
     as strategy;
 
+// todo-00-last review doc, notes, and structure
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
 /// Creates a simple chart container and call all needed [layout] methods.
+/// 
+/// Notes:
+///   - [ChartContainer] and it's extensions, 
+///     such as [LineChartContainer] and [VerticalBarChartContainer] 
+///     are the only container which does not extend [Container]
+///   - Related to above point, the [layout(num size)] is unrelated to 
+///     a same name method on [Container].
 ///
 /// Terms used:
 ///   - `absolute positions` refer to positions
@@ -508,8 +516,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   /// The layout is independent of whether the labels are tilted or not,
   ///   in the sense that all tilting logic is hidden in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
-
-  layout() {
+  void layout() {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List.empty(growable: true);
 
@@ -811,7 +818,7 @@ class LayoutExpansion {
 /// This base class manages
 ///
 /// Roles:
-///   - Constructor: a paramater named [layoutExpansion] is required
+///   - Constructor: a parameter named [layoutExpansion] is required
 ///   - Container: through the [layout] method.
 ///   - Translator (in X and Y direction): through the [applyParentOffset]
 ///     method.
@@ -839,7 +846,7 @@ abstract class Container {
   /// Provides access to tiltMatrix for extension's [paint] methods.
   vector_math.Matrix2 get tiltMatrix => _tiltMatrix;
 
-  /// [skipByParent] directs the parent container that this container should not be
+  /// [skipByParent] instructs the parent container that this container should not be
   /// painted or layed out - as if it collapsed to zero size.
   ///
   /// Note that concrete implementations must add

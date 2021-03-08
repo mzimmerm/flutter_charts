@@ -19,7 +19,7 @@
 ///
 /// Any dart file (any client application) located outside
 /// of the "lib" directory just above, can only see the classes
-/// contained in the exported packages listed in this file, flutter_chart.dart.
+/// contained in the exported packages listed in this file, flutter_charts.dart.
 ///
 /// Why? The reasons are complex combination of Dart conventions.
 ///
@@ -48,7 +48,7 @@
 ///
 /// 3. Third:  Why so complicated?
 ///      This is an unfortunate result Dart
-///      not being Newspeak :)  a Dart appologetic, this is the
+///      not being Newspeak :)  a Dart apologetic, this is the
 ///      Dart way of providing ability to create private classes in
 ///      public libraries we share with the world.
 ///
@@ -62,9 +62,13 @@
 ///         `import 'package:flutter_charts/flutter_charts.dart';`
 ///  3. We can say that **files below the _lib/src_ directory in Dart,
 ///     are by convention, private, and invisible above the _lib_ directory.
-///  4. Equivalent export syntaxes
-///     - `export                        'src/chart/data.dart'`
-///     - `export 'package:flutter_charts/src/chart/data.dart'`
+///  4. Equivalent export syntax:
+///     - `export                        'src/chart/data.dart';`
+///     - `export 'package:flutter_charts/src/chart/data.dart';`
+///  5. In each of the export lines, we could control exported classes
+///     by name using the `show` syntax, for example:
+///     - `export 'package:flutter_charts/src/chart/data.dart' show ChartData;`
+///     
 ///
 
 /// Note:

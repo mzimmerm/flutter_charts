@@ -32,16 +32,13 @@ class ChartOptions {
 
   /// Color defaults
   final ui.Color gridLinesColor = material.Colors.grey;
-  final ui.Color xLabelsColor =
-      material.Colors.grey; // const ui.Color(0xFFEEEEEE)
+  final ui.Color xLabelsColor = material.Colors.grey;
 
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and righ)
   /// Autolayout can increase these lengths, to fit labels below them.
-  @deprecated
-  double xTopPaddingAboveTicksHeight = 6.0; // Padding above grid
   final double yLeftMinTicksWidth = 6.0;
   final double yRightMinTicksWidth = 6.0;
   final double xBottomMinTicksHeight = 6.0;
@@ -87,7 +84,7 @@ class ChartOptions {
   final double gridStepWidthPortionUsedByAtomicPresenter = 0.75;
 
   /// Controls the order the painter paints [ChartData.dataRows].
-  /// Motivation: Oh the line chart, if two data rows have same values,
+  /// Motivation: On the line chart, if two data rows have same values,
   /// the "last painted value wins". This option helps to change the data rows
   /// painting order - painting starts from the first or from the last.
   /// While so far only makes a difference on the line chart, this is defined

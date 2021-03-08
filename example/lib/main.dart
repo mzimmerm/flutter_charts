@@ -61,7 +61,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of the application.
+  /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -98,8 +98,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 /// State of the page.
-/// All members are required, as they are, in turn, required by the
+///
+/// This state object is created in the stateful widget's [MyHomePage] call to
+/// [MyHomePage.createState()]. In the rest of the lifecycle,
+/// this state object holds on objects which are needed for the chart,
+/// - [_lineChartOptions]
+/// - [_verticalBarChartOptions]
+/// - [_chartData]
+/// - [_xContainerLabelLayoutStrategy].
+///
+/// The first three members are required, as they are, in turn, required by the
 /// chart constructors.
+///
+/// While this home page state object is created only once (hence, the above
+/// state's members [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
+/// and [_xContainerLabelLayoutStrategy] are created only once, the charts shown
+/// in this demo, the [LineChart] and the [VerticalBarChart], are recreated
+/// in this object's [build()] method - so, **the chart objects are created over
+/// and over**.
+///
+/// Note: The (each [build()]) recreated chart objects reuse the state's members
+/// [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
+/// and [_xContainerLabelLayoutStrategy], so they could be considered
+/// "expensive to create". This "expensive" not be true (except [_chartData], which
+/// may be obtained remotely).
+///
+/// Note: At the same time, because the [defineOptionsAndData()] is called in
+/// this state's [build()] can recreate the the state's members
+/// [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
+/// and [_xContainerLabelLayoutStrategy], the core of this state object (all members)
+/// is effectively recreated on each state's [build()] call.
+///
 class _MyHomePageState extends State<MyHomePage> {
   // done-null-safety : Note: To be able to have non-nullable types on members
   //   such as _lineChartOptions (and all others here), 2 things need be done:
@@ -143,29 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
     // todo-00-last : make this optional
     required LabelLayoutStrategy xContainerLabelLayoutStrategy,
     required ChartData chartData,
-  })
-  /* initializer list: an alternative to initializing at the point of definition
-      : _lineChartOptions = new LineChartOptions(),
-        _verticalBarChartOptions = new VerticalBarChartOptions(),
-        _xContainerLabelLayoutStrategy =
-            new DefaultIterativeLabelLayoutStrategy(
-          options: new VerticalBarChartOptions(),
-        ),
-        _chartData = new RandomChartData(
-            useUserProvidedYLabels:
-                new LineChartOptions().useUserProvidedYLabels) 
-  */
-  {
-    _lineChartOptions = lineChartOptions;
-    _verticalBarChartOptions = verticalBarChartOptions;
-    _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
-    _chartData = chartData;
-  }
+  })   : _lineChartOptions = lineChartOptions,
+        _verticalBarChartOptions = verticalBarChartOptions,
+        _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+        _chartData = chartData;
 
   /// Constructor allows to set only data and keep other values default.
-  _MyHomePageState.fromData({required ChartData chartData}) {
-    _chartData = chartData;
-  }
+  _MyHomePageState.fromData({required ChartData chartData})
+      : _chartData = chartData;
 
   /// Define options and data for chart
   void defineOptionsAndData() {
@@ -403,20 +417,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /// Builds the widget that is the home page state.
   @override
   Widget build(BuildContext context) {
+    // General notes on Windows and sizing
+
     // The (singleton?) window object is available anywhere using ui.
     // From window, we can get  ui.window.devicePixelRatio, and also
     //   ui.Size windowLogicalSize = ui.window.physicalSize / devicePixelRatio
     // Note: Do not use ui.window for any sizing: see
     //       https://github.com/flutter/flutter/issues/11697
 
+    // MediaQueryData mediaQueryData = MediaQuery.of(context);
     // Use MediaQuery.of(context) for any sizing.
     // note: mediaQueryData can still return 0 size,
     //       but if MediaQuery.of(context) is used, Flutter will guarantee
     //       the build(context) will be called again !
     //        (once non 0 size becomes available)
-    // MediaQueryData mediaQueryData = MediaQuery.of(context);
 
     // note: windowLogicalSize = size of the media (screen) in logical pixels
     // note: same as ui.window.physicalSize / ui.window.devicePixelRatio;
@@ -432,7 +449,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //       => text is 1.5x larger than the font size.
     // double fontScale = mediaQueryData.textScaleFactor;
 
-    // Let us give the LineChart full width and half of height of window.
+    // To give the LineChart full width and half of height of window.
     // final ui.Size chartLogicalSize =
     //     new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
     //
@@ -480,74 +497,80 @@ class _MyHomePageState extends State<MyHomePage> {
         // our appbar title.
         title: new Text(widget.title),
       ),
+      // Center is a layout widget. It takes a single child and
+      // positions it in the middle of the parent.
       body: new Center(
-        // Center is a layout widget. It takes a single child and
-        // positions it in the middle of the parent.
+        // Column is also layout widget. It takes a list of children
+        // and arranges them vertically. By default, it sizes itself
+        // to fit its children horizontally, and tries to be as tall
+        // as its parent.
+        //
+        // Invoke "debug paint" (press "p" in the console where you
+        // ran "flutter run", or select "Toggle Debug Paint" from the
+        // Flutter tool window in IntelliJ) to see the wireframe for
+        // each widget.
+        //
+        // Column has various properties to control how it sizes
+        // itself and how it positions its children. Here we use
+        // mainAxisAlignment to center the children vertically; the
+        // main axis here is the vertical axis because Columns are
+        // vertical (the cross axis would be horizontal).
+
+        // Expanded can be around one child of a Row or a Column
+        // (there can be one or more children of those layouts).
+        //
+        // In this document below, we use | as abbreviation for vertical expansion,
+        // <--> for horizontal expansion.
+        //
+        // "Expanded" placed around one of children of Row, or Column,
+        // stretches/pulls the expanded child in the parent's
+        // "growing" direction.
+        //
+        // So:
+        //   - Inside Column (children: [A, B, Expanded (C)]) stretches C in
+        //     column's "growing" direction (that is vertically |)
+        //     to the fullest available outside height.
+        //   - For Row  (children: [A, B, Expanded (C)]) stretches C in
+        //     row's "growing" direction (that is horizontally <-->)
+        //     to the fullest available outside width.
+        // The layout of this code, is, structurally like this:
+        //   Column (
+        //      mainAxisAlignment: MainAxisAlignment.center,
+        //      children: [
+        //        vvv,
+        //        Expanded (
+        //          Row  (
+        //            crossAxisAlignment: CrossAxisAlignment.stretch,
+        //            children: [
+        //              >>>, Expanded (Chart), <<<,
+        //            ]),
+        //        ^^^
+        //      ])
+        // The outer | expansion, in the Column's middle child
+        //   pulls/stretches the row vertically |
+        //   BUT also needs explicit
+        //   crossAxisAlignment: CrossAxisAlignment.stretch.
+        //   The cross alignment stretch carries
+        //   the | expansion to all <--> expanded children.
+        //  Basically, while "Expanded" only applies stretch in one
+        //    direction, another outside "Expanded" with CrossAxisAlignment.stretch
+        //    can force the innermost child to be stretched in both directions.
         child: new Column(
-          // Column is also layout widget. It takes a list of children
-          // and arranges them vertically. By default, it sizes itself
-          // to fit its children horizontally, and tries to be as tall
-          // as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you
-          // ran "flutter run", or select "Toggle Debug Paint" from the
-          // Flutter tool window in IntelliJ) to see the wireframe for
-          // each widget.
-          //
-          // Column has various properties to control how it sizes
-          // itself and how it positions its children. Here we use
-          // mainAxisAlignment to center the children vertically; the
-          // main axis here is the vertical axis because Columns are
-          // vertical (the cross axis would be horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center, // = default, not needed
           children: <Widget>[
-            // todo-00-last-last : resolve
-            new RaisedButton(
-              color: Colors.green,
+            new ElevatedButton(
+              // style would need a custom MaterialStateColor extension.
+              // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
               onPressed: _chartStateChanger,
+              child: null,
             ),
             new Text(
               'vvvvvvvv:',
             ),
-
-            // Expanded can be around one child of a Row or a Column
-            // (there can be one or more children of those layouts).
-            //
-            // In this document below, we use | as abbreviation for vertical expansion,
-            // <--> for horizontal expansion.
-            //
-            // "new Expanded()" around one of children of Row, or Column,
-            // stretches/pulls the expanded child in the parent's
-            // "growing" direction.
-            //
-            // So:
-            //   - Inside Column (e.g. children: [A, B, Expanded (C)]) stretches C in
-            //     column's "growing" direction (that is vertically |)
-            //     to the fullest available outside height.
-            //   - For Row  (e.g. children: [A, B, Expanded (C)]) stretches C in
-            //     rows's "growing" direction (that is horizontally <-->)
-            //     to the fullest available outside width.
-            // The layout of this code, is, structurally like this:
-            //   Column (children: [
-            //      vvv,
-            //      Expanded (
-            //        Row  (children: [
-            //        >>>, Expanded (Chart), <<<,
-            //        ]),
-            //      ^^^
-            //    ])
-            // The outer | expansion, in the Column's middle child
-            //   pulls/stretches the row vertically |
-            //   BUT also needs explicit
-            //   crossAxisAlignment: CrossAxisAlignment.stretch.
-            //   The cross alignment stretch carries
-            //   the | expansion to all <--> expanded children.
-            //  Basically, while "Expanded" only applies stretch in one
-            //    direction, another outside "Expanded" with CrossAxisAlignment.stretch
-            //    can force the innermost child to be stretched in both directions.
             new Expanded(
               // expansion inside Column pulls contents |
               child: new Row(
+                // mainAxisAlignment: MainAxisAlignment.center, // = default, not needed
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -558,23 +581,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
-                    child: lineChart, // verticalBarChart, lineChart
+                    // #### Core chart
+                    child: verticalBarChart, // verticalBarChart, lineChart
                   ),
-                  // new Text('<<'), // horizontal
-                  new Text('<<<<<<'),
-                  // tilted labels, all present
-                  // new Text('<<<<<<<<<<<'),   // skipped (shows 3 labels, legend present)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // skipped (shows 2 labels, legend present but text vertical)
-                  //  new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
+                  new Text('<<'),
+                  // labels fit horizontally
+                  // new Text('<<<<<<'), // default, labels tilted, all present
+                  // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // labels skipped (shows 2 labels, legend present but text vertical)
+                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
                 ],
               ),
             ),
-
             new Text('^^^^^^:'),
-            // todo-00-last-last : resolve
-            new RaisedButton(
-              color: Colors.green,
+            new ElevatedButton(
+              // style would need a custom MaterialStateColor extension.
+              // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
               onPressed: _chartStateChanger,
+              child: null,
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../bar/painter.dart' as painter;
+import '../bar/painter.dart' as bar_painter;
 
 import '../bar/container.dart' as bar_containers;
 
@@ -14,7 +14,7 @@ class VerticalBarChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   VerticalBarChart({
     widgets.Key? key,
-    required painter.VerticalBarChartPainter painter,
+    required bar_painter.VerticalBarChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size: widgets.Size.zero,
     widgets.Widget? child,
