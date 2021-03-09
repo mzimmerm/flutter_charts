@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
@@ -23,4 +24,23 @@ class LineChartContainer extends ChartContainer {
         ) {
     presenterCreator = new LineAndHotspotLeafCreator();
   }
+
+// todo-00-last-last-all-containers : added block
+/////////////////////////////
+  LineChartDataContainer createDataContainer({
+    required ChartContainer parentContainer,
+    required LayoutExpansion layoutExpansion,
+  }) {
+    return new LineChartDataContainer(
+      parentContainer: parentContainer,
+      layoutExpansion: layoutExpansion,
+    );
+  }
+
+  void paint(Canvas canvas) {
+    throw new StateError("should not be called. todo-00-last-last");
+  }
+
+////////////////////////////////
+  
 }

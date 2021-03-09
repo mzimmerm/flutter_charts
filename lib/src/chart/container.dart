@@ -23,6 +23,10 @@ import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
     as strategy;
 
+import 'line/presenter.dart' as line_presenters;
+import 'bar/presenter.dart' as bar_presenters;
+
+
 // todo-00-last review doc, notes, and structure
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -40,11 +44,17 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
 ///   - `absolute positions` refer to positions
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-abstract class ChartContainer {
+// todo-00-last-last-all-containers abstract class ChartContainer {
+abstract class ChartContainer extends Container {
+
+  // todo-00-last-last-all-containers added block:
+  ui.Size get layoutSize => chartArea;
+  
+  
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
   /// area on which the painter will paint.
-  /// See the call to [layout] of this class.
+  /// See the call to [painterLayout()] of this class.
   /// [chartArea] marked late, as there is virtually no practical situation
   /// it can be known before runtime; it is required,
   /// but not set at construction time.
@@ -113,13 +123,27 @@ abstract class ChartContainer {
         this.data = chartData,
         this.options = chartOptions,
         this._cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy ??
-            strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions);
+            strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions),
+  super(
+        layoutExpansion: LayoutExpansion.unused(),
+      ) {
+    // Must initialize in body, as access to 'this' not available in initializer.
+   // todo-00-last-last-last :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
+  }
 
-  // todo-00-last: now when we added size to layout, should not this be done the same in subclasses?
-  // todo-00-last-added : added param chartAreaSize - consider if this is OK with Container interface layout()
 
-  layout(ui.Size chartAreaSize) {
-    this.chartArea = chartAreaSize;
+
+
+  // todo-00-last-last-all-containers-added 
+  // is this called?
+  void layout() {
+    painterLayout();
+  }
+
+  
+  // todo-00-last-last-all-containers-modified void painterLayout(ui.Size chartAreaSize) {
+  // todo-00-last-last-all-containers-modified    this.chartArea = chartAreaSize;
+  void painterLayout() {
 
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
@@ -212,6 +236,9 @@ abstract class ChartContainer {
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
 
+    // todo-00-last-last-all-containers : modified  block 
+//////////////////////////////
+/*
     this.dataContainer = new DataContainer(
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
@@ -221,10 +248,31 @@ abstract class ChartContainer {
               (legendContainerSize.height + xContainerSize.height),
           heightExpansionStyle: ExpansionStyle.TryFill),
     );
-
+*/
+    this.dataContainer = createDataContainer(
+      parentContainer: this,
+      layoutExpansion: new LayoutExpansion(
+          width: chartArea.width - yContainerSize.width,
+          widthExpansionStyle: ExpansionStyle.TryFill,
+          height: chartArea.height -
+              (legendContainerSize.height + xContainerSize.height),
+          heightExpansionStyle: ExpansionStyle.TryFill),
+    );
+    
+//////////////////////////////
+    
     dataContainer.layout();
     dataContainer.applyParentOffset(dataContainerOffset);
   }
+  
+  //////////////////////////////
+ // todo-00-last-last-all-containers : added block 
+  /// Abstract, document
+  DataContainer createDataContainer({
+    required ChartContainer parentContainer,
+    required LayoutExpansion layoutExpansion,
+});
+ ///////////////////////////////////////////////
 
   /// Create member [pointsColumns] from [data.dataRows].
   void setupPointsColumns() {
@@ -955,7 +1003,7 @@ abstract class ChartAreaContainer extends Container {
 /// Manages the core chart area which displays, overlayed:
 ///   - Data - as columns of bar chart, line chart, or other chart type
 ///   - The grid (this includes the X and Y axis).
-class DataContainer extends ChartAreaContainer {
+abstract class DataContainer extends ChartAreaContainer {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 
@@ -972,9 +1020,9 @@ class DataContainer extends ChartAreaContainer {
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
   }) : super(
-          layoutExpansion: layoutExpansion,
-          parentContainer: parentContainer,
-        );
+    layoutExpansion: layoutExpansion,
+    parentContainer: parentContainer,
+  );
 
   void layout() {
     _layoutGrid();
@@ -1061,7 +1109,8 @@ class DataContainer extends ChartAreaContainer {
     return new ui.Size(_layoutExpansion._width, _layoutExpansion._height);
   }
 
-  void paint(ui.Canvas canvas) {
+  // todo-00-last-last-last
+  void paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
     this._xGridLinesContainer.paint(canvas);
 
@@ -1073,6 +1122,8 @@ class DataContainer extends ChartAreaContainer {
     //         Look at VerticalBarChartPainter extends ChartPainter
     //         and rename drawPresentersColumns to paint
     //         But needs to take care of some things
+
+
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
@@ -1108,8 +1159,114 @@ class DataContainer extends ChartAreaContainer {
       presenterCreator: parentContainer.presenterCreator,
     );
   }
+
+
+// todo-00-last-last-all-containers : moved here from ChartPainter
+  /// Optionally paint series in reverse order (first to last vs last to first)
+  ///
+  /// See [ChartOptions.firstDataRowPaintedFirst].
+  List<Presenter> optionalPaintOrderReverse(
+      List<Presenter> presenters) {
+    var options = this.parentContainer.options;
+    if (options.firstDataRowPaintedFirst) {
+      presenters = presenters.reversed.toList();
+    }
+    return presenters;
+  }
+
+  // todo-00-last-last-last-all-containers : this can be removed, it is forwarded to paint
+/// Draws the actual data, either as lines with points (line chart),
+/// or bars/columns, stacked or grouped (bar/column charts).
+  void drawDataPresentersColumns(ui.Canvas canvas);  
 }
 
+////////////////////////////////////////////
+// todo-00-last-last-all-containers  added 2 classes
+class VerticalBarChartDataContainer extends DataContainer {
+
+// todo-00-last-last-all-containers : moved here from VerticalBarChartPainter
+  VerticalBarChartDataContainer({
+    required ChartContainer parentContainer,
+    required LayoutExpansion layoutExpansion,
+  }) : super(parentContainer: parentContainer,
+      layoutExpansion: layoutExpansion);
+  
+  void paint(ui.Canvas canvas) {
+    super.paintGridLines(canvas); // todo-00-last-last-all-containers
+    drawDataPresentersColumns(canvas);
+  }
+  
+// todo-00-last-last-all-containers : moved from here to VerticalBarChartDataContainer as paint()
+  /// See super [ChartPainter.drawDataPresentersColumns].
+  void drawDataPresentersColumns(ui.Canvas canvas) {
+    PresentersColumns presentersColumns = this.presentersColumns;
+
+    presentersColumns.forEach((PresentersColumn presentersColumn) {
+      // todo-2 do not repeat loop, collapse to one construct
+
+      var positivePresenterList = presentersColumn.positivePresenters;
+      positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
+      positivePresenterList.forEach((Presenter presenter) {
+        bar_presenters.VerticalBarPresenter presenterCast =
+        presenter as bar_presenters.VerticalBarPresenter;
+        canvas.drawRect(
+            presenterCast.presentedRect, presenterCast.dataRowPaint);
+      });
+
+      var negativePresenterList = presentersColumn.negativePresenters;
+      negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
+      negativePresenterList.forEach((Presenter presenter) {
+        bar_presenters.VerticalBarPresenter presenterCast =
+        presenter as bar_presenters.VerticalBarPresenter;
+        canvas.drawRect(
+            presenterCast.presentedRect, presenterCast.dataRowPaint);
+      });
+    });
+  }
+  
+}
+
+class LineChartDataContainer extends DataContainer {
+
+  LineChartDataContainer({
+    required ChartContainer parentContainer,
+    required LayoutExpansion layoutExpansion,
+  }) : super(parentContainer: parentContainer,
+        layoutExpansion: layoutExpansion);
+
+// todo-00-last-last-all-containers : moved here from LineChartPainter
+
+  void paint(ui.Canvas canvas) {
+    drawDataPresentersColumns(canvas);
+  }
+
+  /// See super [ChartPainter.drawDataPresentersColumns].
+  void drawDataPresentersColumns(ui.Canvas canvas) {
+    var presentersColumns = this.presentersColumns;
+    presentersColumns.forEach((PresentersColumn presentersColumn) {
+      var presenterList = presentersColumn.presenters;
+      presenterList = optionalPaintOrderReverse(presenterList);
+      presenterList.forEach((Presenter presenter) {
+        line_presenters.LineAndHotspotPresenter presenterCast =
+        presenter as line_presenters.LineAndHotspotPresenter;
+        // todo 0-future-minor Use call to Container.paint
+        canvas.drawLine(
+          presenterCast.lineContainer.lineFrom,
+          presenterCast.lineContainer.lineTo,
+          presenterCast.lineContainer.linePaint,
+        );
+        // todo 0-future-medium Add hotspot as Container, use Container.paint
+        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,
+            presenterCast.outerPaint);
+        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.innerRadius,
+            presenterCast.innerPaint);
+      });
+    });
+  }
+
+}
+
+////////////////////////////////////////////
 class GridLinesContainer extends Container {
   List<LineContainer> _lineContainers = new List.empty(growable: true);
 

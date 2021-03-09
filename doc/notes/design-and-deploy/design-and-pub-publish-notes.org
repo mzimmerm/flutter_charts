@@ -6,6 +6,8 @@
 
 ** Where are the paint and draw primitives called?
 
+// todo-00-last-last-all-containers 
+
 At the end of Container.paint(canvas), there is always one of:
   - _textPainter.paint(canvas, offset);
   - canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
@@ -21,6 +23,19 @@ But there is also drawing in
           presenterCast.lineContainer.linePaint,
         );
     - canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,  presenterCast.outerPaint);
+
+
+
+
+
+
+  // todo-00-last-last-all-containers added block:
+  ui.Size _size = ui.Size.zero;
+  ui.Size get layoutSize => _size;
+  
+
+
+  
 
 * TODO Bugs to report or ask on Stack Overflow
 

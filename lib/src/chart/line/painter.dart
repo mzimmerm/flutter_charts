@@ -8,9 +8,10 @@ import '../line/container.dart' as line_containers;
 
 import '../painter.dart';
 
+// todo-00-last-last-document-better
 /// Paints the columns of the line chart.
 ///
-/// The core override is the [drawPresentersColumns] method
+/// The core override is the [drawDataPresentersColumns] method
 /// which call on each column area of the chart, to paint the
 /// [LineAndHotspotPresenter]s - painting a point and line for
 /// each data value across series.
@@ -25,8 +26,10 @@ class LineChartPainter extends ChartPainter {
     lineChartContainer.isStacked = false;
   }
 
-  /// See super [ChartPainter.drawPresentersColumns].
-  void drawPresentersColumns(ui.Canvas canvas) {
+// todo-00-last-last-all-containers : moved from here to LineChartDataContainer as paint()
+/*  
+  /// See super [ChartPainter.drawDataPresentersColumns].
+  void drawDataPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.container.dataContainer.presentersColumns;
     presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
       var presenterList = presentersColumn.presenters;
@@ -48,4 +51,5 @@ class LineChartPainter extends ChartPainter {
       });
     });
   }
+*/
 }

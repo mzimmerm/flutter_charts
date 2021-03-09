@@ -466,7 +466,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     LineChart lineChart = new LineChart(
-      painter: new LineChartPainter(lineChartContainer: lineChartContainer),
+      painter: new LineChartPainter(
+        lineChartContainer: lineChartContainer,
+      ),
     );
 
     VerticalBarChartContainer verticalBarChartContainer =
@@ -478,7 +480,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     VerticalBarChart verticalBarChart = new VerticalBarChart(
       painter: new VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer),
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
     );
 
     // [MyHomePage] extends [StatefulWidget].

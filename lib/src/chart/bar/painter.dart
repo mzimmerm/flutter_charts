@@ -7,15 +7,16 @@ import '../presenter.dart' as presenters;
 
 import '../bar/presenter.dart' as bar_presenters;
 
+
+// todo-00-last-last-document-better
 /// Paints the columns of the bar chart.
 ///
-/// The core override is the [drawPresentersColumns] method
+/// The core override is the [drawDataPresentersColumns] method
 /// which call on each column area of the chart, to paint the
 /// [VerticalBarPresenter]s - painting a rectangle for
 /// each data value across series.
 ///
 /// See [ChartPainter]
-
 class VerticalBarChartPainter extends ChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer]
@@ -25,8 +26,10 @@ class VerticalBarChartPainter extends ChartPainter {
     verticalBarChartContainer.isStacked = true;
   }
 
-  /// See super [ChartPainter.drawPresentersColumns].
-  void drawPresentersColumns(ui.Canvas canvas) {
+/*
+// todo-00-last-last-all-containers : moved from here to VerticalBarChartDataContainer as paint()
+  /// See super [ChartPainter.drawDataPresentersColumns].
+  void drawDataPresentersColumns(ui.Canvas canvas) {
     presenters.PresentersColumns presentersColumns =
         this.container.dataContainer.presentersColumns;
 
@@ -52,4 +55,5 @@ class VerticalBarChartPainter extends ChartPainter {
       });
     });
   }
+*/
 }

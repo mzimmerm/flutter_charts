@@ -1,9 +1,10 @@
-# version 0.3.0 (??)
+# version 0.3.0 (date??)
 
 - API changes
   - Removed the container parameter from the constructor of VerticalBarChart, LineChart.
     For VerticalBarChart:
     ```dart
+      class VerticalBarChart {
       VerticalBarChart({
         widgets.Key? key,
         required bar_painter.VerticalBarChartPainter painter,
@@ -18,6 +19,7 @@
           size: size,
           child: child,
         );
+    }
     ```
     - If you passed the container before, remove it. 
     - The container is stored on the VerticalBarChartPainter and used from there.
