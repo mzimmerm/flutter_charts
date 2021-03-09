@@ -257,14 +257,64 @@ abstract class ChartContainer extends Container {
     dataContainer.applyParentOffset(dataContainerOffset);
   }
   
-  // todo-00-last-last-last : Why is this not used? Describe
-  /// Implements superclass's [paint()] by throwing exception.
-  /// 
-  /// The reason for this is that the p
+  /// Implements abstract [paint()] for the whole chart.
+  /// Paints the chart on the passed [canvas], limited to the [size] area.
+  ///
+  /// This [paint()] method is the core method call of painting the chart.
+  /// Called from the chart's painter baseclass, the [ChartPainter], which 
+  /// [paint(Canvas, Size)] is guaranteed to be called by the Flutter framework
+  /// (see class comment), hence [ChartPainter.paint] starts the chart painting.
+  ///
+  /// In detail, this method paints all elements of the chart - the legend in [_paintLegend],
+  /// the grid in [drawGrid], the x/y labels in [_paintXLabels] and [_paintYLabels],
+  /// and the data values, column by column, in [drawDataPresentersColumns].
+  ///
+  /// Before the actual canvas painting,
+  /// the operation with a call to [ChartContainer.layout()], then paints
+  /// the lines, rectangles and circles of the child [containers.Container]s,
+  /// according to their calculated layout positions.
   void paint(ui.Canvas canvas) {
-    throw new StateError("should not be called. todo-00-last-last");
+    // Layout the whole chart container - provides all positions to paint and draw
+    // all chart elements.
+    layout();
+
+    _paintYLabels(canvas);
+    _paintXLabels(canvas);
+    _paintLegend(canvas);
+    // removed drawDataPresentersColumns(canvas); // bars (bar chart), lines and points (line chart)
+    // Grid, then data area - bars (bar chart), lines and points (line chart).
+    _paintGridAndData(canvas);
+
+    // clip canvas to size - this does nothing
+    // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
+    // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
   }
-  
+
+  /// Draws the X labels area of the chart. 
+  void _paintXLabels(ui.Canvas canvas) {
+    // Draw x axis labels
+    xContainer.paint(canvas);
+  }
+
+  /// Draws the Y labels area of the chart.
+  void _paintYLabels(ui.Canvas canvas) {
+    // Draw y axis labels
+    yContainer.paint(canvas);
+  }
+
+  /// Draws the legend area of the chart.
+  void _paintLegend(ui.Canvas canvas) {
+    legendContainer.paint(canvas);
+  }
+
+  /// Draws the grid and data areas of the chart.
+  void _paintGridAndData(ui.Canvas canvas) {
+    dataContainer.paint(canvas);
+  }
+
+
+
+
   /// Abstract method creates the [DataContainer],
   /// for the particular chart type (line, bar).
   DataContainer createDataContainer({

@@ -46,15 +46,13 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// in the sense it is guaranteed to be called by the Flutter framework
   /// (see class comment), hence it provides a "hook" into the chart
   /// being able to paint and draw itself.
-  ///
-  /// In detail, it paints all elements of the chart - the legend in [_paintLegend],
-  /// the grid in [drawGrid], the x/y labels in [_paintXLabels] and [_paintYLabels],
-  /// and the data values, column by column, in [drawDataPresentersColumns].
-  ///
-  /// Before the actual canvas painting,
-  /// the operation with a call to [ChartContainer.layout()], then paints
-  /// the lines, rectangles and circles of the child [containers.Container]s,
-  /// according to their calculated layout positions.
+  /// 
+  /// The substantial role is to pass the [size] provided by the framework layout
+  /// to [container.chartArea]. The container needs this information for layout,
+  /// see [containers.ChartContainer.layout()].
+  /// 
+  /// Once the above role is done, it delegates all painting to canvas to the
+  /// [containers.ChartContainer.paint()] (see).
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
@@ -66,19 +64,13 @@ abstract class ChartPainter extends widgets.CustomPainter {
     // set background: canvas.drawPaint(new ui.Paint()..color = material.Colors.green);
 
     // Once we know the size, let the container manage it's size.
-    // This is the layout size (??)
+    // This is the layout size. Once done, we can delegate painting 
+    // to canvas to the [ChartContainer].
     container.chartArea = size;
 
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    container.layout();
-
-    _paintYLabels(canvas);
-    _paintXLabels(canvas);
-    _paintLegend(canvas);
-    // removed drawDataPresentersColumns(canvas); // bars (bar chart), lines and points (line chart)
-    // Grid, then data area - bars (bar chart), lines and points (line chart).
-    _paintGridAndData(canvas); 
+    container.paint(canvas); 
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
@@ -93,25 +85,4 @@ abstract class ChartPainter extends widgets.CustomPainter {
     return true;
   }
 
-  /// Draws the X labels area of the chart. 
-  void _paintXLabels(ui.Canvas canvas) {
-    // Draw x axis labels
-    container.xContainer.paint(canvas);
-  }
-
-  /// Draws the Y labels area of the chart.
-  void _paintYLabels(ui.Canvas canvas) {
-    // Draw y axis labels
-    container.yContainer.paint(canvas);
-  }
-
-  /// Draws the legend area of the chart.
-  void _paintLegend(ui.Canvas canvas) {
-    container.legendContainer.paint(canvas);
-  }
-
-  /// Draws the grid and data areas of the chart.
-  void _paintGridAndData(ui.Canvas canvas) {
-    container.dataContainer.paint(canvas);
-  }
 }
