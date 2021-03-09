@@ -18,14 +18,11 @@ class VerticalBarChart extends widgets.CustomPaint {
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size: widgets.Size.zero,
     widgets.Widget? child,
-    required bar_containers.VerticalBarChartContainer container,
   }) : super(
-          key: key,
-          painter: painter,
-          foregroundPainter: foregroundPainter,
-          size: size,
-          child: child,
-        ) {
-    container.isStacked = true;
-  }
+    key: key,
+    painter: painter,
+    foregroundPainter: foregroundPainter,
+    size: size,
+    child: child,
+  );
 }

@@ -19,10 +19,11 @@ import '../bar/presenter.dart' as bar_presenters;
 class VerticalBarChartPainter extends ChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer]
-  VerticalBarChartPainter(
-      {required bar_containers.VerticalBarChartContainer
-          verticalBarChartContainer})
-      : super(chartContainer: verticalBarChartContainer);
+  VerticalBarChartPainter({
+    required bar_containers.VerticalBarChartContainer verticalBarChartContainer,
+  }) : super(chartContainer: verticalBarChartContainer) {
+    verticalBarChartContainer.isStacked = true;
+  }
 
   /// See super [ChartPainter.drawPresentersColumns].
   void drawPresentersColumns(ui.Canvas canvas) {

@@ -1,5 +1,5 @@
 import 'package:flutter_charts/src/chart/container.dart'
-    show Container, AdjustableContentChartAreaContainer;
+    show Container, AdjustableLabelsChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
@@ -71,6 +71,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
 
   /// Constructor uses default values from [ChartOptions]
+  // todo-00-last : Move all re-layout settings from options to DefaultIterativeLabelLayoutStrategy
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
   })   : _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
@@ -175,11 +176,11 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 ///   - Tilt all labels
 ///   - Decrease label font size
 abstract class LabelLayoutStrategy {
-  late AdjustableContentChartAreaContainer _container;
+  late AdjustableLabelsChartAreaContainer _container;
 
   LabelLayoutStrategy();
 
-  void onContainer(AdjustableContentChartAreaContainer container) {
+  void onContainer(AdjustableLabelsChartAreaContainer container) {
     this._container = container;
   }
 

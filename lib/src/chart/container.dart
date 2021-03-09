@@ -56,9 +56,10 @@ abstract class ChartContainer {
   late XContainer xContainer;
   late DataContainer dataContainer;
 
-  // Layout strategy for XContainer labels
-  // todo-00-last-last : why is this needed here AND in AdjustableContentChartAreaContainer?
-  strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy;
+  /// Layout strategy for XContainer labels.
+  /// 
+  /// Cached from constructor here, until the late [xContainer] is created.
+  strategy.LabelLayoutStrategy _cachedXContainerLabelLayoutStrategy;
 
   /// Scaler of data values to values on the Y axis.
   late YScalerAndLabelFormatter yScaler;
@@ -111,7 +112,7 @@ abstract class ChartContainer {
   })  :
         this.data = chartData,
         this.options = chartOptions,
-        this.xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy ??
+        this._cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy ??
             strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions);
 
   // todo-00-last: now when we added size to layout, should not this be done the same in subclasses?
@@ -164,12 +165,6 @@ abstract class ChartContainer {
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
 
-    // todo-00-last : when made optional, consider remove
-    xContainerLabelLayoutStrategy =
-        new strategy.DefaultIterativeLabelLayoutStrategy(
-      options: this.options,
-    );
-
     xContainer = new XContainer(
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
@@ -177,7 +172,7 @@ abstract class ChartContainer {
           widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height - legendContainerSize.height,
           heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
     xContainer.layout();
@@ -479,7 +474,7 @@ class YContainer extends ChartAreaContainer {
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [LayoutExpansion].
 
-class XContainer extends AdjustableContentChartAreaContainer {
+class XContainer extends AdjustableLabelsChartAreaContainer {
   /// X labels.
   List<AxisLabelContainer> _xLabelContainers = new List.empty(growable: true);
 
@@ -496,13 +491,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
   XContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
-    // todo-00-last-last-make-optional
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
           layoutExpansion: layoutExpansion,
           parentContainer: parentContainer,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
+    // Must initialize in body, as access to 'this' not available in initializer.
     xContainerLabelLayoutStrategy.onContainer(this);
   }
 
@@ -518,6 +513,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List.empty(growable: true);
 
+    // todo-00-last : should we inherit from parent in constructor?
+    //                  maybe provide an inherit method.
     ChartOptions options = _parentContainer.options;
 
     List<String> xLabels = _parentContainer.data.xLabels;
@@ -540,7 +537,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
             .toInt();
     */
     int numShownLabels =
-        (xLabels.length ~/ xContainerLabelLayoutStrategy.showEveryNthLabel);
+        (xLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
     LabelStyle labelStyle = _styleForLabels(options);
@@ -552,8 +549,8 @@ class XContainer extends AdjustableContentChartAreaContainer {
       var xLabelContainer = new AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.infinity,
-        labelTiltMatrix: xContainerLabelLayoutStrategy.labelTiltMatrix,
-        canvasTiltMatrix: xContainerLabelLayoutStrategy.canvasTiltMatrix,
+        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
+        canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
         layoutExpansion: LayoutExpansion.unused(),
       );
@@ -599,13 +596,13 @@ class XContainer extends AdjustableContentChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    xContainerLabelLayoutStrategy.reLayout();
+    labelLayoutStrategy.reLayout();
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
     widgets.TextStyle labelTextStyle = new widgets.TextStyle(
       color: options.labelTextStyle.color,
-      fontSize: xContainerLabelLayoutStrategy.labelFontSize,
+      fontSize: labelLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -632,10 +629,10 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   void paint(ui.Canvas canvas) {
-    if (xContainerLabelLayoutStrategy.isRotateLabelsReLayout) {
+    if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * xContainerLabelLayoutStrategy.labelTiltRadians);
+      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
 
       _rotateLabelContainersAsCanvas();
       _paintLabelContainers(canvas);
@@ -660,7 +657,7 @@ class XContainer extends AdjustableContentChartAreaContainer {
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-    if (xIndex % xContainerLabelLayoutStrategy.showEveryNthLabel == 0)
+    if (xIndex % labelLayoutStrategy.showEveryNthLabel == 0)
       return true;
     return false;
   }
@@ -694,29 +691,32 @@ class XContainer extends AdjustableContentChartAreaContainer {
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
 // todo-2 LabelLayoutStrategy should be a member of AdjustableContect, not
-//          in AdjustableContentChartAreaContainer
-//          Also, AdjustableContent should be a mixin.
+//          in AdjustableLabelsChartAreaContainer
+//          Also, AdjustableLabels should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
-abstract class AdjustableContent {
+abstract class AdjustableLabels {
   bool labelsOverlap();
 }
 
 /// Provides ability to connect [LabelLayoutStrategy] to [Container],
 /// (actually currently the [ChartAreaContainer].
-abstract class AdjustableContentChartAreaContainer extends ChartAreaContainer
-    implements AdjustableContent {
-  // todo-00-last-last : why is this needed here AND in top ChartContainer?
-  strategy.LabelLayoutStrategy _xContainerLabelLayoutStrategy;
+/// 
+/// Requires a non-null [_labelLayoutStrategy] passed to this, 
+/// as this abstract should not guess any defaults for the layout strategies;
+/// this abstract is serving too generic layouts to guess layout strategies.
+/// Extensions can create layout strategy defaults.
+abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
+    implements AdjustableLabels {
+  strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
-  strategy.LabelLayoutStrategy get xContainerLabelLayoutStrategy =>
-      _xContainerLabelLayoutStrategy;
+  strategy.LabelLayoutStrategy get labelLayoutStrategy =>
+      _labelLayoutStrategy;
 
-  AdjustableContentChartAreaContainer({
+  AdjustableLabelsChartAreaContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
-    // todo-00-last-last-make-optional
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
-  })   : _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+  })   : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
         super(
           parentContainer: parentContainer,
           layoutExpansion: layoutExpansion,
@@ -1068,6 +1068,7 @@ class DataContainer extends ChartAreaContainer {
     // draw vertical grid
     this._yGridLinesContainer.paint(canvas);
 
+    // todo-00-last-last-last
     // todo 0-layout move here painting of lines and bars.
     //         Look at VerticalBarChartPainter extends ChartPainter
     //         and rename drawPresentersColumns to paint

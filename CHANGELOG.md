@@ -1,3 +1,29 @@
+# version 0.3.0 (??)
+
+- API changes
+  - Removed the container parameter from the constructor of VerticalBarChart, LineChart.
+    For VerticalBarChart:
+    ```dart
+      VerticalBarChart({
+        widgets.Key? key,
+        required bar_painter.VerticalBarChartPainter painter,
+        widgets.CustomPainter? foregroundPainter,
+        widgets.Size size: widgets.Size.zero,
+        widgets.Widget? child,
+        // REMOVED  required bar_containers.VerticalBarChartContainer container,
+        }) : super(
+          key: key,
+          painter: painter,
+          foregroundPainter: foregroundPainter,
+          size: size,
+          child: child,
+        );
+    ```
+    - If you passed the container before, remove it. 
+    - The container is stored on the VerticalBarChartPainter and used from there.
+    - A similar situation for the LineChart.
+      
+
 # version 0.2.0 (2021-03-07)
 
 Support for null safety.

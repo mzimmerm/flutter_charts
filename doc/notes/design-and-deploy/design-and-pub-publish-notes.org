@@ -2,6 +2,26 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 
+* Refactoring 2021
+
+** Where are the paint and draw primitives called?
+
+At the end of Container.paint(canvas), there is always one of:
+  - _textPainter.paint(canvas, offset);
+  - canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
+  - canvas.drawRect(_indicatorRect, _indicatorPaint);
+But there is also drawing in
+- VerticalBarChartPainter.drawPresentersColumns
+    -  canvas.drawRect(
+            presenterCast.presentedRect, presenterCast.dataRowPaint);
+- LineChartPainter.drawPresentersColumns
+    - canvas.drawLine(
+          presenterCast.lineContainer.lineFrom,
+          presenterCast.lineContainer.lineTo,
+          presenterCast.lineContainer.linePaint,
+        );
+    - canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,  presenterCast.outerPaint);
+
 * TODO Bugs to report or ask on Stack Overflow
 
 ** TODO Stack overflow: add question on how to migrate int extensions - note in gitter

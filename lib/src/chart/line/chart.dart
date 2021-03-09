@@ -24,14 +24,11 @@ class LineChart extends widgets.CustomPaint {
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size: widgets.Size.zero,
     widgets.Widget? child,
-    required line_containers.LineChartContainer container,
   }) : super(
           key: key,
           painter: painter,
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
-        ) {
-    container.isStacked = false;
-  }
+        );
 }

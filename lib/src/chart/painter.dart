@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart' as widgets; // note: external package
+import 'package:flutter_charts/src/chart/bar/chart.dart';
+import 'package:flutter_charts/src/chart/line/chart.dart';
 
 import 'container.dart' as containers;
 
@@ -30,12 +32,23 @@ abstract class ChartPainter extends widgets.CustomPainter {
   ChartPainter({required containers.ChartContainer chartContainer})
       : container = chartContainer;
 
-  /// Paints the chart area - the legend in [drawLegend],
+  /// Paints the chart on the passed [canvas], limited to the [size] area.
+  /// 
+  /// This [paint()] method is the core method call of painting the chart. 
+  /// 
+  /// As this class extends [widgets.CustomPainter], the Flutter framework
+  /// ensures this method is called at some point during the chart widget 
+  /// (the [VerticalBarChart], [LineChart], etc 
+  /// - the extensions of [widgets.CustomPaint]) - is being build. 
+  /// 
+  /// In detail, it paints all elements of the chart - the legend in [drawLegend],
   /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
   /// and the data values, column by column, in [drawPresentersColumns].
   ///
-  /// Starts with a call to [ChartContainer.layout], then painting
-  /// according to the calculated layout positions.
+  /// Before the actual canvas painting, 
+  /// the operation with a call to [ChartContainer.layout], then paints 
+  /// the lines, rectangles and circles of the child [containers.Container]s,
+  /// according to their calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
