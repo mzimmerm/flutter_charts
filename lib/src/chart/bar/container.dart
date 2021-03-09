@@ -11,7 +11,7 @@ import 'presenter.dart';
 ///
 /// The core override is setting the [presenterCreator] -
 /// object which makes instances of [VerticalBarPresenter]s,
-/// used to present each data value.
+/// which are, in turn, used to present each data value.
 class VerticalBarChartContainer extends ChartContainer {
   VerticalBarChartContainer({
     required ChartData chartData,
@@ -25,8 +25,6 @@ class VerticalBarChartContainer extends ChartContainer {
     presenterCreator = new VerticalBarLeafCreator();
   }
 
-// todo-00-last-last-all-containers : added block
-////////////////////////////
   VerticalBarChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
@@ -36,10 +34,5 @@ class VerticalBarChartContainer extends ChartContainer {
       layoutExpansion: layoutExpansion,
     );
   }
-
-  void paint(Canvas canvas) {
-    throw new StateError("should not be called. todo-00-last-last");
-  }
-////////////////////////////////
   
 }

@@ -6,10 +6,13 @@ import 'dart:math' as math show pi;
 
 enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
 
-/// Strategy of achieving that labels "fit" on the X axis.
-///
-/// Strategy defines a sequence of steps, each performing a specific strategy
-/// to achieve X labels fit, currently, [LabelFitMethod.RotateLabels],
+/// Strategy of achieving that labels do not overlap ("fit") on an axis. 
+/// 
+/// Currently only used on the X axis, this strategy defines a sequence of steps, 
+/// each performing a specific strategy to achieve labels fit.
+/// 
+/// When the [layout()] finds labels overlap, the following steps are taken
+/// to achieve "fit" of labels: [LabelFitMethod.RotateLabels],
 /// [LabelFitMethod.DecreaseLabelFont] and [LabelFitMethod.SkipLabels].
 ///
 /// The steps are repeated at most [maxLabelReLayouts] times.
@@ -25,7 +28,6 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// later can change by _decreaseLabelFontRatio.
   ///
   // If _reLayoutDecreaseLabelFont is not called, _labelFontSize is never moved away from 0.0
-  // todo-00-last : how come the members do not need neither late, nor init to 0.0?
   double _labelFontSize;
 
   double get labelFontSize => _labelFontSize;

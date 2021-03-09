@@ -7,53 +7,18 @@ import '../presenter.dart' as presenters;
 
 import '../bar/presenter.dart' as bar_presenters;
 
-
-// todo-00-last-last-document-better
-/// Paints the columns of the bar chart.
+/// This concrete [CustomPainter] only provides a constructor, 
+/// specifically requiring [bar_containers.VerticalBarChartContainer],
+/// and setting [verticalBarChartContainer.isStacked] to true,
+/// as bars are stacked by default.
 ///
-/// The core override is the [drawDataPresentersColumns] method
-/// which call on each column area of the chart, to paint the
-/// [VerticalBarPresenter]s - painting a rectangle for
-/// each data value across series.
-///
-/// See [ChartPainter]
+/// See [ChartPainter] for more information.
 class VerticalBarChartPainter extends ChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
-  /// the [VerticalBarChartContainer]
+  /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
     required bar_containers.VerticalBarChartContainer verticalBarChartContainer,
   }) : super(chartContainer: verticalBarChartContainer) {
     verticalBarChartContainer.isStacked = true;
   }
-
-/*
-// todo-00-last-last-all-containers : moved from here to VerticalBarChartDataContainer as paint()
-  /// See super [ChartPainter.drawDataPresentersColumns].
-  void drawDataPresentersColumns(ui.Canvas canvas) {
-    presenters.PresentersColumns presentersColumns =
-        this.container.dataContainer.presentersColumns;
-
-    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
-      // todo-2 do not repeat loop, collapse to one construct
-
-      var positivePresenterList = presentersColumn.positivePresenters;
-      positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
-      positivePresenterList.forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast =
-            presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(
-            presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
-
-      var negativePresenterList = presentersColumn.negativePresenters;
-      negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
-      negativePresenterList.forEach((presenters.Presenter presenter) {
-        bar_presenters.VerticalBarPresenter presenterCast =
-            presenter as bar_presenters.VerticalBarPresenter;
-        canvas.drawRect(
-            presenterCast.presentedRect, presenterCast.dataRowPaint);
-      });
-    });
-  }
-*/
 }

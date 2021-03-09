@@ -7,34 +7,6 @@
 ** Where are the paint and draw primitives called?
 
 // todo-00-last-last-all-containers 
-
-At the end of Container.paint(canvas), there is always one of:
-  - _textPainter.paint(canvas, offset);
-  - canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
-  - canvas.drawRect(_indicatorRect, _indicatorPaint);
-But there is also drawing in
-- VerticalBarChartPainter.drawPresentersColumns
-    -  canvas.drawRect(
-            presenterCast.presentedRect, presenterCast.dataRowPaint);
-- LineChartPainter.drawPresentersColumns
-    - canvas.drawLine(
-          presenterCast.lineContainer.lineFrom,
-          presenterCast.lineContainer.lineTo,
-          presenterCast.lineContainer.linePaint,
-        );
-    - canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,  presenterCast.outerPaint);
-
-
-
-
-
-
-  // todo-00-last-last-all-containers added block:
-  ui.Size _size = ui.Size.zero;
-  ui.Size get layoutSize => _size;
-  
-
-
   
 
 * TODO Bugs to report or ask on Stack Overflow
@@ -73,14 +45,24 @@ See file:./bug-text-painter-2.png
 * IN-PROGRESS Flutter Charts Bugs status
 
 - [X] Chart area needs clipping in the application
-- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
+- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
+- [ ] After hot reload, switching between Line and Vertical charts, the labels start being skipped: DefaultIterativeLabelLayoutStrategy._showEveryNthLabel actually increases.
+- 
  
 * IN-PROGRESS Flutter Charts Enhancements
 
 ** Refactorings
+
+*** IN-PROGRESS Move all painting from ChartPainter.paint to ChartContainer.paint!!
 *** Introduce Mixin Layoutable by applyParentOffset()
 *** Introduce Mixin Paintable by paint()
+*** In many signatures where ChartContainer is used, I think it should be just Container.
+*** Strongly consider: Presenters should also be Containers!
+*** Rename Container into Morph
+**** Add a list of children to Morph
+**** Add name field to Morph 
+** Study Morphs what else needs added!
 ** Enhancements in progress or planned - priority order
 
 *** Create a document / image showing chart layout and spacing - show option variables on image

@@ -26,8 +26,8 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
-
-// todo-00-last review doc, notes, and structure
+/// Abstract class representing the [Container] of the whole chart.
+/// 
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
@@ -44,17 +44,15 @@ import 'bar/presenter.dart' as bar_presenters;
 ///   - `absolute positions` refer to positions
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-// todo-00-last-last-all-containers abstract class ChartContainer {
 abstract class ChartContainer extends Container {
-
-  // todo-00-last-last-all-containers added block:
+  /// Implements [Container.layoutSize()].
   ui.Size get layoutSize => chartArea;
-  
-  
+
+  // todo-00-last describe in detail how this is set in Painter and used in Paint (chart).
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
   /// area on which the painter will paint.
-  /// See the call to [painterLayout()] of this class.
+  /// See the call to [layout()] of this class.
   /// [chartArea] marked late, as there is virtually no practical situation
   /// it can be known before runtime; it is required,
   /// but not set at construction time.
@@ -67,12 +65,13 @@ abstract class ChartContainer extends Container {
   late DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
-  /// 
+  ///
   /// Cached from constructor here, until the late [xContainer] is created.
   strategy.LabelLayoutStrategy _cachedXContainerLabelLayoutStrategy;
 
   /// Scaler of data values to values on the Y axis.
   late YScalerAndLabelFormatter yScaler;
+
   /// ##### Abstract methods or subclasses-implemented getters
 
   /// Makes presenters, the visuals painted on each chart column that
@@ -99,7 +98,7 @@ abstract class ChartContainer extends Container {
 
   ChartOptions options;
   ChartData data;
-  
+
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
@@ -119,32 +118,41 @@ abstract class ChartContainer extends Container {
     required ChartData chartData,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  :
-        this.data = chartData,
+  })  : this.data = chartData,
         this.options = chartOptions,
-        this._cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy ??
-            strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions),
-  super(
-        layoutExpansion: LayoutExpansion.unused(),
-      ) {
+        this._cachedXContainerLabelLayoutStrategy =
+            xContainerLabelLayoutStrategy ??
+                strategy.DefaultIterativeLabelLayoutStrategy(
+                    options: chartOptions),
+        super(
+          layoutExpansion: LayoutExpansion.unused(),
+        ) {
     // Must initialize in body, as access to 'this' not available in initializer.
-   // todo-00-last-last-last :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
+    // todo-00-last : check if needed :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
   }
 
-
-
-
-  // todo-00-last-last-all-containers-added 
-  // is this called?
+  /// Implements [Container.layout()] for the chart as a whole.
+  ///
+  /// Uses this container's [chartArea] as available size
+  ///
+  /// Note: The [chartArea] was set in the [ChartPainter.paint(Canvas, Size)]
+  /// just before calling this method:
+  ///
+  /// ```dart
+  ///   void paint(ui.Canvas canvas, ui.Size size) {
+  ///     ...
+  ///     container.chartArea = size;
+  ///     container.layout();
+  ///     ...
+  /// ```
+  ///
+  /// Layout proceeds scaling the Y values to fit the available size,
+  /// then lays out the legend, Y axis and labels, X axis and labels,
+  /// and the data area, giving each the size it needs.
+  ///
+  /// The actual layout algorithm should be made pluggable.
+  ///
   void layout() {
-    painterLayout();
-  }
-
-  
-  // todo-00-last-last-all-containers-modified void painterLayout(ui.Size chartAreaSize) {
-  // todo-00-last-last-all-containers-modified    this.chartArea = chartAreaSize;
-  void painterLayout() {
-
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -235,20 +243,6 @@ abstract class ChartContainer extends Container {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-
-    // todo-00-last-last-all-containers : modified  block 
-//////////////////////////////
-/*
-    this.dataContainer = new DataContainer(
-      parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width - yContainerSize.width,
-          widthExpansionStyle: ExpansionStyle.TryFill,
-          height: chartArea.height -
-              (legendContainerSize.height + xContainerSize.height),
-          heightExpansionStyle: ExpansionStyle.TryFill),
-    );
-*/
     this.dataContainer = createDataContainer(
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
@@ -258,21 +252,25 @@ abstract class ChartContainer extends Container {
               (legendContainerSize.height + xContainerSize.height),
           heightExpansionStyle: ExpansionStyle.TryFill),
     );
-    
-//////////////////////////////
-    
+
     dataContainer.layout();
     dataContainer.applyParentOffset(dataContainerOffset);
   }
   
-  //////////////////////////////
- // todo-00-last-last-all-containers : added block 
-  /// Abstract, document
+  // todo-00-last-last-last : Why is this not used? Describe
+  /// Implements superclass's [paint()] by throwing exception.
+  /// 
+  /// The reason for this is that the p
+  void paint(ui.Canvas canvas) {
+    throw new StateError("should not be called. todo-00-last-last");
+  }
+  
+  /// Abstract method creates the [DataContainer],
+  /// for the particular chart type (line, bar).
   DataContainer createDataContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
-});
- ///////////////////////////////////////////////
+  });
 
   /// Create member [pointsColumns] from [data.dataRows].
   void setupPointsColumns() {
@@ -705,8 +703,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   bool _isLabelOnIndexShown(int xIndex) {
-    if (xIndex % labelLayoutStrategy.showEveryNthLabel == 0)
-      return true;
+    if (xIndex % labelLayoutStrategy.showEveryNthLabel == 0) return true;
     return false;
   }
 
@@ -748,8 +745,8 @@ abstract class AdjustableLabels {
 
 /// Provides ability to connect [LabelLayoutStrategy] to [Container],
 /// (actually currently the [ChartAreaContainer].
-/// 
-/// Requires a non-null [_labelLayoutStrategy] passed to this, 
+///
+/// Requires a non-null [_labelLayoutStrategy] passed to this,
 /// as this abstract should not guess any defaults for the layout strategies;
 /// this abstract is serving too generic layouts to guess layout strategies.
 /// Extensions can create layout strategy defaults.
@@ -757,8 +754,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
     implements AdjustableLabels {
   strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
-  strategy.LabelLayoutStrategy get labelLayoutStrategy =>
-      _labelLayoutStrategy;
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
     required ChartContainer parentContainer,
@@ -975,7 +971,7 @@ abstract class Container {
 ///       and also Y points on which the Y labels are centered.
 ///   - [XContainer] - Equivalent to YContainer, but manages X direction
 ///     layout and labels.
-///   - [DataContainer] - manages the area which displays:
+///   - [DataContainer] and extensions - manages the area which displays:
 ///     - Data as bar chart, line chart, or other chart type.
 ///     - Grid (this includes the X and Y axis).
 ///
@@ -1000,9 +996,9 @@ abstract class ChartAreaContainer extends Container {
   ChartContainer get parentContainer => _parentContainer;
 }
 
-/// Manages the core chart area which displays, overlayed:
-///   - Data - as columns of bar chart, line chart, or other chart type
+/// Manages the core chart area which displays and paints (in this order):
 ///   - The grid (this includes the X and Y axis).
+///   - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainer extends ChartAreaContainer {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
@@ -1020,14 +1016,18 @@ abstract class DataContainer extends ChartAreaContainer {
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
   }) : super(
-    layoutExpansion: layoutExpansion,
-    parentContainer: parentContainer,
-  );
+          layoutExpansion: layoutExpansion,
+          parentContainer: parentContainer,
+        );
 
+  /// Implements [Container.layout()] for data area.
+  ///
+  /// First lays out the Grid, then, based on the available size,
+  /// scales the columns to the [YContainer]'s scale.
   void layout() {
     _layoutGrid();
 
-    // Scale the [pointsColumns] to the [YContainer] 's scale.
+    // Scale the [pointsColumns] to the [YContainer]'s scale.
     scalePointsColumns();
   }
 
@@ -1109,21 +1109,19 @@ abstract class DataContainer extends ChartAreaContainer {
     return new ui.Size(_layoutExpansion._width, _layoutExpansion._height);
   }
 
-  // todo-00-last-last-last
-  void paintGridLines(ui.Canvas canvas) {
+  /// Paints the Grid lines of the chart area.
+  ///
+  /// Note that the [super.paint()] remains not implemented in this class.
+  /// Superclasses (for example the line chart data container) should
+  /// call this method at the beginning of it's [paint()] implementation,
+  /// followed by painting the [Presenter]s in [drawDataPresentersColumns()].
+  ///
+  void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
     this._xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
     this._yGridLinesContainer.paint(canvas);
-
-    // todo-00-last-last-last
-    // todo 0-layout move here painting of lines and bars.
-    //         Look at VerticalBarChartPainter extends ChartPainter
-    //         and rename drawPresentersColumns to paint
-    //         But needs to take care of some things
-
-
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
@@ -1160,13 +1158,11 @@ abstract class DataContainer extends ChartAreaContainer {
     );
   }
 
-
-// todo-00-last-last-all-containers : moved here from ChartPainter
-  /// Optionally paint series in reverse order (first to last vs last to first)
+  /// Optionally paint series in reverse order (first to last,
+  /// vs last to first which is default).
   ///
   /// See [ChartOptions.firstDataRowPaintedFirst].
-  List<Presenter> optionalPaintOrderReverse(
-      List<Presenter> presenters) {
+  List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
     var options = this.parentContainer.options;
     if (options.firstDataRowPaintedFirst) {
       presenters = presenters.reversed.toList();
@@ -1174,30 +1170,28 @@ abstract class DataContainer extends ChartAreaContainer {
     return presenters;
   }
 
-  // todo-00-last-last-last-all-containers : this can be removed, it is forwarded to paint
-/// Draws the actual data, either as lines with points (line chart),
-/// or bars/columns, stacked or grouped (bar/column charts).
-  void drawDataPresentersColumns(ui.Canvas canvas);  
+  /// Draws the actual data, either as lines with points (line chart),
+  /// or bars/columns, stacked or grouped (bar/column charts).
+  void drawDataPresentersColumns(ui.Canvas canvas);
 }
 
-////////////////////////////////////////////
-// todo-00-last-last-all-containers  added 2 classes
+/// Provides the data area container for the bar chart.
+///
+/// The only role is to implement the abstract method of the baseclass,
+/// [paint()] and [drawDataPresentersColumns()].
 class VerticalBarChartDataContainer extends DataContainer {
-
-// todo-00-last-last-all-containers : moved here from VerticalBarChartPainter
   VerticalBarChartDataContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
-  }) : super(parentContainer: parentContainer,
-      layoutExpansion: layoutExpansion);
-  
+  }) : super(
+            parentContainer: parentContainer, layoutExpansion: layoutExpansion);
+
   void paint(ui.Canvas canvas) {
-    super.paintGridLines(canvas); // todo-00-last-last-all-containers
+    super._paintGridLines(canvas);
     drawDataPresentersColumns(canvas);
   }
-  
-// todo-00-last-last-all-containers : moved from here to VerticalBarChartDataContainer as paint()
-  /// See super [ChartPainter.drawDataPresentersColumns].
+
+  /// See super [ChartPainter.drawDataPresentersColumns()].
   void drawDataPresentersColumns(ui.Canvas canvas) {
     PresentersColumns presentersColumns = this.presentersColumns;
 
@@ -1208,7 +1202,7 @@ class VerticalBarChartDataContainer extends DataContainer {
       positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
       positivePresenterList.forEach((Presenter presenter) {
         bar_presenters.VerticalBarPresenter presenterCast =
-        presenter as bar_presenters.VerticalBarPresenter;
+            presenter as bar_presenters.VerticalBarPresenter;
         canvas.drawRect(
             presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
@@ -1217,30 +1211,30 @@ class VerticalBarChartDataContainer extends DataContainer {
       negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
       negativePresenterList.forEach((Presenter presenter) {
         bar_presenters.VerticalBarPresenter presenterCast =
-        presenter as bar_presenters.VerticalBarPresenter;
+            presenter as bar_presenters.VerticalBarPresenter;
         canvas.drawRect(
             presenterCast.presentedRect, presenterCast.dataRowPaint);
       });
     });
   }
-  
 }
 
+/// Provides the data area container for the line chart.
+///
+/// The only role is to implement the abstract method of the baseclass,
+/// [paint()] and [drawDataPresentersColumns()].
 class LineChartDataContainer extends DataContainer {
-
   LineChartDataContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
-  }) : super(parentContainer: parentContainer,
-        layoutExpansion: layoutExpansion);
-
-// todo-00-last-last-all-containers : moved here from LineChartPainter
+  }) : super(
+            parentContainer: parentContainer, layoutExpansion: layoutExpansion);
 
   void paint(ui.Canvas canvas) {
     drawDataPresentersColumns(canvas);
   }
 
-  /// See super [ChartPainter.drawDataPresentersColumns].
+  /// See super [ChartPainter.drawDataPresentersColumns()].
   void drawDataPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.presentersColumns;
     presentersColumns.forEach((PresentersColumn presentersColumn) {
@@ -1248,7 +1242,7 @@ class LineChartDataContainer extends DataContainer {
       presenterList = optionalPaintOrderReverse(presenterList);
       presenterList.forEach((Presenter presenter) {
         line_presenters.LineAndHotspotPresenter presenterCast =
-        presenter as line_presenters.LineAndHotspotPresenter;
+            presenter as line_presenters.LineAndHotspotPresenter;
         // todo 0-future-minor Use call to Container.paint
         canvas.drawLine(
           presenterCast.lineContainer.lineFrom,
@@ -1263,10 +1257,9 @@ class LineChartDataContainer extends DataContainer {
       });
     });
   }
-
 }
 
-////////////////////////////////////////////
+/// 
 class GridLinesContainer extends Container {
   List<LineContainer> _lineContainers = new List.empty(growable: true);
 
@@ -1279,8 +1272,7 @@ class GridLinesContainer extends Container {
     _lineContainers.add(lineContainer);
   }
 
-  // #####  Implementors of method in superclass [Container].
-
+  /// Implements the abstract [Container.layout()].
   void layout() {
     _lineContainers.forEach((lineContainer) => lineContainer.layout());
   }
@@ -1291,13 +1283,14 @@ class GridLinesContainer extends Container {
         .forEach((lineContainer) => lineContainer.applyParentOffset(offset));
   }
 
+  /// Implements the abstract [Container.layout()].
   void paint(ui.Canvas canvas) {
     _lineContainers.forEach((lineContainer) => lineContainer.paint(canvas));
   }
 
   /// Implementor of method in superclass [Container].
   ///
-  /// Return the size of the outhermost rectangle which contains all lines
+  /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
   ui.Size get layoutSize => throw new StateError("todo-2 implement this.");

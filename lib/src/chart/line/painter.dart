@@ -8,15 +8,12 @@ import '../line/container.dart' as line_containers;
 
 import '../painter.dart';
 
-// todo-00-last-last-document-better
-/// Paints the columns of the line chart.
+/// This concrete [CustomPainter] only provides a constructor, 
+/// specifically requiring [line_containers.LineChartContainer],
+/// and setting [line_containers.LineChartContainer.isStacked] to false,
+/// as lines can never be stacked.
 ///
-/// The core override is the [drawDataPresentersColumns] method
-/// which call on each column area of the chart, to paint the
-/// [LineAndHotspotPresenter]s - painting a point and line for
-/// each data value across series.
-///
-/// See [ChartPainter]
+/// See [ChartPainter] for more information.
 class LineChartPainter extends ChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
@@ -25,31 +22,4 @@ class LineChartPainter extends ChartPainter {
   }) : super(chartContainer: lineChartContainer) {
     lineChartContainer.isStacked = false;
   }
-
-// todo-00-last-last-all-containers : moved from here to LineChartDataContainer as paint()
-/*  
-  /// See super [ChartPainter.drawDataPresentersColumns].
-  void drawDataPresentersColumns(ui.Canvas canvas) {
-    var presentersColumns = this.container.dataContainer.presentersColumns;
-    presentersColumns.forEach((presenters.PresentersColumn presentersColumn) {
-      var presenterList = presentersColumn.presenters;
-      presenterList = optionalPaintOrderReverse(presenterList);
-      presenterList.forEach((presenters.Presenter presenter) {
-        line_presenters.LineAndHotspotPresenter presenterCast =
-            presenter as line_presenters.LineAndHotspotPresenter;
-        // todo 0-future-minor Use call to Container.paint
-        canvas.drawLine(
-          presenterCast.lineContainer.lineFrom,
-          presenterCast.lineContainer.lineTo,
-          presenterCast.lineContainer.linePaint,
-        );
-        // todo 0-future-medium Add hotspot as Container, use Container.paint
-        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.outerRadius,
-            presenterCast.outerPaint);
-        canvas.drawCircle(presenterCast.offsetPoint, presenterCast.innerRadius,
-            presenterCast.innerPaint);
-      });
-    });
-  }
-*/
 }

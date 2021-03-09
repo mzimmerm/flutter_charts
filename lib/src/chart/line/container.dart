@@ -11,7 +11,7 @@ import 'presenter.dart';
 ///
 /// The core override is setting the [presenterCreator] -
 /// object which makes instances of [LineAndHotspotPresenter]s,
-/// used to present each data value.
+/// which are, in turn, used to present each data value.
 class LineChartContainer extends ChartContainer {
   LineChartContainer({
     required ChartData chartData,
@@ -25,8 +25,6 @@ class LineChartContainer extends ChartContainer {
     presenterCreator = new LineAndHotspotLeafCreator();
   }
 
-// todo-00-last-last-all-containers : added block
-/////////////////////////////
   LineChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
     required LayoutExpansion layoutExpansion,
@@ -36,11 +34,4 @@ class LineChartContainer extends ChartContainer {
       layoutExpansion: layoutExpansion,
     );
   }
-
-  void paint(Canvas canvas) {
-    throw new StateError("should not be called. todo-00-last-last");
-  }
-
-////////////////////////////////
-  
 }

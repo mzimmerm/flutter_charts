@@ -8,9 +8,15 @@ import 'container.dart' as containers;
 
 import 'package:flutter_charts/src/chart/presenter.dart' as presenters;
 
-// todo-00-last-last-document-better around how this is only used to be called [paint] from there, everything are containers.
-/// [ChartPainter] does the core of painting the chart,
-/// in it's core method [paint()].
+/// Base class of the chart painters; it's core role is to paint the 
+/// charts (the extensions of [CustomPaint]).
+/// 
+/// As this class extends [widgets.CustomPainter], the Flutter framework
+/// ensures it's [paint()] method is called at some point during the chart widget
+/// ([VerticalBarChart], [LineChart], etc, the extensions of [widgets.CustomPaint])
+///  is being build.
+///
+/// This class does the core of painting the chart, in it's core method [paint()].
 ///
 /// Extensions should implement method [drawPresentersColumns()],
 /// which paints each column with the data representing elements -
@@ -35,20 +41,18 @@ abstract class ChartPainter extends widgets.CustomPainter {
   }) : container = chartContainer;
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
-  /// 
-  /// This [paint()] method is the core method call of painting the chart. 
-  /// 
-  /// As this class extends [widgets.CustomPainter], the Flutter framework
-  /// ensures this method is called at some point during the chart widget 
-  /// (the [VerticalBarChart], [LineChart], etc 
-  /// - the extensions of [widgets.CustomPaint]) - is being build. 
-  /// 
-  /// In detail, it paints all elements of the chart - the legend in [drawLegend],
-  /// the grid in [drawGrid], the x/y labels in [drawXLabels] and [drawYLabels],
+  ///
+  /// This [paint()] method is the core method call of painting the chart,
+  /// in the sense it is guaranteed to be called by the Flutter framework
+  /// (see class comment), hence it provides a "hook" into the chart
+  /// being able to paint and draw itself.
+  ///
+  /// In detail, it paints all elements of the chart - the legend in [_paintLegend],
+  /// the grid in [drawGrid], the x/y labels in [_paintXLabels] and [_paintYLabels],
   /// and the data values, column by column, in [drawDataPresentersColumns].
   ///
-  /// Before the actual canvas painting, 
-  /// the operation with a call to [ChartContainer.painterLayout], then paints 
+  /// Before the actual canvas painting,
+  /// the operation with a call to [ChartContainer.layout()], then paints
   /// the lines, rectangles and circles of the child [containers.Container]s,
   /// according to their calculated layout positions.
   void paint(ui.Canvas canvas, ui.Size size) {
@@ -61,22 +65,20 @@ abstract class ChartPainter extends widgets.CustomPainter {
 
     // set background: canvas.drawPaint(new ui.Paint()..color = material.Colors.green);
 
-
-    // todo-00-last-last-all-containers added block:
-    // Once we know the size, let the container manage it's size. 
+    // Once we know the size, let the container manage it's size.
     // This is the layout size (??)
     container.chartArea = size;
 
-    // todo-00-last-last-all-containers container.painterLayout(size);
-    container.painterLayout();
+    // Layout the whole chart container - provides all positions to paint and draw
+    // all chart elements.
+    container.layout();
 
-    drawGrid(canvas);
-    drawYLabels(canvas);
-    drawXLabels(canvas);
-    drawLegend(canvas);
-    // todo-00-last-last-all-containers
+    _paintYLabels(canvas);
+    _paintXLabels(canvas);
+    _paintLegend(canvas);
     // removed drawDataPresentersColumns(canvas); // bars (bar chart), lines and points (line chart)
-    drawData(canvas); // bars (bar chart), lines and points (line chart)
+    // Grid, then data area - bars (bar chart), lines and points (line chart).
+    _paintGridAndData(canvas); 
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
@@ -91,51 +93,25 @@ abstract class ChartPainter extends widgets.CustomPainter {
     return true;
   }
 
-  void drawGrid(ui.Canvas canvas) {
-    // draw horizontal and vertical grid
-    container.dataContainer.paint(canvas);
-  }
-
-  void drawXLabels(ui.Canvas canvas) {
+  /// Draws the X labels area of the chart. 
+  void _paintXLabels(ui.Canvas canvas) {
     // Draw x axis labels
     container.xContainer.paint(canvas);
   }
 
-  void drawYLabels(ui.Canvas canvas) {
+  /// Draws the Y labels area of the chart.
+  void _paintYLabels(ui.Canvas canvas) {
     // Draw y axis labels
     container.yContainer.paint(canvas);
   }
 
-  void drawLegend(ui.Canvas canvas) {
+  /// Draws the legend area of the chart.
+  void _paintLegend(ui.Canvas canvas) {
     container.legendContainer.paint(canvas);
   }
 
-// todo-00-last-last-all-containers : moved from here to LineChartDataContainer 
-/*
-
-  /// Optionally paint series in reverse order (first to last vs last to first)
-  ///
-  /// See [ChartOptions.firstDataRowPaintedFirst].
-  List<presenters.Presenter> optionalPaintOrderReverse(
-      List<presenters.Presenter> presenters) {
-    var options = this.container.options;
-    if (options.firstDataRowPaintedFirst) {
-      presenters = presenters.reversed.toList();
-    }
-    return presenters;
+  /// Draws the grid and data areas of the chart.
+  void _paintGridAndData(ui.Canvas canvas) {
+    container.dataContainer.paint(canvas);
   }
-*/
-
-  // todo-00-last-last-last-remove
-
-  /// Draws the actual data, either as lines with points (line chart),
-  /// or bars/columns, stacked or grouped (bar/column charts).
-// todo-00-last-last-all-containers-moved void drawDataPresentersColumns(ui.Canvas canvas);
-
-// todo-00-last-last-all-containers-added
-
-void drawData(ui.Canvas canvas) {
-  container.dataContainer.paint(canvas);
-}
-
 }
