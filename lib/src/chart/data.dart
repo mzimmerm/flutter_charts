@@ -90,7 +90,7 @@ class ChartData {
       for (int i = 3; i < dataRowsCount; i++) {
         int colorHex = new math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;
-        // todo-00-last : cast toInt added - does this change results?
+        // todo-11-last : cast toInt added - does this change results?
         dataRowsColors.add(
             new ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
       }

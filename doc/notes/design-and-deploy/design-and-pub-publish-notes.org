@@ -2,12 +2,10 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 
-* Refactoring 2021
+* IN-PROGRESS Dart questions running
 
-** Where are the paint and draw primitives called?
+- Is there a way to initialize a non-nullable list to size?
 
-// todo-00-last-last-all-containers 
-  
 
 * TODO Bugs to report or ask on Stack Overflow
 
@@ -42,60 +40,86 @@ It sounds like in the end this is just a type system complaint, I hope we should
 See file:./bug-text-painter-1.png
 See file:./bug-text-painter-2.png
 
-* IN-PROGRESS Flutter Charts Bugs status
-
-- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
-- [X] Chart area needs clipping in the application
-- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
-- 
- 
 * IN-PROGRESS Flutter Charts Enhancements
 
-** Refactorings
+** IN-PROGRESS Refactorings
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
-*** IN-PROGRESS Make Containers a hierarchy; remove complexity around passing ChartOptions.
+*** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
+- ChartContainer
+  - LegendContainer
+    - List<LegendItemContainer> _legendItemContainers
+  - YContainer
+  - XContainer
+  - DataContainer
+  - 
+*** IN-PROGRESS Make Containers a hierarchy
 
-**** First, add layouts and constraints
+**** ~Add layouts and constraints~
 - Add layout.dart -
   - Constraint{ _maxSize = Size.infinity; Constraint({maxSize:}); Constraint.infinity: redirect to Constraint(maxSize: Size.infinity};},
   - 
 - Pass Constraint to each Container.layout({required Constraint constraint})
-**** Next, convert all Presenter, PointsColumn, PointsColumns etc  to Containers
+**** ~LayoutExpansion~ - merge it somehow with ~Constraint~!!!
+**** ~Remove _paintYLabels and similar~, just replace with content of the method. 
+*** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers~
 - Find where Presenters get their internal values set
 - Replace the above sites with calls to layout(maxSize: internal values from existing code);
 - Convert to Containers
-  - [ ] Presenter
+  - [ ] Presenter - VerticalBarPresenter, LineAndHotspotpresenter
+    - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
+    - VerticalBarPresenter({required StackableValuePoint point,
+      - presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom); // so this is where the size is set!!!
+    - LineAndHotspotpresenter
+      - LineAndHotspotPresenter({  required StackableValuePoint point,
+      - toPoint ??= fromPoint;
+      - lineContainer = new LineContainer(
+        lineFrom: fromPoint,
+        lineTo: toPoint,
+        linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
+      - offsetPoint = fromPoint; // point is the left (from) end of the line
+      - innerPaint = options.hotspotInnerPaint;
+      - outerPaint = options.hotspotOuterPaint;
+      - innerRadius = options.hotspotInnerRadius;
+      - outerRadius = options.hotspotOuterRadius;
+  - ~LineContainer (passed and living in LineAndHotspotPresenter) already extends Container!!~
+    - class LineContainer extends flutter_charts_container.Container
+  - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
+ 
+- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS~
   - [ ] PointsColumn
   - [ ] PointsColumns
   - [ ] NOT StackableValuePoint
   - [ ] May need a special extension of Containers for some of the above.
+  - [ ] Anne Kilpatrick
+    - 43 M valuation, 146 Units 
+    - Oakville 10 M dollars / acre at lake
+    - here it is 7M / acre =>  164 - this would be $475 / unit ????
+    - 
   - 
-**** Rename Container.paint to Container.presentOn - we may need
-**** research which containers hold on parents and children
-**** Make containers a hierarchy
+**** TODO Rename Container.paint to Container.presentOn - we may need
+**** TODO research which containers hold on parents and children
+**** TODO Make containers a hierarchy
 ***** Add 'parent' and 'children' members
 ***** Add 'name' member to Container 
-**** Ensure code sets up the hierarchy correctly 
+**** TODO Ensure code sets up the hierarchy correctly 
 ***** Study use of GridLinesContainer, XContainer etc, their membership 
-**** Put ChartOptions only on top Container (ChartContainer, may be there already
+**** TODO Put ChartOptions only on top Container (ChartContainer, may be there already
 ***** remove passing the ChartOptions down
 ***** access ChartOptions in Containers via the (get)root 
 ***** 
-**** ChartContainer: Keep the class, but convert to Container where possible in method arguments.
+*** TODO Remove complexity around passing ChartOptions.
+*** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
 
 ***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
-*** 
-*** In many signatures where ChartContainer is used, I think it should be just Container.
-*** Introduce Mixin Layoutable by applyParentOffset()
-*** Introduce Mixin Paintable by paint()
-*** Strongly consider: Presenters should also be Containers!
-*** Rename Container into Morph
+*** NOTE Introduce Mixin Layoutable by applyParentOffset()
+*** NOTE Introduce Mixin Paintable by paint()
+*** TODO Study Morphs what else needs added!
+*** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
-** Study Morphs what else needs added!
-** Enhancements in progress or planned - priority order
+** LATER Enhancements in progress or planned - priority order
 
 *** Create a document / image showing chart layout and spacing - show option variables on image
 Also:
@@ -127,10 +151,17 @@ Also:
 *** TextPainter notes
 
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
-** DONE Enhancements implemented
+** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
 *** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
 
+* IN-PROGRESS Flutter Charts Bugs status
+
+- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
+- [X] Chart area needs clipping in the application
+- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
+- 
+ 
 * NOTE How are todos used in code
 - todo-1 long term low priority
 - todo-2 long term higher priority

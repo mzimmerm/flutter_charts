@@ -328,9 +328,6 @@ class LabelInfo {
   /// and axisRange (min, max).
   LabelInfo(this.labelValue);
 
-  // todo-00-last : removed parentScaler so we can initialize. Can this be improved?
-  //    parentScaler will be set after construction : LabelInfo(this.labelValue, this.parentScaler);
-
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
     // todo-2 consider what to do about the toDouble() - may want to ensure higher up
@@ -367,7 +364,7 @@ class Poly {
 
   // ### methods
 
-  // todo-00-last : added static on the 2 methods below. can this improve?
+  // todo-11-last : added static on the 2 methods below. can this improve?
   static decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
 
   static decimal.Decimal numToDec(num value) => dec(value.toString());

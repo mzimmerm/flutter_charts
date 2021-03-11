@@ -37,7 +37,7 @@ double scaleValue({
   return scaled;
 }
 
-/* todo-00-last
+/* todo-11-last : original version before nullability
 List<List<T>> transpose<T>(List<List<T>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.length == 0) return colsInRows;
@@ -61,8 +61,8 @@ List<List<T>> transpose<T>(List<List<T>> colsInRows) {
 }
 */
 
-// todo-00-last: In null safety, I had to replace T with a concrete StackableValuePoint.
-// todo-00-last: can this be improved? This need may be a typing bug in Dart
+// todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
+//               can this be improved? This need may be a typing bug in Dart
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
 List<List<StackableValuePoint>> transpose(
     List<List<StackableValuePoint>> colsInRows) {
@@ -73,10 +73,8 @@ List<List<StackableValuePoint>> transpose(
   if (nCols == 0) throw new StateError("Degenerate matrix");
 
   // Init the transpose to make sure the size is right
-  // todo-00-last : was : List<List<T>> rowsInCols = new List(nCols);
   List<List<StackableValuePoint>> rowsInCols = new List.filled(nCols, []);
   for (int col = 0; col < nCols; col++) {
-    // todo-00-last : was : rowsInCols[col] =  new List(nRows);
     rowsInCols[col] = new List.filled(nRows, new StackableValuePoint.initial());
   }
 

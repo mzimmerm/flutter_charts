@@ -73,7 +73,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
 
   /// Constructor uses default values from [ChartOptions]
-  // todo-00-last : Move all re-layout settings from options to DefaultIterativeLabelLayoutStrategy
+  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy 
+  // todo-11-last :   But they still need to default from options or somewhere? 
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
   })   : _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
@@ -87,19 +88,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     switch (depth) {
       case 1:
         return LabelFitMethod.RotateLabels;
-      // todo-00-last-removed-dead-code: break;
       case 2:
         return LabelFitMethod.SkipLabels;
-      // todo-00-last-removed-dead-code: break;
       case 3:
         return LabelFitMethod.DecreaseLabelFont;
-      // todo-00-last-removed-dead-code: break;
       case 4:
         return LabelFitMethod.DecreaseLabelFont;
-      // todo-00-last-removed-dead-code: break;
       default:
         return LabelFitMethod.SkipLabels;
-      // todo-00-last-removed-dead-code: break;
     }
   }
 

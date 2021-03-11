@@ -18,8 +18,8 @@ class LineAndHotspotPresenter extends Presenter {
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
   late ui.Paint outerPaint;
-  double innerRadius = 0.0; // todo-00-last-where-set-can-be-late?
-  double outerRadius = 0.0; // todo-00-last-where-set-can-be-late?
+  double innerRadius = 0.0; // todo-11-last-where-set-can-be-late?
+  double outerRadius = 0.0; // todo-11-last-where-set-can-be-late?
 
   late ui.Paint rowDataPaint;
 

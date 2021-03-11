@@ -48,7 +48,7 @@ abstract class ChartContainer extends Container {
   /// Implements [Container.layoutSize()].
   ui.Size get layoutSize => chartArea;
 
-  // todo-00-last describe in detail how this is set in Painter and used in Paint (chart).
+  // todo-11-last describe in detail how this is set in Painter and used in Paint (chart).
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
   /// area on which the painter will paint.
@@ -128,7 +128,7 @@ abstract class ChartContainer extends Container {
           layoutExpansion: LayoutExpansion.unused(),
         ) {
     // Must initialize in body, as access to 'this' not available in initializer.
-    // todo-00-last : check if needed :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
+    // todo-11-last : check if needed :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
   }
 
   /// Implements [Container.layout()] for the chart as a whole.
@@ -520,7 +520,7 @@ class YContainer extends ChartAreaContainer {
         labelStyle: labelStyle,
         layoutExpansion: LayoutExpansion.unused(),
       );
-      yLabelContainer.layout(); // todo-00-last consider if needed
+      yLabelContainer.layout(); // todo-11-last consider if needed
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
       yLabelContainer.parentOffsetTick = yTickY;
@@ -606,8 +606,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List.empty(growable: true);
 
-    // todo-00-last : should we inherit from parent in constructor?
-    //                  maybe provide an inherit method.
     ChartOptions options = _parentContainer.options;
 
     List<String> xLabels = _parentContainer.data.xLabels;
@@ -648,7 +646,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         layoutExpansion: LayoutExpansion.unused(),
       );
       // force layout. lack of this causes _textPainter._text size to be 0, 1 always.
-      xLabelContainer.layout(); // todo-00-last consider if needed
+      xLabelContainer.layout(); // todo-11-last consider if needed
 
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
@@ -816,8 +814,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
 
 enum ExpansionStyle { TryFill, GrowDoNotFill, Unused }
 
-/// todo-00-last : review docs
-
 /// Defines how a container [layout] should expand the container in a direction.
 ///
 /// Direction can be "width" or "height".
@@ -845,7 +841,7 @@ class LayoutExpansion {
     required ExpansionStyle widthExpansionStyle,
     required double height,
     required ExpansionStyle heightExpansionStyle,
-    bool used = true, // todo-00-last : added : consider if can simplify
+    bool used = true,
   })  : _width = width,
         _widthExpansionStyle = widthExpansionStyle,
         _height = height,
@@ -923,9 +919,29 @@ abstract class Container {
   /// External size enforced by the parent container.
   LayoutExpansion _layoutExpansion;
 
-  /// Maintains current offset, a sum of all offsets
-  /// passed in subsequent calls to [applyParentOffset] during object
-  /// lifetime.
+  /// Answers the requested expansion sizes.
+  ///
+  /// Before layout, clients may need to ask for expansion,
+  /// as that gives a reliable pre-layout size in directions
+  /// where [ExpansionStyle == ExpansionStyle.TryFill]
+  LayoutExpansion get layoutExpansion => _layoutExpansion;
+
+  /// Size after [layout] has been called.
+  ui.Size get layoutSize;
+  
+// todo-2: Add assertion abstract method in direction where we should fill,
+//          that the layout size is same as the expansion size.
+
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  /// 
+  /// That means, it is the offset from (0,0) of the canvas. There is only one 
+  /// canvas, managed by the top Container, passed to all children in the 
+  /// [paint(Canvas, Size)].
+  ///  
+  /// 
+  /// 
+  /// It is a sum of all offsets passed in subsequent calls 
+  /// to [applyParentOffset] during object lifetime.
   ui.Offset offset = ui.Offset.zero;
 
   // todo-2 move _tiltMatrix to container base, similar to offset and comment as unused
@@ -977,7 +993,8 @@ abstract class Container {
 
   void paint(ui.Canvas canvas);
 
-  /// Allow a parent container to move this Container.
+  /// Allow a parent container to move this Container 
+  /// after [layout()].
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [Container].
@@ -991,19 +1008,6 @@ abstract class Container {
     if (tiltMatrix == new vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
   }
-
-  /// Size after [layout] has been called.
-  ui.Size get layoutSize;
-
-  /// Answers the requested expansion sizes.
-  ///
-  /// Before layout, clients may need to ask for expansion,
-  /// as that gives a reliable pre-layout size in directions
-  /// where [ExpansionStyle == ExpansionStyle.TryFill]
-  LayoutExpansion get layoutExpansion => _layoutExpansion;
-
-// todo-2: Add assertion abstract method in direction where we should fill,
-//          that the layout size is same as the expansion size.
 
 }
 
@@ -1219,7 +1223,7 @@ abstract class DataContainer extends ChartAreaContainer {
 
   /// Draws the actual data, either as lines with points (line chart),
   /// or bars/columns, stacked or grouped (bar/column charts).
-  void drawDataPresentersColumns(ui.Canvas canvas);
+  void _drawDataPresentersColumns(ui.Canvas canvas);
 }
 
 /// Provides the data area container for the bar chart.
@@ -1234,12 +1238,12 @@ class VerticalBarChartDataContainer extends DataContainer {
             parentContainer: parentContainer, layoutExpansion: layoutExpansion);
 
   void paint(ui.Canvas canvas) {
-    super._paintGridLines(canvas);
-    drawDataPresentersColumns(canvas);
+    _paintGridLines(canvas);
+    _drawDataPresentersColumns(canvas);
   }
 
   /// See super [ChartPainter.drawDataPresentersColumns()].
-  void drawDataPresentersColumns(ui.Canvas canvas) {
+  void _drawDataPresentersColumns(ui.Canvas canvas) {
     PresentersColumns presentersColumns = this.presentersColumns;
 
     presentersColumns.forEach((PresentersColumn presentersColumn) {
@@ -1278,11 +1282,11 @@ class LineChartDataContainer extends DataContainer {
             parentContainer: parentContainer, layoutExpansion: layoutExpansion);
 
   void paint(ui.Canvas canvas) {
-    drawDataPresentersColumns(canvas);
+    _drawDataPresentersColumns(canvas);
   }
 
   /// See super [ChartPainter.drawDataPresentersColumns()].
-  void drawDataPresentersColumns(ui.Canvas canvas) {
+  void _drawDataPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.presentersColumns;
     presentersColumns.forEach((PresentersColumn presentersColumn) {
       var presenterList = presentersColumn.presenters;
@@ -1407,7 +1411,7 @@ class LegendItemContainer extends Container {
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
     // 1. layout the _labelContainer - this also provides height
-    _labelContainer.layout(); // todo-00-last consider if needed
+    _labelContainer.layout(); // todo-11-last consider if needed
 
     ui.Size labelContainerSize = _labelContainer.layoutSize;
     // 2. Y Center the indicator and label on same horizontal Y level
@@ -1502,6 +1506,10 @@ class LegendContainer extends ChartAreaContainer {
 
   late ui.Size _layoutSize;
 
+  ui.Size get layoutSize {
+    return _layoutSize;
+  }
+
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   ///
@@ -1590,10 +1598,6 @@ class LegendContainer extends ChartAreaContainer {
     });
   }
 
-  ui.Size get layoutSize {
-    return _layoutSize;
-  }
-
   void paint(ui.Canvas canvas) {
     for (var legendItemContainer in _legendItemContainers) {
       legendItemContainer.paint(canvas);
@@ -1633,7 +1637,6 @@ class StackableValuePoint {
   double fromY;
   double toY;
 
-  // todo-00-last-is-init-0-needed-or-late-better in all below?
   /// Scaled values. All set lazily after [scale]
   double scaledX = 0.0;
   double scaledY = 0.0;
@@ -1660,8 +1663,6 @@ class StackableValuePoint {
         this.fromY = 0.0,
         this.toY = y;
 
-  // todo-00-last-attention - this constructor was added as sort of unused
-  //  point.
   /// Initial instance of a [StackableValuePoint].
   /// Forwarded to the default constructor.
   /// This should fail if it undergoes any processing such as layout
@@ -1677,8 +1678,6 @@ class StackableValuePoint {
     this.isStacked = true;
 
     // todo-1 validate: check if both points y is same sign or zero
-    // todo-00-last-! added ! in  predecessorPoint!.toY
-    // this.fromY = predecessorPoint != null ? predecessorPoint.toY : 0.0;
     this.fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
     this.toY = this.fromY + this.y;
 
@@ -1866,8 +1865,7 @@ class PointsColumn {
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
-  // todo-00-last - what if like this : extension PointsColumns on List<PointsColumn> {
-  ///Data points managed row - major. Internal only, not used in chart.
+  /// Data points managed row - major. Internal only, not used in chart.
   List<List<StackableValuePoint>> _valuePointArrInRows;
 
   /// Data points managed column - major. Internal only, not used in chart.
@@ -1897,7 +1895,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     /// below the currently processed point. The currently processed point is
     /// (potentially) stacked on it's predecessor.
 
-    // todo-00-last : is there a way to initialize a non-nullable list to size?
     List<StackableValuePoint?> rowOfPredecessorPoints = new List.filled(
         chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
@@ -1916,7 +1913,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = new StackableValuePoint(
-            xLabel: "initial", // todo-00-last : xLabel: null : consider
+            xLabel: "initial", // todo-11-last : xLabel: null : consider
             y: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
@@ -1933,7 +1930,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     // to a column, and add the columns to this instance
     PointsColumn? leftColumn;
 
-    // todo-00-last : can _valuePointArrInColumns be null?
+    // todo-11-last : can _valuePointArrInColumns be null?
     _valuePointArrInColumns?.forEach((columnPoints) {
       var pointsColumn = new PointsColumn(points: columnPoints);
       this.add(pointsColumn);
