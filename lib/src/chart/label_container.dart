@@ -6,7 +6,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas, Offset;
 
 import 'package:flutter_charts/src/chart/container.dart'
-    as flutter_charts_container show Container, LayoutExpansion;
+    as container show Container, LayoutExpansion;
 
 import '../util/geometry.dart' as geometry;
 
@@ -34,7 +34,7 @@ import '../util/geometry.dart' as geometry;
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 
-class LabelContainer extends flutter_charts_container.Container {
+class LabelContainer extends container.Container {
   /// Label text
   String _label;
 
@@ -79,7 +79,7 @@ class LabelContainer extends flutter_charts_container.Container {
     required vector_math.Matrix2 labelTiltMatrix,
     required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
-    required flutter_charts_container.LayoutExpansion layoutExpansion,
+    required container.LayoutExpansion layoutExpansion,
   })   : this._label = label,
         this._labelMaxWidth = labelMaxWidth,
         this._labelTiltMatrix = labelTiltMatrix,
@@ -252,7 +252,7 @@ class AxisLabelContainer extends LabelContainer {
       required vector_math.Matrix2 labelTiltMatrix,
       required vector_math.Matrix2 canvasTiltMatrix,
       required LabelStyle labelStyle,
-      required flutter_charts_container.LayoutExpansion layoutExpansion})
+      required container.LayoutExpansion layoutExpansion})
       : super(
           label: label,
           labelMaxWidth: labelMaxWidth,

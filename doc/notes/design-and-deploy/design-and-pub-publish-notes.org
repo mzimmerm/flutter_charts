@@ -46,28 +46,53 @@ See file:./bug-text-painter-2.png
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
-*** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
-- ChartContainer
-  - LegendContainer
-    - List<LegendItemContainer> _legendItemContainers
-  - YContainer
-  - XContainer
-  - DataContainer
-  - 
-*** IN-PROGRESS Make Containers a hierarchy
+*** TODO ~Remove _paintYLabels and similar~, just replace with content of the method. 
+*** TODO Make Containers a hierarchy
 
-**** ~Add layouts and constraints~
-- Add layout.dart -
+**** TODO ~Add constraints~
+- [ ] Add layout.dart -
   - Constraint{ _maxSize = Size.infinity; Constraint({maxSize:}); Constraint.infinity: redirect to Constraint(maxSize: Size.infinity};},
   - 
-- Pass Constraint to each Container.layout({required Constraint constraint})
-**** ~LayoutExpansion~ - merge it somehow with ~Constraint~!!!
-**** ~Remove _paintYLabels and similar~, just replace with content of the method. 
+- [ ] Pass Constraint to each Container.layout({required Constraint constraint})
+- [ ] Add Constraint field to Container, from constructor.
+
+
+**** TODO Container - make it a hierarchy:
+
+***** TODO add parent and child pointers, what else??
+
+**** TODO ~HUGE - ESTABLISH HIERARCHY BETWEEN CONTAINERS AS THEY ARE CURRENTLY. 
 *** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers~
+**** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
+- ~ChartContainer~
+  - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
+  - ~LegendContainer~ extends ChartAreaContainer 
+    - has List<LegendItemContainer> _legendItemContainers  // is container, checked all the way down
+  - ~YContainer~
+    - has List<AxisLabelContainer> _yLabelContainers; // is container, checked all the way down
+  - ~XContainer~ 
+    - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
+  - ~DataContainer~
+    - has GridLinesContainer _xGridLinesContainer; // is container, checked all the way down
+    - has GridLinesContainer _yGridLinesContainer; // is container, checked all the way down
+    - has PresentersColumns presentersColumns (is List<PresentersColumn>; // NOT a container
+      - PresentersColumns // NOT a container
+        - During constructions, calls self(CustomList).add(PresentersColumn)
+      - PresentersColumn  //  NOT a container 
+        - List<Presenter> presenters;
+        - During construction, calls ~_createPresentersInColumn~
+          - accepts:
+            - PointsColumn // END. NOT a container
+              - has List<StackableValuePoint> points;
+            - OR
+            - List<StackableValuePoint> fromPoints,
+          - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
+
+**** TODO ~TO CONTAINERS CONVERSION~
 - Find where Presenters get their internal values set
 - Replace the above sites with calls to layout(maxSize: internal values from existing code);
 - Convert to Containers
-  - [ ] Presenter - VerticalBarPresenter, LineAndHotspotpresenter
+  - [ ] ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
     - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
     - VerticalBarPresenter({required StackableValuePoint point,
       - presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom); // so this is where the size is set!!!
@@ -86,8 +111,13 @@ See file:./bug-text-painter-2.png
   - ~LineContainer (passed and living in LineAndHotspotPresenter) already extends Container!!~
     - class LineContainer extends flutter_charts_container.Container
   - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
+    - ~The problem is, the presenters do not "paint/draw" themselves, but are drawn in parents~
+      - ~VerticalBarChartDataContainer._drawDataPresentersColumns~
+    - ~BUT WHERE ARE THE POSITINS OF THE PRESENTORS INSIDES CALCULATED??~
+      - ~CALCULATED IN ChartContainer.layout -> DataContainer.applyParentOffset -> DataContainer.setupPresentersColumns -> new PresentersColumns(pointsColumns: parentContainer.pointsColumns,~ 
+      - So the calculation and drawing both happens in parents, NOT presenters.
  
-- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS~
+- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS, AND ITERATE THE layout and paint calls~
   - [ ] PointsColumn
   - [ ] PointsColumns
   - [ ] NOT StackableValuePoint
@@ -113,6 +143,7 @@ See file:./bug-text-painter-2.png
 *** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
 
 ***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
+*** LATER ~LayoutExpansion~ - merge it somehow with ~Constraint~!!!
 *** NOTE Introduce Mixin Layoutable by applyParentOffset()
 *** NOTE Introduce Mixin Paintable by paint()
 *** TODO Study Morphs what else needs added!

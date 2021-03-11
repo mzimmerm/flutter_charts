@@ -59,7 +59,7 @@ class PresentersColumn {
   }) {
     // setup the contained presenters from points
     _createPresentersInColumn(
-        fromPoints: pointsColumn.points,
+        fromPoints: pointsColumn.stackableValuePoints,
         toPresenters: this.presenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
@@ -89,7 +89,7 @@ class PresentersColumn {
     fromPoints.forEach((StackableValuePoint point) {
       // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
-          ? pointsColumn.nextRightPointsColumn!.points[rowIndex]
+          ? pointsColumn.nextRightPointsColumn!.stackableValuePoints[rowIndex]
           : null;
 
       Presenter presenter = presenterCreator.createPointPresenter(

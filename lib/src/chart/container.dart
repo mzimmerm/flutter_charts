@@ -929,9 +929,6 @@ abstract class Container {
   /// Size after [layout] has been called.
   ui.Size get layoutSize;
   
-// todo-2: Add assertion abstract method in direction where we should fill,
-//          that the layout size is same as the expansion size.
-
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   /// 
   /// That means, it is the offset from (0,0) of the canvas. There is only one 
@@ -944,6 +941,15 @@ abstract class Container {
   /// to [applyParentOffset] during object lifetime.
   ui.Offset offset = ui.Offset.zero;
 
+  /// Allow a parent container to move this Container 
+  /// after [layout()].
+  ///
+  /// Override if parent move needs to propagate to internals of
+  /// this [Container].
+  void applyParentOffset(ui.Offset offset) {
+    this.offset += offset;
+  }
+
   // todo-2 move _tiltMatrix to container base, similar to offset and comment as unused
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
@@ -952,6 +958,13 @@ abstract class Container {
 
   /// Provides access to tiltMatrix for extension's [paint] methods.
   vector_math.Matrix2 get tiltMatrix => _tiltMatrix;
+
+  /// Tilt may apply to the whole container.
+  /// todo-2 unused? move to base class? similar to offset?
+  void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
+    if (tiltMatrix == new vector_math.Matrix2.identity()) return;
+    this._tiltMatrix = this._tiltMatrix * tiltMatrix;
+  }
 
   /// [skipByParent] instructs the parent container that this container should not be
   /// painted or layed out - as if it collapsed to zero size.
@@ -992,22 +1005,6 @@ abstract class Container {
   void layout();
 
   void paint(ui.Canvas canvas);
-
-  /// Allow a parent container to move this Container 
-  /// after [layout()].
-  ///
-  /// Override if parent move needs to propagate to internals of
-  /// this [Container].
-  void applyParentOffset(ui.Offset offset) {
-    this.offset += offset;
-  }
-
-  /// Tilt may apply to the whole container.
-  /// todo-2 unused? move to base class? similar to offset?
-  void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
-    if (tiltMatrix == new vector_math.Matrix2.identity()) return;
-    this._tiltMatrix = this._tiltMatrix * tiltMatrix;
-  }
 
 }
 
@@ -1350,6 +1347,9 @@ class GridLinesContainer extends Container {
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
 class LegendItemContainer extends Container {
+
+  late ui.Size _layoutSize;
+
   /// Container of label
   late LabelContainer _labelContainer;
 
@@ -1363,7 +1363,6 @@ class LegendItemContainer extends Container {
 
   LabelStyle _labelStyle;
   String _label;
-  late ui.Size _layoutSize;
 
   LegendItemContainer({
     required String label,
@@ -1504,6 +1503,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Results of laying out the legend labels. Each member is one series label.
   late List<LegendItemContainer> _legendItemContainers;
 
+  // todo-00-last : why is this needed? Should not Container.size be the same?
   late ui.Size _layoutSize;
 
   ui.Size get layoutSize {
@@ -1782,15 +1782,15 @@ class StackableValuePoint {
 /// Supports to convert the raw data values from the data rows,
 /// into values that are either
 ///   - unstacked (such as in the line chart),  in which case it manages
-///   [points] that have values from [ChartData.dataRows].
+///   [stackableValuePoints] that have values from [ChartData.dataRows].
 ///   - stacked (such as in the bar chart), in which case it manages
-///   [points] that have values added up from [ChartData.dataRows].
+///   [stackableValuePoints] that have values added up from [ChartData.dataRows].
 ///
 /// Negative and positive points must be stacked separately,
 /// to support correctly displayed stacked values above and below zero.
 class PointsColumn {
   /// List of charted values in this column
-  late List<StackableValuePoint> points;
+  late List<StackableValuePoint> stackableValuePoints;
 
   /// List of stacked positive or zero value points - support for stacked type charts,
   /// where negative and positive points must be stacked separately,
@@ -1816,12 +1816,12 @@ class PointsColumn {
     required List<StackableValuePoint> points,
   }) {
     // todo-1 add validation that points are not stacked
-    this.points = points;
+    this.stackableValuePoints = points;
 
     this.stackedPositivePoints = this.selectThenCollectStacked(
-        points: this.points, selector: (point) => point.y >= 0);
+        points: this.stackableValuePoints, selector: (point) => point.y >= 0);
     this.stackedNegativePoints = this.selectThenCollectStacked(
-        points: this.points, selector: (point) => point.y < 0);
+        points: this.stackableValuePoints, selector: (point) => point.y < 0);
   }
 
   // points are ordered in series order, first to last  (bottom to top),
@@ -1833,7 +1833,7 @@ class PointsColumn {
     required bool selector(StackableValuePoint point),
   }) {
     StackableValuePoint? predecessorPoint;
-    List<StackableValuePoint> selected = this.points.where((point) {
+    List<StackableValuePoint> selected = this.stackableValuePoints.where((point) {
       return selector(point);
     }) // point.y >= 0;
         .map((point) {
@@ -1847,7 +1847,7 @@ class PointsColumn {
   /// Column Utility for iterating over all points in order
   Iterable<StackableValuePoint> allPoints() {
     return []
-      ..addAll(points)
+      ..addAll(stackableValuePoints)
       ..addAll(stackedNegativePoints)
       ..addAll(stackedPositivePoints);
   }
@@ -1947,7 +1947,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Notes:
   ///   - Iterates this object's [pointsColumns], then the contained
-  ///   [PointsColumn.points], and scales each point by
+  ///   [PointsColumn.stackableValuePoints], and scales each point by
   ///   applying its [StackableValuePoint.scale] method.
   ///   - No scaling of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
@@ -1983,7 +1983,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
     List<double> flat = [];
     this.forEach((PointsColumn column) {
-      column.points.forEach((StackableValuePoint point) {
+      column.stackableValuePoints.forEach((StackableValuePoint point) {
         flat.add(point.toY);
       });
     });
