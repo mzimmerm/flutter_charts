@@ -27,7 +27,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
 /// Abstract class representing the [Container] of the whole chart.
-/// 
+///
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
@@ -256,12 +256,12 @@ abstract class ChartContainer extends Container {
     dataContainer.layout();
     dataContainer.applyParentOffset(dataContainerOffset);
   }
-  
+
   /// Implements abstract [paint()] for the whole chart.
   /// Paints the chart on the passed [canvas], limited to the [size] area.
   ///
   /// This [paint()] method is the core method call of painting the chart.
-  /// Called from the chart's painter baseclass, the [ChartPainter], which 
+  /// Called from the chart's painter baseclass, the [ChartPainter], which
   /// [paint(Canvas, Size)] is guaranteed to be called by the Flutter framework
   /// (see class comment), hence [ChartPainter.paint] starts the chart painting.
   ///
@@ -290,7 +290,7 @@ abstract class ChartContainer extends Container {
     // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
   }
 
-  /// Draws the X labels area of the chart. 
+  /// Draws the X labels area of the chart.
   void _paintXLabels(ui.Canvas canvas) {
     // Draw x axis labels
     xContainer.paint(canvas);
@@ -311,9 +311,6 @@ abstract class ChartContainer extends Container {
   void _paintGridAndData(ui.Canvas canvas) {
     dataContainer.paint(canvas);
   }
-
-
-
 
   /// Abstract method creates the [DataContainer],
   /// for the particular chart type (line, bar).
@@ -1309,7 +1306,7 @@ class LineChartDataContainer extends DataContainer {
   }
 }
 
-/// 
+///
 class GridLinesContainer extends Container {
   List<LineContainer> _lineContainers = new List.empty(growable: true);
 

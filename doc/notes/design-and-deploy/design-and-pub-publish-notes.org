@@ -44,20 +44,52 @@ See file:./bug-text-painter-2.png
 
 * IN-PROGRESS Flutter Charts Bugs status
 
+- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
 - [X] Chart area needs clipping in the application
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
-- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
-- [ ] After hot reload, switching between Line and Vertical charts, the labels start being skipped: DefaultIterativeLabelLayoutStrategy._showEveryNthLabel actually increases.
 - 
  
 * IN-PROGRESS Flutter Charts Enhancements
 
 ** Refactorings
 
-*** IN-PROGRESS Move all painting from ChartPainter.paint to ChartContainer.paint!!
+*** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
+
+*** IN-PROGRESS Make Containers a hierarchy; remove complexity around passing ChartOptions.
+
+**** First, add layouts and constraints
+- Add layout.dart -
+  - Constraint{ _maxSize = Size.infinity; Constraint({maxSize:}); Constraint.infinity: redirect to Constraint(maxSize: Size.infinity};},
+  - 
+- Pass Constraint to each Container.layout({required Constraint constraint})
+**** Next, convert all Presenter, PointsColumn, PointsColumns etc  to Containers
+- Find where Presenters get their internal values set
+- Replace the above sites with calls to layout(maxSize: internal values from existing code);
+- Convert to Containers
+  - [ ] Presenter
+  - [ ] PointsColumn
+  - [ ] PointsColumns
+  - [ ] NOT StackableValuePoint
+  - [ ] May need a special extension of Containers for some of the above.
+  - 
+**** Rename Container.paint to Container.presentOn - we may need
+**** research which containers hold on parents and children
+**** Make containers a hierarchy
+***** Add 'parent' and 'children' members
+***** Add 'name' member to Container 
+**** Ensure code sets up the hierarchy correctly 
+***** Study use of GridLinesContainer, XContainer etc, their membership 
+**** Put ChartOptions only on top Container (ChartContainer, may be there already
+***** remove passing the ChartOptions down
+***** access ChartOptions in Containers via the (get)root 
+***** 
+**** ChartContainer: Keep the class, but convert to Container where possible in method arguments.
+
+***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
+*** 
+*** In many signatures where ChartContainer is used, I think it should be just Container.
 *** Introduce Mixin Layoutable by applyParentOffset()
 *** Introduce Mixin Paintable by paint()
-*** In many signatures where ChartContainer is used, I think it should be just Container.
 *** Strongly consider: Presenters should also be Containers!
 *** Rename Container into Morph
 **** Add a list of children to Morph
