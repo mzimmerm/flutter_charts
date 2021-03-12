@@ -22,7 +22,7 @@ See file:CHANGELOG.md for the list of new features and bug fixes in this release
 
 As noted in the CHANGELOG, the most important new features are:
 
-- null safety support
+- null safety support.
 
 ** Illustration of the new "iterative auto layout" feature
 
