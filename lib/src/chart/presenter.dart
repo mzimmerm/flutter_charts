@@ -24,6 +24,8 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 /// on a line chart this is a point with line connecting to the next
 /// value point.
 class Presenter {
+  // Not actually stored here, but could be
+  // todo-00-last-unused
   StackableValuePoint point;
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;

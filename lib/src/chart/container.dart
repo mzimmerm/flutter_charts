@@ -253,6 +253,8 @@ abstract class ChartContainer extends Container {
           heightExpansionStyle: ExpansionStyle.TryFill),
     );
 
+    // todo-00-last : this is where most non-Container elements are layed out.
+    //                problem is, part of the layout happens in applyParentOffset!
     dataContainer.layout();
     dataContainer.applyParentOffset(dataContainerOffset);
   }
@@ -1150,6 +1152,7 @@ abstract class DataContainer extends ChartAreaContainer {
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
+    // todo-00-last : problem : this call actually sets absolute values on Presenters !!
     setupPresentersColumns();
   }
 
@@ -1503,7 +1506,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Results of laying out the legend labels. Each member is one series label.
   late List<LegendItemContainer> _legendItemContainers;
 
-  // todo-00-last : why is this needed? Should not Container.size be the same?
+  // Member supports the layoutSize accumulation during layout.
   late ui.Size _layoutSize;
 
   ui.Size get layoutSize {
