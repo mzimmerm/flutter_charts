@@ -280,38 +280,18 @@ abstract class ChartContainer extends Container {
     // all chart elements.
     layout();
 
-    _paintYLabels(canvas);
-    _paintXLabels(canvas);
-    _paintLegend(canvas);
-    // removed drawDataPresentersColumns(canvas); // bars (bar chart), lines and points (line chart)
-    // Grid, then data area - bars (bar chart), lines and points (line chart).
-    _paintGridAndData(canvas);
+    // Draws the Y labels area of the chart.
+    yContainer.paint(canvas);
+    // Draws the X labels area of the chart.
+    xContainer.paint(canvas);
+    // Draws the legend area of the chart.
+    legendContainer.paint(canvas);
+    // Draws the grid, then data area - bars (bar chart), lines and points (line chart).
+    dataContainer.paint(canvas);
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
     // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
-  }
-
-  /// Draws the X labels area of the chart.
-  void _paintXLabels(ui.Canvas canvas) {
-    // Draw x axis labels
-    xContainer.paint(canvas);
-  }
-
-  /// Draws the Y labels area of the chart.
-  void _paintYLabels(ui.Canvas canvas) {
-    // Draw y axis labels
-    yContainer.paint(canvas);
-  }
-
-  /// Draws the legend area of the chart.
-  void _paintLegend(ui.Canvas canvas) {
-    legendContainer.paint(canvas);
-  }
-
-  /// Draws the grid and data areas of the chart.
-  void _paintGridAndData(ui.Canvas canvas) {
-    dataContainer.paint(canvas);
   }
 
   /// Abstract method creates the [DataContainer],

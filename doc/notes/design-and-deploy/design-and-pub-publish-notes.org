@@ -46,23 +46,86 @@ See file:./bug-text-painter-2.png
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
-*** TODO ~Remove _paintYLabels and similar~, just replace with content of the method. 
-*** TODO Make Containers a hierarchy
+*** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
 
-**** TODO ~Add constraints~
-- [ ] Add layout.dart -
+*** TODO Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
+
+- LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
+
+
+*** TODO Make Containers a hierarchy
+**** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.
+***** Change code to pickup 
+**** TODO Edit all calls to layout and return it
+
+**** TODO ~Add constraints and layouts ~
+
+                                     
+- [ ] Add constraint.dart -
   - Constraint{ _maxSize = Size.infinity; Constraint({maxSize:}); Constraint.infinity: redirect to Constraint(maxSize: Size.infinity};},
-  - 
-- [ ] Pass Constraint to each Container.layout({required Constraint constraint})
+- [ ] In existing code, Pass Constraint to each Container.layout({required Constraint constraint})
 - [ ] Add Constraint field to Container, from constructor.
 
 
-**** TODO Container - make it a hierarchy:
+**** TODO ~Container class~ - make it a hierarchy:
 
-***** TODO add parent and child pointers, what else??
+Container is it's children, but it can rotate or be moved.
 
-**** TODO ~HUGE - ESTABLISH HIERARCHY BETWEEN CONTAINERS AS THEY ARE CURRENTLY. 
-*** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers~
+***** TODO Add members and methods
+
+- [ ] add constructor named root
+- [ ] consider constructors from children:
+- [ ] add members
+  - [ ] parent on top, should be root (in ChartContainer)
+  - [ ] children
+- [ ] add method traverse 
+- [ ] add method flatten 
+- [ ] add member name not null, required, set in constructor, functions as unique key. Ensure name unique in hierarchy. 
+- [ ] add method isUniqueName
+- [ ] children should be just a List<Containers>
+- [ ] add member root. On top, should be null. 
+- [ ] add method addChild(Container)
+- [ ] add member constraint 
+- [ ] add member size
+- [ ] keep member offset
+- [ ] implement default method layout(Constraint) - see [[Layouter general function]]
+- [ ] add abstract method calculateAndSetActualChildrenSizesAndOffsetsInSelf() # Calculates children's positions in self based on what the layout actually is
+- [ ] applyParentOffset removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenSizesAndOffsetsInSelf
+  - applies offset on self (call super)
+  - calls applyParentOffset on all children 
+
+***** TODO How do we want the Containers function eventually?
+
+- Generally, Containers lifecycle should be as follows.
+  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know od
+    - create Root (ChartContainer)
+    - add all children recursively 
+  - Layout
+    - called by root.layout(Constraint)
+    - side effects
+      - set layoutSize on all members in hierarchy (currently not done)
+      - set offset (applyParentOffset) on all members in hierarchy 
+  - Paint 
+  
+*** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
+*** TODO ~Convert ChartContainer.layout to use the new concepts - CONVERT ONLY ON THIS LEVEL, NOT CHILDREN~
+**** TODO Move some code to calculateAndSetActualChildrenSizesAndOffsetsInSelf
+
+Code between layout and applyParentOffset, like this:
+#+begin_example
+    xContainer.layout();
+
+    ui.Size xContainerSize = xContainer.layoutSize;
+    ui.Offset xContainerOffset = new ui.Offset(
+        yContainerSize.width, chartArea.height - xContainerSize.height);
+    xContainer.applyParentOffset(xContainerOffset);
+#+end_example
+shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetActualChildrenSizesAndOffsetsInSelf
+**** TODO What else  - much more
+
+*** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
+
+*** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers but keep the code structure the same~
 **** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
 - ~ChartContainer~
   - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
@@ -87,11 +150,15 @@ See file:./bug-text-painter-2.png
             - OR
             - List<StackableValuePoint> fromPoints,
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
-
+          - [ ]
 **** TODO ~TO CONTAINERS CONVERSION~
-- Find where Presenters get their internal values set
-- Replace the above sites with calls to layout(maxSize: internal values from existing code);
-- Convert to Containers
+- [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
+  - [ ] First experiment on ~PresentersColumns~
+- [ ] Find where Presenters get their internal values set
+  - They are set in constructors, which are created during layout() of parents
+  - For example, VerticalBarPresener constructor, all values (that is offsets) are established in Contructory, NOT in layout!
+- [ ] Replace the above sites with calls to layout(maxSize: internal values from existing code);
+- [ ] Convert to Containers
   - [ ] ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
     - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
     - VerticalBarPresenter({required StackableValuePoint point,
@@ -113,7 +180,7 @@ See file:./bug-text-painter-2.png
   - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
     - ~The problem is, the presenters do not "paint/draw" themselves, but are drawn in parents~
       - ~VerticalBarChartDataContainer._drawDataPresentersColumns~
-    - ~BUT WHERE ARE THE POSITINS OF THE PRESENTORS INSIDES CALCULATED??~
+    - ~BUT WHERE ARE THE POSITIONS OF THE PRESENTORS INSIDES CALCULATED??~
       - ~CALCULATED IN ChartContainer.layout -> DataContainer.applyParentOffset -> DataContainer.setupPresentersColumns -> new PresentersColumns(pointsColumns: parentContainer.pointsColumns,~ 
       - So the calculation and drawing both happens in parents, NOT presenters.
  
@@ -144,8 +211,6 @@ See file:./bug-text-painter-2.png
 
 ***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
 *** LATER ~LayoutExpansion~ - merge it somehow with ~Constraint~!!!
-*** NOTE Introduce Mixin Layoutable by applyParentOffset()
-*** NOTE Introduce Mixin Paintable by paint()
 *** TODO Study Morphs what else needs added!
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
@@ -185,6 +250,44 @@ If layout() is called, following paint() always prints full line  (goes to line 
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
 *** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+
+* NOTE Layouter general function
+
+*The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
+
+1. *Constraint is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(constraintDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
+2. *PreferredSize is returned up* from layout and also stored on child (happens also in 1).               
+3. Once we know all children sizes:
+4. Parent decides, based on it's layout algorithm,
+   the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenSizesAndOffsetsInSelf() <= size effect: child.size [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.size and this.offset is set on me (parent)
+6. Step 4 includes *Parent sets actual size and position down on child*.
+
+
+#+BEGIN_SRC python
+  def layout(Size min, Size max):     # 1. constraints go down (as this is called in parent context)
+    if this is leaf:
+      this.size = calculate own size (may be e.g. size of rectangle if this is a rectangle) if not withit Constraint, exception???
+      return this.size                # 2. sizes go up
+    else:
+      for child in children:
+        Size size = child.layout(constraintDefinedByParent) # ignore return, we have it in side-effect
+      calculateAndSetActualChildrenSizesAndOffsetsInSelf()
+      return this.size ????
+
+
+  # For example, for flow layout, each child is given the size it previously asked, and moved by predecessors sizes.
+  # !!!!!!!!!!!!!!! this replaces applyParentOffset
+  def calculateAndSetActualChildrenSizesAndOffsetsInSelf():
+    Offset currentOffset = 0
+    Size mySize = 0
+    for child in children:
+      child.size = child.size         # Size goes down - no change in one pass layout
+      child.offset += currentOffset   # 3. Actual position goes down
+      currentOffset += new Offset(child.size.width, 0) # just shift next child some more to the right.
+      mySize = currentOffset + child.size
+    this.size = mySize
+#+END_SRC   
+
 
 * IN-PROGRESS Flutter Charts Bugs status
 
