@@ -159,12 +159,13 @@ abstract class ChartContainer extends Container {
     setupPointsColumns();
 
     // ### 2. Layout the legends on top
+    var legendLayoutExpansion = new LayoutExpansion(
+      width: chartArea.width,
+      height: chartArea.height,
+    );
     legendContainer = new LegendContainer(
       parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width,
-          height: chartArea.height,
-        ),
+      layoutExpansion: legendLayoutExpansion,
     );
 
     legendContainer.layout();
@@ -178,12 +179,13 @@ abstract class ChartContainer extends Container {
     //        is not relevant in this first call.
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
+    var yContainerLayoutExpansion = new LayoutExpansion(
+      width: chartArea.width,
+      height: yContainerHeight,
+    );
     var yContainerFirst = new YContainer(
       parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width,
-          height: yContainerHeight,
-        ),
+      layoutExpansion: yContainerLayoutExpansion,
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
 
@@ -195,12 +197,13 @@ abstract class ChartContainer extends Container {
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
 
+    var xContainerLayoutExpansion = new LayoutExpansion(
+      width: chartArea.width - yContainerSize.width,
+      height: chartArea.height - legendContainerSize.height,
+    );
     xContainer = new XContainer(
       parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width - yContainerSize.width,
-          height: chartArea.height - legendContainerSize.height,
-        ),
+      layoutExpansion: xContainerLayoutExpansion,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
@@ -219,12 +222,13 @@ abstract class ChartContainer extends Container {
 
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
+    yContainerLayoutExpansion = new LayoutExpansion(
+      width: chartArea.width,
+      height: yContainerHeight - xContainerSize.height,
+    );
     yContainer = new YContainer(
       parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width,
-          height: yContainerHeight - xContainerSize.height,
-      ),
+      layoutExpansion: yContainerLayoutExpansion,
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
 
@@ -239,13 +243,14 @@ abstract class ChartContainer extends Container {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
+    var dataContainerLayoutExpansion = new LayoutExpansion(
+      width: chartArea.width - yContainerSize.width,
+      height: chartArea.height -
+          (legendContainerSize.height + xContainerSize.height),
+    );
     this.dataContainer = createDataContainer(
       parentContainer: this,
-      layoutExpansion: new LayoutExpansion(
-          width: chartArea.width - yContainerSize.width,
-          height: chartArea.height -
-              (legendContainerSize.height + xContainerSize.height),
-      ),
+      layoutExpansion: dataContainerLayoutExpansion,
     );
 
     // todo-00-last : this is where most non-Container elements are layed out.

@@ -60,6 +60,10 @@ I suspect, this is actually used as Container.preLayoutSize - sort of like prefe
 - or maybe as layoutSize member that is settable, to bypass only getter getLayoutSize
   
 Study it and comment, maybe rename and refactor.
+
+Code review:
+
+- [ ] Container._layouExpansion is ONLY set during construction, so should be doable to be final! 
  
 
 *** TODO Make Containers a hierarchy
@@ -273,13 +277,14 @@ If layout() is called, following paint() always prints full line  (goes to line 
 
 
 #+BEGIN_SRC python
-  def layout(Size min, Size max):     # 1. constraints go down (as this is called in parent context)
+  def layout(Size constraintFromParent):     # 1. constraints go down (as this is called in parent context)
     if this is leaf:
       this.size = calculate own size (may be e.g. size of rectangle if this is a rectangle) if not withit Constraint, exception???
       return this.size                # 2. sizes go up
     else:
       for child in children:
-        Size size = child.layout(constraintDefinedByParent) # ignore return, we have it in side-effect
+        # All children are offered the full size of parent. If greedy, that is a problem 
+        Size size = child.layout(constraintFromParent) # ignore return, we have it in side-effect
       calculateAndSetActualChildrenSizesAndOffsetsInSelf()
       return this.size ????
 
