@@ -15,9 +15,7 @@ class LineContainer extends container.Container {
   })   : this.linePaint = linePaint,
         this.lineFrom = lineFrom,
         this.lineTo = lineTo,
-        super(
-            layoutExpansion:
-                new container.LayoutExpansion.unused());
+        super();
 
   // #####  Implementors of method in superclass [Container].
 
@@ -26,7 +24,7 @@ class LineContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout() {
+  void layout(container.LayoutExpansion layoutExpansion) {
     throw new StateError("No need to call layout on ${this.runtimeType}.");
   }
 

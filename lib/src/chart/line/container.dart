@@ -27,11 +27,9 @@ class LineChartContainer extends ChartContainer {
 
   LineChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
-    required LayoutExpansion layoutExpansion,
   }) {
     return new LineChartDataContainer(
       parentContainer: parentContainer,
-      layoutExpansion: layoutExpansion,
     );
   }
 }

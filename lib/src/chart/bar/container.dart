@@ -27,11 +27,9 @@ class VerticalBarChartContainer extends ChartContainer {
 
   VerticalBarChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
-    required LayoutExpansion layoutExpansion,
   }) {
     return new VerticalBarChartDataContainer(
       parentContainer: parentContainer,
-      layoutExpansion: layoutExpansion,
     );
   }
   

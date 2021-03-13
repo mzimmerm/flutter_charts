@@ -79,7 +79,6 @@ class LabelContainer extends container.Container {
     required vector_math.Matrix2 labelTiltMatrix,
     required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
-    required container.LayoutExpansion layoutExpansion,
   })   : this._label = label,
         this._labelMaxWidth = labelMaxWidth,
         this._labelTiltMatrix = labelTiltMatrix,
@@ -97,7 +96,7 @@ class LabelContainer extends container.Container {
           // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
         ),
         //  textScaleFactor does nothing ??
-        super(layoutExpansion: layoutExpansion) {
+        super() {
     // var text = new widgets.TextSpan(
     //   text: label,
     //   style: _labelStyle.textStyle, // All labels share one style object
@@ -113,7 +112,7 @@ class LabelContainer extends container.Container {
 
     // Make sure to call layout - this instance is always "clean"
     //   without need to call layout or introducing _isLayoutNeeded
-    layout();
+    layout(new container.LayoutExpansion.unused());
   }
 
   // #####  Implementors of method in superclass [Container].
@@ -124,7 +123,9 @@ class LabelContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout() {
+  void layout(container.LayoutExpansion layoutExpansion) {
+    // todo-00-last : cannot set _layoutExpansion here, as it is private in another src file
+    // it does not appear needed.
     _layoutAndCheckOverflowInTextDirection();
     _tiltedLabelEnvelope = _createLabelEnvelope();
   }
@@ -252,14 +253,13 @@ class AxisLabelContainer extends LabelContainer {
       required vector_math.Matrix2 labelTiltMatrix,
       required vector_math.Matrix2 canvasTiltMatrix,
       required LabelStyle labelStyle,
-      required container.LayoutExpansion layoutExpansion})
+  })
       : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
           canvasTiltMatrix: canvasTiltMatrix,
           labelStyle: labelStyle,
-          layoutExpansion: layoutExpansion,
         );
 
   void applyParentOffset(ui.Offset offset) {

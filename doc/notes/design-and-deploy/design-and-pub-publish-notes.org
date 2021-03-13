@@ -2,12 +2,15 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 
-* IN-PROGRESS Dart questions running
+* IN-PROGRESS Flutter Charts Bugs status
 
-- Is there a way to initialize a non-nullable list to size?
-
-
-* TODO Bugs to report or ask on Stack Overflow
+- [ ] After tons of layout changes, the grid disappeared from the line chart only.
+- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
+- [X] Chart area needs clipping in the application
+- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
+- 
+ 
+* TODO Dart or Flutter bugs to report or ask on Stack Overflow
 
 ** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
 
@@ -35,10 +38,14 @@ Emulator:
 
 It sounds like in the end this is just a type system complaint, I hope we should be able to use a list of num and then do a concrete operations on them, at least if they are all the same type (int or double, which they are) in the data I passed. 
 
-** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses '...' 
+** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses - three dots '...'  like this.
 
 See file:./bug-text-painter-1.png
 See file:./bug-text-painter-2.png
+** TODO Dart questions running
+
+- Is there a way to initialize a non-nullable list to size?
+
 
 * IN-PROGRESS Flutter Charts Enhancements
 
@@ -64,6 +71,14 @@ Study it and comment, maybe rename and refactor.
 Code review:
 
 - [ ] Container._layouExpansion is ONLY set during construction, so should be doable to be final! 
+- [ ] LayoutExpansion is now passed to layout as it functions basically as Constraint!!
+-
+
+
+
+*** ~HUGE Rename LayoutExpansion to Constraint~ !!!
+
+  
  
 
 *** TODO Make Containers a hierarchy
@@ -262,7 +277,7 @@ Also:
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
-*** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+*** DONE Labels austo-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
 
 * NOTE Layouter general function
 
@@ -303,13 +318,6 @@ If layout() is called, following paint() always prints full line  (goes to line 
 #+END_SRC   
 
 
-* IN-PROGRESS Flutter Charts Bugs status
-
-- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
-- [X] Chart area needs clipping in the application
-- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
-- 
- 
 * NOTE How are todos used in code
 - todo-1 long term low priority
 - todo-2 long term higher priority
