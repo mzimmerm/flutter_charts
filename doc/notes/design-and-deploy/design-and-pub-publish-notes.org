@@ -48,10 +48,19 @@ See file:./bug-text-painter-2.png
 
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
 
-*** TODO Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
+*** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
 - LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
 
+
+
+*** IN-PROGRESS LayoutExpansion: more study and cleanup
+
+I suspect, this is actually used as Container.preLayoutSize - sort of like preferredSize !!!!
+- or maybe as layoutSize member that is settable, to bypass only getter getLayoutSize
+  
+Study it and comment, maybe rename and refactor.
+ 
 
 *** TODO Make Containers a hierarchy
 **** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.

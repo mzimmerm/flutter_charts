@@ -163,9 +163,8 @@ abstract class ChartContainer extends Container {
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
-          widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height,
-          heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
+        ),
     );
 
     legendContainer.layout();
@@ -183,9 +182,8 @@ abstract class ChartContainer extends Container {
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
-          widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
           height: yContainerHeight,
-          heightExpansionStyle: ExpansionStyle.TryFill),
+        ),
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
 
@@ -201,9 +199,8 @@ abstract class ChartContainer extends Container {
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width - yContainerSize.width,
-          widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height - legendContainerSize.height,
-          heightExpansionStyle: ExpansionStyle.GrowDoNotFill),
+        ),
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
@@ -226,9 +223,8 @@ abstract class ChartContainer extends Container {
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width,
-          widthExpansionStyle: ExpansionStyle.GrowDoNotFill,
           height: yContainerHeight - xContainerSize.height,
-          heightExpansionStyle: ExpansionStyle.TryFill),
+      ),
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
 
@@ -247,10 +243,9 @@ abstract class ChartContainer extends Container {
       parentContainer: this,
       layoutExpansion: new LayoutExpansion(
           width: chartArea.width - yContainerSize.width,
-          widthExpansionStyle: ExpansionStyle.TryFill,
           height: chartArea.height -
               (legendContainerSize.height + xContainerSize.height),
-          heightExpansionStyle: ExpansionStyle.TryFill),
+      ),
     );
 
     // todo-00-last : this is where most non-Container elements are layed out.
@@ -794,7 +789,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
         );
 }
 
-enum ExpansionStyle { TryFill, GrowDoNotFill, Unused }
 
 /// Defines how a container [layout] should expand the container in a direction.
 ///
@@ -814,20 +808,15 @@ enum ExpansionStyle { TryFill, GrowDoNotFill, Unused }
 ///
 class LayoutExpansion {
   double _width;
-  ExpansionStyle _widthExpansionStyle;
   double _height;
-  ExpansionStyle _heightExpansionStyle;
 
   LayoutExpansion({
     required double width,
-    required ExpansionStyle widthExpansionStyle,
     required double height,
-    required ExpansionStyle heightExpansionStyle,
     bool used = true,
   })  : _width = width,
-        _widthExpansionStyle = widthExpansionStyle,
-        _height = height,
-        _heightExpansionStyle = heightExpansionStyle {
+        _height = height
+  {
     if (used && this._width <= 0.0) {
       throw new StateError("Invalid width $_width");
     }
@@ -840,28 +829,31 @@ class LayoutExpansion {
   LayoutExpansion.unused()
       : this(
           width: -1.0,
-          widthExpansionStyle: ExpansionStyle.Unused,
           height: -1.0,
-          heightExpansionStyle: ExpansionStyle.Unused,
           used: false,
         );
 
   double get height {
+    
+/*
     if (_heightExpansionStyle != ExpansionStyle.TryFill) {
       throw new StateError(
           "Before layout, cannot ask for height if style is not ${ExpansionStyle.TryFill}. " +
               "If asking after layout, call [layoutSize]");
     }
+*/
 
     return _height;
   }
 
   double get width {
+/*
     if (_widthExpansionStyle != ExpansionStyle.TryFill) {
       throw new StateError(
           "Before layout, cannot ask for width if style is not ${ExpansionStyle.TryFill}. " +
               "If asking after layout, call [layoutSize]");
     }
+*/
 
     return _width;
   }
@@ -874,9 +866,8 @@ class LayoutExpansion {
     width ??= _width;
     return new LayoutExpansion(
         width: width,
-        widthExpansionStyle: _widthExpansionStyle,
-        height: height,
-        heightExpansionStyle: _heightExpansionStyle);
+        height: height
+    );
   }
 }
 
