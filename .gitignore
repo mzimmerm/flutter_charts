@@ -6,6 +6,9 @@
 .projectile
 .gnupg
 
+# Emacs, maybe other edit lock files
+.\#*
+
 # Private notes, todos, readme
 INTERNAL-GITIGNORE/
 

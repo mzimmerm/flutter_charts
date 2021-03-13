@@ -807,8 +807,8 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
 ///     looking at such
 ///
 class LayoutExpansion {
-  double _width;
-  double _height;
+  final double _width;
+  final double _height;
 
   LayoutExpansion({
     required double width,
@@ -890,7 +890,7 @@ class LayoutExpansion {
 ///
 abstract class Container {
   /// External size enforced by the parent container.
-  LayoutExpansion _layoutExpansion;
+  final LayoutExpansion _layoutExpansion;
 
   /// Answers the requested expansion sizes.
   ///
