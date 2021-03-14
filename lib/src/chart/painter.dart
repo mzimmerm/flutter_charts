@@ -6,8 +6,6 @@ import 'package:flutter_charts/src/chart/line/chart.dart';
 
 import 'container.dart' as containers;
 
-import 'package:flutter_charts/src/chart/presenter.dart' as presenters;
-
 /// Base class of the chart painters; it's core role is to paint the
 /// charts (the extensions of [CustomPaint]).
 ///

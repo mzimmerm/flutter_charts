@@ -6,7 +6,10 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas, Offset;
 
 import 'package:flutter_charts/src/chart/container.dart'
-    as container show Container, LayoutExpansion;
+    as container show Container;
+
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show 
+LayoutExpansion;
 
 import '../util/geometry.dart' as geometry;
 
@@ -112,7 +115,7 @@ class LabelContainer extends container.Container {
 
     // Make sure to call layout - this instance is always "clean"
     //   without need to call layout or introducing _isLayoutNeeded
-    layout(new container.LayoutExpansion.unused());
+    layout(new LayoutExpansion.unused());
   }
 
   // #####  Implementors of method in superclass [Container].
@@ -123,7 +126,7 @@ class LabelContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout(container.LayoutExpansion layoutExpansion) {
+  void layout(LayoutExpansion layoutExpansion) {
     // todo-00-last : cannot set _layoutExpansion here, as it is private in another src file
     // it does not appear needed.
     _layoutAndCheckOverflowInTextDirection();

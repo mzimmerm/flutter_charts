@@ -55,13 +55,14 @@ See file:./bug-text-painter-2.png
 
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
 
-*** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
+*** 
+*** IN-PROGRESS ~HUGE Refactor LayoutExpansion to SizeConstraints~ !!!
+**** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
 - LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
 
 
-
-*** IN-PROGRESS LayoutExpansion: more study and cleanup
+**** DONE LayoutExpansion: more study and cleanup - pass to layout instead of to Container constructor (required layoutExpansion)
 
 I suspect, this is actually used as Container.preLayoutSize - sort of like preferredSize !!!!
 - or maybe as layoutSize member that is settable, to bypass only getter getLayoutSize
@@ -71,28 +72,88 @@ Study it and comment, maybe rename and refactor.
 Code review:
 
 - [ ] Container._layouExpansion is ONLY set during construction, so should be doable to be final! 
-- [ ] LayoutExpansion is now passed to layout as it functions basically as Constraint!!
+- [ ] LayoutExpansion is now passed to layout as it functions basically as SizeConstraints!!
 -
 
 
 
-*** ~HUGE Rename LayoutExpansion to Constraint~ !!!
+**** TODO LayoutExpansion : remove all _layoutSize from extensions, and let base Container to have it as member, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
 
-  
- 
+- This should be possible in principle relatively simply.
+- Container layoutSize will need set and get. To set, add new private _debugLayoutSetCount. This will be interesting to know if the setter was called after initial set in layout
 
-*** TODO Make Containers a hierarchy
+**** TODO ~LayoutExpansion : solve core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doint things such as get layoutSize { return _layoutExpansion }~
+
+See those 2 examples:
+
+
+#+begin_src javascript
+  ui.Size get layoutSize {
+    return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+  }
+#+end_src
+
+#+begin_src javascript
+
+  void layout(LayoutExpansion layoutExpansion) {
+    _layoutExpansion = layoutExpansion;
+    // ### 1. Prepare early, from dataRows, the stackable points managed
+    //        in [pointsColumns], as [YContainer] needs to scale y values and
+    //        create labels from the stacked points (if chart is stacked).
+    setupPointsColumns();
+
+    .. etc
+    }
+
+#+end_src
+
+We need to solve this but may not be possible. As a start, we could say:
+
+By passing layoutExpansion to layout, we are basically forcing child size on the child. So the passed layoutExpansion is immediately becoming layout size.
+
+So try this and see what happend:
+
+In all layout definitions, such as:
+
+#+begin_src javascript
+
+  void layout(LayoutExpansion layoutExpansion) {
+    _layoutExpansion = layoutExpansion;
+    .. etc
+    }
+#+end_src
+
+change that to:
+
+#+begin_src javascript
+
+  void layout(LayoutExpansion layoutExpansion) {
+    _layoutSize = layoutExpansion;
+    .. etc
+    }
+#+end_src
+
+and see what happens :)
+
+
+**** TODO Rename LayoutExpansion to SizeConstraints (to distinguish from BoxConstraints and SliverConstraints)
+
+**** TODO Rename offset to layoutOffset
+
+***** rename applyParentOffset to applyParentLayoutOffset
+
+*** TODO ~Rename offset to layoutOffset~
+*** TODO Make Containers a hierarchy - Everything is a container. Layout, Inset, etc are also containers. Containers are wrapped and only contain children, not layouts, or other loose containers.
 **** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.
-***** Change code to pickup 
 **** TODO Edit all calls to layout and return it
 
-**** TODO ~Add constraints and layouts ~
+**** TODO ~Add SizeConstraints~
 
                                      
-- [ ] Add constraint.dart -
-  - Constraint{ _maxSize = Size.infinity; Constraint({maxSize:}); Constraint.infinity: redirect to Constraint(maxSize: Size.infinity};},
-- [ ] In existing code, Pass Constraint to each Container.layout({required Constraint constraint})
-- [ ] Add Constraint field to Container, from constructor.
+- [ ] Add size_constraint.dart -
+  - SizeConstraints{ _maxSize = Size.infinity; SizeConstraints({maxSize:}); SizeConstraints.infinity: redirect to SizeConstraints(maxSize: Size.infinity};},
+- [ ] In existing code, Pass SizeConstraints to each Container.layout({required SizeConstraints sizeConstraints})
+- [ ] Add SizeConstraints field to Container, from constructor.
 
 
 **** TODO ~Container class~ - make it a hierarchy:
@@ -113,12 +174,12 @@ Container is it's children, but it can rotate or be moved.
 - [ ] children should be just a List<Containers>
 - [ ] add member root. On top, should be null. 
 - [ ] add method addChild(Container)
-- [ ] add member constraint 
-- [ ] add member size
+- [ ] add member sizeConstraints - NOT NOW, LATER - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
+- [ ] add member layoutSize
 - [ ] keep member offset
-- [ ] implement default method layout(Constraint) - see [[Layouter general function]]
-- [ ] add abstract method calculateAndSetActualChildrenSizesAndOffsetsInSelf() # Calculates children's positions in self based on what the layout actually is
-- [ ] applyParentOffset removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenSizesAndOffsetsInSelf
+- [ ] implement default method layout(SizeConstraints) - see [[Layouter general function]]
+- [ ] add abstract method calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf() # Calculates children's positions in self based on what the layout actually is
+- [ ] applyParentOffset removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
   - applies offset on self (call super)
   - calls applyParentOffset on all children 
 
@@ -129,7 +190,7 @@ Container is it's children, but it can rotate or be moved.
     - create Root (ChartContainer)
     - add all children recursively 
   - Layout
-    - called by root.layout(Constraint)
+    - called by root.layout(SizeConstraints)
     - side effects
       - set layoutSize on all members in hierarchy (currently not done)
       - set offset (applyParentOffset) on all members in hierarchy 
@@ -137,7 +198,7 @@ Container is it's children, but it can rotate or be moved.
   
 *** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
 *** TODO ~Convert ChartContainer.layout to use the new concepts - CONVERT ONLY ON THIS LEVEL, NOT CHILDREN~
-**** TODO Move some code to calculateAndSetActualChildrenSizesAndOffsetsInSelf
+**** TODO Move some code to calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
 
 Code between layout and applyParentOffset, like this:
 #+begin_example
@@ -148,7 +209,7 @@ Code between layout and applyParentOffset, like this:
         yContainerSize.width, chartArea.height - xContainerSize.height);
     xContainer.applyParentOffset(xContainerOffset);
 #+end_example
-shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetActualChildrenSizesAndOffsetsInSelf
+shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
 **** TODO What else  - much more
 
 *** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
@@ -238,7 +299,6 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
 
 ***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
-*** LATER ~LayoutExpansion~ - merge it somehow with ~Constraint~!!!
 *** TODO Study Morphs what else needs added!
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
@@ -283,38 +343,38 @@ If layout() is called, following paint() always prints full line  (goes to line 
 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
 
-1. *Constraint is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(constraintDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
+1. *SizeConstraints is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(sizeConstraintsDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
 2. *PreferredSize is returned up* from layout and also stored on child (happens also in 1).               
 3. Once we know all children sizes:
 4. Parent decides, based on it's layout algorithm,
-   the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenSizesAndOffsetsInSelf() <= size effect: child.size [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.size and this.offset is set on me (parent)
-6. Step 4 includes *Parent sets actual size and position down on child*.
+   the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf() <= layoutSize effect: child.layoutSize [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.layoutSize and this.offset is set on me (parent)
+6. Step 4 includes *Parent sets actual layoutSize and position down on child*.
 
 
 #+BEGIN_SRC python
-  def layout(Size constraintFromParent):     # 1. constraints go down (as this is called in parent context)
+  def layout(Size sizeConstraintsFromParent):     # 1. sizeConstraintss go down (as this is called in parent context)
     if this is leaf:
-      this.size = calculate own size (may be e.g. size of rectangle if this is a rectangle) if not withit Constraint, exception???
-      return this.size                # 2. sizes go up
+      this.layoutSize = calculate own layoutSize (may be e.g. size of rectangle if this is a rectangle) if not withit SizeConstraints, exception???
+      return this.layoutSize                # 2. sizes go up
     else:
       for child in children:
-        # All children are offered the full size of parent. If greedy, that is a problem 
-        Size size = child.layout(constraintFromParent) # ignore return, we have it in side-effect
-      calculateAndSetActualChildrenSizesAndOffsetsInSelf()
-      return this.size ????
+        # All children are offered the full layoutSize of parent. If greedy, that is a problem 
+        Size layoutSize = child.layout(constraintFromParent) # ignore return, we have it in side-effect
+      calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()
+      return this.layoutSize ????
 
 
-  # For example, for flow layout, each child is given the size it previously asked, and moved by predecessors sizes.
+  # For example, for flow layout, each child is given the layoutSize it previously asked, and moved by predecessors layoutSizes.
   # !!!!!!!!!!!!!!! this replaces applyParentOffset
-  def calculateAndSetActualChildrenSizesAndOffsetsInSelf():
+  def calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf():
     Offset currentOffset = 0
-    Size mySize = 0
+    Size myLayoutSize = 0
     for child in children:
-      child.size = child.size         # Size goes down - no change in one pass layout
+      child.layoutSize = child.layoutSize         # Size goes down - no change in one pass layout
       child.offset += currentOffset   # 3. Actual position goes down
-      currentOffset += new Offset(child.size.width, 0) # just shift next child some more to the right.
-      mySize = currentOffset + child.size
-    this.size = mySize
+      currentOffset += new Offset(child.layoutSize.width, 0) # just shift next child some more to the right.
+      myLayoutSize = currentOffset + child.layoutSize
+    this.layoutSize = myLayoutSize
 #+END_SRC   
 
 

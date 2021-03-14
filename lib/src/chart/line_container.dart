@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas, Size;
 import 'package:flutter_charts/src/chart/container.dart'
-    as container show Container, LayoutExpansion;
+    as container show Container;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart'
+    show LayoutExpansion;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends container.Container {
@@ -24,7 +26,7 @@ class LineContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout(container.LayoutExpansion layoutExpansion) {
+  void layout(LayoutExpansion layoutExpansion) {
     throw new StateError("No need to call layout on ${this.runtimeType}.");
   }
 

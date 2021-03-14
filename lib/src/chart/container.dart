@@ -1,5 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
+
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection
     show CustomList;
 
@@ -377,7 +379,7 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = _layoutExpansion._height -
+    double yAxisMin = _layoutExpansion.height -
         (_parentContainer.options.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
@@ -394,7 +396,7 @@ class YContainer extends ChartAreaContainer {
             .reduce(math.max) +
         2 * _parentContainer.options.yLabelsPadLR;
 
-    _layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion._height);
+    _layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion.height);
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
@@ -585,7 +587,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     double yTicksWidth =
         options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
 
-    double availableWidth = _layoutExpansion._width - yTicksWidth;
+    double availableWidth = _layoutExpansion.width - yTicksWidth;
 
     double labelMaxAllowedWidth = availableWidth / xLabels.length;
 
@@ -651,7 +653,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     // Set the layout size calculated by this layout
     _layoutSize = new ui.Size(
-      _layoutExpansion._width,
+      _layoutExpansion.width,
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
@@ -782,86 +784,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer
 }
 
 
-/// Defines how a container [layout] should expand the container in a direction.
-///
-/// Direction can be "width" or "height".
-/// Generally,
-///   - If direction style is [TryFill], the container should use all
-///     available length in the direction (that is, [width] or [height].
-///     This is intended to fill a predefined
-///     available length, such as when showing X axis labels
-///   - If direction style is [GrowDoNotFill], container should use as much space
-///     as needed in the direction, but stop "well before" the available length.
-///     The "well before" is not really defined here.
-///     This is intended to for example layout Y axis in X direction,
-///     where we want to put the data container to the right of the Y labels.
-///   - If direction style is [Unused], the [layout] should fail on attempted
-///     looking at such
-///
-class LayoutExpansion {
-  final double _width;
-  final double _height;
 
-  LayoutExpansion({
-    required double width,
-    required double height,
-    bool used = true,
-  })  : _width = width,
-        _height = height
-  {
-    if (used && this._width <= 0.0) {
-      throw new StateError("Invalid width $_width");
-    }
-    if (used && this._height <= 0.0) {
-      throw new StateError("Invalid height $_height");
-    }
-  }
-
-  /// Named constructor for unused expansion
-  LayoutExpansion.unused()
-      : this(
-          width: -1.0,
-          height: -1.0,
-          used: false,
-        );
-
-  double get height {
-    
-/*
-    if (_heightExpansionStyle != ExpansionStyle.TryFill) {
-      throw new StateError(
-          "Before layout, cannot ask for height if style is not ${ExpansionStyle.TryFill}. " +
-              "If asking after layout, call [layoutSize]");
-    }
-*/
-
-    return _height;
-  }
-
-  double get width {
-/*
-    if (_widthExpansionStyle != ExpansionStyle.TryFill) {
-      throw new StateError(
-          "Before layout, cannot ask for width if style is not ${ExpansionStyle.TryFill}. " +
-              "If asking after layout, call [layoutSize]");
-    }
-*/
-
-    return _width;
-  }
-
-  LayoutExpansion cloneWith({
-    double? width,
-    double? height,
-  }) {
-    height ??= _height;
-    width ??= _width;
-    return new LayoutExpansion(
-        width: width,
-        height: height
-    );
-  }
-}
 
 /// Base class which manages, lays out, moves, and paints
 /// graphical elements on the chart, for example individual
@@ -1090,7 +1013,7 @@ abstract class DataContainer extends ChartAreaContainer {
     chartContainer.yTickYs.forEach((yTickY) {
       LineContainer xLineContainer = new LineContainer(
           lineFrom: new ui.Offset(0.0, yTickY),
-          lineTo: new ui.Offset(this._layoutExpansion._width, yTickY),
+          lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
@@ -1118,7 +1041,7 @@ abstract class DataContainer extends ChartAreaContainer {
   }
 
   ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion._width, _layoutExpansion._height);
+    return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
   }
 
   /// Paints the Grid lines of the chart area.
@@ -1539,7 +1462,7 @@ class LegendContainer extends ChartAreaContainer {
     }
 
     _layoutSize = new ui.Size(
-      _layoutExpansion._width,
+      _layoutExpansion.width,
       _legendItemContainers
               .map((legendItemContainer) =>
                   legendItemContainer.layoutSize.height)
@@ -1723,10 +1646,8 @@ class StackableValuePoint {
     clone.scaledY = scaledY;
     clone.fromScaledY = fromScaledY;
     clone.toScaledY = toScaledY;
-    if (scaledFrom != null)
-      clone.scaledFrom = new ui.Offset(scaledFrom.dx, scaledFrom.dy);
-    if (scaledTo != null)
-      clone.scaledTo = new ui.Offset(scaledTo.dx, scaledTo.dy);
+    clone.scaledFrom = new ui.Offset(scaledFrom.dx, scaledFrom.dy);
+    clone.scaledTo = new ui.Offset(scaledTo.dx, scaledTo.dy);
 
     return clone;
   }

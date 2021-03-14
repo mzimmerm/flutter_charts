@@ -1,11 +1,6 @@
-import 'dart:ui' as ui;
-
 import '../bar/container.dart' as bar_containers;
 
 import '../painter.dart';
-import '../presenter.dart' as presenters;
-
-import '../bar/presenter.dart' as bar_presenters;
 
 /// This concrete [CustomPainter] only provides a constructor, 
 /// specifically requiring [bar_containers.VerticalBarChartContainer],

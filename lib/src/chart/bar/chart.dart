@@ -2,8 +2,6 @@ import 'package:flutter/widgets.dart' as widgets;
 
 import '../bar/painter.dart' as bar_painter;
 
-import '../bar/container.dart' as bar_containers;
-
 /// Provides paint for the vertical bar chart.
 ///
 /// It extends [CustomPaint] which is the flutter widget

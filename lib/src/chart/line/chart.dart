@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../line/container.dart' as line_containers;
 import '../line/painter.dart' as line_painter show LineChartPainter;
 
 /// Provides paint for the line chart.
