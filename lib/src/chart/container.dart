@@ -48,6 +48,7 @@ import 'bar/presenter.dart' as bar_presenters;
 ///      ChartPainter by the application.
 abstract class ChartContainer extends Container {
   /// Implements [Container.layoutSize()].
+  // todo-00-last-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea 
   ui.Size get layoutSize => chartArea;
 
   // todo-11-last describe in detail how this is set in Painter and used in Paint (chart).
@@ -58,6 +59,7 @@ abstract class ChartContainer extends Container {
   /// [chartArea] marked late, as there is virtually no practical situation
   /// it can be known before runtime; it is required,
   /// but not set at construction time.
+  /// 
   late ui.Size chartArea;
 
   /// Base Areas of chart.
@@ -345,7 +347,7 @@ class YContainer extends ChartAreaContainer {
   late List<AxisLabelContainer> _yLabelContainers;
 
   /// private [_layoutSize] is calculated in layout and stored
-  late ui.Size _layoutSize;
+  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
 
   double _yLabelsMaxHeightFromFirstLayout;
 
@@ -518,9 +520,11 @@ class YContainer extends ChartAreaContainer {
     });
   }
 
+/* todo-00-last-last-layout-size-removed : 
   ui.Size get layoutSize {
     return _layoutSize;
   }
+*/
 
   void paint(ui.Canvas canvas) {
     for (var yLabelContainer in _yLabelContainers) {
@@ -550,7 +554,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   /// Size allocated for each shown label (>= [_gridStepWidth]
   double _shownLabelsStepWidth = 0.0;
-  late ui.Size _layoutSize;
+  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
 
   /// Constructs the container that holds X labels.
   ///
@@ -688,9 +692,11 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     });
   }
 
+/* todo-00-last-last-layout-size-removed : 
   ui.Size get layoutSize {
     return _layoutSize;
   }
+*/
 
   void paint(ui.Canvas canvas) {
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
@@ -816,8 +822,24 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
+  // todo-00-last-last-layout-size-added : 
+  ui.Size _layoutSize = ui.Size.zero;
+  
   /// Size after [layout] has been called.
-  ui.Size get layoutSize;
+  // todo-00-last-last-layout-size-removed : ui.Size get layoutSize;
+  
+  // todo-00-last-last-layout-size-block-added : 
+  int _debugLayoutSetCount = 0;
+  
+  ui.Size get layoutSize => _layoutSize;
+  
+  set layoutSize(ui.Size newLayoutSize) { 
+    _layoutSize = newLayoutSize; 
+    _debugLayoutSetCount++;
+  }
+  
+  
+  
   
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   /// 
@@ -959,6 +981,9 @@ abstract class DataContainer extends ChartAreaContainer {
   /// scales the columns to the [YContainer]'s scale.
   void layout(LayoutExpansion layoutExpansion) {
     _layoutExpansion = layoutExpansion;
+    // todo-00-last-last-layout-size-added
+    _layoutSize = ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+    
     _layoutGrid();
 
     // Scale the [pointsColumns] to the [YContainer]'s scale.
@@ -1013,7 +1038,8 @@ abstract class DataContainer extends ChartAreaContainer {
     chartContainer.yTickYs.forEach((yTickY) {
       LineContainer xLineContainer = new LineContainer(
           lineFrom: new ui.Offset(0.0, yTickY),
-          lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
+          // todo-00-last-last-layout-size-changed : lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
+          lineTo: new ui.Offset(this._layoutSize.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
@@ -1040,9 +1066,11 @@ abstract class DataContainer extends ChartAreaContainer {
     setupPresentersColumns();
   }
 
+/* todo-00-last-last-layout-size-removed : 
   ui.Size get layoutSize {
     return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
   }
+*/
 
   /// Paints the Grid lines of the chart area.
   ///
@@ -1227,6 +1255,7 @@ class GridLinesContainer extends Container {
   /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
+  // todo-00-last-last-last look into this
   ui.Size get layoutSize => throw new StateError("todo-2 implement this.");
 }
 
@@ -1234,7 +1263,7 @@ class GridLinesContainer extends Container {
 /// indicator, [_indicatorRect], followed by the series label text.
 class LegendItemContainer extends Container {
 
-  late ui.Size _layoutSize;
+  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
 
   /// Container of label
   late LabelContainer _labelContainer;
@@ -1362,7 +1391,9 @@ class LegendItemContainer extends Container {
     _labelContainer.applyParentOffset(offset);
   }
 
+/* // todo-00-last-last-layout-size-removed : 
   ui.Size get layoutSize => _layoutSize;
+*/
 }
 
 /// Lays out the legend area for the chart.
@@ -1387,11 +1418,13 @@ class LegendContainer extends ChartAreaContainer {
   late List<LegendItemContainer> _legendItemContainers;
 
   // Member supports the layoutSize accumulation during layout.
-  late ui.Size _layoutSize;
+  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
 
+/* // todo-00-last-last-layout-size-removed : 
   ui.Size get layoutSize {
     return _layoutSize;
   }
+*/
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.

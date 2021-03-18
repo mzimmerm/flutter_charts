@@ -177,10 +177,12 @@ class LabelContainer extends container.Container {
       _constraintSize = _tiltedLabelEnvelope.size;
     }
 
+    // todo-00-last-last-layout-size-add : _layoutSize = _constraintSize ?? _unconstrainedSize;
     return isOverflowingHorizontally;
   }
 
   /// Implementor of method in superclass [Container].
+  // todo-00-last-last-remove : 
   ui.Size get layoutSize => _constraintSize ?? _unconstrainedSize;
 }
 
