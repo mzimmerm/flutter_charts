@@ -586,7 +586,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: lineChart, // verticalBarChart, lineChart
                   ),
                   // new Text('<<'), // labels fit horizontally
-                  // new Text('<<<<<<'), // default, labels tilted, all present
+                  new Text('<<<<<<'), // default, labels tilted, all present
                   // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // labels skipped (shows 2 labels, legend present but text vertical)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present

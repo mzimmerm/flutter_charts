@@ -654,7 +654,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    labelLayoutStrategy.reLayout();
+    labelLayoutStrategy.reLayout(parentLayoutExpansion);
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {

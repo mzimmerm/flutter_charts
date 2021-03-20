@@ -90,9 +90,9 @@ This should be possible, and in principle relatively simple .. well it still has
 
 **** DONE Consider if LabelContainer needs to call layout again: places like: yLabelContainer.layout(LayoutExpansion.unused());
 
-Not needed, tested.
+Not needed, commented out and tested.
 
-**** TODO LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
+**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 

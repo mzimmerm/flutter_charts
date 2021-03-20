@@ -1,6 +1,7 @@
 import 'package:flutter_charts/src/chart/container.dart'
     show Container, AdjustableLabelsChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
@@ -105,7 +106,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// next prescribed auto-layout action - one of the actions defined in the
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
-  void reLayout() {
+  void reLayout(LayoutExpansion parentLayoutExpansion) {
     if (!_container.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
       //   to layout(). Exits from iterative layout.
@@ -131,7 +132,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    _container.layout(_container.layoutExpansion); // will call this function back!
+    // todo-00-last-last-done : _container.layout(_container.layoutExpansion); // will call this function back!
+    _container.layout(parentLayoutExpansion); // will call this function back!
 
     // print("Iterative layout finished after $_reLayoutsCounter iterations.");
   }
@@ -192,7 +194,7 @@ abstract class LabelLayoutStrategy {
   /// it should set some values on [_container]'s labels to
   /// make them smaller, less dense, tilt, skip etc, and call
   /// [Container.layout] iteratively.
-  void reLayout();
+  void reLayout(LayoutExpansion parentLayoutExpansion);
 
   /// Should return true if the layout strategy rotates labels during the
   /// current reLayout.
