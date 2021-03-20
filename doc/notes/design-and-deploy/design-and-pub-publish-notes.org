@@ -92,7 +92,7 @@ This should be possible, and in principle relatively simple .. well it still has
 
 Not needed, commented out and tested.
 
-**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
+**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 

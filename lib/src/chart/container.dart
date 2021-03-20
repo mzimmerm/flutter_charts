@@ -155,7 +155,7 @@ abstract class ChartContainer extends Container {
   /// The actual layout algorithm should be made pluggable.
   ///
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _layoutExpansion = parentLayoutExpansion;
+    // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -372,13 +372,13 @@ class YContainer extends ChartAreaContainer {
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   void layout(LayoutExpansion parentLayoutExpansion) {
-      _layoutExpansion = parentLayoutExpansion;
+    // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
     // yAxisMin and yAxisMax define end points of the Y axis, in the YContainer
     //   coordinates.
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = _layoutExpansion.height -
+    double yAxisMin = parentLayoutExpansion.height -
         (_parentContainer.options.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
@@ -395,7 +395,7 @@ class YContainer extends ChartAreaContainer {
             .reduce(math.max) +
         2 * _parentContainer.options.yLabelsPadLR;
 
-    layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion.height);
+    layoutSize = new ui.Size(yLabelsContainerWidth, parentLayoutExpansion.height);
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
@@ -570,7 +570,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   ///   in the sense that all tilting logic is hidden in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
   void layout(LayoutExpansion parentLayoutExpansion) {
-      _layoutExpansion = parentLayoutExpansion;
+      // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = new List.empty(growable: true);
 
@@ -581,7 +581,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     double yTicksWidth =
         options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
 
-    double availableWidth = _layoutExpansion.width - yTicksWidth;
+    double availableWidth = parentLayoutExpansion.width - yTicksWidth;
 
     double labelMaxAllowedWidth = availableWidth / xLabels.length;
 
@@ -647,7 +647,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     // Set the layout size calculated by this layout
     layoutSize = new ui.Size(
-      _layoutExpansion.width,
+      parentLayoutExpansion.width,
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
@@ -796,6 +796,7 @@ abstract class Container {
   /// External size enforced by the parent container.
   // todo-00-last-note-only this was final when it was in Constructor, not layout.
   
+/* todo-00-last-last-removed  
   LayoutExpansion _layoutExpansion = LayoutExpansion.unused();
 
   /// Answers the requested expansion sizes.
@@ -804,6 +805,7 @@ abstract class Container {
   /// as that gives a reliable pre-layout size in directions
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
+*/
 
   /// Manages the layout size during the layout process in [layout()].
   /// Should be only mentioned in this class, not super
@@ -970,8 +972,8 @@ abstract class DataContainer extends ChartAreaContainer {
   /// First lays out the Grid, then, based on the available size,
   /// scales the columns to the [YContainer]'s scale.
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _layoutExpansion = parentLayoutExpansion;
-    layoutSize = ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+    // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
+    layoutSize = ui.Size(parentLayoutExpansion.width, parentLayoutExpansion.height);
     
     _layoutGrid();
 
@@ -1217,7 +1219,7 @@ class GridLinesContainer extends Container {
 
   /// Implements the abstract [Container.layout()].
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _layoutExpansion = parentLayoutExpansion;
+    // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
     _lineContainers.forEach((lineContainer) => lineContainer.layout(parentLayoutExpansion));
   }
 
@@ -1278,13 +1280,13 @@ class LegendItemContainer extends Container {
   }
 
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _layoutExpansion = parentLayoutExpansion;
+    // todo-00-last-last-removed _layoutExpansion = parentLayoutExpansion;
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
     double indicatorSquareSide = _options.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
-    double labelMaxWidth = _layoutExpansion.width -
+    double labelMaxWidth = parentLayoutExpansion.width -
         (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       _isDistressed = true;
@@ -1349,7 +1351,7 @@ class LegendItemContainer extends Container {
     );
 
     // Make sure we fit all available width
-    assert(_layoutExpansion.width + 1.0 >=
+    assert(parentLayoutExpansion.width + 1.0 >=
         layoutSize.width); // todo-2 within epsilon
   }
 
@@ -1409,7 +1411,7 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// Evenly divides the [availableWidth] to all legend items.
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _layoutExpansion = parentLayoutExpansion;
+    // todo-00-last-last-removed : _layoutExpansion = parentLayoutExpansion;
     ChartOptions options = _parentContainer.options;
     double containerMarginTB = options.legendContainerMarginTB;
     double containerMarginLR = options.legendContainerMarginLR;
@@ -1440,7 +1442,12 @@ class LegendContainer extends ChartAreaContainer {
       indicatorPaint.color = _parentContainer.data
           .dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
+/* todo-00-last-last-removed
       var legendItemLayoutExpansion = this.layoutExpansion.cloneWith(
+        width: legendItemWidth,
+      );
+*/
+      var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(
         width: legendItemWidth,
       );
       var legendItemContainer = new LegendItemContainer(
@@ -1463,7 +1470,7 @@ class LegendContainer extends ChartAreaContainer {
     }
 
     layoutSize = new ui.Size(
-      _layoutExpansion.width,
+      parentLayoutExpansion.width,
       _legendItemContainers
               .map((legendItemContainer) =>
                   legendItemContainer.layoutSize.height)
