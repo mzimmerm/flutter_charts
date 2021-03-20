@@ -66,8 +66,11 @@ class LabelContainer extends container.Container {
   // _unconstrainedSize is always initialized in layout, so can be late,
   // while _constraintSize may remain null.
   // todo-00-last-last-last : we should NOT need these variables. Just use layoutSize.
+  
+/* todo-00-last-last-last-layout-size-temps-not-needed
   late ui.Size _unconstrainedSize;
   ui.Size? _constraintSize;
+*/
 
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
@@ -169,17 +172,20 @@ class LabelContainer extends container.Container {
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
-    _unconstrainedSize = _tiltedLabelEnvelope.size;
+    // todo-00-last-last-last-layout-size-temps-not-needed _unconstrainedSize = _tiltedLabelEnvelope.size;
+    layoutSize = _tiltedLabelEnvelope.size;
 
-    if (_unconstrainedSize.width > _labelMaxWidth) {
+    // todo-00-last-last-last-layout-size-temps-not-needed if (_unconstrainedSize.width > _labelMaxWidth) {
+    if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
       _textPainter.layout(maxWidth: _labelMaxWidth);
       _tiltedLabelEnvelope = _createLabelEnvelope();
-      _constraintSize = _tiltedLabelEnvelope.size;
+      // todo-00-last-last-last-layout-size-temps-not-needed  _constraintSize = _tiltedLabelEnvelope.size;
+      layoutSize = _tiltedLabelEnvelope.size;
     }
 
     // Set layoutSize from the size of the _tiltedLabelEnvelope.size
-    layoutSize = _constraintSize ?? _unconstrainedSize;
+    // todo-00-last-last-last-layout-size-temps-not-needed layoutSize = _constraintSize ?? _unconstrainedSize;
     
     return isOverflowingHorizontally;
   }
