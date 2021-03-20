@@ -29,7 +29,7 @@ class LineContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout(LayoutExpansion layoutExpansion) {
+  void layout(LayoutExpansion parentLayoutExpansion) {
     throw new StateError("No need to call layout on ${this.runtimeType}.");
   }
 

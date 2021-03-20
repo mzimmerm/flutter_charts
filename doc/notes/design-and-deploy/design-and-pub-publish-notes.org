@@ -87,7 +87,12 @@ This should be possible, and in principle relatively simple .. well it still has
 - [X] Make sure _layoutSize is only in Container. Outside Container, use layoutSize 
 
 
-**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
+
+**** DONE Consider if LabelContainer needs to call layout again: places like: yLabelContainer.layout(LayoutExpansion.unused());
+
+Not needed, tested.
+
+**** TODO LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 

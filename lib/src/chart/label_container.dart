@@ -62,16 +62,7 @@ class LabelContainer extends container.Container {
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
-
-  // _unconstrainedSize is always initialized in layout, so can be late,
-  // while _constraintSize may remain null.
-  // todo-00-last-last-last : we should NOT need these variables. Just use layoutSize.
   
-/* todo-00-last-last-last-layout-size-temps-not-needed
-  late ui.Size _unconstrainedSize;
-  ui.Size? _constraintSize;
-*/
-
   /// Allows to configure certain sizes, colors, and layout.
   LabelStyle _labelStyle;
 
@@ -130,7 +121,7 @@ class LabelContainer extends container.Container {
   }
 
   /// Implementor of method in superclass [Container].
-  void layout(LayoutExpansion layoutExpansion) {
+  void layout(LayoutExpansion parentLayoutExpansion) {
     // todo-00-last : cannot set _layoutExpansion here, as it is private in another src file
     // it does not appear needed.
     _layoutAndCheckOverflowInTextDirection();
@@ -172,20 +163,14 @@ class LabelContainer extends container.Container {
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
-    // todo-00-last-last-last-layout-size-temps-not-needed _unconstrainedSize = _tiltedLabelEnvelope.size;
     layoutSize = _tiltedLabelEnvelope.size;
 
-    // todo-00-last-last-last-layout-size-temps-not-needed if (_unconstrainedSize.width > _labelMaxWidth) {
     if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
       _textPainter.layout(maxWidth: _labelMaxWidth);
       _tiltedLabelEnvelope = _createLabelEnvelope();
-      // todo-00-last-last-last-layout-size-temps-not-needed  _constraintSize = _tiltedLabelEnvelope.size;
       layoutSize = _tiltedLabelEnvelope.size;
     }
-
-    // Set layoutSize from the size of the _tiltedLabelEnvelope.size
-    // todo-00-last-last-last-layout-size-temps-not-needed layoutSize = _constraintSize ?? _unconstrainedSize;
     
     return isOverflowingHorizontally;
   }
