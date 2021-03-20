@@ -91,9 +91,8 @@ This should be possible, and in principle relatively simply.
 // todo-00-last-last-layout-size-block-added : 
 
 
-**** TODO Move Container.dart to it's own package containter_base.dart
 
-- This may cause some trouble !!!
+**** TODO LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 
@@ -152,6 +151,10 @@ and see what happens :)
 
 - This may prove hard due to how things work currently.
   
+**** TODO Move Container.dart to it's own package containter_base.dart
+
+- This may cause some trouble !!!
+
 **** TODO Rename LayoutExpansion to FixedSizeConstraint extends (new class) SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
 
@@ -167,6 +170,17 @@ and see what happens :)
 - but express that ChartContainer layoutSize should never change, be final!
 
 
+*** TODO ~In Container, provide a default paint() method rather than abstract, like this~
+
+#+begin_src javascript
+
+  void paint(ui.Canvas canvas) {
+    for (var yLabelContainer in _yLabelContainers) {
+      yLabelContainer.paint(canvas);
+    }
+  }
+
+#+end_src
 *** TODO ~Rename offset to layoutOffset~
 *** TODO Make Containers a hierarchy - Everything is a container. Layout, Inset, etc are also containers. Containers are wrapped and only contain children, not layouts, or other loose containers.
 **** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.

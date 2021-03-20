@@ -346,9 +346,6 @@ class YContainer extends ChartAreaContainer {
   /// todo 0-future-minor : above is not true now for user defined labels
   late List<AxisLabelContainer> _yLabelContainers;
 
-  /// private [_layoutSize] is calculated in layout and stored
-  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
-
   double _yLabelsMaxHeightFromFirstLayout;
 
   /// Constructs the container that holds Y labels.
@@ -520,12 +517,6 @@ class YContainer extends ChartAreaContainer {
     });
   }
 
-/* todo-00-last-last-layout-size-removed : 
-  ui.Size get layoutSize {
-    return _layoutSize;
-  }
-*/
-
   void paint(ui.Canvas canvas) {
     for (var yLabelContainer in _yLabelContainers) {
       yLabelContainer.paint(canvas);
@@ -554,7 +545,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   /// Size allocated for each shown label (>= [_gridStepWidth]
   double _shownLabelsStepWidth = 0.0;
-  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
 
   /// Constructs the container that holds X labels.
   ///
@@ -692,12 +682,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     });
   }
 
-/* todo-00-last-last-layout-size-removed : 
-  ui.Size get layoutSize {
-    return _layoutSize;
-  }
-*/
-
   void paint(ui.Canvas canvas) {
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
@@ -822,20 +806,25 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-  // todo-00-last-last-layout-size-added : 
+  // todo-00-last-last-layout-size : make sure only mentioned in this class
+  /// Manages the layout size during the layout process in [layout()].
+  /// Should be only mentioned in this class, not super
   ui.Size _layoutSize = ui.Size.zero;
   
-  /// Size after [layout] has been called.
-  // todo-00-last-last-layout-size-removed : ui.Size get layoutSize;
-  
-  // todo-00-last-last-layout-size-block-added : 
   int _debugLayoutSetCount = 0;
-  
+
+  /// Size after [layout()] has been called.
   ui.Size get layoutSize => _layoutSize;
-  
+
+  /// Change the layout size.
+  /// 
+  /// Supports the layoutSize accumulation during layout.
+  /// Should be only called from inside the [layout()] method.
   set layoutSize(ui.Size newLayoutSize) { 
     _layoutSize = newLayoutSize; 
     _debugLayoutSetCount++;
+    print("Changed layoutSize. It changed $_debugLayoutSetCount times; "
+        "now it is : $_layoutSize");
   }
   
   
@@ -977,11 +966,14 @@ abstract class DataContainer extends ChartAreaContainer {
 
   /// Implements [Container.layout()] for data area.
   ///
+  /// Uses all available space in the passed [layoutExpansion],
+  /// which it divides between it's children.
+  /// 
   /// First lays out the Grid, then, based on the available size,
   /// scales the columns to the [YContainer]'s scale.
   void layout(LayoutExpansion layoutExpansion) {
     _layoutExpansion = layoutExpansion;
-    // todo-00-last-last-layout-size-added
+    // todo-00-last-last-layout-size-added - moved here from where get layoutSize, which is now in super
     _layoutSize = ui.Size(_layoutExpansion.width, _layoutExpansion.height);
     
     _layoutGrid();
@@ -1065,12 +1057,6 @@ abstract class DataContainer extends ChartAreaContainer {
     // todo-00-last : problem : this call actually sets absolute values on Presenters !!
     setupPresentersColumns();
   }
-
-/* todo-00-last-last-layout-size-removed : 
-  ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
-  }
-*/
 
   /// Paints the Grid lines of the chart area.
   ///
@@ -1255,16 +1241,14 @@ class GridLinesContainer extends Container {
   /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  // todo-00-last-last-last look into this
+  // todo-00-last look into this
   ui.Size get layoutSize => throw new StateError("todo-2 implement this.");
 }
 
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
 class LegendItemContainer extends Container {
-
-  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
-
+  
   /// Container of label
   late LabelContainer _labelContainer;
 
@@ -1391,9 +1375,6 @@ class LegendItemContainer extends Container {
     _labelContainer.applyParentOffset(offset);
   }
 
-/* // todo-00-last-last-layout-size-removed : 
-  ui.Size get layoutSize => _layoutSize;
-*/
 }
 
 /// Lays out the legend area for the chart.
@@ -1416,16 +1397,7 @@ class LegendContainer extends ChartAreaContainer {
 
   /// Results of laying out the legend labels. Each member is one series label.
   late List<LegendItemContainer> _legendItemContainers;
-
-  // Member supports the layoutSize accumulation during layout.
-  // todo-00-last-last-layout-size-removed : late ui.Size _layoutSize;
-
-/* // todo-00-last-last-layout-size-removed : 
-  ui.Size get layoutSize {
-    return _layoutSize;
-  }
-*/
-
+  
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   ///
