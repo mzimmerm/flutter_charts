@@ -65,6 +65,7 @@ class LabelContainer extends container.Container {
 
   // _unconstrainedSize is always initialized in layout, so can be late,
   // while _constraintSize may remain null.
+  // todo-00-last-last-last : we should NOT need these variables. Just use layoutSize.
   late ui.Size _unconstrainedSize;
   ui.Size? _constraintSize;
 
@@ -177,13 +178,12 @@ class LabelContainer extends container.Container {
       _constraintSize = _tiltedLabelEnvelope.size;
     }
 
-    // todo-00-last-last-layout-size-add : _layoutSize = _constraintSize ?? _unconstrainedSize;
+    // Set layoutSize from the size of the _tiltedLabelEnvelope.size
+    layoutSize = _constraintSize ?? _unconstrainedSize;
+    
     return isOverflowingHorizontally;
   }
 
-  /// Implementor of method in superclass [Container].
-  // todo-00-last-last-remove : 
-  ui.Size get layoutSize => _constraintSize ?? _unconstrainedSize;
 }
 
 /// Class for value objects which group the text styles that may affect

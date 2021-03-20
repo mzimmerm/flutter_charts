@@ -77,22 +77,17 @@ Code review:
 
 
 
-**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutSize from extensions of Container, and add it as member to Container, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
+**** DONE LayoutExpansion and Containers: remove all _layoutSize from extensions of Container, and add it as member to Container, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
 
-This should be possible, and in principle relatively simply.
+This should be possible, and in principle relatively simple .. well it still has some leftover work below.
 
 - [X] Remove _layoutSize from specializations of Container
-- [ ] Remove get layoutSize from specializations of Container 
-- 
-- [ ] Container layoutSize will need set and get. To set, add new private _debugLayoutSetCount. This will be interesting to know if the setter was called after initial set in layout
-- 
+- [X] Remove get layoutSize from specializations of Container 
+- [X] Container layoutSize will need set and get. To set, add new private _debugLayoutSetCount. This will be interesting to know if the setter was called after initial set in layout
+- [X] Make sure _layoutSize is only in Container. Outside Container, use layoutSize 
 
 
-// todo-00-last-last-layout-size-block-added : 
-
-
-
-**** TODO LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
+**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 
@@ -151,6 +146,12 @@ and see what happens :)
 
 - This may prove hard due to how things work currently.
   
+
+**** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
+
+- but express that ChartContainer layoutSize should never change, be final!
+
+
 **** TODO Move Container.dart to it's own package containter_base.dart
 
 - This may cause some trouble !!!
@@ -164,12 +165,11 @@ and see what happens :)
 
 **** TODO Look into remaining usages of "ui.Size get layoutSize"
 
+
+**** TODO ~LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!~
+
+- This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
   
-**** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
-
-- but express that ChartContainer layoutSize should never change, be final!
-
-
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 
 #+begin_src javascript

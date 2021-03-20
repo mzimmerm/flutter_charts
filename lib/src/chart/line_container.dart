@@ -18,8 +18,8 @@ class LineContainer extends container.Container {
         this.lineFrom = lineFrom,
         this.lineTo = lineTo,
         super() {
-    // todo-00-last-last-layout-size-add
-    // _layoutSize = _lineContainerLayoutSize;
+    // todo-00-last-layout-size-add
+    // layoutSize = _lineContainerLayoutSize;
   }
 
   // #####  Implementors of method in superclass [Container].
@@ -38,16 +38,10 @@ class LineContainer extends container.Container {
     super.applyParentOffset(offset);
     this.lineFrom += offset;
     this.lineTo += offset;
-    // todo-00-last-last-layout-size-add : _layoutSize = _lineContainerLayoutSize
+    // todo-00-last-layout-size-add : layoutSize = _lineContainerLayoutSize
   }
 
-  /// Implementor of method in superclass [Container].
-  // todo-00-last-last-layout-size-remove : 
-  ui.Size get layoutSize => new ui.Size(
-        (lineFrom.dx - lineTo.dx).abs(),
-        (lineFrom.dy - lineTo.dy).abs(),
-      );
-  // todo-00-last-last-layout-size-added : 
+  // todo-00-last-layout-size : This is not called. Call when we manage line segments like other Containers, and call their layout! 
   ui.Size get _lineContainerLayoutSize => new ui.Size(
     (lineFrom.dx - lineTo.dx).abs(),
     (lineFrom.dy - lineTo.dy).abs(),

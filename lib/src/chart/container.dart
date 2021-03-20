@@ -48,7 +48,7 @@ import 'bar/presenter.dart' as bar_presenters;
 ///      ChartPainter by the application.
 abstract class ChartContainer extends Container {
   /// Implements [Container.layoutSize()].
-  // todo-00-last-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea 
+  // todo-00-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea 
   ui.Size get layoutSize => chartArea;
 
   // todo-11-last describe in detail how this is set in Painter and used in Paint (chart).
@@ -395,7 +395,7 @@ class YContainer extends ChartAreaContainer {
             .reduce(math.max) +
         2 * _parentContainer.options.yLabelsPadLR;
 
-    _layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion.height);
+    layoutSize = new ui.Size(yLabelsContainerWidth, _layoutExpansion.height);
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
@@ -646,7 +646,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         .reduce(math.max);
 
     // Set the layout size calculated by this layout
-    _layoutSize = new ui.Size(
+    layoutSize = new ui.Size(
       _layoutExpansion.width,
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
@@ -806,7 +806,6 @@ abstract class Container {
   /// where [ExpansionStyle == ExpansionStyle.TryFill]
   LayoutExpansion get layoutExpansion => _layoutExpansion;
 
-  // todo-00-last-last-layout-size : make sure only mentioned in this class
   /// Manages the layout size during the layout process in [layout()].
   /// Should be only mentioned in this class, not super
   ui.Size _layoutSize = ui.Size.zero;
@@ -973,8 +972,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// scales the columns to the [YContainer]'s scale.
   void layout(LayoutExpansion layoutExpansion) {
     _layoutExpansion = layoutExpansion;
-    // todo-00-last-last-layout-size-added - moved here from where get layoutSize, which is now in super
-    _layoutSize = ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+    layoutSize = ui.Size(_layoutExpansion.width, _layoutExpansion.height);
     
     _layoutGrid();
 
@@ -1030,8 +1028,7 @@ abstract class DataContainer extends ChartAreaContainer {
     chartContainer.yTickYs.forEach((yTickY) {
       LineContainer xLineContainer = new LineContainer(
           lineFrom: new ui.Offset(0.0, yTickY),
-          // todo-00-last-last-layout-size-changed : lineTo: new ui.Offset(this._layoutExpansion.width, yTickY),
-          lineTo: new ui.Offset(this._layoutSize.width, yTickY),
+          lineTo: new ui.Offset(this.layoutSize.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
@@ -1292,7 +1289,7 @@ class LegendItemContainer extends Container {
         (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       _isDistressed = true;
-      _layoutSize = new ui.Size(0.0, 0.0);
+      layoutSize = new ui.Size(0.0, 0.0);
       return;
     }
     _labelContainer = new LabelContainer(
@@ -1341,7 +1338,7 @@ class LegendItemContainer extends Container {
     ));
 
     // 6. And store the layout size on member
-    _layoutSize = new ui.Size(
+    layoutSize = new ui.Size(
       _indicatorRect.width +
           indicatorToLabelPad +
           _labelContainer.layoutSize.width +
@@ -1354,7 +1351,7 @@ class LegendItemContainer extends Container {
 
     // Make sure we fit all available width
     assert(_layoutExpansion.width + 1.0 >=
-        _layoutSize.width); // todo-2 within epsilon
+        layoutSize.width); // todo-2 within epsilon
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
@@ -1466,7 +1463,7 @@ class LegendContainer extends ChartAreaContainer {
       _legendItemContainers.add(legendItemContainer);
     }
 
-    _layoutSize = new ui.Size(
+    layoutSize = new ui.Size(
       _layoutExpansion.width,
       _legendItemContainers
               .map((legendItemContainer) =>
