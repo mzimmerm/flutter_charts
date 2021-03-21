@@ -61,7 +61,6 @@ See file:./bug-text-painter-2.png
 
 - LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
 
-
 **** DONE LayoutExpansion: more study and cleanup - pass to layout instead of to Container constructor (required layoutExpansion)
 
 I suspect, this is actually used as Container.preLayoutSize - sort of like preferredSize !!!!
@@ -76,7 +75,6 @@ Code review:
 -
 
 
-
 **** DONE LayoutExpansion and Containers: remove all _layoutSize from extensions of Container, and add it as member to Container, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
 
 This should be possible, and in principle relatively simple .. well it still has some leftover work below.
@@ -87,81 +85,45 @@ This should be possible, and in principle relatively simple .. well it still has
 - [X] Make sure _layoutSize is only in Container. Outside Container, use layoutSize 
 
 
-
 **** DONE Consider if LabelContainer needs to call layout again: places like: yLabelContainer.layout(LayoutExpansion.unused());
 
 Not needed, commented out and tested.
 
 **** DONE LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
 
-
-
-**** IN-PROGRESS Put back grid on the line chart.
+**** DONE Put back grid on the line chart.
 
 - why did it disappear?
 
-**** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
+  Reason: In LineChartDataContainer
 
-- but express that ChartContainer layoutSize should never change, be final!
+  #+begin_src javascript
 
-
-**** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
-
-See those 2 examples:
-
-#+begin_src javascript
-  ui.Size get layoutSize {
-    return new ui.Size(_layoutExpansion.width, _layoutExpansion.height);
+  void paint(ui.Canvas canvas) {
+    _paintGridLines(canvas);
+    _drawDataPresentersColumns(canvas);
   }
-#+end_src
 
-#+begin_src javascript
+  #+end_src
 
-  void layout(LayoutExpansion layoutExpansion) {
-    _layoutExpansion = layoutExpansion;
-    // ### 1. Prepare early, from dataRows, the stackable points managed
-    //        in [pointsColumns], as [YContainer] needs to scale y values and
-    //        create labels from the stacked points (if chart is stacked).
-    setupPointsColumns();
+  The _paintGridLines was missing
+**** DONE NO, KEEP chartArea for now : Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
 
-    .. etc
-    }
+- but express that ChartContainer layoutSize should never change, be fine
+**** DONE ~LayoutExpansion and Containers: Now when the layoutSize is holding the passed layoutExpansion, Remove from Container, all members and getters for layoutExpansion.~
 
-#+end_src
+Ok, now Nothing holds on layoutExpansion. Only passed to layout(layoutExpansion)
 
-We need to solve this but may not be possible. As a start, we could say:
+Note: We can add at most a getter later (Flutter RenderObject and RenderBox has get constraints)
 
-By passing layoutExpansion to layout, we are basically forcing child size on the child. So the passed layoutExpansion is immediately becoming layout size.
+**** TODO Move Container.dart to it's own package containter_base.dart
 
-So try this and see what happend:
+- This may cause some trouble !!!
 
-In all layout definitions, such as:
-
-#+begin_src javascript
-
-  void layout(LayoutExpansion layoutExpansion) {
-    _layoutExpansion = layoutExpansion;
-    .. etc
-    }
-#+end_src
-
-change that to:
-
-#+begin_src javascript
-
-  void layout(LayoutExpansion layoutExpansion) {
-    _layoutSize = layoutExpansion;
-    .. etc
-    }
-#+end_src
-
-and see what happens :)
+**** TODO Rename LayoutExpansion to FixedSizeConstraint extends (new class) SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
 
-**** TODO ~LayoutExpansion and Containers: Now when the layoutSize is holding the passed layoutExpansion, Remove from Container, all members and getters around layoutExpansion. We can add at most a getter later (Flutter RenderObject and RenderBox has get constraints)~
-
-- This may prove hard due to how things work currently.
-  
+**** TODO Rename ~offset to layoutOffset~ and rename ~applyParentOffset to applyParentLayoutOffset~
 
 **** TODO ~Core Problem - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout~
 
@@ -174,24 +136,13 @@ Thoughts:
   - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
   - paint() - Paint the layed out Containers, skipping those marked to skip
 
-**** TODO Move Container.dart to it's own package containter_base.dart
-
-- This may cause some trouble !!!
-
-**** TODO Rename LayoutExpansion to FixedSizeConstraint extends (new class) SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
-
-
-**** TODO Rename offset to layoutOffset
-
-***** TODO rename applyParentOffset to applyParentLayoutOffset
-
-**** TODO Look into remaining usages of "ui.Size get layoutSize"
-
-
 **** TODO ~LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!~
 
 - This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
   
+**** TODO Look into remaining usages of "ui.Size get layoutSize"
+
+
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 
 #+begin_src javascript
@@ -203,7 +154,6 @@ Thoughts:
   }
 
 #+end_src
-*** TODO ~Rename offset to layoutOffset~
 *** TODO Make Containers a hierarchy - Everything is a container. Layout, Inset, etc are also containers. Containers are wrapped and only contain children, not layouts, or other loose containers.
 **** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.
 **** TODO Edit all calls to layout and return it
