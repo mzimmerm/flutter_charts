@@ -132,7 +132,6 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    // todo-00-last-last-done : _container.layout(_container.layoutExpansion); // will call this function back!
     _container.layout(parentLayoutExpansion); // will call this function back!
 
     // print("Iterative layout finished after $_reLayoutsCounter iterations.");

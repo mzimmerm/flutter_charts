@@ -92,7 +92,13 @@ This should be possible, and in principle relatively simple .. well it still has
 
 Not needed, commented out and tested.
 
-**** IN-PROGRESS LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
+**** DONE LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
+
+
+**** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
+
+- but express that ChartContainer layoutSize should never change, be final!
+
 
 **** TODO ~LayoutExpansion  and Containers: cleanup core problem - Currently, we use LayoutExpansion both as Constraints (by passing to layout and holding on to it) as well as layoutSize (by doing things such as get layoutSize { return _layoutExpansion }~
 
@@ -152,10 +158,16 @@ and see what happens :)
 - This may prove hard due to how things work currently.
   
 
-**** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
+**** TODO ~Core Problem - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout~
 
-- but express that ChartContainer layoutSize should never change, be final!
+This is a core design issue. Think about this and review. This may not be salvageable.
 
+Thoughts:
+
+- Maybe the lifecycle needs to be:
+  - setup() - Create top Container and Children - all of them, for example, all labels 
+  - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
+  - paint() - Paint the layed out Containers, skipping those marked to skip
 
 **** TODO Move Container.dart to it's own package containter_base.dart
 
