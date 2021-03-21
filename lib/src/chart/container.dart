@@ -1161,6 +1161,7 @@ class LineChartDataContainer extends DataContainer {
   );
 
   void paint(ui.Canvas canvas) {
+    _paintGridLines(canvas);
     _drawDataPresentersColumns(canvas);
   }
 

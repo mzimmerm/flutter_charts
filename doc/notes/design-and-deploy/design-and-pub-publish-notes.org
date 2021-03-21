@@ -95,6 +95,11 @@ Not needed, commented out and tested.
 **** DONE LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
 
 
+
+**** IN-PROGRESS Put back grid on the line chart.
+
+- why did it disappear?
+
 **** TODO Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
 
 - but express that ChartContainer layoutSize should never change, be final!
