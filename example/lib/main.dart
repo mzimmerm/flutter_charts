@@ -583,7 +583,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
                     // #### Core chart
-                    child: lineChart, // verticalBarChart, lineChart
+                    child: verticalBarChart, // verticalBarChart, lineChart
                   ),
                   new Text('<<'), // labels fit horizontally
                   // new Text('<<<<<<'), // default, labels tilted, all present

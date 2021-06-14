@@ -116,12 +116,21 @@ Ok, now Nothing holds on layoutExpansion. Only passed to layout(layoutExpansion)
 
 Note: We can add at most a getter later (Flutter RenderObject and RenderBox has get constraints)
 
-**** TODO Move Container.dart to it's own package containter_base.dart
+**** DONE Move Container.dart to it's own package containter_base.dart
 
-- This may cause some trouble !!!
+- This was easy, only had to make isDistressed public.
 
-**** TODO Rename LayoutExpansion to FixedSizeConstraint extends (new class) SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
+**** IN-PROGRESS Rename LayoutExpansion to SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
+- LayoutExpansion
+  - make members final
+  - test
+  - add min/max and getter for width,height as in BoxConstraints
+  - test
+  - add tight and similar constructors as in BoxConstraints.
+  - test 
+  - Rename (substitution? Refactor?) to SizeConstraint , also variables.
+    
 
 **** TODO Rename ~offset to layoutOffset~ and rename ~applyParentOffset to applyParentLayoutOffset~
 
