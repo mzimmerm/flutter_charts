@@ -3,7 +3,12 @@
 
 * Table of contents :TOC:noexport:
 - [[#new-in-the-current-release][New in the current release]]
-  - [[#illustration-of-the-new-iterative-auto-layout-feature][Illustration of the new "iterative auto layout" feature]]
+- [[#illustration-of-the-iterative-auto-layout-feature][Illustration of the "iterative auto layout" feature]]
+  - [[#autolayout-step-1][Autolayout step 1]]
+  - [[#autolayout-step-2][Autolayout step 2]]
+  - [[#autolayout-step-3][Autolayout step 3]]
+  - [[#autolayout-step-4][Autolayout step 4]]
+  - [[#autolayout-step-5][Autolayout step 5]]
 - [[#how-to-include-the-flutter_charts-library-in-your-application][How to include the flutter_charts library in your application]]
 - [[#a-chart-created-using-flutter_charts---example-application][A chart created using flutter_charts - example application]]
 - [[#known-packages-libraries-and-apps-that-use-this-this-flutter_charts-package][Known packages, libraries and apps that use this this flutter_charts package]]
@@ -24,7 +29,7 @@ As noted in the CHANGELOG, the most important new features are:
 
 - null safety support
 
-** Illustration of the new "iterative auto layout" feature
+* Illustration of the "iterative auto layout" feature
 
 This section illustrates how the auto layout behaves when less and less horizontal space is available to display the chart. 
 
@@ -32,7 +37,7 @@ Flutter chart library automatically checks for the X label overlap, and follows 
 
 To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' signs on the right of the chart.
 
-*** Autolayout step 1
+** Autolayout step 1
 
 Let's say there are six labels on a chart, and sufficient space to display labels horizontally. The result may look like this:
 
@@ -40,7 +45,7 @@ Let's say there are six labels on a chart, and sufficient space to display label
 
 We can see all x axis labels displayed it full, horizontally oriented.
 
-*** Autolayout step 2
+** Autolayout step 2
 
 Next, let us make less available space by taking away some space on the right with a wider text label like this '<<<<<<'
 
@@ -48,14 +53,14 @@ Next, let us make less available space by taking away some space on the right wi
 
 We can see the labels were automatically tilted by angle ~ChartOptions labelTiltRadians~ for the labels to fit.
 
-*** Autolayout step 3
+** Autolayout step 3
 Next, let us make even less available space by taking away some space on the right with a wider text label like this '<<<<<<<<<<<'.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-3.png]]
 
 We can see that labels are not only tilted, but also automatically skipped (every 2nd) for labels not to overlap.
 
-*** Autolayout step 4
+** Autolayout step 4
 
 Next, let us make even less available space some more compared to step 3, with even a wider text label like this '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
 
@@ -63,7 +68,7 @@ Next, let us make even less available space some more compared to step 3, with e
 
 We can see even more labels were skipped for labels to prevent overlap, the chart is showing evey 5th label
 
-*** Autolayout step 5
+** Autolayout step 5
 
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
 

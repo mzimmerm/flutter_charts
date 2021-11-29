@@ -187,121 +187,18 @@ class _MyHomePageState extends State<MyHomePage> {
         useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
 
-  /* ALWAYS ON TOP - DEFAULT - Default - Random data
+/* Default - Random data
   void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
-  */
-
-  /* 9  - Explicit use of DefaultIterativeLabelLayoutStrategy.
-          The _xContainerLabelLayoutStrategy must also work commented out.
-
-  void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    // If you were to use your own extension of
-    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-    //   this is how to create an instance.
-    // If _xContainerLabelLayoutStrategy
-    //   is not set (remains null), the charts instantiate
-    //   the DefaultIterativeLabelLayoutStrategy.
-    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-      options: _verticalBarChartOptions,
-    );
-    // _xContainerLabelLayoutStrategy = null;
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
-   */
-
-  /* 8 - Explicit use of DefaultIterativeLabelLayoutStrategy (see also 9),
-         to show how to use in case extensions are needed
-
-  void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-      options: _verticalBarChartOptions,
-    );
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = ["Spring", "Summer", "Fall", "Winter"];
-    _chartData.dataRows = [
-      [1.0, 2.0, 3.0, 4.0, 6.0],
-      [4.0, 3.0, 5.0, 6.0, 1.0],
-    ];
-    _chartData.xLabels = ["One", "Two", "Three", "Four", "Five"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-  }
-   */
-
-  /* 7 - Default - Random data
-  void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
-  */
-
-  /* 6 Test a bug reported by Lonenzo Tejera - todo-1 - also check Y range that should have more points.
-
-  void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-      "Fall",
-      "Winter"];
-    _chartData.dataRows = [
-      [1.0, 2.0, 3.0, 4.0, 6.0],
-      [4.0, 3.0, 5.0, 6.0, 1.0],
-    ];
-    _chartData.xLabels =  ["One", "Two", "Three", "Four", "Five"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-  }
-   */
-
-  /* 5 Demonstrate order of painting lines on the line chart,
-       when dataRows lines are on top of each other
-
-  void defineOptionsAndData() {
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-      "Fall",
-      "Winter"];
-    _chartData.dataRows = [
-      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
-      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0, ],
-      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
-      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0, ],
-    ];
-    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-  }
-   */
-
-  /* 4 Basic simpliest demo
-
-   void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new RandomChartData(useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-   }
-   */
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
+*/
 
-  /* 3
+  /* todo-00 If line chart, add option that allows to start on non-zero 
+             - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+             - test  on values like 10,000 - 11,000.  
    void defineOptionsAndData() {
      _lineChartOptions = new LineChartOptions();
      _verticalBarChartOptions = new VerticalBarChartOptions();
@@ -310,20 +207,111 @@ class _MyHomePageState extends State<MyHomePage> {
        "Spring",
        "Summer",
        "Fall",
-       "Winter"];
-     _chartData.dataRows = [
-       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0, ],
-       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0, ],
-       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0, ],
-       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0, ],
+       "Winter",
+     ];
+    _chartData.dataRows = [
+       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
+       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
+       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
+       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
      ];
      _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
      _chartData.assignDataRowsDefaultColors();
      // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-   }
+   }     
    */
+  /* 9  - Explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
+          The _xContainerLabelLayoutStrategy must also work commented out.
+  void defineOptionsAndData() {
+    // If you were to use your own extension of
+    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+    //   this is how to create an instance.
+    // If _xContainerLabelLayoutStrategy
+    //   is not set (remains null), the charts instantiate
+    //   the DefaultIterativeLabelLayoutStrategy.
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+      options: _verticalBarChartOptions,
+    );
+    // _xContainerLabelLayoutStrategy = null;
+    _chartData = new RandomChartData(
+        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+  }
+  */
 
-  /* 2
+  /* 8 - Explicit use of DefaultIterativeLabelLayoutStrategy with defined values and labels.
+         Also tests a bug reported by Lonenzo Tejera
+  void defineOptionsAndData() {
+    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+      options: _verticalBarChartOptions,
+    );
+    // _xContainerLabelLayoutStrategy = null;
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer",
+    ];
+    _chartData.dataRows = [
+      [1.0, 2.0, 3.0, 4.0, 6.0],
+      [4.0, 3.0, 5.0, 6.0, 1.0],
+    ];
+    _chartData.xLabels = ["One", "Two", "Three", "Four", "Five"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+  */
+
+  /* 7 Set values, labels, legends
+   void defineOptionsAndData() {
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+     _chartData = new ChartData();
+     _chartData.dataRowsLegends = [
+       "Spring",
+       "Summer",
+       "Fall",
+       "Winter",
+     ];
+    _chartData.dataRows = [
+       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
+       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
+       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
+       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
+     ];
+     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+     _chartData.assignDataRowsDefaultColors();
+     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+   }   
+   */
+  
+  /* 6 Same as item 7 above, but this demonstrates order of painting lines on the line chart,
+       when dataRows lines are on top of each other
+  void defineOptionsAndData() {
+     _lineChartOptions = new LineChartOptions();
+     _verticalBarChartOptions = new VerticalBarChartOptions();
+    _chartData = new ChartData();
+    _chartData.dataRowsLegends = [
+      "Spring",
+      "Summer",
+      "Fall",
+      "Winter",
+    ];
+    _chartData.dataRows = [
+      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
+      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0 ],
+      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
+      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0 ],
+    ];
+    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+    _chartData.assignDataRowsDefaultColors();
+    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+  }
+  */
+  
+  /* 5 User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
    void defineOptionsAndData() {
      // This example shows user defined Y Labels.
      //   When setting Y labels by user, the dataRows value scale
@@ -346,12 +334,12 @@ class _MyHomePageState extends State<MyHomePage> {
        "Python",
        "Newspeak"];
      _chartData.dataRows = [
-       [9.0, 4.0,  3.0,  9.0, ],
-       [7.0, 6.0,  7.0,  6.0, ],
-       [4.0, 9.0,  6.0,  8.0, ],
-       [3.0, 9.0, 10.0,  1.0, ],
+       [9.0, 4.0,  3.0,  9.0 ],
+       [7.0, 6.0,  7.0,  6.0 ],
+       [4.0, 9.0,  6.0,  8.0 ],
+       [3.0, 9.0, 10.0,  1.0 ],
      ];
-     _chartData.xLabels =  ["Fast", "Readable", "Novel", "Use"];
+     _chartData.xLabels =  ["Speed", "Readability", "Level of Novel", "Usage"];
      _chartData.dataRowsColors = [
        Colors.blue,
        Colors.yellow,
@@ -360,15 +348,15 @@ class _MyHomePageState extends State<MyHomePage> {
      ];
      _lineChartOptions.useUserProvidedYLabels = true; // use labels below
      _chartData.yLabels = [
-       "Ok",
-       "Higher",
+       "Low",
+       "Medium",
        "High",
-
      ];
    }
   */
 
-  /* 1
+  /* 4 User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
+       Similar to above, this also shows a bug.
    void defineOptionsAndData() {
      // In each column, adding it's absolute values should add to same number:
      // 100 would make more sense, to represent 100% of stocks in each category.
@@ -376,10 +364,10 @@ class _MyHomePageState extends State<MyHomePage> {
      _verticalBarChartOptions = new VerticalBarChartOptions();
      _chartData = new ChartData();
      _chartData.dataRowsLegends = [
-       "-2%_0%",
-       "<-2%",
-       "0%_+2%",
-       ">+2%"];
+       "-2% or less",
+       "-2% to 0%",
+       "0% to +2%",
+       "more than +2%",];
      // each column should add to same number. everything else is relative.
      _chartData.dataRows = [
        [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
@@ -389,19 +377,14 @@ class _MyHomePageState extends State<MyHomePage> {
      ];
      _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
      _chartData.dataRowsColors = [
-       Colors.grey,
        Colors.red,
+       Colors.grey,
        Colors.greenAccent,
        Colors.black,
      ];
-     _lineChartOptions.useUserProvidedYLabels = false; // use labels below
-     //_chartData.yLabels = [
-     //  "Ok",
-     //  "Higher",
-     //  "High",
-     //];
+     _lineChartOptions.useUserProvidedYLabels = false;
    }
-  */
+   */
 
   void _chartStateChanger() {
     setState(() {

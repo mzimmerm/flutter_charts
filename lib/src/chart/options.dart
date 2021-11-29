@@ -22,7 +22,8 @@ class ChartOptions {
   ///     a limited number of Y labels from data, so that Y labels do not
   ///     crowd, and little Y space is wasted on top.
 
-  final bool useUserProvidedYLabels = false;
+  // 2021-11-29 todo-00-done: final bool useUserProvidedYLabels = false;
+  bool useUserProvidedYLabels = false;
 
   /// Shows largest value on very top of the chart grid, to save space.
   final bool largestValuePointOnVeryTop = true; // false not supported yet

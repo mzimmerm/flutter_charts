@@ -11,7 +11,6 @@
 - 
  
 * TODO Dart or Flutter bugs to report or ask on Stack Overflow
-
 ** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
 
 // todo-10 mz ori
@@ -46,9 +45,7 @@ See file:./bug-text-painter-2.png
 
 - Is there a way to initialize a non-nullable list to size?
 
-
 * IN-PROGRESS Flutter Charts Enhancements
-
 ** IN-PROGRESS Refactorings
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
@@ -120,7 +117,7 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
 
 - This was easy, only had to make isDistressed public.
 
-**** IN-PROGRESS Rename LayoutExpansion to SizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
+**** IN-PROGRESS Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
 - LayoutExpansion
   - make members final
@@ -129,7 +126,7 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
   - test
   - add tight and similar constructors as in BoxConstraints.
   - test 
-  - Rename (substitution? Refactor?) to SizeConstraint , also variables.
+  - Rename (substitution? Refactor?) to BoxSizeConstraint, also variables.
     
 
 **** TODO Rename ~offset to layoutOffset~ and rename ~applyParentOffset to applyParentLayoutOffset~
@@ -398,7 +395,6 @@ If layout() is called, following paint() always prints full line  (goes to line 
       myLayoutSize = currentOffset + child.layoutSize
     this.layoutSize = myLayoutSize
 #+END_SRC   
-
 
 * NOTE How are todos used in code
 - todo-1 long term low priority
