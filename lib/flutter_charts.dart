@@ -1,7 +1,7 @@
 ///
 /// **This file [root/lib/flutter_charts.dart]
 ///    _IS the flutter_charts package_,
-///    and can be used by _external code_ OR _code inside the same lib_.**.
+///    and can be used by _external code_ OR _code inside the same lib_.**
 ///
 /// Basically, files _exported_ in this file, for example
 ///
@@ -12,10 +12,12 @@
 ///
 ///       > import 'package:flutter_charts/flutter_charts.dart';
 ///
-/// Code under [root/lib] directory
-///     1. can use same _import 'package:etc'_ as above external code
-///     2. or file scheme, e.g.
-///     > import 'src/chart/data.dart';
+/// Code in this project, under [root/lib] directory can import this package's code two ways:
+///     1. Either using the same package: scheme, as above external code, for example
+///          > _import 'package:flutter_charts/flutter_charts.dart';_ 
+///     2. Or using a path scheme, for example
+///          > _import 'src/chart/data.dart';_ (absolute path)
+///          > _import '../util/range.dart';_ (relative path)
 ///
 /// Any dart file (any client application) located outside
 /// of the "lib" directory just above, can only see the classes
@@ -36,7 +38,7 @@
 ///       4. Under lib, the existence of file named `flutter_charts.dart`.
 ///          This file contains the exported dart files (libraries)
 ///
-/// 2. Second: Why is this file needed?
+/// 2. Second: Why is this file _flutter_charts.dart_ needed?
 ///      Because dart tools have the
 ///      convention to consider everything under lib/src private
 ///      and not visible to external Dart files (if we  were too,
@@ -44,7 +46,7 @@
 ///      to some other project). So this file, _flutter_charts.dart_
 ///      provides the public API to our package `flutter_charts`.
 ///      All classes (and oly those classes) listed "exported" in this file,
-///      are visible externally.
+///      are visible externally to other packages (libraries) and applications which depend on it.
 ///
 /// 3. Third:  Why so complicated?
 ///      This is an unfortunate result Dart
@@ -54,9 +56,11 @@
 ///
 /// Notes:
 ///
-///  1.  Paths in export the *lib level is skipped*
-///      starting with the ‘src’ representing Private.
-///         `export 'src/chart/torefactor/line_chart.dart';` // even though under lib
+///  1.  When writing the export code such as
+///         `export 'package:flutter_charts/src/chart/label_container.dart';` // lib not named in path
+///         `export 'src/chart/line/chart.dart';` // even though under lib
+///      the *lib level above src  is skipped - not specified*
+///      Basically files under ‘lib/src’ are private (unless exported) even for other files in project.
 ///  2.  Generally, external code can import
 ///      all classes in one library in one line, referencing this file
 ///         `import 'package:flutter_charts/flutter_charts.dart';`

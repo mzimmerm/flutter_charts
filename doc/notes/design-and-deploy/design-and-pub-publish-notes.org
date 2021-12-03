@@ -46,6 +46,49 @@ See file:./bug-text-painter-2.png
 - Is there a way to initialize a non-nullable list to size?
 
 * IN-PROGRESS Flutter Charts Enhancements
+
+** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
+    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+    - test  on values like 10,000 - 11,000.
+
+** IN-PROGRESS Add integration tests and ability to take screenshot and compare
+
+See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter
+
+1. Setup integration tests: https://flutter.dev/docs/cookbook/testing/integration/introduction
+2. Create an integration test chart_test_1.dart, which will run same code as the app flutter_charts/lib/main.dart 
+3. *Must start an AVD device - without this, errors about 'dart:ui' not found!*
+4. Command line, run: ~flutter test integration_test/chart_test_1.dart~. Can add -d device.
+5. Experiment with ability to run the test. Experiment with clicking on the + button in the test.
+6. Replace test_driver/integration_test.dart code with
+   #+begin_src dart
+     import 'dart:io';
+     import 'package:integration_test/integration_test_driver_extended.dart';
+
+     Future<void> main() async {
+       try {
+         await integrationDriver(
+           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
+             final File image = await File('screenshots/$screenshotName.png').create(recursive: true);
+             image.writeAsBytesSync(screenshotBytes);
+             return true;
+           },
+         );
+       } catch (e) {
+         print('Error occured: $e');
+       }
+     }
+   #+end_src
+   This adds onScreenshot event handler to integration tests
+7. To integration_test/app_test.dart, before all testWidgets where tests are initialized, add this code:
+   #+begin_src dart
+     final binding = IntegrationTestWidgetsFlutterBinding();
+     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+   #+end_src
+8. To the code of the test, at the point you want to take the screenshot, add this code
+   #+begin_src dart
+     await binding.takeScreenshot('test-screenshot');
+   #+end_src
 ** IN-PROGRESS Refactorings
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint

@@ -130,8 +130,9 @@ class MyHomePage extends StatefulWidget {
 /// is effectively recreated on each state's [build()] call.
 ///
 class _MyHomePageState extends State<MyHomePage> {
-  // done-null-safety : Note: To be able to have non-nullable types on members
-  //   such as _lineChartOptions (and all others here), 2 things need be done:
+  // Note (on null safety): 
+  //     To be able to have non-nullable types on members
+  //     such as _lineChartOptions (and all others here), 2 things need be done:
   //   1. The member must be initialized with some non-null value,
   //      either in the definition or in constructor initializer list
   //   2. If a member is passed to a constructor (see  _MyHomePageState.fromOptionsAndData)
@@ -181,11 +182,54 @@ class _MyHomePageState extends State<MyHomePage> {
     required ChartData chartData,
   }) : _chartData = chartData;
 
+  /*
+  todo-00 If line chart, add option that allows to start on non-zero
+    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+    - test  on values like 10,000 - 11,000.
+  */
+
   /// Define options and data for chart
+  void defineOptionsAndData() {
+    const exampleToRun=String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'RandomData');
+
+    _lineChartOptions = new LineChartOptions();
+    _verticalBarChartOptions = new VerticalBarChartOptions();
+
+    switch(exampleToRun) {
+      case '1_RandomData':
+        _chartData = new RandomChartData(
+            useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+        break;
+      case '2_AnimalNumbersBySeason':
+        _chartData = new ChartData();
+        _chartData.dataRowsLegends = [
+          "Spring",
+          "Summer",
+          "Fall",
+          "Winter",
+        ];
+        _chartData.dataRows = [
+          [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
+          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
+          [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
+          [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
+        ];
+        _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
+        _chartData.assignDataRowsDefaultColors();
+        // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+        break;
+      default:
+        throw new StateError("Invalid exampleToRun in dart-define environment.");
+    }
+    
+  }
+
+  /* todo-00 ori
   void defineOptionsAndData() {
     _chartData = new RandomChartData(
         useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
   }
+   */
 
 /* Default - Random data
   void defineOptionsAndData() {

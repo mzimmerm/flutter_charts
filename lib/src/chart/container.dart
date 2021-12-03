@@ -17,7 +17,7 @@ import 'package:flutter_charts/src/chart/label_container.dart';
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
 
-import 'presenter.dart'; // V
+import 'presenter.dart';
 
 import '../util/range.dart';
 import '../util/util.dart' as util;
