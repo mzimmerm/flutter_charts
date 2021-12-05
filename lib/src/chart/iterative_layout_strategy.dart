@@ -5,7 +5,11 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
-enum LabelFitMethod { RotateLabels, DecreaseLabelFont, SkipLabels }
+enum LabelFitMethod { 
+  RotateLabels, 
+  DecreaseLabelFont, 
+  SkipLabels,
+}
 
 /// Strategy of achieving that labels do not overlap ("fit") on an axis. 
 /// 
@@ -140,7 +144,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   void _reLayoutRotateLabels() {
     //  angle must be in interval `<-math.pi, +math.pi>`
     if (!(-1 * math.pi <= _labelTiltRadians && _labelTiltRadians <= math.pi)) {
-      throw new StateError("angle must be between -PI and +PI");
+      throw new StateError('angle must be between -PI and +PI');
     }
 
     _makeTiltMatricesFromTiltRadians();

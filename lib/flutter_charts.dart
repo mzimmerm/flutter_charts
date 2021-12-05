@@ -1,16 +1,21 @@
 ///
 /// **This file [root/lib/flutter_charts.dart]
-///    _IS the flutter_charts package_,
-///    and can be used by _external code_ OR _code inside the same lib_.**
+///    _IS the flutter_charts library package_,
+///    and can be used by _external code_ OR _code inside this lib_.**
 ///
-/// Basically, files _exported_ in this file, for example
+/// The core of how library packages work in Dart can be summarized in A, B, below: 
+/// 
+///   A. Files _exported_ in this file, for example
+///   
+///        > export 'src/chart/data.dart'; todo-00 we are not doing this here
+///        
+///      are visible to external applications.
+///      
+///   B. External applications (to which the contents of the _lib_
+///        directory is copied through pub) can use the library exported in A. 
+///        using code like this
 ///
-/// > export 'src/chart/data.dart';
-///
-/// are visible to external applications (to which the contents of the _lib_
-/// directory is copied through pub) using code like this
-///
-///       > import 'package:flutter_charts/flutter_charts.dart';
+///          > import 'package:flutter_charts/flutter_charts.dart';
 ///
 /// Code in this project, under [root/lib] directory can import this package's code two ways:
 ///     1. Either using the same package: scheme, as above external code, for example

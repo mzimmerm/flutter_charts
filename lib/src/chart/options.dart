@@ -91,7 +91,7 @@ class ChartOptions {
   /// While so far only makes a difference on the line chart, this is defined
   /// as a common option in case there is some future overlap use on other
   /// chart types.
-  final bool firstDataRowPaintedFirst = true;
+  DataRowsPaintingOrder dataRowsPaintingOrder = DataRowsPaintingOrder.FirstToLast;
 
   final double labelFontSize = 14.0;
 
@@ -137,7 +137,7 @@ class ChartOptions {
   final double labelTextScaleFactor = 1.0;
 
   /// todo-2 remove, replace with formatter outright
-  final String yLabelUnits = "";
+  final String yLabelUnits = '';
 
   String toLabel(String label) => label + yLabelUnits;
 
@@ -145,10 +145,15 @@ class ChartOptions {
     // if there are >= 3 < 6 decimal digits, replace with K (etc)
     // todo 1 add an option for how to format; a method or a formatter.
     String val = value.toString();
-    if (val.endsWith("000000000")) val = val.substring(0, val.length - 9) + "B";
-    if (val.endsWith("000000")) val = val.substring(0, val.length - 6) + "M";
-    if (val.endsWith("000")) val = val.substring(0, val.length - 3) + "K";
+    if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
+    if (val.endsWith('000000')) val = val.substring(0, val.length - 6) + 'M';
+    if (val.endsWith('000')) val = val.substring(0, val.length - 3) + 'K';
 
     return val + yLabelUnits;
   }
+}
+
+enum DataRowsPaintingOrder { 
+  FirstToLast, 
+  LastToFirst,
 }

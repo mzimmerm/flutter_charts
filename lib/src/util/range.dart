@@ -168,7 +168,7 @@ class Range {
           labels.add(l * math.pow(10, power));
         }
       } else {
-        throw new Exception("Unexpected power: $powerMin, $powerMax ");
+        throw new Exception('Unexpected power: $powerMin, $powerMax ');
       }
     }
 
@@ -337,9 +337,9 @@ class LabelInfo {
 
   String toString() {
     return super.toString() +
-        " scaledLabelValue=${this.scaledLabelValue}," +
-        " labelValue=${this.labelValue}," +
-        " formattedYLabel=${this.formattedYLabel}";
+        ' scaledLabelValue=${this.scaledLabelValue},' +
+        ' labelValue=${this.labelValue},' +
+        ' formattedYLabel=${this.formattedYLabel}';
   }
 }
 
@@ -401,7 +401,7 @@ class Poly {
   }
 
   int _ltOnePower(decimal.Decimal tester) {
-    if (tester >= _one) throw new Exception("$tester Failed: tester < 1.0");
+    if (tester >= _one) throw new Exception('$tester Failed: tester < 1.0');
     int power = 0;
     while (tester < _one) {
       tester = tester * _ten;

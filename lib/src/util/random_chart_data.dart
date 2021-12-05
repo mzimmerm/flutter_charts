@@ -99,7 +99,7 @@ class RandomChartData extends ChartData {
   void _generateYLabels() {
     if (_useUserProvidedYLabels) {
       // yLabels = [ "0%", "25%", "50%", "75%", "100%"];
-      yLabels = ["NONE", "OK", "GOOD", "BETTER", "100%"];
+      yLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
     }
   }
 
@@ -107,19 +107,19 @@ class RandomChartData extends ChartData {
     int dataRowsCount = dataRows.length;
 
     if (dataRowsCount >= 1) {
-      dataRowsLegends.add("YELLOW");
+      dataRowsLegends.add('YELLOW');
     }
     if (dataRowsCount >= 2) {
-      dataRowsLegends.add("GREEN");
+      dataRowsLegends.add('GREEN');
     }
     if (dataRowsCount >= 3) {
-      dataRowsLegends.add("BLUE");
+      dataRowsLegends.add('BLUE');
     }
     if (dataRowsCount > 3) {
       for (int i = 3; i < dataRowsCount; i++) {
         // todo-1 when large value is generated, it paints outside canvas, fix.
         int number = new math.Random().nextInt(10000);
-        dataRowsLegends.add("OTHER " + number.toString());
+        dataRowsLegends.add('OTHER ' + number.toString());
       }
     }
   }

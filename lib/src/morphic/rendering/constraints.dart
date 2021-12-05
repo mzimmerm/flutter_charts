@@ -26,10 +26,10 @@ class LayoutExpansion {
         this.height = height
   {
     if (used && this.width <= 0.0) {
-      throw new StateError("Invalid width $width");
+      throw new StateError('Invalid width $width');
     }
     if (used && this.height <= 0.0) {
-      throw new StateError("Invalid height $height");
+      throw new StateError('Invalid height $height');
     }
   }
 

@@ -46,17 +46,17 @@ class ChartData {
   void validate() {
     if (dataRowsLegends.length > 0 &&
         dataRows.length != dataRowsLegends.length) {
-      throw new StateError(" If row legends are defined, their "
-          "number must be the same as number of data rows. "
-          " [dataRows length: ${dataRows.length}] "
-          "!= [dataRowsLegends length: ${dataRowsLegends.length}]. ");
+      throw new StateError(' If row legends are defined, their '
+          'number must be the same as number of data rows. '
+          ' [dataRows length: ${dataRows.length}] '
+          '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
     }
     for (List<double> dataRow in dataRows) {
       if (xLabels.length > 0 && dataRow.length != xLabels.length) {
-        throw new StateError(" If xLabels are defined, their "
-            "length must be the same as length of each dataRow"
-            " [dataRow length: ${dataRow.length}] "
-            "!= [xLabels length: ${xLabels.length}]. ");
+        throw new StateError(' If xLabels are defined, their '
+            'length must be the same as length of each dataRow'
+            ' [dataRow length: ${dataRow.length}] '
+            '!= [xLabels length: ${xLabels.length}]. ');
       }
     }
   }

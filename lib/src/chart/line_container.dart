@@ -30,7 +30,7 @@ class LineContainer extends container_base.Container {
 
   /// Implementor of method in superclass [Container].
   void layout(LayoutExpansion parentLayoutExpansion) {
-    throw new StateError("No need to call layout on ${this.runtimeType}.");
+    throw new StateError('No need to call layout on ${this.runtimeType}.');
   }
 
   /// Override method in superclass [Container].

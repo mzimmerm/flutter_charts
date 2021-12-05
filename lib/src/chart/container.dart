@@ -948,10 +948,10 @@ abstract class DataContainer extends ChartAreaContainer {
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
   ///
-  /// See [ChartOptions.firstDataRowPaintedFirst].
+  /// See [ChartOptions.dataRowsPaintingOrder].
   List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
     var options = this.parentContainer.options;
-    if (options.firstDataRowPaintedFirst) {
+    if (options.dataRowsPaintingOrder == DataRowsPaintingOrder.FirstToLast) {
       presenters = presenters.reversed.toList();
     }
     return presenters;
@@ -1085,7 +1085,7 @@ class GridLinesContainer extends Container {
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
   // todo-00-last look into this
-  ui.Size get layoutSize => throw new StateError("todo-2 implement this.");
+  ui.Size get layoutSize => throw new StateError('todo-2 implement this.');
 }
 
 /// Represents one layed out item of the legend:  The rectangle for the color
@@ -1385,7 +1385,7 @@ class StackableValuePoint {
   /// This should fail if it undergoes any processing such as layout
   StackableValuePoint.initial()
       : this(
-          xLabel: "initial",
+          xLabel: 'initial',
           y: -1,
           dataRowIndex: -1,
           predecessorPoint: null,
@@ -1459,7 +1459,7 @@ class StackableValuePoint {
   /// type members.
   StackableValuePoint unstackedClone() {
     if (isStacked) {
-      throw new Exception("Cannot clone if already stacked");
+      throw new Exception('Cannot clone if already stacked');
     }
 
     StackableValuePoint clone = new StackableValuePoint(
@@ -1620,7 +1620,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = new StackableValuePoint(
-            xLabel: "initial", // todo-11-last : xLabel: null : consider
+            xLabel: 'initial', // todo-11-last : xLabel: null : consider
             y: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);

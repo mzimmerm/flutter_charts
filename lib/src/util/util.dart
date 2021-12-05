@@ -70,7 +70,7 @@ List<List<StackableValuePoint>> transpose(
   if (colsInRows.length == 0) return colsInRows;
 
   int nCols = colsInRows[0].length;
-  if (nCols == 0) throw new StateError("Degenerate matrix");
+  if (nCols == 0) throw new StateError('Degenerate matrix');
 
   // Init the transpose to make sure the size is right
   List<List<StackableValuePoint>> rowsInCols = new List.filled(nCols, []);

@@ -4,10 +4,18 @@
 //       Also, material.dart exports many dart files, including widgets.dart,
 //         so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'dart:ui' as ui;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
+import 'package:tuple/tuple.dart' show Tuple2;
+
+import 'ExamplesChartTypeEnum.dart' show ExamplesChartTypeEnum;
+import 'ExamplesEnum.dart' show ExamplesEnum;
+import 'examples_descriptor.dart';
+import 'dart:io' show exit;
 
 /// Example of simple line chart usage in an application.
 ///
@@ -57,13 +65,34 @@ void main() {
   //    packages/flutter/lib/src/widgets/binding.dart
   //    which has the runApp() function.
   //
+  // TODO-00
+  var comboToRun = requestedExampleComboToRun();
+  if (!ExamplesDescriptor().isAllowed(comboToRun)) {
+    // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    exit(0);
+  }
+
   runApp(new MyApp());
+}
+
+/// Find, from environment dart-define, the example to run and chart type to show.
+/// 
+Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleComboToRun() {
+  // Pickup what example to run, and which chart to show (line, vertical bar).
+  const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex_1_0_RandomData');
+  ExamplesEnum exampleToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
+
+  const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'LineChart');
+  ExamplesChartTypeEnum chartTypeToShow = chartTypeToShowStr.asEnum(ExamplesChartTypeEnum.values);
+
+  return Tuple2(exampleToRun, chartTypeToShow);
 }
 
 class MyApp extends StatelessWidget {
   /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
+    
     return new MaterialApp(
       title: 'Charts Demo Title',
       debugShowCheckedModeBanner: false,
@@ -130,7 +159,7 @@ class MyHomePage extends StatefulWidget {
 /// is effectively recreated on each state's [build()] call.
 ///
 class _MyHomePageState extends State<MyHomePage> {
-  // Note (on null safety): 
+  // Note (on null safety):
   //     To be able to have non-nullable types on members
   //     such as _lineChartOptions (and all others here), 2 things need be done:
   //   1. The member must be initialized with some non-null value,
@@ -146,6 +175,9 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Define options for vertical bar chart, if used in the demo
   ChartOptions _verticalBarChartOptions = new VerticalBarChartOptions();
 
+  /// Get (again) the example to run from environment
+  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun = requestedExampleComboToRun();
+
   // If you were to use your own extension of
   //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
   //   this is how to create an instance.
@@ -154,17 +186,17 @@ class _MyHomePageState extends State<MyHomePage> {
   //   the DefaultIterativeLabelLayoutStrategy.
 
   /// Define Layout strategy go labels. todo-null-safety : this can be null here
-  LabelLayoutStrategy? _xContainerLabelLayoutStrategy =
-      new DefaultIterativeLabelLayoutStrategy(
+  LabelLayoutStrategy? _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
     options: new VerticalBarChartOptions(),
   );
 
   /// Define data to be displayed
-  ChartData _chartData = new RandomChartData(
-      useUserProvidedYLabels: new LineChartOptions().useUserProvidedYLabels);
+  ChartData _chartData = new RandomChartData(useUserProvidedYLabels: new LineChartOptions().useUserProvidedYLabels);
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
+
+  // todo-00 Note: ChartOptions.useUserProvidedYLabels default is still used (false);
 
   /// Constructor sets all options and data.
   _MyHomePageState.fromOptionsAndData({
@@ -172,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
     required ChartOptions verticalBarChartOptions,
     LabelLayoutStrategy? xContainerLabelLayoutStrategy,
     required ChartData chartData,
-  })   : _chartData = chartData,
+  })  : _chartData = chartData,
         _lineChartOptions = lineChartOptions,
         _verticalBarChartOptions = verticalBarChartOptions,
         _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
@@ -182,25 +214,155 @@ class _MyHomePageState extends State<MyHomePage> {
     required ChartData chartData,
   }) : _chartData = chartData;
 
-  /*
-  todo-00 If line chart, add option that allows to start on non-zero
-    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-    - test  on values like 10,000 - 11,000.
-  */
-
   /// Define options and data for chart
   void defineOptionsAndData() {
-    const exampleToRun=String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'RandomData');
 
-    _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
+    ChartOptions chartOptions;
 
-    switch(exampleToRun) {
-      case '1_RandomData':
-        _chartData = new RandomChartData(
-            useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
+    ExamplesEnum exampleToRun = comboToRun.item1;
+    ExamplesChartTypeEnum chartTypeToShow = comboToRun.item2;
+    
+    switch(chartTypeToShow) {
+      case ExamplesChartTypeEnum.LineChart:
+        _verticalBarChartOptions = new VerticalBarChartOptions(); // todo-00 make this fail if used by mistake
+        _lineChartOptions =  new LineChartOptions();
+        chartOptions = _lineChartOptions;
         break;
-      case '2_AnimalNumbersBySeason':
+      case ExamplesChartTypeEnum.VerticalBarChart:
+        _verticalBarChartOptions = new VerticalBarChartOptions();
+        _lineChartOptions =  new LineChartOptions(); // todo-00 make this fail if used by mistake
+        chartOptions = _verticalBarChartOptions;
+        break;
+    }
+
+    switch (exampleToRun) {
+      
+      case ExamplesEnum.ex_1_0_RandomData:
+        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        break;
+        
+      case ExamplesEnum.ex_2_0_AnimalCountBySeason:
+        _chartData = new ChartData();
+        _chartData.dataRowsLegends = [
+          'Spring',
+          'Summer',
+          'Fall',
+          'Winter',
+        ];
+        _chartData.dataRows = [
+          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+        ];
+        _chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+        _chartData.assignDataRowsDefaultColors();
+        break;
+        
+      // todo-00 add default
+      case ExamplesEnum.ex_3_0_RandomData_ExplicitLabelLayoutStrategy:
+        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
+        // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
+        // If you were to use your own extension of
+        //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+        //   this is how to create an instance.
+        // If _xContainerLabelLayoutStrategy
+        //   is not set (remains null), the charts instantiate
+        //   the DefaultIterativeLabelLayoutStrategy.
+        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+          options: chartOptions,
+        );
+        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        break;
+        
+
+      case ExamplesEnum.ex_4_0_LanguagesOrdinarOnYFromData_UserYOrdinarLabels_UserColors:
+        
+      // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
+      // This example shows user defined Y Labels that derive order from data.
+      //   When setting Y labels by user, the dataRows value scale
+      //   is irrelevant. User can use for example interval <0, 1>,
+      //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
+      //   The only thing that matters is  the relative values in the data Rows.
+
+      // Note that current implementation sets
+      //   the minimum of dataRows range (1.0 in this example)
+      //     on the level of the first Y Label ("Low" in this example),
+      //   and the maximum  of dataRows range (10.0 in this example)
+      //     on the level of the last Y Label ("High" in this example).
+
+      // todo-00 : This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+        _chartData = new ChartData();
+        _chartData.dataRowsLegends = [
+          'Java',
+          'Dart',
+          'Python',
+          'Newspeak'];
+        _chartData.dataRows = [
+          [9.0, 4.0,  3.0,  9.0 ],
+          [7.0, 6.0,  7.0,  6.0 ],
+          [4.0, 9.0,  6.0,  8.0 ],
+          [3.0, 9.0, 10.0,  1.0 ],
+        ];
+        _chartData.xLabels =  ['Speed', 'Readability', 'Level of Novel', 'Usage'];
+        _chartData.dataRowsColors = [
+          Colors.blue,
+          Colors.yellow,
+          Colors.green,
+          Colors.amber,
+        ];
+        // todo-00 _lineChartOptions.useUserProvidedYLabels = true; // use labels below
+        chartOptions.useUserProvidedYLabels = true; // use labels below
+        _chartData.yLabels = [
+          'Low',
+          'Medium',
+          'High',
+        ];
+        break;
+
+      case ExamplesEnum.ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors:
+      // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, Data-Based Y Labels, User-Provided Colors, 
+      //        This shows a bug where negatives go below X axis.
+      // If we want the chart to show User-Provided textual Y labels with 
+      // In each column, adding it's absolute values should add to same number:
+      // todo-00 100 would make more sense, to represent 100% of stocks in each category.
+      
+        _chartData = new ChartData();
+        _chartData.dataRowsLegends = [
+          '-2% or less',
+          '-2% to 0%',
+          '0% to +2%',
+          'more than +2%',];
+        // each column should add to same number. everything else is relative. todo-00 maybe no need to add to same number.
+        _chartData.dataRows = [
+          [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
+          [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
+          [ 7.0,  8.0,   7.0,  11.0,  9.0, ],
+          [ 3.0,  2.0,   1.0,   3.0,  3.0, ],
+        ];
+        _chartData.xLabels =  ['Energy', 'Health', 'Finance', 'Chips', 'Oil'];
+        _chartData.dataRowsColors = [
+          Colors.red,
+          Colors.grey,
+          Colors.greenAccent,
+          Colors.black,
+        ];
+        chartOptions.useUserProvidedYLabels = false; // todo-00 why is this needed?
+        break;
+        
+      default:
+        throw new StateError('Invalid exampleToRun in dart-define environment.');
+    }
+  }
+  
+  
+  /* unused examples
+      case ExamplesEnum.ex_2_1_AnimalCountBySeason:
+        // Same as 2_0 above, but this demonstrates order of painting lines on the line chart,
+        //   controlled by DataRowsPaintingOrder.
+        //  This has benefits when dataRows lines are on top of each other
+
+        _lineChartOptions.dataRowsPaintingOrder = DataRowsPaintingOrder.LastToFirst;
         _chartData = new ChartData();
         _chartData.dataRowsLegends = [
           "Spring",
@@ -210,226 +372,39 @@ class _MyHomePageState extends State<MyHomePage> {
         ];
         _chartData.dataRows = [
           [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
-          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
+          [10.0, 20.0,  5.0,  30.0,  5.0,  30.0 ],
           [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
-          [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
+          [25.0, 40.0, 20.0,  80.0, 12.0, 100.0 ],
         ];
         _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
         _chartData.assignDataRowsDefaultColors();
-        // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+
         break;
-      default:
-        throw new StateError("Invalid exampleToRun in dart-define environment.");
-    }
-    
-  }
 
-  /* todo-00 ori
-  void defineOptionsAndData() {
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
+      case ExamplesEnum.ex_4_0_SunnyDaysPerWeek_ExplicitLabelLayoutStrategy:
+        // Shows: 
+        //   - Explicit use of DefaultIterativeLabelLayoutStrategy
+        //   - User defined values and labels.
+        //   - Also tests a bug reported by Lonenzo Tejera
+        _lineChartOptions = new LineChartOptions();
+        _verticalBarChartOptions = new VerticalBarChartOptions();
+        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+          options: _verticalBarChartOptions,
+        );
+        _chartData = new ChartData();
+        _chartData.dataRowsLegends = [
+          "Spring",
+          "Summer",
+        ];
+        _chartData.dataRows = [
+          [1.0, 2.0, 3.0, 4.0, 6.0],
+          [4.0, 3.0, 5.0, 6.0, 1.0],
+        ];
+        _chartData.xLabels = ["Seattle", "Toronto", "London", "Prague", "Vancouver"];
+        _chartData.assignDataRowsDefaultColors();
+        // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
+        break;  
    */
-
-/* Default - Random data
-  void defineOptionsAndData() {
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
-*/
-
-  /* todo-00 If line chart, add option that allows to start on non-zero 
-             - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-             - test  on values like 10,000 - 11,000.  
-   void defineOptionsAndData() {
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new ChartData();
-     _chartData.dataRowsLegends = [
-       "Spring",
-       "Summer",
-       "Fall",
-       "Winter",
-     ];
-    _chartData.dataRows = [
-       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
-       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
-       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
-       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
-     ];
-     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-     _chartData.assignDataRowsDefaultColors();
-     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-   }     
-   */
-  /* 9  - Explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-          The _xContainerLabelLayoutStrategy must also work commented out.
-  void defineOptionsAndData() {
-    // If you were to use your own extension of
-    //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-    //   this is how to create an instance.
-    // If _xContainerLabelLayoutStrategy
-    //   is not set (remains null), the charts instantiate
-    //   the DefaultIterativeLabelLayoutStrategy.
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-      options: _verticalBarChartOptions,
-    );
-    // _xContainerLabelLayoutStrategy = null;
-    _chartData = new RandomChartData(
-        useUserProvidedYLabels: _lineChartOptions.useUserProvidedYLabels);
-  }
-  */
-
-  /* 8 - Explicit use of DefaultIterativeLabelLayoutStrategy with defined values and labels.
-         Also tests a bug reported by Lonenzo Tejera
-  void defineOptionsAndData() {
-    _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-      options: _verticalBarChartOptions,
-    );
-    // _xContainerLabelLayoutStrategy = null;
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-    ];
-    _chartData.dataRows = [
-      [1.0, 2.0, 3.0, 4.0, 6.0],
-      [4.0, 3.0, 5.0, 6.0, 1.0],
-    ];
-    _chartData.xLabels = ["One", "Two", "Three", "Four", "Five"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-  }
-  */
-
-  /* 7 Set values, labels, legends
-   void defineOptionsAndData() {
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new ChartData();
-     _chartData.dataRowsLegends = [
-       "Spring",
-       "Summer",
-       "Fall",
-       "Winter",
-     ];
-    _chartData.dataRows = [
-       [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
-       [30.0, 60.0, 16.0, 100.0, 12.0, 120.0 ],
-       [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
-       [12.0, 30.0, 18.0,  40.0, 10.0,  30.0 ],
-     ];
-     _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-     _chartData.assignDataRowsDefaultColors();
-     // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-   }   
-   */
-  
-  /* 6 Same as item 7 above, but this demonstrates order of painting lines on the line chart,
-       when dataRows lines are on top of each other
-  void defineOptionsAndData() {
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-    _chartData = new ChartData();
-    _chartData.dataRowsLegends = [
-      "Spring",
-      "Summer",
-      "Fall",
-      "Winter",
-    ];
-    _chartData.dataRows = [
-      [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
-      [10.0, 20.0,  5.0,  30.0,  5.0,  30.0 ],
-      [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
-      [25.0, 40.0, 20.0,  80.0, 12.0, 100.0 ],
-    ];
-    _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-    _chartData.assignDataRowsDefaultColors();
-    // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-  }
-  */
-  
-  /* 5 User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
-   void defineOptionsAndData() {
-     // This example shows user defined Y Labels.
-     //   When setting Y labels by user, the dataRows value scale
-     //   is irrelevant. User can use for example interval <0, 1>,
-     //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
-     //   The only thing that matters is  the relative values in the data Rows.
-
-     // Note that current implementation sets
-     // the minimum of dataRows range (1.0 in this example)
-     // on the level of the first Y Label ("Ok" in this example),
-     // and the maximum  of dataRows range (10.0 in this example)
-     // on the level of the last Y Label ("High" in this example).
-     // This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
-     _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new ChartData();
-     _chartData.dataRowsLegends = [
-       "Java",
-       "Dart",
-       "Python",
-       "Newspeak"];
-     _chartData.dataRows = [
-       [9.0, 4.0,  3.0,  9.0 ],
-       [7.0, 6.0,  7.0,  6.0 ],
-       [4.0, 9.0,  6.0,  8.0 ],
-       [3.0, 9.0, 10.0,  1.0 ],
-     ];
-     _chartData.xLabels =  ["Speed", "Readability", "Level of Novel", "Usage"];
-     _chartData.dataRowsColors = [
-       Colors.blue,
-       Colors.yellow,
-       Colors.green,
-       Colors.amber,
-     ];
-     _lineChartOptions.useUserProvidedYLabels = true; // use labels below
-     _chartData.yLabels = [
-       "Low",
-       "Medium",
-       "High",
-     ];
-   }
-  */
-
-  /* 4 User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
-       Similar to above, this also shows a bug.
-   void defineOptionsAndData() {
-     // In each column, adding it's absolute values should add to same number:
-     // 100 would make more sense, to represent 100% of stocks in each category.
-    _lineChartOptions = new LineChartOptions();
-     _verticalBarChartOptions = new VerticalBarChartOptions();
-     _chartData = new ChartData();
-     _chartData.dataRowsLegends = [
-       "-2% or less",
-       "-2% to 0%",
-       "0% to +2%",
-       "more than +2%",];
-     // each column should add to same number. everything else is relative.
-     _chartData.dataRows = [
-       [-9.0, -8.0,  -8.0,  -5.0, -8.0, ],
-       [-1.0, -2.0,  -4.0,  -1.0, -1.0, ],
-       [7.0, 8.0,  7.0, 11.0, 9.0, ],
-       [3.0, 2.0, 1.0,  3.0,  3.0, ],
-     ];
-     _chartData.xLabels =  ["Energy", "Health", "Finance", "Chips", "Oil"];
-     _chartData.dataRowsColors = [
-       Colors.red,
-       Colors.grey,
-       Colors.greenAccent,
-       Colors.black,
-     ];
-     _lineChartOptions.useUserProvidedYLabels = false;
-   }
-   */
-
   void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
@@ -498,8 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    VerticalBarChartContainer verticalBarChartContainer =
-        new VerticalBarChartContainer(
+    VerticalBarChartContainer verticalBarChartContainer = new VerticalBarChartContainer(
       chartData: _chartData,
       chartOptions: _verticalBarChartOptions,
       xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
@@ -511,6 +485,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
+    Widget flutterChart;
+    
+    
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
     // for instance as done by the _chartStateChanger method above.
@@ -612,7 +589,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     // #### Core chart
                     child: verticalBarChart, // verticalBarChart, lineChart
                   ),
-                  new Text('<<'), // labels fit horizontally
+                  new Text('<<'),
+                  // labels fit horizontally
                   // new Text('<<<<<<'), // default, labels tilted, all present
                   // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
                   // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // labels skipped (shows 2 labels, legend present but text vertical)
