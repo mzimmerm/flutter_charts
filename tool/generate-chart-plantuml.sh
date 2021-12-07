@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # dcdg is a package which generates uml
 #   if installed 'globally', it will add executable to ~~/.pub-cache/bin~

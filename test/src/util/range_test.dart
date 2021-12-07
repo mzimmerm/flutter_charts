@@ -44,7 +44,7 @@ void main() {
 
   test('Poly floor and ceil', () {
     Poly p = new Poly(from: 123.04);
-    expect(p.floorAtMaxPower, 100); // ex: throwsA(throwsException));
+    expect(p.floorAtMaxPower, 100);
     expect(p.ceilAtMaxPower, 200);
 
     // todo 1 test pure fractions and negatives

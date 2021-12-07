@@ -61,7 +61,8 @@
 ///
 /// Notes:
 ///
-///  1.  When writing the export code such as
+///  1.  When writing the export code such as in this file, flutter_charts/lib/flutter_charts.dart,
+///      both formats below re fine:
 ///         `export 'package:flutter_charts/src/chart/label_container.dart';` // lib not named in path
 ///         `export 'src/chart/line/chart.dart';` // even though under lib
 ///      the *lib level above src  is skipped - not specified*
@@ -84,6 +85,10 @@
 /// Export path starts after lib, whether using
 ///   'package:flutter_charts' format or 'src/' format.
 ///
+/// todo-00 : see https://dart.dev/guides/language/effective-dart/usage#prefer-relative-import-paths 
+/// todo-00   to change this to use EXPORT src, as in: lib/api.dart:
+// todo-00  import 'src/stuff.dart';
+// todo-00  import 'src/utils.dart';
 export 'package:flutter_charts/src/chart/label_container.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 

@@ -67,7 +67,7 @@ void main() {
   //
   // TODO-00
   var comboToRun = requestedExampleComboToRun();
-  if (!ExamplesDescriptor().isAllowed(comboToRun)) {
+  if (!ExamplesDescriptor().exampleComboIsAllowed(comboToRun)) {
     // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     exit(0);
   }
@@ -485,7 +485,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    Widget flutterChart;
+    Widget chartToRun;
+    switch(comboToRun.item2) {
+      case ExamplesChartTypeEnum.LineChart:
+        chartToRun = lineChart;
+        break;
+      case ExamplesChartTypeEnum.VerticalBarChart:
+        chartToRun = verticalBarChart;
+        break;
+    }
     
     
     // [MyHomePage] extends [StatefulWidget].
@@ -587,7 +595,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   new Expanded(
                     // #### Core chart
-                    child: verticalBarChart, // verticalBarChart, lineChart
+                    child: chartToRun, // verticalBarChart, lineChart
                   ),
                   new Text('<<'),
                   // labels fit horizontally

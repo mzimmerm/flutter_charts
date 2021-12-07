@@ -1,0 +1,11 @@
+This directory,
+
+flutter_charts/tool
+
+Should contain private tools such as shell scripts to build something or run tests.
+
+From https://dart.dev/tools/pub/package-layout#internal-tools-and-scripts :
+
+Mature packages often have little helper scripts and programs that people run while developing the package itself. Think things like test runners, documentation generators, or other bits of automation.
+
+Unlike the scripts in bin, these are not for external users of the package. If you have any of these, place them in a directory called tool.

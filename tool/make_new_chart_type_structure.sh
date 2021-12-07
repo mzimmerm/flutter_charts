@@ -5,16 +5,21 @@ echo Usage: $0 newChartType
 
 chartType=${1:-UNSET}
 
+if [[ -z "$chartType" ]]; then
+  echo Invalid chartType="$chartType", exiting
+  exit 1
+fi
+
 echo chartType = $chartType
 
 mkdir {$chartType}
 
 for file in \
-  $chartType/layouters.dart  \
   $chartType/chart.dart \
+  $chartType/container.dart \
+  $chartType/options.dart \
   $chartType/painter.dart  \
-  $chartType/presenters.dart \
-  $chartType/options.dart
+  $chartType/presenters.dart
 do
   echo "" >> $file
 done
