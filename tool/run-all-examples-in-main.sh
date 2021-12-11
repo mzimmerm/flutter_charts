@@ -39,14 +39,14 @@ echo Emulator $emulator_used is running as device_id="$device_id".
 # Run the examples one after another. Ignore errors, as manual device-swipe-up of program would exist script
 #while read example; do
 #  echo Running chart for "$example"
-#  # flutter run --device-id="$device_id" --dart-define=EXAMPLE_TO_RUN=ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors --dart-define=CHART_TYPE_TO_SHOW=VerticalBarChart example/lib/main.dart
+#  # flutter run --device-id="$device_id" --dart-define=EXAMPLE_TO_RUN=ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors --dart-define=CHART_TYPE_TO_SHOW=VerticalBarChart example1/lib/main.dart
 #  echo Running command: flutter run --device-id="$device_id" $example example/lib/main.dart 
-#  flutter run --device-id="$device_id" $example  example/lib/main.dart
+#  flutter run --device-id="$device_id" $example  example1/lib/main.dart
 #  echo Next chart
-#done < <(dart run example/lib/examples_descriptor.dart)
+#done < <(dart run example1/lib/examples_descriptor.dart)
 
 # todo-00 make tmp a tmp file
-dart run example/lib/examples_descriptor.dart > ~/tmp/run_examples.sh
+dart run example1/lib/examples_descriptor.dart > ~/tmp/run_examples.sh
 . ~/tmp/run_examples.sh "$device_id"
 
 

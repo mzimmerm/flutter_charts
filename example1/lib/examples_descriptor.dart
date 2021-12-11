@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 
 /// Represents examples and tests to be shown.
 class ExamplesDescriptor {
-  List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
+  final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     const Tuple2(ExamplesEnum.ex_1_0_RandomData, ExamplesChartTypeEnum.LineChart),
     const Tuple2(ExamplesEnum.ex_1_0_RandomData, ExamplesChartTypeEnum.VerticalBarChart),
 
@@ -39,12 +39,14 @@ class ExamplesDescriptor {
 
   /// Present this descriptor is a format suitable to run as a test from command line.
   void asCommandLine() {
-    _allowed.forEach((tuple) => print(
+    for ( Tuple2 tuple in _allowed) {
+      print(
         // cli representation
-        'flutter run --device-id=\$1 ' +
-            '--dart-define=EXAMPLE_TO_RUN=${myDescribeEnum(tuple.item1)} ' +
-            '--dart-define=CHART_TYPE_TO_SHOW=${myDescribeEnum(tuple.item2)} ' +
-            ' example/lib/main.dart'));
+          'flutter run --device-id=\$1 '
+              '--dart-define=EXAMPLE_TO_RUN=${myDescribeEnum(tuple.item1)} '
+              '--dart-define=CHART_TYPE_TO_SHOW=${myDescribeEnum(tuple.item2)} '
+              ' example1/lib/main.dart');
+    };
   }
 }
 
