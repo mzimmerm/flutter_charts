@@ -82,7 +82,7 @@ Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleComboToRun() {
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex_1_0_RandomData');
   ExamplesEnum exampleToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
 
-  const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'LineChart');
+  const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'lineChart');
   ExamplesChartTypeEnum chartTypeToShow = chartTypeToShowStr.asEnum(ExamplesChartTypeEnum.values);
 
   return Tuple2(exampleToRun, chartTypeToShow);
@@ -221,12 +221,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ExamplesChartTypeEnum chartTypeToShow = comboToRun.item2;
 
     switch (chartTypeToShow) {
-      case ExamplesChartTypeEnum.LineChart:
+      case ExamplesChartTypeEnum.lineChart:
         _verticalBarChartOptions = new VerticalBarChartOptions(); // todo-00 make this fail if used by mistake
         _lineChartOptions = new LineChartOptions();
         chartOptions = _lineChartOptions;
         break;
-      case ExamplesChartTypeEnum.VerticalBarChart:
+      case ExamplesChartTypeEnum.verticalBarChart:
         _verticalBarChartOptions = new VerticalBarChartOptions();
         _lineChartOptions = new LineChartOptions(); // todo-00 make this fail if used by mistake
         chartOptions = _verticalBarChartOptions;
@@ -234,11 +234,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     switch (exampleToRun) {
-      case ExamplesEnum.ex_1_0_RandomData:
+      case ExamplesEnum.ex10RandomData:
         _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
-      case ExamplesEnum.ex_2_0_AnimalCountBySeason:
+      case ExamplesEnum.ex20AnimalsBySeason:
         _chartData = new ChartData();
         _chartData.dataRowsLegends = [
           'Spring',
@@ -257,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
 
       // todo-00 add default
-      case ExamplesEnum.ex_3_0_RandomData_ExplicitLabelLayoutStrategy:
+      case ExamplesEnum.ex30RandomDataWithLabelLayoutStrategy:
         // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
         // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
         // If you were to use your own extension of
@@ -272,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
-      case ExamplesEnum.ex_4_0_LanguagesOrdinarOnYFromData_UserYOrdinarLabels_UserColors:
+      case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
         //   When setting Y labels by user, the dataRows value scale
@@ -311,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ];
         break;
 
-      case ExamplesEnum.ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors:
+      case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, Data-Based Y Labels, User-Provided Colors,
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
@@ -478,10 +478,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Widget chartToRun;
     switch (comboToRun.item2) {
-      case ExamplesChartTypeEnum.LineChart:
+      case ExamplesChartTypeEnum.lineChart:
         chartToRun = lineChart;
         break;
-      case ExamplesChartTypeEnum.VerticalBarChart:
+      case ExamplesChartTypeEnum.verticalBarChart:
         chartToRun = verticalBarChart;
         break;
     }
