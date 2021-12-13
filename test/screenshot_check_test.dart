@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-// todo-00-now pull the enums and descriptor to main.
 import '../example1/lib/src/util/examples_descriptor.dart';
 import '../example1/lib/main.dart' as app;
 
@@ -17,10 +16,10 @@ void main() {
   test('after screenshot integration, test for sameness', () {
     // Find the command-line provided enums which define chart data, options and type to use in the example app.
     // The app find the enums transiently, here we need it to generate consistent screenshot filename. 
-    // todo-00-now convert this to one method and place on test_util.dart
     Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun = app.requestedExampleToRun();
-    String screenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
-    String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
+    var screenshotPaths = screenshotPathsFor(exampleComboToRun);
+    String expectedScreenshotPath = screenshotPaths.item1;
+    String screenshotPath = screenshotPaths.item2;
 
     // Flag controls if this test runs 'expect'. 
     // Set to false to generate initial validated screenshots.

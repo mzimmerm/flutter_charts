@@ -19,8 +19,6 @@ void main() {
   ExamplesDescriptor().asCommandLine();
 }
 
-// todo-00-now: pull ExamplesChartTypeEnum and ExamplesEnum in this package.
-
 /// Describes the full set of charts shown in examples or integration tests.
 enum ExamplesEnum {
   ex10RandomData,

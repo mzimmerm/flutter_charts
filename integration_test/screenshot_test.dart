@@ -87,10 +87,8 @@ void main() {
   testWidgets('screenshot', (WidgetTester tester) async {
     // Find the command-line provided enums which define chart data, options and type to use in the example app.
     // The app find the enums transiently, here we need it to generate consistent screenshot filename. 
-    // todo-00-now move this code to a single function in test_util.dart
-    Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun = app.requestedExampleToRun();
-    String screenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
-    String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
+    var screenshotPaths = screenshotPathsFor(app.requestedExampleToRun());
+    String screenshotPath = screenshotPaths.item2;
 
     // Build the app.
     app.main();
@@ -113,3 +111,4 @@ void main() {
     
   });
 }
+

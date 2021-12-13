@@ -21,7 +21,7 @@ fi
 source tool/test/start_emulator_and_generate_examples_descriptor.sh
 
 
-# todo-00 make tmp a tmp file
+# todo-00-now make tmp a tmp file
 
 echo
 echo -------------------------------------

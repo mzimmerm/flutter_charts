@@ -6,7 +6,6 @@ import 'package:flutter_charts/flutter_charts.dart' show enumName;
 
 import '../example1/lib/src/util/examples_descriptor.dart';
 
-// todo-00 create util/util_dart.dart in test directory and use it in test and integration_test.  
 /// Path to screenshot file the test uses for each test.
 String relativePath(String screenshotDirName, Tuple2 <ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
   return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
@@ -29,4 +28,13 @@ String screenshotDirName() {
 
 String expectedScreenshotDirName() {
   return 'integration_test/screenshots_expected';
+}
+
+/// Extract paths to screenshots for tests. 
+/// 
+/// Paths include filename, and are relative to project root. 
+Tuple2<String, String> screenshotPathsFor(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+  String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
+  String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
+  return Tuple2(expectedScreenshotPath, actualScreenshotPath);
 }

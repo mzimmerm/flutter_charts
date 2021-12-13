@@ -12,7 +12,6 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
 import 'package:tuple/tuple.dart' show Tuple2;
 
-// todo-00-now
 import 'src/util/examples_descriptor.dart';
 import 'dart:io' show exit;
 
