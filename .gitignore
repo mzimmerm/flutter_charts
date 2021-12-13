@@ -6,6 +6,9 @@
 .projectile
 .gnupg
 
+# results of integration_test to ignore
+integration_test/screenshots_tested/
+
 # Emacs, maybe other edit lock files
 .\#*
 

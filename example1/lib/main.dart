@@ -12,16 +12,18 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
 import 'package:tuple/tuple.dart' show Tuple2;
 
-import 'ExamplesChartTypeEnum.dart' show ExamplesChartTypeEnum;
-import 'ExamplesEnum.dart' show ExamplesEnum;
+import 'ExamplesChartTypeEnum.dart';
+import 'ExamplesEnum.dart';
 import 'examples_descriptor.dart';
 import 'dart:io' show exit;
 
 /// Example of simple line chart usage in an application.
 ///
-/// Library note: This file is on the same level as _lib_ so everything from _lib_ must
+/// Library note: This file is on the same level as _lib_, so everything from _lib_ must
 /// be imported using the "package:" scheme, e.g.
-/// > import 'package:flutter_charts/flutter_charts.dart';
+/// ```dart
+///    import 'package:flutter_charts/flutter_charts.dart';
+/// ```
 void main() {
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
@@ -79,7 +81,7 @@ void main() {
 ///
 Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleComboToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
-  const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex_1_0_RandomData');
+  const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
 
   const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'lineChart');

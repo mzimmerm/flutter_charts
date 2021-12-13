@@ -7,16 +7,21 @@ Future<void> main() => integrationDriver();
 //           import 'package:integration_test/integration_test_driver.dart'; 
 */
 
+/// Allows to control apps from tests, while test code runs on a native device, physical or emulated. 
 import 'dart:io';
 import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {
   await integrationDriver(
     onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
-      final File image = File('$screenshotName.png');
-      image.writeAsBytesSync(screenshotBytes);
+      final File image = File(screenshotName);
+      // Write the image as bytes; flush ensures close before dart exit.
+      image.writeAsBytesSync(screenshotBytes, mode: FileMode.write, flush: true);
+      if (image.existsSync()) {
+        return true;
+      }
       // Return false if the screenshot is invalid.
-      return true;
+      return false;
     },
   );
 }

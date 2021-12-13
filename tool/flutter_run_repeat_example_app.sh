@@ -1,24 +1,28 @@
 #!/bin/bash
 
-# Starts an Android AVD emulator for Flutter, then runs all examples in ExamplesEnum.
+# If Android AVD emulator is not running, starts one.
+# Then, repeatedly runs the example app for data specified in ExamplesEnum.
+# More precisely, for all values in ExamplesEnum, runs
+#   flutter run --device-id=$device_id" "example1/lib/main.dart"
 
 # This is the AVD emulator we request to exist
 emulator_used="Nexus_6_API_29_2"
 
-# First check if emulator exists
+echo Check if emulator exists
 if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
   echo "Emulator $emulator_used does not exist. Please create it, our integration tests depend on it. Exiting"
   exit 1
 fi
 
-# Check if the emulator named $emulator_used is connected to a running device.
+echo Check if the emulator named $emulator_used is connected to a running device.
 # The only way to find out is to run ps, searching for the device name,
 #   as "flutter devices" list only the short device name such as e3565
 if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
   echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
   flutter emulators --launch "$emulator_used"
-  echo The AVD emulator $emulator_used succesfully launched. Will sleep 20 to give it time to start fully.
+  echo Sleep 20 to give the emulator time to start fully.
   sleep 20
+  echo The AVD emulator $emulator_used succesfully launched.
 else
   echo The emulator $emulator_used appears running and connected.
 fi
@@ -30,9 +34,7 @@ if ! flutter devices  2>/dev/null | grep --quiet "emulator-"; then
   exit 1
 fi
 
-# flutter devices 2>/dev/null | grep --extended-regexp "emulator-([0-9]+)"
-echo Starting to run examples.
-
+echo Checking processes for running emulator name.
 device_id=$(flutter devices 2>/dev/null | grep "emulator-" | sed 's/.*\(emulator\-[0-9]\+\).*/\1/')
 echo Emulator $emulator_used is running as device_id="$device_id".
 
