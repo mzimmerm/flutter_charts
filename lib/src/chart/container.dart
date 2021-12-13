@@ -20,7 +20,7 @@ import 'package:flutter_charts/src/chart/data.dart';
 import 'presenter.dart';
 
 import '../util/range.dart';
-import '../util/util.dart' as util;
+import '../util/util_dart.dart' as util;
 import '../util/geometry.dart' as geometry;
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
@@ -1630,8 +1630,8 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       }
     }
     _valuePointArrInRows.toList();
-    _valuePointArrInColumns = util.transpose(_valuePointArrInRows);
-    // also OK: _valuePointArrInColumns = util.transpose<StackableValuePoint>(_valuePointArrInRows);
+    _valuePointArrInColumns = transpose(_valuePointArrInRows);
+    // also OK: _valuePointArrInColumns = transpose<StackableValuePoint>(_valuePointArrInRows);
 
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
@@ -1712,4 +1712,31 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     });
     return flat;
   }
+}
+
+// todo-11 maybe replace.
+// todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
+//               can this be improved? This need may be a typing bug in Dart
+/// Assuming even length 2D matrix [colsRows], return it's transpose copy.
+List<List<StackableValuePoint>> transpose(
+    List<List<StackableValuePoint>> colsInRows) {
+  int nRows = colsInRows.length;
+  if (colsInRows.length == 0) return colsInRows;
+
+  int nCols = colsInRows[0].length;
+  if (nCols == 0) throw new StateError('Degenerate matrix');
+
+  // Init the transpose to make sure the size is right
+  List<List<StackableValuePoint>> rowsInCols = new List.filled(nCols, []);
+  for (int col = 0; col < nCols; col++) {
+    rowsInCols[col] = new List.filled(nRows, new StackableValuePoint.initial());
+  }
+
+  // Transpose
+  for (int row = 0; row < nRows; row++) {
+    for (int col = 0; col < nCols; col++) {
+      rowsInCols[col][row] = colsInRows[row][col];
+    }
+  }
+  return rowsInCols;
 }

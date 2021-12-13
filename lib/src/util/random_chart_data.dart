@@ -2,6 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter_charts/src/chart/data.dart';
 
+import 'dart:ui' as ui show Color;
+import 'package:flutter/material.dart' as material show Colors;
+
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
@@ -35,7 +38,7 @@ class RandomChartData extends ChartData {
 
     _generateYValues();
 
-    _generateDataRowsLegends();
+    assignDataRowsDefaultLegends();
 
     _generateYLabels();
 
@@ -102,28 +105,7 @@ class RandomChartData extends ChartData {
       yLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
     }
   }
-
-  void _generateDataRowsLegends() {
-    int dataRowsCount = dataRows.length;
-
-    if (dataRowsCount >= 1) {
-      dataRowsLegends.add('YELLOW');
-    }
-    if (dataRowsCount >= 2) {
-      dataRowsLegends.add('GREEN');
-    }
-    if (dataRowsCount >= 3) {
-      dataRowsLegends.add('BLUE');
-    }
-    if (dataRowsCount > 3) {
-      for (int i = 3; i < dataRowsCount; i++) {
-        // todo-1 when large value is generated, it paints outside canvas, fix.
-        int number = new math.Random().nextInt(10000);
-        dataRowsLegends.add('OTHER ' + number.toString());
-      }
-    }
-  }
-
+  
   void _generateYValues() {
     dataRows = new List.empty(growable: true);
 

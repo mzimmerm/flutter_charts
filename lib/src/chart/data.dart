@@ -73,7 +73,43 @@ class ChartData {
     return _flattenData().reduce(math.min);
   }
 
-  /// Sets up colors first three data rows (series) explicitly, rest randomly
+  /// Sets up legends names, first several explicitly, rest randomly.
+  /// 
+  /// This is used if user does not set legends.
+  /// This should be kept in sync with colors below.
+  void assignDataRowsDefaultLegends() {
+    int dataRowsCount = dataRows.length;
+
+    if (dataRowsCount >= 1) {
+      dataRowsLegends.add('YELLOW');
+    }
+    if (dataRowsCount >= 2) {
+      dataRowsLegends.add('GREEN');
+    }
+    if (dataRowsCount >= 3) {
+      dataRowsLegends.add('BLUE');
+    }
+    if (dataRowsCount >= 4) {
+      dataRowsLegends.add('BLACK');
+    }
+    if (dataRowsCount >= 5) {
+      dataRowsLegends.add('GREY');
+    }
+    if (dataRowsCount >= 6) {
+      dataRowsLegends.add('ORANGE');
+    }
+    if (dataRowsCount > 6) {
+      for (int i = 3; i < dataRowsCount; i++) {
+        // todo-1 when large value is generated, it paints outside canvas, fix.
+        int number = new math.Random().nextInt(10000);
+        dataRowsLegends.add('OTHER ' + number.toString());
+      }
+    }
+  }
+
+  /// Sets up colors for legends, first several explicitly, rest randomly.
+  /// 
+  /// This is used if user does not set colors.
   void assignDataRowsDefaultColors() {
     int dataRowsCount = dataRows.length;
 
@@ -86,7 +122,16 @@ class ChartData {
     if (dataRowsCount >= 3) {
       dataRowsColors.add(material.Colors.blue);
     }
-    if (dataRowsCount > 3) {
+    if (dataRowsCount >= 4) {
+      dataRowsColors.add(material.Colors.black);
+    }
+    if (dataRowsCount >= 5) {
+      dataRowsColors.add(material.Colors.grey);
+    }
+    if (dataRowsCount >= 6) {
+      dataRowsColors.add(material.Colors.orange);
+    }
+    if (dataRowsCount > 6) {
       for (int i = 3; i < dataRowsCount; i++) {
         int colorHex = new math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;

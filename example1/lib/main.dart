@@ -77,7 +77,11 @@ void main() {
   runApp(new MyApp());
 }
 
-/// Find, from environment dart-define, the example to run and chart type to show.
+/// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']
+///   passed to the program by `--dart-define` options.
+///
+/// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
+///   to a tuple of enums which describe the example to run, and the chart type to show.
 ///
 Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleComboToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
@@ -240,7 +244,26 @@ class _MyHomePageState extends State<MyHomePage> {
         _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
-      case ExamplesEnum.ex20AnimalsBySeason:
+      // todo-00 add default
+      case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
+        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
+        // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
+        // If you were to use your own extension of
+        //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+        //   this is how to create an instance.
+        // If _xContainerLabelLayoutStrategy
+        //   is not set (remains null), the charts instantiate
+        //   the DefaultIterativeLabelLayoutStrategy.
+        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+          options: chartOptions,
+        );
+        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        break;
+
+      case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
+        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+          options: chartOptions,
+        );
         _chartData = new ChartData();
         _chartData.dataRowsLegends = [
           'Spring',
@@ -256,22 +279,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ];
         _chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
         _chartData.assignDataRowsDefaultColors();
-        break;
-
-      // todo-00 add default
-      case ExamplesEnum.ex30RandomDataWithLabelLayoutStrategy:
-        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-        // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
-        // If you were to use your own extension of
-        //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-        //   this is how to create an instance.
-        // If _xContainerLabelLayoutStrategy
-        //   is not set (remains null), the charts instantiate
-        //   the DefaultIterativeLabelLayoutStrategy.
-        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-          options: chartOptions,
-        );
-        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
@@ -343,9 +350,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ];
         chartOptions.useUserProvidedYLabels = false; // todo-00 why is this needed?
         break;
-
-      default:
-        throw new StateError('Invalid exampleToRun in dart-define environment.');
     }
   }
 

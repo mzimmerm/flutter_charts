@@ -1,7 +1,7 @@
 import 'dart:math' as math show min, max, pow;
 import 'package:decimal/decimal.dart' as decimal;
 import 'package:flutter_charts/src/chart/options.dart';
-import 'util.dart' as util;
+import 'util_dart.dart' as util_dart;
 
 // todo-2 - this library (range.dart) has been modified for Dart 2.0
 //            using a hack which replaces all List<num> to List<double>,
@@ -222,7 +222,7 @@ class YScalerAndLabelFormatter {
     required double value,
   }) {
     Interval mergedOwnScale = labelValuesAndDataRangesMerged;
-    return util.scaleValue(
+    return util_dart.scaleValue(
         value: value.toDouble(),
         ownScaleMin: mergedOwnScale.min.toDouble(),
         ownScaleMax: mergedOwnScale.max.toDouble(),

@@ -1,9 +1,18 @@
-// Note: import 'package:flutter/foundation.dart'; - this causes bizarre error on dart:ui missing if running
-//       as 'dart run example/lib/examples_descriptor.dart'. Running with 'flutter run' sort of works, but needs device.
-//       Looks like importing any flutter packages fails when running as dart.
-
+/// todo-00 document
+/// 
 import 'ExamplesChartTypeEnum.dart' show ExamplesChartTypeEnum;
 import 'ExamplesEnum.dart' show ExamplesEnum;
+// Removing import for whole flutter_charts. 
+//    import 'package:flutter_charts/flutter_charts.dart' show enumName;
+// Reason: As part of a shell script, this needs to run as
+//    dart run example1/lib/examples_descriptor.dart
+// But, because importing flutter_charts.dart does
+//    import 'dart:ui'
+// then during 'dart run' we get messages such as :
+//    Error: Not found: 'dart:ui'
+// Import specifically only the source file where enumName is defined
+import '../../lib/src/util/util_dart.dart' show enumName; // todo-00 maybe enumName should be in test/test_util.dart
+
 import 'package:tuple/tuple.dart' show Tuple2;
 
 // todo-00 : pull ExamplesChartTypeEnum and ExamplesEnum in this package.
@@ -20,11 +29,11 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
 
-    const Tuple2(ExamplesEnum.ex20AnimalsBySeason, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex20AnimalsBySeason, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
 
-    const Tuple2(ExamplesEnum.ex30RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex30RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
 
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
     //  const Tuple2(ExamplesEnum.ex_4_0_LanguagesYOrdinarLevelFromData_UserYOrdinarLevelLabels_UserColors, ExamplesChartTypeEnum.VerticalBarChart),
@@ -45,20 +54,28 @@ class ExamplesDescriptor {
   /// Present this descriptor is a format suitable to run as a test from command line.
   void asCommandLine() {
     for (Tuple2 tuple in _allowed) {
+      print('set -e');
       print('echo');
+      print('echo');
+      print('echo Running \$1 for EXAMPLE_TO_RUN=${enumName(tuple.item1)}, CHART_TYPE_TO_SHOW=${enumName(tuple.item2)}.');
       print(
           // generates cli representation of arguments 
           '\$1 ' // 'flutter run --device-id=\$1 '
-          '--dart-define=EXAMPLE_TO_RUN=${myDescribeEnum(tuple.item1)} '
-          '--dart-define=CHART_TYPE_TO_SHOW=${myDescribeEnum(tuple.item2)} '
+          '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
+          '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
           '\$2' // ' example1/lib/main.dart'
           );
     }
   }
 }
 
-String myDescribeEnum(Enum e) {
-  return e.toString().split('.')[1];
+bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun) {
+  
+  if (enumName(comboToRun.item1).contains('RandomData')) {
+    return true;
+  }
+  return false;
+  
 }
 
 /// Present this descriptor as a command line.

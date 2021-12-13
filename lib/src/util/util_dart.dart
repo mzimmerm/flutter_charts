@@ -1,6 +1,15 @@
+/// Utility that contain only Dart code and do NOT import 'dart:ui' or anything Flutter.
+/// Reason: If a test or a main file depends on flutter or dart:ui, you need to use flutter test, not dart or pub commands,
+/// otherwise a run such as
+///    dart run something_with_main.dart
+///    dart test some_test.dart
+/// causes
+///    Error: Not found: 'dart:ui'
+/// This behavior feels like a bug rather than intention. Dart:ui is still Dart!
+/// 
 // todo 1 - Functions here should eventually be held by a Utility class
 
-import 'package:flutter_charts/src/chart/container.dart';
+// import 'package:flutter_charts/src/chart/container.dart';
 
 /// Scale the [value] that must be from the scale
 /// given by [ownScaleMin] - [ownScaleMax]
@@ -61,30 +70,10 @@ List<List<T>> transpose<T>(List<List<T>> colsInRows) {
 }
 */
 
-// todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
-//               can this be improved? This need may be a typing bug in Dart
-/// Assuming even length 2D matrix [colsRows], return it's transpose copy.
-List<List<StackableValuePoint>> transpose(
-    List<List<StackableValuePoint>> colsInRows) {
-  int nRows = colsInRows.length;
-  if (colsInRows.length == 0) return colsInRows;
-
-  int nCols = colsInRows[0].length;
-  if (nCols == 0) throw new StateError('Degenerate matrix');
-
-  // Init the transpose to make sure the size is right
-  List<List<StackableValuePoint>> rowsInCols = new List.filled(nCols, []);
-  for (int col = 0; col < nCols; col++) {
-    rowsInCols[col] = new List.filled(nRows, new StackableValuePoint.initial());
-  }
-
-  // Transpose
-  for (int row = 0; row < nRows; row++) {
-    for (int col = 0; col < nCols; col++) {
-      rowsInCols[col][row] = colsInRows[row][col];
-    }
-  }
-  return rowsInCols;
-}
 
 double get epsilon => 0.000001;
+
+String enumName(Enum e) {
+  return e.toString().split('.')[1];
+}
+

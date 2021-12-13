@@ -92,7 +92,7 @@
 export 'package:flutter_charts/src/chart/label_container.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 
-export 'package:flutter_charts/src/util/util.dart';
+export 'package:flutter_charts/src/util/util_dart.dart';
 export 'package:flutter_charts/src/util/range.dart';
 
 export 'package:flutter_charts/src/chart/data.dart';

@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../example1/lib/main.dart' as app;
 
-/// Flutter widget tests
+/// Flutter widget tests for the example app in '../example1/lib/main.dart'.
+/// 
+/// Tests check some expected values on the main page of the app.
 /// 
 /// Run as
 /// ``` shell
