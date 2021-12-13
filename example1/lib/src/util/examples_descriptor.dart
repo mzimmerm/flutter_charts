@@ -1,21 +1,41 @@
 /// todo-00-document
 /// 
-import 'ExamplesChartTypeEnum.dart' show ExamplesChartTypeEnum;
-import 'ExamplesEnum.dart' show ExamplesEnum;
 // Removing import for whole flutter_charts. 
 //    import 'package:flutter_charts/flutter_charts.dart' show enumName;
 // Reason: As part of a shell script, this needs to run as
-//    dart run example1/lib/examples_descriptor.dart
+//    dart run example1/lib/src/util/examples_descriptor.dart
 // But, because importing flutter_charts.dart does
 //    import 'dart:ui'
 // then during 'dart run' we get messages such as :
 //    Error: Not found: 'dart:ui'
-// Import specifically only the source file where enumName is defined
-import '../../lib/src/util/util_dart.dart' show enumName;
+// Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
+import '../../../../lib/src/util/util_dart.dart' show enumName;
 
 import 'package:tuple/tuple.dart' show Tuple2;
 
+/// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
+/// that require passing the examples to run or test using the environment variables `--dart-define`.
+void main() {
+  ExamplesDescriptor().asCommandLine();
+}
+
 // todo-00-now: pull ExamplesChartTypeEnum and ExamplesEnum in this package.
+
+/// Describes the full set of charts shown in examples or integration tests.
+enum ExamplesEnum {
+  ex10RandomData,
+  ex20RandomDataWithLabelLayoutStrategy,
+  ex30AnimalsBySeasonWithLabelLayoutStrategy,
+  ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
+  ex50StocksWithNegativesWithUserColors,
+}
+
+
+/// Describes chart types shown in examples or integration tests..
+enum ExamplesChartTypeEnum {
+  lineChart,
+  verticalBarChart,
+}
 
 /// Represents examples and tests to be run.
 /// 
@@ -78,7 +98,3 @@ bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> example
   
 }
 
-/// Present this descriptor as a command line.
-void main() {
-  ExamplesDescriptor().asCommandLine();
-}

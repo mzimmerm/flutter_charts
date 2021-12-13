@@ -2,7 +2,7 @@
 
 # If Android AVD emulator is not running, starts one.
 # Then, use program 
-#    dart run example1/lib/examples_descriptor.dart
+#    dart run example1/lib/src/util/examples_descriptor.dart
 # to generate a temp script named
 #    ~/tmp/run_examples.sh
 #  ~/tmp/run_examples.sh can be called from another script to repeatedly run the example app for data in ExamplesEnum.
@@ -41,8 +41,8 @@ device_id=$(flutter devices 2>/dev/null | grep "emulator-" | sed 's/.*\(emulator
 echo Emulator $emulator_used is running as device_id="$device_id".
 
 
-# todo-00 make tmp a tmp file
-dart run example1/lib/examples_descriptor.dart > ~/tmp/run_examples.sh
+# todo-00-now make tmp a tmp file
+dart run example1/lib/src/util/examples_descriptor.dart > ~/tmp/run_examples.sh
 
 # Generated script ~/tmp/run_examples.sh contains list of lines, one line looks like this
 #    $1 --dart-define=EXAMPLE_TO_RUN=ex_1_0_RandomData --dart-define=CHART_TYPE_TO_SHOW=LineChart $2

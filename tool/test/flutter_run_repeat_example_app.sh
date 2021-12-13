@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# todo-00 source start_emulator_and_generate_examples_descriptor
+# todo-00-now source start_emulator_and_generate_examples_descriptor
 # If Android AVD emulator is not running, starts one.
 # Then, repeatedly runs the example app for data specified in ExamplesEnum.
 # More precisely, for all values in ExamplesEnum, runs
@@ -48,13 +48,13 @@ echo Emulator $emulator_used is running as device_id="$device_id".
 #   flutter run --device-id="$device_id" $example  example1/lib/main.dart
 #   echo Next chart
 #   set +e
-# done < <(dart run example1/lib/examples_descriptor.dart)
+# done < <(dart run example1/lib/src/util/examples_descriptor.dart)
 
-# todo-00 make tmp a tmp file
+# todo-00-now make tmp a tmp file
 echo
 echo -------------------------------------
-echo Running dart run example1/lib/examples_descriptor.dart to create ~/tmp/run_examples.sh
-dart run example1/lib/examples_descriptor.dart > ~/tmp/run_examples.sh
+echo Running dart run example1/lib/src/util/examples_descriptor.dart to create ~/tmp/run_examples.sh
+dart run example1/lib/src/util/examples_descriptor.dart > ~/tmp/run_examples.sh
 chmod u+x ~/tmp/run_examples.sh
 bash -x ~/tmp/run_examples.sh "flutter run --device-id=$device_id" "example1/lib/main.dart"
 

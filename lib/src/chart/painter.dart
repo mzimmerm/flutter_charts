@@ -59,7 +59,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
       return;
     }
 
-    // set background: canvas.drawPaint(new ui.Paint()..color = material.Colors.green);
+    // set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
     // Once we know the size, let the container manage it's size.
     // This is the layout size. Once done, we can delegate painting

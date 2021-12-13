@@ -4,10 +4,7 @@ import 'package:tuple/tuple.dart';
 
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 
-import '../example1/lib/ExamplesChartTypeEnum.dart';
-import '../example1/lib/ExamplesEnum.dart';
-import '../example1/lib/examples_descriptor.dart';
-import '../example1/lib/main.dart' as app;
+import '../example1/lib/src/util/examples_descriptor.dart';
 
 // todo-00 create util/util_dart.dart in test directory and use it in test and integration_test.  
 /// Path to screenshot file the test uses for each test.

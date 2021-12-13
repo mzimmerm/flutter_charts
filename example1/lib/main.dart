@@ -12,9 +12,8 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
 import 'package:tuple/tuple.dart' show Tuple2;
 
-import 'ExamplesChartTypeEnum.dart';
-import 'ExamplesEnum.dart';
-import 'examples_descriptor.dart';
+// todo-00-now
+import 'src/util/examples_descriptor.dart';
 import 'dart:io' show exit;
 
 /// Example of simple line chart usage in an application.
@@ -34,7 +33,7 @@ void main() {
   // Longer reason
   //
   //      - Because Any Flutter app must have:
-  //        1) main() { runApp(new MyApp()) } // entry point
+  //        1) main() { runApp(MyApp()) } // entry point
   //        2) import 'package:flutter/material.dart';
   //          Note: *NOT* 'package:flutter/material/material.dart'.
   //          Note: material.dart is on path: PROJ/packages/flutter/lib/material.dart
@@ -74,7 +73,7 @@ void main() {
     exit(0);
   }
 
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 /// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']

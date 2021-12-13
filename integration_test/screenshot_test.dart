@@ -10,9 +10,7 @@ import 'dart:io';
 
 import '../test/test_util.dart';
 
-import '../example1/lib/ExamplesChartTypeEnum.dart';
-import '../example1/lib/ExamplesEnum.dart';
-import '../example1/lib/examples_descriptor.dart';
+import '../example1/lib/src/util/examples_descriptor.dart';
 import '../example1/lib/main.dart' as app;
 
 /// Integration testing by taking a screenshot from the example app, 

@@ -110,7 +110,7 @@ class LabelContainer extends container_base.Container {
 
     // Make sure to call layout - this instance is always "clean"
     //   without need to call layout or introducing _isLayoutNeeded
-    layout(new LayoutExpansion.unused());
+    layout(LayoutExpansion.unused());
   }
 
   // #####  Implementors of method in superclass [Container].

@@ -270,7 +270,7 @@ abstract class ChartContainer extends Container {
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    layout(new LayoutExpansion(width: chartArea.width, height: chartArea.height));
+    layout(LayoutExpansion(width: chartArea.width, height: chartArea.height));
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);
@@ -1175,7 +1175,7 @@ class LegendItemContainer extends Container {
     );
 
     // 5. Place the label within this container
-    _labelContainer.applyParentOffset(new ui.Offset(
+    _labelContainer.applyParentOffset(ui.Offset(
       labelOffsetX,
       labelOffsetY,
     ));

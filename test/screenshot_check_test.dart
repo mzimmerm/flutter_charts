@@ -7,10 +7,8 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-// todo-00 pull the enums and descriptor to main.
-import '../example1/lib/ExamplesChartTypeEnum.dart';
-import '../example1/lib/ExamplesEnum.dart';
-import '../example1/lib/examples_descriptor.dart';
+// todo-00-now pull the enums and descriptor to main.
+import '../example1/lib/src/util/examples_descriptor.dart';
 import '../example1/lib/main.dart' as app;
 
 
