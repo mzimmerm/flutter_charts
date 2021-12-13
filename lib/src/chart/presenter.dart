@@ -8,7 +8,7 @@ import 'package:flutter_charts/src/util/collection.dart' as custom_collection
 
 // todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
-  ui.Paint paint = new ui.Paint();
+  ui.Paint paint = ui.Paint();
   paint.color = options.gridLinesColor;
   paint.style = ui.PaintingStyle.stroke;
   paint.strokeWidth = 1.0;
@@ -49,9 +49,9 @@ class Presenter {
 /// shows all data value at that label, each value in one instance of
 /// [Presenter].
 class PresentersColumn {
-  List<Presenter> presenters = new List.empty(growable: true);
-  List<Presenter> positivePresenters = new List.empty(growable: true);
-  List<Presenter> negativePresenters = new List.empty(growable: true);
+  List<Presenter> presenters = List.empty(growable: true);
+  List<Presenter> positivePresenters = List.empty(growable: true);
+  List<Presenter> negativePresenters = List.empty(growable: true);
   PresentersColumn? nextRightPointsColumn;
 
   PresentersColumn({
@@ -133,7 +133,7 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn? leftPresentersColumn;
     pointsColumns.forEach((PointsColumn pointsColumn) {
-      var presentersColumn = new PresentersColumn(
+      var presentersColumn = PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,
         presenterCreator: presenterCreator,

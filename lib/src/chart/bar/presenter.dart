@@ -24,7 +24,7 @@ class VerticalBarPresenter extends Presenter {
           container: container,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
-    dataRowPaint = new ui.Paint();
+    dataRowPaint = ui.Paint();
     dataRowPaint.color = container
         .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
@@ -36,7 +36,7 @@ class VerticalBarPresenter extends Presenter {
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
 
-    presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom);
+    presentedRect = ui.Rect.fromPoints(barLeftTop, barRightBottom);
   }
 }
 
@@ -53,7 +53,7 @@ class VerticalBarLeafCreator extends PresenterCreator {
     required int rowIndex,
     required ChartContainer container,
   }) {
-    return new VerticalBarPresenter(
+    return VerticalBarPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,

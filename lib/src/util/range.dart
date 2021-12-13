@@ -32,7 +32,7 @@ class Range {
         _options = chartOptions;
 
   /// superior and inferior closure - min and max of values
-  Interval get _closure => new Interval(
+  Interval get _closure => Interval(
       _values.reduce(math.min).toDouble(),
       _values.reduce(math.max).toDouble(),
       true,
@@ -50,8 +50,8 @@ class Range {
     double min = _closure.min;
     double max = _closure.max;
 
-    Poly polyMin = new Poly(from: min);
-    Poly polyMax = new Poly(from: max);
+    Poly polyMin = Poly(from: min);
+    Poly polyMax = Poly(from: max);
 
     int signMin = polyMin.signum;
     int signMax = polyMax.signum;
@@ -93,12 +93,12 @@ class Range {
     // not the displayed pixels scale.
 
     List<double> labels = _distributeLabelsIn(
-        new Interval(from, to)); // todo 0 pull only once (see below)
+        Interval(from, to)); // todo 0 pull only once (see below)
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
 
-    var yScaler = new YScalerAndLabelFormatter(
-        dataRange: new Interval(from, to),
+    var yScaler = YScalerAndLabelFormatter(
+        dataRange: Interval(from, to),
         valueOnLabels: labels,
         toScaleMin: toScaleMin,
         toScaleMax: toScaleMax,
@@ -121,8 +121,8 @@ class Range {
   ///   3. [Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
   List<double> _distributeLabelsIn(Interval interval) {
-    Poly polyMin = new Poly(from: interval.min);
-    Poly polyMax = new Poly(from: interval.max);
+    Poly polyMin = Poly(from: interval.min);
+    Poly polyMax = Poly(from: interval.max);
 
     int powerMax = polyMax.maxPower;
     int coeffMax = polyMax.coeffAtMaxPower;
@@ -168,7 +168,7 @@ class Range {
           labels.add(l * math.pow(10, power));
         }
       } else {
-        throw new Exception('Unexpected power: $powerMin, $powerMax ');
+        throw Exception('Unexpected power: $powerMin, $powerMax ');
       }
     }
 
@@ -204,7 +204,7 @@ class YScalerAndLabelFormatter {
     required ChartOptions chartOptions,
   })   : this.dataRange = dataRange,
         this.labelInfos =
-            valueOnLabels.map((value) => new LabelInfo(value)).toList(),
+            valueOnLabels.map((value) => LabelInfo(value)).toList(),
         _toScaleMin = toScaleMin,
         _toScaleMax = toScaleMax,
         _options = chartOptions {
@@ -287,7 +287,7 @@ class YScalerAndLabelFormatter {
   /// **The returned [Interval] is intended to be used as the full extend
   /// of the unscaled Y axis.**
   Interval get labelValuesAndDataRangesMerged =>
-      new Interval(labelValues.reduce(math.min), labelValues.reduce(math.max))
+      Interval(labelValues.reduce(math.min), labelValues.reduce(math.max))
           .merge(dataRange);
 }
 
@@ -401,7 +401,7 @@ class Poly {
   }
 
   int _ltOnePower(decimal.Decimal tester) {
-    if (tester >= _one) throw new Exception('$tester Failed: tester < 1.0');
+    if (tester >= _one) throw Exception('$tester Failed: tester < 1.0');
     int power = 0;
     while (tester < _one) {
       tester = tester * _ten;
@@ -440,7 +440,7 @@ class Interval {
 
   /// Outermost union of this interal with [other].
   Interval merge(Interval other) {
-    return new Interval(
+    return Interval(
         math.min(this.min, other.min), math.max(this.max, other.max));
   }
 }

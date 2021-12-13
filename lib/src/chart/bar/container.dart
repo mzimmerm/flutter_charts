@@ -21,13 +21,13 @@ class VerticalBarChartContainer extends ChartContainer {
           chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    presenterCreator = new VerticalBarLeafCreator();
+    presenterCreator = VerticalBarLeafCreator();
   }
 
   VerticalBarChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
   }) {
-    return new VerticalBarChartDataContainer(
+    return VerticalBarChartDataContainer(
       parentContainer: parentContainer,
     );
   }

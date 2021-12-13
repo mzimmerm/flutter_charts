@@ -9,23 +9,23 @@ class ChartData {
   ///
   /// Each element of outer list represents one row.
   /// Alternative name would be "data series".
-  List<List<double>> dataRows = new List.empty(growable: true);
+  List<List<double>> dataRows = List.empty(growable: true);
 
   /// Provides legends for [dataRows] (data series).
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
-  List<String> dataRowsLegends = new List.empty(growable: true);
+  List<String> dataRowsLegends = List.empty(growable: true);
 
   /// Colors corresponding to each data row (series) in [ChartData].
-  List<ui.Color> dataRowsColors = new List.empty(growable: true);
+  List<ui.Color> dataRowsColors = List.empty(growable: true);
 
   /// Labels on independent (X) axis.
   ///
   /// It is generally assumed labels are defined,
   /// and their number is the same as number of points
   /// in each row in [dataRows].
-  List<String> xLabels = new List.empty(growable: true);
+  List<String> xLabels = List.empty(growable: true);
 
   /// Labels on dependent (Y) axis.
   ///
@@ -41,19 +41,19 @@ class ChartData {
   /// This [yLabels] member is used only if
   /// [ChartOptions.useUserProvidedYLabels] is true.
   ///
-  List<String> yLabels = new List.empty(growable: true);
+  List<String> yLabels = List.empty(growable: true);
 
   void validate() {
     if (dataRowsLegends.length > 0 &&
         dataRows.length != dataRowsLegends.length) {
-      throw new StateError(' If row legends are defined, their '
+      throw StateError(' If row legends are defined, their '
           'number must be the same as number of data rows. '
           ' [dataRows length: ${dataRows.length}] '
           '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
     }
     for (List<double> dataRow in dataRows) {
       if (xLabels.length > 0 && dataRow.length != xLabels.length) {
-        throw new StateError(' If xLabels are defined, their '
+        throw StateError(' If xLabels are defined, their '
             'length must be the same as length of each dataRow'
             ' [dataRow length: ${dataRow.length}] '
             '!= [xLabels length: ${xLabels.length}]. ');
@@ -101,7 +101,7 @@ class ChartData {
     if (dataRowsCount > 6) {
       for (int i = 3; i < dataRowsCount; i++) {
         // todo-1 when large value is generated, it paints outside canvas, fix.
-        int number = new math.Random().nextInt(10000);
+        int number = math.Random().nextInt(10000);
         dataRowsLegends.add('OTHER ' + number.toString());
       }
     }
@@ -133,11 +133,11 @@ class ChartData {
     }
     if (dataRowsCount > 6) {
       for (int i = 3; i < dataRowsCount; i++) {
-        int colorHex = new math.Random().nextInt(0xFFFFFF);
+        int colorHex = math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;
         // todo-11-last : cast toInt added - does this change results?
         dataRowsColors.add(
-            new ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
+            ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
       }
     }
   }

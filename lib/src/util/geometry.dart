@@ -6,12 +6,12 @@ import 'dart:math' as math show min, max;
 /// Utility conversion Offset ==> Vector2
 
 vector_math.Vector2 offsetToVector2(ui.Offset offset) =>
-    new vector_math.Vector2(offset.dx, offset.dy);
+    vector_math.Vector2(offset.dx, offset.dy);
 
 /// Utility conversion Vector2  ==> Offset
 
 ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
-    new ui.Offset(vector.x, vector.y);
+    ui.Offset(vector.x, vector.y);
 
 ui.Offset transform({
   required vector_math.Matrix2 matrix,
@@ -113,7 +113,7 @@ class EnvelopedRotatedRect {
         _topRight = rect.topRight,
         _bottomLeft = rect.bottomLeft,
         _bottomRight = rect.bottomRight {
-    if (_rotatorMatrix == new vector_math.Matrix2.identity()) {
+    if (_rotatorMatrix == vector_math.Matrix2.identity()) {
       // already set in initializer, done and return
       return;
     }
@@ -139,9 +139,9 @@ class EnvelopedRotatedRect {
     double minY = rotOffsets.map((offset) => offset.dy).reduce(math.min);
     double maxY = rotOffsets.map((offset) => offset.dy).reduce(math.max);
 
-    _envelopeRect = new ui.Rect.fromPoints(
-      new ui.Offset(minX, minY),
-      new ui.Offset(maxX, maxY),
+    _envelopeRect = ui.Rect.fromPoints(
+      ui.Offset(minX, minY),
+      ui.Offset(maxX, maxY),
     );
 
     //  After rotation and envelope creation, both [envelopeRect]

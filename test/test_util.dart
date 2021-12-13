@@ -11,16 +11,16 @@ import '../example1/lib/main.dart' as app;
 
 // todo-00 create util/util_dart.dart in test directory and use it in test and integration_test.  
 /// Path to screenshot file the test uses for each test.
-String relativePath(String screenshotDirName, Tuple2 <ExamplesEnum, ExamplesChartTypeEnum> comboToRun) {
-  return '$screenshotDirName/${screenshotFileName(comboToRun)}';
+String relativePath(String screenshotDirName, Tuple2 <ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+  return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
 }
 
 /// Path to screenshot file which this test generates. 
 /// 
 /// Generated from enum values. 
 /// Example: 'ex10RandomData-lineChart.png'.
-String screenshotFileName(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun) {
-  return '${enumName(comboToRun.item1)}_${enumName(comboToRun.item2)}.png';
+String screenshotFileName(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+  return '${enumName(exampleComboToRun.item1)}_${enumName(exampleComboToRun.item2)}.png';
 }
 
 /// The name of the directory where screenshots are placed.

@@ -85,10 +85,12 @@
 /// Export path starts after lib, whether using
 ///   'package:flutter_charts' format or 'src/' format.
 ///
-/// todo-00 : see https://dart.dev/guides/language/effective-dart/usage#prefer-relative-import-paths 
-/// todo-00   to change this to use EXPORT src, as in: lib/api.dart:
-// todo-00  import 'src/stuff.dart';
-// todo-00  import 'src/utils.dart';
+/* todo-00
+ see https://dart.dev/guides/language/effective-dart/usage#prefer-relative-import-paths 
+   to change this to use EXPORT src, as in: lib/api.dart:
+ import 'src/stuff.dart';
+ import 'src/utils.dart';
+*/
 export 'package:flutter_charts/src/chart/label_container.dart';
 export 'package:flutter_charts/src/util/random_chart_data.dart';
 

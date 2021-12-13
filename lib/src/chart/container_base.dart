@@ -65,7 +65,7 @@ abstract class Container {
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTiltMatrix] during object
   /// lifetime.
-  vector_math.Matrix2 _tiltMatrix = new vector_math.Matrix2.identity();
+  vector_math.Matrix2 _tiltMatrix = vector_math.Matrix2.identity();
 
   /// Provides access to tiltMatrix for extension's [paint] methods.
   vector_math.Matrix2 get tiltMatrix => _tiltMatrix;
@@ -73,7 +73,7 @@ abstract class Container {
   /// Tilt may apply to the whole container.
   /// todo-2 unused? move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
-    if (tiltMatrix == new vector_math.Matrix2.identity()) return;
+    if (tiltMatrix == vector_math.Matrix2.identity()) return;
     this._tiltMatrix = this._tiltMatrix * tiltMatrix;
   }
 

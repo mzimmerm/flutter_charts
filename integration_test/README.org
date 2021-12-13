@@ -1,0 +1,11 @@
+* Integration test in Flutter
+
+See the "Testing in Flutter" heading in https://github.com/mzimmerm/flutter_experiments/blob/master/doc/flutter-notes.org for details of Dart unit test, Flutter widget test and Flutter integration test.
+
+See https://docs.flutter.dev/cookbook/testing/integration/introduction
+  for integration testing in Flutter.
+
+See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k
+  for how to take a screenshot from your Flutter app inside flutter test integration_test/app_test.dart;
+  but the same should work from an actual flutter run --device_id app.dart
+

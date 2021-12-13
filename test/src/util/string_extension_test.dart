@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 // tested package
 import 'package:flutter_charts/src/util/string_extension.dart';
 
-// todo-00 document
+// todo-00-document
 
 enum TestedEnum { enum1, enum2 }
 

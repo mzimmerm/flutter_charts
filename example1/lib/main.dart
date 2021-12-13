@@ -68,8 +68,8 @@ void main() {
   //    which has the runApp() function.
   //
   // TODO-00
-  var comboToRun = requestedExampleComboToRun();
-  if (!ExamplesDescriptor().exampleComboIsAllowed(comboToRun)) {
+  var exampleComboToRun = requestedExampleToRun();
+  if (!ExamplesDescriptor().exampleComboIsAllowed(exampleComboToRun)) {
     // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     exit(0);
   }
@@ -83,28 +83,28 @@ void main() {
 /// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
 ///   to a tuple of enums which describe the example to run, and the chart type to show.
 ///
-Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleComboToRun() {
+Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
-  ExamplesEnum exampleToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
+  ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
 
   const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'lineChart');
   ExamplesChartTypeEnum chartTypeToShow = chartTypeToShowStr.asEnum(ExamplesChartTypeEnum.values);
 
-  return Tuple2(exampleToRun, chartTypeToShow);
+  return Tuple2(exampleComboToRun, chartTypeToShow);
 }
 
 class MyApp extends StatelessWidget {
   /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Charts Demo Title',
       debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Charts Demo'),
+      home: MyHomePage(title: 'Flutter Charts Demo'),
     );
   }
 }
@@ -128,7 +128,7 @@ class MyHomePage extends StatefulWidget {
   /// The [createState()] method will typically return the
   /// new state of the widget.
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 /// State of the page.
@@ -175,13 +175,13 @@ class _MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Define options for line chart, if used in the demo.
-  LineChartOptions _lineChartOptions = new LineChartOptions();
+  LineChartOptions _lineChartOptions = LineChartOptions();
 
   /// Define options for vertical bar chart, if used in the demo
-  ChartOptions _verticalBarChartOptions = new VerticalBarChartOptions();
+  ChartOptions _verticalBarChartOptions = VerticalBarChartOptions();
 
   /// Get (again) the example to run from environment
-  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun = requestedExampleComboToRun();
+  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   // If you were to use your own extension of
   //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
@@ -191,18 +191,16 @@ class _MyHomePageState extends State<MyHomePage> {
   //   the DefaultIterativeLabelLayoutStrategy.
 
   /// Define Layout strategy go labels. todo-null-safety : this can be null here
-  LabelLayoutStrategy? _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-    options: new VerticalBarChartOptions(),
+  LabelLayoutStrategy? _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
+    options: VerticalBarChartOptions(),
   );
 
   /// Define data to be displayed
-  ChartData _chartData = new RandomChartData(useUserProvidedYLabels: new LineChartOptions().useUserProvidedYLabels);
+  ChartData _chartData = RandomChartData(useUserProvidedYLabels: LineChartOptions().useUserProvidedYLabels);
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-
-  // todo-00 Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-
+  
   /// Constructor sets all options and data.
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
@@ -223,28 +221,27 @@ class _MyHomePageState extends State<MyHomePage> {
   void defineOptionsAndData() {
     ChartOptions chartOptions;
 
-    ExamplesEnum exampleToRun = comboToRun.item1;
-    ExamplesChartTypeEnum chartTypeToShow = comboToRun.item2;
+    ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
+    ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        _verticalBarChartOptions = new VerticalBarChartOptions(); // todo-00 make this fail if used by mistake
-        _lineChartOptions = new LineChartOptions();
+        _verticalBarChartOptions = VerticalBarChartOptions();
+        _lineChartOptions = LineChartOptions();
         chartOptions = _lineChartOptions;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        _verticalBarChartOptions = new VerticalBarChartOptions();
-        _lineChartOptions = new LineChartOptions(); // todo-00 make this fail if used by mistake
+        _verticalBarChartOptions = VerticalBarChartOptions();
+        _lineChartOptions = LineChartOptions();
         chartOptions = _verticalBarChartOptions;
         break;
     }
 
-    switch (exampleToRun) {
+    switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
-        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        _chartData = RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
-      // todo-00 add default
       case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
         // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
         // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
@@ -254,17 +251,17 @@ class _MyHomePageState extends State<MyHomePage> {
         // If _xContainerLabelLayoutStrategy
         //   is not set (remains null), the charts instantiate
         //   the DefaultIterativeLabelLayoutStrategy.
-        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+        _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        _chartData = new RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        _chartData = RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
-        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
+        _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        _chartData = new ChartData();
+        _chartData = ChartData();
         _chartData.dataRowsLegends = [
           'Spring',
           'Summer',
@@ -295,8 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
 
-        // todo-00 : This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
-        _chartData = new ChartData();
+        _chartData = ChartData();
         _chartData.dataRowsLegends = ['Java', 'Dart', 'Python', 'Newspeak'];
         _chartData.dataRows = [
           [9.0, 4.0, 3.0, 9.0],
@@ -311,7 +307,6 @@ class _MyHomePageState extends State<MyHomePage> {
           Colors.green,
           Colors.amber,
         ];
-        // todo-00 _lineChartOptions.useUserProvidedYLabels = true; // use labels below
         chartOptions.useUserProvidedYLabels = true; // use labels below
         _chartData.yLabels = [
           'Low',
@@ -325,16 +320,16 @@ class _MyHomePageState extends State<MyHomePage> {
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
         // In each column, adding it's absolute values should add to same number:
-        // todo-00 100 would make more sense, to represent 100% of stocks in each category.
+        // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
 
-        _chartData = new ChartData();
+        _chartData = ChartData();
         _chartData.dataRowsLegends = [
           '-2% or less',
           '-2% to 0%',
           '0% to +2%',
           'more than +2%',
         ];
-        // each column should add to same number. everything else is relative. todo-00 maybe no need to add to same number.
+        // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
         _chartData.dataRows = [
           [-9.0, -8.0, -8.0, -5.0, -8.0],
           [-1.0, -2.0, -4.0, -1.0, -1.0],
@@ -458,32 +453,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
     defineOptionsAndData();
 
-    LineChartContainer lineChartContainer = new LineChartContainer(
+    LineChartContainer lineChartContainer = LineChartContainer(
       chartData: _chartData,
       chartOptions: _lineChartOptions,
       xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
     );
 
-    LineChart lineChart = new LineChart(
-      painter: new LineChartPainter(
+    LineChart lineChart = LineChart(
+      painter: LineChartPainter(
         lineChartContainer: lineChartContainer,
       ),
     );
 
-    VerticalBarChartContainer verticalBarChartContainer = new VerticalBarChartContainer(
+    VerticalBarChartContainer verticalBarChartContainer = VerticalBarChartContainer(
       chartData: _chartData,
       chartOptions: _verticalBarChartOptions,
       xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
     );
 
-    VerticalBarChart verticalBarChart = new VerticalBarChart(
-      painter: new VerticalBarChartPainter(
+    VerticalBarChart verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
         verticalBarChartContainer: verticalBarChartContainer,
       ),
     );
 
     Widget chartToRun;
-    switch (comboToRun.item2) {
+    switch (descriptorOfExampleToRun.item2) {
       case ExamplesChartTypeEnum.lineChart:
         chartToRun = lineChart;
         break;
@@ -499,16 +494,16 @@ class _MyHomePageState extends State<MyHomePage> {
     // build methods fast, so that you can just rebuild anything that
     // needs updating rather than having to individually change
     // instances of widgets.
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         // Here we take the value from the MyHomePage object that
         // was created by the App.build method, and use it to set
         // our appbar title.
-        title: new Text(widget.title),
+        title: Text(widget.title),
       ),
       // Center is a layout widget. It takes a single child and
       // positions it in the middle of the parent.
-      body: new Center(
+      body: Center(
         // Column is also layout widget. It takes a list of children
         // and arranges them vertically. By default, it sizes itself
         // to fit its children horizontally, and tries to be as tall
@@ -564,36 +559,36 @@ class _MyHomePageState extends State<MyHomePage> {
         //  Basically, while "Expanded" only applies stretch in one
         //    direction, another outside "Expanded" with CrossAxisAlignment.stretch
         //    can force the innermost child to be stretched in both directions.
-        child: new Column(
+        child: Column(
           // mainAxisAlignment: MainAxisAlignment.center, // = default, not needed
           children: <Widget>[
-            new ElevatedButton(
+            ElevatedButton(
               // style would need a custom MaterialStateColor extension.
               // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
               onPressed: _chartStateChanger,
               child: null,
             ),
-            new Text(
+            Text(
               'vvvvvvvv:',
             ),
-            new Expanded(
+            Expanded(
               // expansion inside Column pulls contents |
-              child: new Row(
+              child: Row(
                 // mainAxisAlignment: MainAxisAlignment.center, // = default, not needed
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  new Text('>>>'),
+                  Text('>>>'),
                   // LineChart is CustomPaint:
                   // A widget that provides a canvas on which to draw
                   // during the paint phase.
 
                   // Row -> Expanded -> Chart expands chart horizontally <-->
-                  new Expanded(
+                  Expanded(
                     // #### Core chart
                     child: chartToRun, // verticalBarChart, lineChart
                   ),
-                  new Text('<<'),
+                  Text('<<'),
                   // labels fit horizontally
                   // new Text('<<<<<<'), // default, labels tilted, all present
                   // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
@@ -602,8 +597,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            new Text('^^^^^^:'),
-            new ElevatedButton(
+            Text('^^^^^^:'),
+            ElevatedButton(
               // style would need a custom MaterialStateColor extension.
               // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
               onPressed: _chartStateChanger,
@@ -612,10 +607,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _chartStateChanger,
         tooltip: 'New Random Data',
-        child: new Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }

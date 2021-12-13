@@ -67,13 +67,13 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
   /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 _canvasTiltMatrix = new vector_math.Matrix2.identity();
+  vector_math.Matrix2 _canvasTiltMatrix = vector_math.Matrix2.identity();
 
   vector_math.Matrix2 get canvasTiltMatrix => _canvasTiltMatrix;
 
   /// Angle by which labels are tilted.
   /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 _labelTiltMatrix = new vector_math.Matrix2.identity();
+  vector_math.Matrix2 _labelTiltMatrix = vector_math.Matrix2.identity();
 
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
 
@@ -144,17 +144,17 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   void _reLayoutRotateLabels() {
     //  angle must be in interval `<-math.pi, +math.pi>`
     if (!(-1 * math.pi <= _labelTiltRadians && _labelTiltRadians <= math.pi)) {
-      throw new StateError('angle must be between -PI and +PI');
+      throw StateError('angle must be between -PI and +PI');
     }
 
     _makeTiltMatricesFromTiltRadians();
   }
 
   void _makeTiltMatricesFromTiltRadians() {
-    _canvasTiltMatrix = new vector_math.Matrix2.rotation(_labelTiltRadians);
+    _canvasTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
     // label is actually tilted in the direction when canvas is rotated back,
     //   so the label tilt is inverse of the canvas tilt
-    _labelTiltMatrix = new vector_math.Matrix2.rotation(-_labelTiltRadians);
+    _labelTiltMatrix = vector_math.Matrix2.rotation(-_labelTiltRadians);
   }
 
   void _reLayoutDecreaseLabelFont() {
@@ -210,11 +210,11 @@ abstract class LabelLayoutStrategy {
   /// This is always the inverse of [_labelTiltMatrix].
   /// Just passed down to [LabelContainer]s.
   vector_math.Matrix2 get canvasTiltMatrix =>
-      new vector_math.Matrix2.identity();
+      vector_math.Matrix2.identity();
 
   /// Angle by which labels are tilted.
   /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 get labelTiltMatrix => new vector_math.Matrix2.identity();
+  vector_math.Matrix2 get labelTiltMatrix => vector_math.Matrix2.identity();
 
   /// In addition to the rotation matrices, hold on radians for canvas rotation.
   double get labelTiltRadians => 0.0;

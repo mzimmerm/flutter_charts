@@ -126,7 +126,7 @@ class ChartOptions {
   /// Text style for both X and Y labels.
   ///
   /// The (future) iterative container can change this default for labels to fit.
-  widgets.TextStyle get labelTextStyle => new widgets.TextStyle(
+  widgets.TextStyle get labelTextStyle => widgets.TextStyle(
         color: labelTextColor,
         fontSize: labelFontSize,
       );

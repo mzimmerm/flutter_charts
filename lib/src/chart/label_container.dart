@@ -82,8 +82,8 @@ class LabelContainer extends container_base.Container {
         this._labelTiltMatrix = labelTiltMatrix,
         this._canvasTiltMatrix = canvasTiltMatrix,
         this._labelStyle = labelStyle,
-        _textPainter = new widgets.TextPainter(
-          text: new widgets.TextSpan(
+        _textPainter = widgets.TextPainter(
+          text: widgets.TextSpan(
             text: label,
             style: labelStyle.textStyle, // All labels share one style object
           ),
@@ -131,7 +131,7 @@ class LabelContainer extends container_base.Container {
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     assert(offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
-    return new geometry.EnvelopedRotatedRect.centerRotatedFrom(
+    return geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: offset & _textPainter.size, // offset & size => Rect
       rotateMatrix: _labelTiltMatrix,
     );

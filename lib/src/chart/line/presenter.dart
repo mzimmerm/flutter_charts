@@ -37,14 +37,14 @@ class LineAndHotspotPresenter extends Presenter {
     var options = container.options as LineChartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
-    rowDataPaint = new ui.Paint();
+    rowDataPaint = ui.Paint();
     rowDataPaint.color = container
         .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
-    lineContainer = new LineContainer(
+    lineContainer = LineContainer(
         lineFrom: fromPoint,
         lineTo: toPoint,
         linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
@@ -69,7 +69,7 @@ class LineAndHotspotLeafCreator extends PresenterCreator {
     required int rowIndex,
     required ChartContainer container,
   }) {
-    return new LineAndHotspotPresenter(
+    return LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,

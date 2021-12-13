@@ -21,13 +21,13 @@ class LineChartContainer extends ChartContainer {
           chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    presenterCreator = new LineAndHotspotLeafCreator();
+    presenterCreator = LineAndHotspotLeafCreator();
   }
 
   LineChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
   }) {
-    return new LineChartDataContainer(
+    return LineChartDataContainer(
       parentContainer: parentContainer,
     );
   }

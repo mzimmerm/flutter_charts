@@ -107,11 +107,11 @@ class RandomChartData extends ChartData {
   }
   
   void _generateYValues() {
-    dataRows = new List.empty(growable: true);
+    dataRows = List.empty(growable: true);
 
     double scale = 200.0;
 
-    math.Random rgen = new math.Random();
+    math.Random rgen = math.Random();
 
     int maxYValue = 4;
     double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
@@ -132,7 +132,7 @@ class RandomChartData extends ChartData {
     required double pushUpBy,
     required double scale,
   }) {
-    List<double> dataRow = new List.empty(growable: true);
+    List<double> dataRow = List.empty(growable: true);
     for (int i = 0; i < _numXLabels; i++) {
       dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
     }

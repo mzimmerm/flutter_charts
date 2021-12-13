@@ -16,7 +16,7 @@ extension StringExtension on String {
     try {
       return enumValues.singleWhere((v) => this == flutter_foundation.describeEnum(v));
     } on Error catch (e) {
-      throw new StateError('String $this is not in enum list $enumValues.');
+      throw StateError('String $this is not in enum list $enumValues.');
     }
   }
   

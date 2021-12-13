@@ -30,7 +30,7 @@ class LineContainer extends container_base.Container {
 
   /// Implementor of method in superclass [Container].
   void layout(LayoutExpansion parentLayoutExpansion) {
-    throw new StateError('No need to call layout on ${this.runtimeType}.');
+    throw StateError('No need to call layout on ${this.runtimeType}.');
   }
 
   /// Override method in superclass [Container].
@@ -42,7 +42,7 @@ class LineContainer extends container_base.Container {
   }
 
   // todo-00-last-layout-size : This is not called. Call when we manage line segments like other Containers, and call their layout! 
-  ui.Size get _lineContainerLayoutSize => new ui.Size(
+  ui.Size get _lineContainerLayoutSize => ui.Size(
     (lineFrom.dx - lineTo.dx).abs(),
     (lineFrom.dy - lineTo.dy).abs(),
   );

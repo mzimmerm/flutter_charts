@@ -26,10 +26,10 @@ class LayoutExpansion {
         this.height = height
   {
     if (used && this.width <= 0.0) {
-      throw new StateError('Invalid width $width');
+      throw StateError('Invalid width $width');
     }
     if (used && this.height <= 0.0) {
-      throw new StateError('Invalid height $height');
+      throw StateError('Invalid height $height');
     }
   }
 
@@ -47,7 +47,7 @@ class LayoutExpansion {
   }) {
     height ??= this.height;
     width ??= this.width;
-    return new LayoutExpansion(
+    return LayoutExpansion(
         width: width,
         height: height
     );

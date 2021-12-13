@@ -1,4 +1,4 @@
-/// todo-00 document
+/// todo-00-document
 /// 
 import 'ExamplesChartTypeEnum.dart' show ExamplesChartTypeEnum;
 import 'ExamplesEnum.dart' show ExamplesEnum;
@@ -11,11 +11,11 @@ import 'ExamplesEnum.dart' show ExamplesEnum;
 // then during 'dart run' we get messages such as :
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined
-import '../../lib/src/util/util_dart.dart' show enumName; // todo-00 maybe enumName should be in test/test_util.dart
+import '../../lib/src/util/util_dart.dart' show enumName;
 
 import 'package:tuple/tuple.dart' show Tuple2;
 
-// todo-00 : pull ExamplesChartTypeEnum and ExamplesEnum in this package.
+// todo-00-now: pull ExamplesChartTypeEnum and ExamplesEnum in this package.
 
 /// Represents examples and tests to be run.
 /// 
@@ -23,7 +23,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 ///   for the flutter_charts example app in [example1/lib/main.dart].
 ///   
 /// The conversion from enumerates to data and options is in [example1/lib/main.dart] [chartTypeToShow()].
-/// The conversion from enumerates to chart type is in [example1/lib/main.dart] [requestedExampleComboToRun()].
+/// The conversion from enumerates to chart type is in [example1/lib/main.dart] [requestedExampleToRun()].
 class ExamplesDescriptor {
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
@@ -47,8 +47,8 @@ class ExamplesDescriptor {
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
   ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only
   ///   one chart type makes sense to be presented.
-  bool exampleComboIsAllowed(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun) {
-    return _allowed.any((tuple) => tuple.item1 == comboToRun.item1 && tuple.item2 == comboToRun.item2);
+  bool exampleComboIsAllowed(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+    return _allowed.any((tuple) => tuple.item1 == exampleComboToRun.item1 && tuple.item2 == exampleComboToRun.item2);
   }
 
   /// Present this descriptor is a format suitable to run as a test from command line.
@@ -69,9 +69,9 @@ class ExamplesDescriptor {
   }
 }
 
-bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> comboToRun) {
+bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
   
-  if (enumName(comboToRun.item1).contains('RandomData')) {
+  if (enumName(exampleComboToRun.item1).contains('RandomData')) {
     return true;
   }
   return false;
