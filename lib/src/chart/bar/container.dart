@@ -24,6 +24,7 @@ class VerticalBarChartContainer extends ChartContainer {
     presenterCreator = VerticalBarLeafCreator();
   }
 
+  @override
   VerticalBarChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
   }) {

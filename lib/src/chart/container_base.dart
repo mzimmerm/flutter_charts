@@ -74,7 +74,7 @@ abstract class Container {
   /// todo-2 unused? move to base class? similar to offset?
   void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
     if (tiltMatrix == vector_math.Matrix2.identity()) return;
-    this._tiltMatrix = this._tiltMatrix * tiltMatrix;
+    _tiltMatrix = _tiltMatrix * tiltMatrix;
   }
 
   /// [skipByParent] instructs the parent container that this container should not be

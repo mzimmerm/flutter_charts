@@ -20,7 +20,6 @@ import 'package:flutter_charts/src/chart/data.dart';
 import 'presenter.dart';
 
 import '../util/range.dart';
-import '../util/util_dart.dart' as util;
 import '../util/geometry.dart' as geometry;
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
@@ -49,6 +48,7 @@ import 'bar/presenter.dart' as bar_presenters;
 abstract class ChartContainer extends Container {
   /// Implements [Container.layoutSize()].
   // todo-00-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
+  @override
   ui.Size get layoutSize => chartArea;
 
   // todo-11-last describe in detail how this is set in Painter and used in Paint (chart).
@@ -71,7 +71,7 @@ abstract class ChartContainer extends Container {
   /// Layout strategy for XContainer labels.
   ///
   /// Cached from constructor here, until the late [xContainer] is created.
-  strategy.LabelLayoutStrategy _cachedXContainerLabelLayoutStrategy;
+  final strategy.LabelLayoutStrategy _cachedXContainerLabelLayoutStrategy;
 
   /// Scaler of data values to values on the Y axis.
   late YScalerAndLabelFormatter yScaler;
@@ -122,9 +122,9 @@ abstract class ChartContainer extends Container {
     required ChartData chartData,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : this.data = chartData,
-        this.options = chartOptions,
-        this._cachedXContainerLabelLayoutStrategy =
+  })  : data = chartData,
+        options = chartOptions,
+        _cachedXContainerLabelLayoutStrategy =
             xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions),
         super() {
     // Must initialize in body, as access to 'this' not available in initializer.
@@ -152,6 +152,7 @@ abstract class ChartContainer extends Container {
   ///
   /// The actual layout algorithm should be made pluggable.
   ///
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
@@ -189,7 +190,7 @@ abstract class ChartContainer extends Container {
 
     yContainerFirst.layout(yContainerLayoutExpansion);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    this.yContainer = yContainerFirst;
+    yContainer = yContainerFirst;
     ui.Size yContainerSize = yContainer.layoutSize;
 
     // ### 4. Knowing the width required by Y axis, layout X
@@ -241,7 +242,7 @@ abstract class ChartContainer extends Container {
       width: chartArea.width - yContainerSize.width,
       height: chartArea.height - (legendContainerSize.height + xContainerSize.height),
     );
-    this.dataContainer = createDataContainer(
+    dataContainer = createDataContainer(
       parentContainer: this,
     );
 
@@ -267,6 +268,7 @@ abstract class ChartContainer extends Container {
   /// the operation with a call to [ChartContainer.layout()], then paints
   /// the lines, rectangles and circles of the child [containers.Container]s,
   /// according to their calculated layout positions.
+  @override
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
@@ -294,10 +296,10 @@ abstract class ChartContainer extends Container {
 
   /// Create member [pointsColumns] from [data.dataRows].
   void setupPointsColumns() {
-    this.pointsColumns = PointsColumns(
+    pointsColumns = PointsColumns(
       container: this,
-      presenterCreator: this.presenterCreator,
-      isStacked: this.isStacked,
+      presenterCreator: presenterCreator,
+      isStacked: isStacked,
     );
   }
 
@@ -337,7 +339,7 @@ class YContainer extends ChartAreaContainer {
   /// todo 0-future-minor : above is not true now for user defined labels
   late List<AxisLabelContainer> _yLabelContainers;
 
-  double _yLabelsMaxHeightFromFirstLayout;
+  final double _yLabelsMaxHeightFromFirstLayout;
 
   /// Constructs the container that holds Y labels.
   ///
@@ -362,6 +364,7 @@ class YContainer extends ChartAreaContainer {
   /// The remaining horizontal width of [ChartContainer.chartArea] minus
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // yAxisMin and yAxisMax define end points of the Y axis, in the YContainer
     //   coordinates.
@@ -403,12 +406,12 @@ class YContainer extends ChartAreaContainer {
     List<double> yLabelsDividedInYAxisRange = List.empty(growable: true);
     //var seq = new Iterable.generate(yLabels.length, (i) => i); // 0 .. length-1
     //for (var yIndex in seq) {
-    for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
+    for (int yIndex = 0; yIndex < yLabels.length; yIndex++) {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + yGridStepHeight * yIndex);
     }
 
     List<num> yLabelsDividedInYDataRange = List.empty(growable: true);
-    for (var yIndex = 0; yIndex < yLabels.length; yIndex++) {
+    for (int yIndex = 0; yIndex < yLabels.length; yIndex++) {
       yLabelsDividedInYDataRange.add(yDataRange.min + dataStepHeight * yIndex);
     }
 
@@ -440,7 +443,7 @@ class YContainer extends ChartAreaContainer {
       chartOptions: _parentContainer.options,
     );
 
-    // revert toScaleMin/Max to accomodate y axis starting from top
+    // revert toScaleMin/Max to accommodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
       toScaleMin: yAxisMin,
       toScaleMax: yAxisMax,
@@ -491,17 +494,19 @@ class YContainer extends ChartAreaContainer {
     }
   }
 
+  @override
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _yLabelContainers.forEach((AxisLabelContainer yLabelContainer) {
+    for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
       yLabelContainer.applyParentOffset(offset);
-    });
+    }
   }
 
+  @override
   void paint(ui.Canvas canvas) {
-    for (var yLabelContainer in _yLabelContainers) {
+    for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
   }
@@ -551,6 +556,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// The layout is independent of whether the labels are tilted or not,
   ///   in the sense that all tilting logic is hidden in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
@@ -583,7 +589,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
 
-    for (var xIndex = 0; xIndex < xLabels.length; xIndex++) {
+    for (int xIndex = 0; xIndex < xLabels.length; xIndex++) {
       var xLabelContainer = AxisLabelContainer(
         label: xLabels[xIndex],
         labelMaxWidth: double.infinity,
@@ -650,15 +656,17 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     return labelStyle;
   }
 
+  @override
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _xLabelContainers.forEach((AxisLabelContainer xLabelContainer) {
+    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentOffset(offset);
-    });
+    }
   }
 
+  @override
   void paint(ui.Canvas canvas) {
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
@@ -676,13 +684,13 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   void _rotateLabelContainersAsCanvas() {
-    for (var xLabelContainer in _xLabelContainers) {
+    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.rotateLabelWithCanvas();
     }
   }
 
   void _paintLabelContainers(canvas) {
-    for (var xLabelContainer in _xLabelContainers) {
+    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
     }
   }
@@ -707,8 +715,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   ///   labels containers DO overlap. In such situation, the caller should
   ///   take action to make labels smaller, tilt, or skip.
   ///
+  @override
   bool labelsOverlap() {
-    if (this._xLabelContainers.any((axisLabelContainer) =>
+    if (_xLabelContainers.any((axisLabelContainer) =>
         !axisLabelContainer.skipByParent && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       return true;
     }
@@ -735,7 +744,7 @@ abstract class AdjustableLabels {
 /// this abstract is serving too generic layouts to guess layout strategies.
 /// Extensions can create layout strategy defaults.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
-  strategy.LabelLayoutStrategy _labelLayoutStrategy;
+  final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
@@ -773,7 +782,7 @@ abstract class ChartAreaContainer extends Container {
   /// Departure from a top down approach, this allows to
   /// access the parent [ChartContainer], which has (currently)
   /// members needed by children.
-  ChartContainer _parentContainer;
+  final ChartContainer _parentContainer;
 
   ChartAreaContainer({
     required ChartContainer parentContainer,
@@ -812,6 +821,7 @@ abstract class DataContainer extends ChartAreaContainer {
   ///
   /// First lays out the Grid, then, based on the available size,
   /// scales the columns to the [YContainer]'s scale.
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     layoutSize = ui.Size(parentLayoutExpansion.width, parentLayoutExpansion.height);
 
@@ -833,9 +843,9 @@ abstract class DataContainer extends ChartAreaContainer {
     // For each already layed out X labels in [xLabelContainers],
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    this._yGridLinesContainer = GridLinesContainer();
+    _yGridLinesContainer = GridLinesContainer();
 
-    chartContainer.xTickXs.forEach((xTickX) {
+    for (double xTickX in chartContainer.xTickXs) {
       // Add vertical yGrid line in the middle or on the left
       double lineX = isStacked ? xTickX - xGridStep / 2 : xTickX;
 
@@ -846,8 +856,8 @@ abstract class DataContainer extends ChartAreaContainer {
       );
 
       // Add a new vertical grid line - yGrid line.
-      this._yGridLinesContainer.addLine(yLineContainer);
-    });
+      _yGridLinesContainer.addLine(yLineContainer);
+    }
 
     // For stacked, we need to add last right vertical yGrid line
     if (isStacked && chartContainer.xTickXs.isNotEmpty) {
@@ -856,35 +866,36 @@ abstract class DataContainer extends ChartAreaContainer {
           lineFrom: ui.Offset(x, 0.0),
           lineTo: ui.Offset(x, layoutSize.height),
           linePaint: gridLinesPaint(options));
-      this._yGridLinesContainer.addLine(yLineContainer);
+      _yGridLinesContainer.addLine(yLineContainer);
     }
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Iterate yLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    this._xGridLinesContainer = GridLinesContainer();
+    _xGridLinesContainer = GridLinesContainer();
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    chartContainer.yTickYs.forEach((yTickY) {
+    for (double yTickY in chartContainer.yTickYs) {
       LineContainer xLineContainer = LineContainer(
           lineFrom: ui.Offset(0.0, yTickY),
-          lineTo: ui.Offset(this.layoutSize.width, yTickY),
+          lineTo: ui.Offset(layoutSize.width, yTickY),
           linePaint: gridLinesPaint(options));
 
       // Add a new horizontal grid line - xGrid line.
-      this._xGridLinesContainer._lineContainers.add(xLineContainer);
-    });
+      _xGridLinesContainer._lineContainers.add(xLineContainer);
+    }
   }
 
+  @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
 
     // Move all container atomic elements - lines, labels, circles etc
-    this._xGridLinesContainer.applyParentOffset(offset);
+    _xGridLinesContainer.applyParentOffset(offset);
 
     // draw vertical grid
-    this._yGridLinesContainer.applyParentOffset(offset);
+    _yGridLinesContainer.applyParentOffset(offset);
 
     // Apply offset to lines and bars.
     parentContainer.pointsColumns.applyParentOffset(offset);
@@ -905,10 +916,10 @@ abstract class DataContainer extends ChartAreaContainer {
   ///
   void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
-    this._xGridLinesContainer.paint(canvas);
+    _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    this._yGridLinesContainer.paint(canvas);
+    _yGridLinesContainer.paint(canvas);
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
@@ -938,7 +949,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// lines, points, bars, etc.
 
   void setupPresentersColumns() {
-    this.presentersColumns = PresentersColumns(
+    presentersColumns = PresentersColumns(
       pointsColumns: parentContainer.pointsColumns,
       container: parentContainer,
       presenterCreator: parentContainer.presenterCreator,
@@ -950,8 +961,8 @@ abstract class DataContainer extends ChartAreaContainer {
   ///
   /// See [ChartOptions.dataRowsPaintingOrder].
   List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
-    var options = this.parentContainer.options;
-    if (options.dataRowsPaintingOrder == DataRowsPaintingOrder.FirstToLast) {
+    var options = parentContainer.options;
+    if (options.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       presenters = presenters.reversed.toList();
     }
     return presenters;
@@ -973,38 +984,40 @@ class VerticalBarChartDataContainer extends DataContainer {
           parentContainer: parentContainer,
         );
 
+  @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
     _drawDataPresentersColumns(canvas);
   }
 
   /// See super [ChartPainter.drawDataPresentersColumns()].
+  @override
   void _drawDataPresentersColumns(ui.Canvas canvas) {
     PresentersColumns presentersColumns = this.presentersColumns;
 
-    presentersColumns.forEach((PresentersColumn presentersColumn) {
+    for (PresentersColumn presentersColumn in presentersColumns) {
       // todo-2 do not repeat loop, collapse to one construct
 
       var positivePresenterList = presentersColumn.positivePresenters;
       positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
-      positivePresenterList.forEach((Presenter presenter) {
+      for (Presenter presenter in positivePresenterList) {
         bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
           presenterCast.dataRowPaint,
         );
-      });
+      }
 
       var negativePresenterList = presentersColumn.negativePresenters;
       negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
-      negativePresenterList.forEach((Presenter presenter) {
+      for (Presenter presenter in negativePresenterList) {
         bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
           presenterCast.dataRowPaint,
         );
-      });
-    });
+      }
+    }
   }
 }
 
@@ -1019,18 +1032,20 @@ class LineChartDataContainer extends DataContainer {
           parentContainer: parentContainer,
         );
 
+  @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
     _drawDataPresentersColumns(canvas);
   }
 
   /// See super [ChartPainter.drawDataPresentersColumns()].
+  @override
   void _drawDataPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.presentersColumns;
-    presentersColumns.forEach((PresentersColumn presentersColumn) {
+    for (PresentersColumn presentersColumn in presentersColumns) {
       var presenterList = presentersColumn.presenters;
       presenterList = optionalPaintOrderReverse(presenterList);
-      presenterList.forEach((Presenter presenter) {
+      for (Presenter presenter in presenterList) {
         line_presenters.LineAndHotspotPresenter presenterCast = presenter as line_presenters.LineAndHotspotPresenter;
         // todo 0-future-minor Use call to Container.paint
         canvas.drawLine(
@@ -1049,14 +1064,14 @@ class LineChartDataContainer extends DataContainer {
           presenterCast.innerRadius,
           presenterCast.innerPaint,
         );
-      });
-    });
+      }
+    }
   }
 }
 
 ///
 class GridLinesContainer extends Container {
-  List<LineContainer> _lineContainers = List.empty(growable: true);
+  final List<LineContainer> _lineContainers = List.empty(growable: true);
 
   GridLinesContainer() : super();
 
@@ -1065,18 +1080,27 @@ class GridLinesContainer extends Container {
   }
 
   /// Implements the abstract [Container.layout()].
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    _lineContainers.forEach((lineContainer) => lineContainer.layout(parentLayoutExpansion));
+    for (LineContainer lineContainer in _lineContainers) {
+      lineContainer.layout(parentLayoutExpansion);
+    }
   }
 
   /// Overridden from super. Applies offset on all members.
+  @override
   void applyParentOffset(ui.Offset offset) {
-    _lineContainers.forEach((lineContainer) => lineContainer.applyParentOffset(offset));
+    for (LineContainer lineContainer in _lineContainers) {
+      lineContainer.applyParentOffset(offset);
+    }
   }
 
   /// Implements the abstract [Container.layout()].
+  @override
   void paint(ui.Canvas canvas) {
-    _lineContainers.forEach((lineContainer) => lineContainer.paint(canvas));
+    for (LineContainer lineContainer in _lineContainers) {
+      lineContainer.paint(canvas);
+    }
   }
 
   /// Implementor of method in superclass [Container].
@@ -1085,6 +1109,7 @@ class GridLinesContainer extends Container {
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
   // todo-00-last look into this
+  @override
   ui.Size get layoutSize => throw StateError('todo-2 implement this.');
 }
 
@@ -1098,12 +1123,12 @@ class LegendItemContainer extends Container {
   late ui.Rect _indicatorRect;
 
   /// Paint used to paint the indicator
-  ui.Paint _indicatorPaint;
+  final ui.Paint _indicatorPaint;
 
-  ChartOptions _options;
+  final ChartOptions _options;
 
-  LabelStyle _labelStyle;
-  String _label;
+  final LabelStyle _labelStyle;
+  final String _label;
 
   LegendItemContainer({
     required String label,
@@ -1123,6 +1148,7 @@ class LegendItemContainer extends Container {
     // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
@@ -1133,7 +1159,7 @@ class LegendItemContainer extends Container {
         parentLayoutExpansion.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       isDistressed = true;
-      layoutSize = ui.Size(0.0, 0.0);
+      layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
     _labelContainer = LabelContainer(
@@ -1194,6 +1220,7 @@ class LegendItemContainer extends Container {
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
+  @override
   void paint(ui.Canvas canvas) {
     if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
 
@@ -1204,6 +1231,7 @@ class LegendItemContainer extends Container {
     );
   }
 
+  @override
   void applyParentOffset(ui.Offset offset) {
     if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
 
@@ -1248,6 +1276,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Lays out the legend area.
   ///
   /// Evenly divides the [availableWidth] to all legend items.
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     ChartOptions options = _parentContainer.options;
     double containerMarginTB = options.legendContainerMarginTB;
@@ -1273,7 +1302,7 @@ class LegendContainer extends ChartAreaContainer {
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
     //   - label painter
-    for (var index = 0; index < dataRowsLegends.length; index++) {
+    for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
       indicatorPaint.color = _parentContainer.data.dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
 
@@ -1306,17 +1335,19 @@ class LegendContainer extends ChartAreaContainer {
     );
   }
 
+  @override
   void applyParentOffset(ui.Offset offset) {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    _legendItemContainers.forEach((LegendItemContainer legendItemContainer) {
+    for (LegendItemContainer legendItemContainer in _legendItemContainers) {
       legendItemContainer.applyParentOffset(offset);
-    });
+    }
   }
 
+  @override
   void paint(ui.Canvas canvas) {
-    for (var legendItemContainer in _legendItemContainers) {
+    for (LegendItemContainer legendItemContainer in _legendItemContainers) {
       legendItemContainer.paint(canvas);
     }
   }
@@ -1364,21 +1395,17 @@ class StackableValuePoint {
   /// More precisely, offsets of the bottom and top of the presenter of this
   /// point - for example, for VerticalBar, bottom and top of each bar
   /// representing this value point (data point)
-  ui.Offset scaledFrom = ui.Offset(0.0, 0.0);
-  ui.Offset scaledTo = ui.Offset(0.0, 0.0);
+  ui.Offset scaledFrom = const ui.Offset(0.0, 0.0);
+  ui.Offset scaledTo = const ui.Offset(0.0, 0.0);
 
   StackableValuePoint({
-    required String xLabel,
-    required double y,
-    required int dataRowIndex,
-    StackableValuePoint? predecessorPoint,
-  })  : this.xLabel = xLabel,
-        this.y = y,
-        this.dataRowIndex = dataRowIndex,
-        this.predecessorPoint = predecessorPoint,
-        this.isStacked = false,
-        this.fromY = 0.0,
-        this.toY = y;
+    required this.xLabel,
+    required this.y,
+    required this.dataRowIndex,
+    this.predecessorPoint,
+  })  : isStacked = false,
+        fromY = 0.0,
+        toY = y;
 
   /// Initial instance of a [StackableValuePoint].
   /// Forwarded to the default constructor.
@@ -1392,11 +1419,11 @@ class StackableValuePoint {
         );
 
   StackableValuePoint stack() {
-    this.isStacked = true;
+    isStacked = true;
 
     // todo-1 validate: check if both points y is same sign or zero
-    this.fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
-    this.toY = this.fromY + this.y;
+    fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
+    toY = fromY + y;
 
     return this;
   }
@@ -1408,7 +1435,7 @@ class StackableValuePoint {
   /// (if chart type is [ChartContainer.isStacked].
   StackableValuePoint stackOnAnother(StackableValuePoint? predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
-    return this.stack();
+    return stack();
   }
 
   /// Scales this point's data values [x] and [y], and all stacked y values
@@ -1427,11 +1454,11 @@ class StackableValuePoint {
     required YScalerAndLabelFormatter yScaler,
   }) {
     this.scaledX = scaledX;
-    this.scaledY = yScaler.scaleY(value: this.y);
-    this.fromScaledY = yScaler.scaleY(value: this.fromY);
-    this.toScaledY = yScaler.scaleY(value: this.toY);
-    this.scaledFrom = ui.Offset(scaledX, this.fromScaledY);
-    this.scaledTo = ui.Offset(scaledX, this.toScaledY);
+    scaledY = yScaler.scaleY(value: y);
+    fromScaledY = yScaler.scaleY(value: fromY);
+    toScaledY = yScaler.scaleY(value: toY);
+    scaledFrom = ui.Offset(scaledX, fromScaledY);
+    scaledTo = ui.Offset(scaledX, toScaledY);
 
     return this;
   }
@@ -1463,7 +1490,7 @@ class StackableValuePoint {
     }
 
     StackableValuePoint clone = StackableValuePoint(
-        xLabel: this.xLabel, y: this.y, dataRowIndex: this.dataRowIndex, predecessorPoint: this.predecessorPoint);
+        xLabel: xLabel, y: y, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable leafs.
@@ -1528,12 +1555,12 @@ class PointsColumn {
     required List<StackableValuePoint> points,
   }) {
     // todo-1 add validation that points are not stacked
-    this.stackableValuePoints = points;
+    stackableValuePoints = points;
 
-    this.stackedPositivePoints =
-        this.selectThenCollectStacked(points: this.stackableValuePoints, selector: (point) => point.y >= 0);
-    this.stackedNegativePoints =
-        this.selectThenCollectStacked(points: this.stackableValuePoints, selector: (point) => point.y < 0);
+    stackedPositivePoints =
+        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y >= 0);
+    stackedNegativePoints =
+        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y < 0);
   }
 
   // points are ordered in series order, first to last  (bottom to top),
@@ -1545,7 +1572,7 @@ class PointsColumn {
     required bool selector(StackableValuePoint point),
   }) {
     StackableValuePoint? predecessorPoint;
-    List<StackableValuePoint> selected = this.stackableValuePoints.where((point) {
+    List<StackableValuePoint> selected = stackableValuePoints.where((point) {
       return selector(point);
     }) // point.y >= 0;
         .map((point) {
@@ -1575,16 +1602,16 @@ class PointsColumn {
 /// instance, managed in [DataContainer].
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Data points managed row - major. Internal only, not used in chart.
-  List<List<StackableValuePoint>> _valuePointArrInRows;
+  final List<List<StackableValuePoint>> _valuePointArrInRows;
 
   /// Data points managed column - major. Internal only, not used in chart.
   List<List<StackableValuePoint>>? _valuePointArrInColumns;
 
   /// Parent chart container.
-  ChartContainer _container;
+  final ChartContainer _container;
 
   /// True if chart type presents values stacked.
-  bool _isStacked;
+  final bool _isStacked;
 
   /// Constructor creates a [PointsColumns] instance from values in
   /// the passed [container.data.dataRows].
@@ -1640,7 +1667,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     // todo-11-last : can _valuePointArrInColumns be null?
     _valuePointArrInColumns?.forEach((columnPoints) {
       var pointsColumn = PointsColumn(points: columnPoints);
-      this.add(pointsColumn);
+      add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
     });
@@ -1660,21 +1687,21 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
-    this.forEach((PointsColumn column) {
+    for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
         point.scale(scaledX: scaledX, yScaler: _container.yScaler);
       });
       col++;
-    });
+    }
   }
 
   void applyParentOffset(ui.Offset offset) {
-    this.forEach((PointsColumn column) {
+    for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(offset);
       });
-    });
+    }
   }
 
   List<double> flattenPointsValues() {
@@ -1689,11 +1716,11 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   List<double> flattenUnstackedPointsYValues() {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
     List<double> flat = [];
-    this.forEach((PointsColumn column) {
-      column.stackableValuePoints.forEach((StackableValuePoint point) {
+    for (PointsColumn column in this) {
+      for (StackableValuePoint point in column.stackableValuePoints) {
         flat.add(point.toY);
-      });
-    });
+      }
+    }
     return flat;
   }
 
@@ -1702,14 +1729,14 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
   List<double> flattenStackedPointsYValues() {
     List<double> flat = [];
-    this.forEach((PointsColumn column) {
-      column.stackedNegativePoints.forEach((StackableValuePoint point) {
+    for (PointsColumn column in this) {
+      for (StackableValuePoint point in column.stackedNegativePoints) {
         flat.add(point.toY);
-      });
-      column.stackedPositivePoints.forEach((StackableValuePoint point) {
+      }
+      for (StackableValuePoint point in column.stackedPositivePoints) {
         flat.add(point.toY);
-      });
-    });
+      }
+    }
     return flat;
   }
 }
@@ -1721,7 +1748,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 List<List<StackableValuePoint>> transpose(
     List<List<StackableValuePoint>> colsInRows) {
   int nRows = colsInRows.length;
-  if (colsInRows.length == 0) return colsInRows;
+  if (colsInRows.isEmpty) return colsInRows;
 
   int nCols = colsInRows[0].length;
   if (nCols == 0) throw StateError('Degenerate matrix');

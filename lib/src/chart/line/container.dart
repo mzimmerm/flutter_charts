@@ -24,6 +24,7 @@ class LineChartContainer extends ChartContainer {
     presenterCreator = LineAndHotspotLeafCreator();
   }
 
+  @override
   LineChartDataContainer createDataContainer({
     required ChartContainer parentContainer,
   }) {

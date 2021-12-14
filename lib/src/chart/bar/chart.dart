@@ -10,11 +10,11 @@ import '../bar/painter.dart' as bar_painter;
 /// it's [ChartContainer.isStacked] setting.
 class VerticalBarChart extends widgets.CustomPaint {
   /// Default constructor accepts size
-  VerticalBarChart({
+  const VerticalBarChart({
     widgets.Key? key,
     required bar_painter.VerticalBarChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
-    widgets.Size size: widgets.Size.zero,
+    widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
     key: key,

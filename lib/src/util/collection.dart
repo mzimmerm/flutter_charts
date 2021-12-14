@@ -14,20 +14,25 @@ class CustomList<E> extends collection.ListBase<E> {
   // - `operator[]=`
   // Classes using this base classs  should implement those five operations.
 
+  @override
   set length(int newLength) {
     delegate.length = newLength;
   }
 
+  @override
   int get length => delegate.length;
 
+  @override
   E operator [](int index) => delegate[index];
 
+  @override
   void operator []=(int index, E value) {
     delegate[index] = value;
   }
 
   /// The [add] method must be overridden for lists that do NOT
   /// allow `null` as element.
+  @override
   void add(E element) {
     delegate.add(element);
   }

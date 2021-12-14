@@ -35,8 +35,8 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Constructor ensures the [ChartPainter] is initialized with
   /// the [ChartContainer]
   ChartPainter({
-    required containers.ChartContainer chartContainer,
-  }) : chartContainer = chartContainer;
+    required this.chartContainer,
+  }) ;
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
   ///
@@ -51,6 +51,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   ///
   /// Once the above role is done, it delegates all painting to canvas to the
   /// [containers.ChartContainer.paint()] (see).
+  @override
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
@@ -79,6 +80,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   ///
   /// Called any time that a new CustomPaint object is created
   /// with a new instance of the custom painter delegate class.
+  @override
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
     return true;
   }

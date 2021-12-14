@@ -1,14 +1,14 @@
 import 'package:flutter_charts/src/chart/container.dart'
-    show Container, AdjustableLabelsChartAreaContainer;
+    show AdjustableLabelsChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
 enum LabelFitMethod { 
-  RotateLabels, 
-  DecreaseLabelFont, 
-  SkipLabels,
+  rotateLabels, 
+  decreaseLabelFont, 
+  skipLabels,
 }
 
 /// Strategy of achieving that labels do not overlap ("fit") on an axis. 
@@ -17,8 +17,8 @@ enum LabelFitMethod {
 /// each performing a specific strategy to achieve labels fit.
 /// 
 /// When the [layout()] finds labels overlap, the following steps are taken
-/// to achieve "fit" of labels: [LabelFitMethod.RotateLabels],
-/// [LabelFitMethod.DecreaseLabelFont] and [LabelFitMethod.SkipLabels].
+/// to achieve "fit" of labels: [LabelFitMethod.rotateLabels],
+/// [LabelFitMethod.decreaseLabelFont] and [LabelFitMethod.skipLabels].
 ///
 /// The steps are repeated at most [maxLabelReLayouts] times.
 /// If a "fit" is not achieved on last step, the last step is repeated
@@ -35,20 +35,24 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   // If _reLayoutDecreaseLabelFont is not called, _labelFontSize is never moved away from 0.0
   double _labelFontSize;
 
+  @override
   double get labelFontSize => _labelFontSize;
 
   /// In addition to the rotation matrices, hold on radians for canvas rotation.
-  double _labelTiltRadians;
+  final double _labelTiltRadians;
 
+  @override
   double get labelTiltRadians => _labelTiltRadians;
 
   bool _isRotateLabelsReLayout = false;
 
+  @override
   bool get isRotateLabelsReLayout => _isRotateLabelsReLayout;
 
   int _reLayoutsCounter = 0;
   int _showEveryNthLabel = 0;
 
+  @override
   int get showEveryNthLabel => _showEveryNthLabel;
 
   /// On multiple auto layout iterations, every new iteration skips more labels.
@@ -56,11 +60,11 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// [_multiplyLabelSkip]. For example, if on first layout,
   /// [_showEveryNthLabel] was 3, and labels still overlap, on the next re-layout
   /// the  [_showEveryNthLabel] would be `3 * _multiplyLabelSkip`.
-  int _multiplyLabelSkip;
+  final int _multiplyLabelSkip;
 
-  int _maxLabelReLayouts;
+  final int _maxLabelReLayouts;
 
-  double _decreaseLabelFontRatio;
+  final double _decreaseLabelFontRatio;
 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
@@ -69,12 +73,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// Just passed down to [LabelContainer]s.
   vector_math.Matrix2 _canvasTiltMatrix = vector_math.Matrix2.identity();
 
+  @override
   vector_math.Matrix2 get canvasTiltMatrix => _canvasTiltMatrix;
 
   /// Angle by which labels are tilted.
   /// Just passed down to [LabelContainer]s.
   vector_math.Matrix2 _labelTiltMatrix = vector_math.Matrix2.identity();
 
+  @override
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
 
   /// Constructor uses default values from [ChartOptions]
@@ -92,15 +98,15 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
-        return LabelFitMethod.RotateLabels;
+        return LabelFitMethod.rotateLabels;
       case 2:
-        return LabelFitMethod.SkipLabels;
+        return LabelFitMethod.skipLabels;
       case 3:
-        return LabelFitMethod.DecreaseLabelFont;
+        return LabelFitMethod.decreaseLabelFont;
       case 4:
-        return LabelFitMethod.DecreaseLabelFont;
+        return LabelFitMethod.decreaseLabelFont;
       default:
-        return LabelFitMethod.SkipLabels;
+        return LabelFitMethod.skipLabels;
     }
   }
 
@@ -110,6 +116,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// next prescribed auto-layout action - one of the actions defined in the
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
+  @override
   void reLayout(LayoutExpansion parentLayoutExpansion) {
     if (!_container.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
@@ -125,14 +132,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     _isRotateLabelsReLayout = false;
 
     switch (_atDepth(_reLayoutsCounter)) {
-      case LabelFitMethod.DecreaseLabelFont:
+      case LabelFitMethod.decreaseLabelFont:
         _reLayoutDecreaseLabelFont();
         break;
-      case LabelFitMethod.RotateLabels:
+      case LabelFitMethod.rotateLabels:
         _reLayoutRotateLabels();
         _isRotateLabelsReLayout = true;
         break;
-      case LabelFitMethod.SkipLabels:
+      case LabelFitMethod.skipLabels:
         _reLayoutSkipLabels();
         break;
     }
@@ -159,12 +166,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   void _reLayoutDecreaseLabelFont() {
     // Decrease font (already init-ted from options), and call layout again
-    _labelFontSize *= this._decreaseLabelFontRatio;
+    _labelFontSize *= _decreaseLabelFontRatio;
   }
 
   void _reLayoutSkipLabels() {
     // Most advanced; Keep list of labels, but only display every nth
-    this._showEveryNthLabel *= this._multiplyLabelSkip;
+    _showEveryNthLabel *= _multiplyLabelSkip;
   }
 }
 
@@ -184,7 +191,7 @@ abstract class LabelLayoutStrategy {
   LabelLayoutStrategy();
 
   void onContainer(AdjustableLabelsChartAreaContainer container) {
-    this._container = container;
+    _container = container;
   }
 
   /// Core of the auto layout strategy.

@@ -14,9 +14,9 @@ class Range {
 
   // ### Private api
 
-  List<double> _values;
+  final List<double> _values;
 
-  ChartOptions _options;
+  final ChartOptions _options;
 
   /// Constructs a scalable range from a list of passed [values].
   ///
@@ -125,12 +125,12 @@ class Range {
     Poly polyMax = Poly(from: interval.max);
 
     int powerMax = polyMax.maxPower;
-    int coeffMax = polyMax.coeffAtMaxPower;
+    int coeffMax = polyMax.coefficientAtMaxPower;
     int signMax = polyMax.signum;
 
     // using Min makes sense if one or both (min, max) are negative
     int powerMin = polyMin.maxPower;
-    int coeffMin = polyMin.coeffAtMaxPower;
+    int coeffMin = polyMin.coefficientAtMaxPower;
     int signMin = polyMin.signum;
 
     List<double> labels = [];
@@ -192,26 +192,24 @@ class YScalerAndLabelFormatter {
   /// Maintains labels created from data values, scaled and unscaled.
   List<LabelInfo> labelInfos;
 
-  double _toScaleMin;
-  double _toScaleMax;
-  ChartOptions _options;
+  final double _toScaleMin;
+  final double _toScaleMax;
+  final ChartOptions _options;
 
   YScalerAndLabelFormatter({
-    required Interval dataRange,
+    required this.dataRange,
     required List<double> valueOnLabels,
     required double toScaleMin,
     required double toScaleMax,
     required ChartOptions chartOptions,
-  })   : this.dataRange = dataRange,
-        this.labelInfos =
-            valueOnLabels.map((value) => LabelInfo(value)).toList(),
+  })  : labelInfos  =  valueOnLabels.map((value) => LabelInfo(value)).toList(),
         _toScaleMin = toScaleMin,
         _toScaleMax = toScaleMax,
         _options = chartOptions {
     // late initialize the parentScaler
-    this.labelInfos.forEach((labelInfo) {
+    for (LabelInfo labelInfo in labelInfos) {
       labelInfo.parentScaler = this;
-    });
+    }
   }
 
   /// Scales [value]
@@ -234,7 +232,9 @@ class YScalerAndLabelFormatter {
   /// of the available chart size.
   /// todo 1 maybe make private and wrap - need for manual layout - better, create method for manual layout and move code from containers here
   void scaleLabelInfos() {
-    labelInfos.forEach((var labelInfo) => labelInfo._scaleLabelValue());
+    for (LabelInfo labelInfo in labelInfos) {
+      labelInfo._scaleLabelValue();
+    }
 
     if (_toScaleMin > _toScaleMax) {
       // we are inverting scales, so invert labels.
@@ -265,9 +265,9 @@ class YScalerAndLabelFormatter {
   /// [ChartOptions] allow for customization.
   /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
   void makeLabelsPresentable() {
-    labelInfos.forEach((labelInfo) {
+    for (LabelInfo labelInfo in labelInfos) {
       labelInfo.formattedYLabel = _options.valueToLabel(labelInfo.labelValue);
-    });
+    }
   }
 
   // ### Helper accessors to collection of LabelInfos
@@ -335,11 +335,12 @@ class LabelInfo {
     scaledLabelValue = parentScaler.scaleY(value: labelValue.toDouble());
   }
 
+  @override
   String toString() {
     return super.toString() +
-        ' scaledLabelValue=${this.scaledLabelValue},' +
-        ' labelValue=${this.labelValue},' +
-        ' formattedYLabel=${this.formattedYLabel}';
+        ' scaledLabelValue=$scaledLabelValue,' +
+        ' labelValue=$labelValue,' +
+        ' formattedYLabel=$formattedYLabel';
   }
 }
 
@@ -349,9 +350,9 @@ class LabelInfo {
 class Poly {
   // ### members
 
-  decimal.Decimal _dec;
-  decimal.Decimal _one;
-  decimal.Decimal _ten;
+  final decimal.Decimal _dec;
+  final decimal.Decimal _one;
+  final decimal.Decimal _ten;
 
   // ### constructors
 
@@ -375,13 +376,13 @@ class Poly {
 
   int get totalLen => _dec.precision;
 
-  int get coeffAtMaxPower =>
+  int get coefficientAtMaxPower =>
       (_dec.abs() / numToDec(math.pow(10, maxPower))).toInt();
 
   int get floorAtMaxPower =>
-      (numToDec(coeffAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
+      (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
 
-  int get ceilAtMaxPower => ((numToDec(coeffAtMaxPower) + dec('1')) *
+  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) *
           numToDec(math.pow(10, maxPower)))
       .toInt();
 
@@ -441,6 +442,6 @@ class Interval {
   /// Outermost union of this interal with [other].
   Interval merge(Interval other) {
     return Interval(
-        math.min(this.min, other.min), math.max(this.max, other.max));
+        math.min(min, other.min), math.max(max, other.max));
   }
 }

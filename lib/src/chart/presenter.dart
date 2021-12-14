@@ -31,13 +31,11 @@ class Presenter {
   int rowIndex;
 
   Presenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
-    required int rowIndex,
+    required this.point,
+    this.nextRightColumnValuePoint,
+    required this.rowIndex,
     required ChartContainer container,
-  })   : this.point = point,
-        this.nextRightColumnValuePoint = nextRightColumnValuePoint,
-        this.rowIndex = rowIndex;
+  });
 }
 
 /// Manages and presents one "visual column" on the chart.
@@ -59,19 +57,19 @@ class PresentersColumn {
     // setup the contained presenters from points
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackableValuePoints,
-        toPresenters: this.presenters,
+        toPresenters: presenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
         container: container);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
-        toPresenters: this.positivePresenters,
+        toPresenters: positivePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
         container: container);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
-        toPresenters: this.negativePresenters,
+        toPresenters: negativePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
         container: container);
@@ -85,7 +83,7 @@ class PresentersColumn {
     required ChartContainer container,
   }) {
     int rowIndex = 0;
-    fromPoints.forEach((StackableValuePoint point) {
+    for (StackableValuePoint point in fromPoints) {
       // todo-2 nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       var nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.stackableValuePoints[rowIndex]
@@ -99,7 +97,7 @@ class PresentersColumn {
       );
       toPresenters.add(presenter);
       rowIndex++;
-    });
+    }
   }
 }
 
@@ -129,16 +127,16 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn? leftPresentersColumn;
-    pointsColumns.forEach((PointsColumn pointsColumn) {
+    for (PointsColumn pointsColumn in pointsColumns) {
       var presentersColumn = PresentersColumn(
         pointsColumn: pointsColumn,
         container: container,
         presenterCreator: presenterCreator,
       );
-      this.add(presentersColumn);
+      add(presentersColumn);
       leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
       leftPresentersColumn = presentersColumn;
-    });
+    }
   }
 }
 

@@ -9,37 +9,37 @@ void main() {
     Poly p = Poly(from: 123.04);
     expect(p.signum, 1);
     expect(p.maxPower, 2);
-    expect(p.coeffAtMaxPower, 1);
+    expect(p.coefficientAtMaxPower, 1);
 
     p = Poly(from: 78);
     expect(p.signum, 1);
     expect(p.maxPower, 1);
-    expect(p.coeffAtMaxPower, 7);
+    expect(p.coefficientAtMaxPower, 7);
 
     p = Poly(from: 0);
     expect(p.signum, 0);
     expect(p.maxPower, 0);
-    expect(p.coeffAtMaxPower, 0);
+    expect(p.coefficientAtMaxPower, 0);
 
     p = Poly(from: 0.0);
     expect(p.signum, 0);
     expect(p.maxPower, 0);
-    expect(p.coeffAtMaxPower, 0);
+    expect(p.coefficientAtMaxPower, 0);
 
     p = Poly(from: 0.1);
     expect(p.signum, 1);
     expect(p.maxPower, -1);
-    expect(p.coeffAtMaxPower, 1);
+    expect(p.coefficientAtMaxPower, 1);
 
     p = Poly(from: 0.01);
     expect(p.signum, 1);
     expect(p.maxPower, -2);
-    expect(p.coeffAtMaxPower, 1);
+    expect(p.coefficientAtMaxPower, 1);
 
     p = Poly(from: -0.01);
     expect(p.signum, -1);
     expect(p.maxPower, -2);
-    expect(p.coeffAtMaxPower, 1);
+    expect(p.coefficientAtMaxPower, 1);
   });
 
   test('Poly floor and ceil', () {

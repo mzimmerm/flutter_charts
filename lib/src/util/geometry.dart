@@ -74,13 +74,13 @@ class EnvelopedRotatedRect {
 
   get bottomRight => _bottomRight;
 
-  vector_math.Matrix2 _rotatorMatrix;
+  final vector_math.Matrix2 _rotatorMatrix;
 
   /// The matrix used for rotation of the [sourceRect], after which the
   /// rotated corners [topLeft] etc) are created.
   get rotatorMatrix => _rotatorMatrix;
 
-  ui.Rect _sourceRect;
+  final ui.Rect _sourceRect;
 
   /// The source, unrotated rectangle
   get sourceRect => _sourceRect;

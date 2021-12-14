@@ -91,7 +91,7 @@ class ChartOptions {
   /// While so far only makes a difference on the line chart, this is defined
   /// as a common option in case there is some future overlap use on other
   /// chart types.
-  DataRowsPaintingOrder dataRowsPaintingOrder = DataRowsPaintingOrder.FirstToLast;
+  DataRowsPaintingOrder dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast;
 
   final double labelFontSize = 14.0;
 
@@ -154,6 +154,6 @@ class ChartOptions {
 }
 
 enum DataRowsPaintingOrder { 
-  FirstToLast, 
-  LastToFirst,
+  firstToLast, 
+  lastToFirst,
 }

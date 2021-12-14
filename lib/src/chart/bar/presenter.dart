@@ -47,6 +47,7 @@ class VerticalBarPresenter extends Presenter {
 class VerticalBarLeafCreator extends PresenterCreator {
   VerticalBarLeafCreator() : super();
 
+  @override
   Presenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,

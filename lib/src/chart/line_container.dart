@@ -11,33 +11,33 @@ class LineContainer extends container_base.Container {
   ui.Offset lineTo;
 
   LineContainer({
-    required ui.Offset lineFrom,
-    required ui.Offset lineTo,
-    required ui.Paint linePaint,
-  })   : this.linePaint = linePaint,
-        this.lineFrom = lineFrom,
-        this.lineTo = lineTo,
-        super() {
+    required this.lineFrom,
+    required this.lineTo,
+    required this.linePaint,
+  }) {
     // todo-00-last-layout-size-add
     // layoutSize = _lineContainerLayoutSize;
   }
 
   // #####  Implementors of method in superclass [Container].
 
+  @override
   void paint(ui.Canvas canvas) {
-    canvas.drawLine(this.lineFrom, this.lineTo, this.linePaint);
+    canvas.drawLine(lineFrom, lineTo, linePaint);
   }
 
   /// Implementor of method in superclass [Container].
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    throw StateError('No need to call layout on ${this.runtimeType}.');
+    throw StateError('No need to call layout on $runtimeType.');
   }
 
   /// Override method in superclass [Container].
+  @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
-    this.lineFrom += offset;
-    this.lineTo += offset;
+    lineFrom += offset;
+    lineTo += offset;
     // todo-00-last-layout-size-add : layoutSize = _lineContainerLayoutSize
   }
 

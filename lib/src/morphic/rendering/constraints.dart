@@ -19,16 +19,14 @@ class LayoutExpansion {
   final double height;
 
   LayoutExpansion({
-    required double width,
-    required double height,
+    required this.width,
+    required this.height,
     bool used = true,
-  })  : this.width = width,
-        this.height = height
-  {
-    if (used && this.width <= 0.0) {
+  }) {
+    if (used && width <= 0.0) {
       throw StateError('Invalid width $width');
     }
-    if (used && this.height <= 0.0) {
+    if (used && height <= 0.0) {
       throw StateError('Invalid height $height');
     }
   }

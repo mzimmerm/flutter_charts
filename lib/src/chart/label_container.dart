@@ -39,23 +39,24 @@ import '../util/geometry.dart' as geometry;
 
 class LabelContainer extends container_base.Container {
   /// Label text
-  String _label;
+  // todo-00-now why is it not used, can we remove this?
+  final String _label;
 
   /// Max width of label (outside constraint)
-  double _labelMaxWidth;
+  final double _labelMaxWidth;
 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
   /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
-  vector_math.Matrix2 _canvasTiltMatrix;
+  final vector_math.Matrix2 _canvasTiltMatrix;
 
   /// Angle by which label is tilted.
-  vector_math.Matrix2 _labelTiltMatrix;
+  final vector_math.Matrix2 _labelTiltMatrix;
 
   /// [TextPainter] wrapped in this label container.
   /// Paints the [_label]. It is the only painted content of this container.
-  widgets.TextPainter _textPainter;
+  final widgets.TextPainter _textPainter;
 
   /// Minimum envelope around the contained label (and hence, this container).
   /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
@@ -64,7 +65,7 @@ class LabelContainer extends container_base.Container {
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
   
   /// Allows to configure certain sizes, colors, and layout.
-  LabelStyle _labelStyle;
+  final LabelStyle _labelStyle;
 
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
@@ -77,11 +78,11 @@ class LabelContainer extends container_base.Container {
     required vector_math.Matrix2 labelTiltMatrix,
     required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
-  })   : this._label = label,
-        this._labelMaxWidth = labelMaxWidth,
-        this._labelTiltMatrix = labelTiltMatrix,
-        this._canvasTiltMatrix = canvasTiltMatrix,
-        this._labelStyle = labelStyle,
+  })   : _label = label,
+        _labelMaxWidth = labelMaxWidth,
+        _labelTiltMatrix = labelTiltMatrix,
+        _canvasTiltMatrix = canvasTiltMatrix,
+        _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
           text: widgets.TextSpan(
             text: label,
@@ -116,11 +117,13 @@ class LabelContainer extends container_base.Container {
   // #####  Implementors of method in superclass [Container].
 
   /// Implementor of method in superclass [Container].
+  @override
   void paint(ui.Canvas canvas) {
-    this._textPainter.paint(canvas, offset);
+    _textPainter.paint(canvas, offset);
   }
 
   /// Implementor of method in superclass [Container].
+  @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // todo-00-last : cannot set _layoutExpansion here, as it is private in another src file
     // it does not appear needed.
@@ -258,9 +261,12 @@ class AxisLabelContainer extends LabelContainer {
           labelStyle: labelStyle,
         );
 
+/* todo-00-last this is just calling super, so not needed, todo-00-remove
+  @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
   }
+*/
 
   /// Rotate this label around origin along with Canvas, to achieve label tilt.
   ///

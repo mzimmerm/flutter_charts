@@ -63,6 +63,7 @@ class LineAndHotspotPresenter extends Presenter {
 class LineAndHotspotLeafCreator extends PresenterCreator {
   LineAndHotspotLeafCreator() : super();
 
+  @override
   Presenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,

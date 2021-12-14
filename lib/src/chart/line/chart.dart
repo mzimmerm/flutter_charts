@@ -24,11 +24,11 @@ import '../line/painter.dart' as line_painter show LineChartPainter;
 ///       can be seen in the [LineChart] constructor.
 class LineChart extends widgets.CustomPaint {
   /// Default constructor accepts size
-  LineChart({
+  const LineChart({
     widgets.Key? key,
     required line_painter.LineChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
-    widgets.Size size: widgets.Size.zero,
+    widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
           key: key,

@@ -1,11 +1,11 @@
-// note: All classes without prefix in this code are either
-//       - from material.dart or
-//       - from flutter_charts.dart exports (this library)
-//       Also, material.dart exports many dart files, including widgets.dart,
-//         so Widget classes are referred to without prefix
+/// Example app for flutter_charts.
+/// 
+/// All classes without prefix in this code are either
+///       - from material.dart or
+///       - from flutter_charts.dart exports (this library)
+///       Also, material.dart exports many dart files, including widgets.dart,
+///         so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-// import 'dart:ui' as ui;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
@@ -71,7 +71,7 @@ void main() {
     exit(0);
   }
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 /// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']
@@ -92,6 +92,9 @@ Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleToRun() {
 }
 
 class MyApp extends StatelessWidget {
+  
+  const MyApp({Key? key}) : super(key: key);
+  
   /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
@@ -101,13 +104,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Charts Demo'),
+      home: const MyHomePage(title: 'Flutter Charts Demo'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful,
   // meaning that it has a State object (defined below) that contains
@@ -199,6 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState();
   
   /// Constructor sets all options and data.
+  // todo-00-last this is not used. Why?
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
     required ChartOptions verticalBarChartOptions,
@@ -564,7 +568,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: _chartStateChanger,
               child: null,
             ),
-            Text(
+            const Text(
               'vvvvvvvv:',
             ),
             Expanded(
@@ -574,7 +578,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('>>>'),
+                  const Text('>>>'),
                   // LineChart is CustomPaint:
                   // A widget that provides a canvas on which to draw
                   // during the paint phase.
@@ -584,7 +588,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     // #### Core chart
                     child: chartToRun, // verticalBarChart, lineChart
                   ),
-                  Text('<<'),
+                  const Text('<<'),
                   // labels fit horizontally
                   // new Text('<<<<<<'), // default, labels tilted, all present
                   // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
@@ -593,7 +597,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            Text('^^^^^^:'),
+            const Text('^^^^^^:'),
             ElevatedButton(
               // style would need a custom MaterialStateColor extension.
               // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
@@ -606,7 +610,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _chartStateChanger,
         tooltip: 'New Random Data',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

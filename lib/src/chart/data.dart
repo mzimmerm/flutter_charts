@@ -44,7 +44,7 @@ class ChartData {
   List<String> yLabels = List.empty(growable: true);
 
   void validate() {
-    if (dataRowsLegends.length > 0 &&
+    if (dataRowsLegends.isNotEmpty &&
         dataRows.length != dataRowsLegends.length) {
       throw StateError(' If row legends are defined, their '
           'number must be the same as number of data rows. '
@@ -52,7 +52,7 @@ class ChartData {
           '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
     }
     for (List<double> dataRow in dataRows) {
-      if (xLabels.length > 0 && dataRow.length != xLabels.length) {
+      if (xLabels.isNotEmpty && dataRow.length != xLabels.length) {
         throw StateError(' If xLabels are defined, their '
             'length must be the same as length of each dataRow'
             ' [dataRow length: ${dataRow.length}] '
@@ -62,7 +62,7 @@ class ChartData {
   }
 
   List<double> _flattenData() {
-    return this.dataRows.expand((i) => i).toList();
+    return dataRows.expand((i) => i).toList();
   }
 
   double maxData() {

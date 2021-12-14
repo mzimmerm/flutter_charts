@@ -15,7 +15,7 @@ extension StringExtension on String {
   T asEnum<T extends Enum>(List<T> enumValues) {
     try {
       return enumValues.singleWhere((v) => this == flutter_foundation.describeEnum(v));
-    } on Error catch (e) {
+    } on Error { // on Error catch (e) {
       throw StateError('String $this is not in enum list $enumValues.');
     }
   }

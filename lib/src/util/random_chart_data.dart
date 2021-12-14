@@ -2,27 +2,25 @@ import 'dart:math' as math;
 
 import 'package:flutter_charts/src/chart/data.dart';
 
-import 'dart:ui' as ui show Color;
-import 'package:flutter/material.dart' as material show Colors;
-
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
   /// If true, Y labels are not numbers, but values 
   /// hardwired in this class.
-  bool _useUserProvidedYLabels = false;
-  int _numXLabels;
-  int _numDataRows;
+  final bool _useUserProvidedYLabels;
+  final int _numXLabels;
+  final int _numDataRows;
 
   //bool _useMonthNames;
   //int _maxLabelLength;
-  bool _overlapYValues;
+  final bool _overlapYValues;
 
   /// Generate random data for chart, with number of x labels given by
   /// [numXLabels] and number of data series given by [numDataRows].
   ///
   /// If [useMonthNames] is set to false, random
   ///
+// todo-00-now This is a useful paradigm : member is named, provides default, then set in initializer list. Most constuctors should be like that?
   RandomChartData({
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,
@@ -60,7 +58,7 @@ class RandomChartData extends ChartData {
     ];
 
     // for (var xIndex in new Iterable.generate(_numXLabels, (i) => i)) {
-    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
+    for (int xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsMonths[xIndex % 12]);
     }
   }
@@ -72,7 +70,7 @@ class RandomChartData extends ChartData {
       'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'
     ];
 
-    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
+    for (int xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsDows[xIndex % 7]);
     }
   }
@@ -89,7 +87,7 @@ class RandomChartData extends ChartData {
       'Seventh'
     ];
 
-    for (var xIndex = 0; xIndex < _numXLabels; xIndex++) {
+    for (int xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsDows[xIndex % 7]);
     }
   }
@@ -118,7 +116,7 @@ class RandomChartData extends ChartData {
     int maxYValue = 4;
     double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
 
-    for (var rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
+    for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
       dataRows.add(_oneDataRow(
           rgen: rgen,
           max: maxYValue,
