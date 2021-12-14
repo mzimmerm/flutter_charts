@@ -8,7 +8,9 @@ import 'package:flutter/material.dart' as material show Colors;
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
-  bool _useUserProvidedYLabels;
+  /// If true, Y labels are not numbers, but values 
+  /// hardwired in this class.
+  bool _useUserProvidedYLabels = false;
   int _numXLabels;
   int _numDataRows;
 
@@ -22,7 +24,7 @@ class RandomChartData extends ChartData {
   /// If [useMonthNames] is set to false, random
   ///
   RandomChartData({
-    required bool useUserProvidedYLabels,
+    bool useUserProvidedYLabels = false,
     int numXLabels = 6,
     int numDataRows = 4,
     bool useMonthNames = true,

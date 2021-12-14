@@ -6,8 +6,9 @@
 .projectile
 .gnupg
 
-# results of integration_test to ignore
-integration_test/screenshots_tested/
+# contents of the following folders is ignored via the special .gitignore in the folders
+#  - integration_test/screenshots_tested/
+#  - test/tmp
 
 # Emacs, maybe other edit lock files
 .\#*

@@ -65,10 +65,9 @@ void main() {
   //    packages/flutter/lib/src/widgets/binding.dart
   //    which has the runApp() function.
   //
-  // TODO-00
   var exampleComboToRun = requestedExampleToRun();
   if (!ExamplesDescriptor().exampleComboIsAllowed(exampleComboToRun)) {
-    // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     exit(0);
   }
 
@@ -194,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
   );
 
   /// Define data to be displayed
-  ChartData _chartData = RandomChartData(useUserProvidedYLabels: LineChartOptions().useUserProvidedYLabels);
+  ChartData _chartData = RandomChartData();
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
@@ -237,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
-        _chartData = RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        _chartData = RandomChartData();
         break;
 
       case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
@@ -252,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        _chartData = RandomChartData(useUserProvidedYLabels: chartOptions.useUserProvidedYLabels);
+        _chartData = RandomChartData();
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
@@ -341,7 +340,6 @@ class _MyHomePageState extends State<MyHomePage> {
           Colors.greenAccent,
           Colors.black,
         ];
-        chartOptions.useUserProvidedYLabels = false; // todo-00 why is this needed?
         break;
     }
   }

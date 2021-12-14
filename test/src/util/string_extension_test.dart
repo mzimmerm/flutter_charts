@@ -1,9 +1,9 @@
+/// Tests the methods in the `string_extension` package.
+
 import 'package:test/test.dart';
 
 // tested package
 import 'package:flutter_charts/src/util/string_extension.dart';
-
-// todo-00-document
 
 enum TestedEnum { enum1, enum2 }
 

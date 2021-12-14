@@ -29,7 +29,6 @@ class Presenter {
   StackableValuePoint point;
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
-  ChartContainer container;
 
   Presenter({
     required StackableValuePoint point,
@@ -38,9 +37,7 @@ class Presenter {
     required ChartContainer container,
   })   : this.point = point,
         this.nextRightColumnValuePoint = nextRightColumnValuePoint,
-        this.rowIndex = rowIndex,
-        // todo-00 do we need to store the container, or just pass?
-        this.container = container;
+        this.rowIndex = rowIndex;
 }
 
 /// Manages and presents one "visual column" on the chart.

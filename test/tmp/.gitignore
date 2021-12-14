@@ -1,0 +1,9 @@
+# The parent directory tmp is for programs and files generated during tests.
+
+# Presence of this .gitignore commands to ignore everything but itself.
+# This achieves the directory is NOT ignored, and shows up on github,
+# while all files in this directory (which are temporary) are ignored.
+
+# * ignores everything (files and subfolders), !.gitignore keeps this file.
+*
+!.gitignore

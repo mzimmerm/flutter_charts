@@ -3,9 +3,9 @@
 # If Android AVD emulator is not running, starts one.
 # Then, use program 
 #    dart run example1/lib/src/util/examples_descriptor.dart
-# to generate a temp script named
-#    ~/tmp/run_examples.sh
-#  ~/tmp/run_examples.sh can be called from another script to repeatedly run the example app for data in ExamplesEnum.
+# to generate a temp script which name is placed to
+#    $examples_descriptor_generated_program
+# $examples_descriptor_generated_program can be called from another script to repeatedly run the example app for data in ExamplesEnum.
 
 # This is the AVD emulator we request to exist
 emulator_used="Nexus_6_API_29_2"
@@ -40,11 +40,17 @@ echo Checking processes for running emulator name.
 device_id=$(flutter devices 2>/dev/null | grep "emulator-" | sed 's/.*\(emulator\-[0-9]\+\).*/\1/')
 echo Emulator $emulator_used is running as device_id="$device_id".
 
+# Define the name of the program which the scripts sourcing this file can execute.
+examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
-# todo-00-now make tmp a tmp file
-dart run example1/lib/src/util/examples_descriptor.dart > ~/tmp/run_examples.sh
+# Dart run examples_descriptor.dart which generates a script with dart_defines.
+echo Running dart run example1/lib/src/util/examples_descriptor.dart 
+echo   to create $examples_descriptor_generated_program
+dart run example1/lib/src/util/examples_descriptor.dart > $examples_descriptor_generated_program
 
-# Generated script ~/tmp/run_examples.sh contains list of lines, one line looks like this
+chmod u+x $examples_descriptor_generated_program
+
+# Generated script $examples_descriptor_generated_program contains list of lines, one line looks like this
 #    $1 --dart-define=EXAMPLE_TO_RUN=ex_1_0_RandomData --dart-define=CHART_TYPE_TO_SHOW=LineChart $2
 
 

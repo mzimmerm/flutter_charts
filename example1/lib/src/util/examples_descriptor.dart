@@ -1,4 +1,10 @@
-/// todo-00-document
+/// Library for a tool that helps generate programs that run chart examples and tests.
+/// 
+/// Library with has a main.dart which generates a shell script that allow 
+/// to run commands such as `flutter run` or `flutter drive` 
+/// on all examples defined in [ExamplesEnum].
+/// 
+/// 
 /// 
 // Removing import for whole flutter_charts. 
 //    import 'package:flutter_charts/flutter_charts.dart' show enumName;
@@ -54,9 +60,7 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
 
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
-    //  const Tuple2(ExamplesEnum.ex_4_0_LanguagesYOrdinarLevelFromData_UserYOrdinarLevelLabels_UserColors, ExamplesChartTypeEnum.VerticalBarChart),
 
-    // const  Tuple2(ExamplesEnum.ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors, ExamplesChartTypeEnum.LineChart),
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
   ];
 

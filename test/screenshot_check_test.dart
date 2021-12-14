@@ -1,7 +1,10 @@
-/// todo-00-document 
-import 'package:flutter/material.dart';
+/// Flutter test which compares expected screenshots to actual screenshots 
+/// for the requested example.
+/// 
+/// The requested example is given by the app method [requestedExampleToRun()], which
+/// in turn is given by the `--dart-define` passed environment to the `flutter test` command.
+/// 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart' show IntegrationTestWidgetsFlutterBinding;
 import 'package:tuple/tuple.dart';
 import 'dart:io';
 
