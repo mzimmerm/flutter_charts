@@ -1,5 +1,7 @@
 * Integration test in Flutter
 
+Files in this directory which end with '_test.dart' are integration (drive) tests. 
+
 See the "Testing in Flutter" heading in https://github.com/mzimmerm/flutter_experiments/blob/master/doc/flutter-notes.org for details of Dart unit test, Flutter widget test and Flutter integration test.
 
 See https://docs.flutter.dev/cookbook/testing/integration/introduction

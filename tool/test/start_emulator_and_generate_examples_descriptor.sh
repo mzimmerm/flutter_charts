@@ -1,11 +1,17 @@
 #!/bin/bash
 
 # If Android AVD emulator is not running, starts one.
-# Then, use program 
+# Then, uses the program 
 #    dart run example1/lib/src/util/examples_descriptor.dart
-# to generate a temp script which name is placed to
+# to generate a temp script, which name is placed to variable named
 #    $examples_descriptor_generated_program
 # $examples_descriptor_generated_program can be called from another script to repeatedly run the example app for data in ExamplesEnum.
+
+# Input $1: ExamplesEnum value, for example ex10RandomData. 
+#           If empty or not set, all example screenshots are tested.
+# Output: variable examples_descriptor_generated_program
+
+exampleEnum=$1
 
 # This is the AVD emulator we request to exist
 emulator_used="Nexus_6_API_29_2"
@@ -46,7 +52,7 @@ examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_pro
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
 echo Running dart run example1/lib/src/util/examples_descriptor.dart 
 echo   to create $examples_descriptor_generated_program
-dart run example1/lib/src/util/examples_descriptor.dart > $examples_descriptor_generated_program
+dart run example1/lib/src/util/examples_descriptor.dart "$exampleEnum" > $examples_descriptor_generated_program
 
 chmod u+x $examples_descriptor_generated_program
 

@@ -376,6 +376,16 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
+    // todo-00-new 
+    // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
+    //   and parentContainer.yScaler is needed in [PointsColumns.scale()], 
+    //   so we cannot just skip layout completely at the beginning.
+    if (!parentContainer.options.isYContainerShown) {
+      _yLabelContainers = List.empty(growable: false);
+      parentContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
+      return;
+    }
+
     if (_parentContainer.options.useUserProvidedYLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
@@ -435,21 +445,26 @@ class YContainer extends ChartAreaContainer {
   /// range [yAxisMin] to [yAxisMax].
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
     // todo-2 move to common layout, same for manual and auto
+    YScalerAndLabelFormatter yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
+
+    _commonLayout(yScaler);
+  }
+
+  YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
     List<double> flatData =
         geometry.iterableNumToDouble(_parentContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
-
+    
     Range range = Range(
       values: flatData,
       chartOptions: _parentContainer.options,
     );
-
+    
     // revert toScaleMin/Max to accommodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
       toScaleMin: yAxisMin,
       toScaleMax: yAxisMax,
     );
-
-    _commonLayout(yScaler);
+    return yScaler;
   }
 
   void _commonLayout(YScalerAndLabelFormatter yScaler) {
@@ -496,6 +511,9 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
+    if (!parentContainer.options.isYContainerShown) {
+      return;
+    }
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
@@ -506,13 +524,19 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
+    if (!parentContainer.options.isYContainerShown) {
+      return;
+    }
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
   }
 
-  double get yLabelsMaxHeight =>
-      _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
+  double get yLabelsMaxHeight {
+    return _yLabelContainers.isEmpty
+        ? 0.0
+        : _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
+  }
 }
 
 /// Container of the X axis labels.
@@ -625,19 +649,35 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     }
 
     // xlabels area without padding
+    /* todo-00-new done converted to getter
     double xLabelsMaxHeight =
         _xLabelContainers.map((xLabelContainer) => xLabelContainer.layoutSize.height).reduce(math.max);
-
+    */
+    
     // Set the layout size calculated by this layout
     layoutSize = ui.Size(
       parentLayoutExpansion.width,
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
+    // todo-00-now Before re-layout, return and make the layout size vertical (Y) direction 0.
+    //             we cannot skip the layout entirely, as the xTickX are used late in the 
+    //             layout and painting of the DataContainer in ChartContainer - see xTickXs
+    if (!parentContainer.options.isXContainerShown) {
+      layoutSize = ui.Size(layoutSize.width, 0.0);
+      return;
+    }
+
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
     labelLayoutStrategy.reLayout(parentLayoutExpansion);
+  }
+
+  double get xLabelsMaxHeight {
+    return _xLabelContainers.isEmpty
+        ? 0.0
+        : _xLabelContainers.map((xLabelContainer) => xLabelContainer.layoutSize.height).reduce(math.max);
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
@@ -658,6 +698,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
+    if (!parentContainer.options.isXContainerShown) {
+      return;
+    }
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
@@ -668,6 +711,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
+    // todo-00-now move this to parent, ensuring isShow = false containers are not layed out or painted
+    if (!parentContainer.options.isXContainerShown) {
+      return;
+    }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
@@ -919,7 +966,9 @@ abstract class DataContainer extends ChartAreaContainer {
     _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    _yGridLinesContainer.paint(canvas);
+    if (_parentContainer.options.isYGridlinesShown) {
+      _yGridLinesContainer.paint(canvas);
+    }
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
@@ -1278,6 +1327,10 @@ class LegendContainer extends ChartAreaContainer {
   /// Evenly divides the [availableWidth] to all legend items.
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
+    // todo-00-now move this to parent, ensuring isShow = false containers are not layed out or painted
+    if (!parentContainer.options.isLegendContainerShown) {
+      return;
+    }
     ChartOptions options = _parentContainer.options;
     double containerMarginTB = options.legendContainerMarginTB;
     double containerMarginLR = options.legendContainerMarginLR;
@@ -1337,6 +1390,9 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
+    if (!parentContainer.options.isLegendContainerShown) {
+      return;
+    }
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
@@ -1347,6 +1403,9 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
+    if (!parentContainer.options.isLegendContainerShown) {
+      return;
+    }
     for (LegendItemContainer legendItemContainer in _legendItemContainers) {
       legendItemContainer.paint(canvas);
     }

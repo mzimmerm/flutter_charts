@@ -12,9 +12,10 @@ flutter test test/src/util/string_extension_test.dart
 echo
 echo -------------------------------------
 echo Running Flutter widget tests
-flutter test test/flutter_app_widget_test.dart
+flutter test test/widget_test.dart
 
 echo
 echo -------------------------------------
 echo Running wrapper around Flutter integration tests for screenshots
+echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
 tool/test/integration_test_validate_screenshots.sh

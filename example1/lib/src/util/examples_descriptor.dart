@@ -16,13 +16,20 @@
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 import '../../../../lib/src/util/util_dart.dart' show enumName;
+import '../../../../lib/src/util/string_extension.dart';
 
 import 'package:tuple/tuple.dart' show Tuple2;
 
 /// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
 /// that require passing the examples to run or test using the environment variables `--dart-define`.
-void main() {
-  ExamplesDescriptor().asCommandLine();
+void main(List<String> args) {
+  var exampleDescriptor =  ExamplesDescriptor();
+  if (args.isNotEmpty && args[0].trim().isNotEmpty) {
+    // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
+    ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
+    exampleDescriptor = ExamplesDescriptor(exampleRequested: exampleToRun);
+  }
+  exampleDescriptor.asCommandLine();
 }
 
 /// Describes the full set of charts shown in examples or integration tests.
@@ -30,6 +37,7 @@ enum ExamplesEnum {
   ex10RandomData,
   ex20RandomDataWithLabelLayoutStrategy,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
+  ex31AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
 }
@@ -49,21 +57,31 @@ enum ExamplesChartTypeEnum {
 /// The conversion from enumerates to data and options is in [example1/lib/main.dart] [chartTypeToShow()].
 /// The conversion from enumerates to chart type is in [example1/lib/main.dart] [requestedExampleToRun()].
 class ExamplesDescriptor {
+  
+  /// If set, only the requested example will run.
+  ExamplesEnum? exampleRequested;
+
+  ExamplesDescriptor({this.exampleRequested});
+
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
 
+    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
 
-    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
 
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
 
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
   ];
-
+  
+  
   /// Check if the example described by the passed enums should run in a test.
   ///
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
@@ -75,7 +93,10 @@ class ExamplesDescriptor {
 
   /// Present this descriptor is a format suitable to run as a test from command line.
   void asCommandLine() {
-    for (Tuple2 tuple in _allowed) {
+    List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun =
+        exampleRequested == null ? _allowed : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
+
+    for (Tuple2 tuple in combosToRun) {
       print('set -e');
       print('echo');
       print('echo');

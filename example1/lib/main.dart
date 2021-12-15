@@ -203,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
   /// Constructor sets all options and data.
   // todo-00-last this is not used. Why?
+/*
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
     required ChartOptions verticalBarChartOptions,
@@ -212,6 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _lineChartOptions = lineChartOptions,
         _verticalBarChartOptions = verticalBarChartOptions,
         _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
+*/
 
   /// Constructor allows to set only data and keep other values default.
   _MyHomePageState.fromData({
@@ -262,6 +264,28 @@ class _MyHomePageState extends State<MyHomePage> {
         _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
+        _chartData = ChartData();
+        _chartData.dataRowsLegends = [
+          'Spring',
+          'Summer',
+          'Fall',
+          'Winter',
+        ];
+        _chartData.dataRows = [
+          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+        ];
+        _chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+        _chartData.assignDataRowsDefaultColors();
+        break;
+
+      case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
+        chartOptions.isLegendContainerShown = false;
+        chartOptions.isXContainerShown = false;
+        chartOptions.isYContainerShown = false;
+        chartOptions.isYGridlinesShown = false;
         _chartData = ChartData();
         _chartData.dataRowsLegends = [
           'Spring',

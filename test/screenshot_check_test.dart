@@ -13,7 +13,6 @@ import 'test_util.dart';
 import '../example1/lib/src/util/examples_descriptor.dart';
 import '../example1/lib/main.dart' as app;
 
-
 void main() {
   
   test('after screenshot integration, test for sameness', () {
@@ -32,6 +31,7 @@ void main() {
       File expectedFile = File(expectedScreenshotPath);
       File actualFile = File(screenshotPath);
       
+      // Compare the screenshot just generated with one that was stored as expected.
       expectSync(
         expectedFile.readAsBytesSync(),
         actualFile.readAsBytesSync(),

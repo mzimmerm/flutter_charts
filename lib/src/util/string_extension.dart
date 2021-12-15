@@ -1,7 +1,6 @@
 /// Library of extensions on the [String] class.
 /// 
-
-import 'package:flutter/foundation.dart' as flutter_foundation show describeEnum;
+import 'package:flutter_charts/src/util/util_dart.dart';
 
 extension StringExtension on String {
   
@@ -14,7 +13,7 @@ extension StringExtension on String {
   ///     a StateError is thrown, indicating the values that failed.
   T asEnum<T extends Enum>(List<T> enumValues) {
     try {
-      return enumValues.singleWhere((v) => this == flutter_foundation.describeEnum(v));
+      return enumValues.singleWhere((v) => this == enumName(v));
     } on Error { // on Error catch (e) {
       throw StateError('String $this is not in enum list $enumValues.');
     }

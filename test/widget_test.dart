@@ -8,7 +8,7 @@ import '../example1/lib/main.dart' as app;
 /// 
 /// Run as
 /// ``` shell
-///   flutter clean; flutter test test/flutter_app_widget_test.dart 
+///   flutter clean; flutter test test/widget_test.dart 
 /// ```
 void main() {
   group('Widget tests on page 1', () {

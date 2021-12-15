@@ -9,6 +9,18 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 /// related, may be overridden or adjusted by the chart auto-layout,
 /// see [SimpleChartContainer].
 class ChartOptions {
+  
+  /// 
+  bool isLegendContainerShown = true;
+  bool isXContainerShown = true;
+  bool isYContainerShown = true;
+  /// In the current implementation, X gridlines (horizontal) disappear when `isYContainerShown = false`, 
+  /// which is probably reasonable, although should be fixed.
+  ///   
+  /// However, Y gridlines (vertical) are showing even when `isXContainerShown = false`.
+  /// This option allows to toggle it.
+  bool isYGridlinesShown = true;
+  
   /// Defines how to create and layout chart's Y labels: either from user
   /// defined Y labels, or from auto-created Y labels from data.
   ///
