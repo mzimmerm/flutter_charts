@@ -20,7 +20,6 @@ class RandomChartData extends ChartData {
   ///
   /// If [useMonthNames] is set to false, random
   ///
-// todo-00-now This is a useful paradigm : member is named, provides default, then set in initializer list. Most constuctors should be like that?
   RandomChartData({
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,

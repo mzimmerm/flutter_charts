@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState();
   
   /// Constructor sets all options and data.
-  // todo-00-last this is not used. Why?
+  // todo-00-now this is not used. Why?
 /*
   _MyHomePageState.fromOptionsAndData({
     required LineChartOptions lineChartOptions,
@@ -477,7 +477,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     defineOptionsAndData();
 
-    LineChartContainer lineChartContainer = LineChartContainer(
+    LineChartTopContainer lineChartContainer = LineChartTopContainer(
       chartData: _chartData,
       chartOptions: _lineChartOptions,
       xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
@@ -489,7 +489,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    VerticalBarChartContainer verticalBarChartContainer = VerticalBarChartContainer(
+    VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
       chartData: _chartData,
       chartOptions: _verticalBarChartOptions,
       xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,

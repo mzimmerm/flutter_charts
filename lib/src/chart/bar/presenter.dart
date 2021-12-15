@@ -16,7 +16,7 @@ class VerticalBarPresenter extends Presenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartContainer container,
+    required ChartTopContainer container,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
@@ -52,7 +52,7 @@ class VerticalBarLeafCreator extends PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartContainer container,
+    required ChartTopContainer container,
   }) {
     return VerticalBarPresenter(
       point: point,

@@ -38,9 +38,6 @@ import '../util/geometry.dart' as geometry;
 ///   is always layed out, ready to be painted.
 
 class LabelContainer extends container_base.Container {
-  /// Label text
-  // todo-00-now why is it not used, can we remove this?
-  final String _label;
 
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
@@ -78,8 +75,7 @@ class LabelContainer extends container_base.Container {
     required vector_math.Matrix2 labelTiltMatrix,
     required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
-  })   : _label = label,
-        _labelMaxWidth = labelMaxWidth,
+  })  : _labelMaxWidth = labelMaxWidth,
         _labelTiltMatrix = labelTiltMatrix,
         _canvasTiltMatrix = canvasTiltMatrix,
         _labelStyle = labelStyle,

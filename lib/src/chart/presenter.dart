@@ -34,7 +34,7 @@ class Presenter {
     required this.point,
     this.nextRightColumnValuePoint,
     required this.rowIndex,
-    required ChartContainer container,
+    required ChartTopContainer container,
   });
 }
 
@@ -51,7 +51,7 @@ class PresentersColumn {
 
   PresentersColumn({
     required PointsColumn pointsColumn,
-    required ChartContainer container,
+    required ChartTopContainer container,
     required PresenterCreator presenterCreator,
   }) {
     // setup the contained presenters from points
@@ -80,7 +80,7 @@ class PresentersColumn {
     required List toPresenters,
     required PointsColumn pointsColumn,
     required PresenterCreator presenterCreator,
-    required ChartContainer container,
+    required ChartTopContainer container,
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
@@ -122,7 +122,7 @@ class PresentersColumn {
 class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   PresentersColumns({
     required PointsColumns pointsColumns,
-    required ChartContainer container,
+    required ChartTopContainer container,
     required PresenterCreator presenterCreator,
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
@@ -158,6 +158,6 @@ abstract class PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartContainer container,
+    required ChartTopContainer container,
   });
 }

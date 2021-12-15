@@ -35,7 +35,7 @@ import 'bar/presenter.dart' as bar_presenters;
 /// Creates a simple chart container and call all needed [layout] methods.
 ///
 /// Notes:
-///   - [ChartContainer] and it's extensions,
+///   - [ChartTopContainer] and it's extensions,
 ///     such as [LineChartContainer] and [VerticalBarChartContainer]
 ///     are the only container which does not extend [Container]
 ///   - Related to above point, the [layout(num size)] is unrelated to
@@ -45,7 +45,7 @@ import 'bar/presenter.dart' as bar_presenters;
 ///   - `absolute positions` refer to positions
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-abstract class ChartContainer extends Container {
+abstract class ChartTopContainer extends Container {
   /// Implements [Container.layoutSize()].
   // todo-00-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
@@ -91,7 +91,7 @@ abstract class ChartContainer extends Container {
 
   /// Keeps data values grouped in columns.
   ///
-  /// This column grouped data instance is managed here in the [ChartContainer],
+  /// This column grouped data instance is managed here in the [ChartTopContainer],
   /// (immediate owner of [YContainer] and [DataContainer])
   /// as their data points are needed both during [YContainer.layout]
   /// to calculate scaling, and also in [DataContainer.layout] to create
@@ -118,7 +118,7 @@ abstract class ChartContainer extends Container {
   ///     In the Y direction, takes
   ///     up all available chart area, except a top horizontal strip,
   ///     required to paint half of the topmost label.
-  ChartContainer({
+  ChartTopContainer({
     required ChartData chartData,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -291,7 +291,7 @@ abstract class ChartContainer extends Container {
   /// Abstract method creates the [DataContainer],
   /// for the particular chart type (line, bar).
   DataContainer createDataContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   });
 
   /// Create member [pointsColumns] from [data.dataRows].
@@ -346,7 +346,7 @@ class YContainer extends ChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
   YContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
     required double yLabelsMaxHeightFromFirstLayout,
   })   : _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout,
         super(
@@ -356,12 +356,12 @@ class YContainer extends ChartAreaContainer {
   /// Lays out the area containing the Y axis labels.
   ///
   /// Out of calls to all container's [layout] by the parent
-  /// [ChartContainer.layout], the call to this object's [layout] is second,
+  /// [ChartTopContainer.layout], the call to this object's [layout] is second,
   /// after [LegendContainer.layout].
   /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
-  /// The remaining horizontal width of [ChartContainer.chartArea] minus
+  /// The remaining horizontal width of [ChartTopContainer.chartArea] minus
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridContainer] and [XContainer].
   @override
@@ -562,7 +562,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
           parentContainer: parentContainer,
@@ -660,10 +660,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
-    // todo-00-now Before re-layout, return and make the layout size vertical (Y) direction 0.
-    //             we cannot skip the layout entirely, as the xTickX are used late in the 
-    //             layout and painting of the DataContainer in ChartContainer - see xTickXs
     if (!parentContainer.options.isXContainerShown) {
+      // Before re-layout, return and make the layout height (vertical-Y size) 0.
+      // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the 
+      // layout and painting of the DataContainer in ChartContainer - see xTickXs
       layoutSize = ui.Size(layoutSize.width, 0.0);
       return;
     }
@@ -711,7 +711,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-now move this to parent, ensuring isShow = false containers are not layed out or painted
     if (!parentContainer.options.isXContainerShown) {
       return;
     }
@@ -796,7 +795,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   })   : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
         super(
@@ -806,7 +805,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
-///   - [ChartContainer] - the whole chart
+///   - [ChartTopContainer] - the whole chart
 ///   - [LegendContainer] - manages the legend
 ///   - [YContainer] - manages the Y labels layout, which defines:
 ///     - Y axis label sizes
@@ -827,16 +826,16 @@ abstract class ChartAreaContainer extends Container {
   /// The chart top level.
   ///
   /// Departure from a top down approach, this allows to
-  /// access the parent [ChartContainer], which has (currently)
+  /// access the parent [ChartTopContainer], which has (currently)
   /// members needed by children.
-  final ChartContainer _parentContainer;
+  final ChartTopContainer _parentContainer;
 
   ChartAreaContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   })   : _parentContainer = parentContainer,
         super();
 
-  ChartContainer get parentContainer => _parentContainer;
+  ChartTopContainer get parentContainer => _parentContainer;
 }
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -856,7 +855,7 @@ abstract class DataContainer extends ChartAreaContainer {
   late PresentersColumns presentersColumns;
 
   DataContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   }) : super(
           parentContainer: parentContainer,
         );
@@ -883,7 +882,7 @@ abstract class DataContainer extends ChartAreaContainer {
     ChartOptions options = parentContainer.options;
     bool isStacked = parentContainer.isStacked;
     double xGridStep = parentContainer.gridStepWidth;
-    ChartContainer chartContainer = parentContainer;
+    ChartTopContainer chartContainer = parentContainer;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -1028,7 +1027,7 @@ abstract class DataContainer extends ChartAreaContainer {
 /// [paint()] and [drawDataPresentersColumns()].
 class VerticalBarChartDataContainer extends DataContainer {
   VerticalBarChartDataContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   }) : super(
           parentContainer: parentContainer,
         );
@@ -1076,7 +1075,7 @@ class VerticalBarChartDataContainer extends DataContainer {
 /// [paint()] and [drawDataPresentersColumns()].
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   }) : super(
           parentContainer: parentContainer,
         );
@@ -1317,7 +1316,7 @@ class LegendContainer extends ChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   LegendContainer({
-    required ChartContainer parentContainer,
+    required ChartTopContainer parentContainer,
   }) : super(
           parentContainer: parentContainer,
         );
@@ -1327,7 +1326,6 @@ class LegendContainer extends ChartAreaContainer {
   /// Evenly divides the [availableWidth] to all legend items.
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    // todo-00-now move this to parent, ensuring isShow = false containers are not layed out or painted
     if (!parentContainer.options.isLegendContainerShown) {
       return;
     }
@@ -1491,7 +1489,7 @@ class StackableValuePoint {
   ///
   /// Points are constructed unstacked. Depending on chart type,
   /// a later processing can stack points using this method
-  /// (if chart type is [ChartContainer.isStacked].
+  /// (if chart type is [ChartTopContainer.isStacked].
   StackableValuePoint stackOnAnother(StackableValuePoint? predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
     return stack();
@@ -1667,7 +1665,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   List<List<StackableValuePoint>>? _valuePointArrInColumns;
 
   /// Parent chart container.
-  final ChartContainer _container;
+  final ChartTopContainer _container;
 
   /// True if chart type presents values stacked.
   final bool _isStacked;
@@ -1675,7 +1673,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Constructor creates a [PointsColumns] instance from values in
   /// the passed [container.data.dataRows].
   PointsColumns({
-    required ChartContainer container,
+    required ChartTopContainer container,
     required PresenterCreator presenterCreator,
     required bool isStacked,
   })   : _container = container,

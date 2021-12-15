@@ -26,7 +26,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  containers.ChartContainer chartContainer;
+  containers.ChartTopContainer chartContainer;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
