@@ -165,7 +165,7 @@ abstract class ChartTopContainer extends Container {
       height: chartArea.height,
     );
     legendContainer = LegendContainer(
-      parentContainer: this,
+      chartTopContainer: this,
     );
 
     legendContainer.layout(legendLayoutExpansion);
@@ -184,7 +184,7 @@ abstract class ChartTopContainer extends Container {
       height: yContainerHeight,
     );
     var yContainerFirst = YContainer(
-      parentContainer: this,
+      chartTopContainer: this,
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
 
@@ -201,7 +201,7 @@ abstract class ChartTopContainer extends Container {
       height: chartArea.height - legendContainerSize.height,
     );
     xContainer = XContainer(
-      parentContainer: this,
+      chartTopContainer: this,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
@@ -224,7 +224,7 @@ abstract class ChartTopContainer extends Container {
       height: yContainerHeight - xContainerSize.height,
     );
     yContainer = YContainer(
-      parentContainer: this,
+      chartTopContainer: this,
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
 
@@ -243,7 +243,7 @@ abstract class ChartTopContainer extends Container {
       height: chartArea.height - (legendContainerSize.height + xContainerSize.height),
     );
     dataContainer = createDataContainer(
-      parentContainer: this,
+      chartTopContainer: this,
     );
 
     // todo-00-last : this is where most non-Container elements are layed out.
@@ -291,7 +291,7 @@ abstract class ChartTopContainer extends Container {
   /// Abstract method creates the [DataContainer],
   /// for the particular chart type (line, bar).
   DataContainer createDataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   });
 
   /// Create member [pointsColumns] from [data.dataRows].
@@ -346,11 +346,11 @@ class YContainer extends ChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
   YContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
     required double yLabelsMaxHeightFromFirstLayout,
   })   : _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout,
         super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 
   /// Lays out the area containing the Y axis labels.
@@ -371,22 +371,22 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = parentLayoutExpansion.height - (_parentContainer.options.xBottomMinTicksHeight);
+    double yAxisMin = parentLayoutExpansion.height - (_chartTopContainer.options.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
     // todo-00-new 
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
-    //   and parentContainer.yScaler is needed in [PointsColumns.scale()], 
+    //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()], 
     //   so we cannot just skip layout completely at the beginning.
-    if (!parentContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
-      parentContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
+      chartTopContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
       return;
     }
 
-    if (_parentContainer.options.useUserProvidedYLabels) {
+    if (_chartTopContainer.options.useUserProvidedYLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
@@ -394,7 +394,7 @@ class YContainer extends ChartAreaContainer {
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * _parentContainer.options.yLabelsPadLR;
+            2 * _chartTopContainer.options.yLabelsPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, parentLayoutExpansion.height);
   }
@@ -402,9 +402,9 @@ class YContainer extends ChartAreaContainer {
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData =
-        _parentContainer.pointsColumns.flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
+        _chartTopContainer.pointsColumns.flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
-    List<String> yLabels = _parentContainer.data.yLabels;
+    List<String> yLabels = _chartTopContainer.data.yLabels;
 
     var yDataRange = Interval(flatData.reduce(math.min), flatData.reduce(math.max));
     double dataStepHeight = (yDataRange.max - yDataRange.min) / (yLabels.length - 1);
@@ -430,7 +430,7 @@ class YContainer extends ChartAreaContainer {
         valueOnLabels: yLabelsDividedInYAxisRange,
         toScaleMin: yAxisMin,
         toScaleMax: yAxisMax,
-        chartOptions: _parentContainer.options);
+        chartOptions: _chartTopContainer.options);
 
     yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYDataRange,
@@ -452,11 +452,11 @@ class YContainer extends ChartAreaContainer {
 
   YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
     List<double> flatData =
-        geometry.iterableNumToDouble(_parentContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+        geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
     
     Range range = Range(
       values: flatData,
-      chartOptions: _parentContainer.options,
+      chartOptions: _chartTopContainer.options,
     );
     
     // revert toScaleMin/Max to accommodate y axis starting from top
@@ -470,8 +470,8 @@ class YContainer extends ChartAreaContainer {
   void _commonLayout(YScalerAndLabelFormatter yScaler) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _parentContainer.yScaler = yScaler;
-    ChartOptions options = _parentContainer.options;
+    _chartTopContainer.yScaler = yScaler;
+    ChartOptions options = _chartTopContainer.options;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -502,7 +502,7 @@ class YContainer extends ChartAreaContainer {
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(
-        ui.Offset(_parentContainer.options.yLabelsPadLR, labelTopY),
+        ui.Offset(_chartTopContainer.options.yLabelsPadLR, labelTopY),
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -511,7 +511,7 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!parentContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.isYContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -524,7 +524,7 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!parentContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.isYContainerShown) {
       return;
     }
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
@@ -562,10 +562,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   }) : super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     // Must initialize in body, as access to 'this' not available in initializer.
@@ -585,9 +585,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
-    ChartOptions options = _parentContainer.options;
+    ChartOptions options = _chartTopContainer.options;
 
-    List<String> xLabels = _parentContainer.data.xLabels;
+    List<String> xLabels = _chartTopContainer.data.xLabels;
 
     double yTicksWidth = options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
 
@@ -660,7 +660,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       xLabelsMaxHeight + 2 * options.xLabelsPadTB,
     );
 
-    if (!parentContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.isXContainerShown) {
       // Before re-layout, return and make the layout height (vertical-Y size) 0.
       // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the 
       // layout and painting of the DataContainer in ChartContainer - see xTickXs
@@ -698,7 +698,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!parentContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.isXContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -711,7 +711,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!parentContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.isXContainerShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
@@ -795,11 +795,11 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
   })   : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
         super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 }
 
@@ -821,21 +821,21 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 /// See [Container] for discussion of roles of this class.
 /// This extension of  [Container] has the added ability
 /// to access the container's parent, which is handled by
-/// [parentContainer].
+/// [chartTopContainer].
 abstract class ChartAreaContainer extends Container {
   /// The chart top level.
   ///
   /// Departure from a top down approach, this allows to
   /// access the parent [ChartTopContainer], which has (currently)
   /// members needed by children.
-  final ChartTopContainer _parentContainer;
+  final ChartTopContainer _chartTopContainer;
 
   ChartAreaContainer({
-    required ChartTopContainer parentContainer,
-  })   : _parentContainer = parentContainer,
+    required ChartTopContainer chartTopContainer,
+  })   : _chartTopContainer = chartTopContainer,
         super();
 
-  ChartTopContainer get parentContainer => _parentContainer;
+  ChartTopContainer get chartTopContainer => _chartTopContainer;
 }
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -855,9 +855,9 @@ abstract class DataContainer extends ChartAreaContainer {
   late PresentersColumns presentersColumns;
 
   DataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) : super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 
   /// Implements [Container.layout()] for data area.
@@ -879,10 +879,10 @@ abstract class DataContainer extends ChartAreaContainer {
 
   void _layoutGrid() {
     // Vars that layout needs from the [_chartContainer] passed to constructor
-    ChartOptions options = parentContainer.options;
-    bool isStacked = parentContainer.isStacked;
-    double xGridStep = parentContainer.gridStepWidth;
-    ChartTopContainer chartContainer = parentContainer;
+    ChartOptions options = chartTopContainer.options;
+    bool isStacked = chartTopContainer.isStacked;
+    double xGridStep = chartTopContainer.gridStepWidth;
+    ChartTopContainer chartContainer = chartTopContainer;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -944,7 +944,7 @@ abstract class DataContainer extends ChartAreaContainer {
     _yGridLinesContainer.applyParentOffset(offset);
 
     // Apply offset to lines and bars.
-    parentContainer.pointsColumns.applyParentOffset(offset);
+    chartTopContainer.pointsColumns.applyParentOffset(offset);
 
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
@@ -965,7 +965,7 @@ abstract class DataContainer extends ChartAreaContainer {
     _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (_parentContainer.options.isYGridlinesShown) {
+    if (_chartTopContainer.options.isYGridlinesShown) {
       _yGridLinesContainer.paint(canvas);
     }
   }
@@ -979,9 +979,9 @@ abstract class DataContainer extends ChartAreaContainer {
   /// values.
   ///
   /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
-  /// uses the  absolute scaled [parentContainer.pointsColumns].
+  /// uses the  absolute scaled [chartTopContainer.pointsColumns].
   void scalePointsColumns() {
-    parentContainer.pointsColumns.scale();
+    chartTopContainer.pointsColumns.scale();
   }
 
   /// Creates from [ChartData] (model for this container),
@@ -998,9 +998,9 @@ abstract class DataContainer extends ChartAreaContainer {
 
   void setupPresentersColumns() {
     presentersColumns = PresentersColumns(
-      pointsColumns: parentContainer.pointsColumns,
-      container: parentContainer,
-      presenterCreator: parentContainer.presenterCreator,
+      pointsColumns: chartTopContainer.pointsColumns,
+      container: chartTopContainer,
+      presenterCreator: chartTopContainer.presenterCreator,
     );
   }
 
@@ -1009,7 +1009,7 @@ abstract class DataContainer extends ChartAreaContainer {
   ///
   /// See [ChartOptions.dataRowsPaintingOrder].
   List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
-    var options = parentContainer.options;
+    var options = chartTopContainer.options;
     if (options.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       presenters = presenters.reversed.toList();
     }
@@ -1027,9 +1027,9 @@ abstract class DataContainer extends ChartAreaContainer {
 /// [paint()] and [drawDataPresentersColumns()].
 class VerticalBarChartDataContainer extends DataContainer {
   VerticalBarChartDataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) : super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 
   @override
@@ -1075,9 +1075,9 @@ class VerticalBarChartDataContainer extends DataContainer {
 /// [paint()] and [drawDataPresentersColumns()].
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) : super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 
   @override
@@ -1316,9 +1316,9 @@ class LegendContainer extends ChartAreaContainer {
   /// The passed [LayoutExpansion] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   LegendContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) : super(
-          parentContainer: parentContainer,
+          chartTopContainer: chartTopContainer,
         );
 
   /// Lays out the legend area.
@@ -1326,14 +1326,14 @@ class LegendContainer extends ChartAreaContainer {
   /// Evenly divides the [availableWidth] to all legend items.
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    if (!parentContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.isLegendContainerShown) {
       return;
     }
-    ChartOptions options = _parentContainer.options;
+    ChartOptions options = _chartTopContainer.options;
     double containerMarginTB = options.legendContainerMarginTB;
     double containerMarginLR = options.legendContainerMarginLR;
 
-    List<String> dataRowsLegends = _parentContainer.data.dataRowsLegends;
+    List<String> dataRowsLegends = _chartTopContainer.data.dataRowsLegends;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -1355,7 +1355,7 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      indicatorPaint.color = _parentContainer.data.dataRowsColors[index % _parentContainer.data.dataRowsColors.length];
+      indicatorPaint.color = _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(
         width: legendItemWidth,
@@ -1388,7 +1388,7 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!parentContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.isLegendContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -1401,7 +1401,7 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!parentContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.isLegendContainerShown) {
       return;
     }
     for (LegendItemContainer legendItemContainer in _legendItemContainers) {

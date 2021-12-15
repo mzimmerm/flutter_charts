@@ -67,7 +67,7 @@ class LabelContainer extends container_base.Container {
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// Does not set parent container's [_layoutExpansion] and [_parentContainer].
+  /// Does not set parent container's [_layoutExpansion] and [_chartTopContainer].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     required String label,

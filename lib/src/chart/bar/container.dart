@@ -26,10 +26,10 @@ class VerticalBarChartTopContainer extends ChartTopContainer {
 
   @override
   VerticalBarChartDataContainer createDataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) {
     return VerticalBarChartDataContainer(
-      parentContainer: parentContainer,
+      chartTopContainer: chartTopContainer,
     );
   }
   

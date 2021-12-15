@@ -216,9 +216,12 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 
   /// Constructor allows to set only data and keep other values default.
+  // todo-00-now this is not used. Why?
+/*
   _MyHomePageState.fromData({
     required ChartData chartData,
   }) : _chartData = chartData;
+*/
 
   /// Define options and data for chart
   void defineOptionsAndData() {

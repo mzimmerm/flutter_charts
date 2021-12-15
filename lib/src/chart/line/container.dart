@@ -26,10 +26,10 @@ class LineChartTopContainer extends ChartTopContainer {
 
   @override
   LineChartDataContainer createDataContainer({
-    required ChartTopContainer parentContainer,
+    required ChartTopContainer chartTopContainer,
   }) {
     return LineChartDataContainer(
-      parentContainer: parentContainer,
+      chartTopContainer: chartTopContainer,
     );
   }
 }
