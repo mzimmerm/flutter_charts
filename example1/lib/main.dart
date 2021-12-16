@@ -1,5 +1,5 @@
 /// Example app for flutter_charts.
-/// 
+///
 /// All classes without prefix in this code are either
 ///       - from material.dart or
 ///       - from flutter_charts.dart exports (this library)
@@ -92,9 +92,8 @@ Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleToRun() {
 }
 
 class MyApp extends StatelessWidget {
-  
   const MyApp({Key? key}) : super(key: key);
-  
+
   /// Builds the widget which becomes the root of the application.
   @override
   Widget build(BuildContext context) {
@@ -174,14 +173,12 @@ class _MyHomePageState extends State<MyHomePage> {
   //      This serves as a lasso that enforces callers to set the non-null.
   //      But why Dart would not use the initialized value?
 
+/*
   /// Define options for line chart, if used in the demo.
   LineChartOptions _lineChartOptions = LineChartOptions();
 
   /// Define options for vertical bar chart, if used in the demo
   ChartOptions _verticalBarChartOptions = VerticalBarChartOptions();
-
-  /// Get (again) the example to run from environment
-  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   // If you were to use your own extension of
   //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
@@ -197,10 +194,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Define data to be displayed
   ChartData _chartData = RandomChartData();
+*/
+
+  /// Get the example to run from environment variable.
+  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-  
+
   /// Constructor sets all options and data.
   // todo-00-now this is not used. Why?
 /*
@@ -224,6 +225,8 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 
   /// Define options and data for chart
+  ///
+/*
   void defineOptionsAndData() {
     ChartOptions chartOptions;
 
@@ -374,6 +377,7 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
     }
   }
+*/
 
   /* unused examples
       case ExamplesEnum.ex_2_1_AnimalCountBySeason:
@@ -424,6 +428,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
         break;  
    */
+
   void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
@@ -444,30 +449,30 @@ class _MyHomePageState extends State<MyHomePage> {
     // General notes on Windows and sizing
 
     // The (singleton?) window object is available anywhere using ui.
-    // From window, we can get  ui.window.devicePixelRatio, and also
+    // From window, we can get ui.window.devicePixelRatio, and also
     //   ui.Size windowLogicalSize = ui.window.physicalSize / devicePixelRatio
     // Note: Do not use ui.window for any sizing: see
     //       https://github.com/flutter/flutter/issues/11697
 
     // MediaQueryData mediaQueryData = MediaQuery.of(context);
     // Use MediaQuery.of(context) for any sizing.
-    // note: mediaQueryData can still return 0 size,
+    // Note: mediaQueryData can still return 0 size,
     //       but if MediaQuery.of(context) is used, Flutter will guarantee
     //       the build(context) will be called again !
     //        (once non 0 size becomes available)
 
-    // note: windowLogicalSize = size of the media (screen) in logical pixels
-    // note: same as ui.window.physicalSize / ui.window.devicePixelRatio;
+    // Note: windowLogicalSize = size of the media (screen) in logical pixels
+    // Note: same as ui.window.physicalSize / ui.window.devicePixelRatio;
     // ui.Size windowLogicalSize = mediaQueryData.size;
 
     // devicePixelRatio = number of device pixels for each logical pixel.
-    // note: in all known hardware, size(logicalPixel) > size(devicePixel)
-    // note: this is also, practically, never needed
+    // Note: in all known hardware, size(logicalPixel) > size(devicePixel)
+    // Note: this is also, practically, never needed
     // double logicalToDevicePixelSize = mediaQueryData.devicePixelRatio;
 
     // textScaleFactor = number of font pixels for each logical pixel.
-    // note: with some fontSize, if text scale factor is 1.5
-    //       => text is 1.5x larger than the font size.
+    // Note: with some fontSize, if text scale factor is 1.5
+    //       => text font is 1.5x larger than the font size.
     // double fontScale = mediaQueryData.textScaleFactor;
 
     // To give the LineChart full width and half of height of window.
@@ -478,41 +483,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
     //     "chartLogicalSize=$chartLogicalSize");
 
-    defineOptionsAndData();
-
-    LineChartTopContainer lineChartContainer = LineChartTopContainer(
-      chartData: _chartData,
-      chartOptions: _lineChartOptions,
-      xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
-    );
-
-    LineChart lineChart = LineChart(
-      painter: LineChartPainter(
-        lineChartContainer: lineChartContainer,
-      ),
-    );
-
-    VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
-      chartData: _chartData,
-      chartOptions: _verticalBarChartOptions,
-      xContainerLabelLayoutStrategy: _xContainerLabelLayoutStrategy,
-    );
-
-    VerticalBarChart verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
-      ),
-    );
-
-    Widget chartToRun;
-    switch (descriptorOfExampleToRun.item2) {
-      case ExamplesChartTypeEnum.lineChart:
-        chartToRun = lineChart;
-        break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        chartToRun = verticalBarChart;
-        break;
-    }
+    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
+    Widget chartToRun = definer.createRequestedChart();
 
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
@@ -640,5 +612,230 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+/// Defines which example to run.
+///
+/// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
+/// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
+class _ExampleDefiner {
+  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
+
+  _ExampleDefiner(this.descriptorOfExampleToRun);
+
+  Widget createRequestedChart() {
+
+    // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+    //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
+    // If xContainerLabelLayoutStrategy is not set (remains null), the charts instantiate
+    //   the DefaultIterativeLabelLayoutStrategy as we do here.
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    
+    ChartData chartData;
+    
+    ChartOptions chartOptions;
+
+    ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
+    ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
+
+    // Set chartOptions defaults here, so we do not repeat it in every example section. 
+    // Some sections may override this default.
+    switch (chartTypeToShow) {
+      case ExamplesChartTypeEnum.lineChart:
+        chartOptions = LineChartOptions();
+        break;
+      case ExamplesChartTypeEnum.verticalBarChart:
+        chartOptions = VerticalBarChartOptions();
+        break;
+    }
+
+    switch (exampleComboToRun) {
+      case ExamplesEnum.ex10RandomData:
+        chartData = RandomChartData();
+        break;
+
+      case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
+        xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
+          options: chartOptions,
+        );
+        chartData = RandomChartData();
+        break;
+
+      case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
+      // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
+      // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+      // Clients can also create their own LayoutStrategy.
+        xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
+          options: chartOptions,
+        );
+        chartData = ChartData();
+        chartData.dataRowsLegends = [
+          'Spring',
+          'Summer',
+          'Fall',
+          'Winter',
+        ];
+        chartData.dataRows = [
+          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+        ];
+        chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+        chartData.assignDataRowsDefaultColors();
+        break;
+
+      case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
+        // Set non-default chart options to show no labels
+        switch (chartTypeToShow) {
+          case ExamplesChartTypeEnum.lineChart:
+            chartOptions = LineChartOptions.noLabels();
+            break;
+          case ExamplesChartTypeEnum.verticalBarChart:
+            chartOptions = VerticalBarChartOptions.noLabels();
+            break;
+        }
+        chartData = ChartData();
+        chartData.dataRowsLegends = [
+          'Spring',
+          'Summer',
+          'Fall',
+          'Winter',
+        ];
+        chartData.dataRows = [
+          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+        ];
+        chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+        chartData.assignDataRowsDefaultColors();
+        break;
+
+      case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
+        // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
+        // This example shows user defined Y Labels that derive order from data.
+        //   When setting Y labels by user, the dataRows value scale
+        //   is irrelevant. User can use for example interval <0, 1>,
+        //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
+        //   The only thing that matters is  the relative values in the data Rows.
+
+        // Note that current implementation sets
+        //   the minimum of dataRows range (1.0 in this example)
+        //     on the level of the first Y Label ("Low" in this example),
+        //   and the maximum  of dataRows range (10.0 in this example)
+        //     on the level of the last Y Label ("High" in this example).
+
+      // Set non-default chart options to show no labels
+        switch (chartTypeToShow) {
+          case ExamplesChartTypeEnum.lineChart:
+            chartOptions = LineChartOptions(
+              chartOptions: const ChartOptions(
+                useUserProvidedYLabels: true, // use Y labels below
+              ),
+            );
+            break;
+          case ExamplesChartTypeEnum.verticalBarChart:
+            chartOptions = VerticalBarChartOptions(
+              chartOptions: const ChartOptions(
+                useUserProvidedYLabels: true, // use Y labels below
+              ),
+            );
+            break;
+        }
+        chartData = ChartData();
+        chartData.yLabels = [
+          'Low',
+          'Medium',
+          'High',
+        ];
+
+        chartData.dataRowsLegends = ['Java', 'Dart', 'Python', 'Newspeak'];
+        chartData.dataRows = [
+          [9.0, 4.0, 3.0, 9.0],
+          [7.0, 6.0, 7.0, 6.0],
+          [4.0, 9.0, 6.0, 8.0],
+          [3.0, 9.0, 10.0, 1.0],
+        ];
+        chartData.xLabels = ['Speed', 'Readability', 'Level of Novel', 'Usage'];
+        chartData.dataRowsColors = [
+          Colors.blue,
+          Colors.yellow,
+          Colors.green,
+          Colors.amber,
+        ];
+        
+        break;
+
+      case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
+        // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, Data-Based Y Labels, User-Provided Colors,
+        //        This shows a bug where negatives go below X axis.
+        // If we want the chart to show User-Provided textual Y labels with
+        // In each column, adding it's absolute values should add to same number:
+        // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
+
+        chartData = ChartData();
+        chartData.dataRowsLegends = [
+          '-2% or less',
+          '-2% to 0%',
+          '0% to +2%',
+          'more than +2%',
+        ];
+        // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
+        chartData.dataRows = [
+          [-9.0, -8.0, -8.0, -5.0, -8.0],
+          [-1.0, -2.0, -4.0, -1.0, -1.0],
+          [7.0, 8.0, 7.0, 11.0, 9.0],
+          [3.0, 2.0, 1.0, 3.0, 3.0],
+        ];
+        chartData.xLabels = ['Energy', 'Health', 'Finance', 'Chips', 'Oil'];
+        chartData.dataRowsColors = [
+          Colors.red,
+          Colors.grey,
+          Colors.greenAccent,
+          Colors.black,
+        ];
+        break;
+    }
+
+    // LineChart or VerticalBarChart depending on what is set in environment.
+    Widget chartToRun;
+    
+    switch (chartTypeToShow) {
+      case ExamplesChartTypeEnum.lineChart:
+      // construct line chart
+        LineChartTopContainer lineChartContainer = LineChartTopContainer(
+          chartData: chartData,
+          chartOptions: chartOptions,
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        );
+
+        LineChart lineChart = LineChart(
+          painter: LineChartPainter(
+            lineChartContainer: lineChartContainer,
+          ),
+        );
+        chartToRun = lineChart;
+        break;
+      case ExamplesChartTypeEnum.verticalBarChart:
+        VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
+          chartData: chartData,
+          chartOptions: chartOptions,
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        );
+
+        // construct bar chart
+        VerticalBarChart verticalBarChart = VerticalBarChart(
+          painter: VerticalBarChartPainter(
+            verticalBarChartContainer: verticalBarChartContainer,
+          ),
+        );
+
+        chartToRun = verticalBarChart;
+        break;
+    }
+    // Returns a configured LineChart or VerticalBarChart
+    return chartToRun;
   }
 }

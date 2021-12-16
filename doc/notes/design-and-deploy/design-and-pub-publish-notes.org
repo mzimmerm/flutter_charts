@@ -45,362 +45,6 @@ See file:./bug-text-painter-2.png
 
 - Is there a way to initialize a non-nullable list to size?
 
-* IN-PROGRESS Flutter Charts Enhancements
-
-** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
-    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-    - test  on values like 10,000 - 11,000.
-
-** IN-PROGRESS Add integration tests and ability to take screenshot and compare
-
-See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter
-
-1. Setup integration tests: https://flutter.dev/docs/cookbook/testing/integration/introduction
-2. Create an integration test chart_test_1.dart, which will run same code as the app flutter_charts/lib/main.dart 
-3. *Must start an AVD device - without this, errors about 'dart:ui' not found!*
-4. Command line, run: ~flutter test integration_test/chart_test_1.dart~. Can add -d device.
-5. Experiment with ability to run the test. Experiment with clicking on the + button in the test.
-6. Replace test_driver/integration_test.dart code with
-   #+begin_src dart
-     import 'dart:io';
-     import 'package:integration_test/integration_test_driver_extended.dart';
-
-     Future<void> main() async {
-       try {
-         await integrationDriver(
-           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
-             final File image = await File('screenshots/$screenshotName.png').create(recursive: true);
-             image.writeAsBytesSync(screenshotBytes);
-             return true;
-           },
-         );
-       } catch (e) {
-         print('Error occured: $e');
-       }
-     }
-   #+end_src
-   This adds onScreenshot event handler to integration tests
-7. To integration_test/app_test.dart, before all testWidgets where tests are initialized, add this code:
-   #+begin_src dart
-     final binding = IntegrationTestWidgetsFlutterBinding();
-     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-   #+end_src
-8. To the code of the test, at the point you want to take the screenshot, add this code
-   #+begin_src dart
-     await binding.takeScreenshot('test-screenshot');
-   #+end_src
-** IN-PROGRESS Refactorings
-
-*** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
-
-*** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
-
-*** 
-*** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
-**** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
-
-- LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
-
-**** DONE LayoutExpansion: more study and cleanup - pass to layout instead of to Container constructor (required layoutExpansion)
-
-I suspect, this is actually used as Container.preLayoutSize - sort of like preferredSize !!!!
-- or maybe as layoutSize member that is settable, to bypass only getter getLayoutSize
-  
-Study it and comment, maybe rename and refactor.
-
-Code review:
-
-- [ ] Container._layouExpansion is ONLY set during construction, so should be doable to be final! 
-- [ ] LayoutExpansion is now passed to layout as it functions basically as SizeConstraint!!
--
-
-
-**** DONE LayoutExpansion and Containers: remove all _layoutSize from extensions of Container, and add it as member to Container, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
-
-This should be possible, and in principle relatively simple .. well it still has some leftover work below.
-
-- [X] Remove _layoutSize from specializations of Container
-- [X] Remove get layoutSize from specializations of Container 
-- [X] Container layoutSize will need set and get. To set, add new private _debugLayoutSetCount. This will be interesting to know if the setter was called after initial set in layout
-- [X] Make sure _layoutSize is only in Container. Outside Container, use layoutSize 
-
-
-**** DONE Consider if LabelContainer needs to call layout again: places like: yLabelContainer.layout(LayoutExpansion.unused());
-
-Not needed, commented out and tested.
-
-**** DONE LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
-
-**** DONE Put back grid on the line chart.
-
-- why did it disappear?
-
-  Reason: In LineChartDataContainer
-
-  #+begin_src javascript
-
-  void paint(ui.Canvas canvas) {
-    _paintGridLines(canvas);
-    _drawDataPresentersColumns(canvas);
-  }
-
-  #+end_src
-
-  The _paintGridLines was missing
-**** DONE NO, KEEP chartArea for now : Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
-
-- but express that ChartContainer layoutSize should never change, be fine
-**** DONE ~LayoutExpansion and Containers: Now when the layoutSize is holding the passed layoutExpansion, Remove from Container, all members and getters for layoutExpansion.~
-
-Ok, now Nothing holds on layoutExpansion. Only passed to layout(layoutExpansion)
-
-Note: We can add at most a getter later (Flutter RenderObject and RenderBox has get constraints)
-
-**** DONE Move Container.dart to it's own package containter_base.dart
-
-- This was easy, only had to make isDistressed public.
-
-**** IN-PROGRESS Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
-
-- LayoutExpansion
-  - make members final
-  - test
-  - add min/max and getter for width,height as in BoxConstraints
-  - test
-  - add tight and similar constructors as in BoxConstraints.
-  - test 
-  - Rename (substitution? Refactor?) to BoxSizeConstraint, also variables.
-    
-
-**** TODO Rename ~offset to layoutOffset~ and rename ~applyParentOffset to applyParentLayoutOffset~
-
-**** TODO ~Core Problem - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout~
-
-This is a core design issue. Think about this and review. This may not be salvageable.
-
-Thoughts:
-
-- Maybe the lifecycle needs to be:
-  - setup() - Create top Container and Children - all of them, for example, all labels 
-  - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
-  - paint() - Paint the layed out Containers, skipping those marked to skip
-
-**** TODO ~LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!~
-
-- This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
-  
-**** TODO Look into remaining usages of "ui.Size get layoutSize"
-
-
-*** TODO ~In Container, provide a default paint() method rather than abstract, like this~
-
-#+begin_src javascript
-
-  void paint(ui.Canvas canvas) {
-    for (var yLabelContainer in _yLabelContainers) {
-      yLabelContainer.paint(canvas);
-    }
-  }
-
-#+end_src
-*** TODO Make Containers a hierarchy - Everything is a container. Layout, Inset, etc are also containers. Containers are wrapped and only contain children, not layouts, or other loose containers.
-**** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.
-**** TODO Edit all calls to layout and return it
-
-**** TODO ~Add SizeConstraint~
-
-                                     
-- [ ] Add size_constraint.dart -
-  - SizeConstraint{ _maxSize = Size.infinity; SizeConstraint({maxSize:}); SizeConstraint.infinity: redirect to SizeConstraint(maxSize: Size.infinity};},
-- [ ] In existing code, Pass SizeConstraint to each Container.layout({required SizeConstraint sizeConstraint})
-- [ ] Add SizeConstraint field to Container, from constructor.
-
-
-**** TODO ~Container class~ - make it a hierarchy:
-
-Container is it's children, but it can rotate or be moved.
-
-***** TODO Add members and methods to Container class
-
-- [ ] Add hierarchy stuff
-  - [ ] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
-  - [ ] ~children~ should be just a List<Containers>
-  - [ ] ~traverse()~ 
-  - [ ] ~flatten()~ 
-  - [ ] ~isUniqueName()~
-  - [ ] ~isRoot()~
-- [ ] Add Content management stuff
-  - [ ] ~addChild(Container)~ - can never be root
-  - [ ] ~name~ not null, required
-- [ ] Add Constructors
-  - [ ] ~Container.root~, configure as root
-    - member ~name~ set in all constructors or defaults to random string, functions as unique key. later Ensure name unique in hierarchy. 
-  - [ ] constructor from children by passing children: List<Container>
-- [ ] Layout related stuff
-  - [ ] add member ~sizeConstraint~ - NOT NOW, LATER - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
-  - [ ] add member ~layoutSize~
-  - [ ] keep member ~layoutOffset~
-  - [ ] implement default method ~layout(SizeConstraint)~ - see [[Layouter general function]]
-  - [ ] add abstract method ~calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()~ # Calculates children's positions in self based on what the layout actually is
-  - [ ] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
-    - applies offset on self (call super)
-
-***** TODO How do we want the Containers function eventually?
-
-- Generally, Containers lifecycle should be as follows.
-  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know od
-    - create Root (ChartContainer)
-    - add all children recursively 
-  - Layout
-    - called by root.layout(SizeConstraint)
-    - side effects
-      - set layoutSize on all members in hierarchy (currently not done)
-      - set offset (applyParentOffset) on all members in hierarchy 
-  - Paint 
-  
-*** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
-*** TODO ~Convert ChartContainer.layout to use the new concepts - CONVERT ONLY ON THIS LEVEL, NOT CHILDREN~
-**** TODO Move some code to calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
-
-Code between layout and applyParentOffset, like this:
-#+begin_example
-    xContainer.layout();
-
-    ui.Size xContainerSize = xContainer.layoutSize;
-    ui.Offset xContainerOffset = new ui.Offset(
-        yContainerSize.width, chartArea.height - xContainerSize.height);
-    xContainer.applyParentOffset(xContainerOffset);
-#+end_example
-shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
-**** TODO What else  - much more
-
-*** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
-
-*** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers but keep the code structure the same~
-**** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
-- ~ChartContainer~
-  - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
-  - ~LegendContainer~ extends ChartAreaContainer 
-    - has List<LegendItemContainer> _legendItemContainers  // is container, checked all the way down
-  - ~YContainer~
-    - has List<AxisLabelContainer> _yLabelContainers; // is container, checked all the way down
-  - ~XContainer~ 
-    - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
-  - ~DataContainer~
-    - has GridLinesContainer _xGridLinesContainer; // is container, checked all the way down
-    - has GridLinesContainer _yGridLinesContainer; // is container, checked all the way down
-    - has PresentersColumns presentersColumns (is List<PresentersColumn>; // NOT a container
-      - PresentersColumns // NOT a container
-        - During constructions, calls self(CustomList).add(PresentersColumn)
-      - PresentersColumn  //  NOT a container 
-        - List<Presenter> presenters;
-        - During construction, calls ~_createPresentersInColumn~
-          - accepts:
-            - PointsColumn // END. NOT a container
-              - has List<StackableValuePoint> points;
-            - OR
-            - List<StackableValuePoint> fromPoints,
-          - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
-          - [ ]
-**** TODO ~TO CONTAINERS CONVERSION~
-- [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
-  - [ ] First experiment on ~PresentersColumns~
-- [ ] Find where Presenters get their internal values set
-  - They are set in constructors, which are created during layout() of parents
-  - For example, VerticalBarPresener constructor, all values (that is offsets) are established in Contructory, NOT in layout!
-- [ ] Replace the above sites with calls to layout(maxSize: internal values from existing code);
-- [ ] Convert to Containers
-  - [ ] ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
-    - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
-    - VerticalBarPresenter({required StackableValuePoint point,
-      - presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom); // so this is where the size is set!!!
-    - LineAndHotspotpresenter
-      - LineAndHotspotPresenter({  required StackableValuePoint point,
-      - toPoint ??= fromPoint;
-      - lineContainer = new LineContainer(
-        lineFrom: fromPoint,
-        lineTo: toPoint,
-        linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
-      - offsetPoint = fromPoint; // point is the left (from) end of the line
-      - innerPaint = options.hotspotInnerPaint;
-      - outerPaint = options.hotspotOuterPaint;
-      - innerRadius = options.hotspotInnerRadius;
-      - outerRadius = options.hotspotOuterRadius;
-  - ~LineContainer (passed and living in LineAndHotspotPresenter) already extends Container!!~
-    - class LineContainer extends flutter_charts_container.Container
-  - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
-    - ~The problem is, the presenters do not "paint/draw" themselves, but are drawn in parents~
-      - ~VerticalBarChartDataContainer._drawDataPresentersColumns~
-    - ~BUT WHERE ARE THE POSITIONS OF THE PRESENTORS INSIDES CALCULATED??~
-      - ~CALCULATED IN ChartContainer.layout -> DataContainer.applyParentOffset -> DataContainer.setupPresentersColumns -> new PresentersColumns(pointsColumns: parentContainer.pointsColumns,~ 
-      - So the calculation and drawing both happens in parents, NOT presenters.
- 
-- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS, AND ITERATE THE layout and paint calls~
-  - [ ] PointsColumn
-  - [ ] PointsColumns
-  - [ ] NOT StackableValuePoint
-  - [ ] May need a special extension of Containers for some of the above.
-  - [ ] Anne Kilpatrick
-    - 43 M valuation, 146 Units 
-    - Oakville 10 M dollars / acre at lake
-    - here it is 7M / acre =>  164 - this would be $475 / unit ????
-    - 
-  - 
-**** TODO Rename Container.paint to Container.presentOn - we may need
-**** TODO research which containers hold on parents and children
-**** TODO Make containers a hierarchy
-***** Add 'parent' and 'children' members
-***** Add 'name' member to Container 
-**** TODO Ensure code sets up the hierarchy correctly 
-***** Study use of GridLinesContainer, XContainer etc, their membership 
-**** TODO Put ChartOptions only on top Container (ChartContainer, may be there already
-***** remove passing the ChartOptions down
-***** access ChartOptions in Containers via the (get)root 
-***** 
-*** TODO Remove complexity around passing ChartOptions.
-*** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
-
-***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
-*** TODO Study Morphs what else needs added!
-*** TODO Rename Container into Morph
-**** Add a list of children to Morph
-**** Add name field to Morph 
-** LATER Enhancements in progress or planned - priority order
-
-*** Create a document / image showing chart layout and spacing - show option variables on image
-Also:
-- document applyParentOffset and pull from Container?
-- go over Container and document
-
-*** Add org mode based integration build, which allows to run and test all "known/predefined" code scenarios that work. 
-*** To the above org mode base integration build, add ability to "capture self", and compare result as jpeg/svg with known jpeg/svg results
-*** Add formatter for YLabels.
-*** Option additions that control look:
-**** Add options to hide the grid (keep axes)
-**** Add options to hide  axes (if axes not shown, labels should not show?)
-**** Decrease option for default spacing around the Y axis.
-*** Provide tooltip support
-*** Provide a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
-.
-*** Data types
-**** Independent (X value) data types
-***** There should be adapters from any dependent (X value) data types:
-****** Ordinal - x values spaced evenly, only sequence matters
-****** Measured - x values are convertible to numbers
-******* Date types
-******* Number types
-******* Others?
-**** Dependent (Y value) data types - for now, keep double, can provide converters.
-
-*** For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
-*** Next, add ability to invert X and Y axis (values on horizontal axis)
-*** TextPainter notes
-
-If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
-** DONE Items, bugs, refactorings Implemented
-*** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
-*** DONE Labels austo-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
-
 * NOTE Layouter general function
 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
@@ -823,7 +467,6 @@ Also, although "from a separation of data and view" principle I originally put s
    - whateverFromCX (Y coordinate from ) - if it is a point which is part of a line
    - whateverToCX (Y coordinate to )     - if it is a point which is part of a line
 
-
 * Flutter beginner: Experimenting with Flutter using Flutter Charts
 
 This section describes, very briefly with links, how to install Flutter, and the Flutter Charts package.
@@ -861,3 +504,358 @@ This section We describe running Flutter Charts in development mode on your devi
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
 
+* IN-PROGRESS Flutter Charts Enhancements
+
+** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
+    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+    - test  on values like 10,000 - 11,000.
+
+** IN-PROGRESS Add integration tests and ability to take screenshot and compare
+
+See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter
+
+1. Setup integration tests: https://flutter.dev/docs/cookbook/testing/integration/introduction
+2. Create an integration test chart_test_1.dart, which will run same code as the app flutter_charts/lib/main.dart 
+3. *Must start an AVD device - without this, errors about 'dart:ui' not found!*
+4. Command line, run: ~flutter test integration_test/chart_test_1.dart~. Can add -d device.
+5. Experiment with ability to run the test. Experiment with clicking on the + button in the test.
+6. Replace test_driver/integration_test.dart code with
+   #+begin_src dart
+     import 'dart:io';
+     import 'package:integration_test/integration_test_driver_extended.dart';
+
+     Future<void> main() async {
+       try {
+         await integrationDriver(
+           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
+             final File image = await File('screenshots/$screenshotName.png').create(recursive: true);
+             image.writeAsBytesSync(screenshotBytes);
+             return true;
+           },
+         );
+       } catch (e) {
+         print('Error occured: $e');
+       }
+     }
+   #+end_src
+   This adds onScreenshot event handler to integration tests
+7. To integration_test/app_test.dart, before all testWidgets where tests are initialized, add this code:
+   #+begin_src dart
+     final binding = IntegrationTestWidgetsFlutterBinding();
+     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+   #+end_src
+8. To the code of the test, at the point you want to take the screenshot, add this code
+   #+begin_src dart
+     await binding.takeScreenshot('test-screenshot');
+   #+end_src
+** IN-PROGRESS Refactorings
+
+*** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
+
+*** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
+
+*** 
+*** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
+**** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
+
+- LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
+
+**** DONE LayoutExpansion: more study and cleanup - pass to layout instead of to Container constructor (required layoutExpansion)
+
+I suspect, this is actually used as Container.preLayoutSize - sort of like preferredSize !!!!
+- or maybe as layoutSize member that is settable, to bypass only getter getLayoutSize
+  
+Study it and comment, maybe rename and refactor.
+
+Code review:
+
+- [ ] Container._layouExpansion is ONLY set during construction, so should be doable to be final! 
+- [ ] LayoutExpansion is now passed to layout as it functions basically as SizeConstraint!!
+-
+
+
+**** DONE LayoutExpansion and Containers: remove all _layoutSize from extensions of Container, and add it as member to Container, replacing getter layoutSize in preparation of moving all these basic elements related to layout to Container.
+
+This should be possible, and in principle relatively simple .. well it still has some leftover work below.
+
+- [X] Remove _layoutSize from specializations of Container
+- [X] Remove get layoutSize from specializations of Container 
+- [X] Container layoutSize will need set and get. To set, add new private _debugLayoutSetCount. This will be interesting to know if the setter was called after initial set in layout
+- [X] Make sure _layoutSize is only in Container. Outside Container, use layoutSize 
+
+
+**** DONE Consider if LabelContainer needs to call layout again: places like: yLabelContainer.layout(LayoutExpansion.unused());
+
+Not needed, commented out and tested.
+
+**** DONE LayoutExpansion and Containers: remove all _layoutExpansion from extensions of Container AND Container. ~layoutExpansion is passed to layout, but NOT held on~
+
+**** DONE Put back grid on the line chart.
+
+- why did it disappear?
+
+  Reason: In LineChartDataContainer
+
+  #+begin_src javascript
+
+  void paint(ui.Canvas canvas) {
+    _paintGridLines(canvas);
+    _drawDataPresentersColumns(canvas);
+  }
+
+  #+end_src
+
+  The _paintGridLines was missing
+**** DONE NO, KEEP chartArea for now : Review use of chartArea on ChartContainer, see if it should be simply replaced with layoutSize !!!
+
+- but express that ChartContainer layoutSize should never change, be fine
+**** DONE ~LayoutExpansion and Containers: Now when the layoutSize is holding the passed layoutExpansion, Remove from Container, all members and getters for layoutExpansion.~
+
+Ok, now Nothing holds on layoutExpansion. Only passed to layout(layoutExpansion)
+
+Note: We can add at most a getter later (Flutter RenderObject and RenderBox has get constraints)
+
+**** DONE Move Container.dart to it's own package containter_base.dart
+
+- This was easy, only had to make isDistressed public.
+
+**** IN-PROGRESS Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
+
+- LayoutExpansion
+  - make members final
+  - test
+  - add min/max and getter for width,height as in BoxConstraints
+  - test
+  - add tight and similar constructors as in BoxConstraints.
+  - test 
+  - Rename (substitution? Refactor?) to BoxSizeConstraint, also variables.
+    
+
+**** TODO Rename ~offset to layoutOffset~ and rename ~applyParentOffset to applyParentLayoutOffset~
+
+**** TODO ~Core Problem - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout~
+
+This is a core design issue. Think about this and review. This may not be salvageable.
+
+Thoughts:
+
+- Maybe the lifecycle needs to be:
+  - setup() - Create top Container and Children - all of them, for example, all labels 
+  - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
+  - paint() - Paint the layed out Containers, skipping those marked to skip
+
+**** TODO ~LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!~
+
+- This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
+  
+**** TODO Look into remaining usages of "ui.Size get layoutSize"
+
+
+*** TODO ~In Container, provide a default paint() method rather than abstract, like this~
+
+#+begin_src javascript
+
+  void paint(ui.Canvas canvas) {
+    for (var yLabelContainer in _yLabelContainers) {
+      yLabelContainer.paint(canvas);
+    }
+  }
+
+#+end_src
+*** TODO Make Containers a hierarchy - Everything is a container. Layout, Inset, etc are also containers. Containers are wrapped and only contain children, not layouts, or other loose containers.
+**** TODO Add return Size to layout. This should return current Container.layoutSize . This is for the short term.
+**** TODO Edit all calls to layout and return it
+
+**** TODO ~Add SizeConstraint~
+
+                                     
+- [ ] Add size_constraint.dart -
+  - SizeConstraint{ _maxSize = Size.infinity; SizeConstraint({maxSize:}); SizeConstraint.infinity: redirect to SizeConstraint(maxSize: Size.infinity};},
+- [ ] In existing code, Pass SizeConstraint to each Container.layout({required SizeConstraint sizeConstraint})
+- [ ] Add SizeConstraint field to Container, from constructor.
+
+
+**** TODO ~Container class~ - make it a hierarchy:
+
+Container is it's children, but it can rotate or be moved.
+
+***** TODO Add members and methods to Container class
+
+- [ ] Add hierarchy stuff
+  - [ ] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
+  - [ ] ~children~ should be just a List<Containers>
+  - [ ] ~traverse()~ 
+  - [ ] ~flatten()~ 
+  - [ ] ~isUniqueName()~
+  - [ ] ~isRoot()~
+- [ ] Add Content management stuff
+  - [ ] ~addChild(Container)~ - can never be root
+  - [ ] ~name~ not null, required
+- [ ] Add Constructors
+  - [ ] ~Container.root~, configure as root
+    - member ~name~ set in all constructors or defaults to random string, functions as unique key. later Ensure name unique in hierarchy. 
+  - [ ] constructor from children by passing children: List<Container>
+- [ ] Layout related stuff
+  - [ ] add member ~sizeConstraint~ - NOT NOW, LATER - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
+  - [ ] add member ~layoutSize~
+  - [ ] keep member ~layoutOffset~
+  - [ ] implement default method ~layout(SizeConstraint)~ - see [[Layouter general function]]
+  - [ ] add abstract method ~calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()~ # Calculates children's positions in self based on what the layout actually is
+  - [ ] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
+    - applies offset on self (call super)
+
+***** TODO How do we want the Containers function eventually?
+
+- Generally, Containers lifecycle should be as follows.
+  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know od
+    - create Root (ChartContainer)
+    - add all children recursively 
+  - Layout
+    - called by root.layout(SizeConstraint)
+    - side effects
+      - set layoutSize on all members in hierarchy (currently not done)
+      - set offset (applyParentOffset) on all members in hierarchy 
+  - Paint 
+  
+*** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
+*** TODO ~Convert ChartContainer.layout to use the new concepts - CONVERT ONLY ON THIS LEVEL, NOT CHILDREN~
+**** TODO Move some code to calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
+
+Code between layout and applyParentOffset, like this:
+#+begin_example
+    xContainer.layout();
+
+    ui.Size xContainerSize = xContainer.layoutSize;
+    ui.Offset xContainerOffset = new ui.Offset(
+        yContainerSize.width, chartArea.height - xContainerSize.height);
+    xContainer.applyParentOffset(xContainerOffset);
+#+end_example
+shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
+**** TODO What else  - much more
+
+*** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
+
+*** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers but keep the code structure the same~
+**** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
+- ~ChartContainer~
+  - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
+  - ~LegendContainer~ extends ChartAreaContainer 
+    - has List<LegendItemContainer> _legendItemContainers  // is container, checked all the way down
+  - ~YContainer~
+    - has List<AxisLabelContainer> _yLabelContainers; // is container, checked all the way down
+  - ~XContainer~ 
+    - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
+  - ~DataContainer~
+    - has GridLinesContainer _xGridLinesContainer; // is container, checked all the way down
+    - has GridLinesContainer _yGridLinesContainer; // is container, checked all the way down
+    - has PresentersColumns presentersColumns (is List<PresentersColumn>; // NOT a container
+      - PresentersColumns // NOT a container
+        - During constructions, calls self(CustomList).add(PresentersColumn)
+      - PresentersColumn  //  NOT a container 
+        - List<Presenter> presenters;
+        - During construction, calls ~_createPresentersInColumn~
+          - accepts:
+            - PointsColumn // END. NOT a container
+              - has List<StackableValuePoint> points;
+            - OR
+            - List<StackableValuePoint> fromPoints,
+          - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
+          - [ ]
+**** TODO ~TO CONTAINERS CONVERSION~
+- [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
+  - [ ] First experiment on ~PresentersColumns~
+- [ ] Find where Presenters get their internal values set
+  - They are set in constructors, which are created during layout() of parents
+  - For example, VerticalBarPresener constructor, all values (that is offsets) are established in Contructory, NOT in layout!
+- [ ] Replace the above sites with calls to layout(maxSize: internal values from existing code);
+- [ ] Convert to Containers
+  - [ ] ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+    - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
+    - VerticalBarPresenter({required StackableValuePoint point,
+      - presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom); // so this is where the size is set!!!
+    - LineAndHotspotpresenter
+      - LineAndHotspotPresenter({  required StackableValuePoint point,
+      - toPoint ??= fromPoint;
+      - lineContainer = new LineContainer(
+        lineFrom: fromPoint,
+        lineTo: toPoint,
+        linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
+      - offsetPoint = fromPoint; // point is the left (from) end of the line
+      - innerPaint = options.hotspotInnerPaint;
+      - outerPaint = options.hotspotOuterPaint;
+      - innerRadius = options.hotspotInnerRadius;
+      - outerRadius = options.hotspotOuterRadius;
+  - ~LineContainer (passed and living in LineAndHotspotPresenter) already extends Container!!~
+    - class LineContainer extends flutter_charts_container.Container
+  - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
+    - ~The problem is, the presenters do not "paint/draw" themselves, but are drawn in parents~
+      - ~VerticalBarChartDataContainer._drawDataPresentersColumns~
+    - ~BUT WHERE ARE THE POSITIONS OF THE PRESENTORS INSIDES CALCULATED??~
+      - ~CALCULATED IN ChartContainer.layout -> DataContainer.applyParentOffset -> DataContainer.setupPresentersColumns -> new PresentersColumns(pointsColumns: parentContainer.pointsColumns,~ 
+      - So the calculation and drawing both happens in parents, NOT presenters.
+ 
+- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS, AND ITERATE THE layout and paint calls~
+  - [ ] PointsColumn
+  - [ ] PointsColumns
+  - [ ] NOT StackableValuePoint
+  - [ ] May need a special extension of Containers for some of the above.
+  - [ ] Anne Kilpatrick
+    - 43 M valuation, 146 Units 
+    - Oakville 10 M dollars / acre at lake
+    - here it is 7M / acre =>  164 - this would be $475 / unit ????
+    - 
+  - 
+**** TODO Rename Container.paint to Container.presentOn - we may need
+**** TODO research which containers hold on parents and children
+**** TODO Make containers a hierarchy
+***** Add 'parent' and 'children' members
+***** Add 'name' member to Container 
+**** TODO Ensure code sets up the hierarchy correctly 
+***** Study use of GridLinesContainer, XContainer etc, their membership 
+**** TODO Put ChartOptions only on top Container (ChartContainer, may be there already
+***** remove passing the ChartOptions down
+***** access ChartOptions in Containers via the (get)root 
+***** 
+*** TODO Remove complexity around passing ChartOptions.
+*** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
+
+***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
+*** TODO Study Morphs what else needs added!
+*** TODO Rename Container into Morph
+**** Add a list of children to Morph
+**** Add name field to Morph 
+** LATER Enhancements in progress or planned - priority order
+
+*** Create a document / image showing chart layout and spacing - show option variables on image
+Also:
+- document applyParentOffset and pull from Container?
+- go over Container and document
+
+*** Add org mode based integration build, which allows to run and test all "known/predefined" code scenarios that work. 
+*** To the above org mode base integration build, add ability to "capture self", and compare result as jpeg/svg with known jpeg/svg results
+*** Add formatter for YLabels.
+*** Option additions that control look:
+**** Add options to hide the grid (keep axes)
+**** Add options to hide  axes (if axes not shown, labels should not show?)
+**** Decrease option for default spacing around the Y axis.
+*** Provide tooltip support
+*** Provide a few more chart types: Spline line chart (stacked line chart), Grouped VerticalBar chart,
+.
+*** Data types
+**** Independent (X value) data types
+***** There should be adapters from any dependent (X value) data types:
+****** Ordinal - x values spaced evenly, only sequence matters
+****** Measured - x values are convertible to numbers
+******* Date types
+******* Number types
+******* Others?
+**** Dependent (Y value) data types - for now, keep double, can provide converters.
+
+*** For ChartOptions.useUserProvidedYLabels = true. See example with User defined YLabels: Current implementation sets the minimum of dataRows range (1.0 in the example) on the level of the first Y Label ("Ok" in this example), and the maximum  of dataRows range (10.0 in this example) on the level of the last Y Label ("High" in this example). This is not desirable, we need to add a userProvidedYLabelsBoundaryMin/Max.
+*** Next, add ability to invert X and Y axis (values on horizontal axis)
+*** TextPainter notes
+
+If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
+** DONE Items, bugs, refactorings Implemented
+*** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
+*** DONE Labels austo-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
