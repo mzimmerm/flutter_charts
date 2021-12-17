@@ -64,8 +64,8 @@ abstract class ChartTopContainer extends Container {
 
   /// Base Areas of chart.
   late LegendContainer legendContainer;
-  late YContainer yContainer;
   late XContainer xContainer;
+  late YContainer yContainer;
   late DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
@@ -371,7 +371,7 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = parentLayoutExpansion.height - (_chartTopContainer.options.xBottomMinTicksHeight);
+    double yAxisMin = parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
@@ -379,13 +379,13 @@ class YContainer extends ChartAreaContainer {
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
     //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()], 
     //   so we cannot just skip layout completely at the beginning.
-    if (!chartTopContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
       chartTopContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
       return;
     }
 
-    if (_chartTopContainer.options.useUserProvidedYLabels) {
+    if (_chartTopContainer.options.yContainerOptions.useUserProvidedYLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
@@ -393,7 +393,7 @@ class YContainer extends ChartAreaContainer {
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * _chartTopContainer.options.yLabelsPadLR;
+            2 * _chartTopContainer.options.yContainerOptions.yLabelsPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, parentLayoutExpansion.height);
   }
@@ -474,10 +474,10 @@ class YContainer extends ChartAreaContainer {
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
-      textScaleFactor: options.labelTextScaleFactor,
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
     // Create one Y Label (yLabelContainer) for each labelInfo,
     // and add to yLabelContainers list.
@@ -501,7 +501,7 @@ class YContainer extends ChartAreaContainer {
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(
-        ui.Offset(_chartTopContainer.options.yLabelsPadLR, labelTopY),
+        ui.Offset(_chartTopContainer.options.yContainerOptions.yLabelsPadLR, labelTopY),
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -510,7 +510,7 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!chartTopContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -523,7 +523,7 @@ class YContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartTopContainer.options.isYContainerShown) {
+    if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       return;
     }
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
@@ -588,7 +588,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     List<String> xLabels = _chartTopContainer.data.xLabels;
 
-    double yTicksWidth = options.yLeftMinTicksWidth + options.yRightMinTicksWidth;
+    double yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
 
     double availableWidth = parentLayoutExpansion.width - yTicksWidth;
 
@@ -631,8 +631,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
       double halfStepWidth = _gridStepWidth / 2;
       double atIndexOffset = _gridStepWidth * xIndex;
-      double xTickX = halfStepWidth + atIndexOffset + options.yLeftMinTicksWidth;
-      double labelTopY = options.xLabelsPadTB; // down by XContainer padding
+      double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
+      double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
 
       xLabelContainer.parentOffsetTick = xTickX;
 
@@ -650,10 +650,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // Set the layout size calculated by this layout
     layoutSize = ui.Size(
       parentLayoutExpansion.width,
-      xLabelsMaxHeight + 2 * options.xLabelsPadTB,
+      xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
     );
 
-    if (!chartTopContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.xContainerOptions.isXContainerShown) {
       // Before re-layout, return and make the layout height (vertical-Y size) 0.
       // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the 
       // layout and painting of the DataContainer in ChartContainer - see xTickXs
@@ -676,23 +676,23 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   LabelStyle _styleForLabels(ChartOptions options) {
     widgets.TextStyle labelTextStyle = widgets.TextStyle(
-      color: options.labelTextStyle.color,
+      color: options.labelCommonOptions.labelTextStyle.color,
       fontSize: labelLayoutStrategy.labelFontSize,
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
       textStyle: labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.labelTextAlign, // center text
-      textScaleFactor: options.labelTextScaleFactor,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
     return labelStyle;
   }
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!chartTopContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.xContainerOptions.isXContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -705,7 +705,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartTopContainer.options.isXContainerShown) {
+    if (!chartTopContainer.options.xContainerOptions.isXContainerShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
@@ -959,7 +959,7 @@ abstract class DataContainer extends ChartAreaContainer {
     _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (_chartTopContainer.options.isYGridlinesShown) {
+    if (_chartTopContainer.options.yContainerOptions.isYGridlinesShown) {
       _yGridLinesContainer.paint(canvas);
     }
   }
@@ -1004,7 +1004,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// See [ChartOptions.dataRowsPaintingOrder].
   List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
     var options = chartTopContainer.options;
-    if (options.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
+    if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       presenters = presenters.reversed.toList();
     }
     return presenters;
@@ -1194,9 +1194,9 @@ class LegendItemContainer extends Container {
   void layout(LayoutExpansion parentLayoutExpansion) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
-    double indicatorSquareSide = _options.legendColorIndicatorWidth;
-    double indicatorToLabelPad = _options.legendItemIndicatorToLabelPad;
-    double betweenLegendItemsPadding = _options.betweenLegendItemsPadding;
+    double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
+    double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
+    double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
     double labelMaxWidth =
         parentLayoutExpansion.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
@@ -1320,21 +1320,21 @@ class LegendContainer extends ChartAreaContainer {
   /// Evenly divides the [availableWidth] to all legend items.
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    if (!chartTopContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
       return;
     }
     ChartOptions options = _chartTopContainer.options;
-    double containerMarginTB = options.legendContainerMarginTB;
-    double containerMarginLR = options.legendContainerMarginLR;
+    double containerMarginTB = options.legendOptions.legendContainerMarginTB;
+    double containerMarginLR = options.legendOptions.legendContainerMarginLR;
 
     List<String> dataRowsLegends = _chartTopContainer.data.dataRowsLegends;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelTextStyle,
-      textDirection: options.labelTextDirection,
-      textAlign: options.legendTextAlign, // keep left, close to indicator
-      textScaleFactor: options.labelTextScaleFactor,
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
     // First paint all legends, to figure out max height of legends to center all
@@ -1382,7 +1382,7 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (!chartTopContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
@@ -1395,7 +1395,7 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartTopContainer.options.isLegendContainerShown) {
+    if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
       return;
     }
     for (LegendItemContainer legendItemContainer in _legendItemContainers) {

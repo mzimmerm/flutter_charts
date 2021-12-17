@@ -51,7 +51,7 @@ void main() {
   });
 
   test('Range makeLabelsFromData', () {
-    ChartOptions options = ChartOptions();
+    ChartOptions options = const ChartOptions();
     double min = 100.0;
     double max = 500.0;
 

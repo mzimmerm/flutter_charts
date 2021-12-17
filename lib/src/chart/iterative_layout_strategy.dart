@@ -88,12 +88,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   // todo-11-last :   But they still need to default from options or somewhere? 
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
-  })   : _decreaseLabelFontRatio = options.decreaseLabelFontRatio,
-        _showEveryNthLabel = options.showEveryNthLabel,
-        _maxLabelReLayouts = options.maxLabelReLayouts,
-        _multiplyLabelSkip = options.multiplyLabelSkip,
-        _labelFontSize = options.labelFontSize,
-        _labelTiltRadians = options.labelTiltRadians;
+  })   : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
+        _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
+        _maxLabelReLayouts = options.iterativeLayoutOptions.maxLabelReLayouts,
+        _multiplyLabelSkip = options.iterativeLayoutOptions.multiplyLabelSkip,
+        _labelFontSize = options.labelCommonOptions.labelFontSize,
+        _labelTiltRadians = options.iterativeLayoutOptions.labelTiltRadians;
 
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {

@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //      This serves as a lasso that enforces callers to set the non-null.
   //      But why Dart would not use the initialized value?
 
-/*
+/* todo-00-new remove
   /// Define options for line chart, if used in the demo.
   LineChartOptions _lineChartOptions = LineChartOptions();
 
@@ -470,10 +470,15 @@ class _ExampleDefiner {
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
         chartOptions = LineChartOptions();
-        // example of overwriting defaults: 
-        //   chartOptions = LineChartOptions(
-        //     chartOptions: const ChartOptions(labelTextColor: material.Colors.yellow), 
-        //     hotspotInnerPaintColor: material.Colors.blue);
+        // example of overwriting defaults of LineChartOptions:
+        //    chartOptions = LineChartOptions(
+        //      chartOptions: const ChartOptions(
+        //        labelCommonOptions: LabelCommonOptions(
+        //          labelTextColor: material.Colors.yellow,
+        //        ),
+        //      ),
+        //      hotspotInnerPaintColor: material.Colors.blue,
+        //    );
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
         chartOptions = VerticalBarChartOptions();
@@ -551,26 +556,25 @@ class _ExampleDefiner {
         //   is irrelevant. User can use for example interval <0, 1>,
         //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
         //   The only thing that matters is  the relative values in the data Rows.
-
-        // Note that current implementation sets
+        // Current implementation sets
         //   the minimum of dataRows range (1.0 in this example)
         //     on the level of the first Y Label ("Low" in this example),
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
 
-      // Set non-default chart options to show no labels
+      // Set non-default chart options to show no labels in this example
         switch (chartTypeToShow) {
           case ExamplesChartTypeEnum.lineChart:
             chartOptions = LineChartOptions(
               chartOptions: const ChartOptions(
-                useUserProvidedYLabels: true, // use Y labels below
+                yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
               ),
             );
             break;
           case ExamplesChartTypeEnum.verticalBarChart:
             chartOptions = VerticalBarChartOptions(
               chartOptions: const ChartOptions(
-                useUserProvidedYLabels: true, // use Y labels below
+                yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
               ),
             );
             break;

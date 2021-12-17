@@ -267,7 +267,7 @@ class YScalerAndLabelFormatter {
   /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
   void makeLabelsPresentable() {
     for (LabelInfo labelInfo in labelInfos) {
-      labelInfo.formattedYLabel = _options.valueToLabel(labelInfo.labelValue);
+      labelInfo.formattedYLabel = _options.yContainerOptions.valueToLabel(labelInfo.labelValue);
     }
   }
 

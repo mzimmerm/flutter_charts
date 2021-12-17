@@ -9,7 +9,7 @@ import 'package:flutter_charts/src/util/collection.dart' as custom_collection
 // todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {
   ui.Paint paint = ui.Paint();
-  paint.color = options.gridLinesColor;
+  paint.color = options.dataContainerOptions.gridLinesColor;
   paint.style = ui.PaintingStyle.stroke;
   paint.strokeWidth = 1.0;
 
