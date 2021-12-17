@@ -376,7 +376,6 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
-    // todo-00-new 
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
     //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()], 
     //   so we cannot just skip layout completely at the beginning.
@@ -648,12 +647,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       _xLabelContainers.add(xLabelContainer);
     }
 
-    // xlabels area without padding
-    /* todo-00-new done converted to getter
-    double xLabelsMaxHeight =
-        _xLabelContainers.map((xLabelContainer) => xLabelContainer.layoutSize.height).reduce(math.max);
-    */
-    
     // Set the layout size calculated by this layout
     layoutSize = ui.Size(
       parentLayoutExpansion.width,
@@ -674,6 +667,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     labelLayoutStrategy.reLayout(parentLayoutExpansion);
   }
 
+  // xlabels area without padding
   double get xLabelsMaxHeight {
     return _xLabelContainers.isEmpty
         ? 0.0

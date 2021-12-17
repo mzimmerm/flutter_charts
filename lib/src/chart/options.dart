@@ -1,16 +1,17 @@
 import 'dart:ui' as ui show Color, TextDirection, TextAlign;
+import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 import 'dart:math' as math show pi;
+import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 
-// todo-00-new done: Use ui.Color as it can be const:  import 'package:flutter/material.dart' as material show Colors;
-import 'package:flutter/widgets.dart' as widgets show TextStyle;
+
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
 /// related, may be overridden or adjusted by the chart auto-layout,
 /// see [SimpleChartContainer].
-// @immutable
+@immutable
 class ChartOptions {
   
   /// Manages showing the legend container on the chart.
@@ -46,8 +47,8 @@ class ChartOptions {
   final int maxNumYLabels;
 
   /// Color defaults
-  final ui.Color gridLinesColor;// todo-00-new : use const: material.Colors.grey;
-  final ui.Color xLabelsColor; // todo-00-new : use const: material.Colors.grey;
+  final ui.Color gridLinesColor;
+  final ui.Color xLabelsColor;
 
   /// Length of the ticks around the grid rectangle.
   ///
@@ -61,12 +62,12 @@ class ChartOptions {
   // todo 1 in LB, LR, separate top, bottom, left, right, and only keep those used
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
-  final double xLabelsPadTB; // top and bottom
-  /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
-  final double xLabelsPadLR; // todo-00-new-last unused.
+  final double xLabelsPadTB;
+  /// Pad space around the X labels area. TB - top/bottom, LR - left/right. Unused.
+  final double xLabelsPadLR;
 
-  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
-  final double yLabelsPadTB; // todo-00-new-last.
+  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
+  final double yLabelsPadTB;
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
   final double yLabelsPadLR;
 
@@ -107,8 +108,7 @@ class ChartOptions {
 
   final double labelFontSize;
 
-  // todo-00-new : final ui.Color? labelTextColor = material.Colors.grey[600];
-  final ui.Color labelTextColor; // todo-00-new : use const: material.Colors.grey[600];
+  final ui.Color labelTextColor;
 
   // ############## Iterative label layout options
 
@@ -152,8 +152,8 @@ class ChartOptions {
     this.useUserProvidedYLabels = false,
     this.largestValuePointOnVeryTop = true,
     this.maxNumYLabels = 4,
-    this.gridLinesColor = const ui.Color(0xFF9E9E9E), // todo-00-new : use const: material.Colors.grey;
-    this.xLabelsColor =  const ui.Color(0xFF9E9E9E),  // todo-00-new : use const: material.Colors.grey;
+    this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
+    this.xLabelsColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E), // todo-00-last-last xLabelsColor not used?
     this.yLeftMinTicksWidth = 6.0,
     this.yRightMinTicksWidth = 6.0,
     this.xBottomMinTicksHeight = 6.0,
@@ -169,7 +169,7 @@ class ChartOptions {
     this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
     this.labelFontSize = 14.0,
-    this.labelTextColor = const ui.Color(0xFF757575), // todo-00-new : use const: material.Colors.grey[600];
+    this.labelTextColor = const ui.Color(0xFF757575), // was causing compile err: material.Colors.grey[600],
     this.maxLabelReLayouts = 5,
     this.decreaseLabelFontRatio = 1.0,
     this.showEveryNthLabel = 1,

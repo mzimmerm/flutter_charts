@@ -1,12 +1,15 @@
 import '../options.dart';
 
+import 'package:flutter/foundation.dart' show immutable;
+
+@immutable
 class VerticalBarChartOptions extends ChartOptions {
   VerticalBarChartOptions({
     // forward an instance which values will be set on super
     ChartOptions chartOptions = const ChartOptions(),
    })
       :
-        super(
+         super(
         isLegendContainerShown: chartOptions.isLegendContainerShown,
         isXContainerShown: chartOptions.isXContainerShown,
         isYContainerShown: chartOptions.isYContainerShown,

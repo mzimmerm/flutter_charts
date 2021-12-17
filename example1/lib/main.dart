@@ -15,6 +15,9 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'src/util/examples_descriptor.dart';
 import 'dart:io' show exit;
 
+import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
+
+
 /// Example of simple line chart usage in an application.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
@@ -130,7 +133,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-/// State of the page.
+/// State of the page. todo-00-now documents this, this is wrong and outdated
 ///
 /// This state object is created in the stateful widget's [MyHomePage] call to
 /// [MyHomePage.createState()]. In the rest of the lifecycle,
@@ -201,184 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-
-  /// Constructor sets all options and data.
-  // todo-00-now this is not used. Why?
-/*
-  _MyHomePageState.fromOptionsAndData({
-    required LineChartOptions lineChartOptions,
-    required ChartOptions verticalBarChartOptions,
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-    required ChartData chartData,
-  })  : _chartData = chartData,
-        _lineChartOptions = lineChartOptions,
-        _verticalBarChartOptions = verticalBarChartOptions,
-        _xContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy;
-*/
-
-  /// Constructor allows to set only data and keep other values default.
-  // todo-00-now this is not used. Why?
-/*
-  _MyHomePageState.fromData({
-    required ChartData chartData,
-  }) : _chartData = chartData;
-*/
-
-  /// Define options and data for chart
-  ///
-/*
-  void defineOptionsAndData() {
-    ChartOptions chartOptions;
-
-    ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
-    ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
-
-    switch (chartTypeToShow) {
-      case ExamplesChartTypeEnum.lineChart:
-        _verticalBarChartOptions = VerticalBarChartOptions();
-        _lineChartOptions = LineChartOptions();
-        chartOptions = _lineChartOptions;
-        break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        _verticalBarChartOptions = VerticalBarChartOptions();
-        _lineChartOptions = LineChartOptions();
-        chartOptions = _verticalBarChartOptions;
-        break;
-    }
-
-    switch (exampleComboToRun) {
-      case ExamplesEnum.ex10RandomData:
-        _chartData = RandomChartData();
-        break;
-
-      case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
-        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-        // The _xContainerLabelLayoutStrategy would work as default if set to null or not set at all.
-        // If you were to use your own extension of
-        //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-        //   this is how to create an instance.
-        // If _xContainerLabelLayoutStrategy
-        //   is not set (remains null), the charts instantiate
-        //   the DefaultIterativeLabelLayoutStrategy.
-        _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-          options: chartOptions,
-        );
-        _chartData = RandomChartData();
-        break;
-
-      case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
-        _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-          options: chartOptions,
-        );
-        _chartData = ChartData();
-        _chartData.dataRowsLegends = [
-          'Spring',
-          'Summer',
-          'Fall',
-          'Winter',
-        ];
-        _chartData.dataRows = [
-          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-        ];
-        _chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        _chartData.assignDataRowsDefaultColors();
-        break;
-
-      case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
-        chartOptions.isLegendContainerShown = false;
-        chartOptions.isXContainerShown = false;
-        chartOptions.isYContainerShown = false;
-        chartOptions.isYGridlinesShown = false;
-        _chartData = ChartData();
-        _chartData.dataRowsLegends = [
-          'Spring',
-          'Summer',
-          'Fall',
-          'Winter',
-        ];
-        _chartData.dataRows = [
-          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-        ];
-        _chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        _chartData.assignDataRowsDefaultColors();
-        break;
-
-      case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
-        // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
-        // This example shows user defined Y Labels that derive order from data.
-        //   When setting Y labels by user, the dataRows value scale
-        //   is irrelevant. User can use for example interval <0, 1>,
-        //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
-        //   The only thing that matters is  the relative values in the data Rows.
-
-        // Note that current implementation sets
-        //   the minimum of dataRows range (1.0 in this example)
-        //     on the level of the first Y Label ("Low" in this example),
-        //   and the maximum  of dataRows range (10.0 in this example)
-        //     on the level of the last Y Label ("High" in this example).
-
-        _chartData = ChartData();
-        _chartData.dataRowsLegends = ['Java', 'Dart', 'Python', 'Newspeak'];
-        _chartData.dataRows = [
-          [9.0, 4.0, 3.0, 9.0],
-          [7.0, 6.0, 7.0, 6.0],
-          [4.0, 9.0, 6.0, 8.0],
-          [3.0, 9.0, 10.0, 1.0],
-        ];
-        _chartData.xLabels = ['Speed', 'Readability', 'Level of Novel', 'Usage'];
-        _chartData.dataRowsColors = [
-          Colors.blue,
-          Colors.yellow,
-          Colors.green,
-          Colors.amber,
-        ];
-        chartOptions.useUserProvidedYLabels = true; // use labels below
-        _chartData.yLabels = [
-          'Low',
-          'Medium',
-          'High',
-        ];
-        break;
-
-      case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
-        // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, Data-Based Y Labels, User-Provided Colors,
-        //        This shows a bug where negatives go below X axis.
-        // If we want the chart to show User-Provided textual Y labels with
-        // In each column, adding it's absolute values should add to same number:
-        // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
-
-        _chartData = ChartData();
-        _chartData.dataRowsLegends = [
-          '-2% or less',
-          '-2% to 0%',
-          '0% to +2%',
-          'more than +2%',
-        ];
-        // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
-        _chartData.dataRows = [
-          [-9.0, -8.0, -8.0, -5.0, -8.0],
-          [-1.0, -2.0, -4.0, -1.0, -1.0],
-          [7.0, 8.0, 7.0, 11.0, 9.0],
-          [3.0, 2.0, 1.0, 3.0, 3.0],
-        ];
-        _chartData.xLabels = ['Energy', 'Health', 'Finance', 'Chips', 'Oil'];
-        _chartData.dataRowsColors = [
-          Colors.red,
-          Colors.grey,
-          Colors.greenAccent,
-          Colors.black,
-        ];
-        break;
-    }
-  }
-*/
-
+  
   /* unused examples
       case ExamplesEnum.ex_2_1_AnimalCountBySeason:
         // Same as 2_0 above, but this demonstrates order of painting lines on the line chart,
@@ -644,6 +470,10 @@ class _ExampleDefiner {
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
         chartOptions = LineChartOptions();
+        // example of overwriting defaults: 
+        //   chartOptions = LineChartOptions(
+        //     chartOptions: const ChartOptions(labelTextColor: material.Colors.yellow), 
+        //     hotspotInnerPaintColor: material.Colors.blue);
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
         chartOptions = VerticalBarChartOptions();
@@ -651,6 +481,7 @@ class _ExampleDefiner {
     }
 
     switch (exampleComboToRun) {
+      
       case ExamplesEnum.ex10RandomData:
         chartData = RandomChartData();
         break;

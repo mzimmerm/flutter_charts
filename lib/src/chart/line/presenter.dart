@@ -49,8 +49,8 @@ class LineAndHotspotPresenter extends Presenter {
         lineTo: toPoint,
         linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
     offsetPoint = fromPoint; // point is the left (from) end of the line
-    innerPaint = options.hotspotInnerPaint;
-    outerPaint = options.hotspotOuterPaint;
+    innerPaint = ui.Paint()..color = options.hotspotInnerPaintColor;
+    outerPaint = ui.Paint()..color = options.hotspotOuterPaintColor;
     innerRadius = options.hotspotInnerRadius;
     outerRadius = options.hotspotOuterRadius;
   }

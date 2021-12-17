@@ -858,4 +858,4 @@ Also:
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
-*** DONE Labels austo-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+*** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
