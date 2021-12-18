@@ -1,30 +1,64 @@
-# version 0.3.0 (date??)
+# version 0.3.0 (2021-12-17)
 
-- API changes
-  - Removed the container parameter from the constructor of VerticalBarChart, LineChart.
-    For VerticalBarChart:
+## API changes
+1. `VerticalBarChart`, `LineChart` API changes: Removed the container parameter from the constructor of VerticalBarChart and LineChart.
+    The container is now passed to the painter. A client example of creating a VerticalBarChart:
     ```dart
-      class VerticalBarChart {
-      VerticalBarChart({
-        widgets.Key? key,
-        required bar_painter.VerticalBarChartPainter painter,
-        widgets.CustomPainter? foregroundPainter,
-        widgets.Size size: widgets.Size.zero,
-        widgets.Widget? child,
-        // REMOVED  required bar_containers.VerticalBarChartContainer container,
-        }) : super(
-          key: key,
-          painter: painter,
-          foregroundPainter: foregroundPainter,
-          size: size,
-          child: child,
+        ChartData chartData = RandomChartData();
+        ChartOptions chartOptions = VerticalBarChartOptions();
+
+        VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
+          chartData: chartData,
+          chartOptions: chartOptions,
+          // optional xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
-    }
+    
+        VerticalBarChart verticalBarChart = VerticalBarChart(
+          painter: VerticalBarChartPainter(
+            verticalBarChartContainer: verticalBarChartContainer,
+          ),
+        );
+
     ```
-    - If you passed the container before, remove it. 
+    - If the container was passed before, it needs to be removed. 
     - The container is stored on the VerticalBarChartPainter and used from there.
     - A similar situation for the LineChart.
-      
+2. `ChartOptions`, `LineOptions`, `VerticalBarChartOptions` API changes. The constructors of all the options classes have changed. `ChartOptions` were split to `IterativeLayoutOptions`, `LegendOptions`, `XContainerOptions`, `YContainerOptions`, `DataContainerOptions`, and `LabelCommonOptions`. Please check the code in `example/lib/main.dart` which contains examples of how to create instances of those classes.
+
+## Functional improvements
+
+1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example1/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
+    ```dart
+      ChartOptions chartOptions = VerticalBarChartOptions.noLabels();
+    ```
+    or to set individual values to false. Default is true so no need to set
+    ```dart
+      ChartOptions chartOptions =
+            VerticalBarChartOptions(
+                chartOptions: const ChartOptions(
+                  legendOptions: LegendOptions(
+                    isLegendContainerShown: false,
+                  ),
+                  xContainerOptions: XContainerOptions(
+                    isXContainerShown: false,
+                  ),
+                  yContainerOptions: YContainerOptions(
+                    isYContainerShown: false,
+                    isYGridlinesShown: false,
+                  ),
+                )
+            );
+    ```
+
+## Added integration tests, including taking screenshots for comparison
+
+All tests can be run using
+```shell
+tool/test/run_all_tests.sh
+```
+## Large amount of refactoring.
+
+This is part of a process to make everything a container. Getting there.
 
 # version 0.2.0 (2021-03-07)
 

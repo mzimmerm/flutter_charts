@@ -15,8 +15,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'src/util/examples_descriptor.dart';
 import 'dart:io' show exit;
 
-import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
-
+// import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
 /// Example of simple line chart usage in an application.
 ///
@@ -133,36 +132,29 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-/// State of the page. todo-00-now documents this, this is wrong and outdated
-///
 /// This state object is created in the stateful widget's [MyHomePage] call to
-/// [MyHomePage.createState()]. In the rest of the lifecycle,
-/// this state object holds on objects which are needed for the chart,
-/// - [_lineChartOptions]
-/// - [_verticalBarChartOptions]
-/// - [_chartData]
-/// - [_xContainerLabelLayoutStrategy].
+/// [MyHomePage.createState()].
+/// 
+/// In the rest of the lifecycle, this state object holds on one object,
+/// - [descriptorOfExampleToRun]
 ///
-/// The first three members are required, as they are, in turn, required by the
-/// chart constructors.
+/// The rest of the objects (options, data, etc) are created during the build.
 ///
 /// While this home page state object is created only once (hence, the above
-/// state's members [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
-/// and [_xContainerLabelLayoutStrategy] are created only once, the charts shown
+/// state's member [descriptorOfExampleToRun], is created only once, the charts shown
 /// in this demo, the [LineChart] and the [VerticalBarChart], are recreated
 /// in this object's [build()] method - so, **the chart objects are created over
 /// and over**.
 ///
 /// Note: The (each [build()]) recreated chart objects reuse the state's members
-/// [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
-/// and [_xContainerLabelLayoutStrategy], so they could be considered
-/// "expensive to create". This "expensive" not be true (except [_chartData], which
-/// may be obtained remotely).
+/// [descriptorOfExampleToRun], so this could be considered
+/// "expensive to create". 
 ///
-/// Note: At the same time, because the [defineOptionsAndData()] is called in
-/// this state's [build()] can recreate the the state's members
-/// [_lineChartOptions], [_verticalBarChartOptions], [_chartData],
-/// and [_xContainerLabelLayoutStrategy], the core of this state object (all members)
+/// Note: At the same time, because the this state's [build()] calls
+///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
+//     Widget chartToRun = definer.createRequestedChart();
+/// recreates lineChartOptions, verticalBarChartOptions, chartData,
+/// and xContainerLabelLayoutStrategy, the core of this state object (all members)
 /// is effectively recreated on each state's [build()] call.
 ///
 class _MyHomePageState extends State<MyHomePage> {
@@ -175,36 +167,13 @@ class _MyHomePageState extends State<MyHomePage> {
   //      the constructor value must still be marked "required".
   //      This serves as a lasso that enforces callers to set the non-null.
   //      But why Dart would not use the initialized value?
-
-/* todo-00-new remove
-  /// Define options for line chart, if used in the demo.
-  LineChartOptions _lineChartOptions = LineChartOptions();
-
-  /// Define options for vertical bar chart, if used in the demo
-  ChartOptions _verticalBarChartOptions = VerticalBarChartOptions();
-
-  // If you were to use your own extension of
-  //   DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-  //   this is how to create an instance.
-  // If _xContainerLabelLayoutStrategy
-  //   is not set (remains null), the charts instantiate
-  //   the DefaultIterativeLabelLayoutStrategy.
-
-  /// Define Layout strategy go labels. todo-null-safety : this can be null here
-  LabelLayoutStrategy? _xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-    options: VerticalBarChartOptions(),
-  );
-
-  /// Define data to be displayed
-  ChartData _chartData = RandomChartData();
-*/
-
+  
   /// Get the example to run from environment variable.
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-  
+
   /* unused examples
       case ExamplesEnum.ex_2_1_AnimalCountBySeason:
         // Same as 2_0 above, but this demonstrates order of painting lines on the line chart,
@@ -272,35 +241,35 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Builds the widget that is the home page state.
   @override
   Widget build(BuildContext context) {
-    // General notes on Windows and sizing
-
+    // General notes on Windows and sizing in Flutter
+    //
     // The (singleton?) window object is available anywhere using ui.
     // From window, we can get ui.window.devicePixelRatio, and also
     //   ui.Size windowLogicalSize = ui.window.physicalSize / devicePixelRatio
     // Note: Do not use ui.window for any sizing: see
     //       https://github.com/flutter/flutter/issues/11697
-
+    //
     // MediaQueryData mediaQueryData = MediaQuery.of(context);
     // Use MediaQuery.of(context) for any sizing.
     // Note: mediaQueryData can still return 0 size,
     //       but if MediaQuery.of(context) is used, Flutter will guarantee
     //       the build(context) will be called again !
     //        (once non 0 size becomes available)
-
+    //
     // Note: windowLogicalSize = size of the media (screen) in logical pixels
     // Note: same as ui.window.physicalSize / ui.window.devicePixelRatio;
     // ui.Size windowLogicalSize = mediaQueryData.size;
-
-    // devicePixelRatio = number of device pixels for each logical pixel.
+    //
+    // `devicePixelRatio` = number of device pixels for each logical pixel.
     // Note: in all known hardware, size(logicalPixel) > size(devicePixel)
     // Note: this is also, practically, never needed
     // double logicalToDevicePixelSize = mediaQueryData.devicePixelRatio;
-
-    // textScaleFactor = number of font pixels for each logical pixel.
+    //
+    // `textScaleFactor` = number of font pixels for each logical pixel.
     // Note: with some fontSize, if text scale factor is 1.5
     //       => text font is 1.5x larger than the font size.
     // double fontScale = mediaQueryData.textScaleFactor;
-
+    //
     // To give the LineChart full width and half of height of window.
     // final ui.Size chartLogicalSize =
     //     new Size(windowLogicalSize.width, windowLogicalSize.height / 2);
@@ -309,6 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "windowLogicalSize = mediaQueryData.size = $windowLogicalSize,"
     //     "chartLogicalSize=$chartLogicalSize");
 
+    // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
     _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
     Widget chartToRun = definer.createRequestedChart();
 
@@ -388,8 +358,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // mainAxisAlignment: MainAxisAlignment.center, // = default, not needed
           children: <Widget>[
             ElevatedButton(
-              // style would need a custom MaterialStateColor extension.
-              // style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
+              // Style would need a custom MaterialStateColor extension.
+              //   style: ButtonStyle(backgroundColor: MyMaterialStateColor.resolve(() => Set(Colors))),
               onPressed: _chartStateChanger,
               child: null,
             ),
@@ -451,21 +421,20 @@ class _ExampleDefiner {
   _ExampleDefiner(this.descriptorOfExampleToRun);
 
   Widget createRequestedChart() {
-
     // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
     //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
     // If xContainerLabelLayoutStrategy is not set (remains null), the charts instantiate
     //   the DefaultIterativeLabelLayoutStrategy as we do here.
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-    
+
     ChartData chartData;
-    
+
     ChartOptions chartOptions;
 
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
-    // Set chartOptions defaults here, so we do not repeat it in every example section. 
+    // Set chartOptions defaults here, so we do not repeat it in every example section.
     // Some sections may override this default.
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
@@ -486,7 +455,6 @@ class _ExampleDefiner {
     }
 
     switch (exampleComboToRun) {
-      
       case ExamplesEnum.ex10RandomData:
         chartData = RandomChartData();
         break;
@@ -499,9 +467,9 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
-      // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-      // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
-      // Clients can also create their own LayoutStrategy.
+        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
+        // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+        // Clients can also create their own LayoutStrategy.
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
@@ -562,7 +530,7 @@ class _ExampleDefiner {
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
 
-      // Set non-default chart options to show no labels in this example
+        // Set non-default chart options to show no labels in this example
         switch (chartTypeToShow) {
           case ExamplesChartTypeEnum.lineChart:
             chartOptions = LineChartOptions(
@@ -600,7 +568,7 @@ class _ExampleDefiner {
           Colors.green,
           Colors.amber,
         ];
-        
+
         break;
 
       case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
@@ -636,10 +604,9 @@ class _ExampleDefiner {
 
     // LineChart or VerticalBarChart depending on what is set in environment.
     Widget chartToRun;
-    
+
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-      // construct line chart
         LineChartTopContainer lineChartContainer = LineChartTopContainer(
           chartData: chartData,
           chartOptions: chartOptions,
@@ -660,7 +627,6 @@ class _ExampleDefiner {
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
-        // construct bar chart
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
             verticalBarChartContainer: verticalBarChartContainer,
@@ -670,7 +636,8 @@ class _ExampleDefiner {
         chartToRun = verticalBarChart;
         break;
     }
-    // Returns a configured LineChart or VerticalBarChart
+    // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
+    //   depending on the chart type requested by [requestedExampleToRun()]
     return chartToRun;
   }
 }

@@ -4,7 +4,7 @@
 
 * IN-PROGRESS Flutter Charts Bugs status
 
-- [ ] After tons of layout changes, the whole grid disappeared from the line chart only.
+- [X] After tons of layout changes, the whole grid disappeared from the line chart only.
 - [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
 - [X] Chart area needs clipping in the application
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
@@ -90,17 +90,18 @@ See file:./bug-text-painter-2.png
 - todo-11, todo-12 todo-13 - work in progress (implies todo-10), higher number is higher priority or more immediate. So -13 is the highest ever priority.
 * NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~cd flutter_charts~ - Implied default directory
-** ~flutter packages pub upgrade~
+** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
-** Test app from IntelliJ
-** Run ~flutter test~. Also see  https://flutter.io/testing/
+** Test app from IntelliJ and ~tool/test/run_all_tests.sh~
 ** Ensure pub-required files exist: pub the following file in project to show the correct tabs on pub
 *** Tab README.md    - Needs the file
 *** Tab CHANGELOG.md - Needs the file
 *** Tab Example      - this tab appears if the project has and ~example/lib/main.dart~ file ~file://./../../../../flutter_charts/example/lib/main.dart~ exists
 *** Tab Installing   - shows automatically
+** *pubspec.yaml*: - Increase version number "version: 0.1.8"
+** *CHANGELOG.md*: - Add comment section for new version and description of changes.
 ** IF *README.md* needs change
-*** *README.org*: ! *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
+*** Edit *README.org*: ! *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
 *** *README.org*: Conversion steps for new *README.md* 
 
 To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
@@ -113,22 +114,19 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 5. *README.md*: Generate md-native TOC:
 6. Cursor on top
 7. ~M-x: markdown-toc-generate-toc~
-8. *README.md*: Fix image links in the README.md - links must look like this:
+8. *README.md*: May need to fix image links in the README.md - links must be converted from the first version to the second: *NOT NEEDED in 2021-12*
   #+BEGIN_SRC markdown
   -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
   +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
   #+END_SRC
    - *README.md*: This is achieved with: ~M-x replace-string~ then ~doc/readme_images/~ ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
-** *pubspec.yaml*: - Increase version number "version: 0.1.8"
-** *CHANGELOG.md*: - Add comment section for new version
-** ~git add .; git commit; git push~
 ** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path
-** TODO Go over [[file:~/dev/my-projects-source/public-on-github/dart-experiments/doc/dart-notes.org::*How%20to%20build%20great%20Dart%20and%20Flutter%20packages%20and%20plugins%20https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5][How to build great Dart and Flutter packages and plugins https://www.youtube.com/watch?v=oimGULseQ4M&index=6&list=PLOU2XLYxmsIIJr3vjxggY7yGcGO7i9BK5]]
-
+** ~flutter format [--dry-run] .~ # Run the standard formatter. Dot is for currdir
 ** ~flutter analyze~ # Analyze and fix errors
 
-** ~flutter format [--dry-run] .~ # Run the standard formatter. Dot is for currdir
+** ~tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration tests. Also see https://flutter.io/testing/
 ** TODO Run Dart Doc creator - this can fail on dependencies, so fix it!
+** ~git add .; git commit; git push~
 ** ~flutter packages pub publish --dry-run~
 ** Once the above works: ~flutter packages pub publish~
 ** The above will ask for authorization (browser based)
