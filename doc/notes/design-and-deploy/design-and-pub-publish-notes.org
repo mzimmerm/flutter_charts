@@ -124,12 +124,17 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 ** ~flutter format [--dry-run] .~ # Run the standard formatter. Dot is for currdir
 ** ~flutter analyze~ # Analyze and fix errors
 
-** ~tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration tests. Also see https://flutter.io/testing/
+** ~flutter clean; flutter pub upgrade; flutter pub get; flutter clean; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration tests. Also see https://flutter.io/testing/
 ** TODO Run Dart Doc creator - this can fail on dependencies, so fix it!
+See https://dart.dev/tools/dartdoc
 ** ~git add .; git commit; git push~
-** ~flutter packages pub publish --dry-run~
-** Once the above works: ~flutter packages pub publish~
-** The above will ask for authorization (browser based)
+** ~flutter pub publish --dry-run~
+** Once the above has no errors or warnings: ~flutter pub publish~
+** The above will ask for authorization (will generate an auth link and go to the link in browser)
+** Message: The pub client has been successfully authorized. You may now use it to upload packages and perform other tasks.
+
+This just finishes up the publish.
+
 ** Check the published package: https://pub.dartlang.org/packages/flutter_charts
 *** Make sure that:
 - all tabs look good, 
@@ -137,7 +142,7 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 - check if doc was generated
 - Go over issues in the analyses tab: https://pub.dartlang.org/packages/flutter_charts#-analysis-tab-
 ** Test the package that was just published
-*** ~cd flutter_charts_sample_app; flutter packages pub upgrade; flutter packages pub get; flutter run~
+*** ~cd flutter_charts_sample_app; flutter pub upgrade; flutter pub get; flutter run~
 
 * NOTE Adding images to README.org
 

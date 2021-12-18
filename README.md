@@ -2,7 +2,7 @@
 **Table of Contents**
 
 - [New in the current release](#new-in-the-current-release)
-    - [IN-PROGRESS Illustration of this new feature, ability to hide labels, legend, or gridlines](#in-progress-illustration-of-this-new-feature-ability-to-hide-labels-legend-or-gridlines)
+    - [Illustration of this new feature, ability to hide labels, legend, or gridlines](#illustration-of-this-new-feature-ability-to-hide-labels-legend-or-gridlines)
 - [Installing flutter\_charts as a library into your app](#installing-flutter_charts-as-a-library-into-your-app)
 - [Installing the flutter\_charts project locally from Github, and running the example app](#installing-the-flutter_charts-project-locally-from-github-and-running-the-example-app)
     - [Installing the flutter\_charts project locally from Github](#installing-the-flutter_charts-project-locally-from-github)
@@ -59,7 +59,7 @@ or to set individual values to false. Default is true so no need to set those th
 
 <a id="org95dc140"></a>
 
-## IN-PROGRESS Illustration of this new feature, ability to hide labels, legend, or gridlines
+## Illustration of this new feature, ability to hide labels, legend, or gridlines
 
 Code is for the line chart. See the function `Widget createRequestedChart()` in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart> for changes to create a vertical bar chart instead (essentially in this code substitute "Line" for "VerticalBar". For the configuration, the section of interest is around `ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown`
 
