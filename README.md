@@ -30,7 +30,7 @@
 
 # New in the current release
 
-Current release is 0.3.0
+Current release is 0.3.1
 
 See <CHANGELOG.md> for the list of new features and bug fixes in this release.
 
@@ -147,8 +147,8 @@ To run the example application, Android emulator or iOS emulator need to be inst
     
         flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
         flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-        flutter run --dart-define=EXAMPLE_TO_RUN=ex20RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-        flutter run --dart-define=EXAMPLE_TO_RUN=ex20RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
+        flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
+        flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
         flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
         flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
         flutter run --dart-define=EXAMPLE_TO_RUN=ex31AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart

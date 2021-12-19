@@ -35,11 +35,14 @@ void main(List<String> args) {
 /// Describes the full set of charts shown in examples or integration tests.
 enum ExamplesEnum {
   ex10RandomData,
-  ex20RandomDataWithLabelLayoutStrategy,
+  ex11RandomDataWithLabelLayoutStrategy,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
   ex31AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
+  ex51AnimalsBySeasonManualLogarithmicScale,
+  // Range 900 - 999 are error testing examples
+  ex900ErrorFixUserDataAllZero,
 }
 
 
@@ -67,8 +70,8 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
 
-    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
 
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
@@ -79,6 +82,10 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
 
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
+
+    const Tuple2(ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale, ExamplesChartTypeEnum.lineChart),
+
+    const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
   
   
@@ -96,6 +103,10 @@ class ExamplesDescriptor {
     List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun =
         exampleRequested == null ? _allowed : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
 
+    if (combosToRun.isEmpty) {
+      throw StateError('No examples requested to run are defined in examples_descriptor.');
+    }
+    
     for (Tuple2 tuple in combosToRun) {
       print('set -e');
       print('echo');

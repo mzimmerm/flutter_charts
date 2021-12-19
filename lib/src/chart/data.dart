@@ -2,7 +2,22 @@ import 'dart:math' as math;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/material.dart' as material show Colors;
 
+// todo-00-last-last : Make final and rethink completely. 
+//                     Should be able to set defauls for everything, unless set on construction time.
+
 class ChartData {
+  
+  /// Default constructor only assumes [dataRows] are set,
+  /// and assigns default values of [dataRowsLegends], [dataRowsColors], [xLabels], [yLabels].
+  /// 
+  // todo-00-last-last : make final and always define with DataRows.
+  ChartData() {
+    assignDataRowsDefaultLegends();
+    assignDataRowsDefaultColors();
+    // todo-00-last-last : deal with xLabels
+    // todo-00-last-last : deal with yLabels
+  }
+  
   /// Data in rows. Each row of data represents one data series.
   ///
   /// Legends per row are managed by [dataRowsLegends].
@@ -22,7 +37,7 @@ class ChartData {
 
   /// Labels on independent (X) axis.
   ///
-  /// It is generally assumed labels are defined,
+  /// It is assumed labels are defined, by the client
   /// and their number is the same as number of points
   /// in each row in [dataRows].
   List<String> xLabels = List.empty(growable: true);
@@ -43,6 +58,8 @@ class ChartData {
   ///
   List<String> yLabels = List.empty(growable: true);
 
+  // todo-00-last-last : improve to check everything, then call on as many places as possible
+  
   void validate() {
     if (dataRowsLegends.isNotEmpty &&
         dataRows.length != dataRowsLegends.length) {

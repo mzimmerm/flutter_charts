@@ -13,7 +13,8 @@ import 'package:flutter_charts/src/util/string_extension.dart' show StringExtens
 import 'package:tuple/tuple.dart' show Tuple2;
 
 import 'src/util/examples_descriptor.dart';
-import 'dart:io' show exit;
+import 'dart:io' as io show exit;
+import 'dart:math' as math;
 
 // import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
@@ -70,7 +71,7 @@ void main() {
   var exampleComboToRun = requestedExampleToRun();
   if (!ExamplesDescriptor().exampleComboIsAllowed(exampleComboToRun)) {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    exit(0);
+    io.exit(0);
   }
 
   runApp(const MyApp());
@@ -459,7 +460,7 @@ class _ExampleDefiner {
         chartData = RandomChartData();
         break;
 
-      case ExamplesEnum.ex20RandomDataWithLabelLayoutStrategy:
+      case ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy:
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
@@ -487,7 +488,7 @@ class _ExampleDefiner {
           [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
         ];
         chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        chartData.assignDataRowsDefaultColors();
+        chartData.assignDataRowsDefaultColors(); // todo-00-last-last try to remove
         break;
 
       case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
@@ -514,7 +515,7 @@ class _ExampleDefiner {
           [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
         ];
         chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        chartData.assignDataRowsDefaultColors();
+        chartData.assignDataRowsDefaultColors(); // todo-00-last-last try to remove
         break;
 
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
@@ -568,7 +569,7 @@ class _ExampleDefiner {
           Colors.green,
           Colors.amber,
         ];
-
+        chartData.assignDataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
         break;
 
       case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
@@ -598,6 +599,55 @@ class _ExampleDefiner {
           Colors.grey,
           Colors.greenAccent,
           Colors.black,
+        ];
+        break;
+
+      case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
+        // todo-00-last-last - while this runs, and result is correct, it is ugly and manual.
+        chartOptions = LineChartOptions(
+            chartOptions: const ChartOptions(
+              yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
+            ),
+        );
+        chartData = ChartData();
+        chartData.dataRowsLegends = [
+          'Spring',
+          'Summer',
+        ];
+        var originalData = [
+          [2.2, 220.0, 2200.0],
+          [330.0, 3.3, 3300.0],
+        ];
+        chartData.dataRows = [
+          [math.log(2.2), math.log(220.0), math.log(2200.0)],
+          [math.log(330.0), math.log(3.3), math.log(3300.0)],
+        ];
+        chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];
+        chartData.yLabels = [
+          '2.2', // minimum of all values
+          math.pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2)).toString(), // values in between linearly scaled between log(min) and log(max)
+          '3300', // maximum of all values
+        ];
+        chartData.assignDataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
+        break;
+
+      case ExamplesEnum.ex900ErrorFixUserDataAllZero:
+        /// Currently, setting [ChartDate.dataRows] requires to also set all of 
+        /// [chartData.xLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
+        // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
+        chartData = ChartData();
+        chartData.dataRows = [
+          [0.0, 0.0, 0.0],
+        ];
+        // Note: When ChartData is defined, 
+        //       ALL OF  chartData.xLabels,  chartData.dataRowsLegends, chartData.dataRowsColors
+        //       must be set by client
+        chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];
+        chartData.dataRowsLegends = [
+          'Row 1',
+        ];
+        chartData.dataRowsColors = [
+          Colors.blue,
         ];
         break;
     }

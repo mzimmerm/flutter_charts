@@ -1,3 +1,7 @@
+# version 0.3.1 (2021-12-19)
+
+1. Fixed error when all passed data are 0.0
+
 # version 0.3.0 (2021-12-17)
 
 ## API changes

@@ -21,6 +21,7 @@
   - [[#autolayout-step-5][Autolayout step 5]]
 - [[#known-packages-libraries-and-apps-that-use-this-flutter_charts-package][Known packages, libraries and apps that use this flutter_charts package]]
 - [[#an-overview-of-this-library-data-options-classes][An overview of this library: data, options, classes]]
+- [[#todos][Todos]]
 
 * New in the current release
 
@@ -143,8 +144,8 @@ To run the example application, Android emulator or iOS emulator need to be inst
   #+begin_src bash
     flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
     flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex20RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex20RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
+    flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
+    flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
     flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
     flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
     flutter run --dart-define=EXAMPLE_TO_RUN=ex31AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
@@ -383,3 +384,10 @@ Before we show several examples of charts, a few notes.
   - Series legends  
 - Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
 
+
+
+* TODO Todos
+
+1. During construction of DataRows, enforce default values of Legend names and colors for rows. This fixes issues such as https://github.com/mzimmerm/flutter_charts/issues/18, when users do not set them and expect (reasonably) a default chart to show anyway.
+2. Replace `reduce(fn)` with `fold(initialValue, fn)` throughout code to deal with exceptions when lists are empty. 
+3. Allow scaling y values using a function.
