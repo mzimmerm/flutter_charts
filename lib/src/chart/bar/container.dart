@@ -1,7 +1,6 @@
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
-import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart'
-    as strategy show LabelLayoutStrategy;
+import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import '../container.dart';
 
 import 'presenter.dart';
@@ -32,5 +31,4 @@ class VerticalBarChartTopContainer extends ChartTopContainer {
       chartTopContainer: chartTopContainer,
     );
   }
-  
 }

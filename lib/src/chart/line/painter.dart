@@ -2,7 +2,7 @@ import '../line/container.dart' as line_containers;
 
 import '../painter.dart';
 
-/// This concrete [CustomPainter] only provides a constructor, 
+/// This concrete [CustomPainter] only provides a constructor,
 /// specifically requiring [line_containers.LineChartTopContainer],
 /// and setting [line_containers.LineChartContainer.isStacked] to false,
 /// as lines can never be stacked.

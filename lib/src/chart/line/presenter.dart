@@ -38,16 +38,13 @@ class LineAndHotspotPresenter extends Presenter {
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    rowDataPaint.color = container
-        .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    rowDataPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = LineContainer(
-        lineFrom: fromPoint,
-        lineTo: toPoint,
-        linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
+        lineFrom: fromPoint, lineTo: toPoint, linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
     offsetPoint = fromPoint; // point is the left (from) end of the line
     innerPaint = ui.Paint()..color = options.hotspotInnerPaintColor;
     outerPaint = ui.Paint()..color = options.hotspotOuterPaintColor;

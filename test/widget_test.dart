@@ -3,17 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import '../example1/lib/main.dart' as app;
 
 /// Flutter widget tests for the example app in '../example1/lib/main.dart'.
-/// 
+///
 /// Tests check some expected values on the main page of the app.
-/// 
+///
 /// Run as
 /// ``` shell
-///   flutter clean; flutter test test/widget_test.dart 
+///   flutter clean; flutter test test/widget_test.dart
 /// ```
 void main() {
   group('Widget tests on page 1', () {
     testWidgets('find expected text on widgets', (WidgetTester tester) async {
-
       // Build the app.
       app.main();
 

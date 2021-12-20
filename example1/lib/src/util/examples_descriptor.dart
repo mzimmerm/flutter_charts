@@ -1,12 +1,12 @@
 /// Library for a tool that helps generate programs that run chart examples and tests.
-/// 
-/// Library with has a main.dart which generates a shell script that allow 
-/// to run commands such as `flutter run` or `flutter drive` 
+///
+/// Library with has a main.dart which generates a shell script that allow
+/// to run commands such as `flutter run` or `flutter drive`
 /// on all examples defined in [ExamplesEnum].
-/// 
-/// 
-/// 
-// Removing import for whole flutter_charts. 
+///
+///
+///
+// Removing import for whole flutter_charts.
 //    import 'package:flutter_charts/flutter_charts.dart' show enumName;
 // Reason: As part of a shell script, this needs to run as
 //    dart run example1/lib/src/util/examples_descriptor.dart
@@ -23,7 +23,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 /// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
 /// that require passing the examples to run or test using the environment variables `--dart-define`.
 void main(List<String> args) {
-  var exampleDescriptor =  ExamplesDescriptor();
+  var exampleDescriptor = ExamplesDescriptor();
   if (args.isNotEmpty && args[0].trim().isNotEmpty) {
     // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
     ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
@@ -45,7 +45,6 @@ enum ExamplesEnum {
   ex900ErrorFixUserDataAllZero,
 }
 
-
 /// Describes chart types shown in examples or integration tests..
 enum ExamplesChartTypeEnum {
   lineChart,
@@ -53,14 +52,13 @@ enum ExamplesChartTypeEnum {
 }
 
 /// Represents examples and tests to be run.
-/// 
+///
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example1/lib/main.dart].
-///   
+///
 /// The conversion from enumerates to data and options is in [example1/lib/main.dart] [chartTypeToShow()].
 /// The conversion from enumerates to chart type is in [example1/lib/main.dart] [requestedExampleToRun()].
 class ExamplesDescriptor {
-  
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;
 
@@ -69,26 +67,18 @@ class ExamplesDescriptor {
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
-
     const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
-
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
-
     const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
-
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
-
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
-
     const Tuple2(ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale, ExamplesChartTypeEnum.lineChart),
-
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
-  
-  
+
   /// Check if the example described by the passed enums should run in a test.
   ///
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
@@ -106,14 +96,15 @@ class ExamplesDescriptor {
     if (combosToRun.isEmpty) {
       throw StateError('No examples requested to run are defined in examples_descriptor.');
     }
-    
+
     for (Tuple2 tuple in combosToRun) {
       print('set -e');
       print('echo');
       print('echo');
-      print('echo Running \$1 for EXAMPLE_TO_RUN=${enumName(tuple.item1)}, CHART_TYPE_TO_SHOW=${enumName(tuple.item2)}.');
       print(
-          // generates cli representation of arguments 
+          'echo Running \$1 for EXAMPLE_TO_RUN=${enumName(tuple.item1)}, CHART_TYPE_TO_SHOW=${enumName(tuple.item2)}.');
+      print(
+          // generates cli representation of arguments
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
@@ -124,11 +115,8 @@ class ExamplesDescriptor {
 }
 
 bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
-  
   if (enumName(exampleComboToRun.item1).contains('RandomData')) {
     return true;
   }
   return false;
-  
 }
-

@@ -348,7 +348,7 @@ class YContainer extends ChartAreaContainer {
   YContainer({
     required ChartTopContainer chartTopContainer,
     required double yLabelsMaxHeightFromFirstLayout,
-  })   : _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout,
+  })  : _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout,
         super(
           chartTopContainer: chartTopContainer,
         );
@@ -371,13 +371,14 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin = parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
+    double yAxisMin =
+        parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
     double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
-    //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()], 
+    //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()],
     //   so we cannot just skip layout completely at the beginning.
     if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
@@ -400,8 +401,8 @@ class YContainer extends ChartAreaContainer {
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   void layoutManually(double yAxisMin, double yAxisMax) {
-    List<double> flatData =
-        _chartTopContainer.pointsColumns.flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
+    List<double> flatData = _chartTopContainer.pointsColumns
+        .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
     List<String> yLabels = _chartTopContainer.data.yLabels;
 
@@ -452,12 +453,12 @@ class YContainer extends ChartAreaContainer {
   YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
     List<double> flatData =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
-    
+
     Range range = Range(
       values: flatData,
       chartOptions: _chartTopContainer.options,
     );
-    
+
     // revert toScaleMin/Max to accommodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
       toScaleMin: yAxisMin,
@@ -655,7 +656,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     if (!chartTopContainer.options.xContainerOptions.isXContainerShown) {
       // Before re-layout, return and make the layout height (vertical-Y size) 0.
-      // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the 
+      // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the
       // layout and painting of the DataContainer in ChartContainer - see xTickXs
       layoutSize = ui.Size(layoutSize.width, 0.0);
       return;
@@ -791,7 +792,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   AdjustableLabelsChartAreaContainer({
     required ChartTopContainer chartTopContainer,
     required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
-  })   : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
         super(
           chartTopContainer: chartTopContainer,
         );
@@ -826,7 +827,7 @@ abstract class ChartAreaContainer extends Container {
 
   ChartAreaContainer({
     required ChartTopContainer chartTopContainer,
-  })   : _chartTopContainer = chartTopContainer,
+  })  : _chartTopContainer = chartTopContainer,
         super();
 
   ChartTopContainer get chartTopContainer => _chartTopContainer;
@@ -903,9 +904,7 @@ abstract class DataContainer extends ChartAreaContainer {
     if (isStacked && chartContainer.xTickXs.isNotEmpty) {
       double x = chartContainer.xTickXs.last + xGridStep / 2;
       LineContainer yLineContainer = LineContainer(
-          lineFrom: ui.Offset(x, 0.0),
-          lineTo: ui.Offset(x, layoutSize.height),
-          linePaint: gridLinesPaint(options));
+          lineFrom: ui.Offset(x, 0.0), lineTo: ui.Offset(x, layoutSize.height), linePaint: gridLinesPaint(options));
       _yGridLinesContainer.addLine(yLineContainer);
     }
 
@@ -1177,7 +1176,7 @@ class LegendItemContainer extends Container {
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
     required ChartOptions options,
-  })   :
+  })  :
         // We want to only create as much as we can in layout for clarity,
         // as a price, need to hold on on label and style from constructor
         _label = label,
@@ -1349,7 +1348,8 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      indicatorPaint.color = _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
+      indicatorPaint.color =
+          _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(
         width: legendItemWidth,
@@ -1540,8 +1540,8 @@ class StackableValuePoint {
       throw Exception('Cannot clone if already stacked');
     }
 
-    StackableValuePoint clone = StackableValuePoint(
-        xLabel: xLabel, y: y, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
+    StackableValuePoint clone =
+        StackableValuePoint(xLabel: xLabel, y: y, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable leafs.
@@ -1608,10 +1608,8 @@ class PointsColumn {
     // todo-1 add validation that points are not stacked
     stackableValuePoints = points;
 
-    stackedPositivePoints =
-        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y >= 0);
-    stackedNegativePoints =
-        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y < 0);
+    stackedPositivePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y >= 0);
+    stackedNegativePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y < 0);
   }
 
   // points are ordered in series order, first to last  (bottom to top),
@@ -1636,7 +1634,10 @@ class PointsColumn {
 
   /// Column Utility for iterating over all points in order
   Iterable<StackableValuePoint> allPoints() {
-    return []..addAll(stackableValuePoints)..addAll(stackedNegativePoints)..addAll(stackedPositivePoints);
+    return []
+      ..addAll(stackableValuePoints)
+      ..addAll(stackedNegativePoints)
+      ..addAll(stackedPositivePoints);
   }
 }
 
@@ -1670,7 +1671,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required ChartTopContainer container,
     required PresenterCreator presenterCreator,
     required bool isStacked,
-  })   : _container = container,
+  })  : _container = container,
         _valuePointArrInRows = List.empty(growable: true),
         _isStacked = isStacked {
     ChartData chartData = container.data;
@@ -1796,8 +1797,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 // todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
 //               can this be improved? This need may be a typing bug in Dart
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
-List<List<StackableValuePoint>> transpose(
-    List<List<StackableValuePoint>> colsInRows) {
+List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.isEmpty) return colsInRows;
 

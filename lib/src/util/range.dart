@@ -27,15 +27,12 @@ class Range {
   Range({
     required List<double> values,
     required ChartOptions chartOptions,
-  })   : _values = values,
+  })  : _values = values,
         // todo 1 maxLabels does not work. Enable and add to test
         _options = chartOptions;
 
   /// superior and inferior closure - min and max of values
-  Interval get _closure => Interval(
-      _values.reduce(math.min).toDouble(),
-      _values.reduce(math.max).toDouble(),
-      true,
+  Interval get _closure => Interval(_values.reduce(math.min).toDouble(), _values.reduce(math.max).toDouble(), true,
       true); // todo-2 remove toDouble after parametrization
 
   /// Automatically generates unscaled labels (more precisely their values)
@@ -93,8 +90,7 @@ class Range {
     // Labels are (obviously) unscaled, that is, on the scale of data,
     // not the displayed pixels scale.
 
-    List<double> labels = _distributeLabelsIn(
-        Interval(from, to)); // todo 0 pull only once (see below)
+    List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
 
     // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
 
@@ -153,9 +149,7 @@ class Range {
     } else {
       // min is negative, max is positive - need added logic
       if (powerMax == powerMin) {
-        for (double l = 1.0 * signMin * coeffMin;
-            l <= signMax * coeffMax;
-            l++) {
+        for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
           labels.add(l * math.pow(10, power));
         }
       } else if (powerMax < powerMin) {
@@ -203,7 +197,7 @@ class YScalerAndLabelFormatter {
     required double toScaleMin,
     required double toScaleMax,
     required ChartOptions chartOptions,
-  })  : labelInfos  =  valueOnLabels.map((value) => LabelInfo(value)).toList(),
+  })  : labelInfos = valueOnLabels.map((value) => LabelInfo(value)).toList(),
         _toScaleMin = toScaleMin,
         _toScaleMax = toScaleMax,
         _options = chartOptions {
@@ -274,8 +268,7 @@ class YScalerAndLabelFormatter {
   // ### Helper accessors to collection of LabelInfos
 
   /// Extracts unscaled values of labels from [labelInfos].
-  List<double> get labelValues =>
-      labelInfos.map((labelInfo) => labelInfo.labelValue.toDouble()).toList();
+  List<double> get labelValues => labelInfos.map((labelInfo) => labelInfo.labelValue.toDouble()).toList();
 
   /// Constructs interval which is a merge (outer bound) of
   /// two ranges: the labels range stored in [ labelValues]
@@ -288,8 +281,7 @@ class YScalerAndLabelFormatter {
   /// **The returned [Interval] is intended to be used as the full extend
   /// of the unscaled Y axis.**
   Interval get labelValuesAndDataRangesMerged =>
-      Interval(labelValues.reduce(math.min), labelValues.reduce(math.max))
-          .merge(dataRange);
+      Interval(labelValues.reduce(math.min), labelValues.reduce(math.max)).merge(dataRange);
 }
 
 /// Manages labels and their values: scaled in , unscaled, and presented (formatted)
@@ -377,15 +369,11 @@ class Poly {
 
   int get totalLen => _dec.precision;
 
-  int get coefficientAtMaxPower =>
-      (_dec.abs() / numToDec(math.pow(10, maxPower))).toInt();
+  int get coefficientAtMaxPower => (_dec.abs() / numToDec(math.pow(10, maxPower))).toInt();
 
-  int get floorAtMaxPower =>
-      (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
+  int get floorAtMaxPower => (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
 
-  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) *
-          numToDec(math.pow(10, maxPower)))
-      .toInt();
+  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) * numToDec(math.pow(10, maxPower))).toInt();
 
   /// Position of first significant non zero digit.
   ///
@@ -417,8 +405,7 @@ class Poly {
 // todo-2: replaced num with double,  parametrize with T instead so it works for both
 
 class Interval {
-  Interval(this.min, this.max,
-      [this.includesMin = true, this.includesMax = true]);
+  Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
 
   final double min;
   final double max;
@@ -442,7 +429,6 @@ class Interval {
 
   /// Outermost union of this interal with [other].
   Interval merge(Interval other) {
-    return Interval(
-        math.min(min, other.min), math.max(max, other.max));
+    return Interval(math.min(min, other.min), math.max(max, other.max));
   }
 }

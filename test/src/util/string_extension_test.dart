@@ -8,7 +8,6 @@ import 'package:flutter_charts/src/util/string_extension.dart';
 enum TestedEnum { enum1, enum2 }
 
 void main() {
-  
   // enum related string extensions.
   group('enum', () {
     test('Convert string literal (representing a valid enum name) to enum', () {
@@ -23,21 +22,21 @@ void main() {
     });
 
     test('Convert string which does not have representation should cause exception', () {
-      // Checking error thrown requires first argument to be a Function, 
+      // Checking error thrown requires first argument to be a Function,
       //   NOT a function call such as just "NOT_IN_ENUM".asEnum(TestedEnum.values).
       expect(() => 'NOT_IN_ENUM'.asEnum(TestedEnum.values), throwsStateError);
     });
-    
+
     test('Convert string which does not have representation should cause exception. Test the exception string.', () {
       String errorText = '';
       try {
         'NOT_IN_ENUM'.asEnum(TestedEnum.values);
-      } on Error catch(e) {
+      } on Error catch (e) {
         errorText = e.toString();
       }
       expect(errorText.contains('String NOT_IN_ENUM is not in enum list [TestedEnum.enum1, TestedEnum.enum2]'), true);
     });
   });
-  
+
   // next group
 }

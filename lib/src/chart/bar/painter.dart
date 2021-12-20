@@ -2,7 +2,7 @@ import '../bar/container.dart' as bar_containers;
 
 import '../painter.dart';
 
-/// This concrete [CustomPainter] only provides a constructor, 
+/// This concrete [CustomPainter] only provides a constructor,
 /// specifically requiring [bar_containers.VerticalBarChartTopContainer],
 /// and setting [verticalBarChartContainer.isStacked] to true,
 /// as bars are stacked by default.

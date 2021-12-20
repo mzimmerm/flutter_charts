@@ -135,7 +135,7 @@ class MyHomePage extends StatefulWidget {
 
 /// This state object is created in the stateful widget's [MyHomePage] call to
 /// [MyHomePage.createState()].
-/// 
+///
 /// In the rest of the lifecycle, this state object holds on one object,
 /// - [descriptorOfExampleToRun]
 ///
@@ -149,7 +149,7 @@ class MyHomePage extends StatefulWidget {
 ///
 /// Note: The (each [build()]) recreated chart objects reuse the state's members
 /// [descriptorOfExampleToRun], so this could be considered
-/// "expensive to create". 
+/// "expensive to create".
 ///
 /// Note: At the same time, because the this state's [build()] calls
 ///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //      the constructor value must still be marked "required".
   //      This serves as a lasso that enforces callers to set the non-null.
   //      But why Dart would not use the initialized value?
-  
+
   /// Get the example to run from environment variable.
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
@@ -605,9 +605,9 @@ class _ExampleDefiner {
       case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
         // todo-00-last-last - while this runs, and result is correct, it is ugly and manual.
         chartOptions = LineChartOptions(
-            chartOptions: const ChartOptions(
-              yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
-            ),
+          chartOptions: const ChartOptions(
+            yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
+          ),
         );
         chartData = ChartData();
         chartData.dataRowsLegends = [
@@ -625,21 +625,24 @@ class _ExampleDefiner {
         chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];
         chartData.yLabels = [
           '2.2', // minimum of all values
-          math.pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2)).toString(), // values in between linearly scaled between log(min) and log(max)
+          math
+              .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
+              .toString(), // values in between linearly scaled between log(min) and log(max)
           '3300', // maximum of all values
         ];
         chartData.assignDataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
         break;
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
-        /// Currently, setting [ChartDate.dataRows] requires to also set all of 
+
+        /// Currently, setting [ChartDate.dataRows] requires to also set all of
         /// [chartData.xLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
         // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
         chartData = ChartData();
         chartData.dataRows = [
           [0.0, 0.0, 0.0],
         ];
-        // Note: When ChartData is defined, 
+        // Note: When ChartData is defined,
         //       ALL OF  chartData.xLabels,  chartData.dataRowsLegends, chartData.dataRowsColors
         //       must be set by client
         chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];

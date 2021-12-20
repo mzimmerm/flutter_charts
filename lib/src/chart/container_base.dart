@@ -19,7 +19,6 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show Layo
 ///       here.
 ///
 abstract class Container {
-
   /// Manages the layout size during the layout process in [layout()].
   /// Should be only mentioned in this class, not super
   ui.Size _layoutSize = ui.Size.zero;
@@ -30,7 +29,7 @@ abstract class Container {
   ui.Size get layoutSize => _layoutSize;
 
   /// Change the layout size.
-  /// 
+  ///
   /// Supports the layoutSize accumulation during layout.
   /// Should be only called from inside the [layout()] method.
   set layoutSize(ui.Size newLayoutSize) {
@@ -39,20 +38,20 @@ abstract class Container {
     print('Changed layoutSize. It changed $_debugLayoutSetCount times; '
         'now it is : $_layoutSize');
   }
-  
+
   /// Current absolute offset, set by parent (and it's parent etc, to root).
-  /// 
-  /// That means, it is the offset from (0,0) of the canvas. There is only one 
-  /// canvas, managed by the top Container, passed to all children in the 
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top Container, passed to all children in the
   /// [paint(Canvas, Size)].
-  ///  
-  /// 
-  /// 
-  /// It is a sum of all offsets passed in subsequent calls 
+  ///
+  ///
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
   /// to [applyParentOffset] during object lifetime.
   ui.Offset offset = ui.Offset.zero;
 
-  /// Allow a parent container to move this Container 
+  /// Allow a parent container to move this Container
   /// after [layout()].
   ///
   /// Override if parent move needs to propagate to internals of
@@ -102,8 +101,7 @@ abstract class Container {
   /// [enableSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the container.
-  bool enableSkipOnDistressedSize =
-  true; // todo-10 set to true for distress test
+  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
 
   bool isDistressed = false;
 
@@ -114,5 +112,4 @@ abstract class Container {
   void layout(LayoutExpansion parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);
-
 }

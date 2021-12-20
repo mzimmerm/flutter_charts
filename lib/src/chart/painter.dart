@@ -36,7 +36,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// the [ChartContainer]
   ChartPainter({
     required this.chartContainer,
-  }) ;
+  });
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
   ///

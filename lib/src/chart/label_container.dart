@@ -1,15 +1,12 @@
-import 'package:flutter/widgets.dart' as widgets
-    show TextStyle, TextSpan, TextPainter;
+import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
 
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas, Offset;
 
-import 'package:flutter_charts/src/chart/container_base.dart'
-    as container_base show Container;
+import 'package:flutter_charts/src/chart/container_base.dart' as container_base show Container;
 
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show 
-LayoutExpansion;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
 
 import '../util/geometry.dart' as geometry;
 
@@ -38,7 +35,6 @@ import '../util/geometry.dart' as geometry;
 ///   is always layed out, ready to be painted.
 
 class LabelContainer extends container_base.Container {
-
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
 
@@ -60,7 +56,7 @@ class LabelContainer extends container_base.Container {
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
-  
+
   /// Allows to configure certain sizes, colors, and layout.
   final LabelStyle _labelStyle;
 
@@ -170,10 +166,9 @@ class LabelContainer extends container_base.Container {
       _tiltedLabelEnvelope = _createLabelEnvelope();
       layoutSize = _tiltedLabelEnvelope.size;
     }
-    
+
     return isOverflowingHorizontally;
   }
-
 }
 
 /// Class for value objects which group the text styles that may affect
@@ -242,14 +237,13 @@ class AxisLabelContainer extends LabelContainer {
   ///
   double parentOffsetTick = 0.0;
 
-  AxisLabelContainer(
-      {required String label,
-      required double labelMaxWidth,
-      required vector_math.Matrix2 labelTiltMatrix,
-      required vector_math.Matrix2 canvasTiltMatrix,
-      required LabelStyle labelStyle,
-  })
-      : super(
+  AxisLabelContainer({
+    required String label,
+    required double labelMaxWidth,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required vector_math.Matrix2 canvasTiltMatrix,
+    required LabelStyle labelStyle,
+  }) : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,

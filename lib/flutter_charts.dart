@@ -3,31 +3,31 @@
 ///    _IS the flutter_charts library package_,
 ///    and can be used by _external code_ OR _code inside this lib_.**
 ///
-/// The core of how library packages work in Dart can be summarized in A, B, below: 
-/// 
+/// The core of how library packages work in Dart can be summarized in A, B, below:
+///
 ///   A. Files _exported_ in this file, should be exported as
 ///       ```dart
 ///         export 'src/chart/data.dart';
-///       ``` 
+///       ```
 ///      are visible to external applications.
-///      
+///
 ///   B. External applications (to which the contents of the _lib_
-///        directory is copied through pub) can use the library exported in A. 
+///        directory is copied through pub) can use the library exported in A.
 ///        using code like this
 ///       ```dart
 ///         import 'package:flutter_charts/flutter_charts.dart';
-///       ``` 
+///       ```
 ///
 /// Code in this project, under [root/lib] directory can import this package's code two ways:
 ///     1. Either using the same package: scheme, as above external code, for example
 ///       ```dart
-///         _import 'package:flutter_charts/flutter_charts.dart';_ 
-///       ``` 
+///         _import 'package:flutter_charts/flutter_charts.dart';_
+///       ```
 ///     2. Or using a path scheme, for example
 ///       ```dart
 ///         _import 'src/chart/data.dart';_ (absolute path)
 ///         _import '../util/range.dart';_ (relative path)
-///       ``` 
+///       ```
 ///
 /// Any dart file (any client application) located outside
 /// of the "lib" directory just above, can only see the classes
@@ -44,7 +44,7 @@
 ///         it's name on pub.
 ///       3. Under the `root directory`, the existence of directory `lib`.
 ///       4. Under lib, the existence of file named `flutter_charts.dart`.
-///          This file contains the exported dart files (which are also libraries) 
+///          This file contains the exported dart files (which are also libraries)
 ///          that are under `src`.
 ///
 /// 2. Second: Why is this file _flutter_charts.dart_ needed?
@@ -95,7 +95,7 @@
 ///   ```dart
 ///     import 'package:flutter_charts/flutter_charts.dart'
 ///   ```
-///   even though `flutter_charts.dart` path is `flutter_charts/lib/flutter_charts.dart`. 
+///   even though `flutter_charts.dart` path is `flutter_charts/lib/flutter_charts.dart`.
 ///
 export 'src/chart/label_container.dart';
 export 'src/util/random_chart_data.dart';

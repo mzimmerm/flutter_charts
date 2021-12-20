@@ -98,11 +98,13 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 *** Tab CHANGELOG.md - Needs the file
 *** Tab Example      - this tab appears if the project has and ~example/lib/main.dart~ file ~file://./../../../../flutter_charts/example/lib/main.dart~ exists
 *** Tab Installing   - shows automatically
-** *pubspec.yaml*: - Increase version number "version: 0.1.8"
+** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
 ** *CHANGELOG.md*: - Add comment section for new version and description of changes.
-** IF *README.md* needs change
-*** Edit *README.org*: ! *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
-*** *README.org*: Conversion steps for new *README.md* 
+** *README.org*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
+
+The reason is, the published package website only allows links to the ~doc/~ directory. So all images must be in ~doc/~.
+
+** *README.org*: Convert to *README.md* 
 
 To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
 
@@ -114,12 +116,13 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
 5. *README.md*: Generate md-native TOC:
 6. Cursor on top
 7. ~M-x: markdown-toc-generate-toc~
-8. *README.md*: May need to fix image links in the README.md - links must be converted from the first version to the second: *NOT NEEDED in 2021-12*
+8. *README.md*: *NOT NEEDED in 2021-12* Fix image links in the README.md - links must be converted from the first version to the second: 
   #+BEGIN_SRC markdown
   -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
   +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
   #+END_SRC
-   - *README.md*: This is achieved with: ~M-x replace-string~ then ~doc/readme_images/~ ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
+
+  *README.md*: This is achieved with: ~M-x replace-string~ then ~doc/readme_images/~ ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
 ** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path
 ** ~flutter format [--dry-run] .~ # Run the standard formatter. Dot is for currdir
 ** ~flutter analyze~ # Analyze and fix errors
@@ -509,10 +512,15 @@ This section We describe running Flutter Charts in development mode on your devi
 
 * IN-PROGRESS Flutter Charts Enhancements
 
+** TODO *todo-00-soon* Replace scaler with a more elegant, see gpilt I did there. See todo-00-last-last
+
 ** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
     - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
     - test  on values like 10,000 - 11,000.
+    -
 
+
+    
 ** IN-PROGRESS Add integration tests and ability to take screenshot and compare
 
 See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter

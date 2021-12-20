@@ -3,8 +3,7 @@ import 'dart:ui' as ui show Paint, PaintingStyle;
 import 'package:flutter_charts/src/chart/options.dart';
 import 'container.dart';
 
-import 'package:flutter_charts/src/util/collection.dart' as custom_collection
-    show CustomList;
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
 
 // todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {

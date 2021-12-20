@@ -25,13 +25,12 @@ class VerticalBarPresenter extends Presenter {
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    dataRowPaint.color = container
-        .data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    double barWidth = container.gridStepWidth *
-        container.options.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+    double barWidth =
+        container.gridStepWidth * container.options.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);

@@ -1,21 +1,20 @@
-import 'package:flutter_charts/src/chart/container.dart'
-    show AdjustableLabelsChartAreaContainer;
+import 'package:flutter_charts/src/chart/container.dart' show AdjustableLabelsChartAreaContainer;
 import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
-enum LabelFitMethod { 
-  rotateLabels, 
-  decreaseLabelFont, 
+enum LabelFitMethod {
+  rotateLabels,
+  decreaseLabelFont,
   skipLabels,
 }
 
-/// Strategy of achieving that labels do not overlap ("fit") on an axis. 
-/// 
-/// Currently only used on the X axis, this strategy defines a sequence of steps, 
+/// Strategy of achieving that labels do not overlap ("fit") on an axis.
+///
+/// Currently only used on the X axis, this strategy defines a sequence of steps,
 /// each performing a specific strategy to achieve labels fit.
-/// 
+///
 /// When the [layout()] finds labels overlap, the following steps are taken
 /// to achieve "fit" of labels: [LabelFitMethod.rotateLabels],
 /// [LabelFitMethod.decreaseLabelFont] and [LabelFitMethod.skipLabels].
@@ -84,11 +83,11 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
 
   /// Constructor uses default values from [ChartOptions]
-  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy 
-  // todo-11-last :   But they still need to default from options or somewhere? 
+  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+  // todo-11-last :   But they still need to default from options or somewhere?
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
-  })   : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
+  })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
         _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
         _maxLabelReLayouts = options.iterativeLayoutOptions.maxLabelReLayouts,
         _multiplyLabelSkip = options.iterativeLayoutOptions.multiplyLabelSkip,
@@ -216,8 +215,7 @@ abstract class LabelLayoutStrategy {
   /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
   /// Just passed down to [LabelContainer]s.
-  vector_math.Matrix2 get canvasTiltMatrix =>
-      vector_math.Matrix2.identity();
+  vector_math.Matrix2 get canvasTiltMatrix => vector_math.Matrix2.identity();
 
   /// Angle by which labels are tilted.
   /// Just passed down to [LabelContainer]s.

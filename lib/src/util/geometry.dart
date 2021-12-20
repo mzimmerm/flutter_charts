@@ -1,17 +1,14 @@
 import 'dart:ui' as ui show Rect, Offset, Size;
-import 'package:vector_math/vector_math.dart' as vector_math
-    show Matrix2, Vector2;
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2, Vector2;
 import 'dart:math' as math show min, max;
 
 /// Utility conversion Offset ==> Vector2
 
-vector_math.Vector2 offsetToVector2(ui.Offset offset) =>
-    vector_math.Vector2(offset.dx, offset.dy);
+vector_math.Vector2 offsetToVector2(ui.Offset offset) => vector_math.Vector2(offset.dx, offset.dy);
 
 /// Utility conversion Vector2  ==> Offset
 
-ui.Offset vector2ToOffset(vector_math.Vector2 vector) =>
-    ui.Offset(vector.x, vector.y);
+ui.Offset vector2ToOffset(vector_math.Vector2 vector) => ui.Offset(vector.x, vector.y);
 
 ui.Offset transform({
   required vector_math.Matrix2 matrix,
@@ -106,7 +103,7 @@ class EnvelopedRotatedRect {
   EnvelopedRotatedRect.centerRotatedFrom({
     required ui.Rect rect,
     required vector_math.Matrix2 rotateMatrix,
-  })   : _rotatorMatrix = rotateMatrix,
+  })  : _rotatorMatrix = rotateMatrix,
         _sourceRect = rect,
         _envelopeRect = rect,
         _topLeft = rect.topLeft,

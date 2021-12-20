@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/chart/data.dart';
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
-  /// If true, Y labels are not numbers, but values 
+  /// If true, Y labels are not numbers, but values
   /// hardwired in this class.
   final bool _useUserProvidedYLabels;
   final int _numXLabels;
@@ -76,15 +76,7 @@ class RandomChartData extends ChartData {
   */
 
   void _generateXLabelsCount() {
-    List<String> xLabelsDows = [
-      'First',
-      'Second',
-      'Third',
-      'Fourth',
-      'Fifth',
-      'Sixth',
-      'Seventh'
-    ];
+    List<String> xLabelsDows = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'];
 
     for (int xIndex = 0; xIndex < _numXLabels; xIndex++) {
       xLabels.add(xLabelsDows[xIndex % 7]);
@@ -104,7 +96,7 @@ class RandomChartData extends ChartData {
       yLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
     }
   }
-  
+
   void _generateYValues() {
     dataRows = List.empty(growable: true);
 
@@ -116,11 +108,7 @@ class RandomChartData extends ChartData {
     double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
 
     for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
-      dataRows.add(_oneDataRow(
-          rgen: rgen,
-          max: maxYValue,
-          pushUpBy: (rowIndex - 1) * pushUpStep,
-          scale: scale));
+      dataRows.add(_oneDataRow(rgen: rgen, max: maxYValue, pushUpBy: (rowIndex - 1) * pushUpStep, scale: scale));
     }
     // print("Random generator data: ${_flattenData()}.");
   }

@@ -34,10 +34,10 @@ class LayoutExpansion {
   /// Named constructor for unused expansion
   LayoutExpansion.unused()
       : this(
-    width: -1.0,
-    height: -1.0,
-    used: false,
-  );
+          width: -1.0,
+          height: -1.0,
+          used: false,
+        );
 
   LayoutExpansion cloneWith({
     double? width,
@@ -45,9 +45,6 @@ class LayoutExpansion {
   }) {
     height ??= this.height;
     width ??= this.width;
-    return LayoutExpansion(
-        width: width,
-        height: height
-    );
+    return LayoutExpansion(width: width, height: height);
   }
 }

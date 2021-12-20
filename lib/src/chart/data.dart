@@ -2,14 +2,13 @@ import 'dart:math' as math;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/material.dart' as material show Colors;
 
-// todo-00-last-last : Make final and rethink completely. 
+// todo-00-last-last : Make final and rethink completely.
 //                     Should be able to set defauls for everything, unless set on construction time.
 
 class ChartData {
-  
   /// Default constructor only assumes [dataRows] are set,
   /// and assigns default values of [dataRowsLegends], [dataRowsColors], [xLabels], [yLabels].
-  /// 
+  ///
   // todo-00-last-last : make final and always define with DataRows.
   ChartData() {
     assignDataRowsDefaultLegends();
@@ -17,7 +16,7 @@ class ChartData {
     // todo-00-last-last : deal with xLabels
     // todo-00-last-last : deal with yLabels
   }
-  
+
   /// Data in rows. Each row of data represents one data series.
   ///
   /// Legends per row are managed by [dataRowsLegends].
@@ -59,10 +58,9 @@ class ChartData {
   List<String> yLabels = List.empty(growable: true);
 
   // todo-00-last-last : improve to check everything, then call on as many places as possible
-  
+
   void validate() {
-    if (dataRowsLegends.isNotEmpty &&
-        dataRows.length != dataRowsLegends.length) {
+    if (dataRowsLegends.isNotEmpty && dataRows.length != dataRowsLegends.length) {
       throw StateError(' If row legends are defined, their '
           'number must be the same as number of data rows. '
           ' [dataRows length: ${dataRows.length}] '
@@ -91,7 +89,7 @@ class ChartData {
   }
 
   /// Sets up legends names, first several explicitly, rest randomly.
-  /// 
+  ///
   /// This is used if user does not set legends.
   /// This should be kept in sync with colors below.
   void assignDataRowsDefaultLegends() {
@@ -125,7 +123,7 @@ class ChartData {
   }
 
   /// Sets up colors for legends, first several explicitly, rest randomly.
-  /// 
+  ///
   /// This is used if user does not set colors.
   void assignDataRowsDefaultColors() {
     int dataRowsCount = dataRows.length;
@@ -153,8 +151,7 @@ class ChartData {
         int colorHex = math.Random().nextInt(0xFFFFFF);
         int opacityHex = 0xFF;
         // todo-11-last : cast toInt added - does this change results?
-        dataRowsColors.add(
-            ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
+        dataRowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
       }
     }
   }
