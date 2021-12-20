@@ -1,0 +1,12 @@
+* A list of frequent commands in this project.
+
+tool/test/run_all_tests.sh 
+tool/test/run_one_screenshot_test.sh ex10RandomData
+flutter emulator --launch "Nexus_6_API_29_2"
+flutter create --template=app flutter_charts_app
+flutter pub get
+flutter pub upgrade
+flutter clean; flutter pub get; \
+flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshot_test.dart
+flutter test --dart-define=EXAMPLE_TO_RUN=ex50StocksWithNegativesWithUserColors --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart tool/screenshot_after_test_check.dart
+
