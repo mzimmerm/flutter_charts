@@ -1,7 +1,8 @@
-import 'dart:ui' as ui show Rect, Offset, Paint;
+import 'dart:ui' as ui show Rect, Offset, Paint, Color;
 
 import '../presenter.dart';
 import '../container.dart';
+import '../../util/util_type_workaround.dart' as util_type_workaround;
 
 /// Presenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
@@ -25,7 +26,11 @@ class VerticalBarPresenter extends Presenter {
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    // todo-00-last-last-done type null check : dataRowPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    List<ui.Color> dataRowsColors = util_type_workaround.makeNonNullableWithNonNullAssert(container.data.dataRowsColors);
+    dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
+
+
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;

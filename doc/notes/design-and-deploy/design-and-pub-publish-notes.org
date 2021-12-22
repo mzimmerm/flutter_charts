@@ -2,7 +2,9 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 
-* IN-PROGRESS Flutter Charts Bugs status
+* IN-PROGRESS Bugs and issues
+
+** Flutter charts bugs
 
 - [X] After tons of layout changes, the whole grid disappeared from the line chart only.
 - [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
@@ -10,8 +12,8 @@
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
 - 
  
-* TODO Dart or Flutter bugs to report or ask on Stack Overflow
-** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
+** IN-PROGRESS Dart or Flutter bugs to report or ask on Stack Overflow
+*** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
 
 // todo-10 mz ori
 
@@ -37,11 +39,11 @@ Emulator:
 
 It sounds like in the end this is just a type system complaint, I hope we should be able to use a list of num and then do a concrete operations on them, at least if they are all the same type (int or double, which they are) in the data I passed. 
 
-** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses - three dots '...'  like this.
+*** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses - three dots '...'  like this.
 
 See file:./bug-text-painter-1.png
 See file:./bug-text-painter-2.png
-** TODO Dart questions running
+*** TODO Dart questions running
 
 - Is there a way to initialize a non-nullable list to size?
 
@@ -82,14 +84,14 @@ See file:./bug-text-painter-2.png
       myLayoutSize = currentOffset + child.layoutSize
     this.layoutSize = myLayoutSize
 #+END_SRC   
-
 * NOTE How are todos used in code
+
 - todo-1 long term low priority
 - todo-2 long term higher priority
 - todo-10 release-blocker (created typically during a new work in progress)
 - todo-11, todo-12 todo-13 - work in progress (implies todo-10), higher number is higher priority or more immediate. So -13 is the highest ever priority.
-* NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~cd flutter_charts~ - Implied default directory
+* NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
 ** Test app from IntelliJ and ~tool/test/run_all_tests.sh~
@@ -102,7 +104,18 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 ** *CHANGELOG.md*: - Add comment section for new version and description of changes.
 ** *README.org*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
 
-The reason is, the published package website only allows links to the ~doc/~ directory. So all images must be in ~doc/~.
+The reason is, the published package website only allows links to the ~doc/readme_images~ directory. So all images must be there.
+
+*From web: Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory doc/readme_images, and point to then via github*. 
+
+This is the process of adding images to README.org, which survives conversion to README.md, and publishing on pub:
+
+- [ ] Add an image to README.org using the regular image capture.
+- [ ] Show the image links directly
+- [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
+- [ ] Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
+- [ ] Change the links in org file by changing =file:= to =file:doc/readme_images/=
+  - [ ] in the org file, this look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
 
 ** *README.org*: Convert to *README.md* 
 
@@ -146,19 +159,6 @@ This just finishes up the publish.
 - Go over issues in the analyses tab: https://pub.dartlang.org/packages/flutter_charts#-analysis-tab-
 ** Test the package that was just published
 *** ~cd flutter_charts_sample_app; flutter pub upgrade; flutter pub get; flutter run~
-
-* NOTE Adding images to README.org
-
-*Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory doc/readme_images, and point to then via github*. 
-
-This is the process of adding images to README.org, which survives conversion to README.md, and publishing on pub:
-
-- [ ] Add an image to README.org using the regular image capture.
-- [ ] Show the image links directly
-- [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
-- [ ] Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
-- [ ] Change the links in org file by changing =file:= to =file:doc/readme_images/=
-  - [ ] in the org file, this look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
 
 * DONE Add ability to create a Table of Contents to README.org
 - [X] Install toc-org package
@@ -510,10 +510,79 @@ This section We describe running Flutter Charts in development mode on your devi
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
 
+* Note : geek charts_flutter use this process and associations between CustomPaint and CustomPainter
+geek:
+  - ~ChartContainer<D> extends CustomPaint~ = widget that inflates to a custompaint that provides common ChartContext
+    - member BaseChart
+    - member BaseChartState
+  - ~BaseChartState extends State~
+    - ~build(buildContext)~ calls and adds child:   _buildChartContainer() which does:
+      - chartContainer = new ChartContainer
+      - return chartContainer.
+
+From top of example:
+- main
+- creates State instance
+  - in build
+    - creates: SimpleBarChart.withSampleData() 
+      - returns SimpleBarChart(_createSampleData();
+        - where SimpleBarChart extends StatelessWidget
+          - has build(context) where it
+            - returns charts.BarChart(seriesList); <== so this is called from main
+              - BarChart constructor has createCommonChart(BaseChartState) which does
+                - return new common.BarChart(params)
+                - *passed BaseChartState _buildChartContainer creates new ~ChartContainer which is the CustomPaint~
+                - *so this is how far the CustomPaint is created. I create CustomPaint immediately*
+
+
+- ~ChartContainerCustomPaint extends CustomPainter~ (note the switch)
+- ChartContainerRenderObject
+  - _setNewPainter creates ChartContainerCustomPaint (painter)
+    - called in ChartContainerRenderObject.reconfigure
+      - called in ChartContainer.createRenderObject
+        - called during mount. ~so Painter is created during mount~
+
+
+flutter_charts:
+
+- *While FLUTTER CHARTS EXTEND CUSTOM_PAINT, AND HAVE PAINTER (e.g. LineChartPainter extends CustomPainter) AS MEMBER*
+  - *PAINTER HAS CONTAINER AS MEMBER*
+
+so I do (-> means association)
+
+LineChart(is CustomPaint) -> LineChartPainter(is CustomPainter) -> Container
+
+This is the same structure as flutter uses!
+
+comparison:
+
+- ~So container ~ painter (while geek : container ~ paint)~
+- Also geek has RenderCustomPaint which has nothing to do with CustomPaint, and has CustomPainter on it. Looks like they are re-doing this part of Flutter
+- Also geek keeps re-assigning paint's (container's) member painter () different painter (ChildContainerCustomPaint) in _setNewPainter
+- So geek can access painter 2 ways:
+  - From ChartContainer extends CustomPaint (which has CustomPainter)
+  - From RenderCustomPaint which has nothing to do with CustomPaint, and has CustomPainter on it
+
+                      
 * IN-PROGRESS Flutter Charts Enhancements
 
-** TODO *todo-00-soon* Replace scaler with a more elegant, see gpilt I did there. See todo-00-last-last
+** IN-PROGRESS Replace ChartData with a more sane immutable object, more representing what people need
 
+*** Pass ChartData members as constructor arguments, and init in initializer list
+
+*** New class ChartDataRows which serves as current dataRows
+
+*** Rename ChartData to ChartModel
+
+*** Rename ChartDataRows to ChartModelRows
+
+*** What options are controlled on the ChartModel level? What on the ChartModelRows level?
+
+*** For those on ChartModelRows level: add functionality and options via 
+
+** TODO Go over todo-00(-now , doc, etc)
+
+** TODO *todo-00-soon* Replace scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
 ** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
     - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
     - test  on values like 10,000 - 11,000.
@@ -521,45 +590,8 @@ This section We describe running Flutter Charts in development mode on your devi
 
 
     
-** IN-PROGRESS Add integration tests and ability to take screenshot and compare
-
-See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter
-
-1. Setup integration tests: https://flutter.dev/docs/cookbook/testing/integration/introduction
-2. Create an integration test chart_test_1.dart, which will run same code as the app flutter_charts/lib/main.dart 
-3. *Must start an AVD device - without this, errors about 'dart:ui' not found!*
-4. Command line, run: ~flutter test integration_test/chart_test_1.dart~. Can add -d device.
-5. Experiment with ability to run the test. Experiment with clicking on the + button in the test.
-6. Replace test_driver/integration_test.dart code with
-   #+begin_src dart
-     import 'dart:io';
-     import 'package:integration_test/integration_test_driver_extended.dart';
-
-     Future<void> main() async {
-       try {
-         await integrationDriver(
-           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
-             final File image = await File('screenshots/$screenshotName.png').create(recursive: true);
-             image.writeAsBytesSync(screenshotBytes);
-             return true;
-           },
-         );
-       } catch (e) {
-         print('Error occured: $e');
-       }
-     }
-   #+end_src
-   This adds onScreenshot event handler to integration tests
-7. To integration_test/app_test.dart, before all testWidgets where tests are initialized, add this code:
-   #+begin_src dart
-     final binding = IntegrationTestWidgetsFlutterBinding();
-     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-   #+end_src
-8. To the code of the test, at the point you want to take the screenshot, add this code
-   #+begin_src dart
-     await binding.takeScreenshot('test-screenshot');
-   #+end_src
-** IN-PROGRESS Refactorings
+** TODO *todo-00-soon* add function which applies to Y data and scale but not labels. Use for logarighmic examples.
+** IN-PROGRESS Refactorings to make flutter_charts a bit like Morphic (marginally like it)
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
@@ -870,3 +902,41 @@ If layout() is called, following paint() always prints full line  (goes to line 
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
 *** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
+*** DONE Add integration tests and ability to take screenshot and compare
+
+See https://dev.to/mjablecnik/take-screenshot-during-flutter-integration-tests-435k on how to take screenshots in Flutter
+
+1. Setup integration tests: https://flutter.dev/docs/cookbook/testing/integration/introduction
+2. Create an integration test chart_test_1.dart, which will run same code as the app flutter_charts/lib/main.dart 
+3. *Must start an AVD device - without this, errors about 'dart:ui' not found!*
+4. Command line, run: ~flutter test integration_test/chart_test_1.dart~. Can add -d device.
+5. Experiment with ability to run the test. Experiment with clicking on the + button in the test.
+6. Replace test_driver/integration_test.dart code with
+   #+begin_src dart
+     import 'dart:io';
+     import 'package:integration_test/integration_test_driver_extended.dart';
+
+     Future<void> main() async {
+       try {
+         await integrationDriver(
+           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
+             final File image = await File('screenshots/$screenshotName.png').create(recursive: true);
+             image.writeAsBytesSync(screenshotBytes);
+             return true;
+           },
+         );
+       } catch (e) {
+         print('Error occured: $e');
+       }
+     }
+   #+end_src
+   This adds onScreenshot event handler to integration tests
+7. To integration_test/app_test.dart, before all testWidgets where tests are initialized, add this code:
+   #+begin_src dart
+     final binding = IntegrationTestWidgetsFlutterBinding();
+     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+   #+end_src
+8. To the code of the test, at the point you want to take the screenshot, add this code
+   #+begin_src dart
+     await binding.takeScreenshot('test-screenshot');
+   #+end_src

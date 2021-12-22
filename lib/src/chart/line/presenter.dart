@@ -1,9 +1,11 @@
-import 'dart:ui' as ui show Offset, Paint;
+import 'dart:ui' as ui show Offset, Paint, Color;
 
 import '../presenter.dart';
 import 'package:flutter_charts/src/chart/line/options.dart';
 import '../container.dart';
 import 'package:flutter_charts/src/chart/line_container.dart';
+import '../../util/util_type_workaround.dart' as util_type_workaround;
+
 
 /// Presenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
@@ -38,7 +40,9 @@ class LineAndHotspotPresenter extends Presenter {
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    rowDataPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    // todo-00-last-last-done : force non null : rowDataPaint.color = container.data.dataRowsColors[rowIndex % container.data.dataRowsColors.length];
+    List<ui.Color> dataRowsColors = util_type_workaround.makeNonNullableWithNonNullAssert(container.data.dataRowsColors);
+    rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;

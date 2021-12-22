@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
           [25.0, 40.0, 20.0,  80.0, 12.0, 100.0 ],
         ];
         _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-        _chartData.assignDataRowsDefaultColors();
+        _chartData.dataRowsDefaultColors();
 
         break;
 
@@ -220,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
           [4.0, 3.0, 5.0, 6.0, 1.0],
         ];
         _chartData.xLabels = ["Seattle", "Toronto", "London", "Prague", "Vancouver"];
-        _chartData.assignDataRowsDefaultColors();
+        _chartData.dataRowsDefaultColors();
         // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
         break;  
    */
@@ -474,21 +474,22 @@ class _ExampleDefiner {
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = ChartData();
-        chartData.dataRowsLegends = [
-          'Spring',
-          'Summer',
-          'Fall',
-          'Winter',
-        ];
-        chartData.dataRows = [
-          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-        ];
-        chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        chartData.assignDataRowsDefaultColors(); // todo-00-last-last try to remove
+        chartData = ChartData(
+          dataRows: [
+            [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+            [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+            [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+            [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+          ],
+          xLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          dataRowsLegends: [
+            'Spring',
+            'Summer',
+            'Fall',
+            'Winter',
+          ],
+        );
+        // chartData.dataRowsDefaultColors(); // todo-00-last-last if not set, called in constructor
         break;
 
       case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
@@ -501,21 +502,22 @@ class _ExampleDefiner {
             chartOptions = VerticalBarChartOptions.noLabels();
             break;
         }
-        chartData = ChartData();
-        chartData.dataRowsLegends = [
-          'Spring',
-          'Summer',
-          'Fall',
-          'Winter',
-        ];
-        chartData.dataRows = [
-          [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-          [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-          [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-          [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-        ];
-        chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-        chartData.assignDataRowsDefaultColors(); // todo-00-last-last try to remove
+        chartData = ChartData(
+          dataRows: [
+            [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+            [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+            [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+            [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+          ],
+          xLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          dataRowsLegends: [
+            'Spring',
+            'Summer',
+            'Fall',
+            'Winter',
+          ],
+        );
+        // chartData.dataRowsDefaultColors(); // todo-00-last-last where to set
         break;
 
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
@@ -548,28 +550,29 @@ class _ExampleDefiner {
             );
             break;
         }
-        chartData = ChartData();
-        chartData.yLabels = [
-          'Low',
-          'Medium',
-          'High',
-        ];
+        chartData = ChartData(
+          dataRows: [
+            [9.0, 4.0, 3.0, 9.0],
+            [7.0, 6.0, 7.0, 6.0],
+            [4.0, 9.0, 6.0, 8.0],
+            [3.0, 9.0, 10.0, 1.0],
+          ],
+          xLabels: ['Speed', 'Readability', 'Level of Novel', 'Usage'],
+          dataRowsColors: [
+            Colors.blue,
+            Colors.yellow,
+            Colors.green,
+            Colors.amber,
+          ],
+          dataRowsLegends: ['Java', 'Dart', 'Python', 'Newspeak'],
+          yLabels: [
+            'Low',
+            'Medium',
+            'High',
+          ],
+        );
 
-        chartData.dataRowsLegends = ['Java', 'Dart', 'Python', 'Newspeak'];
-        chartData.dataRows = [
-          [9.0, 4.0, 3.0, 9.0],
-          [7.0, 6.0, 7.0, 6.0],
-          [4.0, 9.0, 6.0, 8.0],
-          [3.0, 9.0, 10.0, 1.0],
-        ];
-        chartData.xLabels = ['Speed', 'Readability', 'Level of Novel', 'Usage'];
-        chartData.dataRowsColors = [
-          Colors.blue,
-          Colors.yellow,
-          Colors.green,
-          Colors.amber,
-        ];
-        chartData.assignDataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
+        // chartData.dataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
         break;
 
       case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
@@ -579,27 +582,28 @@ class _ExampleDefiner {
         // In each column, adding it's absolute values should add to same number:
         // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
 
-        chartData = ChartData();
-        chartData.dataRowsLegends = [
-          '-2% or less',
-          '-2% to 0%',
-          '0% to +2%',
-          'more than +2%',
-        ];
-        // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
-        chartData.dataRows = [
-          [-9.0, -8.0, -8.0, -5.0, -8.0],
-          [-1.0, -2.0, -4.0, -1.0, -1.0],
-          [7.0, 8.0, 7.0, 11.0, 9.0],
-          [3.0, 2.0, 1.0, 3.0, 3.0],
-        ];
-        chartData.xLabels = ['Energy', 'Health', 'Finance', 'Chips', 'Oil'];
-        chartData.dataRowsColors = [
-          Colors.red,
-          Colors.grey,
-          Colors.greenAccent,
-          Colors.black,
-        ];
+        chartData = ChartData(
+          // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
+          dataRows: [
+            [-9.0, -8.0, -8.0, -5.0, -8.0],
+            [-1.0, -2.0, -4.0, -1.0, -1.0],
+            [7.0, 8.0, 7.0, 11.0, 9.0],
+            [3.0, 2.0, 1.0, 3.0, 3.0],
+          ],
+          xLabels: ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
+          dataRowsLegends: [
+            '-2% or less',
+            '-2% to 0%',
+            '0% to +2%',
+            'more than +2%',
+          ],
+          dataRowsColors: [
+            Colors.red,
+            Colors.grey,
+            Colors.greenAccent,
+            Colors.black,
+          ],
+        );
         break;
 
       case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
@@ -609,28 +613,29 @@ class _ExampleDefiner {
             yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
           ),
         );
-        chartData = ChartData();
-        chartData.dataRowsLegends = [
-          'Spring',
-          'Summer',
-        ];
         var originalData = [
           [2.2, 220.0, 2200.0],
           [330.0, 3.3, 3300.0],
         ];
-        chartData.dataRows = [
-          [math.log(2.2), math.log(220.0), math.log(2200.0)],
-          [math.log(330.0), math.log(3.3), math.log(3300.0)],
-        ];
-        chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];
-        chartData.yLabels = [
-          '2.2', // minimum of all values
-          math
-              .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
-              .toString(), // values in between linearly scaled between log(min) and log(max)
-          '3300', // maximum of all values
-        ];
-        chartData.assignDataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
+        chartData = ChartData(
+          dataRows: [
+            [math.log(2.2), math.log(220.0), math.log(2200.0)],
+            [math.log(330.0), math.log(3.3), math.log(3300.0)],
+          ],
+          xLabels: ['Wolf', 'Deer', 'Mouse'],
+          dataRowsLegends: [
+            'Spring',
+            'Summer',
+          ],
+          yLabels: [
+            '2.2', // minimum of all values
+            math
+                .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
+                .toString(), // values in between linearly scaled between log(min) and log(max)
+            '3300', // maximum of all values
+          ],
+        );
+        // chartData.dataRowsDefaultColors(); // todo-00-last-last where to set
         break;
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
@@ -638,20 +643,21 @@ class _ExampleDefiner {
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
         /// [chartData.xLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
         // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
-        chartData = ChartData();
-        chartData.dataRows = [
-          [0.0, 0.0, 0.0],
-        ];
-        // Note: When ChartData is defined,
-        //       ALL OF  chartData.xLabels,  chartData.dataRowsLegends, chartData.dataRowsColors
-        //       must be set by client
-        chartData.xLabels = ['Wolf', 'Deer', 'Mouse'];
-        chartData.dataRowsLegends = [
-          'Row 1',
-        ];
-        chartData.dataRowsColors = [
-          Colors.blue,
-        ];
+        chartData = ChartData(
+          dataRows: [
+            [0.0, 0.0, 0.0],
+          ],
+          // Note: When ChartData is defined,
+          //       ALL OF  xLabels,  dataRowsLegends, dataRowsColors
+          //       must be set by client
+          xLabels: ['Wolf', 'Deer', 'Mouse'],
+          dataRowsLegends: [
+            'Row 1',
+          ],
+          dataRowsColors: [
+            Colors.blue,
+          ],
+        );
         break;
     }
 

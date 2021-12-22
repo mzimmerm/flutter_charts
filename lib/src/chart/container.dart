@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas, Color;
 
 import 'package:flutter_charts/src/chart/container_base.dart' show Container;
 
@@ -21,11 +21,14 @@ import 'presenter.dart';
 
 import '../util/range.dart';
 import '../util/geometry.dart' as geometry;
+import '../util/util_type_workaround.dart' as util_type_workaround;
+
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
 
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
+
 
 /// Abstract class representing the [Container] of the whole chart.
 ///
@@ -404,7 +407,9 @@ class YContainer extends ChartAreaContainer {
     List<double> flatData = _chartTopContainer.pointsColumns
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
-    List<String> yLabels = _chartTopContainer.data.yLabels;
+    // todo-00-last-last-done-set-nullable : List<String> yLabels = _chartTopContainer.data.yLabels;
+    assert (_chartTopContainer.data.yLabels != null);
+    List<String> yLabels = _chartTopContainer.data.yLabels ?? [];
 
     var yDataRange = Interval(flatData.reduce(math.min), flatData.reduce(math.max));
     double dataStepHeight = (yDataRange.max - yDataRange.min) / (yLabels.length - 1);
@@ -1000,7 +1005,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
   ///
-  /// See [ChartOptions.dataRowsPaintingOrder].
+  /// See [DataContainerOptions.dataRowsPaintingOrder].
   List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
     var options = chartTopContainer.options;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
@@ -1348,8 +1353,11 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      indicatorPaint.color =
-          _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
+      // todo-00-last-last-done checked nullable dataRowsColors
+      // indicatorPaint.color =
+      //     _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
+      List<ui.Color> dataRowsColors = util_type_workaround.makeNonNullableWithNonNullAssert(_chartTopContainer.data.dataRowsColors);
+      indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(
         width: legendItemWidth,
@@ -1379,7 +1387,7 @@ class LegendContainer extends ChartAreaContainer {
           (2.0 * containerMarginTB),
     );
   }
-
+  
   @override
   void applyParentOffset(ui.Offset offset) {
     if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
