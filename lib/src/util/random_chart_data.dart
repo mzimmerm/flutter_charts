@@ -8,11 +8,11 @@ class RandomChartData implements ChartData {
   @override
   final List<List<double>> dataRows;
   @override
-  final List<String> xLabels;
+  final List<String> xUserLabels;
   @override
   final List<String> dataRowsLegends;
   @override
-  List<String>? yLabels;
+  List<String>? yUserLabels;
   @override
   List<ui.Color>? dataRowsColors;
   
@@ -22,8 +22,6 @@ class RandomChartData implements ChartData {
   /// If [useMonthNames] is set to false, random
   ///
   RandomChartData({
-    // todo-00-last-last required this.dataRows,
-    // this.dataRowsLegends,
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,
     int numDataRows = 4,
@@ -31,13 +29,13 @@ class RandomChartData implements ChartData {
     int maxLabelLength = 8,
     bool overlapYValues = false,
   })  : 
-        xLabels = util_data.generateXLabels(numXLabels),
-        dataRows = util_data.generateYValues(numXLabels, numDataRows, overlapYValues),
-        // if 
-        yLabels = util_data.generateYLabels(useUserProvidedYLabels),
-        dataRowsLegends = util_data.dataRowsDefaultLegends(numDataRows),
+        xUserLabels = util_data.randomDataXLabels(numXLabels),
+        dataRows = util_data.randomDataYValues(numXLabels, numDataRows, overlapYValues),
+        yUserLabels = util_data.randomDataYLabels(useUserProvidedYLabels),
+        dataRowsLegends = util_data.randomDataRowsLegends(numDataRows),
         dataRowsColors = util_data.dataRowsDefaultColors(numDataRows) {
-    // todo-00-last-last : deal with yLabels
-    util_data.validate(dataRows, dataRowsLegends, xLabels);
+    util_data.validate(this);
   }
+  @override
+  bool get useUserLabels => yUserLabels != null;
 }

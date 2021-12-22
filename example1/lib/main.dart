@@ -174,57 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-
-  /* unused examples
-      case ExamplesEnum.ex_2_1_AnimalCountBySeason:
-        // Same as 2_0 above, but this demonstrates order of painting lines on the line chart,
-        //   controlled by DataRowsPaintingOrder.
-        //  This has benefits when dataRows lines are on top of each other
-
-        _lineChartOptions.dataRowsPaintingOrder = DataRowsPaintingOrder.LastToFirst;
-        _chartData = new ChartData();
-        _chartData.dataRowsLegends = [
-          "Spring",
-          "Summer",
-          "Fall",
-          "Winter",
-        ];
-        _chartData.dataRows = [
-          [10.0, 20.0,  5.0,  30.0,  5.0,  20.0 ],
-          [10.0, 20.0,  5.0,  30.0,  5.0,  30.0 ],
-          [25.0, 40.0, 20.0,  80.0, 12.0,  90.0 ],
-          [25.0, 40.0, 20.0,  80.0, 12.0, 100.0 ],
-        ];
-        _chartData.xLabels =  ["Wolf", "Deer", "Owl", "Mouse", "Hawk", "Vole"];
-        _chartData.dataRowsDefaultColors();
-
-        break;
-
-      case ExamplesEnum.ex_4_0_SunnyDaysPerWeek_ExplicitLabelLayoutStrategy:
-        // Shows: 
-        //   - Explicit use of DefaultIterativeLabelLayoutStrategy
-        //   - User defined values and labels.
-        //   - Also tests a bug reported by Lonenzo Tejera
-        _lineChartOptions = new LineChartOptions();
-        _verticalBarChartOptions = new VerticalBarChartOptions();
-        _xContainerLabelLayoutStrategy = new DefaultIterativeLabelLayoutStrategy(
-          options: _verticalBarChartOptions,
-        );
-        _chartData = new ChartData();
-        _chartData.dataRowsLegends = [
-          "Spring",
-          "Summer",
-        ];
-        _chartData.dataRows = [
-          [1.0, 2.0, 3.0, 4.0, 6.0],
-          [4.0, 3.0, 5.0, 6.0, 1.0],
-        ];
-        _chartData.xLabels = ["Seattle", "Toronto", "London", "Prague", "Vancouver"];
-        _chartData.dataRowsDefaultColors();
-        // Note: ChartOptions.useUserProvidedYLabels default is still used (false);
-        break;  
-   */
-
+  
   void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
@@ -481,7 +431,7 @@ class _ExampleDefiner {
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          xUserLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
           dataRowsLegends: [
             'Spring',
             'Summer',
@@ -489,7 +439,7 @@ class _ExampleDefiner {
             'Winter',
           ],
         );
-        // chartData.dataRowsDefaultColors(); // todo-00-last-last if not set, called in constructor
+        // chartData.dataRowsDefaultColors(); // if not set, called in constructor
         break;
 
       case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
@@ -509,7 +459,7 @@ class _ExampleDefiner {
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          xUserLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
           dataRowsLegends: [
             'Spring',
             'Summer',
@@ -517,7 +467,6 @@ class _ExampleDefiner {
             'Winter',
           ],
         );
-        // chartData.dataRowsDefaultColors(); // todo-00-last-last where to set
         break;
 
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
@@ -533,6 +482,7 @@ class _ExampleDefiner {
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
 
+/* todo-00-last-last no need to set options only to redefing useUserProvidedYLabels, that is explicit when yUserLabels are set
         // Set non-default chart options to show no labels in this example
         switch (chartTypeToShow) {
           case ExamplesChartTypeEnum.lineChart:
@@ -550,6 +500,7 @@ class _ExampleDefiner {
             );
             break;
         }
+*/
         chartData = ChartData(
           dataRows: [
             [9.0, 4.0, 3.0, 9.0],
@@ -557,7 +508,7 @@ class _ExampleDefiner {
             [4.0, 9.0, 6.0, 8.0],
             [3.0, 9.0, 10.0, 1.0],
           ],
-          xLabels: ['Speed', 'Readability', 'Level of Novel', 'Usage'],
+          xUserLabels: ['Speed', 'Readability', 'Level of Novel', 'Usage'],
           dataRowsColors: [
             Colors.blue,
             Colors.yellow,
@@ -565,14 +516,13 @@ class _ExampleDefiner {
             Colors.amber,
           ],
           dataRowsLegends: ['Java', 'Dart', 'Python', 'Newspeak'],
-          yLabels: [
+          yUserLabels: [
             'Low',
             'Medium',
             'High',
           ],
         );
 
-        // chartData.dataRowsDefaultColors(); // todo-00-last-last required with useUserProvidedYLabels
         break;
 
       case ExamplesEnum.ex50StocksWithNegativesWithUserColors:
@@ -590,7 +540,7 @@ class _ExampleDefiner {
             [7.0, 8.0, 7.0, 11.0, 9.0],
             [3.0, 2.0, 1.0, 3.0, 3.0],
           ],
-          xLabels: ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
+          xUserLabels: ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
           dataRowsLegends: [
             '-2% or less',
             '-2% to 0%',
@@ -607,12 +557,13 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
-        // todo-00-last-last - while this runs, and result is correct, it is ugly and manual.
+/* todo-00-last-last no need to set options only to redefing useUserProvidedYLabels, that is explicit when yUserLabels are set
         chartOptions = LineChartOptions(
           chartOptions: const ChartOptions(
             yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
           ),
         );
+*/
         // var originalData = [
         //  [2.2, 220.0, 2200.0],
         //  [330.0, 3.3, 3300.0],
@@ -622,12 +573,12 @@ class _ExampleDefiner {
             [math.log(2.2), math.log(220.0), math.log(2200.0)],
             [math.log(330.0), math.log(3.3), math.log(3300.0)],
           ],
-          xLabels: ['Wolf', 'Deer', 'Mouse'],
+          xUserLabels: ['Wolf', 'Deer', 'Mouse'],
           dataRowsLegends: [
             'Spring',
             'Summer',
           ],
-          yLabels: [
+          yUserLabels: [
             '2.2', // minimum of all values
             math
                 .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
@@ -635,22 +586,21 @@ class _ExampleDefiner {
             '3300', // maximum of all values
           ],
         );
-        // chartData.dataRowsDefaultColors(); // todo-00-last-last where to set
         break;
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
-        /// [chartData.xLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
+        /// [chartData.xUserLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
         // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
         chartData = ChartData(
           dataRows: [
             [0.0, 0.0, 0.0],
           ],
           // Note: When ChartData is defined,
-          //       ALL OF  xLabels,  dataRowsLegends, dataRowsColors
+          //       ALL OF  xUserLabels,  dataRowsLegends, dataRowsColors
           //       must be set by client
-          xLabels: ['Wolf', 'Deer', 'Mouse'],
+          xUserLabels: ['Wolf', 'Deer', 'Mouse'],
           dataRowsLegends: [
             'Row 1',
           ],

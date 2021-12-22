@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Color;
 import 'dart:math' as math show Random, pow;
 import 'package:flutter/material.dart' as material show Colors;
+import '../../src/chart/data.dart' as data show ChartData;
 
 // todo-00-last-last move this somewhere else - close to data or random data
 /// Sets up colors for legends, first several explicitly, rest randomly.
@@ -43,7 +44,7 @@ List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
 ///
 /// This is used if user does not set legends.
 /// This should be kept in sync with colors below.
-List<String> dataRowsDefaultLegends(int dataRowsCount) {
+List<String> randomDataRowsLegends(int dataRowsCount) {
 
   List<String> _defaultLegends = List.empty(growable: true);
 
@@ -76,30 +77,29 @@ List<String> dataRowsDefaultLegends(int dataRowsCount) {
 }
 
 
-/// Generate list of "random" [xLabels] as monthNames or weekday names.
+/// Generate list of "random" [xUserLabels] as monthNames or weekday names.
 ///
 ///
-List<String> generateXLabels(int numXLabels) {
+List<String> randomDataXLabels(int numXLabels) {
   List<String> xLabelsDows = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'];
 
 /* todo-00-last-last
   for (int xIndex = 0; xIndex < _numXLabels; xIndex++) {
-    xLabels.add(xLabelsDows[xIndex % 7]);
+    xUserLabels.add(xLabelsDows[xIndex % 7]);
   }
 */
   return xLabelsDows.getRange(0, numXLabels).toList();
 }
 
-List<String> generateYLabels(bool useUserProvidedYLabels) {
-  List<String> yLabels = List.empty(growable: true);
+List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
+  List<String>? yUserLabels;
   if (useUserProvidedYLabels) {
-    // yLabels = [ "0%", "25%", "50%", "75%", "100%"];
-    yLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
+    yUserLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
   }
-  return yLabels;
+  return yUserLabels;
 }
 
-List<List<double>> generateYValues(int numXLabels, int _numDataRows, bool _overlapYValues) {
+List<List<double>> randomDataYValues(int numXLabels, int _numDataRows, bool _overlapYValues) {
   List<List<double>> dataRows = List.empty(growable: true);
 
   double scale = 200.0;
@@ -110,7 +110,7 @@ List<List<double>> generateYValues(int numXLabels, int _numDataRows, bool _overl
   double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
 
   for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
-    dataRows.add(_oneDataRow(
+    dataRows.add(_randomDataOneRow(
       rgen: rgen,
       max: maxYValue,
       pushUpBy: (rowIndex - 1) * pushUpStep,
@@ -121,8 +121,7 @@ List<List<double>> generateYValues(int numXLabels, int _numDataRows, bool _overl
   return dataRows;
 }
 
-
-List<double> _oneDataRow({
+List<double> _randomDataOneRow({
   required math.Random rgen,
   required int max,
   required double pushUpBy,
@@ -136,19 +135,20 @@ List<double> _oneDataRow({
   return dataRow;
 }
 
-void validate(List<List<double>> dataRows, List<String> dataRowsLegends, List<String> xLabels) {
-  if (dataRowsLegends.isNotEmpty && dataRows.length != dataRowsLegends.length) {
+void validate(data.ChartData chartData) {
+  //                      But that would require ChartOptions available in ChartData. 
+  if (chartData.dataRowsLegends.isNotEmpty && chartData.dataRows.length != chartData.dataRowsLegends.length) {
     throw StateError(' If row legends are defined, their '
         'number must be the same as number of data rows. '
-        ' [dataRows length: ${dataRows.length}] '
-        '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
+        ' [dataRows length: ${chartData.dataRows.length}] '
+        '!= [dataRowsLegends length: ${chartData.dataRowsLegends.length}]. ');
   }
-  for (List<double> dataRow in dataRows) {
-    if (xLabels.isNotEmpty && dataRow.length != xLabels.length) {
-      throw StateError(' If xLabels are defined, their '
+  for (List<double> dataRow in chartData.dataRows) {
+    if (chartData.xUserLabels.isNotEmpty && dataRow.length != chartData.xUserLabels.length) {
+      throw StateError(' If xUserLabels are defined, their '
           'length must be the same as length of each dataRow'
           ' [dataRow length: ${dataRow.length}] '
-          '!= [xLabels length: ${xLabels.length}]. ');
+          '!= [xUserLabels length: ${chartData.xUserLabels.length}]. ');
     }
   }
 }

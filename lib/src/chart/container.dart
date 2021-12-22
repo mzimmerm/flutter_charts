@@ -215,7 +215,7 @@ abstract class ChartTopContainer extends Container {
     xContainer.applyParentOffset(xContainerOffset);
 
     // ### 5. Second call to YContainer is needed, as available height for Y
-    //        is only known after XContainer provided required height of xLabels
+    //        is only known after XContainer provided required height of xUserLabels
     //        on the bottom .
     //        The [yLabelsMaxHeightFromFirstLayout] are used to scale
     //        data values to the y axis, and put labels on ticks.
@@ -389,7 +389,8 @@ class YContainer extends ChartAreaContainer {
       return;
     }
 
-    if (_chartTopContainer.options.yContainerOptions.useUserProvidedYLabels) {
+    // todo-00-last-last : if (_chartTopContainer.options.yContainerOptions.useUserProvidedYLabels) {
+    if (_chartTopContainer.data.useUserLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
@@ -407,26 +408,26 @@ class YContainer extends ChartAreaContainer {
     List<double> flatData = _chartTopContainer.pointsColumns
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
-    // todo-00-last-last-done-set-nullable : List<String> yLabels = _chartTopContainer.data.yLabels;
-    assert (_chartTopContainer.data.yLabels != null);
-    List<String> yLabels = _chartTopContainer.data.yLabels ?? [];
+    // todo-00-last-last-done-set-nullable : List<String> yUserLabels = _chartTopContainer.data.yUserLabels;
+    // In manual layout, force yUserLabels non-nullable - they must have been set and validated 
+    List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
     var yDataRange = Interval(flatData.reduce(math.min), flatData.reduce(math.max));
-    double dataStepHeight = (yDataRange.max - yDataRange.min) / (yLabels.length - 1);
+    double dataStepHeight = (yDataRange.max - yDataRange.min) / (yUserLabels.length - 1);
 
     Interval yAxisRange = Interval(yAxisMin, yAxisMax);
 
-    double yGridStepHeight = (yAxisRange.max - yAxisRange.min) / (yLabels.length - 1);
+    double yGridStepHeight = (yAxisRange.max - yAxisRange.min) / (yUserLabels.length - 1);
 
     List<double> yLabelsDividedInYAxisRange = List.empty(growable: true);
-    //var seq = new Iterable.generate(yLabels.length, (i) => i); // 0 .. length-1
+    //var seq = new Iterable.generate(yUserLabels.length, (i) => i); // 0 .. length-1
     //for (var yIndex in seq) {
-    for (int yIndex = 0; yIndex < yLabels.length; yIndex++) {
+    for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
       yLabelsDividedInYAxisRange.add(yAxisRange.min + yGridStepHeight * yIndex);
     }
 
     List<num> yLabelsDividedInYDataRange = List.empty(growable: true);
-    for (int yIndex = 0; yIndex < yLabels.length; yIndex++) {
+    for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
       yLabelsDividedInYDataRange.add(yDataRange.min + dataStepHeight * yIndex);
     }
 
@@ -440,7 +441,7 @@ class YContainer extends ChartAreaContainer {
     yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYDataRange,
         scaledLabelValues: yLabelsDividedInYAxisRange,
-        formattedYLabels: yLabels);
+        formattedYLabels: yUserLabels);
 
     _commonLayout(yScaler);
   }
@@ -592,13 +593,13 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     ChartOptions options = _chartTopContainer.options;
 
-    List<String> xLabels = _chartTopContainer.data.xLabels;
+    List<String> xUserLabels = _chartTopContainer.data.xUserLabels;
 
     double yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
 
     double availableWidth = parentLayoutExpansion.width - yTicksWidth;
 
-    double labelMaxAllowedWidth = availableWidth / xLabels.length;
+    double labelMaxAllowedWidth = availableWidth / xUserLabels.length;
 
     _gridStepWidth = labelMaxAllowedWidth;
 
@@ -607,10 +608,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     //        implementation, just taking user input.
     /*
     int numShownLabels =
-        (xLabels.length / xContainerLabelLayoutStrategy.showEveryNthLabel)
+        (xUserLabels.length / xContainerLabelLayoutStrategy.showEveryNthLabel)
             .toInt();
     */
-    int numShownLabels = (xLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
+    int numShownLabels = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
     LabelStyle labelStyle = _styleForLabels(options);
@@ -618,9 +619,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
 
-    for (int xIndex = 0; xIndex < xLabels.length; xIndex++) {
+    for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
       var xLabelContainer = AxisLabelContainer(
-        label: xLabels[xIndex],
+        label: xUserLabels[xIndex],
         labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
         canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
@@ -915,7 +916,7 @@ abstract class DataContainer extends ChartAreaContainer {
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
-    // Iterate yLabels and for each add a horizontal grid line
+    // Iterate yUserLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
     _xGridLinesContainer = GridLinesContainer();
 

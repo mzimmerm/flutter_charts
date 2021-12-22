@@ -572,6 +572,169 @@ comparison:
 
 *** New class ChartDataRows which serves as current dataRows
 
+*** YLabels stuff
+* IN-PROGRESS-NOW COMMENT YLabels when not set
+
+ChartData yLabels and dataRowsColors behave differently.
+
+reason is, yLabels have 2 modes:
+- When passed to constructor, then they are set to non-null in argument. 
+- When not passed, they are not used at all
+  - yScaler.labelInfos is used instead
+    - yScaler is created from this code
+      #+begin_src dart
+        YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
+          List<double> flatData =
+          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+
+          Range range = Range(
+            values: flatData,
+            chartOptions: _chartTopContainer.options,
+          );
+
+          // revert toScaleMin/Max to accommodate y axis starting from top
+          YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
+            toScaleMin: yAxisMin,
+            toScaleMax: yAxisMax,
+          );
+          return yScaler;
+        }
+
+        ///////////////
+        YScalerAndLabelFormatter makeLabelsFromDataOnScale({
+            required double toScaleMin,
+            required double toScaleMax,
+        }) {
+          double min = _closure.min;
+          double max = _closure.max;
+
+          Poly polyMin = Poly(from: min);
+          Poly polyMax = Poly(from: max);
+
+          int signMin = polyMin.signum;
+          int signMax = polyMax.signum;
+
+          // envelope for all y values
+          double from, to;
+
+          // Need to handle all combinations of the above (a < b < c etc).
+          // There are not that many, because pMin <= pMax and pDiff <= pMax.
+          /* keep
+          if (false && powerDiff < powerMin) {
+          // todo-00-github-issue-31 : Allow start Y axis from non-zero
+          // todo 1 - enable conditions where y=0 axis is not needed to show,
+          //          to allow for details, mainly for lots of values.
+          //          Make an option for this. Add to tests.
+          from = polyMin.floorAtMaxPower.toDouble();
+          to = polyMax.ceilAtMaxPower.toDouble();
+        } else {
+          ,*/
+          // for now, always start with min or 0, and end at max (reverse if both negative).
+
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              from = min;
+              to = 0.0;
+            } else {
+              from = 0.0;
+              to = max;
+            }
+          } else {
+            from = min;
+            to = max;
+          }
+          // keep }
+
+          // Now make labels, evenly distributed in the from, to range.
+          // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+          // Labels are (obviously) unscaled, that is, on the scale of data,
+          // not the displayed pixels scale.
+
+          List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
+
+          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
+
+          var yScaler = YScalerAndLabelFormatter(
+            dataRange: Interval(from, to),
+            valueOnLabels: labels,
+            toScaleMin: toScaleMin,
+            toScaleMax: toScaleMax,
+            chartOptions: _options);
+
+          yScaler.scaleLabelInfos();
+          yScaler.makeLabelsPresentable();
+
+          return yScaler;
+        }
+
+
+        List<double> _distributeLabelsIn(Interval interval) {
+          Poly polyMin = Poly(from: interval.min);
+          Poly polyMax = Poly(from: interval.max);
+
+          int powerMax = polyMax.maxPower;
+          int coeffMax = polyMax.coefficientAtMaxPower;
+          int signMax = polyMax.signum;
+
+          // using Min makes sense if one or both (min, max) are negative
+          int powerMin = polyMin.maxPower;
+          int coeffMin = polyMin.coefficientAtMaxPower;
+          int signMin = polyMin.signum;
+
+          List<double> labels = [];
+          int power = math.max(powerMin, powerMax);
+
+          // todo-1 refactor this and make generic
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              // signMax >= 0
+              for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            }
+          } else {
+            // min is negative, max is positive - need added logic
+            if (powerMax == powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax < powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+                // just one over 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax > powerMin) {
+              for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+                // just one under 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              throw Exception('Unexpected power: $powerMin, $powerMax ');
+            }
+          }
+
+          return labels;
+        }
+
+      #+end_src
+    - yScaler notes  
+      so the labels are created in "distributeLabelsIn(Interval)"
+      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
+      - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
+
+        todo:
+        - rename _closure to _envelope
+        - add to validate, interplay between useUserProvidedYLabels and yLables set / not set
+        - rename value in params in range to pointsColumnsPointsValues
+        - maybe rename useUserProvidedYLabels to useYLabelsFromChartData *maybe remove useUserProvidedYLabels - if yLabels are set in constructor use them, otherwise create labels from data*
+        - Add test that is like RandomData but with similar real data. 
+
 *** Rename ChartData to ChartModel
 
 *** Rename ChartDataRows to ChartModelRows
