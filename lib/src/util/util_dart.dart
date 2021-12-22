@@ -60,10 +60,12 @@ double scaleValue({
   // first move scales to be both starting at 0; also move value equivalently.
   // Naming the 0 based coordinates ending with 0
   double value0 = value - ownScaleMin;
+  /*
   double ownScaleMin0 = 0.0;
   double ownScaleMax0 = ownScaleLength;
   double toScaleMin0 = 0.0;
   double toScaleMax0 = toScaleLength;
+  */
 
   // Next scale the value to 0 - 1 segment
   double value0ScaledTo01 = value0 / ownScaleLength;

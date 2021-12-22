@@ -57,8 +57,8 @@ class LabelContainer extends container_base.Container {
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
-  /// Allows to configure certain sizes, colors, and layout.
-  final LabelStyle _labelStyle;
+  // Allows to configure certain sizes, colors, and layout.
+  // final LabelStyle _labelStyle;
 
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
@@ -74,7 +74,7 @@ class LabelContainer extends container_base.Container {
   })  : _labelMaxWidth = labelMaxWidth,
         _labelTiltMatrix = labelTiltMatrix,
         _canvasTiltMatrix = canvasTiltMatrix,
-        _labelStyle = labelStyle,
+        // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
           text: widgets.TextSpan(
             text: label,

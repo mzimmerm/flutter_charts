@@ -613,10 +613,10 @@ class _ExampleDefiner {
             yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
           ),
         );
-        var originalData = [
-          [2.2, 220.0, 2200.0],
-          [330.0, 3.3, 3300.0],
-        ];
+        // var originalData = [
+        //  [2.2, 220.0, 2200.0],
+        //  [330.0, 3.3, 3300.0],
+        // ];
         chartData = ChartData(
           dataRows: [
             [math.log(2.2), math.log(220.0), math.log(2200.0)],
