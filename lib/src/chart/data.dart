@@ -28,20 +28,12 @@ class ChartData {
   /// Alternative name would be "series names".
   final List<String> dataRowsLegends;
 
-  /// Labels on dependent (Y) axis.
-  ///
-  /// - If you need Data-Generated Y label numbers with units (e.g. %),
-  ///   - Do not set [yUserLabels]
-  ///   - Set [YContainerOptions.useUserProvidedYLabels] to false
-  ///   - define [YContainerOptions.yLabelUnits] in options
-  /// - If you need User-Defined "Ordinal" (Strings with order) Y labels,
-  ///   - Set [yUserLabels] to ordinal values
-  ///   - Set [YContainerOptions.useUserProvidedYLabels] to true.
-  ///   - [YContainerOptions.yLabelUnits] are ignored
-  ///
-  /// This [yUserLabels] member is used only if
-  /// [YContainerOptions.useUserProvidedYLabels] is true.
-  ///
+  /// User defined labels to be used by the chart, instead of labels auto-generated from data.
+  /// 
+  /// Can be Strings or numbers. 
+  /// If not null, a "manual" layout is used, specifically the [YContainer.layoutManually()].
+  /// If null, a "auto" layout of Y axis is used.
+  /// 
   final List<String>? yUserLabels;
 
   /// Colors corresponding to each data row (series) in [ChartData].
@@ -63,5 +55,5 @@ class ChartData {
     util_data.validate(this);
   }
   
-  bool get useUserLabels => yUserLabels != null;
+  bool get isUsingUserLabels => yUserLabels != null;
 }

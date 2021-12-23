@@ -578,8 +578,8 @@ comparison:
 ChartData yLabels and dataRowsColors behave differently.
 
 reason is, yLabels have 2 modes:
-- When passed to constructor, then they are set to non-null in argument. 
-- When not passed, they are not used at all
+- When passed to constructor, then they are set to non-null in argument, then manual layout is used.
+- When not passed, they are not used at all! Instead an auto layout of Y is used as follows:
   - yScaler.labelInfos is used instead
     - yScaler is created from this code
       #+begin_src dart
@@ -728,13 +728,17 @@ reason is, yLabels have 2 modes:
       - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
       - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
 
-        todo:
+        *todo*:
         - rename _closure to _envelope
-        - add to validate, interplay between useUserProvidedYLabels and yLables set / not set
         - rename value in params in range to pointsColumnsPointsValues
-        - maybe rename useUserProvidedYLabels to useYLabelsFromChartData *maybe remove useUserProvidedYLabels - if yLabels are set in constructor use them, otherwise create labels from data*
-        - Add test that is like RandomData but with similar real data. 
+        - Add test that is like RandomData but with similar real data.
+          
+*** Make RandomData extend ChartData again.
 
+*** Can we pull util_data methods back on ChartData as members? OR SEE NEXT
+
+*** Try to make members on ChartData private instead of final, and provide getters.
+Does that relieve the dataRowsColors issue?
 *** Rename ChartData to ChartModel
 
 *** Rename ChartDataRows to ChartModelRows

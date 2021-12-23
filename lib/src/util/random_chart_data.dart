@@ -12,7 +12,7 @@ class RandomChartData implements ChartData {
   @override
   final List<String> dataRowsLegends;
   @override
-  List<String>? yUserLabels;
+  final List<String>? yUserLabels;
   @override
   List<ui.Color>? dataRowsColors;
   
@@ -37,5 +37,5 @@ class RandomChartData implements ChartData {
     util_data.validate(this);
   }
   @override
-  bool get useUserLabels => yUserLabels != null;
+  bool get isUsingUserLabels => yUserLabels != null;
 }

@@ -481,26 +481,6 @@ class _ExampleDefiner {
         //     on the level of the first Y Label ("Low" in this example),
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
-
-/* todo-00-last-last no need to set options only to redefing useUserProvidedYLabels, that is explicit when yUserLabels are set
-        // Set non-default chart options to show no labels in this example
-        switch (chartTypeToShow) {
-          case ExamplesChartTypeEnum.lineChart:
-            chartOptions = LineChartOptions(
-              chartOptions: const ChartOptions(
-                yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
-              ),
-            );
-            break;
-          case ExamplesChartTypeEnum.verticalBarChart:
-            chartOptions = VerticalBarChartOptions(
-              chartOptions: const ChartOptions(
-                yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
-              ),
-            );
-            break;
-        }
-*/
         chartData = ChartData(
           dataRows: [
             [9.0, 4.0, 3.0, 9.0],
@@ -557,13 +537,6 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
-/* todo-00-last-last no need to set options only to redefing useUserProvidedYLabels, that is explicit when yUserLabels are set
-        chartOptions = LineChartOptions(
-          chartOptions: const ChartOptions(
-            yContainerOptions: YContainerOptions(useUserProvidedYLabels: true), // use Y labels below
-          ),
-        );
-*/
         // var originalData = [
         //  [2.2, 220.0, 2200.0],
         //  [330.0, 3.3, 3300.0],

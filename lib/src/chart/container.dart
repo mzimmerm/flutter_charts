@@ -389,8 +389,7 @@ class YContainer extends ChartAreaContainer {
       return;
     }
 
-    // todo-00-last-last : if (_chartTopContainer.options.yContainerOptions.useUserProvidedYLabels) {
-    if (_chartTopContainer.data.useUserLabels) {
+    if (_chartTopContainer.data.isUsingUserLabels) {
       layoutManually(yAxisMin, yAxisMax);
     } else {
       layoutAutomatically(yAxisMin, yAxisMax);
@@ -404,6 +403,8 @@ class YContainer extends ChartAreaContainer {
   }
 
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
+  /// Implementation splits Y axis into even number of
+  ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
   void layoutManually(double yAxisMin, double yAxisMax) {
     List<double> flatData = _chartTopContainer.pointsColumns
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
@@ -449,6 +450,10 @@ class YContainer extends ChartAreaContainer {
   /// Generates scaled and spaced Y labels from data, then auto layouts
   /// them on the Y axis according to data range [range] and display
   /// range [yAxisMin] to [yAxisMax].
+  /// 
+  /// The auto-layout implementation smartly creates
+  /// a limited number of Y labels from data, so that Y labels do not
+  /// crowd, and little Y space is wasted on top.
   void layoutAutomatically(double yAxisMin, double yAxisMax) {
     // todo-2 move to common layout, same for manual and auto
     YScalerAndLabelFormatter yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);

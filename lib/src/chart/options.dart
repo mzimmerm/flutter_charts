@@ -157,26 +157,7 @@ class YContainerOptions {
   /// However, Y gridlines (vertical) are showing even when `isXContainerShown = false`.
   /// This option allows to toggle it.
   final bool isYGridlinesShown;
-
-  /// Defines how to create and layout chart's Y labels: either from user
-  /// defined Y labels, or from auto-created Y labels from data.
-  ///
-  /// - If `true`, a "manual" layout of Y axis is used.
-  ///   This requires [ChartData.yUserLabels] to be defined.
-  ///   Labels can be Strings or numbers..
-  ///   Current layout implementation splits Y axis into even number of
-  ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
-  /// - If `false`, a "auto" layout of Y axis is used.
-  ///   - Current auto-layout implementation smartly creates
-  ///     a limited number of Y labels from data, so that Y labels do not
-  ///     crowd, and little Y space is wasted on top.
-  // todo-00-last-last-remove final bool useUserProvidedYLabels;
-
-/* todo-00-last-last remove
-  /// Number of grid lines and y axis labels. Not implemented
-  final int maxNumYLabels;
-*/
-
+  
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
@@ -203,8 +184,6 @@ class YContainerOptions {
   const YContainerOptions({
     this.isYContainerShown = true,
     this.isYGridlinesShown = true,
-    // todo-00-last-last-remove this.useUserProvidedYLabels = false,
-    // todo-00-last-last-remove this.maxNumYLabels = 4,
     this.yLeftMinTicksWidth = 6.0,
     this.yRightMinTicksWidth = 6.0,
     this.yLabelsPadTB = 40.0,
