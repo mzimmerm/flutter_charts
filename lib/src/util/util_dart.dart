@@ -82,12 +82,6 @@ double scaleValue({
 
 /// Returns [true] if exactly one of the passed values [one], [two] hase the passed [value],
 /// [false] otherwise.
-/*
-bool exactlyOneHasValue({required double one, required double two, required double value,}) {
-  return (math.min(one, two) == value && (math.max(one, two) != math.min(one, two)));
-}
-*/
-// todo-00-last
 bool exactlyOneHasValue({
   required double one,
   required double two,
@@ -106,7 +100,7 @@ bool bothHaveValue({
   return math.min(one, two) == value && value == math.max(one, two) && math.min(one, two) == value;
 }
 
-/* todo-11-last : original version before nullability
+/* todo-13-make-transpose-generics : original version before nullability
 List<List<T>> transpose<T>(List<List<T>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.length == 0) return colsInRows;

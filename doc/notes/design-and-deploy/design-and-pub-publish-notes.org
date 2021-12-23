@@ -1,5 +1,5 @@
 #+OPTIONS: toc:3
-#+TODO: TODO IN-PROGRESS LATER DONE NOTE
+#+TODO: TODO IN-PROGRESS IN-PROGRESS-NOW LATER DONE NOTE
 
 
 * Bugs and issues - flutter_charts
@@ -608,7 +608,6 @@ If layout() is called, following paint() always prints full line  (goes to line 
 
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
 
-*** 
 *** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
@@ -878,15 +877,14 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
-** IN-PROGRESS Replace ChartData with a more sane immutable object, more representing what people need
-
+** IN-PROGRESS Replace ChartData and add DataPoint, more representing what people need, and adding logarithic scale
 *** NOTE YLabels, YScaler, and their layout in flutter_charts
 
 ChartData yLabels and dataRowsColors behave differently.
 
 reason is, yLabels have 2 modes:
-- When passed to constructor, then they are set to non-null in argument, then manual layout is used.
-- When not passed, they are not used at all! Instead an auto layout of Y is used as follows:
+- When yLabels passed to constructor, then they are set to non-null in argument, then manual layout is used.
+- When yLabels not passed, they are not used at all! Instead an auto layout of Y is used as follows:
   - yScaler.labelInfos is used instead
     - yScaler is created from this code
       #+begin_src dart
@@ -1040,18 +1038,31 @@ reason is, yLabels have 2 modes:
         - rename value in params in range to pointsColumnsPointsValues
         - Add test that is like RandomData but with similar real data.
           
-*** Rename ChartData to ChartModel
+*** TODO ChartData contains List<DataSeriesMixin> (think of it as Stack<DataSeriesMixin>)
+*** TODO DataSeriesMixin corresponds to dataRow
+*** TODO DataSeriesMixin contains List<DataPoint>
+*** TODO DataPoint can be any object - sort of a naked user object
+*** TODO DataSeriesMixin is a mixin which provides functions that allow to extract values from DataPoint
+**** DataSeriesMixin.xValue(DataPoint, pointIndexInSeries) =>  whatever value at DataPoint is considered x // similar for Y
+**** DataSeriesMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
+***** DataSeriesMixin.xLabel(DataPoint, pointIndexInSeries) => DataSeriesMixin.xValue(DataPoint, pointIndexInSeries) // similar for Y
+*** TODO ~DataSeriesMixin must be extended as MyDataSeriesMixin, implementing at least 2 methods: xValue and yValue~
+*** TODO *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
+- implemented by ovewriting DataSeriesMixin.yTransform
+- only applies if yValues are numeric
+- only applies on line chart?
+- yValue is the original value
+- values passed to existing label formatters and scalers is yTransform(yValue)
+- but when creating labels, values passed to the formatter and scaler is yValue! so it sort of works like manual yLabels
+- *maybe i implement this first in existing system using option dataContainerOption.logarithmicYValues to learn how to do this*
+*** TODO Rename ChartData to ChartModel
 
-*** Rename ChartDataRows to ChartModelRows
+*** TODO Rename ChartDataRows to ChartModelRows
 
-*** What options are controlled on the ChartModel level? What on the ChartModelRows level?
-
-*** For those on ChartModelRows level: add functionality and options via 
-
-** TODO Go over todo-00(-now , doc, etc)
-
-** TODO *todo-00-soon* Replace scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
-** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
+*** TODO What options are controlled on the ChartModel level? What on the ChartModelRows level?
+*** TODO Go over todo-00(-now , doc, etc)
+*** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
+*** TODO If line chart, add option that allows to start on non-zero
     - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
     - test  on values like 10,000 - 11,000.
     -

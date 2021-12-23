@@ -49,7 +49,7 @@ import 'bar/presenter.dart' as bar_presenters;
 ///      ChartPainter by the application.
 abstract class ChartTopContainer extends Container {
   /// Implements [Container.layoutSize()].
-  // todo-00-last-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
+  // todo-13-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
   ui.Size get layoutSize => chartArea;
 
@@ -248,7 +248,7 @@ abstract class ChartTopContainer extends Container {
       chartTopContainer: this,
     );
 
-    // todo-00-last : this is where most non-Container elements are layed out.
+    // todo-13-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
     dataContainer.layout(dataContainerLayoutExpansion);
     dataContainer.applyParentOffset(dataContainerOffset);
@@ -951,7 +951,7 @@ abstract class DataContainer extends ChartAreaContainer {
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
-    // todo-00-last : problem : this call actually sets absolute values on Presenters !!
+    // todo-13-important : problem : this call actually sets absolute values on Presenters !!
     setupPresentersColumns();
   }
 
@@ -1158,7 +1158,7 @@ class GridLinesContainer extends Container {
   /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  // todo-00-last look into this
+  // todo-13-layout look into this
   @override
   ui.Size get layoutSize => throw StateError('todo-2 implement this.');
 }

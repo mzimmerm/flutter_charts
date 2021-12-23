@@ -19,12 +19,6 @@ class RandomChartData extends ChartData {
           yUserLabels: yUserLabels,
           dataRowsColors: dataRowsColors,
         );
-/*  todo-00-last-last remove
-  {
-    dataRowsColors ??= dataRowsDefaultColors(dataRows.length);
-    validate();
-  }
-*/
 
   // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartData(args) constructor.
   /// Generate random data for chart, with number of x labels given by

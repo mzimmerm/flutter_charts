@@ -11,7 +11,6 @@ import 'package:flutter/foundation.dart' show immutable;
 /// see [SimpleChartContainer].
 @immutable
 class ChartOptions {
-  // todo-00-now in LB, LR, separate top, bottom, left, right, and only keep those used
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
   final XContainerOptions xContainerOptions;
