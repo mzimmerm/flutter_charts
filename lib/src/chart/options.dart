@@ -123,7 +123,7 @@ class LegendOptions {
 @immutable
 class XContainerOptions {
   final bool isXContainerShown;
-  final ui.Color xLabelsColor;
+  // todo-00-last-last xLabelsColor not used? final ui.Color xLabelsColor;
 
   /// Length of the ticks around the grid rectangle.
   ///
@@ -140,7 +140,7 @@ class XContainerOptions {
 
   const XContainerOptions({
     this.isXContainerShown = true,
-    this.xLabelsColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E), // todo-00-last-last xLabelsColor not used?
+    // todo-00-last-last xLabelsColor not used? this.xLabelsColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
     this.xBottomMinTicksHeight = 6.0,
     this.xLabelsPadTB = 6.0,
     this.xLabelsPadLR = 40.0,

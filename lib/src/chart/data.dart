@@ -1,10 +1,10 @@
+import 'dart:math' as math show Random, pow;
 import 'dart:ui' as ui show Color;
+import 'package:flutter/material.dart' as material show Colors;
+
 import 'package:flutter_charts/flutter_charts.dart';
-import '../util/util_data.dart' as util_data;
 
-// todo-00-last-last : Make final and immutable and rethink completely.
-//                     Should be able to set defaults for everything, unless set on construction time.
-
+/// Manages Chart Data. 
 class ChartData {
   
   /// Data in rows. Each row of data represents one data series.
@@ -49,11 +49,68 @@ class ChartData {
     this.yUserLabels,
     this.dataRowsColors,
   }) {
-    dataRowsColors ??= util_data.dataRowsDefaultColors(dataRows.length);
+    // todo-00-last-last dataRowsColors ??= util_data.dataRowsDefaultColors(dataRows.length);
+    dataRowsColors ??= dataRowsDefaultColors(dataRows.length);
 
     // todo-00-last-last : deal with yUserLabels and xUserLabels
-    util_data.validate(this);
+    validate();
   }
   
   bool get isUsingUserLabels => yUserLabels != null;
+
+  /// Sets up colors for legends, first several explicitly, rest randomly.
+  ///
+  /// This is used if user does not set colors.
+  List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
+
+    List<ui.Color> _rowsColors = List.empty(growable: true);
+
+    if (dataRowsCount >= 1) {
+      _rowsColors.add(material.Colors.yellow);
+    }
+    if (dataRowsCount >= 2) {
+      _rowsColors.add(material.Colors.green);
+    }
+    if (dataRowsCount >= 3) {
+      _rowsColors.add(material.Colors.blue);
+    }
+    if (dataRowsCount >= 4) {
+      _rowsColors.add(material.Colors.black);
+    }
+    if (dataRowsCount >= 5) {
+      _rowsColors.add(material.Colors.grey);
+    }
+    if (dataRowsCount >= 6) {
+      _rowsColors.add(material.Colors.orange);
+    }
+    if (dataRowsCount > 6) {
+      for (int i = 3; i < dataRowsCount; i++) {
+        int colorHex = math.Random().nextInt(0xFFFFFF);
+        int opacityHex = 0xFF;
+        // todo-11-last : cast toInt added - does this change results?
+        _rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
+      }
+    }
+    return _rowsColors;
+  }
+  
+  void validate() {
+    ChartData chartData = this; // todo-00-last-last change 
+    //                      But that would require ChartOptions available in ChartData. 
+    if (chartData.dataRowsLegends.isNotEmpty && chartData.dataRows.length != chartData.dataRowsLegends.length) {
+      throw StateError(' If row legends are defined, their '
+          'number must be the same as number of data rows. '
+          ' [dataRows length: ${chartData.dataRows.length}] '
+          '!= [dataRowsLegends length: ${chartData.dataRowsLegends.length}]. ');
+    }
+    for (List<double> dataRow in chartData.dataRows) {
+      if (chartData.xUserLabels.isNotEmpty && dataRow.length != chartData.xUserLabels.length) {
+        throw StateError(' If xUserLabels are defined, their '
+            'length must be the same as length of each dataRow'
+            ' [dataRow length: ${dataRow.length}] '
+            '!= [xUserLabels length: ${chartData.xUserLabels.length}]. ');
+      }
+    }
+  }
+  
 }

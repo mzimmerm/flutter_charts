@@ -11,7 +11,7 @@
 
 import 'dart:math' as math;
 
-// todo-00-last-last write a test for this. Then replace this method with a proper Scaler object
+// todo-11 write test for this and refactor scaling
 /// Scale the [value] that must be from the scale
 /// given by [ownScaleMin] - [ownScaleMax]
 /// to the "to scale" given by  [toScaleMin] - [toScaleMax].

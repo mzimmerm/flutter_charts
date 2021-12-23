@@ -21,7 +21,6 @@ import 'presenter.dart';
 
 import '../util/range.dart';
 import '../util/geometry.dart' as geometry;
-import '../util/util_type_workaround.dart' as util_type_workaround;
 
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
@@ -410,7 +409,7 @@ class YContainer extends ChartAreaContainer {
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
     // todo-00-last-last-done-set-nullable : List<String> yUserLabels = _chartTopContainer.data.yUserLabels;
-    // In manual layout, force yUserLabels non-nullable - they must have been set and validated 
+    // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
     List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
     var yDataRange = Interval(flatData.reduce(math.min), flatData.reduce(math.max));
@@ -1359,10 +1358,8 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      // todo-00-last-last-done checked nullable dataRowsColors
-      // indicatorPaint.color =
-      //     _chartTopContainer.data.dataRowsColors[index % _chartTopContainer.data.dataRowsColors.length];
-      List<ui.Color> dataRowsColors = util_type_workaround.makeNonNullableWithNonNullAssert(_chartTopContainer.data.dataRowsColors);
+      // todo-00-last-last-done why colors nullable?
+      List<ui.Color> dataRowsColors = _chartTopContainer.data.dataRowsColors!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(

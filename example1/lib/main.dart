@@ -407,14 +407,14 @@ class _ExampleDefiner {
 
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
-        chartData = RandomChartData();
+        chartData = RandomChartData.generatedDefaults();
         break;
 
       case ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy:
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = RandomChartData();
+        chartData = RandomChartData.generatedDefaults();
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:

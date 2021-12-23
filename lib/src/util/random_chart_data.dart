@@ -1,41 +1,129 @@
+import 'dart:math' as math show Random, pow;
 import 'package:flutter_charts/src/chart/data.dart';
-import '../util/util_data.dart' as util_data;
-import 'dart:ui' as ui show Color;
 
+// The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
 ///
-class RandomChartData implements ChartData {
-  @override
-  final List<List<double>> dataRows;
-  @override
-  final List<String> xUserLabels;
-  @override
-  final List<String> dataRowsLegends;
-  @override
-  final List<String>? yUserLabels;
-  @override
-  List<ui.Color>? dataRowsColors;
-  
+class RandomChartData extends ChartData {
+
+  RandomChartData({
+    required dataRows,
+    required xUserLabels,
+    required dataRowsLegends,
+    yUserLabels,
+    dataRowsColors,
+  }) : super(
+          dataRows: dataRows,
+          xUserLabels: xUserLabels,
+          dataRowsLegends: dataRowsLegends,
+          yUserLabels: yUserLabels,
+          dataRowsColors: dataRowsColors,
+        ) {
+    dataRowsColors ??= dataRowsDefaultColors(dataRows.length);
+    validate();
+  }
+
+  // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartData(args) constructor.
   /// Generate random data for chart, with number of x labels given by
   /// [numXLabels] and number of data series given by [numDataRows].
   ///
   /// If [useMonthNames] is set to false, random
   ///
-  RandomChartData({
+  RandomChartData.generatedDefaults({
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,
     int numDataRows = 4,
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapYValues = false,
-  })  : 
-        xUserLabels = util_data.randomDataXLabels(numXLabels),
-        dataRows = util_data.randomDataYValues(numXLabels, numDataRows, overlapYValues),
-        yUserLabels = util_data.randomDataYLabels(useUserProvidedYLabels),
-        dataRowsLegends = util_data.randomDataRowsLegends(numDataRows),
-        dataRowsColors = util_data.dataRowsDefaultColors(numDataRows) {
-    util_data.validate(this);
+    dataRowsColors,
+  }) : this(
+          dataRows: randomDataYValues(numXLabels, numDataRows, overlapYValues),
+          xUserLabels: randomDataXLabels(numXLabels),
+          dataRowsLegends: randomDataRowsLegends(numDataRows),
+          yUserLabels: randomDataYLabels(useUserProvidedYLabels),
+          dataRowsColors: dataRowsColors,
+        );
+}
+
+/// Sets up legends names, first several explicitly, rest randomly.
+///
+/// This is used if user does not set legends.
+/// This should be kept in sync with colors below.
+List<String> randomDataRowsLegends(int dataRowsCount) {
+  List<String> _defaultLegends = List.empty(growable: true);
+
+  if (dataRowsCount >= 1) {
+    _defaultLegends.add('YELLOW');
   }
-  @override
-  bool get isUsingUserLabels => yUserLabels != null;
+  if (dataRowsCount >= 2) {
+    _defaultLegends.add('GREEN');
+  }
+  if (dataRowsCount >= 3) {
+    _defaultLegends.add('BLUE');
+  }
+  if (dataRowsCount >= 4) {
+    _defaultLegends.add('BLACK');
+  }
+  if (dataRowsCount >= 5) {
+    _defaultLegends.add('GREY');
+  }
+  if (dataRowsCount >= 6) {
+    _defaultLegends.add('ORANGE');
+  }
+  if (dataRowsCount > 6) {
+    for (int i = 3; i < dataRowsCount; i++) {
+      // todo-1 when large value is generated, it paints outside canvas, fix.
+      int number = math.Random().nextInt(10000);
+      _defaultLegends.add('OTHER ' + number.toString());
+    }
+  }
+  return _defaultLegends;
+}
+
+/// Generate list of "random" [xUserLabels] as monthNames or weekday names.
+///
+///
+List<String> randomDataXLabels(int numXLabels) {
+  List<String> xLabelsDows = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh'];
+  return xLabelsDows.getRange(0, numXLabels).toList();
+}
+
+List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
+  List<String>? yUserLabels;
+  if (useUserProvidedYLabels) {
+    yUserLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
+  }
+  return yUserLabels;
+}
+
+List<List<double>> randomDataYValues(int numXLabels, int _numDataRows, bool _overlapYValues) {
+  List<List<double>> dataRows = List.empty(growable: true);
+
+  double scale = 200.0;
+
+  math.Random rgen = math.Random();
+
+  int maxYValue = 4;
+  double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
+
+  for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
+    dataRows.add(_randomDataOneRow(
+        rgen: rgen, max: maxYValue, pushUpBy: (rowIndex - 1) * pushUpStep, scale: scale, numXLabels: numXLabels));
+  }
+  return dataRows;
+}
+
+List<double> _randomDataOneRow({
+  required math.Random rgen,
+  required int max,
+  required double pushUpBy,
+  required double scale,
+  required int numXLabels,
+}) {
+  List<double> dataRow = List.empty(growable: true);
+  for (int i = 0; i < numXLabels; i++) {
+    dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
+  }
+  return dataRow;
 }
