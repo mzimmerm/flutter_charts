@@ -25,8 +25,7 @@ class VerticalBarPresenter extends Presenter {
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    // todo-00-last-last-done why colors nullable
-    List<ui.Color> dataRowsColors = container.data.dataRowsColors!;
+    List<ui.Color> dataRowsColors = container.data.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
 

@@ -2,51 +2,13 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 
-* IN-PROGRESS Bugs and issues
-
-** Flutter charts bugs
-
+* Bugs and issues - flutter_charts
 - [X] After tons of layout changes, the whole grid disappeared from the line chart only.
 - [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
 - [X] Chart area needs clipping in the application
 - [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
 - 
  
-** IN-PROGRESS Dart or Flutter bugs to report or ask on Stack Overflow
-*** TODO Stack overflow: add question on how to migrate int extensions - note in gitter
-
-// todo-10 mz ori
-
-Converting some code to 2.0 .. How can one tear-off a specifically typed function in 2.0? My problem is for example:
-
-`_values.reduce(math.min)`
-
-If _values were double in version 1.0x, this is ok. In 2.0 I get:
-
-`type '(num, num) => num' is not a subtype of type '(double, double) => double' of 'combine'`
-
-Here , `combine` I assume is a method in `reduce`. It is probably obvious but eluding me. Thanks.
-
-
-Emulator: 
-- v 24: works.
-- v 25: fails loading!!!
-
-
-@RandalSchwartz : Thanks, that is interesting. I will google for it. Although I am confused what num.max going away would mean, that num also goes away?  `math.max` is defined as:
-
-`external T max<T extends num>(T a, T b);`
-
-It sounds like in the end this is just a type system complaint, I hope we should be able to use a list of num and then do a concrete operations on them, at least if they are all the same type (int or double, which they are) in the data I passed. 
-
-*** TODO Flutter bugs: Report issue of TextPainter hangs on certain sizes with ellipses - three dots '...'  like this.
-
-See file:./bug-text-painter-1.png
-See file:./bug-text-painter-2.png
-*** TODO Dart questions running
-
-- Is there a way to initialize a non-nullable list to size?
-
 * NOTE Layouter general function
 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
@@ -640,193 +602,6 @@ Also:
 
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
 
-** IN-PROGRESS Replace ChartData with a more sane immutable object, more representing what people need
-
-*** NOTE YLabels and their layout in flutter_charts
-
-ChartData yLabels and dataRowsColors behave differently.
-
-reason is, yLabels have 2 modes:
-- When passed to constructor, then they are set to non-null in argument, then manual layout is used.
-- When not passed, they are not used at all! Instead an auto layout of Y is used as follows:
-  - yScaler.labelInfos is used instead
-    - yScaler is created from this code
-      #+begin_src dart
-        YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
-          List<double> flatData =
-          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
-
-          Range range = Range(
-            values: flatData,
-            chartOptions: _chartTopContainer.options,
-          );
-
-          // revert toScaleMin/Max to accommodate y axis starting from top
-          YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
-            toScaleMin: yAxisMin,
-            toScaleMax: yAxisMax,
-          );
-          return yScaler;
-        }
-
-        ///////////////
-        YScalerAndLabelFormatter makeLabelsFromDataOnScale({
-            required double toScaleMin,
-            required double toScaleMax,
-        }) {
-          double min = _closure.min;
-          double max = _closure.max;
-
-          Poly polyMin = Poly(from: min);
-          Poly polyMax = Poly(from: max);
-
-          int signMin = polyMin.signum;
-          int signMax = polyMax.signum;
-
-          // envelope for all y values
-          double from, to;
-
-          // Need to handle all combinations of the above (a < b < c etc).
-          // There are not that many, because pMin <= pMax and pDiff <= pMax.
-          /* keep
-          if (false && powerDiff < powerMin) {
-          // todo-00-github-issue-31 : Allow start Y axis from non-zero
-          // todo 1 - enable conditions where y=0 axis is not needed to show,
-          //          to allow for details, mainly for lots of values.
-          //          Make an option for this. Add to tests.
-          from = polyMin.floorAtMaxPower.toDouble();
-          to = polyMax.ceilAtMaxPower.toDouble();
-        } else {
-          ,*/
-          // for now, always start with min or 0, and end at max (reverse if both negative).
-
-          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-            // both negative or positive
-            if (signMax <= 0) {
-              from = min;
-              to = 0.0;
-            } else {
-              from = 0.0;
-              to = max;
-            }
-          } else {
-            from = min;
-            to = max;
-          }
-          // keep }
-
-          // Now make labels, evenly distributed in the from, to range.
-          // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
-          // Labels are (obviously) unscaled, that is, on the scale of data,
-          // not the displayed pixels scale.
-
-          List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
-
-          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
-
-          var yScaler = YScalerAndLabelFormatter(
-            dataRange: Interval(from, to),
-            valueOnLabels: labels,
-            toScaleMin: toScaleMin,
-            toScaleMax: toScaleMax,
-            chartOptions: _options);
-
-          yScaler.scaleLabelInfos();
-          yScaler.makeLabelsPresentable();
-
-          return yScaler;
-        }
-
-
-        List<double> _distributeLabelsIn(Interval interval) {
-          Poly polyMin = Poly(from: interval.min);
-          Poly polyMax = Poly(from: interval.max);
-
-          int powerMax = polyMax.maxPower;
-          int coeffMax = polyMax.coefficientAtMaxPower;
-          int signMax = polyMax.signum;
-
-          // using Min makes sense if one or both (min, max) are negative
-          int powerMin = polyMin.maxPower;
-          int coeffMin = polyMin.coefficientAtMaxPower;
-          int signMin = polyMin.signum;
-
-          List<double> labels = [];
-          int power = math.max(powerMin, powerMax);
-
-          // todo-1 refactor this and make generic
-          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-            // both negative or positive
-            if (signMax <= 0) {
-              for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            } else {
-              // signMax >= 0
-              for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            }
-          } else {
-            // min is negative, max is positive - need added logic
-            if (powerMax == powerMin) {
-              for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            } else if (powerMax < powerMin) {
-              for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
-                // just one over 0
-                labels.add(l * math.pow(10, power));
-              }
-            } else if (powerMax > powerMin) {
-              for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
-                // just one under 0
-                labels.add(l * math.pow(10, power));
-              }
-            } else {
-              throw Exception('Unexpected power: $powerMin, $powerMax ');
-            }
-          }
-
-          return labels;
-        }
-
-      #+end_src
-    - yScaler notes  
-      so the labels are created in "distributeLabelsIn(Interval)"
-      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
-      - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
-
-        *todo*:
-        - rename _closure to _envelope
-        - rename value in params in range to pointsColumnsPointsValues
-        - Add test that is like RandomData but with similar real data.
-          
-*** Make RandomData extend ChartData again.
-
-*** Can we pull util_data methods back on ChartData as members? OR SEE NEXT
-
-*** Try to make members on ChartData private instead of final, and provide getters.
-Does that relieve the dataRowsColors issue?
-*** Rename ChartData to ChartModel
-
-*** Rename ChartDataRows to ChartModelRows
-
-*** What options are controlled on the ChartModel level? What on the ChartModelRows level?
-
-*** For those on ChartModelRows level: add functionality and options via 
-
-** TODO Go over todo-00(-now , doc, etc)
-
-** TODO *todo-00-soon* Replace scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
-** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
-    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-    - test  on values like 10,000 - 11,000.
-    -
-
-
-    
-** TODO *todo-00-soon* add function which applies to Y data and scale but not labels. Use for logarighmic examples.
 ** IN-PROGRESS Refactorings to make flutter_charts a bit like Morphic (marginally like it)
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
@@ -1103,3 +878,184 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
+** IN-PROGRESS Replace ChartData with a more sane immutable object, more representing what people need
+
+*** NOTE YLabels, YScaler, and their layout in flutter_charts
+
+ChartData yLabels and dataRowsColors behave differently.
+
+reason is, yLabels have 2 modes:
+- When passed to constructor, then they are set to non-null in argument, then manual layout is used.
+- When not passed, they are not used at all! Instead an auto layout of Y is used as follows:
+  - yScaler.labelInfos is used instead
+    - yScaler is created from this code
+      #+begin_src dart
+        YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
+          List<double> flatData =
+          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+
+          Range range = Range(
+            values: flatData,
+            chartOptions: _chartTopContainer.options,
+          );
+
+          // revert toScaleMin/Max to accommodate y axis starting from top
+          YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
+            toScaleMin: yAxisMin,
+            toScaleMax: yAxisMax,
+          );
+          return yScaler;
+        }
+
+        ///////////////
+        YScalerAndLabelFormatter makeLabelsFromDataOnScale({
+            required double toScaleMin,
+            required double toScaleMax,
+        }) {
+          double min = _closure.min;
+          double max = _closure.max;
+
+          Poly polyMin = Poly(from: min);
+          Poly polyMax = Poly(from: max);
+
+          int signMin = polyMin.signum;
+          int signMax = polyMax.signum;
+
+          // envelope for all y values
+          double from, to;
+
+          // Need to handle all combinations of the above (a < b < c etc).
+          // There are not that many, because pMin <= pMax and pDiff <= pMax.
+          /* keep
+          if (false && powerDiff < powerMin) {
+          // todo-00-github-issue-31 : Allow start Y axis from non-zero
+          // todo 1 - enable conditions where y=0 axis is not needed to show,
+          //          to allow for details, mainly for lots of values.
+          //          Make an option for this. Add to tests.
+          from = polyMin.floorAtMaxPower.toDouble();
+          to = polyMax.ceilAtMaxPower.toDouble();
+        } else {
+          ,*/
+          // for now, always start with min or 0, and end at max (reverse if both negative).
+
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              from = min;
+              to = 0.0;
+            } else {
+              from = 0.0;
+              to = max;
+            }
+          } else {
+            from = min;
+            to = max;
+          }
+          // keep }
+
+          // Now make labels, evenly distributed in the from, to range.
+          // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+          // Labels are (obviously) unscaled, that is, on the scale of data,
+          // not the displayed pixels scale.
+
+          List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
+
+          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
+
+          var yScaler = YScalerAndLabelFormatter(
+            dataRange: Interval(from, to),
+            valueOnLabels: labels,
+            toScaleMin: toScaleMin,
+            toScaleMax: toScaleMax,
+            chartOptions: _options);
+
+          yScaler.scaleLabelInfos();
+          yScaler.makeLabelsPresentable();
+
+          return yScaler;
+        }
+
+
+        List<double> _distributeLabelsIn(Interval interval) {
+          Poly polyMin = Poly(from: interval.min);
+          Poly polyMax = Poly(from: interval.max);
+
+          int powerMax = polyMax.maxPower;
+          int coeffMax = polyMax.coefficientAtMaxPower;
+          int signMax = polyMax.signum;
+
+          // using Min makes sense if one or both (min, max) are negative
+          int powerMin = polyMin.maxPower;
+          int coeffMin = polyMin.coefficientAtMaxPower;
+          int signMin = polyMin.signum;
+
+          List<double> labels = [];
+          int power = math.max(powerMin, powerMax);
+
+          // todo-1 refactor this and make generic
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              // signMax >= 0
+              for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            }
+          } else {
+            // min is negative, max is positive - need added logic
+            if (powerMax == powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax < powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+                // just one over 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax > powerMin) {
+              for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+                // just one under 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              throw Exception('Unexpected power: $powerMin, $powerMax ');
+            }
+          }
+
+          return labels;
+        }
+
+      #+end_src
+    - yScaler notes  
+      so the labels are created in "distributeLabelsIn(Interval)"
+      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
+      - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
+
+        *todo*:
+        - rename _closure to _envelope
+        - rename value in params in range to pointsColumnsPointsValues
+        - Add test that is like RandomData but with similar real data.
+          
+*** Rename ChartData to ChartModel
+
+*** Rename ChartDataRows to ChartModelRows
+
+*** What options are controlled on the ChartModel level? What on the ChartModelRows level?
+
+*** For those on ChartModelRows level: add functionality and options via 
+
+** TODO Go over todo-00(-now , doc, etc)
+
+** TODO *todo-00-soon* Replace scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
+** TODO *todo-00 soon* If line chart, add option that allows to start on non-zero
+    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+    - test  on values like 10,000 - 11,000.
+    -
+
+
+    
+** TODO *todo-00-soon* add function which applies to Y data and scale but not labels. Use for logarighmic examples.

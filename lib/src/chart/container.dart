@@ -408,7 +408,6 @@ class YContainer extends ChartAreaContainer {
     List<double> flatData = _chartTopContainer.pointsColumns
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
-    // todo-00-last-last-done-set-nullable : List<String> yUserLabels = _chartTopContainer.data.yUserLabels;
     // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
     List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
@@ -1358,8 +1357,7 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      // todo-00-last-last-done why colors nullable?
-      List<ui.Color> dataRowsColors = _chartTopContainer.data.dataRowsColors!;
+      List<ui.Color> dataRowsColors = _chartTopContainer.data.dataRowsColors; //!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(

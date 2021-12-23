@@ -39,8 +39,7 @@ class LineAndHotspotPresenter extends Presenter {
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    // todo-00-last-last : consider why colors can even be null
-    List<ui.Color> dataRowsColors = container.data.dataRowsColors!;
+    List<ui.Color> dataRowsColors = container.data.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;

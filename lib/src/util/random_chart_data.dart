@@ -1,4 +1,4 @@
-import 'dart:math' as math show Random, pow;
+import 'dart:math' as math show Random;
 import 'package:flutter_charts/src/chart/data.dart';
 
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
@@ -18,10 +18,13 @@ class RandomChartData extends ChartData {
           dataRowsLegends: dataRowsLegends,
           yUserLabels: yUserLabels,
           dataRowsColors: dataRowsColors,
-        ) {
+        );
+/*  todo-00-last-last remove
+  {
     dataRowsColors ??= dataRowsDefaultColors(dataRows.length);
     validate();
   }
+*/
 
   // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartData(args) constructor.
   /// Generate random data for chart, with number of x labels given by
@@ -29,7 +32,7 @@ class RandomChartData extends ChartData {
   ///
   /// If [useMonthNames] is set to false, random
   ///
-  RandomChartData.generatedDefaults({
+  RandomChartData.generated({
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,
     int numDataRows = 4,
