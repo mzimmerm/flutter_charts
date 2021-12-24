@@ -1047,6 +1047,8 @@ reason is, yLabels have 2 modes:
 **** DataSeriesMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
 ***** DataSeriesMixin.xLabel(DataPoint, pointIndexInSeries) => DataSeriesMixin.xValue(DataPoint, pointIndexInSeries) // similar for Y
 *** TODO ~DataSeriesMixin must be extended as MyDataSeriesMixin, implementing at least 2 methods: xValue and yValue~
+*** TODO *RENAME OWN_SCALE TO Y_VALUES_SCALE, TO_SCALE TO TO_DISPLAY_SCALE*
+*** TODO *ADD 2 EXAMPLES WITH VARIOUS DATA SIMILAR TO RANDOM DATA*
 *** TODO *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
 - implemented by ovewriting DataSeriesMixin.yTransform
 - only applies if yValues are numeric

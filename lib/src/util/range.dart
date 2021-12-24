@@ -60,8 +60,7 @@ class Range {
     // There are not that many, because pMin <= pMax and pDiff <= pMax.
     /* keep
     if (false && powerDiff < powerMin) {
-      // todo-00-github-issue-31 : Allow start Y axis from non-zero
-      // todo 1 - enable conditions where y=0 axis is not needed to show,
+      // todo-11-github-issue-31-allow-start-Y-axis-from-non-zero
       //          to allow for details, mainly for lots of values.
       //          Make an option for this. Add to tests.
       from = polyMin.floorAtMaxPower.toDouble();

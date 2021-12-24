@@ -37,7 +37,8 @@ enum ExamplesEnum {
   ex10RandomData,
   ex11RandomDataWithLabelLayoutStrategy,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
-  ex31AnimalsBySeasonNoLabelsShown,
+  ex31SomeNegativeValues,
+  ex35AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
   ex51AnimalsBySeasonManualLogarithmicScale,
@@ -65,17 +66,28 @@ class ExamplesDescriptor {
   ExamplesDescriptor({this.exampleRequested});
 
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
+    // 
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
+    //
     const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+    //
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
-    const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
+    // 
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
+    // 
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
+    //
     const Tuple2(ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale, ExamplesChartTypeEnum.lineChart),
+    //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
 

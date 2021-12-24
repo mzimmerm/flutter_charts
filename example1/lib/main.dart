@@ -425,14 +425,14 @@ class _ExampleDefiner {
           options: chartOptions,
         );
         chartData = ChartData(
-          dataRows: [
+          dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xUserLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
-          dataRowsLegends: [
+          xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          dataRowsLegends: const [
             'Spring',
             'Summer',
             'Fall',
@@ -442,7 +442,25 @@ class _ExampleDefiner {
         // chartData.dataRowsDefaultColors(); // if not set, called in constructor
         break;
 
-      case ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown:
+      case ExamplesEnum.ex31SomeNegativeValues:
+        chartData = ChartData(
+          dataRows: const [
+            [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
+            [1100.0, 1000.0, 1200.0, 800.0, 700.0, 800.0],
+            [0.0, 100.0, -200.0, 150.0, -100.0, -150.0],
+            [-800.0, -400.0, -300.0, -400.0, -200.0, -250.0],
+          ],
+          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          dataRowsLegends: const [
+            'Big Corp',
+            'Medium Corp',
+            'Print Shop',
+            'Bar',
+          ],
+        );
+        break;
+
+      case ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown:
         // Set non-default chart options to show no labels
         switch (chartTypeToShow) {
           case ExamplesChartTypeEnum.lineChart:
@@ -453,14 +471,14 @@ class _ExampleDefiner {
             break;
         }
         chartData = ChartData(
-          dataRows: [
+          dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xUserLabels: ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
-          dataRowsLegends: [
+          xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          dataRowsLegends: const [
             'Spring',
             'Summer',
             'Fall',
@@ -482,21 +500,21 @@ class _ExampleDefiner {
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
         chartData = ChartData(
-          dataRows: [
+          dataRows: const [
             [9.0, 4.0, 3.0, 9.0],
             [7.0, 6.0, 7.0, 6.0],
             [4.0, 9.0, 6.0, 8.0],
             [3.0, 9.0, 10.0, 1.0],
           ],
-          xUserLabels: ['Speed', 'Readability', 'Level of Novel', 'Usage'],
-          dataRowsColors: [
+          xUserLabels: const ['Speed', 'Readability', 'Level of Novel', 'Usage'],
+          dataRowsColors: const [
             Colors.blue,
             Colors.yellow,
             Colors.green,
             Colors.amber,
           ],
-          dataRowsLegends: ['Java', 'Dart', 'Python', 'Newspeak'],
-          yUserLabels: [
+          dataRowsLegends: const ['Java', 'Dart', 'Python', 'Newspeak'],
+          yUserLabels: const [
             'Low',
             'Medium',
             'High',
@@ -514,20 +532,20 @@ class _ExampleDefiner {
 
         chartData = ChartData(
           // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
-          dataRows: [
+          dataRows: const [
             [-9.0, -8.0, -8.0, -5.0, -8.0],
             [-1.0, -2.0, -4.0, -1.0, -1.0],
             [7.0, 8.0, 7.0, 11.0, 9.0],
             [3.0, 2.0, 1.0, 3.0, 3.0],
           ],
-          xUserLabels: ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
-          dataRowsLegends: [
+          xUserLabels: const ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
+          dataRowsLegends: const [
             '-2% or less',
             '-2% to 0%',
             '0% to +2%',
             'more than +2%',
           ],
-          dataRowsColors: [
+          dataRowsColors: const [
             Colors.red,
             Colors.grey,
             Colors.greenAccent,
@@ -546,8 +564,8 @@ class _ExampleDefiner {
             [math.log(2.2), math.log(220.0), math.log(2200.0)],
             [math.log(330.0), math.log(3.3), math.log(3300.0)],
           ],
-          xUserLabels: ['Wolf', 'Deer', 'Mouse'],
-          dataRowsLegends: [
+          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          dataRowsLegends: const [
             'Spring',
             'Summer',
           ],
@@ -567,17 +585,17 @@ class _ExampleDefiner {
         /// [chartData.xUserLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
         // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
         chartData = ChartData(
-          dataRows: [
+          dataRows: const [
             [0.0, 0.0, 0.0],
           ],
           // Note: When ChartData is defined,
           //       ALL OF  xUserLabels,  dataRowsLegends, dataRowsColors
           //       must be set by client
-          xUserLabels: ['Wolf', 'Deer', 'Mouse'],
-          dataRowsLegends: [
+          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          dataRowsLegends: const [
             'Row 1',
           ],
-          dataRowsColors: [
+          dataRowsColors: const [
             Colors.blue,
           ],
         );
