@@ -13,69 +13,69 @@ import 'dart:math' as math;
 
 // todo-11 write test for this and refactor scaling
 /// Scale the [value] that must be from the scale
-/// given by [ownScaleMin] - [ownScaleMax]
-/// to the "to scale" given by  [toScaleMin] - [toScaleMax].
+/// given by [yValueScaleMin] - [yValueScaleMax]
+/// to the "to scale" given by  [toDisplayScaleMin] - [toDisplayScaleMax].
 ///
 /// The calculations are rather pig headed and should be made more terse;
 /// also could be separated by caching the scales which do not change
 /// unless data change.
 double scaleValue({
   required double value,
-  required double ownScaleMin,
-  required double ownScaleMax,
-  required double toScaleMin,
-  required double toScaleMax,
+  required double yValueScaleMin,
+  required double yValueScaleMax,
+  required double toDisplayScaleMin,
+  required double toDisplayScaleMax,
 }) {
-  var ownScaleLength = ownScaleMax - ownScaleMin;
-  var toScaleLength = toScaleMax - toScaleMin;
+  var yValueScaleLength = yValueScaleMax - yValueScaleMin;
+  var toDisplayScaleLength = toDisplayScaleMax - toDisplayScaleMin;
   // Handle degenerate cases:
   // 1. If exactly one of the scales is zero length, exception.
   if (exactlyOneHasValue(
-    one: ownScaleLength,
-    two: toScaleLength,
+    one: yValueScaleLength,
+    two: toDisplayScaleLength,
     value: 0.0,
   )) {
-    if (ownScaleLength == 0.0 && value == ownScaleMin) {
+    if (yValueScaleLength == 0.0 && value == yValueScaleMin) {
       // OK to have own scale degenerate, if value is the same as the degenerate min/max
-      return toScaleMin;
-      // all other cases (it is the toScale which is degenerate, or value is outside ownScale
+      return toDisplayScaleMin;
+      // all other cases (it is the toDisplayScale which is degenerate, or value is outside yValueScale
     } else {
       throw StateError(
-          'Cannot convert value $value between scales $ownScaleMin, $ownScaleMax and $toScaleMin $toScaleMax');
+          'Cannot convert value $value between scales $yValueScaleMin, $yValueScaleMax and $toDisplayScaleMin $toDisplayScaleMax');
     }
     // 2. If both scales are zero length:
   } else if (bothHaveValue(
-    one: ownScaleLength,
-    two: toScaleLength,
+    one: yValueScaleLength,
+    two: toDisplayScaleLength,
     value: 0.0,
   )) {
-    // if value != ownScaleMin (same as ownScaleMax), exception
-    if (value != ownScaleMin) {
-      throw StateError('Value is not on own scale: $ownScaleMin, $ownScaleMax and $toScaleMin $toScaleMax');
-      //  else return toScaleMin (same as toScaleMax)
+    // if value != yValueScaleMin (same as yValueScaleMax), exception
+    if (value != yValueScaleMin) {
+      throw StateError('Value is not on own scale: $yValueScaleMin, $yValueScaleMax and $toDisplayScaleMin $toDisplayScaleMax');
+      //  else return toDisplayScaleMin (same as toDisplayScaleMax)
     } else {
-      return toScaleMin;
+      return toDisplayScaleMin;
     }
   }
   // first move scales to be both starting at 0; also move value equivalently.
   // Naming the 0 based coordinates ending with 0
-  double value0 = value - ownScaleMin;
+  double value0 = value - yValueScaleMin;
   /*
-  double ownScaleMin0 = 0.0;
-  double ownScaleMax0 = ownScaleLength;
-  double toScaleMin0 = 0.0;
-  double toScaleMax0 = toScaleLength;
+  double yValueScaleMin0 = 0.0;
+  double yValueScaleMax0 = yValueScaleLength;
+  double toDisplayScaleMin0 = 0.0;
+  double toDisplayScaleMax0 = toDisplayScaleLength;
   */
 
   // Next scale the value to 0 - 1 segment
-  double value0ScaledTo01 = value0 / ownScaleLength;
+  double value0ScaledTo01 = value0 / yValueScaleLength;
 
-  // Then scale value0Scaled01 to the 0 based toScale0
-  double valueOnToScale0 = value0ScaledTo01 * toScaleLength;
+  // Then scale value0Scaled01 to the 0 based toDisplayScale0
+  double valueOnToDisplayScale0 = value0ScaledTo01 * toDisplayScaleLength;
 
-  // And finally shift the valueOnToScale0 to a non-0 start on "to scale"
+  // And finally shift the valueOnToDisplayScale0 to a non-0 start on "to scale"
 
-  double scaled = valueOnToScale0 + toScaleMin;
+  double scaled = valueOnToDisplayScale0 + toDisplayScaleMin;
 
   return scaled;
 }

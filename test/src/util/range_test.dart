@@ -59,7 +59,7 @@ void main() {
     YScalerAndLabelFormatter lsf;
 
     r = Range(values: [1.0, 22.0, 333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     Interval c = lsf.dataRange;
     List<num> labels = lsf.labelValues;
     expect(c.min, 0.0);
@@ -71,7 +71,7 @@ void main() {
     expect(labels[3], 300.0);
 
     r = Range(values: [-1.0, -22.0, -333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
     expect(c.min, -333.0);
@@ -83,7 +83,7 @@ void main() {
     expect(labels[3], 0.0);
 
     r = Range(values: [22.0, 10.0, -333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
     expect(c.min, -333.0);
@@ -96,7 +96,7 @@ void main() {
     expect(labels[4], 100.0);
 
     r = Range(values: [-22.0, -10.0, 333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
     expect(c.min, -22.0);
@@ -109,7 +109,7 @@ void main() {
     expect(labels[4], 300.0);
 
     r = Range(values: [-1000.0, 0.0, 1000.0, 2000.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
     expect(c.min, -1000.0);
@@ -121,7 +121,7 @@ void main() {
     expect(labels[3], 2000.0);
 
     r = Range(values: [-1000.0, 0.0, 1000.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(toScaleMin: min, toScaleMax: max);
+    lsf = r.makeLabelsFromDataOnScale(toDisplayScaleMin: min, toDisplayScaleMax: max);
     c = lsf.dataRange;
     labels = lsf.labelValues;
     expect(c.min, -1000.0);

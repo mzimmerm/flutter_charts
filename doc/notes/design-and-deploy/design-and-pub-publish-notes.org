@@ -878,6 +878,7 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 **** Add a list of children to Morph
 **** Add name field to Morph 
 ** IN-PROGRESS Replace ChartData and add DataPoint, more representing what people need, and adding logarithic scale
+
 *** NOTE YLabels, YScaler, and their layout in flutter_charts
 
 ChartData yLabels and dataRowsColors behave differently.
@@ -1037,38 +1038,55 @@ reason is, yLabels have 2 modes:
         - rename _closure to _envelope
         - rename value in params in range to pointsColumnsPointsValues
         - Add test that is like RandomData but with similar real data.
-          
-*** TODO ChartData contains List<DataSeriesMixin> (think of it as Stack<DataSeriesMixin>)
-*** TODO DataSeriesMixin corresponds to dataRow
-*** TODO DataSeriesMixin contains List<DataPoint>
-*** TODO DataPoint can be any object - sort of a naked user object
-*** TODO DataSeriesMixin is a mixin which provides functions that allow to extract values from DataPoint
-**** DataSeriesMixin.xValue(DataPoint, pointIndexInSeries) =>  whatever value at DataPoint is considered x // similar for Y
-**** DataSeriesMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
-***** DataSeriesMixin.xLabel(DataPoint, pointIndexInSeries) => DataSeriesMixin.xValue(DataPoint, pointIndexInSeries) // similar for Y
-*** TODO ~DataSeriesMixin must be extended as MyDataSeriesMixin, implementing at least 2 methods: xValue and yValue~
-*** TODO *RENAME OWN_SCALE TO Y_VALUES_SCALE, TO_SCALE TO TO_DISPLAY_SCALE*
-*** TODO *ADD 2 EXAMPLES WITH VARIOUS DATA SIMILAR TO RANDOM DATA*
-*** TODO *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
-- implemented by ovewriting DataSeriesMixin.yTransform
-- only applies if yValues are numeric
-- only applies on line chart?
-- yValue is the original value
-- values passed to existing label formatters and scalers is yTransform(yValue)
-- but when creating labels, values passed to the formatter and scaler is yValue! so it sort of works like manual yLabels
-- *maybe i implement this first in existing system using option dataContainerOption.logarithmicYValues to learn how to do this*
-*** TODO Rename ChartData to ChartModel
+*** IN-PROGRESS-NOW Logarithmic Y scale
+**** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
+**** IN-PROGRESS-NOW *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
 
-*** TODO Rename ChartDataRows to ChartModelRows
-
-*** TODO What options are controlled on the ChartModel level? What on the ChartModelRows level?
-*** TODO Go over todo-00(-now , doc, etc)
-*** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
-*** TODO If line chart, add option that allows to start on non-zero
+- [ ] Add ChartOptions.DataContainer.yTransform Function double -> double for now (yTransform applies to both DataContainer and YContainer) 
+- [-] later implemented by ovewriting DataSetsMixin.yTransform (move this to later part)
+- [ ] only applies if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)
+- [ ] only applies on line chart? = both for now
+- [ ] yTransform can always be applied as follows:
+  - [ ] applied to yValues before creating DataPoints, PointsColumns, etc
+  - [ ] applied to yValues Interval before range is created and scaled to displayScale
+  - [ ] NOT applied in labelformatter - original unscaled values are used there
+- [ ] yValue is the original value
+- [ ] values passed to existing label formatters and scalers is yTransform(yValue)
+- [ ] but when creating labels, values passed to the formatter and scaler is yValue! so it sort of works like manual yLabels
+- [ ] *maybe i implement this first in existing system using option dataContainerOption.logarithmicYValues to learn how to do this*
+*** TODO ChartData further refactoring
+**** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
+**** TODO So we need new class DataSet;   DataSets is custom List of DataSet.
+**** TODO So we need new class DataPoint; DataPoints is custom List<DataPoint>
+**** TODO DataPoint can be any object - sort of a naked user object
+**** TODO DataSetsMixin corresponds to dataRows
+**** TODO DataPoints corresponds to one dataRow.
+**** TODO DataSetsMixin is a mixin which provides functions that allow to extract values from DataPoint, for example
+***** DataSetsMixin.xValue(DataPoint, pointIndexInSets) =>  whatever value at DataPoint is considered x // similar for Y
+***** DataSetsMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
+****** DataSetsMixin.xLabel(DataPoint, pointIndexInSets) => DataSetsMixin.xValue(DataPoint, pointIndexInSets) // similar for Y
+**** TODO ~DataSetsMixin must be extended as MyDataSetsMixin, implementing at least 2 methods: xValue and yValue, see aboce~
+**** TODO What options are controlled on the ChartData level? What on the DataSetsMixin level?
+**** TODO ~???? Move ChartOptions to ChartData ??? Or some other redesign using configurations ???~
+***** TODO ~Move function _options.yContainerOptions.valueToLabel to function ChartData.yLabelFormatter and allow to pass it and store as member~
+******* TODO This is the first crack on removing ChartOptions completely and move it to ChartData
+******* TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
+***** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
+***** TODO ~Finish moving ChartOptions entirely to ChartData
+**** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
+**** TODO If line chart, add option that allows to start on non-zero
     - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
     - test  on values like 10,000 - 11,000.
     -
-
-
-    
+**** TODO Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
+This needs entity model change:
+- current ChartData and ChartOptions are kept on ChartTopContainer
+- current data structure is as follows: ChartData -> DataSetsMixin -> DataPoints - unchanged
+- currently ChartOptions is set on Painter along with ChartData;  available from any Container by reaching to parentContainer or topContainer
+- need to allow/add member ChartOptions on DataSet (default still on the ChartTopContainer, placed there from Painter)
+- need to allow/add member presentAs on DataSet (presentAs line chart or bar chart) 
+- need to allow xLabels and yLabels on DataSet ?? How ??
+- we allow to set both options AND enum chartType on ChartDataRows
+- we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
+Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE 
 ** TODO *todo-00-soon* add function which applies to Y data and scale but not labels. Use for logarighmic examples.

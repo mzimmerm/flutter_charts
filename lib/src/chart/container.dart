@@ -433,8 +433,8 @@ class YContainer extends ChartAreaContainer {
     var yScaler = YScalerAndLabelFormatter(
         dataRange: yDataRange,
         valueOnLabels: yLabelsDividedInYAxisRange,
-        toScaleMin: yAxisMin,
-        toScaleMax: yAxisMax,
+        toDisplayScaleMin: yAxisMin,
+        toDisplayScaleMax: yAxisMax,
         chartOptions: _chartTopContainer.options);
 
     yScaler.setLabelValuesForManualLayout(
@@ -468,10 +468,10 @@ class YContainer extends ChartAreaContainer {
       chartOptions: _chartTopContainer.options,
     );
 
-    // revert toScaleMin/Max to accommodate y axis starting from top
+    // revert toDisplayScaleMin/Max to accommodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
-      toScaleMin: yAxisMin,
-      toScaleMax: yAxisMax,
+      toDisplayScaleMin: yAxisMin,
+      toDisplayScaleMax: yAxisMax,
     );
     return yScaler;
   }
@@ -1419,7 +1419,7 @@ class LegendContainer extends ChartAreaContainer {
 ///   - [xLabel], [y], and also the stacking support values [fromY], [toY];
 /// The managed coordinates are absolute coordinates painted by [ChartPainter]:
 ///   - [scaledX], [scaledY], [scaledFrom], [scaledTo], and also
-///   the stacking support coordinates [fromScaledY], [toScaledY].
+///   the stacking support coordinates [fromScaledY], [toDisplayScaledY].
 /// are General x, y coordinates are the outer bound where
 /// represented values will be shown.
 ///
@@ -1449,7 +1449,7 @@ class StackableValuePoint {
   double scaledX = 0.0;
   double scaledY = 0.0;
   double fromScaledY = 0.0;
-  double toScaledY = 0.0;
+  double toDisplayScaledY = 0.0;
 
   /// Scaled Offsets for painting in absolute chart coordinates.
   /// More precisely, offsets of the bottom and top of the presenter of this
@@ -1499,7 +1499,7 @@ class StackableValuePoint {
   }
 
   /// Scales this point's data values [x] and [y], and all stacked y values
-  /// and points - [scaledX], [scaledY], [fromScaledY],  [toScaledY],
+  /// and points - [scaledX], [scaledY], [fromScaledY],  [toDisplayScaledY],
   /// [scaledFrom], [scaledTo] - using the passed values scaler [yScaler].
   ///
   /// Note that the x values are not really scaled, as object doed not
@@ -1516,9 +1516,9 @@ class StackableValuePoint {
     this.scaledX = scaledX;
     scaledY = yScaler.scaleY(value: y);
     fromScaledY = yScaler.scaleY(value: fromY);
-    toScaledY = yScaler.scaleY(value: toY);
+    toDisplayScaledY = yScaler.scaleY(value: toY);
     scaledFrom = ui.Offset(scaledX, fromScaledY);
-    scaledTo = ui.Offset(scaledX, toScaledY);
+    scaledTo = ui.Offset(scaledX, toDisplayScaledY);
 
     return this;
   }
@@ -1532,7 +1532,7 @@ class StackableValuePoint {
     scaledX += offset.dx;
     scaledY += offset.dy;
     fromScaledY += offset.dy;
-    toScaledY += offset.dy;
+    toDisplayScaledY += offset.dy;
 
     scaledFrom += offset;
     scaledTo += offset;
@@ -1564,7 +1564,7 @@ class StackableValuePoint {
     clone.scaledX = scaledX;
     clone.scaledY = scaledY;
     clone.fromScaledY = fromScaledY;
-    clone.toScaledY = toScaledY;
+    clone.toDisplayScaledY = toDisplayScaledY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
     clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 

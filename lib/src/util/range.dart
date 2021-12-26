@@ -38,11 +38,11 @@ class Range {
   /// Automatically generates unscaled labels (more precisely their values)
   /// from data.
   ///
-  /// The [toScaleMin] and [toScaleMax] are the display scale,
+  /// The [toDisplayScaleMin] and [toDisplayScaleMax] are the display scale,
   /// for example the range of Y axis positions between bottom and top.
   YScalerAndLabelFormatter makeLabelsFromDataOnScale({
-    required double toScaleMin,
-    required double toScaleMax,
+    required double toDisplayScaleMin,
+    required double toDisplayScaleMax,
   }) {
     double min = _closure.min;
     double max = _closure.max;
@@ -96,8 +96,8 @@ class Range {
     var yScaler = YScalerAndLabelFormatter(
         dataRange: Interval(from, to),
         valueOnLabels: labels,
-        toScaleMin: toScaleMin,
-        toScaleMax: toScaleMax,
+        toDisplayScaleMin: toDisplayScaleMin,
+        toDisplayScaleMax: toDisplayScaleMax,
         chartOptions: _options);
 
     yScaler.scaleLabelInfos();
@@ -186,19 +186,19 @@ class YScalerAndLabelFormatter {
   /// Maintains labels created from data values, scaled and unscaled.
   List<LabelInfo> labelInfos;
 
-  final double _toScaleMin;
-  final double _toScaleMax;
+  final double _toDisplayScaleMin;
+  final double _toDisplayScaleMax;
   final ChartOptions _options;
 
   YScalerAndLabelFormatter({
     required this.dataRange,
     required List<double> valueOnLabels,
-    required double toScaleMin,
-    required double toScaleMax,
+    required double toDisplayScaleMin,
+    required double toDisplayScaleMax,
     required ChartOptions chartOptions,
   })  : labelInfos = valueOnLabels.map((value) => LabelInfo(value)).toList(),
-        _toScaleMin = toScaleMin,
-        _toScaleMax = toScaleMax,
+        _toDisplayScaleMin = toDisplayScaleMin,
+        _toDisplayScaleMax = toDisplayScaleMax,
         _options = chartOptions {
     // late initialize the parentScaler
     for (LabelInfo labelInfo in labelInfos) {
@@ -209,17 +209,17 @@ class YScalerAndLabelFormatter {
   /// Scales [value]
   ///   - from the own scale, given be the merged data and label intervals
   ///   calculated in [labelAndDataRangeMerged]
-  ///   - to the Y axis scale defined by [_toScaleMin], [_toScaleMax].
+  ///   - to the Y axis scale defined by [_toDisplayScaleMin], [_toDisplayScaleMax].
   double scaleY({
     required double value,
   }) {
-    Interval mergedOwnScale = labelValuesAndDataRangesMerged;
+    Interval mergedYValueScale = labelValuesAndDataRangesMerged;
     return util_dart.scaleValue(
         value: value.toDouble(),
-        ownScaleMin: mergedOwnScale.min.toDouble(),
-        ownScaleMax: mergedOwnScale.max.toDouble(),
-        toScaleMin: _toScaleMin,
-        toScaleMax: _toScaleMax);
+        yValueScaleMin: mergedYValueScale.min.toDouble(),
+        yValueScaleMax: mergedYValueScale.max.toDouble(),
+        toDisplayScaleMin: _toDisplayScaleMin,
+        toDisplayScaleMax: _toDisplayScaleMax);
   }
 
   /// Self-scales the Y label values in [labelInfos] to the scale
@@ -230,7 +230,7 @@ class YScalerAndLabelFormatter {
       labelInfo._scaleLabelValue();
     }
 
-    if (_toScaleMin > _toScaleMax) {
+    if (_toDisplayScaleMin > _toDisplayScaleMax) {
       // we are inverting scales, so invert labels.
       labelInfos = labelInfos.reversed.toList();
     }
@@ -248,7 +248,7 @@ class YScalerAndLabelFormatter {
       labelInfos[i].formattedYLabel = formattedYLabels[i];
     }
 
-    if (_toScaleMin > _toScaleMax) {
+    if (_toDisplayScaleMin > _toDisplayScaleMax) {
       // we are inverting scales, so invert labels.
       labelInfos = labelInfos.reversed.toList();
     }
@@ -296,8 +296,8 @@ class YScalerAndLabelFormatter {
 ///       - *Further, y axis must start at _yAxisMinOffsetFromTop = 8.0*
 ///     - *So, we need to*:
 ///       - 1. *Map / scale all YScalerAndLabelFormatter.labelValues using:*
-///         - /ownScale=labelAndDataRangeMerged=[-1000, 1800]/,
-///         - /toScale=[8, 8+376]/;
+///         - /yValueScale=labelAndDataRangeMerged=[-1000, 1800]/,
+///         - /toDisplayScale=[8, 8+376]/;
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
 
 class LabelInfo {
