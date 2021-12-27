@@ -32,10 +32,10 @@ class RandomChartData extends ChartData {
     int numDataRows = 4,
     bool useMonthNames = true,
     int maxLabelLength = 8,
-    bool overlapYValues = false,
+    bool overlapDataYs = false,
     dataRowsColors,
   }) : this(
-          dataRows: randomDataYValues(numXLabels, numDataRows, overlapYValues),
+          dataRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
           xUserLabels: randomDataXLabels(numXLabels),
           dataRowsLegends: randomDataRowsLegends(numDataRows),
           yUserLabels: randomDataYLabels(useUserProvidedYLabels),
@@ -94,19 +94,19 @@ List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
   return yUserLabels;
 }
 
-List<List<double>> randomDataYValues(int numXLabels, int _numDataRows, bool _overlapYValues) {
+List<List<double>> randomDataYs(int numXLabels, int _numDataRows, bool _overlapDataYs) {
   List<List<double>> dataRows = List.empty(growable: true);
 
   double scale = 200.0;
 
   math.Random rgen = math.Random();
 
-  int maxYValue = 4;
-  double pushUpStep = _overlapYValues ? 0.0 : maxYValue.toDouble();
+  int maxDataY = 4;
+  double pushUpStep = _overlapDataYs ? 0.0 : maxDataY.toDouble();
 
   for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
     dataRows.add(_randomDataOneRow(
-        rgen: rgen, max: maxYValue, pushUpBy: (rowIndex - 1) * pushUpStep, scale: scale, numXLabels: numXLabels));
+        rgen: rgen, max: maxDataY, pushUpBy: (rowIndex - 1) * pushUpStep, scale: scale, numXLabels: numXLabels));
   }
   return dataRows;
 }

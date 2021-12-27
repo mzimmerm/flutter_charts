@@ -11,71 +11,71 @@
 
 import 'dart:math' as math;
 
-// todo-11 write test for this and refactor scaling
+// todo-13 write test for this and refactor scaling
 /// Scale the [value] that must be from the scale
-/// given by [yValueScaleMin] - [yValueScaleMax]
-/// to the "to scale" given by  [toDisplayScaleMin] - [toDisplayScaleMax].
+/// given by [dataYsEnvelopMin] - [dataYsEnvelopMax]
+/// to the "to scale" given by  [axisYMin] - [axisYMax].
 ///
 /// The calculations are rather pig headed and should be made more terse;
 /// also could be separated by caching the scales which do not change
 /// unless data change.
 double scaleValue({
   required double value,
-  required double yValueScaleMin,
-  required double yValueScaleMax,
-  required double toDisplayScaleMin,
-  required double toDisplayScaleMax,
+  required double dataYsEnvelopMin,
+  required double dataYsEnvelopMax,
+  required double axisYMin,
+  required double axisYMax,
 }) {
-  var yValueScaleLength = yValueScaleMax - yValueScaleMin;
-  var toDisplayScaleLength = toDisplayScaleMax - toDisplayScaleMin;
+  var dataYsEnvelopLength = dataYsEnvelopMax - dataYsEnvelopMin;
+  var axisYLength = axisYMax - axisYMin;
   // Handle degenerate cases:
   // 1. If exactly one of the scales is zero length, exception.
   if (exactlyOneHasValue(
-    one: yValueScaleLength,
-    two: toDisplayScaleLength,
+    one: dataYsEnvelopLength,
+    two: axisYLength,
     value: 0.0,
   )) {
-    if (yValueScaleLength == 0.0 && value == yValueScaleMin) {
+    if (dataYsEnvelopLength == 0.0 && value == dataYsEnvelopMin) {
       // OK to have own scale degenerate, if value is the same as the degenerate min/max
-      return toDisplayScaleMin;
-      // all other cases (it is the toDisplayScale which is degenerate, or value is outside yValueScale
+      return axisYMin;
+      // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelop
     } else {
       throw StateError(
-          'Cannot convert value $value between scales $yValueScaleMin, $yValueScaleMax and $toDisplayScaleMin $toDisplayScaleMax');
+          'Cannot convert value $value between scales $dataYsEnvelopMin, $dataYsEnvelopMax and $axisYMin $axisYMax');
     }
     // 2. If both scales are zero length:
   } else if (bothHaveValue(
-    one: yValueScaleLength,
-    two: toDisplayScaleLength,
+    one: dataYsEnvelopLength,
+    two: axisYLength,
     value: 0.0,
   )) {
-    // if value != yValueScaleMin (same as yValueScaleMax), exception
-    if (value != yValueScaleMin) {
-      throw StateError('Value is not on own scale: $yValueScaleMin, $yValueScaleMax and $toDisplayScaleMin $toDisplayScaleMax');
-      //  else return toDisplayScaleMin (same as toDisplayScaleMax)
+    // if value != dataYsEnvelopMin (same as dataYsEnvelopMax), exception
+    if (value != dataYsEnvelopMin) {
+      throw StateError('Value is not on own scale: $dataYsEnvelopMin, $dataYsEnvelopMax and $axisYMin $axisYMax');
+      //  else return axisYMin (same as axisYMax)
     } else {
-      return toDisplayScaleMin;
+      return axisYMin;
     }
   }
   // first move scales to be both starting at 0; also move value equivalently.
   // Naming the 0 based coordinates ending with 0
-  double value0 = value - yValueScaleMin;
+  double value0 = value - dataYsEnvelopMin;
   /*
-  double yValueScaleMin0 = 0.0;
-  double yValueScaleMax0 = yValueScaleLength;
-  double toDisplayScaleMin0 = 0.0;
-  double toDisplayScaleMax0 = toDisplayScaleLength;
+  double dataYsEnvelopMin0 = 0.0;
+  double dataYsEnvelopMax0 = dataYsEnvelopLength;
+  double axisYMin0 = 0.0;
+  double axisYMax0 = axisYLength;
   */
 
   // Next scale the value to 0 - 1 segment
-  double value0ScaledTo01 = value0 / yValueScaleLength;
+  double value0ScaledTo01 = value0 / dataYsEnvelopLength;
 
-  // Then scale value0Scaled01 to the 0 based toDisplayScale0
-  double valueOnToDisplayScale0 = value0ScaledTo01 * toDisplayScaleLength;
+  // Then scale value0Scaled01 to the 0 based axisY0
+  double valueOnAxisY0 = value0ScaledTo01 * axisYLength;
 
-  // And finally shift the valueOnToDisplayScale0 to a non-0 start on "to scale"
+  // And finally shift the valueOnAxisY0 to a non-0 start on "to scale"
 
-  double scaled = valueOnToDisplayScale0 + toDisplayScaleMin;
+  double scaled = valueOnAxisY0 + axisYMin;
 
   return scaled;
 }

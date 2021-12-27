@@ -368,30 +368,30 @@ class YContainer extends ChartAreaContainer {
   /// horizontal space for the [GridContainer] and [XContainer].
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    // yAxisMin and yAxisMax define end points of the Y axis, in the YContainer
+    // axisYMin and axisYMax define end points of the Y axis, in the YContainer
     //   coordinates.
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    double yAxisMin =
+    double axisYMin =
         parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
-    double yAxisMax = _yLabelsMaxHeightFromFirstLayout / 2;
+    double axisYMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
     //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()],
     //   so we cannot just skip layout completely at the beginning.
     if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
-      chartTopContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
+      chartTopContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
       return;
     }
 
     if (_chartTopContainer.data.isUsingUserLabels) {
-      layoutManually(yAxisMin, yAxisMax);
+      layoutManually(axisYMin, axisYMax);
     } else {
-      layoutAutomatically(yAxisMin, yAxisMax);
+      layoutAutomatically(axisYMin, axisYMax);
     }
 
     double yLabelsContainerWidth =
@@ -404,37 +404,37 @@ class YContainer extends ChartAreaContainer {
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   /// Implementation splits Y axis into even number of
   ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
-  void layoutManually(double yAxisMin, double yAxisMax) {
-    List<double> flatData = _chartTopContainer.pointsColumns
+  void layoutManually(double axisYMin, double axisYMax) {
+    List<double> allStackedDataYs = _chartTopContainer.pointsColumns
         .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
 
     // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
     List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
-    var yDataRange = Interval(flatData.reduce(math.min), flatData.reduce(math.max));
-    double dataStepHeight = (yDataRange.max - yDataRange.min) / (yUserLabels.length - 1);
+    var dataYsEnvelop = Interval(allStackedDataYs.reduce(math.min), allStackedDataYs.reduce(math.max));
+    double dataStepHeight = (dataYsEnvelop.max - dataYsEnvelop.min) / (yUserLabels.length - 1);
 
-    Interval yAxisRange = Interval(yAxisMin, yAxisMax);
+    Interval yAxisInterval = Interval(axisYMin, axisYMax);
 
-    double yGridStepHeight = (yAxisRange.max - yAxisRange.min) / (yUserLabels.length - 1);
+    double yGridStepHeight = (yAxisInterval.max - yAxisInterval.min) / (yUserLabels.length - 1);
 
     List<double> yLabelsDividedInYAxisRange = List.empty(growable: true);
     //var seq = new Iterable.generate(yUserLabels.length, (i) => i); // 0 .. length-1
     //for (var yIndex in seq) {
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
-      yLabelsDividedInYAxisRange.add(yAxisRange.min + yGridStepHeight * yIndex);
+      yLabelsDividedInYAxisRange.add(yAxisInterval.min + yGridStepHeight * yIndex);
     }
 
     List<num> yLabelsDividedInYDataRange = List.empty(growable: true);
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
-      yLabelsDividedInYDataRange.add(yDataRange.min + dataStepHeight * yIndex);
+      yLabelsDividedInYDataRange.add(dataYsEnvelop.min + dataStepHeight * yIndex);
     }
 
     var yScaler = YScalerAndLabelFormatter(
-        dataRange: yDataRange,
-        valueOnLabels: yLabelsDividedInYAxisRange,
-        toDisplayScaleMin: yAxisMin,
-        toDisplayScaleMax: yAxisMax,
+        dataYsEnvelop: dataYsEnvelop,
+        dataYsLabelValues: yLabelsDividedInYAxisRange,
+        axisYMin: axisYMin,
+        axisYMax: axisYMax,
         chartOptions: _chartTopContainer.options);
 
     yScaler.setLabelValuesForManualLayout(
@@ -447,31 +447,31 @@ class YContainer extends ChartAreaContainer {
 
   /// Generates scaled and spaced Y labels from data, then auto layouts
   /// them on the Y axis according to data range [range] and display
-  /// range [yAxisMin] to [yAxisMax].
+  /// range [axisYMin] to [axisYMax].
   /// 
   /// The auto-layout implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
-  void layoutAutomatically(double yAxisMin, double yAxisMax) {
+  void layoutAutomatically(double axisYMin, double axisYMax) {
     // todo-2 move to common layout, same for manual and auto
-    YScalerAndLabelFormatter yScaler = _layoutCreateYScalerFromPointsColumnsData(yAxisMin, yAxisMax);
+    YScalerAndLabelFormatter yScaler = _layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
 
     _commonLayout(yScaler);
   }
 
-  YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
-    List<double> flatData =
+  YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
+    List<double> allStackedDataYs =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
 
     Range range = Range(
-      values: flatData,
+      values: allStackedDataYs,
       chartOptions: _chartTopContainer.options,
     );
 
-    // revert toDisplayScaleMin/Max to accommodate y axis starting from top
+    // revert axisYMin/Max to accommodate y axis starting from top
     YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
-      toDisplayScaleMin: yAxisMin,
-      toDisplayScaleMax: yAxisMax,
+      axisYMin: axisYMin,
+      axisYMax: axisYMax,
     );
     return yScaler;
   }
@@ -1419,7 +1419,7 @@ class LegendContainer extends ChartAreaContainer {
 ///   - [xLabel], [y], and also the stacking support values [fromY], [toY];
 /// The managed coordinates are absolute coordinates painted by [ChartPainter]:
 ///   - [scaledX], [scaledY], [scaledFrom], [scaledTo], and also
-///   the stacking support coordinates [fromScaledY], [toDisplayScaledY].
+///   the stacking support coordinates [fromScaledY], [yAxisdY].
 /// are General x, y coordinates are the outer bound where
 /// represented values will be shown.
 ///
@@ -1449,7 +1449,7 @@ class StackableValuePoint {
   double scaledX = 0.0;
   double scaledY = 0.0;
   double fromScaledY = 0.0;
-  double toDisplayScaledY = 0.0;
+  double yAxisdY = 0.0;
 
   /// Scaled Offsets for painting in absolute chart coordinates.
   /// More precisely, offsets of the bottom and top of the presenter of this
@@ -1499,7 +1499,7 @@ class StackableValuePoint {
   }
 
   /// Scales this point's data values [x] and [y], and all stacked y values
-  /// and points - [scaledX], [scaledY], [fromScaledY],  [toDisplayScaledY],
+  /// and points - [scaledX], [scaledY], [fromScaledY],  [yAxisdY],
   /// [scaledFrom], [scaledTo] - using the passed values scaler [yScaler].
   ///
   /// Note that the x values are not really scaled, as object doed not
@@ -1516,9 +1516,9 @@ class StackableValuePoint {
     this.scaledX = scaledX;
     scaledY = yScaler.scaleY(value: y);
     fromScaledY = yScaler.scaleY(value: fromY);
-    toDisplayScaledY = yScaler.scaleY(value: toY);
+    yAxisdY = yScaler.scaleY(value: toY);
     scaledFrom = ui.Offset(scaledX, fromScaledY);
-    scaledTo = ui.Offset(scaledX, toDisplayScaledY);
+    scaledTo = ui.Offset(scaledX, yAxisdY);
 
     return this;
   }
@@ -1532,7 +1532,7 @@ class StackableValuePoint {
     scaledX += offset.dx;
     scaledY += offset.dy;
     fromScaledY += offset.dy;
-    toDisplayScaledY += offset.dy;
+    yAxisdY += offset.dy;
 
     scaledFrom += offset;
     scaledTo += offset;
@@ -1564,7 +1564,7 @@ class StackableValuePoint {
     clone.scaledX = scaledX;
     clone.scaledY = scaledY;
     clone.fromScaledY = fromScaledY;
-    clone.toDisplayScaledY = toDisplayScaledY;
+    clone.yAxisdY = yAxisdY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
     clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 
@@ -1766,15 +1766,15 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   }
 
   List<double> flattenPointsValues() {
-    if (_isStacked) return flattenStackedPointsYValues();
+    if (_isStacked) return flattenStackedPointsDataYs();
 
-    return flattenUnstackedPointsYValues();
+    return flattenUnstackedPointsDataYs();
   }
 
   /// Flattens values of all unstacked data points.
   ///
   /// Use in containers for unstacked charts (e.g. line chart)
-  List<double> flattenUnstackedPointsYValues() {
+  List<double> flattenUnstackedPointsDataYs() {
     // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
     List<double> flat = [];
     for (PointsColumn column in this) {
@@ -1788,7 +1788,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Flattens values of all stacked data points.
   ///
   /// Use in containers for stacked charts (e.g. VerticalBar chart)
-  List<double> flattenStackedPointsYValues() {
+  List<double> flattenStackedPointsDataYs() {
     List<double> flat = [];
     for (PointsColumn column in this) {
       for (StackableValuePoint point in column.stackedNegativePoints) {
