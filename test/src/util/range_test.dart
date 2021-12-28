@@ -50,6 +50,7 @@ void main() {
     // todo 1 test pure fractions and negatives
   });
 
+  // todo-00-last add a test for logarithmic scale
   test('Range makeLabelsFromDataOnScale', () {
     ChartOptions options = const ChartOptions();
     double min = 100.0;
@@ -59,7 +60,7 @@ void main() {
     YScalerAndLabelFormatter lsf;
 
     r = Range(values: [1.0, 22.0, 333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     Interval c = lsf.dataYsEnvelop;
     List<num> labels = lsf.dataYLabelValues;
     expect(c.min, 0.0);
@@ -71,7 +72,7 @@ void main() {
     expect(labels[3], 300.0);
 
     r = Range(values: [-1.0, -22.0, -333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     c = lsf.dataYsEnvelop;
     labels = lsf.dataYLabelValues;
     expect(c.min, -333.0);
@@ -83,7 +84,7 @@ void main() {
     expect(labels[3], 0.0);
 
     r = Range(values: [22.0, 10.0, -333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     c = lsf.dataYsEnvelop;
     labels = lsf.dataYLabelValues;
     expect(c.min, -333.0);
@@ -96,7 +97,7 @@ void main() {
     expect(labels[4], 100.0);
 
     r = Range(values: [-22.0, -10.0, 333.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     c = lsf.dataYsEnvelop;
     labels = lsf.dataYLabelValues;
     expect(c.min, -22.0);
@@ -109,7 +110,7 @@ void main() {
     expect(labels[4], 300.0);
 
     r = Range(values: [-1000.0, 0.0, 1000.0, 2000.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     c = lsf.dataYsEnvelop;
     labels = lsf.dataYLabelValues;
     expect(c.min, -1000.0);
@@ -121,7 +122,7 @@ void main() {
     expect(labels[3], 2000.0);
 
     r = Range(values: [-1000.0, 0.0, 1000.0], chartOptions: options);
-    lsf = r.makeLabelsFromDataOnScale(axisYMin: min, axisYMax: max);
+    lsf = r.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: min, axisYMax: max);
     c = lsf.dataYsEnvelop;
     labels = lsf.dataYLabelValues;
     expect(c.min, -1000.0);

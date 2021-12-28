@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Color, TextDirection, TextAlign;
 import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
-import 'dart:math' as math show pi;
+import 'dart:math' as math show pi, log, ln10, pow;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 
@@ -202,6 +202,11 @@ class YContainerOptions {
   }
 }
 
+// todo-00-later document
+T identity<T>(T y) => y;
+num log10(num y) => math.log(y) / math.ln10;
+num inverseLog10(num y) => math.pow(10, y); // 10^y;
+
 @immutable
 class DataContainerOptions {
   final ui.Color gridLinesColor;
@@ -221,11 +226,19 @@ class DataContainerOptions {
   /// as a common option in case there is some future overlap use on other
   /// chart types.
   final DataRowsPaintingOrder dataRowsPaintingOrder;
+  
+  // todo-00-later-document
+  final num Function(num y) yTransform;
+
+  // todo-00-later-document
+  final num Function(num y) yInverseTransform;
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
     this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
+    this.yTransform = identity<num>,
+    this.yInverseTransform = identity<num>,
   });
 }
 

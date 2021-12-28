@@ -16,7 +16,7 @@ import 'src/util/examples_descriptor.dart';
 import 'dart:io' as io show exit;
 import 'dart:math' as math;
 
-// import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
+import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
 /// Example of simple line chart usage in an application.
 ///
@@ -385,8 +385,8 @@ class _ExampleDefiner {
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
-    // Set chartOptions defaults here, so we do not repeat it in every example section.
-    // Some sections may override this default.
+    // Set chartOptions defaults here, so we do not repeat it in every example section,
+    //   unless specific examples need to override this chartOptions default.
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
         chartOptions = LineChartOptions();
@@ -575,6 +575,38 @@ class _ExampleDefiner {
                 .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
                 .toString(), // values in between linearly scaled between log(min) and log(max)
             '3300', // maximum of all values
+          ],
+        );
+        break;
+
+      case ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale:
+        ChartOptions logChartOptions = const ChartOptions(
+          dataContainerOptions: DataContainerOptions(
+            yTransform: log10,
+            yInverseTransform: inverseLog10,
+          ),
+        );
+        switch (chartTypeToShow) {
+          case ExamplesChartTypeEnum.lineChart:
+            chartOptions = LineChartOptions(
+              chartOptions: logChartOptions,
+            );
+            break;
+          case ExamplesChartTypeEnum.verticalBarChart:
+            chartOptions = VerticalBarChartOptions(
+              chartOptions: logChartOptions,
+            );
+            break;
+        }
+        chartData = ChartData(
+          dataRows: const [
+            [10.0, 600.0, 1000000.0],
+            [20.0, 1000.0, 1500000.0],
+          ],
+          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          dataRowsLegends: const [
+            'Spring',
+            'Summer',
           ],
         );
         break;

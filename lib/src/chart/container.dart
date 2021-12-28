@@ -432,7 +432,7 @@ class YContainer extends ChartAreaContainer {
 
     var yScaler = YScalerAndLabelFormatter(
         dataYsEnvelop: dataYsEnvelop,
-        dataYsLabelValues: yLabelsDividedInYAxisRange,
+        labelYsInDataYsEnvelope: yLabelsDividedInYAxisRange,
         axisYMin: axisYMin,
         axisYMax: axisYMax,
         chartOptions: _chartTopContainer.options);
@@ -460,6 +460,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
+    // todo-00-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
     List<double> allStackedDataYs =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
 
@@ -469,7 +470,7 @@ class YContainer extends ChartAreaContainer {
     );
 
     // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
+    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
       axisYMin: axisYMin,
       axisYMax: axisYMax,
     );
@@ -495,8 +496,9 @@ class YContainer extends ChartAreaContainer {
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
       // yTickY is both scaled data value and vertical (Y) center of the label.
-      // It is kept alway relative to the immediate container - YContainer
-      double yTickY = labelInfo.scaledLabelValue;
+      // It is kept always relative to the immediate container - YContainer
+      // todo-00-done : added toDouble() : double yTickY = labelInfo.notTransformedScaledDataY;
+      double yTickY = labelInfo.notTransformedScaledDataY.toDouble();
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedYLabel,
         labelMaxWidth: double.infinity,
@@ -542,6 +544,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   double get yLabelsMaxHeight {
+    // todo-00-later-replace-this-pattern-with-fold - look for '? 0.0'
     return _yLabelContainers.isEmpty
         ? 0.0
         : _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
@@ -1416,7 +1419,7 @@ class LegendContainer extends ChartAreaContainer {
 /// Represents values and coordinates of one presented atom of data (x and y).
 ///
 /// The managed values are:
-///   - [xLabel], [y], and also the stacking support values [fromY], [toY];
+///   - [xLabel], [dataY], and also the stacking support values [fromY], [toY];
 /// The managed coordinates are absolute coordinates painted by [ChartPainter]:
 ///   - [scaledX], [scaledY], [scaledFrom], [scaledTo], and also
 ///   the stacking support coordinates [fromScaledY], [yAxisdY].
@@ -1436,7 +1439,7 @@ class StackableValuePoint {
   // initial values
   // todo 0 check if this is unused; and why we need label in value?
   String xLabel;
-  double y;
+  double dataY;
   int dataRowIndex; // series index
   StackableValuePoint? predecessorPoint;
   bool isStacked = false;
@@ -1446,6 +1449,7 @@ class StackableValuePoint {
   double toY;
 
   /// Scaled values. All set lazily after [scale]
+  // todo-00-later-document what they are for, possible refactoring
   double scaledX = 0.0;
   double scaledY = 0.0;
   double fromScaledY = 0.0;
@@ -1458,14 +1462,15 @@ class StackableValuePoint {
   ui.Offset scaledFrom = const ui.Offset(0.0, 0.0);
   ui.Offset scaledTo = const ui.Offset(0.0, 0.0);
 
+  // todo-00-later-document that dataY may be transformed. Also document as default constructor
   StackableValuePoint({
     required this.xLabel,
-    required this.y,
+    required this.dataY,
     required this.dataRowIndex,
     this.predecessorPoint,
   })  : isStacked = false,
         fromY = 0.0,
-        toY = y;
+        toY = dataY;
 
   /// Initial instance of a [StackableValuePoint].
   /// Forwarded to the default constructor.
@@ -1473,7 +1478,7 @@ class StackableValuePoint {
   StackableValuePoint.initial()
       : this(
           xLabel: 'initial',
-          y: -1,
+          dataY: -1,
           dataRowIndex: -1,
           predecessorPoint: null,
         );
@@ -1481,9 +1486,9 @@ class StackableValuePoint {
   StackableValuePoint stack() {
     isStacked = true;
 
-    // todo-1 validate: check if both points y is same sign or zero
+    // todo-1 validate: check if both points y have the same sign or both zero
     fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
-    toY = fromY + y;
+    toY = fromY + dataY;
 
     return this;
   }
@@ -1498,7 +1503,7 @@ class StackableValuePoint {
     return stack();
   }
 
-  /// Scales this point's data values [x] and [y], and all stacked y values
+  /// Scales this point's data values [x] and [dataY], and all stacked y values
   /// and points - [scaledX], [scaledY], [fromScaledY],  [yAxisdY],
   /// [scaledFrom], [scaledTo] - using the passed values scaler [yScaler].
   ///
@@ -1514,7 +1519,7 @@ class StackableValuePoint {
     required YScalerAndLabelFormatter yScaler,
   }) {
     this.scaledX = scaledX;
-    scaledY = yScaler.scaleY(value: y);
+    scaledY = yScaler.scaleY(value: dataY);
     fromScaledY = yScaler.scaleY(value: fromY);
     yAxisdY = yScaler.scaleY(value: toY);
     scaledFrom = ui.Offset(scaledX, fromScaledY);
@@ -1550,12 +1555,12 @@ class StackableValuePoint {
     }
 
     StackableValuePoint clone =
-        StackableValuePoint(xLabel: xLabel, y: y, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
+        StackableValuePoint(xLabel: xLabel, dataY: dataY, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable leafs.
     clone.xLabel = xLabel;
-    clone.y = y;
+    clone.dataY = dataY;
     clone.predecessorPoint = null;
     clone.dataRowIndex = dataRowIndex;
     clone.isStacked = false;
@@ -1617,8 +1622,8 @@ class PointsColumn {
     // todo-1 add validation that points are not stacked
     stackableValuePoints = points;
 
-    stackedPositivePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y >= 0);
-    stackedNegativePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.y < 0);
+    stackedPositivePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY >= 0);
+    stackedNegativePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY < 0);
   }
 
   // points are ordered in series order, first to last  (bottom to top),
@@ -1627,7 +1632,9 @@ class PointsColumn {
 
   List<StackableValuePoint> selectThenCollectStacked({
     required List<StackableValuePoint> points,
-    required bool selector(StackableValuePoint point),
+    // todo-00-done : dart analyser warning : https://dart-lang.github.io/linter/lints/use_function_type_syntax_for_parameters.html :
+    //  required bool selector(StackableValuePoint point),
+    required bool Function(StackableValuePoint point) selector,
   }) {
     StackableValuePoint? predecessorPoint;
     List<StackableValuePoint> selected = stackableValuePoints.where((point) {
@@ -1643,10 +1650,11 @@ class PointsColumn {
 
   /// Column Utility for iterating over all points in order
   Iterable<StackableValuePoint> allPoints() {
-    return []
-      ..addAll(stackableValuePoints)
-      ..addAll(stackedNegativePoints)
-      ..addAll(stackedPositivePoints);
+    return [
+      ...stackableValuePoints,
+      ...stackedNegativePoints,
+      ...stackedPositivePoints,
+    ];
   }
 }
 
@@ -1662,12 +1670,6 @@ class PointsColumn {
 /// A (single instance per chart) is used to create [PresentersColumns]
 /// instance, managed in [DataContainer].
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
-  /// Data points managed row - major. Internal only, not used in chart.
-  final List<List<StackableValuePoint>> _valuePointArrInRows;
-
-  /// Data points managed column - major. Internal only, not used in chart.
-  List<List<StackableValuePoint>>? _valuePointArrInColumns;
-
   /// Parent chart container.
   final ChartTopContainer _container;
 
@@ -1681,57 +1683,67 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required PresenterCreator presenterCreator,
     required bool isStacked,
   })  : _container = container,
-        _valuePointArrInRows = List.empty(growable: true),
+        // todo-00-done _valuePointArrInRows = List.empty(growable: true),
         _isStacked = isStacked {
     ChartData chartData = container.data;
 
-    /// Transposes the passed data in [container.data.dataRows]
-    /// to [_valuePointArrInRows] to [_valuePointArrInColumns].
-    ///
-    /// Manages "predecessor in stack" points - each element is the per column point
-    /// below the currently processed point. The currently processed point is
-    /// (potentially) stacked on it's predecessor.
+    _createStackableValuePointsFromChartData(chartData);
+  }
 
+  /// Transposes the passed data in [container.data.dataRows]
+  /// to [_valuePointArrInRows] to [_valuePointArrInColumns].
+  ///
+  /// Creates links on "this column" to "successor in stack" nextRightPointsColumn points - each element is the per column point
+  /// below the currently processed point. The currently processed point is
+  /// (potentially) stacked on it's predecessor.
+  void _createStackableValuePointsFromChartData(ChartData chartData) {
+    // todo-00-later : describe this better and maybe refactor. this class PointsColumns is a list, 
+    //                 why do we need the nextRightPointsColumn at all???
+    
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }
-
+    
+    // Data points managed row.  Internal only, should be refactored away.
+    List<List<StackableValuePoint>> _valuePointArrInRows = List.empty(growable: true);
+    
     for (int row = 0; row < chartData.dataRows.length; row++) {
       List<num> dataRow = chartData.dataRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
       _valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < dataRow.length; col++) {
-        num colValue = dataRow[col];
-
+        // todo-00-last-done : applied yTransform before placing data point on StackableValuePoint : num colValue = dataRow[col];
+        num colValue = _container.options.dataContainerOptions.yTransform(dataRow[col]);
+    
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
             xLabel: 'initial', // todo-11-last : xLabel: null : consider
-            y: colValue.toDouble(),
+            dataY: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
-
+    
         pointsRow.add(thisPoint);
         rowOfPredecessorPoints[col] = thisPoint;
       }
     }
     _valuePointArrInRows.toList();
-    _valuePointArrInColumns = transpose(_valuePointArrInRows);
-    // also OK: _valuePointArrInColumns = transpose<StackableValuePoint>(_valuePointArrInRows);
-
+    
+    // Data points managed column. Internal only, should be refactored away.
+    List<List<StackableValuePoint>> _valuePointArrInColumns = transpose(_valuePointArrInRows);
+    
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
     PointsColumn? leftColumn;
-
-    // todo-11-last : can _valuePointArrInColumns be null?
-    _valuePointArrInColumns?.forEach((columnPoints) {
+    
+    for (List<StackableValuePoint> columnPoints in _valuePointArrInColumns) {
       var pointsColumn = PointsColumn(points: columnPoints);
       add(pointsColumn);
       leftColumn?.nextRightPointsColumn = pointsColumn;
       leftColumn = pointsColumn;
-    });
+    }
   }
 
   /// Scales this object's column values managed in [pointsColumns].

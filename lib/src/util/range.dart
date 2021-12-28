@@ -21,7 +21,7 @@ class Range {
   /// Constructs a scalable range from a list of passed [values].
   ///
   /// Given a list of [values] (to show on Y axis),
-  /// [makeLabelsFromDataOnScale] creates labels evenly distributed to cover the range of values,
+  /// [makeYScalerWithLabelInfosFromDataYsOnScale] creates labels evenly distributed to cover the range of values,
   /// trying to not waste space, and show only relevant labels, in
   /// decimal steps.
   Range({
@@ -33,7 +33,7 @@ class Range {
 
   /// superior and inferior closure - min and max of values
   // todo-13-move-to-interval class
-  // todo-13-parametrize-interval-then-remove-toDouble 
+  // todo-13-parametrize-interval-then-remove-toDouble
   Interval get _dataYsEnvelop => Interval(
         _dataYs.reduce(math.min).toDouble(),
         _dataYs.reduce(math.max).toDouble(),
@@ -45,8 +45,9 @@ class Range {
   /// from data.
   ///
   /// The [axisYMin] and [axisYMax] are the display scale,
-  /// for example the range of Y axis positions between bottom and top.
-  YScalerAndLabelFormatter makeLabelsFromDataOnScale({
+  /// for example the range of Y axis pixels between bottom and top allocated for Y axis.
+  /// // todo-00-last this is a place to consider that LabelInfos values must be transformed for the purpose of label position, but untransformed in their values (but values must be distributed differently when scaled)
+  YScalerAndLabelFormatter makeYScalerWithLabelInfosFromDataYsOnScale({
     required double axisYMin,
     required double axisYMax,
   }) {
@@ -59,7 +60,14 @@ class Range {
     int signMin = polyMin.signum;
     int signMax = polyMax.signum;
 
-    // envelope for all y values
+    // Minimum and maximum for all y values, extended to 0.
+    // More precisely, "extended to 0" means that
+    //   if all y values are positive,
+    //     the range start at 0 (that is, dataYsMinExtendedTo0 is 0);
+    //   else if all y values are negative,
+    //     the range ends at 0 (that is, dataYsMaxExtendedTo0 is 0);
+    //   otherwise [there are both positive and negative y values]
+    //     the dataYsMinExtendedTo0 is the minimum of data, the dataYsMaxExtendedTo0 is the maximum of data.
     double dataYsMinExtendedTo0, dataYsMaxExtendedTo0;
 
     // Need dataYsMaxExtendedTo0 handle all combinations of the above (a < b < c etc).
@@ -90,19 +98,24 @@ class Range {
     }
     // keep }
 
-    // Now make labelValuesInDataYsEnvelop, evenly distributed in 
+    // Now create labelYsInDataYsEnvelop, evenly distributed in
     //   the dataYsMinExtendedTo0, dataYsMaxExtendedTo0 range.
-    // Make labelValuesInDataYsEnvelop only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+    // Make labelYsInDataYsEnvelop only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
     // Labels are (obviously) unscaled, that is, on the scale of data,
     //   not the displayed y axis scale (pixels scale).
 
-    List<double> labelValuesInDataYsEnvelop = _distributeLabelsIn(Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0)); // todo 0 pull only once (see below)
+    // todo-00-last : dataYs are already transformed. But labels must be un-transformed. So maybe un-transfer the passed Interval
+    Function inverse = _options.dataContainerOptions.yInverseTransform;
+    List<double> labelYsInDataYsEnvelop = _distributeLabelsIn(Interval(
+      dataYsMinExtendedTo0,
+      dataYsMaxExtendedTo0,
+    )); // todo 0 pull only once (see below)
 
-    // print( " ################ makeLabelsFromDataOnScale: For ###_values=$_values found ###labeValues=${labelValuesInDataYsEnvelop} and ###dataRange= ${dataYsMinExtendedTo0} dataYsMaxExtendedTo0 ${dataYsMaxExtendedTo0} ");
+    // print( " ################ makeLabelsFromDataOnScale: For ###_values=$_values found ###labeValues=${labelYsInDataYsEnvelop} and ###dataRange= ${dataYsMinExtendedTo0} dataYsMaxExtendedTo0 ${dataYsMaxExtendedTo0} ");
 
     var yScaler = YScalerAndLabelFormatter(
         dataYsEnvelop: Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0),
-        dataYsLabelValues: labelValuesInDataYsEnvelop,
+        labelYsInDataYsEnvelope: labelYsInDataYsEnvelop,
         axisYMin: axisYMin,
         axisYMax: axisYMax,
         chartOptions: _options);
@@ -113,6 +126,7 @@ class Range {
     return yScaler;
   }
 
+  // todo-00-later try to move this to LabelInfo
   /// Makes anywhere from zero to nine label values, of greatest power of
   /// the passed [dataYsInterval.max].
   ///
@@ -191,7 +205,7 @@ class YScalerAndLabelFormatter {
   Interval dataYsEnvelop;
 
   /// Maintains labels created from data values, scaled and unscaled.
-  List<LabelInfo> labelInfos;
+  late List<LabelInfo> labelInfos;
 
   final double _axisYMin;
   final double _axisYMax;
@@ -199,18 +213,28 @@ class YScalerAndLabelFormatter {
 
   YScalerAndLabelFormatter({
     required this.dataYsEnvelop,
-    required List<double> dataYsLabelValues,
+    required List<double> labelYsInDataYsEnvelope,
     required double axisYMin,
     required double axisYMax,
     required ChartOptions chartOptions,
-  })  : labelInfos = dataYsLabelValues.map((value) => LabelInfo(value)).toList(),
+  })  : // todo-00-last-done - moved to constructor : labelInfos = dataYsLabelValues.map((notTransformedLabelValue) => LabelInfo(notTransformedLabelValue)).toList(),
         _axisYMin = axisYMin,
         _axisYMax = axisYMax,
         _options = chartOptions {
+    // Create LabelInfos for all labels and point each to this scaler
+    labelInfos = labelYsInDataYsEnvelope // this is the label/DataYs enveloper - all values after transform
+        .map((transformedLabelValue) => LabelInfo(
+              transformedDataY: transformedLabelValue,
+              parentScaler: this,
+            ))
+        .toList();
     // late initialize the parentScaler
+/* todo-00-done 
     for (LabelInfo labelInfo in labelInfos) {
+      // todo-00-last note that here we are setting the parent scaler on labelInfo - TOO LATE ..
       labelInfo.parentScaler = this;
     }
+*/
   }
 
   /// Scales [value]
@@ -250,8 +274,8 @@ class YScalerAndLabelFormatter {
     required List formattedYLabels,
   }) {
     for (int i = 0; i < labelValues.length; i++) {
-      labelInfos[i].dataYLabelValue = labelValues[i];
-      labelInfos[i].scaledLabelValue = scaledLabelValues[i];
+      labelInfos[i].notTransformedDataY = labelValues[i];
+      labelInfos[i].notTransformedScaledDataY = scaledLabelValues[i];
       labelInfos[i].formattedYLabel = formattedYLabels[i];
     }
 
@@ -267,14 +291,14 @@ class YScalerAndLabelFormatter {
   /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
   void makeLabelsPresentable() {
     for (LabelInfo labelInfo in labelInfos) {
-      labelInfo.formattedYLabel = _options.yContainerOptions.valueToLabel(labelInfo.dataYLabelValue);
+      labelInfo.formattedYLabel = _options.yContainerOptions.valueToLabel(labelInfo.notTransformedDataY);
     }
   }
 
   // ### Helper accessors to collection of LabelInfos
 
   /// Extracts unscaled values of labels from [labelInfos].
-  List<double> get dataYLabelValues => labelInfos.map((labelInfo) => labelInfo.dataYLabelValue.toDouble()).toList();
+  List<double> get dataYLabelValues => labelInfos.map((labelInfo) => labelInfo.notTransformedDataY.toDouble()).toList();
 
   /// Constructs interval which is a merge (outer bound) of
   /// two ranges: the labels range from [dataYLabelValues] (stored in [YScalerAndLabelFormatter.labelInfos])
@@ -308,37 +332,49 @@ class YScalerAndLabelFormatter {
 ///       - 2. yAxis scale is [8, 8+376]=[_yAxisMinOffsetFromTop,  _yAxisMinOffsetFromTop + _yAxisAvailableHeight]
 
 class LabelInfo {
-  late YScalerAndLabelFormatter parentScaler;
+  YScalerAndLabelFormatter parentScaler;
 
-  /// Unscaled label value, ([dataYLabelValue]s are on the scale of data).
-  num dataYLabelValue;
-
-  /// Label showing on the Y axis; typically a value with unit.
+  /// Unscaled and transformed label value.
   ///
-  /// Formatted label is just formatted [scaledLabelValue].
-  late String formattedYLabel;
+  /// [notTransformedDataY]s are on the range of UNtransformed Y data.
+  late num notTransformedDataY;
+
+  // todo-00-later document
+  num transformedDataY;
 
   /// Scaled label value.
   ///
-  /// [scaledLabelValue]s are on the scale of y axis length.
-  double scaledLabelValue = 0.0;
+  /// [notTransformedScaledDataY]s are on the scale of y axis length.
+  late num notTransformedScaledDataY;
+
+  /// Label showing on the Y axis; typically a value with unit.
+  ///
+  /// Formatted label is just formatted [notTransformedScaledDataY].
+  late String formattedYLabel;
 
   /// Constructs from value at the label, using scaler which keeps dataRange
   /// and axisRange (min, max).
-  LabelInfo(this.dataYLabelValue);
+  LabelInfo({
+    required this.transformedDataY,
+    required this.parentScaler,
+  }) {
+    var yInverseTransform = parentScaler._options.dataContainerOptions.yInverseTransform;
+    notTransformedDataY = yInverseTransform(transformedDataY);
+  }
 
   /// Self-scale the RangeOutput to the scale of the available chart size.
   void _scaleLabelValue() {
-    // todo-2 consider what to do about the toDouble() - may want to ensure higher up
+    // todo-13 consider what to do about the toDouble() - may want to ensure higher up
     // so if parent scaler not set by now, scaledLabelValue remains null.
-    scaledLabelValue = parentScaler.scaleY(value: dataYLabelValue.toDouble());
+    // todo-00-later document, that notTransformedScaledDataY is the position of this Label on the Y display axis
+    notTransformedScaledDataY = parentScaler.scaleY(value: notTransformedDataY.toDouble());
   }
 
   @override
   String toString() {
     return super.toString() +
-        ' scaledLabelValue=$scaledLabelValue,' +
-        ' labelValue=$dataYLabelValue,' +
+        ' scaledLabelValue=$notTransformedScaledDataY,' +
+        ' labelValue=$notTransformedDataY,' +
         ' formattedYLabel=$formattedYLabel';
   }
 }

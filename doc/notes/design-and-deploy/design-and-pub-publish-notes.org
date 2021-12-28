@@ -1040,19 +1040,64 @@ reason is, yLabels have 2 modes:
         - Add test that is like RandomData but with similar real data.
 *** IN-PROGRESS-NOW Logarithmic Y scale
 **** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
+**** TODO Refactor StackableValuePoint nextRightColumnValuePoint
+
+The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
+However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
+This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
+
+~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
+Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
+
+  LineAndHotspotPresenter({
+    required StackableValuePoint point,
+    StackableValuePoint? nextRightColumnValuePoint,
+
+**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+
 **** IN-PROGRESS-NOW *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
 
-- [ ] Add ChartOptions.DataContainer.yTransform Function double -> double for now (yTransform applies to both DataContainer and YContainer) 
-- [-] later implemented by ovewriting DataSetsMixin.yTransform (move this to later part)
+loge(10) = ln10 <==> e^ln10 = 10
+loge(x) = y <==> e^y = x
+log10(x) = y <==> 10^y = x <==> (e^ln10)^y = x <==> e^(ln10*y) = x <==>  ln10*y = lne(x) <==> y = lne(x) / ln10
+
+So
+
+log10(x) = y # substiture above for y
+
+log10(x) = lne(x) / ln10
+
+So in Dart speak, where lne = log:
+
+log10(x) = log(x) / ln10
+
+
+- [X] Add ChartOptions.DataContainer.yTransform Function double -> double for now (yTransform applies to both DataContainer and YContainer) 
+- [ ] *everything in LabelInfo is untransfered*
+- [ ] *CREATE TERMINOLOGY FOR LABELS: LABEL NOT TRANSFORMED Y VALUE, LABEL TRANSFORMED Y VALUE, LABEL Y AXIS POSITION*
+
+- [ ] *problem* notTransformedDataY is WRONG, it is 10.0 where it should be 1000000 or so. Main reason: labelYsInDataYsEnvelope (this is 0 .. 12) is not where LabbelInfos should be constructed from
+
+- [ ] *problem* : because we start scale always at 0.0, when notTransformedDataY=0.0, then
+  - transformedDataY = yTransform(notTransformedDataY); is INFINITY
+
+- [ ] *note* : ~labelInfo.formattedYLabel is printed~
+
+  
+- [ ] Rename:
+  
+  - [ ] GET dataYLabelValues  according to above naming.
+  - [ ] notTransformedScaledDataY according to above - this is value on Y axis
+  - [ ]labelValuesInDataYsEnvelop to notTransformedLabelValuesInTransformedDataYsEnvelop
+  - [ ] dataYsLabelValues to notTransformedDataYsLabelValues
+  - [ ] labelInfos to notTransformedLabelInfos
+- [ ] *PROBLEM: IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT Y, THEN ADD DURING STACKING, THEN DO LOG(ADDED).*
 - [ ] only applies if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)
 - [ ] only applies on line chart? = both for now
-- [ ] yTransform can always be applied as follows:
-  - [ ] applied to yValues before creating DataPoints, PointsColumns, etc
-  - [ ] applied to yValues Interval before range is created and scaled to displayScale
-  - [ ] NOT applied in labelformatter - original unscaled values are used there
-- [ ] yValue is the original value
-- [ ] values passed to existing label formatters and scalers is yTransform(yValue)
 - [ ] but when creating labels, values passed to the formatter and scaler is yValue! so it sort of works like manual yLabels
+- [ ] Later
+  - [ ] implemented by ovewriting DataSetsMixin.yTransform (move this to later part)
+  - [ ] document dataY is always trasfered, maybe name that way  
 - [ ] *maybe i implement this first in existing system using option dataContainerOption.logarithmicYValues to learn how to do this*
 *** TODO ChartData further refactoring
 **** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextP
 
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-import 'dart:ui' as ui show TextAlign, TextDirection, Size, Canvas, Offset;
+import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
 import 'package:flutter_charts/src/chart/container_base.dart' as container_base show Container;
 
