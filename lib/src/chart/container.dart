@@ -498,9 +498,9 @@ class YContainer extends ChartAreaContainer {
       // yTickY is both scaled data value and vertical (Y) center of the label.
       // It is kept always relative to the immediate container - YContainer
       // todo-00-done : added toDouble() : double yTickY = labelInfo.notTransformedScaledDataY;
-      double yTickY = labelInfo.notTransformedScaledDataY.toDouble();
+      double yTickY = labelInfo.axisValue.toDouble();
       var yLabelContainer = AxisLabelContainer(
-        label: labelInfo.formattedYLabel,
+        label: labelInfo.formattedLabel,
         labelMaxWidth: double.infinity,
         labelTiltMatrix: vector_math.Matrix2.identity(),
         canvasTiltMatrix: vector_math.Matrix2.identity(),

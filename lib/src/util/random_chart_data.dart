@@ -106,7 +106,12 @@ List<List<double>> randomDataYs(int numXLabels, int _numDataRows, bool _overlapD
 
   for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
     dataRows.add(_randomDataOneRow(
-        rgen: rgen, max: maxDataY, pushUpBy: (rowIndex - 1) * pushUpStep, scale: scale, numXLabels: numXLabels));
+      rgen: rgen,
+      max: maxDataY,
+      pushUpBy: (rowIndex - 1) * pushUpStep,
+      scale: scale,
+      numXLabels: numXLabels,
+    ));
   }
   return dataRows;
 }

@@ -38,6 +38,7 @@ enum ExamplesEnum {
   ex11RandomDataWithLabelLayoutStrategy,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
   ex31SomeNegativeValues,
+  ex32SmallPositivesAxisStartsAbove0,
   ex35AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
@@ -79,6 +80,9 @@ class ExamplesDescriptor {
     //
     const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex32SmallPositivesAxisStartsAbove0, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex32SmallPositivesAxisStartsAbove0, ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),

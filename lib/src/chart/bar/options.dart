@@ -21,4 +21,9 @@ class VerticalBarChartOptions extends ChartOptions {
       : this(
           chartOptions: const ChartOptions.noLabels(),
         );
+
+  // todo-00-last-document that on bar chart y axis must start from 0.
+  @override
+  get canStartYAxisAtDataMin => false;
+  
 }

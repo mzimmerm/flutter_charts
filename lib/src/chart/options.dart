@@ -41,6 +41,10 @@ class ChartOptions {
             isYGridlinesShown: false,
           ),
         );
+  
+  // todo-00-last-document
+  get canStartYAxisAtDataMin => dataContainerOptions.tryStartYAxisAtDataMin;
+
 }
 
 @immutable
@@ -233,10 +237,14 @@ class DataContainerOptions {
   // todo-00-later-document
   final num Function(num y) yInverseTransform;
 
+  // todo-00-later-document
+  final bool tryStartYAxisAtDataMin;
+
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
     this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
+    this.tryStartYAxisAtDataMin = false, // todo-00-last-last must be forced to false on VerticalBarChart
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,
   });

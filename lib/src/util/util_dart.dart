@@ -26,6 +26,13 @@ double scaleValue({
   required double axisYMin,
   required double axisYMax,
 }) {
+  // todo-00-last: added asserts - but they are not correct for random data on linear chart. Are random data wrong??
+  //               actually, the asserts are wrong - it is possible to scale value outside the envelop scale!
+  if (!(dataYsEnvelopMin <= value && value <= dataYsEnvelopMax)) {
+    /* throw StateError */ print('scaleValue: Passed value not in expected interval. '
+        'value=$value, dataYsEnvelopMin=$dataYsEnvelopMin, dataYsEnvelopMax=$dataYsEnvelopMax');
+  }
+
   var dataYsEnvelopLength = dataYsEnvelopMax - dataYsEnvelopMin;
   var axisYLength = axisYMax - axisYMin;
   // Handle degenerate cases:
@@ -67,7 +74,7 @@ double scaleValue({
   double axisYMax0 = axisYLength;
   */
 
-  // Next scale the value to 0 - 1 segment
+  // Next scale the value to the 0 - 1 segment
   double value0ScaledTo01 = value0 / dataYsEnvelopLength;
 
   // Then scale value0Scaled01 to the 0 based axisY0

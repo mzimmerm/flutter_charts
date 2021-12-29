@@ -1057,6 +1057,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 
 **** IN-PROGRESS-NOW *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
 
+***** Logarithms of base 10 and e
 loge(10) = ln10 <==> e^ln10 = 10
 loge(x) = y <==> e^y = x
 log10(x) = y <==> 10^y = x <==> (e^ln10)^y = x <==> e^(ln10*y) = x <==>  ln10*y = lne(x) <==> y = lne(x) / ln10
@@ -1069,9 +1070,9 @@ log10(x) = lne(x) / ln10
 
 So in Dart speak, where lne = log:
 
-log10(x) = log(x) / ln10
+~log10(x) = log(x) / ln10~ where log(x) is loge(x)
 
-
+***** Steps to introduce logarithmic scale
 - [X] Add ChartOptions.DataContainer.yTransform Function double -> double for now (yTransform applies to both DataContainer and YContainer) 
 - [ ] *everything in LabelInfo is untransfered*
 - [ ] *CREATE TERMINOLOGY FOR LABELS: LABEL NOT TRANSFORMED Y VALUE, LABEL TRANSFORMED Y VALUE, LABEL Y AXIS POSITION*
