@@ -1,6 +1,18 @@
+# version 0.4.0 (2022-??)
+
+## Functional improvements
+
+1. Implemented request in issue request #31 https://github.com/mzimmerm/flutter_charts/issues/31: Flutter_charts now provide an option, when all Y values are positive, to start Y axis from the minimum Y data values (or their corresponding transform), rather than always from 0.0. See method `DataContainerOptions.startYAxisAtDataMinRequested` and option `ChartOptions.startYAxisAtDataMinAllowed`. When all Y values are negative, Y axis starts at the minimum and tops at the maximum of Y values.
+
+2. Added logarithmic scale, and any other reversible transform of data. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, but essentially this version implements #22. 
+
+
+
 # version 0.3.1 (2021-12-19)
 
 1. Fixed error when all passed data are 0.0
+
+
 
 # version 0.3.0 (2021-12-17)
 

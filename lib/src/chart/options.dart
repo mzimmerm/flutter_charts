@@ -42,8 +42,12 @@ class ChartOptions {
           ),
         );
   
-  // todo-00-last-document
-  get canStartYAxisAtDataMin => dataContainerOptions.tryStartYAxisAtDataMin;
+  /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
+  /// 
+  /// This is the method used in code, instead of using [DataContainerOptions.startYAxisAtDataMinRequested], 
+  /// which is merely a request that may not be granted in some situations. 
+  /// See [DataContainerOptions.startYAxisAtDataMinRequested]
+  bool get startYAxisAtDataMinAllowed => dataContainerOptions.startYAxisAtDataMinRequested;
 
 }
 
@@ -206,9 +210,15 @@ class YContainerOptions {
   }
 }
 
-// todo-00-later document
+/// Identity transform. 
+/// 
+/// Causes no changes to data. 
 T identity<T>(T y) => y;
+
+/// 10-based logarithm.
 num log10(num y) => math.log(y) / math.ln10;
+
+/// Reverse of  10-based logarithm.
 num inverseLog10(num y) => math.pow(10, y); // 10^y;
 
 @immutable
@@ -231,20 +241,33 @@ class DataContainerOptions {
   /// chart types.
   final DataRowsPaintingOrder dataRowsPaintingOrder;
   
-  // todo-00-later-document
+  /// The transformation function which is always applied on y data before data are added to the chart internals.
+  /// 
+  /// Defaults to identity.
   final num Function(num y) yTransform;
 
-  // todo-00-later-document
+  /// User provided inverse to [yTransform]. 
+  /// 
+  /// Defaults to identity. If the [yTransform] is set to a function different from the 
+  /// default [T identity<T>(T y)], user is responsible 
+  /// for providing the [yInverseTransform] as well. Some common inverse functions are exported by 
+  /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
-  // todo-00-later-document
-  final bool tryStartYAxisAtDataMin;
+  /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum 
+  /// Y data value (transformed with the [yTransform] method).
+  ///
+  /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is not allowed in several conditions:
+  ///   - On the [VerticalBarChart]
+  ///   - for some [yTransform]s for example logarithm, where both data and logarithm must start above y value of 0.
+  /// The implementation of this dichotomy is ensure by [ChartOptions.startYAxisAtDataMinAllowed].
+  final bool startYAxisAtDataMinRequested;
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
     this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
-    this.tryStartYAxisAtDataMin = false, // todo-00-last-last must be forced to false on VerticalBarChart
+    this.startYAxisAtDataMinRequested = false,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,
   });

@@ -1040,20 +1040,49 @@ reason is, yLabels have 2 modes:
         - Add test that is like RandomData but with similar real data.
 *** IN-PROGRESS-NOW Logarithmic Y scale
 **** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
-**** TODO Refactor StackableValuePoint nextRightColumnValuePoint
+**** IN-PROGRESS-NOW Add unit tests for the following unclean classes and methods, before refactoring them
+- util_dart.scaleValue  
+- Range._distributeLablesIn(Interval) # Called in makeYScalerWithLabelInfosFromDataYsOnScale. So if this fails, the latter should fail as well
+- Range.makeYScalerWithLabelInfosFromDataYsOnScale
+- YScaler.scaleLabelInfos
+- YScaler.makeLabelsPresentable
 
-The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
-However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
-This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
 
-~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
-Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
+Some results to add to tests:
 
-  LineAndHotspotPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
+I/flutter ( 4897): for_scaleValue_test: [0.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+286.7321428571429]
+I/flutter ( 4897): for_scaleValue_test: [2000.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+33.33928571428572]
+I/flutter ( 4897): for_scaleValue_test: [-600.0, -1000.0, 2200.0, 413.42857142857144, 8.0, 362.75]
+I/flutter ( 4897): for_scaleValue_test: [0.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+286.7321428571429]
+I/flutter ( 4897): for_scaleValue_test: [-600.0, -1000.0, 2200.0, 413.42857142857144, 8.0, 362.75]
+I/flutter ( 4897): for_scaleValue_test: [600.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+210.71428571428572]
+I/flutter ( 4897): for_scaleValue_test: [0.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+286.7321428571429]
+I/flutter ( 4897): for_scaleValue_test: [600.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+210.71428571428572]
+I/flutter ( 4897): for_scaleValue_test: [1400.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+109.35714285714289]
+I/flutter ( 4897): for_scaleValue_test: [600.0, -1000.0, 2200.0, 413.42857142857144, 8.0,
+210.71428571428572]
 
-**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+
+Also there is this error running all tests:
+
++ echo Running flutter test for EXAMPLE_TO_RUN=ex32AllPositiveYsYAxisStartsAbove0, CHART_TYPE_TO_SHOW=lineChart.
+Running flutter test for EXAMPLE_TO_RUN=ex32AllPositiveYsYAxisStartsAbove0, CHART_TYPE_TO_SHOW=lineChart.
++ flutter test --dart-define=EXAMPLE_TO_RUN=ex32AllPositiveYsYAxisStartsAbove0 --dart-define=CHART_TYPE_TO_SHOW=lineChart test/screenshot_check_test.dart
+00:06 +0 -1: after screenshot integration, test for sameness [E]                                      
+  FileSystemException: Cannot open file, path = 'integration_test/screenshots_expected/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png' (OS Error: No such file or directory, errno = 2)
+  dart:io                                _File.readAsBytesSync
+  test/screenshot_check_test.dart 35:22  main.<fn>
+  
+00:06 +0 -1: Some tests failed.                                                                       
+
+*I think I renamed an enum, rename the files*
 
 **** IN-PROGRESS-NOW *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
 
@@ -1100,6 +1129,21 @@ So in Dart speak, where lne = log:
   - [ ] implemented by ovewriting DataSetsMixin.yTransform (move this to later part)
   - [ ] document dataY is always trasfered, maybe name that way  
 - [ ] *maybe i implement this first in existing system using option dataContainerOption.logarithmicYValues to learn how to do this*
+**** TODO Refactor StackableValuePoint nextRightColumnValuePoint
+
+The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
+However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
+This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
+
+~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
+Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
+
+  LineAndHotspotPresenter({
+    required StackableValuePoint point,
+    StackableValuePoint? nextRightColumnValuePoint,
+
+**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+
 *** TODO ChartData further refactoring
 **** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
 **** TODO So we need new class DataSet;   DataSets is custom List of DataSet.

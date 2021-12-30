@@ -1714,7 +1714,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
       _valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < dataRow.length; col++) {
-        // todo-00-last-done : applied yTransform before placing data point on StackableValuePoint : num colValue = dataRow[col];
+        // yTransform data before placing data point on StackableValuePoint.
         num colValue = _container.options.dataContainerOptions.yTransform(dataRow[col]);
     
         // Create all points unstacked. A later processing can stack them,

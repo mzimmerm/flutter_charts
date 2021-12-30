@@ -460,10 +460,10 @@ class _ExampleDefiner {
         );
         break;
 
-      case ExamplesEnum.ex32SmallPositivesAxisStartsAbove0:
+      case ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0:
         ChartOptions startYAxisAtMinDataChartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
-            tryStartYAxisAtDataMin: true,
+            startYAxisAtDataMinRequested: true,
           ),
         );
         switch (chartTypeToShow) {
@@ -492,6 +492,27 @@ class _ExampleDefiner {
         );
         break;
 
+      case ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0:
+        ChartOptions endYAxisAtMaxDataChartOptions = const ChartOptions(
+          dataContainerOptions: DataContainerOptions(
+            startYAxisAtDataMinRequested: true,
+          ),
+        );
+            chartOptions = LineChartOptions(
+              chartOptions: endYAxisAtMaxDataChartOptions,
+            );
+        chartData = ChartData(
+          dataRows: const [
+            [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],
+            [-35.0, -40.0, -20.0, -25.0, -30.0, -20.0],
+          ],
+          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          dataRowsLegends: const [
+            'Off zero 1',
+            'Off zero 2',
+          ],
+        );
+        break;
       case ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown:
         // Set non-default chart options to show no labels
         switch (chartTypeToShow) {

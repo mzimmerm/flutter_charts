@@ -72,43 +72,28 @@ class Range {
 
     if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
       // todo-00-last-last added this section
-      if (_options.canStartYAxisAtDataMin) {
+      if (_options.startYAxisAtDataMinAllowed) {
         if (signMax <= 0) {
           dataYsMinExtendedTo0 = dataYsMin;
           dataYsMaxExtendedTo0 = dataYsMax;
         } else {
-          dataYsMinExtendedTo0 =dataYsMin;
+          dataYsMinExtendedTo0 = dataYsMin;
           dataYsMaxExtendedTo0 = dataYsMax;
         }
-
       } else {
-      // Need dataYsMaxExtendedTo0 handle all combinations of the above (a < b < c etc).
-      // There are not that many, because pMin <= pMax and pDiff <= pMax.
-      /* keep
-    if (false && powerDiff < powerMin) {
-      // todo-00-last-github-issue-31-allow-start-Y-axis-from-non-zero
-      //          dataYsMaxExtendedTo0 allow for details, mainly for lots of values.
-      //          Make an option for this. Add dataYsMaxExtendedTo0 tests.
-      dataYsMinExtendedTo0 = polyMin.floorAtMaxPower.toDouble();
-      dataYsMaxExtendedTo0 = polyMax.ceilAtMaxPower.toDouble();
-    } else {
-      */
-      // for now, always start with dataYsMin or 0, and end at dataYsMax (reverse if both negative).
-
-      // both negative or positive, extend the range to start or end at zero
-      if (signMax <= 0) {
-        dataYsMinExtendedTo0 = dataYsMin;
-        dataYsMaxExtendedTo0 = 0.0;
-      } else {
-        dataYsMinExtendedTo0 = 0.0;
-        dataYsMaxExtendedTo0 = dataYsMax;
+        // both negative or positive, extend the range to start or end at zero
+        if (signMax <= 0) {
+          dataYsMinExtendedTo0 = dataYsMin;
+          dataYsMaxExtendedTo0 = 0.0;
+        } else {
+          dataYsMinExtendedTo0 = 0.0;
+          dataYsMaxExtendedTo0 = dataYsMax;
+        }
       }
-    }
     } else {
       dataYsMinExtendedTo0 = dataYsMin;
       dataYsMaxExtendedTo0 = dataYsMax;
     }
-    // keep }
 
     // Now create labelYsInDataYsEnvelop, evenly distributed in
     //   the dataYsMinExtendedTo0, dataYsMaxExtendedTo0 range.
@@ -117,7 +102,7 @@ class Range {
     //   not the displayed y axis scale (pixels scale).
 
     // todo-00-last : dataYs are already transformed. But labels must be un-transformed. So maybe un-transfer the passed Interval
-    Function inverse = _options.dataContainerOptions.yInverseTransform;
+    // todo-00-last-remove Function inverse = _options.dataContainerOptions.yInverseTransform;
     List<double> labelYsInDataYsEnvelop = _distributeLabelsIn(Interval(
       dataYsMinExtendedTo0,
       dataYsMaxExtendedTo0,
@@ -138,7 +123,7 @@ class Range {
     return yScaler;
   }
 
-  // todo-00-later try to move this to LabelInfo
+  // todo-00-later try to move this to LabelInfo; also refactor and make more generic in respect to log scale.
   /// Makes anywhere from zero to nine label values, of greatest power of
   /// the passed [dataYsInterval.max].
   ///
@@ -165,28 +150,27 @@ class Range {
     List<double> labels = [];
     int power = math.max(powerMin, powerMax);
 
-    // todo-1 refactor this and make generic
     if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
       // both negative or positive
       if (signMax <= 0) {
-        // todo-00-last-last : add logic similar to else signMax >= 0
-        for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
+        double startCoeff = 1.0 * signMin * coeffMin;
+        int endCoeff = 0;
+        if (_options.startYAxisAtDataMinAllowed) {
+          endCoeff = signMax * coeffMax;
+        }
+        for (double l = startCoeff; l <= endCoeff; l++) {
           labels.add(l * math.pow(10, power));
         }
       } else {
         // signMax >= 0
-        // todo-00-last-last : allow non zero start to Y axis : ori
-        // for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
-        //   labels.add(l * math.pow(10, power));
-        // }
         double startCoeff = 1.0 * 0;
         int endCoeff = signMax * coeffMax;
-        if (_options.canStartYAxisAtDataMin) {
+        if (_options.startYAxisAtDataMinAllowed) {
           startCoeff = 1.0 * coeffMin;
         }
-          for (double l = startCoeff; l <= endCoeff; l++) {
-            labels.add(l * math.pow(10, power));
-          }
+        for (double l = startCoeff; l <= endCoeff; l++) {
+          labels.add(l * math.pow(10, power));
+        }
       }
     } else {
       // min is negative, max is positive - need added logic
@@ -250,13 +234,6 @@ class YScalerAndLabelFormatter {
               parentYScaler: this,
             ))
         .toList();
-    // late initialize the parentScaler
-/* todo-00-done 
-    for (LabelInfo labelInfo in labelInfos) {
-      // todo-00-last note that here we are setting the parent scaler on labelInfo - TOO LATE ..
-      labelInfo.parentScaler = this;
-    }
-*/
   }
 
   /// Scales [value]
@@ -269,10 +246,10 @@ class YScalerAndLabelFormatter {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
     return util_dart.scaleValue(
         value: value.toDouble(),
-        dataYsEnvelopMin: mergedDataYsAndLabelValuesEnvelop.min.toDouble(),
-        dataYsEnvelopMax: mergedDataYsAndLabelValuesEnvelop.max.toDouble(),
-        axisYMin: _axisYMin,
-        axisYMax: _axisYMax);
+        fromDomainMin: mergedDataYsAndLabelValuesEnvelop.min.toDouble(),
+        fromDomainMax: mergedDataYsAndLabelValuesEnvelop.max.toDouble(),
+        toDomainMin: _axisYMin,
+        toDomainMax: _axisYMax);
   }
 
   /// Self-scales the Y label values in [labelInfos] to the scale
@@ -337,21 +314,21 @@ class YScalerAndLabelFormatter {
 }
 
 /// Manages one label and values corresponding to the displayed label.
-/// 
+///
 /// There are four values each [LabelInfo] manages:
 ///   - [dataValue] : The value of dependent (y) variable in data, given by [YScalerAndLabelFormatter.mergedDataYsAndLabelValuesEnvelop]
 ///       This value is in the interval extended from the interval of minimum and maximum y in data
-///       to the interval of the displayed labels. The reason is the chart may display values beyond the strict 
+///       to the interval of the displayed labels. The reason is the chart may display values beyond the strict
 ///       interval between minimum and maximum y in data.
-///   - [transformedDataValue] : The dataValue after transformation by the [DataContainerOptions.yTransform] 
+///   - [transformedDataValue] : The dataValue after transformation by the [DataContainerOptions.yTransform]
 ///       function. Note that the [transformedDataValue] is same as [dataValue] if the [DataContainerOptions.yTransform]
 ///       is an identity.
 ///   - [axisValue] : The point on the dependent (y) axis, in screen pixels, corresponding to the [transformedDataValue].
 ///       This is the [transformedDataValue] scaled to the axis interval.
 ///   - [formattedLabel] : The formatted value of [transformedDataValue], showed at the center position given by [axisValue].
-///    
+///
 /// todo-00-later finish documentation. Note somewhere that this is used for Y labels only, X labels are managed in (where?)
-/// 
+///
 ///  YLabels Note:
 ///
 ///    - There are 3 intervals (example values in text):

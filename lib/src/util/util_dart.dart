@@ -10,80 +10,78 @@
 // todo 1 - Functions here should eventually be held by a Utility class
 
 import 'dart:math' as math;
+import 'test/generate_test_data_from_app_runs.dart';
 
 // todo-13 write test for this and refactor scaling
 /// Scale the [value] that must be from the scale
-/// given by [dataYsEnvelopMin] - [dataYsEnvelopMax]
-/// to the "to scale" given by  [axisYMin] - [axisYMax].
+/// given by [fromDomainMin] - [fromDomainMax]
+/// to the "to scale" given by  [toDomainMin] - [toDomainMax].
 ///
 /// The calculations are rather pig headed and should be made more terse;
 /// also could be separated by caching the scales which do not change
 /// unless data change.
 double scaleValue({
   required double value,
-  required double dataYsEnvelopMin,
-  required double dataYsEnvelopMax,
-  required double axisYMin,
-  required double axisYMax,
+  required double fromDomainMin,
+  required double fromDomainMax,
+  required double toDomainMin,
+  required double toDomainMax,
 }) {
-  // todo-00-last: added asserts - but they are not correct for random data on linear chart. Are random data wrong??
-  //               actually, the asserts are wrong - it is possible to scale value outside the envelop scale!
-  if (!(dataYsEnvelopMin <= value && value <= dataYsEnvelopMax)) {
-    /* throw StateError */ print('scaleValue: Passed value not in expected interval. '
-        'value=$value, dataYsEnvelopMin=$dataYsEnvelopMin, dataYsEnvelopMax=$dataYsEnvelopMax');
-  }
 
-  var dataYsEnvelopLength = dataYsEnvelopMax - dataYsEnvelopMin;
-  var axisYLength = axisYMax - axisYMin;
+  var fromDomainLength = fromDomainMax - fromDomainMin;
+  var toDomainLength = toDomainMax - toDomainMin;
   // Handle degenerate cases:
   // 1. If exactly one of the scales is zero length, exception.
   if (exactlyOneHasValue(
-    one: dataYsEnvelopLength,
-    two: axisYLength,
+    one: fromDomainLength,
+    two: toDomainLength,
     value: 0.0,
   )) {
-    if (dataYsEnvelopLength == 0.0 && value == dataYsEnvelopMin) {
+    if (fromDomainLength == 0.0 && value == fromDomainMin) {
       // OK to have own scale degenerate, if value is the same as the degenerate min/max
-      return axisYMin;
+      return toDomainMin;
       // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelop
     } else {
       throw StateError(
-          'Cannot convert value $value between scales $dataYsEnvelopMin, $dataYsEnvelopMax and $axisYMin $axisYMax');
+          'Cannot convert value $value between scales $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
     }
     // 2. If both scales are zero length:
   } else if (bothHaveValue(
-    one: dataYsEnvelopLength,
-    two: axisYLength,
+    one: fromDomainLength,
+    two: toDomainLength,
     value: 0.0,
   )) {
     // if value != dataYsEnvelopMin (same as dataYsEnvelopMax), exception
-    if (value != dataYsEnvelopMin) {
-      throw StateError('Value is not on own scale: $dataYsEnvelopMin, $dataYsEnvelopMax and $axisYMin $axisYMax');
+    if (value != fromDomainMin) {
+      throw StateError('Value is not on own scale: $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
       //  else return axisYMin (same as axisYMax)
     } else {
-      return axisYMin;
+      return toDomainMin;
     }
   }
   // first move scales to be both starting at 0; also move value equivalently.
   // Naming the 0 based coordinates ending with 0
-  double value0 = value - dataYsEnvelopMin;
+  double value0 = value - fromDomainMin;
   /*
   double dataYsEnvelopMin0 = 0.0;
-  double dataYsEnvelopMax0 = dataYsEnvelopLength;
+  double dataYsEnvelopMax0 = fromDomainLength;
   double axisYMin0 = 0.0;
-  double axisYMax0 = axisYLength;
+  double axisYMax0 = toDomainLength;
   */
 
   // Next scale the value to the 0 - 1 segment
-  double value0ScaledTo01 = value0 / dataYsEnvelopLength;
+  double value0ScaledTo01 = value0 / fromDomainLength;
 
   // Then scale value0Scaled01 to the 0 based axisY0
-  double valueOnAxisY0 = value0ScaledTo01 * axisYLength;
+  double valueOnAxisY0 = value0ScaledTo01 * toDomainLength;
 
   // And finally shift the valueOnAxisY0 to a non-0 start on "to scale"
 
-  double scaled = valueOnAxisY0 + axisYMin;
+  double scaled = valueOnAxisY0 + toDomainMin;
 
+  // todo-00-last-last remove when done 
+  collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainMin, toDomainMax], scaled);
+  
   return scaled;
 }
 
