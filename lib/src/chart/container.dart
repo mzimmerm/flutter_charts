@@ -1632,8 +1632,6 @@ class PointsColumn {
 
   List<StackableValuePoint> selectThenCollectStacked({
     required List<StackableValuePoint> points,
-    // todo-00-done : dart analyser warning : https://dart-lang.github.io/linter/lints/use_function_type_syntax_for_parameters.html :
-    //  required bool selector(StackableValuePoint point),
     required bool Function(StackableValuePoint point) selector,
   }) {
     StackableValuePoint? predecessorPoint;

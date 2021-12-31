@@ -1,6 +1,7 @@
 import 'dart:math' as math show min, max, pow;
 import 'package:decimal/decimal.dart' as decimal;
 import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/util/test/generate_test_data_from_app_runs.dart';
 import 'util_dart.dart' as util_dart;
 
 // todo-2 - this library (range.dart) has been modified for Dart 2.0
@@ -10,10 +11,6 @@ import 'util_dart.dart' as util_dart;
 /// Scalable range, supporting creation of scaled x and y axis labels.
 ///
 class Range {
-  // ### Public api
-
-  // ### Private api
-
   final List<double> _dataYs;
 
   final ChartOptions _options;
@@ -28,7 +25,6 @@ class Range {
     required List<double> values,
     required ChartOptions chartOptions,
   })  : _dataYs = values,
-        // todo 1 maxLabels does not work. Enable and add to test
         _options = chartOptions;
 
   /// superior and inferior closure - min and max of values
@@ -71,7 +67,6 @@ class Range {
     double dataYsMinExtendedTo0, dataYsMaxExtendedTo0;
 
     if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-      // todo-00-last-last added this section
       if (_options.startYAxisAtDataMinAllowed) {
         if (signMax <= 0) {
           dataYsMinExtendedTo0 = dataYsMin;
@@ -95,30 +90,41 @@ class Range {
       dataYsMaxExtendedTo0 = dataYsMax;
     }
 
-    // Now create labelYsInDataYsEnvelop, evenly distributed in
+    // Now create distributedLabels, evenly distributed in
     //   the dataYsMinExtendedTo0, dataYsMaxExtendedTo0 range.
-    // Make labelYsInDataYsEnvelop only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+    // Make distributedLabels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
     // Labels are (obviously) unscaled, that is, on the scale of data,
     //   not the displayed y axis scale (pixels scale).
 
     // todo-00-last : dataYs are already transformed. But labels must be un-transformed. So maybe un-transfer the passed Interval
     // todo-00-last-remove Function inverse = _options.dataContainerOptions.yInverseTransform;
-    List<double> labelYsInDataYsEnvelop = _distributeLabelsIn(Interval(
+    List<double> distributedLabels = distributeLabelsIn(Interval(
       dataYsMinExtendedTo0,
       dataYsMaxExtendedTo0,
     )); // todo 0 pull only once (see below)
-
-    // print( " ################ makeLabelsFromDataOnScale: For ###_values=$_values found ###labeValues=${labelYsInDataYsEnvelop} and ###dataRange= ${dataYsMinExtendedTo0} dataYsMaxExtendedTo0 ${dataYsMaxExtendedTo0} ");
-
+    
     var yScaler = YScalerAndLabelFormatter(
         dataYsEnvelop: Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0),
-        labelYsInDataYsEnvelope: labelYsInDataYsEnvelop,
+        labelYsInDataYsEnvelope: distributedLabels,
         axisYMin: axisYMin,
         axisYMax: axisYMax,
         chartOptions: _options);
 
     yScaler.scaleLabelInfos();
     yScaler.makeLabelsPresentable();
+
+    // todo-00-last-last remove when done     
+    collectTestData(
+        'for_Range.makeYScalerWithLabelInfosFromDataYsOnScale_test',
+        [
+          _dataYs,
+          axisYMin,
+          axisYMax,
+          distributedLabels,
+          yScaler.dataYsEnvelop.min,
+          yScaler.dataYsEnvelop.max,
+        ],
+        yScaler);
 
     return yScaler;
   }
@@ -134,7 +140,7 @@ class Range {
   ///   2. [Interval] is <0, 299> then labels=[0, 100, 200]
   ///   3. [Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
-  List<double> _distributeLabelsIn(Interval dataYsInterval) {
+  List<double> distributeLabelsIn(Interval dataYsInterval) {
     Poly polyMin = Poly(from: dataYsInterval.min);
     Poly polyMax = Poly(from: dataYsInterval.max);
 
@@ -486,5 +492,10 @@ class Interval {
   /// Outermost union of this interal with [other].
   Interval merge(Interval other) {
     return Interval(math.min(min, other.min), math.max(max, other.max));
+  }
+  
+  @override
+  String toString() {
+    return 'Interval($min, $max)';
   }
 }

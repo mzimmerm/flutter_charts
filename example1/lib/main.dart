@@ -174,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Default constructor uses member defaults for all options and data.
   _MyHomePageState();
-  
+
   void _chartStateChanger() {
     setState(() {
       // This call to setState tells the Flutter framework that
@@ -498,9 +498,9 @@ class _ExampleDefiner {
             startYAxisAtDataMinRequested: true,
           ),
         );
-            chartOptions = LineChartOptions(
-              chartOptions: endYAxisAtMaxDataChartOptions,
-            );
+        chartOptions = LineChartOptions(
+          chartOptions: endYAxisAtMaxDataChartOptions,
+        );
         chartData = ChartData(
           dataRows: const [
             [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],

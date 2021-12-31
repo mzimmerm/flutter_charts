@@ -30,16 +30,15 @@ environment:
   sdk: '>=2.15.0 <3.0.0'
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
-#   including how to depend on package on github or local server.
+#   including how to depend on package on GitHub or local server.
 dependencies:
   flutter:
     sdk:  flutter
   decimal: ^1.0.0
   vector_math: ^2.1.0
   tuple: ^2.0.0
-  # path_provider: ^1.6.14 # Needed to write file in Flutter to local (not device) filesystem.
 
-# Example of dependency on another project: local, github, locally hosted on own pub server on 8080,
+# Example of dependency on another project: local, GitHub, locally hosted on own pub server on 8080,
 #
 #   # local directory
 #   flutter_charts_common:
@@ -73,6 +72,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  lints: ^1.0.1 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
+  analyzer: ^2.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
@@ -118,4 +119,3 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
-
