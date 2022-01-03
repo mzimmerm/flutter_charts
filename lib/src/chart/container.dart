@@ -495,9 +495,9 @@ class YContainer extends ChartAreaContainer {
     _yLabelContainers = List.empty(growable: true);
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
-      // yTickY is both scaled data value and vertical (Y) center of the label.
+      // yTickY is the vertical center of the label on the Y axis. 
+      // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue 
       // It is kept always relative to the immediate container - YContainer
-      // todo-00-done : added toDouble() : double yTickY = labelInfo.notTransformedScaledDataY;
       double yTickY = labelInfo.axisValue.toDouble();
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedLabel,
@@ -1681,7 +1681,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required PresenterCreator presenterCreator,
     required bool isStacked,
   })  : _container = container,
-        // todo-00-done _valuePointArrInRows = List.empty(growable: true),
         _isStacked = isStacked {
     ChartData chartData = container.data;
 

@@ -6,8 +6,9 @@
 echo
 echo -------------------------------------
 echo Running Dart files testing, which is still run with Flutter
-flutter test test/src/util/range_test.dart
-flutter test test/src/util/string_extension_test.dart
+flutter test test/util/range_test.dart
+flutter test test/util/string_extension_test.dart
+flutter test test/util/util_dart_test.dart
 
 echo
 echo -------------------------------------

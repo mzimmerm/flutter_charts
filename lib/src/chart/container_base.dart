@@ -35,8 +35,8 @@ abstract class Container {
   set layoutSize(ui.Size newLayoutSize) {
     _layoutSize = newLayoutSize;
     _debugLayoutSetCount++;
-    print('Changed layoutSize. It changed $_debugLayoutSetCount times; '
-        'now it is : $_layoutSize');
+    // print('Changed layoutSize. It changed $_debugLayoutSetCount times; '
+    //     'now it is : $_layoutSize');
   }
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).

@@ -12,7 +12,7 @@
 import 'dart:math' as math;
 import 'test/generate_test_data_from_app_runs.dart';
 
-// todo-13 write test for this and refactor scaling
+// todo-13 Refactor scaling
 /// Scale the [value] that must be from the scale
 /// given by [fromDomainMin] - [fromDomainMax]
 /// to the "to scale" given by  [toDomainMin] - [toDomainMax].
@@ -79,7 +79,6 @@ double scaleValue({
 
   double scaled = valueOnAxisY0 + toDomainMin;
 
-  // todo-00-last-last remove when done 
   collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainMin, toDomainMax], scaled);
   
   return scaled;

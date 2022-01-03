@@ -2,7 +2,7 @@ import 'package:test/test.dart'; // Dart test package
 import 'package:flutter_charts/flutter_charts.dart';
 
 void main() {
-  test('linear scaling test', () {
+  test('scaleValue test - test for linear scaling utility', () {
     expect(scaleValue(
       value: 1.0,
       fromDomainMin: 1.0,
@@ -13,7 +13,7 @@ void main() {
       10.0,);
   });
 
-  test('linear scaling test with array input', () {
+  test('scaleValue test - test for linear scaling utility, from generated data', () {
     var data = [
       [1.0, 1.0, 2.0, 10.0, 20.0, 10.0],
       [2.0, 1.0, 2.0, 10.0, 20.0, 20.0],
