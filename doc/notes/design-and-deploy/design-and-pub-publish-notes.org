@@ -1062,8 +1062,11 @@ reason is, yLabels have 2 modes:
 
 *** IN-PROGRESS-NOW Logarithmic Y scale
 **** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
-**** IN-PROGRESS-NOW *DESIGN OF LOGARITHMIC SCALING WITH EXISTING LABEL FORMATTERS AND SCALERS*
-***** IN-PROGRESS-NOW Bug fix: Ex40 which is manual scale is now using logarithmic scale. Fix it.
+**** IN-PROGRESS-NOW *Logarithmic scale, with existing formatters and label creators*
+***** DONE Bug fix: Ex40 which is manual scale is now using logarithmic scale. Fix it.
+
+Fix: During manual layout, LabelInfo.transformedDataValue was not set.
+
 ***** DONE Logarithms of base 10 and e
 loge(10) = ln10 <==> e^ln10 = 10
 loge(x) = y <==> e^y = x
@@ -1090,6 +1093,7 @@ So in Dart speak, where lne = log:
 - [ ] Check Vertical Bar log based: Is this a PROBLEM?: IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT Y, THEN ADD DURING STACKING, THEN DO LOG(ADDED).
 
 
+**** TODO Rename labelYsInDataYsEnvelope  to something else. 
 **** TODO TODO: Maybe use term RawDataRows, etc for Raw data.
 
 - Anywhere, there is only dataRows and dataYs which represent transformed

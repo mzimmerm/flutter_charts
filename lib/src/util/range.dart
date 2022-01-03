@@ -311,6 +311,7 @@ class YScalerAndLabelFormatter {
   }) {
     for (int i = 0; i < labelValues.length; i++) {
       labelInfos[i].dataValue = labelValues[i];
+      labelInfos[i].transformedDataValue = _options.dataContainerOptions.yTransform(labelInfos[i].dataValue);
       labelInfos[i].axisValue = scaledLabelValues[i];
       labelInfos[i].formattedLabel = formattedYLabels[i];
     }
