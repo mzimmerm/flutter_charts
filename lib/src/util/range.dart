@@ -385,13 +385,18 @@ class YScalerAndLabelFormatter {
 ///       
 ///   - [formattedLabel] : The formatted String-value of [dataValue].
 ///   
-/// Note: The **scaled && not-transformed ** value is not maintained 
+/// Note: The **scaled && not-transformed ** value is not maintained.
+/// 
+/// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
 
 class LabelInfo {
   YScalerAndLabelFormatter parentYScaler;
 
   /// Not-scaled and not-transformed label value.
+  /// 
+  /// This is only used in labels display, never to calculate or display data values.
+  /// All data values calculations are using the [transformedDataValue].
   late num dataValue;
 
   /// The transformed [dataValue].

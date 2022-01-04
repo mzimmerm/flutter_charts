@@ -1,16 +1,18 @@
-import 'dart:math' as math show Random, pow;
+import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as material show Colors;
+import 'package:flutter_charts/flutter_charts.dart';
 
 /// Manages Chart Data.
 @immutable
 class ChartData {
-  /// Data in rows. Each row of data represents one data series.
-  ///
+  /// Data in rows. 
+  /// 
+  /// Each row of data represents one data series.
   /// Legends per row are managed by [dataRowsLegends].
   ///
-  /// Each element of outer list represents one row.
+  /// Each element of the outer list represents one row.
   /// Alternative name would be "data series".
   final List<List<double>> dataRows;
 
@@ -21,7 +23,7 @@ class ChartData {
   /// in each row in [dataRows].
   final List<String> xUserLabels;
 
-  /// Provides legends for [dataRows] (data series).
+  /// The legends for the [dataRows] (data series).
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
@@ -37,6 +39,9 @@ class ChartData {
 
   /// Colors corresponding to each data row (series) in [ChartData].
   final List<ui.Color> dataRowsColors;
+  
+  /// Chart options which may affect data validation.
+  final ChartOptions chartOptions;
 
   /// Default constructor only assumes [dataRows] are set,
   /// and assigns default values of [dataRowsLegends], [dataRowsColors], [xUserLabels], [yUserLabels].
@@ -45,6 +50,7 @@ class ChartData {
     required this.dataRows,
     required this.xUserLabels,
     required this.dataRowsLegends,
+    required this.chartOptions,
     this.yUserLabels,
     dataRowsColors,
   }) :
@@ -55,21 +61,31 @@ class ChartData {
   }
 
   bool get isUsingUserLabels => yUserLabels != null;
+  
+  List<double> get flatten => dataRows.expand((element) => element).toList();
+  double get dataYMax => flatten.reduce(math.max);
+  double get dataYMin => flatten.reduce(math.min);
 
   void validate() {
     //                      But that would require ChartOptions available in ChartData.
     if (!(dataRows.length == dataRowsLegends.length && dataRows.length == dataRowsColors.length)) {
-      throw StateError(' If row legends are defined, their '
+      throw StateError('If row legends are defined, their '
           'number must be the same as number of data rows. '
           ' [dataRows length: ${dataRows.length}] '
           '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
     }
     for (List<double> dataRow in dataRows) {
       if (!(dataRow.length == xUserLabels.length)) {
-        throw StateError(' If xUserLabels are defined, their '
+        throw StateError('If xUserLabels are defined, their '
             'length must be the same as length of each dataRow'
             ' [dataRow length: ${dataRow.length}] '
             '!= [xUserLabels length: ${xUserLabels.length}]. ');
+      }
+    }
+    // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
+    if (log10 == chartOptions.dataContainerOptions.yTransform) {
+      if (!(dataYMin > 0.0)) {
+         throw StateError('Using logarithmic Y scale requires only positive Y data');
       }
     }
   }

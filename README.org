@@ -2,7 +2,7 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 * Table of contents :TOC:noexport:
-- [[#new-in-the-current-release][New in the current release]]
+- [[#latest-release-tracking-changes-over-time][Latest release, tracking changes over time]]
   - [[#illustration-of-a-new-feature-ability-to-hide-labels-legend-or-gridlines][Illustration of a new feature: ability to hide labels, legend, or gridlines]]
 - [[#installing-flutter_charts-as-a-library-into-your-app][Installing flutter_charts as a library into your app]]
 - [[#installing-the-flutter_charts-project-locally-from-github-and-running-the-example-app][Installing the flutter_charts project locally from Github, and running the example app]]
@@ -23,37 +23,11 @@
 - [[#an-overview-of-this-library-data-options-classes][An overview of this library: data, options, classes]]
 - [[#todos][Todos]]
 
-* New in the current release
+* Latest release, tracking changes over time
 
-Current release is 0.3.0
+The latest release is 0.3.0
 
-See file:CHANGELOG.md for the list of new features and bug fixes in this release.
-
-
-In particular, the optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ~ChartOptions~. See the code in `example1/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
-    #+begin_src dart
-      ChartOptions chartOptions = VerticalBarChartOptions.noLabels();
-    #+end_src
-    
-    or to set individual values to false. Default is true so no need to set those that we want to show.
-    
-    #+begin_src dart
-      ChartOptions chartOptions =
-            VerticalBarChartOptions(
-                chartOptions: const ChartOptions(
-                  legendOptions: LegendOptions(
-                    isLegendContainerShown: false,
-                  ),
-                  xContainerOptions: XContainerOptions(
-                    isXContainerShown: false,
-                  ),
-                  yContainerOptions: YContainerOptions(
-                    isYContainerShown: false,
-                    isYGridlinesShown: false,
-                  ),
-                )
-            );
-    #+end_src
+The file:CHANGELOG.md document describes features and bug fixes in this and older versions.
 
 ** Illustration of a new feature: ability to hide labels, legend, or gridlines
 

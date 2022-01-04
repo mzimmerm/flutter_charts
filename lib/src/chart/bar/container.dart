@@ -13,11 +13,11 @@ import 'presenter.dart';
 class VerticalBarChartTopContainer extends ChartTopContainer {
   VerticalBarChartTopContainer({
     required ChartData chartData,
-    required ChartOptions chartOptions,
+    // todo-00-last : required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
-          chartOptions: chartOptions,
+    // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     presenterCreator = VerticalBarLeafCreator();

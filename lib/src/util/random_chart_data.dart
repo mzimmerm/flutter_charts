@@ -1,5 +1,6 @@
 import 'dart:math' as math show Random;
-import 'package:flutter_charts/src/chart/data.dart';
+import '../chart/options.dart';
+import '../chart/data.dart';
 
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
@@ -10,12 +11,14 @@ class RandomChartData extends ChartData {
     required dataRows,
     required xUserLabels,
     required dataRowsLegends,
+    required chartOptions,
     yUserLabels,
     dataRowsColors,
   }) : super(
           dataRows: dataRows,
           xUserLabels: xUserLabels,
           dataRowsLegends: dataRowsLegends,
+          chartOptions: chartOptions,
           yUserLabels: yUserLabels,
           dataRowsColors: dataRowsColors,
         );
@@ -27,6 +30,7 @@ class RandomChartData extends ChartData {
   /// If [useMonthNames] is set to false, random
   ///
   RandomChartData.generated({
+    required ChartOptions chartOptions,
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,
     int numDataRows = 4,
@@ -38,6 +42,7 @@ class RandomChartData extends ChartData {
           dataRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
           xUserLabels: randomDataXLabels(numXLabels),
           dataRowsLegends: randomDataRowsLegends(numDataRows),
+          chartOptions: chartOptions,
           yUserLabels: randomDataYLabels(useUserProvidedYLabels),
           dataRowsColors: dataRowsColors,
         );

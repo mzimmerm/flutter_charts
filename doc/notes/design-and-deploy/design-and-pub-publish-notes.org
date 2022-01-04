@@ -877,7 +877,7 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
-** IN-PROGRESS-NOW Replace ChartData and add DataPoint, more representing what people need, and adding logarithic scale
+** IN-PROGRESS-NOW Add logarithmic scale. 
 *** NOTE Doc: YLabels, YScaler, and their layout in flutter_charts
 
 ChartData yLabels and dataRowsColors behave differently.
@@ -1076,35 +1076,72 @@ So
 
 log10(x) = y # substiture above for y
 
-log10(x) = lne(x) / ln10
+log10(x) = lne(x) / ln10 - where ln10 is loge(10)
 
-So in Dart speak, where lne = log:
+~So in Dart speak~, where lne = log:
 
-~log10(x) = log(x) / ln10~ where log(x) is loge(x)
+~log10(x) = log(x) / ln10~ where log(x) is loge(x) and ln10 is loge(10)
+
+Or - with making a more math notation
+
+log10(x) = loge(x) / loge(10)
+
+e^loge(x) = x ; e^loge(10) = 10
 
 ***** IN-PROGRESS-NOW Steps to introduce logarithmic scale
  
-
-- [ ] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
-- [ ] Add comments:
-  - [ ] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
-  - [ ] *DISPLAYED DATA INSIDE the CHART ARE TRANSFORMED, DISPLAYED LABELS SHOW RAW DATA VALUES*
-  - [ ] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
+- [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
+- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartTopContainer such as VerticalBarChartTopContainer
+- [X] NOT FOR NOW: If scale is logarithmic, enforce the setting data starts above 0
+- [X] Add comments:
+  - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
+  - [X] *Data displayed inside the chart use transformed data values, displayed labels show raw data values*
+  - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
 - [ ] Check Vertical Bar log based: Is this a PROBLEM?: IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT Y, THEN ADD DURING STACKING, THEN DO LOG(ADDED).
 
 
-**** TODO Rename labelYsInDataYsEnvelope  to something else. 
-**** TODO TODO: Maybe use term RawDataRows, etc for Raw data.
+**** TODO Rename distributedLabels to distributedLabelYs
+**** TODO Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
+**** TODO Address todo-00-later 
+**** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
 
-- Anywhere, there is only dataRows and dataYs which represent transformed
-- Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
-- Convert LabelInfo.rawDataValue to getter
-- Rename LabelInfo.transformedDataValue to dataValue
-- Rename DataRows and related to RawDataRows
-- In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
-- This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-**** TODO TODO: Replace labelInfo.dataValue with getter OR MAYBE REPLACE labelInfo.transformedDataValue with getter?
-**** TODO TODO: Replace labelInfo.
+*We only use dataRows and dataYs which represent transformed data, so make it consistent*
+- [ ] Rename DataRows and related to RawDataRows
+- [ ] Rename DataRow to RawDataRow.
+- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
+- [ ] Rename LabelInfo.transformedDataValue to dataValue
+- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
+- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
+**** TODO Manual vs Automated layout changes
+
+- [ ] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
+  #+begin_src dart
+    Range range = Range(
+      values: allStackedDataYs,
+      chartOptions: _chartTopContainer.options,
+    );
+
+    // revert axisYMin/Max to accommodate y axis starting from top
+    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
+      axisYMin: axisYMin,
+      axisYMax: axisYMax,
+    );
+  #+end_src
+- [ ] Remove Range and pull it's functionality to YScalerAndLabelFormatter
+  - [ ] Range only manages a list of values, that represents labels anyway! Do this:
+    - [ ] Move the 2 members from Range to YScalerAndLabelFormatter
+    - [ ] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
+    - [ ] Remove Range
+    - [ ] Fix tests and test
+**** TODO LabelInfo: Make some parts a getter rather than member
+
+- [ ] Convert LabelInfo.rawDataValue to getter
+- [ ] Convert LabelInfo.axisValue to getter
+
+**** TODO Change AdjustableLabelsChartAreaContainer to a MIXIN.
+
+AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
+
 **** TODO Refactor StackableValuePoint nextRightColumnValuePoint
 
 The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
@@ -1120,33 +1157,37 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 
 **** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
 
-*** TODO ChartData further refactoring
-**** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
-**** TODO So we need new class DataSet;   DataSets is custom List of DataSet.
-**** TODO So we need new class DataPoint; DataPoints is custom List<DataPoint>
-**** TODO DataPoint can be any object - sort of a naked user object
-**** TODO DataSetsMixin corresponds to dataRows
-**** TODO DataPoints corresponds to one dataRow.
-**** TODO DataSetsMixin is a mixin which provides functions that allow to extract values from DataPoint, for example
-***** DataSetsMixin.xValue(DataPoint, pointIndexInSets) =>  whatever value at DataPoint is considered x // similar for Y
-***** DataSetsMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
-****** DataSetsMixin.xLabel(DataPoint, pointIndexInSets) => DataSetsMixin.xValue(DataPoint, pointIndexInSets) // similar for Y
-****** DataSetsMixin.yTransform
+**** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK**
 
-**** TODO ~DataSetsMixin must be extended as MyDataSetsMixin, implementing at least 2 methods: xValue and yValue, see aboce~
-**** TODO What options are controlled on the ChartData level? What on the DataSetsMixin level?
-**** TODO ~???? Move ChartOptions to ChartData ??? Or some other redesign using configurations ???~
-***** TODO ~Move function _options.yContainerOptions.valueToLabel to function ChartData.yLabelFormatter and allow to pass it and store as member~
-******* TODO This is the first crack on removing ChartOptions completely and move it to ChartData
-******* TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
-***** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
-***** TODO ~Finish moving ChartOptions entirely to ChartData
-**** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
-**** TODO If line chart, add option that allows to start on non-zero
+** TODO ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
+
+*** TODO Question any place in the library importing import 'package:flutter_charts/flutter_charts.dart'; and change to import only needed sources.
+*** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
+*** TODO So we need new class DataSet;   DataSets is custom List of DataSet.
+*** TODO So we need new class DataPoint; DataPoints is custom List<DataPoint>
+*** TODO DataPoint can be any object - sort of a naked user object
+*** TODO DataSetsMixin corresponds to dataRows
+*** TODO DataPoints corresponds to one dataRow.
+*** TODO DataSetsMixin is a mixin which provides functions that allow to extract values from DataPoint, for example
+**** DataSetsMixin.xValue(DataPoint, pointIndexInSets) =>  whatever value at DataPoint is considered x // similar for Y
+**** DataSetsMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
+***** DataSetsMixin.xLabel(DataPoint, pointIndexInSets) => DataSetsMixin.xValue(DataPoint, pointIndexInSets) // similar for Y
+***** DataSetsMixin.yTransform
+
+*** TODO ~DataSetsMixin must be extended as MyDataSetsMixin, implementing at least 2 methods: xValue and yValue, see aboce~
+*** TODO What options are controlled on the ChartData level? What on the DataSetsMixin level?
+*** TODO ~???? Move ChartOptions to ChartData ??? Or some other redesign using configurations ???~
+**** TODO ~Move function _options.yContainerOptions.valueToLabel to function ChartData.yLabelFormatter and allow to pass it and store as member~
+****** TODO This is the first crack on removing ChartOptions completely and move it to ChartData
+****** TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
+**** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
+**** TODO ~Finish moving ChartOptions entirely to ChartData
+*** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
+*** TODO If line chart, add option that allows to start on non-zero
     - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
     - test  on values like 10,000 - 11,000.
     -
-**** TODO Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
+*** TODO Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
 This needs entity model change:
 - current ChartData and ChartOptions are kept on ChartTopContainer
 - current data structure is as follows: ChartData -> DataSetsMixin -> DataPoints - unchanged

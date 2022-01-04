@@ -73,7 +73,7 @@ abstract class ChartTopContainer extends Container {
   /// Layout strategy for XContainer labels.
   ///
   /// Cached from constructor here, until the late [xContainer] is created.
-  final strategy.LabelLayoutStrategy _cachedXContainerLabelLayoutStrategy;
+  final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy; // todo-00-last : check if needed on this level :  
 
   /// Scaler of data values to values on the Y axis.
   late YScalerAndLabelFormatter yScaler;
@@ -102,7 +102,8 @@ abstract class ChartTopContainer extends Container {
 
   late bool isStacked;
 
-  ChartOptions options;
+  // todo-00-last changed to getter : ChartOptions options;
+  ChartOptions get options => data.chartOptions;
   ChartData data;
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
@@ -122,15 +123,20 @@ abstract class ChartTopContainer extends Container {
   ///     required to paint half of the topmost label.
   ChartTopContainer({
     required ChartData chartData,
-    required ChartOptions chartOptions,
+    // todo-00-last : required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : data = chartData,
-        options = chartOptions,
-        _cachedXContainerLabelLayoutStrategy =
-            xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: chartOptions),
+  // todo-00-last : options = chartOptions,
+  // todo-00-last : moved to constructor   _cachedXContainerLabelLayoutStrategy =
+  // todo-00-last : moved to constructor       xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: data.chartOptions),
+  _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy, // todo-00-last-done : changed to pass through only
         super() {
+
+    // todo-00-last make not required and not initialized, Initialize at usage.
+    // todo-00-last make not required and not initialized, Initialize at usage : _cachedXContainerLabelLayoutStrategy =
+    // todo-00-last make not required and not initialized, Initialize at usage :    xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: data.chartOptions);
     // Must initialize in body, as access to 'this' not available in initializer.
-    // todo-11-last : check if needed :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
+    // todo-00-last : check if needed on this level :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
   }
 
   /// Implements [Container.layout()] for the chart as a whole.
@@ -373,6 +379,9 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
+    // Note: axisYMin > axisYMax ALWAYS. 
+    //       axisYMin should be called axisYBottom, and axisYMin should be called axisYTop,
+    //       expressing the Y axis starts on top = 0.0, ends on bottom = 400 something.
     double axisYMin =
         parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
 
@@ -575,13 +584,17 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
     required ChartTopContainer chartTopContainer,
-    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    // todo-00-last required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartTopContainer: chartTopContainer,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     // Must initialize in body, as access to 'this' not available in initializer.
-    xContainerLabelLayoutStrategy.onContainer(this);
+    // todo-00-last initialize if null passed
+    // todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy =
+    // todo-00-last initialize in super where stored :     xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: _chartTopContainer.data.chartOptions);
+     // todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy.onContainer(this);
   }
 
   /// Lays out the chart in horizontal (x) direction.
@@ -609,14 +622,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     _gridStepWidth = labelMaxAllowedWidth;
 
-    // todo-2 move showEveryNthLabel to IterativeLaoytstrategy.
-    //        Also define common interface, LabelLayoutStrategy, and NonIterative
-    //        implementation, just taking user input.
-    /*
-    int numShownLabels =
-        (xUserLabels.length / xContainerLabelLayoutStrategy.showEveryNthLabel)
-            .toInt();
-    */
     int numShownLabels = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 
@@ -792,23 +797,31 @@ abstract class AdjustableLabels {
 /// Provides ability to connect [LabelLayoutStrategy] to [Container],
 /// (actually currently the [ChartAreaContainer].
 ///
-/// Requires a non-null [_labelLayoutStrategy] passed to this,
-/// as this abstract should not guess any defaults for the layout strategies;
-/// this abstract is serving too generic layouts to guess layout strategies.
 /// Extensions can create layout strategy defaults.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
-  final strategy.LabelLayoutStrategy _labelLayoutStrategy;
+  // todo-00-last : can be null, initialized deeper when needed : final strategy.LabelLayoutStrategy _labelLayoutStrategy;
+  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
+  // todo-00-last : can be null, initialized deeper when needed :strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+  // todo-00-last : THIS IS WHERE EXTENSIONS / ALL PUBLIC GET THEIR STRATEGY FROM
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
     required ChartTopContainer chartTopContainer,
-    required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy,
+    // todo-00-last : not required, initialized late in the container that uses it : required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: chartTopContainer.data.chartOptions),
         super(
           chartTopContainer: chartTopContainer,
-        );
+        ) {
+    // Must initialize in body, as access to 'this' not available in initializer.
+    _labelLayoutStrategy.onContainer(this);
+
+  }
 }
+
+// todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy =
+// todo-00-last initialize in super where stored :     xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: _chartTopContainer.data.chartOptions);
 
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:

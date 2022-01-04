@@ -407,14 +407,14 @@ class _ExampleDefiner {
 
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
-        chartData = RandomChartData.generated();
+        chartData = RandomChartData.generated(chartOptions: chartOptions);
         break;
 
       case ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy:
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = RandomChartData.generated();
+        chartData = RandomChartData.generated(chartOptions: chartOptions);
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
@@ -438,6 +438,7 @@ class _ExampleDefiner {
             'Fall',
             'Winter',
           ],
+          chartOptions: chartOptions,
         );
         // chartData.dataRowsDefaultColors(); // if not set, called in constructor
         break;
@@ -457,6 +458,7 @@ class _ExampleDefiner {
             'Print Shop',
             'Bar',
           ],
+          chartOptions: chartOptions,
         );
         break;
 
@@ -489,6 +491,7 @@ class _ExampleDefiner {
             'Off zero 1',
             'Off zero 2',
           ],
+          chartOptions: chartOptions,
         );
         break;
 
@@ -511,6 +514,7 @@ class _ExampleDefiner {
             'Off zero 1',
             'Off zero 2',
           ],
+          chartOptions: chartOptions,
         );
         break;
       case ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown:
@@ -537,6 +541,7 @@ class _ExampleDefiner {
             'Fall',
             'Winter',
           ],
+          chartOptions: chartOptions,
         );
         break;
 
@@ -572,6 +577,7 @@ class _ExampleDefiner {
             'Medium',
             'High',
           ],
+          chartOptions: chartOptions,
         );
 
         break;
@@ -604,10 +610,12 @@ class _ExampleDefiner {
             Colors.greenAccent,
             Colors.black,
           ],
+          chartOptions: chartOptions,
         );
         break;
 
       case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
+        // THIS IS HERE ONLY AS EXAMPLE AND SHOULD NOT BE USED NOW WHEN WE HAVE a true logarithmic scale.
         // var originalData = [
         //  [2.2, 220.0, 2200.0],
         //  [330.0, 3.3, 3300.0],
@@ -629,6 +637,7 @@ class _ExampleDefiner {
                 .toString(), // values in between linearly scaled between log(min) and log(max)
             '3300', // maximum of all values
           ],
+          chartOptions: chartOptions,
         );
         break;
 
@@ -661,6 +670,7 @@ class _ExampleDefiner {
             'Spring',
             'Summer',
           ],
+          chartOptions: chartOptions,
         );
         break;
 
@@ -683,6 +693,7 @@ class _ExampleDefiner {
           dataRowsColors: const [
             Colors.blue,
           ],
+          chartOptions: chartOptions,
         );
         break;
     }
@@ -694,7 +705,7 @@ class _ExampleDefiner {
       case ExamplesChartTypeEnum.lineChart:
         LineChartTopContainer lineChartContainer = LineChartTopContainer(
           chartData: chartData,
-          chartOptions: chartOptions,
+          // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
@@ -708,7 +719,7 @@ class _ExampleDefiner {
       case ExamplesChartTypeEnum.verticalBarChart:
         VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
           chartData: chartData,
-          chartOptions: chartOptions,
+          // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
