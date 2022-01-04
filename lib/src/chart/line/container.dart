@@ -13,11 +13,9 @@ import 'presenter.dart';
 class LineChartTopContainer extends ChartTopContainer {
   LineChartTopContainer({
     required ChartData chartData,
-    // todo-00-last : required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
-    // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     presenterCreator = LineAndHotspotLeafCreator();

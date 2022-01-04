@@ -1062,7 +1062,7 @@ reason is, yLabels have 2 modes:
 
 *** IN-PROGRESS-NOW Logarithmic Y scale
 **** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
-**** IN-PROGRESS-NOW *Logarithmic scale, with existing formatters and label creators*
+**** DONE *Logarithmic scale, with existing formatters and label creators*
 ***** DONE Bug fix: Ex40 which is manual scale is now using logarithmic scale. Fix it.
 
 Fix: During manual layout, LabelInfo.transformedDataValue was not set.
@@ -1088,7 +1088,7 @@ log10(x) = loge(x) / loge(10)
 
 e^loge(x) = x ; e^loge(10) = 10
 
-***** IN-PROGRESS-NOW Steps to introduce logarithmic scale
+***** DONE Steps to introduce logarithmic scale
  
 - [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
 - [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartTopContainer such as VerticalBarChartTopContainer
@@ -1097,22 +1097,9 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
   - [X] *Data displayed inside the chart use transformed data values, displayed labels show raw data values*
   - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
-- [ ] Check Vertical Bar log based: Is this a PROBLEM?: IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT Y, THEN ADD DURING STACKING, THEN DO LOG(ADDED).
-
-
-**** TODO Rename distributedLabels to distributedLabelYs
-**** TODO Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
-**** TODO Address todo-00-later 
-**** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
-
-*We only use dataRows and dataYs which represent transformed data, so make it consistent*
-- [ ] Rename DataRows and related to RawDataRows
-- [ ] Rename DataRow to RawDataRow.
-- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
-- [ ] Rename LabelInfo.transformedDataValue to dataValue
-- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
-- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-**** TODO Manual vs Automated layout changes
+**** DONE Rename distributedLabels to distributedLabelYs
+**** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
+**** IN-PROGRESS-NOW Manual vs Automated layout changes
 
 - [ ] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
   #+begin_src dart
@@ -1127,12 +1114,27 @@ e^loge(x) = x ; e^loge(10) = 10
       axisYMax: axisYMax,
     );
   #+end_src
-- [ ] Remove Range and pull it's functionality to YScalerAndLabelFormatter
-  - [ ] Range only manages a list of values, that represents labels anyway! Do this:
-    - [ ] Move the 2 members from Range to YScalerAndLabelFormatter
-    - [ ] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
-    - [ ] Remove Range
-    - [ ] Fix tests and test
+- [X] Remove Range and pull it's functionality to YScalerAndLabelFormatter
+- [X] Range only manages a list of values, that represents labels anyway! Do this:
+  - [X] Move the 2 members from Range to YScalerAndLabelFormatter
+  - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
+  - [X] Remove Range
+  - [X] Fix tests and test
+- [ ] Manual Layout
+  - [ ] use terminology userLabelsDrivenLayout instead of manualLayout
+  - [ ] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
+  - [ ] Fix manual layout to work the same as auto layout
+  - [ ] Test
+**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+**** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
+
+*We only use dataRows and dataYs which represent transformed data, so make it consistent*
+- [ ] Rename DataRows and related to RawDataRows
+- [ ] Rename DataRow to RawDataRow.
+- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
+- [ ] Rename LabelInfo.transformedDataValue to dataValue
+- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
+- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
 **** TODO LabelInfo: Make some parts a getter rather than member
 
 - [ ] Convert LabelInfo.rawDataValue to getter
@@ -1155,9 +1157,12 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
 
-**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+**** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First*
+**** TODO Address todo-00-later 
+**** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
 
-**** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK**
+IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
+
 
 ** TODO ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
 

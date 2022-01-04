@@ -5,6 +5,7 @@ import 'package:flutter_charts/src/chart/container_base.dart' show Container;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
 
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
+import 'package:tuple/tuple.dart';
 
 import 'dart:math' as math show max, min;
 
@@ -27,7 +28,6 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as stra
 
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
-
 
 /// Abstract class representing the [Container] of the whole chart.
 ///
@@ -73,7 +73,7 @@ abstract class ChartTopContainer extends Container {
   /// Layout strategy for XContainer labels.
   ///
   /// Cached from constructor here, until the late [xContainer] is created.
-  final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy; // todo-00-last : check if needed on this level :  
+  final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy;
 
   /// Scaler of data values to values on the Y axis.
   late YScalerAndLabelFormatter yScaler;
@@ -102,7 +102,6 @@ abstract class ChartTopContainer extends Container {
 
   late bool isStacked;
 
-  // todo-00-last changed to getter : ChartOptions options;
   ChartOptions get options => data.chartOptions;
   ChartData data;
 
@@ -123,21 +122,10 @@ abstract class ChartTopContainer extends Container {
   ///     required to paint half of the topmost label.
   ChartTopContainer({
     required ChartData chartData,
-    // todo-00-last : required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : data = chartData,
-  // todo-00-last : options = chartOptions,
-  // todo-00-last : moved to constructor   _cachedXContainerLabelLayoutStrategy =
-  // todo-00-last : moved to constructor       xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: data.chartOptions),
-  _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy, // todo-00-last-done : changed to pass through only
-        super() {
-
-    // todo-00-last make not required and not initialized, Initialize at usage.
-    // todo-00-last make not required and not initialized, Initialize at usage : _cachedXContainerLabelLayoutStrategy =
-    // todo-00-last make not required and not initialized, Initialize at usage :    xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: data.chartOptions);
-    // Must initialize in body, as access to 'this' not available in initializer.
-    // todo-00-last : check if needed on this level :  this._cachedXContainerLabelLayoutStrategy.onContainer(this);
-  }
+        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+        super();
 
   /// Implements [Container.layout()] for the chart as a whole.
   ///
@@ -379,7 +367,7 @@ class YContainer extends ChartAreaContainer {
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
-    // Note: axisYMin > axisYMax ALWAYS. 
+    // Note: axisYMin > axisYMax ALWAYS.
     //       axisYMin should be called axisYBottom, and axisYMin should be called axisYTop,
     //       expressing the Y axis starts on top = 0.0, ends on bottom = 400 something.
     double axisYMin =
@@ -393,7 +381,7 @@ class YContainer extends ChartAreaContainer {
     //   so we cannot just skip layout completely at the beginning.
     if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
-      chartTopContainer.yScaler = _layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
+      chartTopContainer.yScaler = _layoutAutomaticallyCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
       return;
     }
 
@@ -414,9 +402,47 @@ class YContainer extends ChartAreaContainer {
   /// Implementation splits Y axis into even number of
   ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
   void layoutManually(double axisYMin, double axisYMax) {
-    List<double> allStackedDataYs = _chartTopContainer.pointsColumns
-        .flattenPointsValues(); // todo-2 move to common layout, same for manual and auto
+    YScalerAndLabelFormatter yScaler = _layoutManuallyCreateYScalerFromUserYLabels(axisYMin, axisYMax);
 
+    _commonLayout(yScaler);
+  }
+
+  YScalerAndLabelFormatter _layoutManuallyCreateYScalerFromUserYLabels(double axisYMin, double axisYMax) {
+    // todo-00-last move to common layout, same for manual and auto
+    // todo-00-last : Is the iterableNumToDouble needed at all? It was not in manual layout and worked
+    List<double> allStackedDataYs =
+    geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
+
+
+    Tuple4 tuple = manualLayoutExtractLabelsDistribution(axisYMin, axisYMax, allStackedDataYs);
+    List<double> yLabelsDividedInYDataRange = tuple.item1;
+    List<double> manuallyDistributedLabelYs = tuple.item2;
+    Interval dataYsEnvelop = tuple.item3;
+    List<String> yUserLabels = tuple.item4;
+
+/* todo-00-last
+    Range range = Range(
+      dataYs: allStackedDataYs,
+      chartOptions: _chartTopContainer.options,
+    );
+*/
+    
+    var yScaler = YScalerAndLabelFormatter(
+        dataYs: allStackedDataYs, // todo-00-last added
+        // todo-00-last removed : dataYsEnvelop: dataYsEnvelop,
+        // todo-00-last removed : labelYsInDataYsEnvelope: manuallyDistributedLabelYs,
+        axisY: Interval(axisYMin, axisYMax),
+        chartOptions: _chartTopContainer.options);
+    
+    yScaler.setLabelValuesForManualLayout(
+        labelValues: yLabelsDividedInYDataRange,
+        scaledLabelValues: manuallyDistributedLabelYs,
+        formattedYLabels: yUserLabels);
+    return yScaler;
+  }
+
+  // todo-00-last-last start here.
+  Tuple4<List<double>, List<double>, Interval, List<String>> manualLayoutExtractLabelsDistribution(double axisYMin, double axisYMax, List<double> allStackedDataYs,) {
     // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
     List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
@@ -427,62 +453,54 @@ class YContainer extends ChartAreaContainer {
 
     double yGridStepHeight = (yAxisInterval.max - yAxisInterval.min) / (yUserLabels.length - 1);
 
-    List<double> yLabelsDividedInYAxisRange = List.empty(growable: true);
+    List<double> manuallyDistributedLabelYs = List.empty(growable: true);
     //var seq = new Iterable.generate(yUserLabels.length, (i) => i); // 0 .. length-1
     //for (var yIndex in seq) {
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
-      yLabelsDividedInYAxisRange.add(yAxisInterval.min + yGridStepHeight * yIndex);
+      manuallyDistributedLabelYs.add(yAxisInterval.min + yGridStepHeight * yIndex);
     }
 
-    List<num> yLabelsDividedInYDataRange = List.empty(growable: true);
+    List<double> yLabelsDividedInYDataRange = List.empty(growable: true);
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
       yLabelsDividedInYDataRange.add(dataYsEnvelop.min + dataStepHeight * yIndex);
     }
-
-    var yScaler = YScalerAndLabelFormatter(
-        dataYsEnvelop: dataYsEnvelop,
-        labelYsInDataYsEnvelope: yLabelsDividedInYAxisRange,
-        axisYMin: axisYMin,
-        axisYMax: axisYMax,
-        chartOptions: _chartTopContainer.options);
-
-    yScaler.setLabelValuesForManualLayout(
-        labelValues: yLabelsDividedInYDataRange,
-        scaledLabelValues: yLabelsDividedInYAxisRange,
-        formattedYLabels: yUserLabels);
-
-    _commonLayout(yScaler);
+    
+    return Tuple4(yLabelsDividedInYDataRange, manuallyDistributedLabelYs, dataYsEnvelop, yUserLabels);
   }
-
   /// Generates scaled and spaced Y labels from data, then auto layouts
   /// them on the Y axis according to data range [range] and display
   /// range [axisYMin] to [axisYMax].
-  /// 
+  ///
   /// The auto-layout implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
   void layoutAutomatically(double axisYMin, double axisYMax) {
     // todo-2 move to common layout, same for manual and auto
-    YScalerAndLabelFormatter yScaler = _layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
+    YScalerAndLabelFormatter yScaler = _layoutAutomaticallyCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
 
     _commonLayout(yScaler);
   }
 
-  YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
+  YScalerAndLabelFormatter _layoutAutomaticallyCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
     // todo-00-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
     List<double> allStackedDataYs =
-        geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+        geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
+/* todo-00-last removed
     Range range = Range(
-      values: allStackedDataYs,
+      dataYs: allStackedDataYs,
       chartOptions: _chartTopContainer.options,
     );
-
+ */
+/* todo-00-last removed
     // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
+    YScalerAndLabelFormatter yScaler = range.makeAutoLayoutYScalerWithLabelInfosFromDataYsOnScale(
       axisYMin: axisYMin,
       axisYMax: axisYMax,
     );
+*/
+     // revert axisYMin/Max to accommodate y axis starting from top
+    YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(dataYs: allStackedDataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: _chartTopContainer.options,);
     return yScaler;
   }
 
@@ -504,8 +522,8 @@ class YContainer extends ChartAreaContainer {
     _yLabelContainers = List.empty(growable: true);
 
     for (LabelInfo labelInfo in yScaler.labelInfos) {
-      // yTickY is the vertical center of the label on the Y axis. 
-      // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue 
+      // yTickY is the vertical center of the label on the Y axis.
+      // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
       // It is kept always relative to the immediate container - YContainer
       double yTickY = labelInfo.axisValue.toDouble();
       var yLabelContainer = AxisLabelContainer(
@@ -584,18 +602,11 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
     required ChartTopContainer chartTopContainer,
-    // todo-00-last required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartTopContainer: chartTopContainer,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        ) {
-    // Must initialize in body, as access to 'this' not available in initializer.
-    // todo-00-last initialize if null passed
-    // todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy =
-    // todo-00-last initialize in super where stored :     xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: _chartTopContainer.data.chartOptions);
-     // todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy.onContainer(this);
-  }
+        );
 
   /// Lays out the chart in horizontal (x) direction.
   ///
@@ -799,29 +810,22 @@ abstract class AdjustableLabels {
 ///
 /// Extensions can create layout strategy defaults.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
-  // todo-00-last : can be null, initialized deeper when needed : final strategy.LabelLayoutStrategy _labelLayoutStrategy;
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
-  // todo-00-last : can be null, initialized deeper when needed :strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
-  // todo-00-last : THIS IS WHERE EXTENSIONS / ALL PUBLIC GET THEIR STRATEGY FROM
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
     required ChartTopContainer chartTopContainer,
-    // todo-00-last : not required, initialized late in the container that uses it : required strategy.LabelLayoutStrategy xContainerLabelLayoutStrategy,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: chartTopContainer.data.chartOptions),
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
+            strategy.DefaultIterativeLabelLayoutStrategy(options: chartTopContainer.data.chartOptions),
         super(
           chartTopContainer: chartTopContainer,
         ) {
     // Must initialize in body, as access to 'this' not available in initializer.
     _labelLayoutStrategy.onContainer(this);
-
   }
 }
-
-// todo-00-last initialize in super where stored : xContainerLabelLayoutStrategy =
-// todo-00-last initialize in super where stored :     xContainerLabelLayoutStrategy ?? strategy.DefaultIterativeLabelLayoutStrategy(options: _chartTopContainer.data.chartOptions);
 
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
@@ -1404,7 +1408,7 @@ class LegendContainer extends ChartAreaContainer {
           (2.0 * containerMarginTB),
     );
   }
-  
+
   @override
   void applyParentOffset(ui.Offset offset) {
     if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
@@ -1567,8 +1571,8 @@ class StackableValuePoint {
       throw Exception('Cannot clone if already stacked');
     }
 
-    StackableValuePoint clone =
-        StackableValuePoint(xLabel: xLabel, dataY: dataY, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
+    StackableValuePoint clone = StackableValuePoint(
+        xLabel: xLabel, dataY: dataY, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable leafs.
@@ -1635,8 +1639,10 @@ class PointsColumn {
     // todo-1 add validation that points are not stacked
     stackableValuePoints = points;
 
-    stackedPositivePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY >= 0);
-    stackedNegativePoints = selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY < 0);
+    stackedPositivePoints =
+        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY >= 0);
+    stackedNegativePoints =
+        selectThenCollectStacked(points: stackableValuePoints, selector: (point) => point.dataY < 0);
   }
 
   // points are ordered in series order, first to last  (bottom to top),
@@ -1707,18 +1713,18 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// below the currently processed point. The currently processed point is
   /// (potentially) stacked on it's predecessor.
   void _createStackableValuePointsFromChartData(ChartData chartData) {
-    // todo-00-later : describe this better and maybe refactor. this class PointsColumns is a list, 
+    // todo-00-later : describe this better and maybe refactor. this class PointsColumns is a list,
     //                 why do we need the nextRightPointsColumn at all???
-    
+
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }
-    
+
     // Data points managed row.  Internal only, should be refactored away.
     List<List<StackableValuePoint>> _valuePointArrInRows = List.empty(growable: true);
-    
+
     for (int row = 0; row < chartData.dataRows.length; row++) {
       List<num> dataRow = chartData.dataRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
@@ -1726,7 +1732,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       for (int col = 0; col < dataRow.length; col++) {
         // yTransform data before placing data point on StackableValuePoint.
         num colValue = _container.options.dataContainerOptions.yTransform(dataRow[col]);
-    
+
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
@@ -1734,20 +1740,20 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
             dataY: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
-    
+
         pointsRow.add(thisPoint);
         rowOfPredecessorPoints[col] = thisPoint;
       }
     }
     _valuePointArrInRows.toList();
-    
+
     // Data points managed column. Internal only, should be refactored away.
     List<List<StackableValuePoint>> _valuePointArrInColumns = transpose(_valuePointArrInRows);
-    
+
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
     PointsColumn? leftColumn;
-    
+
     for (List<StackableValuePoint> columnPoints in _valuePointArrInColumns) {
       var pointsColumn = PointsColumn(points: columnPoints);
       add(pointsColumn);

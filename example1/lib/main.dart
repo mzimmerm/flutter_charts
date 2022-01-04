@@ -16,7 +16,7 @@ import 'src/util/examples_descriptor.dart';
 import 'dart:io' as io show exit;
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
+// import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
 /// Example of simple line chart usage in an application.
 ///
@@ -336,10 +336,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   const Text('<<'),
                   // labels fit horizontally
-                  // new Text('<<<<<<'), // default, labels tilted, all present
-                  // new Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // labels skipped (shows 2 labels, legend present but text vertical)
-                  // new Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
+                  // const Text('<<<<<<'), // default, labels tilted, all present
+                  // const Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
+                  // const Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'), // labels skipped (shows 2 labels, legend present but text vertical)
+                  // const Text('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'),// labels do overlap, legend NOT present
                 ],
               ),
             ),
@@ -613,34 +613,7 @@ class _ExampleDefiner {
           chartOptions: chartOptions,
         );
         break;
-
-      case ExamplesEnum.ex51AnimalsBySeasonManualLogarithmicScale:
-        // THIS IS HERE ONLY AS EXAMPLE AND SHOULD NOT BE USED NOW WHEN WE HAVE a true logarithmic scale.
-        // var originalData = [
-        //  [2.2, 220.0, 2200.0],
-        //  [330.0, 3.3, 3300.0],
-        // ];
-        chartData = ChartData(
-          dataRows: [
-            [math.log(2.2), math.log(220.0), math.log(2200.0)],
-            [math.log(330.0), math.log(3.3), math.log(3300.0)],
-          ],
-          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
-          dataRowsLegends: const [
-            'Spring',
-            'Summer',
-          ],
-          yUserLabels: [
-            '2.2', // minimum of all values
-            math
-                .pow(math.e, ((math.log(2.2) + math.log(3303.0)) / 2))
-                .toString(), // values in between linearly scaled between log(min) and log(max)
-            '3300', // maximum of all values
-          ],
-          chartOptions: chartOptions,
-        );
-        break;
-
+        
       case ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale:
         ChartOptions logChartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
@@ -705,7 +678,6 @@ class _ExampleDefiner {
       case ExamplesChartTypeEnum.lineChart:
         LineChartTopContainer lineChartContainer = LineChartTopContainer(
           chartData: chartData,
-          // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
@@ -719,7 +691,6 @@ class _ExampleDefiner {
       case ExamplesChartTypeEnum.verticalBarChart:
         VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
           chartData: chartData,
-          // todo-00-last : chartOptions: chartOptions,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
