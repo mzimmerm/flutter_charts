@@ -55,10 +55,10 @@ void main() {
     double axisYMin = 100.0;
     double axisYMax = 500.0;
 
-    YScalerAndLabelFormatter yScaler;
+    YLabelsCreatorAndPositioner yScaler;
 
     var dataYs = [1.0, 22.0, 333.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     Interval dataYEnvelop = yScaler.dataYsEnvelop;
     List<num> labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, 0.0);
@@ -70,7 +70,7 @@ void main() {
     expect(labels[3], 300.0);
 
     dataYs = [-1.0, -22.0, -333.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
@@ -82,7 +82,7 @@ void main() {
     expect(labels[3], 0.0);
 
     dataYs = [22.0, 10.0, -333.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
@@ -95,7 +95,7 @@ void main() {
     expect(labels[4], 100.0);
 
     dataYs = [-22.0, -10.0, 333.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -22.0);
@@ -108,7 +108,7 @@ void main() {
     expect(labels[4], 300.0);
 
     dataYs = [-1000.0, 0.0, 1000.0, 2000.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
@@ -120,7 +120,7 @@ void main() {
     expect(labels[3], 2000.0);
 
     dataYs = [-1000.0, 0.0, 1000.0];
-    yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
@@ -193,10 +193,10 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options) {
     double expectedDataEnvelopMin = dataRow[4] as double;
     double expectedDataEnvelopMax = dataRow[5] as double;
 
-    // todo-00 Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
+    // todo-11-later Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeYScalerWithLabelInfosFromDataYsOnScale not adjust?
-    YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(dataYs: dataYsForRange, axisY: Interval(axisYMax, axisYMin), chartOptions: options);
+    YLabelsCreatorAndPositioner yScaler = YLabelsCreatorAndPositioner(dataYs: dataYsForRange, axisY: Interval(axisYMax, axisYMin), chartOptions: options);
 
     expect(yScaler.dataYsEnvelop.min, expectedDataEnvelopMin);
     expect(yScaler.dataYsEnvelop.max, expectedDataEnvelopMax);

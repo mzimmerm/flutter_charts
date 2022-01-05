@@ -121,7 +121,6 @@ List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
     for (int i = 3; i < dataRowsCount; i++) {
       int colorHex = math.Random().nextInt(0xFFFFFF);
       int opacityHex = 0xFF;
-      // todo-11-last : cast toInt added - does this change results?
       _rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
     }
   }

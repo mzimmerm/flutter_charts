@@ -42,7 +42,6 @@ abstract class ChartTopContainer extends Container {
   @override
   ui.Size get layoutSize => chartArea;
 
-  // todo-11-last describe in detail how this is set in Painter and used in Paint (chart).
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
   /// area on which the painter will paint.
@@ -65,7 +64,7 @@ abstract class ChartTopContainer extends Container {
   final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy;
 
   /// Scaler of data values to values on the Y axis.
-  late YScalerAndLabelFormatter yScaler;
+  late YLabelsCreatorAndPositioner yLabelsCreator;
 
   /// ##### Abstract methods or subclasses-implemented getters
 
@@ -366,15 +365,15 @@ class YContainer extends ChartAreaContainer {
     double axisYMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
-    //   and chartTopContainer.yScaler is needed in [PointsColumns.scale()],
+    //   and chartTopContainer.yLabelsCreator is needed in [PointsColumns.scale()],
     //   so we cannot just skip layout completely at the beginning.
     if (!chartTopContainer.options.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
-      chartTopContainer.yScaler = _layoutAutomaticallyCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
+      chartTopContainer.yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
       return;
     }
 
-    layoutAutomatically(axisYMin, axisYMax);
+    _createLabelsAndLayoutThisContainerWithLabels(axisYMin, axisYMax);
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
@@ -390,32 +389,35 @@ class YContainer extends ChartAreaContainer {
   /// The auto-layout implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
-  void layoutAutomatically(double axisYMin, double axisYMax) {
-    // todo-2 move to common layout, same for manual and auto
-    YScalerAndLabelFormatter yScaler = _layoutAutomaticallyCreateYScalerFromPointsColumnsData(axisYMin, axisYMax);
+  void _createLabelsAndLayoutThisContainerWithLabels(double axisYMin, double axisYMax) {
+    YLabelsCreatorAndPositioner yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
 
-    _commonLayout(yScaler);
+    _createContainerForLabelsInCreatorAndLayoutContainer(yLabelsCreator);
   }
 
-  YScalerAndLabelFormatter _layoutAutomaticallyCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
-    // todo-00-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
+  /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
+  YLabelsCreatorAndPositioner _createLabelsAndPositionIn(double axisYMin, double axisYMax) {
+    // todo-11-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
     List<double> dataYs =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
     // Create formatted labels, with positions scaled to the [axisY] interval.
-    YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(
+    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
       chartOptions: _chartTopContainer.options,
       yUserLabels: _chartTopContainer.data.yUserLabels,
     );
-    return yScaler;
+    return yLabelsCreator;
   }
 
-  void _commonLayout(YScalerAndLabelFormatter yScaler) {
+  // todo-11-last-morph Rework to call layout on each AxisLabelContainer. 
+  /// Takes labels in the passed [yLabelsCreator], and creates a [AxisLabelContainer] from each label,
+  /// then collects the created [AxisLabelContainer]s in the member list of Y label containers, the [_yLabelContainers].
+  void _createContainerForLabelsInCreatorAndLayoutContainer(YLabelsCreatorAndPositioner yLabelsCreator) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _chartTopContainer.yScaler = yScaler;
+    _chartTopContainer.yLabelsCreator = yLabelsCreator;
     ChartOptions options = _chartTopContainer.options;
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -429,7 +431,7 @@ class YContainer extends ChartAreaContainer {
     // and add to yLabelContainers list.
     _yLabelContainers = List.empty(growable: true);
 
-    for (LabelInfo labelInfo in yScaler.labelInfos) {
+    for (LabelInfo labelInfo in yLabelsCreator.labelInfos) {
       // yTickY is the vertical center of the label on the Y axis.
       // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
       // It is kept always relative to the immediate container - YContainer
@@ -441,7 +443,6 @@ class YContainer extends ChartAreaContainer {
         canvasTiltMatrix: vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
-      // yLabelContainer.layout(LayoutExpansion.unused()); // todo-11-last consider if needed - no
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
       yLabelContainer.parentOffsetTick = yTickY;
@@ -479,7 +480,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   double get yLabelsMaxHeight {
-    // todo-00-later-replace-this-pattern-with-fold - look for '? 0.0'
+    // todo-11-later-replace-this-pattern-with-fold - look for '? 0.0'
     return _yLabelContainers.isEmpty
         ? 0.0
         : _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
@@ -557,9 +558,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
-      // force layout. lack of this causes _textPainter._text size to be 0, 1 always.
-      //  xLabelContainer.layout(LayoutExpansion.unused()); // todo-11-last consider if needed - no
-
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
@@ -948,7 +946,7 @@ abstract class DataContainer extends ChartAreaContainer {
 
   /// Draws the actual data, either as lines with points (line chart),
   /// or bars/columns, stacked or grouped (bar/column charts).
-  // todo-00-later-not-used
+  // todo-11-later-not-used
   void _drawDataPresentersColumns(ui.Canvas canvas);
 }
 
@@ -1152,8 +1150,6 @@ class LegendItemContainer extends Container {
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
     // 1. layout the _labelContainer - this also provides height
-    // _labelContainer.layout(LayoutExpansion.unused()); // todo-11-last consider if needed - no
-
     ui.Size labelContainerSize = _labelContainer.layoutSize;
     // 2. Y Center the indicator and label on same horizontal Y level
     //   ind stands for "indicator" - the series color indicator square
@@ -1342,53 +1338,96 @@ class LegendContainer extends ChartAreaContainer {
   }
 }
 
-/// Represents values and coordinates of one presented atom of data (x and y).
-///
-/// The managed values are:
-///   - [xLabel], [dataY], and also the stacking support values [fromY], [toY];
-/// The managed coordinates are absolute coordinates painted by [ChartPainter]:
-///   - [scaledX], [scaledY], [scaledFrom], [scaledTo], and also
-///   the stacking support coordinates [fromScaledY], [yAxisdY].
-/// are General x, y coordinates are the outer bound where
-/// represented values will be shown.
-///
-/// For a bar chart (stacked or grouped), this may be the rectangle
-/// representing one data value.
+/// Represents the data values values and container coordinates (display coordinates)
+/// of data in this point. 
+/// 
+/// Data are stacked if [isStacked] is true.
+/// 
+/// The members can be grouped in three groups.
+/// 
+/// 1. The [xLabel], [dataRowIndex] and [predecessorPoint] are initial variables along with [dataY].
+///     
+/// 2. The [fromY] and [toY] and [dataY] are data-values representing this point's numeric value. 
+///   *This group's members do NOT change under [applyParentOffset] as they represent data, not coordinates;* 
+///   they must not change with container (display) size change.
+///   - In addition, the [fromY] and [toY] are stacked, ([dataY] is NOT stacked).
+///     Stacking is achieved by adding the values of [dataY] from the bottom of the stacked values to this point,
+///     by calling the [stackOnAnother] method.
+/// 
+/// 3. The [scaledX], [scaledY], [scaledFromY], [scaledToY], are scaled-coordinates - 
+///    represent members from group 2, scaled to the container coordinates (display coordinates).
+///    *This group's members DO change under [applyParentOffset] as they represent coordinates.* 
+///   - The [scaledY], [scaledFromY], [scaledToY] are converted from the stacked data values [dataY], [fromY] and [toY].
+///   - The [scaledX] is not converted from any data value (does not represent any data value).
+///   - The [scaledFrom] and [scaledTo] are [ui.Offset] wrappers for [scaledX], [scaledFromY], [scaledToY].
 ///
 /// Notes:
-///   - [scaledFrom] and [scaledTo] are offsets for painting in absolute chart
-///     coordinates. Both are set lazily after [scale] is called.
-///   - This object does not manage it's stacking (setting it's [stackFromY],
-///     it is left for the container that manages this object along with
+///   - This object does not manage it's stacking,
+///     stacking is left for the container that manages this object along with
 ///     values before (below) and after (above).
 class StackableValuePoint {
-  // initial values
-  // todo 0 check if this is unused; and why we need label in value?
+  // ### 1. Group 1, initial values, but also includes [dataY] in group 2
   String xLabel;
+  /// The transformed but NOT stacked Y data value.
+  /// **ANY dataYs in the chart objects, once they are copied out of ChartData** 
+  /// **are always 1. transformed, then 2. potentially stacked IN PLACE, then 3. potentially scaled IN A COPY!!**
+  /// **This is the sequence that always happens.**'
+  /// **Transform may be identity**
   double dataY;
+  /// The index of this point in the [PointsColumn] containing this point in it's
+  /// [PointsColumn.stackableValuePoints] list.  
   int dataRowIndex; // series index
+  /// The predecessor point in the [PointsColumn] containing this point in it's [PointsColumn.stackableValuePoints] list.
   StackableValuePoint? predecessorPoint;
+  /// True if data are stacked.
   bool isStacked = false;
 
-  // stacking - sets the y coordinate of range representing this point's value
+  // ### 2. Group 2, are data-values representing this point's numeric value.
+  /// The stacked-data-value where this point's Y value starts.
+  /// Created, along with [toY] as follows:
+  /// ```dart
+  ///    fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
+  ///     toY = fromY + dataY;
+  /// ```
+  /// This value is NOT coordinate based, so [applyParentOffset] is never applied to it.
   double fromY;
+  /// The stacked-data-value where this point's Y value ends.
+  /// See [fromY] for details.
   double toY;
 
-  /// Scaled values. All set lazily after [scale]
-  // todo-00-later-document what they are for, possible refactoring
+  // ### 3. Group 3, the scaled-coordinates - represent members from group 2, 
+  //        scaled to the container coordinates (display coordinates)
+  
+  /// The position in the topContainer, through the PointsColumns hierarchy. 
+  /// Not actually scaled (because it does not represent any X data), just 
+  /// always moved by offsetting by [applyParentOffset].
   double scaledX = 0.0;
+  
+  /// The position in the topContainer, representing the scaled value of [dataY].
+  /// Initially scaled to available pixels on the Y axis, 
+  /// then moved by offsetting by [applyParentOffset].
   double scaledY = 0.0;
-  double fromScaledY = 0.0;
-  double yAxisdY = 0.0;
+  
+  /// The position in the top container, representing the scaled value of [fromY].
+  /// Initially created as `yLabelsCreator.scaleY(value: fromY)`,
+  /// then moved by offsetting by [applyParentOffset].
+  double scaledFromY = 0.0;
+  
+  /// The position in the top container, representing the scaled value of [toY].
+  /// Initially created as `yAxisdY = yLabelsCreator.scaleY(value: toY);`,
+  /// then moved by offsetting by [applyParentOffset].
+  double scaledToY = 0.0;
 
-  /// Scaled Offsets for painting in absolute chart coordinates.
+  /// The [scaledFrom] and [scaledTo] are the scaled Offsets for painting in absolute chart coordinates.
   /// More precisely, offsets of the bottom and top of the presenter of this
-  /// point - for example, for VerticalBar, bottom and top of each bar
-  /// representing this value point (data point)
+  /// point - for example, for VerticalBar, bottom left and top right of each bar
+  /// representing this value point (data point).
+  /// Wrapper for [scaledX], [scaledFromY] 
   ui.Offset scaledFrom = const ui.Offset(0.0, 0.0);
+  /// Wrapper for [scaledX], [scaledToY] 
   ui.Offset scaledTo = const ui.Offset(0.0, 0.0);
 
-  // todo-00-later-document that dataY may be transformed. Also document as default constructor
+  /// The generative constructor of objects for this class.
   StackableValuePoint({
     required this.xLabel,
     required this.dataY,
@@ -1399,7 +1438,7 @@ class StackableValuePoint {
         toY = dataY;
 
   /// Initial instance of a [StackableValuePoint].
-  /// Forwarded to the default constructor.
+  /// Forwarded to the generative constructor.
   /// This should fail if it undergoes any processing such as layout
   StackableValuePoint.initial()
       : this(
@@ -1429,27 +1468,32 @@ class StackableValuePoint {
     return stack();
   }
 
-  /// Scales this point's data values [x] and [dataY], and all stacked y values
-  /// and points - [scaledX], [scaledY], [fromScaledY],  [yAxisdY],
-  /// [scaledFrom], [scaledTo] - using the passed values scaler [yScaler].
-  ///
-  /// Note that the x values are not really scaled, as object doed not
+  /// Scales this point to the container coordinates (display coordinates). 
+  /// 
+  /// More explicitly, scales the data-members of this point to the said coordinates.
+  /// 
+  /// See class documentation for which members are data-members and which are scaled-members.
+  /// 
+  /// Note that the x values are not really scaled, as object does not
   /// manage the unscaled [x] (it manages the corresponding label only).
   /// For this reason, the [scaledX] value must be provided explicitly.
   /// The provided [scaledX] value should be the
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
+  // todo-11-last-morph : Calling this 'scale' is suspect - this does not do any X dimension scaling at all!
+  //                Analyze the uses of the 'scale' term in the system, probably needs improvement.
   StackableValuePoint scale({
     required double scaledX,
-    required YScalerAndLabelFormatter yScaler,
+    required YLabelsCreatorAndPositioner yLabelsCreator,
   }) {
     this.scaledX = scaledX;
-    scaledY = yScaler.scaleY(value: dataY);
-    fromScaledY = yScaler.scaleY(value: fromY);
-    yAxisdY = yScaler.scaleY(value: toY);
-    scaledFrom = ui.Offset(scaledX, fromScaledY);
-    scaledTo = ui.Offset(scaledX, yAxisdY);
+    scaledY = yLabelsCreator.scaleY(value: dataY);
+    scaledFromY = yLabelsCreator.scaleY(value: fromY);
+    scaledToY = yLabelsCreator.scaleY(value: toY);
+    // todo-11-last-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
+    scaledFrom = ui.Offset(scaledX, scaledFromY);
+    scaledTo = ui.Offset(scaledX, scaledToY);
 
     return this;
   }
@@ -1462,8 +1506,8 @@ class StackableValuePoint {
     /// Scaled values represent screen coordinates, apply offset to all.
     scaledX += offset.dx;
     scaledY += offset.dy;
-    fromScaledY += offset.dy;
-    yAxisdY += offset.dy;
+    scaledFromY += offset.dy;
+    scaledToY += offset.dy;
 
     scaledFrom += offset;
     scaledTo += offset;
@@ -1494,8 +1538,8 @@ class StackableValuePoint {
     clone.toY = toY;
     clone.scaledX = scaledX;
     clone.scaledY = scaledY;
-    clone.fromScaledY = fromScaledY;
-    clone.yAxisdY = yAxisdY;
+    clone.scaledFromY = scaledFromY;
+    clone.scaledToY = scaledToY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
     clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 
@@ -1622,7 +1666,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// below the currently processed point. The currently processed point is
   /// (potentially) stacked on it's predecessor.
   void _createStackableValuePointsFromChartData(ChartData chartData) {
-    // todo-00-later : describe this better and maybe refactor. this class PointsColumns is a list,
+    // todo-11-later : describe this better and maybe refactor. this class PointsColumns is a list,
     //                 why do we need the nextRightPointsColumn at all???
 
     List<StackableValuePoint?> rowOfPredecessorPoints =
@@ -1645,7 +1689,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
-            xLabel: 'initial', // todo-11-last : xLabel: null : consider
+            xLabel: 'initial', // todo-11-last-morph : xLabel: null : consider
             dataY: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
@@ -1688,7 +1732,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = _container.xTickXs[col];
-        point.scale(scaledX: scaledX, yScaler: _container.yScaler);
+        point.scale(scaledX: scaledX, yLabelsCreator: _container.yLabelsCreator);
       });
       col++;
     }
@@ -1739,7 +1783,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   }
 }
 
-// todo-11 maybe replace.
 // todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
 //               can this be improved? This need may be a typing bug in Dart
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.

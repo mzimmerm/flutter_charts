@@ -84,7 +84,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   /// Constructor uses default values from [ChartOptions]
   // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-  // todo-11-last :   But they still need to default from options or somewhere?
+  //                But they still need to default from options or somewhere?
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
   })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,

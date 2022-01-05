@@ -35,7 +35,6 @@ class Poly {
 
   // ### methods
 
-  // todo-11-last : added static on the 2 methods below. can this improve?
   static decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
 
   static decimal.Decimal numToDec(num value) => dec(value.toString());

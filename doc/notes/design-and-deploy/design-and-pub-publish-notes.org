@@ -602,7 +602,364 @@ Also:
 
 If layout() is called, following paint() always prints full line  (goes to line 2 if the text contains LF).
 
-** IN-PROGRESS Refactorings to make flutter_charts a bit like Morphic (marginally like it)
+** DONE 1. Add logarithmic scale. 
+*** NOTE Doc: YLabels, YScaler, and their layout in flutter_charts
+
+ChartData yLabels and dataRowsColors behave differently.
+
+reason is, yLabels have 2 modes:
+- When yLabels passed to constructor, then they are set to non-null in argument, then manual layout is used.
+- When yLabels not passed, they are not used at all! Instead an auto layout of Y is used as follows:
+  - yScaler.labelInfos is used instead
+    - yScaler is created from this code
+      #+begin_src dart
+        YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
+          List<double> flatData =
+          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+
+          Range range = Range(
+            values: flatData,
+            chartOptions: _chartTopContainer.options,
+          );
+
+          // revert toScaleMin/Max to accommodate y axis starting from top
+          YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
+            toScaleMin: yAxisMin,
+            toScaleMax: yAxisMax,
+          );
+          return yScaler;
+        }
+
+        ///////////////
+        YScalerAndLabelFormatter makeLabelsFromDataOnScale({
+            required double toScaleMin,
+            required double toScaleMax,
+        }) {
+          double min = _closure.min;
+          double max = _closure.max;
+
+          Poly polyMin = Poly(from: min);
+          Poly polyMax = Poly(from: max);
+
+          int signMin = polyMin.signum;
+          int signMax = polyMax.signum;
+
+          // envelope for all y values
+          double from, to;
+
+          // Need to handle all combinations of the above (a < b < c etc).
+          // There are not that many, because pMin <= pMax and pDiff <= pMax.
+          /* keep
+          if (false && powerDiff < powerMin) {
+          // todo-00-github-issue-31 : Allow start Y axis from non-zero
+          // todo 1 - enable conditions where y=0 axis is not needed to show,
+          //          to allow for details, mainly for lots of values.
+          //          Make an option for this. Add to tests.
+          from = polyMin.floorAtMaxPower.toDouble();
+          to = polyMax.ceilAtMaxPower.toDouble();
+        } else {
+          ,*/
+          // for now, always start with min or 0, and end at max (reverse if both negative).
+
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              from = min;
+              to = 0.0;
+            } else {
+              from = 0.0;
+              to = max;
+            }
+          } else {
+            from = min;
+            to = max;
+          }
+          // keep }
+
+          // Now make labels, evenly distributed in the from, to range.
+          // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+          // Labels are (obviously) unscaled, that is, on the scale of data,
+          // not the displayed pixels scale.
+
+          List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
+
+          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
+
+          var yScaler = YScalerAndLabelFormatter(
+            dataRange: Interval(from, to),
+            valueOnLabels: labels,
+            toScaleMin: toScaleMin,
+            toScaleMax: toScaleMax,
+            chartOptions: _options);
+
+          yScaler.scaleLabelInfos();
+          yScaler.makeLabelsPresentable();
+
+          return yScaler;
+        }
+
+
+        List<double> _distributeLabelsIn(Interval interval) {
+          Poly polyMin = Poly(from: interval.min);
+          Poly polyMax = Poly(from: interval.max);
+
+          int powerMax = polyMax.maxPower;
+          int coeffMax = polyMax.coefficientAtMaxPower;
+          int signMax = polyMax.signum;
+
+          // using Min makes sense if one or both (min, max) are negative
+          int powerMin = polyMin.maxPower;
+          int coeffMin = polyMin.coefficientAtMaxPower;
+          int signMin = polyMin.signum;
+
+          List<double> labels = [];
+          int power = math.max(powerMin, powerMax);
+
+          // todo-1 refactor this and make generic
+          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+            // both negative or positive
+            if (signMax <= 0) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              // signMax >= 0
+              for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            }
+          } else {
+            // min is negative, max is positive - need added logic
+            if (powerMax == powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax < powerMin) {
+              for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+                // just one over 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else if (powerMax > powerMin) {
+              for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+                // just one under 0
+                labels.add(l * math.pow(10, power));
+              }
+            } else {
+              throw Exception('Unexpected power: $powerMin, $powerMax ');
+            }
+          }
+
+          return labels;
+        }
+
+      #+end_src
+    - yScaler notes  
+      so the labels are created in "distributeLabelsIn(Interval)"
+      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
+      - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
+
+        *todo*:
+        - rename _closure to _envelope
+        - rename value in params in range to pointsColumnsPointsValues
+        - Add test that is like RandomData but with similar real data.
+*** NOTE Doc: ChartData flow in the system, data values and names, where are labels created from values 
+1. ~ChartTopContainer.layout~
+   - ~ChartTopContainer.setupPointsColumns~
+     - ~PointsColumns~ costructor (passed TopContainer with data). Internally, this done in ~PointsColumns._createStackableValuePointsFromChartData~. In the end, *transformed data* lives in ~PointsColumns.each.PointsColumn.stackableValuePoints.each.StackableValuePoint.dataY~.
+     - Result: each ~transformed~ data point from ~ChartData.dataRows is converted ==> StackableValuePoint~
+2. ~YContainer.layout~
+   - ~YContainer.layoutAutomatically~
+     - ~YContainer._layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax~
+       - ~allStackedDataYs = _chartTopContainer.pointsColumns.flattenPointsValues()~
+       - ~new Range(values: allStackedDataYs, options)~
+       - ~yScaler = Range.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: axisYMin, axisYMax: axisYMax,)~
+         - This creates the disctributed labels as follows:
+           - ~distributedLabels = Range.distributeLabelsIn(Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0,))~
+             - So the labels are distributed in the TRANSFORMED dataYMin, dataYMax (maybe extended)
+           - ~yScaler = YScalerAndLabelFormatter(dataYsEnvelop: Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0), labelYsInDataYsEnvelope: distributedLabels, axisYMin: axisYMin, axisYMax: axisYMax, chartOptions: _options);~
+         - In the end, the ~yScaler~ scales from the (extended) dataYMin - dataYMax to the axisYMin - axisYMax. So, given a label's raw value, it will display the raw value, which is what we want.
+
+*** DONE Add unit tests for the following unclean classes and methods, before refactoring them
+- [X] util_dart.scaleValue  
+- [X] Range.makeYScalerWithLabelInfosFromDataYsOnScale # This includes  Range.distributeLabelsIn(Interval)
+- [ ] YScaler.scaleLabelInfos later
+- [ ] YScaler.makeLabelsPresentable later
+
+*** DONE Logarithmic Y scale
+**** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
+**** DONE *Logarithmic scale, with existing formatters and label creators*
+***** DONE Bug fix: Ex40 which is manual scale is now using logarithmic scale. Fix it.
+
+Fix: During manual layout, LabelInfo.transformedDataValue was not set.
+
+***** DONE Logarithms of base 10 and e
+loge(10) = ln10 <==> e^ln10 = 10
+loge(x) = y <==> e^y = x
+log10(x) = y <==> 10^y = x <==> (e^ln10)^y = x <==> e^(ln10*y) = x <==>  ln10*y = lne(x) <==> y = lne(x) / ln10
+
+So
+
+log10(x) = y # substiture above for y
+
+log10(x) = lne(x) / ln10 - where ln10 is loge(10)
+
+~So in Dart speak~, where lne = log:
+
+~log10(x) = log(x) / ln10~ where log(x) is loge(x) and ln10 is loge(10)
+
+Or - with making a more math notation
+
+log10(x) = loge(x) / loge(10)
+
+e^loge(x) = x ; e^loge(10) = 10
+
+***** DONE Steps to introduce logarithmic scale
+ 
+- [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
+- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartTopContainer such as VerticalBarChartTopContainer
+- [X] NOT FOR NOW: If scale is logarithmic, enforce the setting data starts above 0
+- [X] Add comments:
+  - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
+  - [X] *Data displayed inside the chart use transformed data values, displayed labels show raw data values*
+  - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
+
+
+
+** IN-PROGRESS-NOW 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
+*** DONE Rename distributedLabels to distributedLabelYs
+*** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
+*** DONE Manual vs Automated layout changes
+
+- [X] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
+  #+begin_src dart
+    Range range = Range(
+      values: allStackedDataYs,
+      chartOptions: _chartTopContainer.options,
+    );
+
+    // revert axisYMin/Max to accommodate y axis starting from top
+    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
+      axisYMin: axisYMin,
+      axisYMax: axisYMax,
+    );
+  #+end_src
+- [X] Remove Range and pull it's functionality to YScalerAndLabelFormatter
+- [X] Range only manages a list of values, that represents labels anyway! Do this:
+  - [X] Move the 2 members from Range to YScalerAndLabelFormatter
+  - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
+  - [X] Remove Range
+  - [X] Fix tests and test
+- [X] Manual Layout
+  - [X] use terminology userLabelsDrivenLayout instead of manualLayout
+  - [X] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
+  - [X] Fix manual layout to work the same as auto layout
+  - [X] Test
+  - [X] push
+  - [X] remove UNUSED methods
+  - [X] remove or rename obsolete comments
+  - [X] Address todo-00-later-document 
+  - [X] Address todo-00-later-not-used
+  - [X] Make YScaler members and methods private
+  - [X] Remove YScaler member dataYsEnvelop
+*** TODO Refactor ChartOptions
+
+- [ ] Rename in place ChartOptions to CommonChartOptions 
+- [ ] pull loose LineChartOptions members to a LineChartOptions 
+- [ ] convert VerticalBarChartOptions to empty class
+- [ ] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
+- [ ] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
+- [ ] Make code and test work.
+*** TODO Rename any Envelop to Interval
+*** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+*** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
+
+*We only use dataRows and dataYs which represent transformed data, so make it consistent*
+- [ ] Rename DataRows and related to RawDataRows
+- [ ] Rename DataRow to RawDataRow.
+- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
+- [ ] Rename LabelInfo.transformedDataValue to dataValue
+- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
+- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
+*** TODO LabelInfo: Make some parts a getter rather than member
+
+- [ ] Convert LabelInfo.rawDataValue to getter
+- [ ] Convert LabelInfo.axisValue to getter
+
+*** TODO Change AdjustableLabelsChartAreaContainer to a MIXIN.
+
+AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
+
+*** TODO Refactor StackableValuePoint nextRightColumnValuePoint
+
+This is often marked as todo-11-later
+The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
+However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
+This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
+
+~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
+Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
+
+  LineAndHotspotPresenter({
+    required StackableValuePoint point,
+    StackableValuePoint? nextRightColumnValuePoint,
+
+*** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First*
+*** TODO Address todo-00-later
+*** TODO todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+*** TODO Go over remaining // todo-11-later
+*** TODO Refactor and document Poly
+*** TODO Refactor and document StackableValuePoint - maybe not, *move this to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
+
+**** TODO Rename scaleX to containerX
+Move this to Morphic section
+**** TODO Rename scaleY to containerY
+Move this to Morphic section
+
+
+*** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
+
+IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
+
+** TODO 3. ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
+
+*** TODO Question any place in the library importing import 'package:flutter_charts/flutter_charts.dart'; and change to import only needed sources.
+*** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
+*** TODO So we need new class DataSet;   DataSets is custom List of DataSet.
+*** TODO So we need new class DataPoint; DataPoints is custom List<DataPoint>
+*** TODO DataPoint can be any object - sort of a naked user object
+*** TODO DataSetsMixin corresponds to dataRows
+*** TODO DataPoints corresponds to one dataRow.
+*** TODO DataSetsMixin is a mixin which provides functions that allow to extract values from DataPoint, for example
+**** DataSetsMixin.xValue(DataPoint, pointIndexInSets) =>  whatever value at DataPoint is considered x // similar for Y
+**** DataSetsMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
+***** DataSetsMixin.xLabel(DataPoint, pointIndexInSets) => DataSetsMixin.xValue(DataPoint, pointIndexInSets) // similar for Y
+***** DataSetsMixin.yTransform
+
+*** TODO ~DataSetsMixin must be extended as MyDataSetsMixin, implementing at least 2 methods: xValue and yValue, see aboce~
+*** TODO What options are controlled on the ChartData level? What on the DataSetsMixin level?
+*** TODO ~???? Move ChartOptions to ChartData ??? Or some other redesign using configurations ???~
+**** TODO ~Move function _options.yContainerOptions.valueToLabel to function ChartData.yLabelFormatter and allow to pass it and store as member~
+****** TODO This is the first crack on removing ChartOptions completely and move it to ChartData
+****** TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
+**** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
+**** TODO ~Finish moving ChartOptions entirely to ChartData
+*** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
+*** TODO If line chart, add option that allows to start on non-zero
+    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
+    - test  on values like 10,000 - 11,000.
+    -
+*** TODO Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
+This needs entity model change:
+- current ChartData and ChartOptions are kept on ChartTopContainer
+- current data structure is as follows: ChartData -> DataSetsMixin -> DataPoints - unchanged
+- currently ChartOptions is set on Painter along with ChartData;  available from any Container by reaching to parentContainer or topContainer
+- need to allow/add member ChartOptions on DataSet (default still on the ChartTopContainer, placed there from Painter)
+- need to allow/add member presentAs on DataSet (presentAs line chart or bar chart) 
+- need to allow xLabels and yLabels on DataSet ?? How ??
+- we allow to set both options AND enum chartType on ChartDataRows
+- we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
+Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
+** IN-PROGRESS 4. Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
@@ -877,350 +1234,3 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
-** IN-PROGRESS-NOW Add logarithmic scale. 
-*** NOTE Doc: YLabels, YScaler, and their layout in flutter_charts
-
-ChartData yLabels and dataRowsColors behave differently.
-
-reason is, yLabels have 2 modes:
-- When yLabels passed to constructor, then they are set to non-null in argument, then manual layout is used.
-- When yLabels not passed, they are not used at all! Instead an auto layout of Y is used as follows:
-  - yScaler.labelInfos is used instead
-    - yScaler is created from this code
-      #+begin_src dart
-        YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
-          List<double> flatData =
-          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
-
-          Range range = Range(
-            values: flatData,
-            chartOptions: _chartTopContainer.options,
-          );
-
-          // revert toScaleMin/Max to accommodate y axis starting from top
-          YScalerAndLabelFormatter yScaler = range.makeLabelsFromDataOnScale(
-            toScaleMin: yAxisMin,
-            toScaleMax: yAxisMax,
-          );
-          return yScaler;
-        }
-
-        ///////////////
-        YScalerAndLabelFormatter makeLabelsFromDataOnScale({
-            required double toScaleMin,
-            required double toScaleMax,
-        }) {
-          double min = _closure.min;
-          double max = _closure.max;
-
-          Poly polyMin = Poly(from: min);
-          Poly polyMax = Poly(from: max);
-
-          int signMin = polyMin.signum;
-          int signMax = polyMax.signum;
-
-          // envelope for all y values
-          double from, to;
-
-          // Need to handle all combinations of the above (a < b < c etc).
-          // There are not that many, because pMin <= pMax and pDiff <= pMax.
-          /* keep
-          if (false && powerDiff < powerMin) {
-          // todo-00-github-issue-31 : Allow start Y axis from non-zero
-          // todo 1 - enable conditions where y=0 axis is not needed to show,
-          //          to allow for details, mainly for lots of values.
-          //          Make an option for this. Add to tests.
-          from = polyMin.floorAtMaxPower.toDouble();
-          to = polyMax.ceilAtMaxPower.toDouble();
-        } else {
-          ,*/
-          // for now, always start with min or 0, and end at max (reverse if both negative).
-
-          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-            // both negative or positive
-            if (signMax <= 0) {
-              from = min;
-              to = 0.0;
-            } else {
-              from = 0.0;
-              to = max;
-            }
-          } else {
-            from = min;
-            to = max;
-          }
-          // keep }
-
-          // Now make labels, evenly distributed in the from, to range.
-          // Make labels only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
-          // Labels are (obviously) unscaled, that is, on the scale of data,
-          // not the displayed pixels scale.
-
-          List<double> labels = _distributeLabelsIn(Interval(from, to)); // todo 0 pull only once (see below)
-
-          // print( " ################ makeLabelsFromData: For ###_values=$_values found ###labeValues=${labels} and ###dataRange= ${from} to ${to} ");
-
-          var yScaler = YScalerAndLabelFormatter(
-            dataRange: Interval(from, to),
-            valueOnLabels: labels,
-            toScaleMin: toScaleMin,
-            toScaleMax: toScaleMax,
-            chartOptions: _options);
-
-          yScaler.scaleLabelInfos();
-          yScaler.makeLabelsPresentable();
-
-          return yScaler;
-        }
-
-
-        List<double> _distributeLabelsIn(Interval interval) {
-          Poly polyMin = Poly(from: interval.min);
-          Poly polyMax = Poly(from: interval.max);
-
-          int powerMax = polyMax.maxPower;
-          int coeffMax = polyMax.coefficientAtMaxPower;
-          int signMax = polyMax.signum;
-
-          // using Min makes sense if one or both (min, max) are negative
-          int powerMin = polyMin.maxPower;
-          int coeffMin = polyMin.coefficientAtMaxPower;
-          int signMin = polyMin.signum;
-
-          List<double> labels = [];
-          int power = math.max(powerMin, powerMax);
-
-          // todo-1 refactor this and make generic
-          if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-            // both negative or positive
-            if (signMax <= 0) {
-              for (double l = 1.0 * signMin * coeffMin; l <= 0; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            } else {
-              // signMax >= 0
-              for (double l = 1.0 * 0; l <= signMax * coeffMax; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            }
-          } else {
-            // min is negative, max is positive - need added logic
-            if (powerMax == powerMin) {
-              for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
-                labels.add(l * math.pow(10, power));
-              }
-            } else if (powerMax < powerMin) {
-              for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
-                // just one over 0
-                labels.add(l * math.pow(10, power));
-              }
-            } else if (powerMax > powerMin) {
-              for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
-                // just one under 0
-                labels.add(l * math.pow(10, power));
-              }
-            } else {
-              throw Exception('Unexpected power: $powerMin, $powerMax ');
-            }
-          }
-
-          return labels;
-        }
-
-      #+end_src
-    - yScaler notes  
-      so the labels are created in "distributeLabelsIn(Interval)"
-      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
-      - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
-
-        *todo*:
-        - rename _closure to _envelope
-        - rename value in params in range to pointsColumnsPointsValues
-        - Add test that is like RandomData but with similar real data.
-*** NOTE Doc: ChartData flow in the system, data values and names, where are labels created from values 
-1. ~ChartTopContainer.layout~
-   - ~ChartTopContainer.setupPointsColumns~
-     - ~PointsColumns~ costructor (passed TopContainer with data). Internally, this done in ~PointsColumns._createStackableValuePointsFromChartData~. In the end, *transformed data* lives in ~PointsColumns.each.PointsColumn.stackableValuePoints.each.StackableValuePoint.dataY~.
-     - Result: each ~transformed~ data point from ~ChartData.dataRows is converted ==> StackableValuePoint~
-2. ~YContainer.layout~
-   - ~YContainer.layoutAutomatically~
-     - ~YContainer._layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax~
-       - ~allStackedDataYs = _chartTopContainer.pointsColumns.flattenPointsValues()~
-       - ~new Range(values: allStackedDataYs, options)~
-       - ~yScaler = Range.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: axisYMin, axisYMax: axisYMax,)~
-         - This creates the disctributed labels as follows:
-           - ~distributedLabels = Range.distributeLabelsIn(Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0,))~
-             - So the labels are distributed in the TRANSFORMED dataYMin, dataYMax (maybe extended)
-           - ~yScaler = YScalerAndLabelFormatter(dataYsEnvelop: Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0), labelYsInDataYsEnvelope: distributedLabels, axisYMin: axisYMin, axisYMax: axisYMax, chartOptions: _options);~
-         - In the end, the ~yScaler~ scales from the (extended) dataYMin - dataYMax to the axisYMin - axisYMax. So, given a label's raw value, it will display the raw value, which is what we want.
-
-*** DONE Add unit tests for the following unclean classes and methods, before refactoring them
-- [X] util_dart.scaleValue  
-- [X] Range.makeYScalerWithLabelInfosFromDataYsOnScale # This includes  Range.distributeLabelsIn(Interval)
-- [ ] YScaler.scaleLabelInfos later
-- [ ] YScaler.makeLabelsPresentable later
-
-*** IN-PROGRESS-NOW Logarithmic Y scale
-**** DONE Rename ownScale to yValueScale, toScale to toDisplayScale
-**** DONE *Logarithmic scale, with existing formatters and label creators*
-***** DONE Bug fix: Ex40 which is manual scale is now using logarithmic scale. Fix it.
-
-Fix: During manual layout, LabelInfo.transformedDataValue was not set.
-
-***** DONE Logarithms of base 10 and e
-loge(10) = ln10 <==> e^ln10 = 10
-loge(x) = y <==> e^y = x
-log10(x) = y <==> 10^y = x <==> (e^ln10)^y = x <==> e^(ln10*y) = x <==>  ln10*y = lne(x) <==> y = lne(x) / ln10
-
-So
-
-log10(x) = y # substiture above for y
-
-log10(x) = lne(x) / ln10 - where ln10 is loge(10)
-
-~So in Dart speak~, where lne = log:
-
-~log10(x) = log(x) / ln10~ where log(x) is loge(x) and ln10 is loge(10)
-
-Or - with making a more math notation
-
-log10(x) = loge(x) / loge(10)
-
-e^loge(x) = x ; e^loge(10) = 10
-
-***** DONE Steps to introduce logarithmic scale
- 
-- [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
-- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartTopContainer such as VerticalBarChartTopContainer
-- [X] NOT FOR NOW: If scale is logarithmic, enforce the setting data starts above 0
-- [X] Add comments:
-  - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
-  - [X] *Data displayed inside the chart use transformed data values, displayed labels show raw data values*
-  - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
-**** DONE Rename distributedLabels to distributedLabelYs
-**** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
-**** IN-PROGRESS-NOW Manual vs Automated layout changes
-
-- [ ] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
-  #+begin_src dart
-    Range range = Range(
-      values: allStackedDataYs,
-      chartOptions: _chartTopContainer.options,
-    );
-
-    // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
-      axisYMin: axisYMin,
-      axisYMax: axisYMax,
-    );
-  #+end_src
-- [X] Remove Range and pull it's functionality to YScalerAndLabelFormatter
-- [X] Range only manages a list of values, that represents labels anyway! Do this:
-  - [X] Move the 2 members from Range to YScalerAndLabelFormatter
-  - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
-  - [X] Remove Range
-  - [X] Fix tests and test
-- [-] Manual Layout
-  - [X] use terminology userLabelsDrivenLayout instead of manualLayout
-  - [X] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
-  - [X] Fix manual layout to work the same as auto layout
-  - [X] Test
-  - [X] push
-  - [X] remove UNUSED methods
-  - [ ] Remove !. in code if possible
-  - [ ] remove obsolete comments
-  - [ ] Address todo-00-later-document 
-  - [ ] Address todo-00-later-not-used
-  - [ ] Make YScaler members and methods private
-  - [ ] Remove YScaler member dataYsEnvelop
-  - [ ] ~Add note to appropriate place that dataYs once out of ChartData are always transformed, then stacked, then potentially scaled !! This is the sequence that always happens. Transform may be identity~
-  - [ ] 
-  - [ ] 
-**** TODO Refactor ChartOptions
-
-- [ ] Rename in place ChartOptions to CommonChartOptions 
-- [ ] pull loose LineChartOptions members to a LineChartOptions 
-- [ ] convert VerticalBarChartOptions to empty class
-- [ ] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
-- [ ] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
-- [ ] Make code and test work.
-**** TODO Rename any Envelop to Interval
-**** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
-**** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
-
-*We only use dataRows and dataYs which represent transformed data, so make it consistent*
-- [ ] Rename DataRows and related to RawDataRows
-- [ ] Rename DataRow to RawDataRow.
-- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
-- [ ] Rename LabelInfo.transformedDataValue to dataValue
-- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
-- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-**** TODO LabelInfo: Make some parts a getter rather than member
-
-- [ ] Convert LabelInfo.rawDataValue to getter
-- [ ] Convert LabelInfo.axisValue to getter
-
-**** TODO Change AdjustableLabelsChartAreaContainer to a MIXIN.
-
-AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
-
-**** TODO Refactor StackableValuePoint nextRightColumnValuePoint
-
-The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
-However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
-This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
-
-~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
-Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
-
-  LineAndHotspotPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
-
-**** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First*
-**** TODO Address todo-00-later 
-**** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
-
-IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
-
-
-** TODO ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
-
-*** TODO Question any place in the library importing import 'package:flutter_charts/flutter_charts.dart'; and change to import only needed sources.
-*** TODO ChartData will contains DataSetsMixin contains DataPoints which is custom List<DataPoint>
-*** TODO So we need new class DataSet;   DataSets is custom List of DataSet.
-*** TODO So we need new class DataPoint; DataPoints is custom List<DataPoint>
-*** TODO DataPoint can be any object - sort of a naked user object
-*** TODO DataSetsMixin corresponds to dataRows
-*** TODO DataPoints corresponds to one dataRow.
-*** TODO DataSetsMixin is a mixin which provides functions that allow to extract values from DataPoint, for example
-**** DataSetsMixin.xValue(DataPoint, pointIndexInSets) =>  whatever value at DataPoint is considered x // similar for Y
-**** DataSetsMixinMixin provides ~default functions which extract xLabel, yLabel, yTransform~
-***** DataSetsMixin.xLabel(DataPoint, pointIndexInSets) => DataSetsMixin.xValue(DataPoint, pointIndexInSets) // similar for Y
-***** DataSetsMixin.yTransform
-
-*** TODO ~DataSetsMixin must be extended as MyDataSetsMixin, implementing at least 2 methods: xValue and yValue, see aboce~
-*** TODO What options are controlled on the ChartData level? What on the DataSetsMixin level?
-*** TODO ~???? Move ChartOptions to ChartData ??? Or some other redesign using configurations ???~
-**** TODO ~Move function _options.yContainerOptions.valueToLabel to function ChartData.yLabelFormatter and allow to pass it and store as member~
-****** TODO This is the first crack on removing ChartOptions completely and move it to ChartData
-****** TODO ~ChartData must be passed to Range, along with options, to make the transforms available~
-**** TODO Similar to above, ~Move function ChartOptions.YContainer.yTransform to ChartData and allow to pass it and store as member. Defaults to identity~ 
-**** TODO ~Finish moving ChartOptions entirely to ChartData
-*** TODO Replace y label formatter and scaler with a more elegant, see pilot project - I added one there. See todo-00-last-last
-*** TODO If line chart, add option that allows to start on non-zero
-    - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-    - test  on values like 10,000 - 11,000.
-    -
-*** TODO Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
-This needs entity model change:
-- current ChartData and ChartOptions are kept on ChartTopContainer
-- current data structure is as follows: ChartData -> DataSetsMixin -> DataPoints - unchanged
-- currently ChartOptions is set on Painter along with ChartData;  available from any Container by reaching to parentContainer or topContainer
-- need to allow/add member ChartOptions on DataSet (default still on the ChartTopContainer, placed there from Painter)
-- need to allow/add member presentAs on DataSet (presentAs line chart or bar chart) 
-- need to allow xLabels and yLabels on DataSet ?? How ??
-- we allow to set both options AND enum chartType on ChartDataRows
-- we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
-Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
-** TODO *todo-00-soon* add function which applies to Y data and scale but not labels. Use for logarighmic examples.
