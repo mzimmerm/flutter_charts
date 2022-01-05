@@ -385,11 +385,15 @@ class YContainer extends ChartAreaContainer {
       return;
     }
 
+/* todo-00-last-last-last everything should go thgough the same layout now
+    // todo-13 : there is also YScalerAndLabelContainer '  bool get isUsingUserLabels => yUserLabels != null;'
     if (_chartTopContainer.data.isUsingUserLabels) {
-      layoutManually(axisYMin, axisYMax);
+      UNUSED_layoutManually(axisYMin, axisYMax);
     } else {
       layoutAutomatically(axisYMin, axisYMax);
     }
+*/
+    layoutAutomatically(axisYMin, axisYMax);
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
@@ -401,20 +405,20 @@ class YContainer extends ChartAreaContainer {
   /// Manually layout Y axis by evenly dividing available height to all Y labels.
   /// Implementation splits Y axis into even number of
   ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
-  void layoutManually(double axisYMin, double axisYMax) {
-    YScalerAndLabelFormatter yScaler = _layoutManuallyCreateYScalerFromUserYLabels(axisYMin, axisYMax);
+  void UNUSED_layoutManually(double axisYMin, double axisYMax) {
+    YScalerAndLabelFormatter yScaler = _UNUSED_layoutManuallyCreateYScalerFromUserYLabels(axisYMin, axisYMax);
 
     _commonLayout(yScaler);
   }
 
-  YScalerAndLabelFormatter _layoutManuallyCreateYScalerFromUserYLabels(double axisYMin, double axisYMax) {
+  YScalerAndLabelFormatter _UNUSED_layoutManuallyCreateYScalerFromUserYLabels(double axisYMin, double axisYMax) {
     // todo-00-last move to common layout, same for manual and auto
     // todo-00-last : Is the iterableNumToDouble needed at all? It was not in manual layout and worked
-    List<double> allStackedDataYs =
+    List<double> dataYs =
     geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
 
-    Tuple4 tuple = manualLayoutExtractLabelsDistribution(axisYMin, axisYMax, allStackedDataYs);
+    Tuple4 tuple = manualLayoutExtractLabelsDistribution(axisYMin, axisYMax, dataYs);
     List<double> yLabelsDividedInYDataRange = tuple.item1;
     List<double> manuallyDistributedLabelYs = tuple.item2;
     Interval dataYsEnvelop = tuple.item3;
@@ -422,18 +426,19 @@ class YContainer extends ChartAreaContainer {
 
 /* todo-00-last
     Range range = Range(
-      dataYs: allStackedDataYs,
+      dataYs: dataYs,
       chartOptions: _chartTopContainer.options,
     );
 */
     
     var yScaler = YScalerAndLabelFormatter(
-        dataYs: allStackedDataYs, // todo-00-last added
+        dataYs: dataYs, // todo-00-last added
         // todo-00-last removed : dataYsEnvelop: dataYsEnvelop,
         // todo-00-last removed : labelYsInDataYsEnvelope: manuallyDistributedLabelYs,
         axisY: Interval(axisYMin, axisYMax),
         chartOptions: _chartTopContainer.options);
     
+    // todo-00-last-last : Only setting formattedYLabels is needed. Let us set that in makeLabelsPresentable - maybe make it per label layout 
     yScaler.setLabelValuesForManualLayout(
         labelValues: yLabelsDividedInYDataRange,
         scaledLabelValues: manuallyDistributedLabelYs,
@@ -442,28 +447,30 @@ class YContainer extends ChartAreaContainer {
   }
 
   // todo-00-last-last start here.
-  Tuple4<List<double>, List<double>, Interval, List<String>> manualLayoutExtractLabelsDistribution(double axisYMin, double axisYMax, List<double> allStackedDataYs,) {
+  Tuple4<List<double>, List<double>, Interval, List<String>> manualLayoutExtractLabelsDistribution(double axisYMin, double axisYMax, List<double> dataYs,) {
     // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
     List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
 
-    var dataYsEnvelop = Interval(allStackedDataYs.reduce(math.min), allStackedDataYs.reduce(math.max));
+    var dataYsEnvelop = Interval(dataYs.reduce(math.min), dataYs.reduce(math.max)); // used in _deriveDataYsEnvelopForUserLabels
+    // vvvvvvvvvv used in _distributeUserLabelsIn
     double dataStepHeight = (dataYsEnvelop.max - dataYsEnvelop.min) / (yUserLabels.length - 1);
 
     Interval yAxisInterval = Interval(axisYMin, axisYMax);
 
     double yGridStepHeight = (yAxisInterval.max - yAxisInterval.min) / (yUserLabels.length - 1);
 
+    // todo-00-last-last : this code is doing same as label transformedDataValues scaling to axis scale!! 
+    //                     this should have same result as scaleY !!
     List<double> manuallyDistributedLabelYs = List.empty(growable: true);
-    //var seq = new Iterable.generate(yUserLabels.length, (i) => i); // 0 .. length-1
-    //for (var yIndex in seq) {
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
       manuallyDistributedLabelYs.add(yAxisInterval.min + yGridStepHeight * yIndex);
     }
-
+    
     List<double> yLabelsDividedInYDataRange = List.empty(growable: true);
     for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
       yLabelsDividedInYDataRange.add(dataYsEnvelop.min + dataStepHeight * yIndex);
     }
+    // ^^^^^^^^^^^^^^
     
     return Tuple4(yLabelsDividedInYDataRange, manuallyDistributedLabelYs, dataYsEnvelop, yUserLabels);
   }
@@ -483,12 +490,12 @@ class YContainer extends ChartAreaContainer {
 
   YScalerAndLabelFormatter _layoutAutomaticallyCreateYScalerFromPointsColumnsData(double axisYMin, double axisYMax) {
     // todo-00-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
-    List<double> allStackedDataYs =
+    List<double> dataYs =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
 /* todo-00-last removed
     Range range = Range(
-      dataYs: allStackedDataYs,
+      dataYs: dataYs,
       chartOptions: _chartTopContainer.options,
     );
  */
@@ -500,7 +507,12 @@ class YContainer extends ChartAreaContainer {
     );
 */
      // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(dataYs: allStackedDataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: _chartTopContainer.options,);
+    YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartOptions: _chartTopContainer.options,
+      yUserLabels: _chartTopContainer.data.yUserLabels,
+    );
     return yScaler;
   }
 

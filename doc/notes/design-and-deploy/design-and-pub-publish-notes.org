@@ -1123,8 +1123,27 @@ e^loge(x) = x ; e^loge(10) = 10
 - [ ] Manual Layout
   - [ ] use terminology userLabelsDrivenLayout instead of manualLayout
   - [ ] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
+  - [ ] 
   - [ ] Fix manual layout to work the same as auto layout
+  - [ ] Remove !. in code if possible
   - [ ] Test
+  - [ ] push
+  - [ ] remove UNUSED methods
+  - [ ] Make YScaler members and methods private
+  - [ ] Remove YScaler member dataYsEnvelop
+  - [ ] remove obsolete comments
+  - [ ] ~Add note to appropriate place that dataYs once out of ChartData are always transformed, then stacked, then potentially scaled !! This is the sequence that always happens. Transform may be identity~
+  - [ ] 
+  - [ ] 
+**** TODO Refactor ChartOptions
+
+- [ ] Rename in place ChartOptions to CommonChartOptions 
+- [ ] pull loose LineChartOptions members to a LineChartOptions 
+- [ ] convert VerticalBarChartOptions to empty class
+- [ ] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
+- [ ] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
+- [ ] Make code and test work.
+**** TODO Rename any Envelop to Interval
 **** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
 **** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
 

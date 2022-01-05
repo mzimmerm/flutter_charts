@@ -89,7 +89,7 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
     // 
-    // todo-00-last-last : FIX AND PUT BACK const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
+    const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
     // 
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
     //

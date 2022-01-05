@@ -31,6 +31,7 @@ class Range {
 }
  */
 
+// todo-00-last-document
 /// Creates, scales, and formats the Y labels, all the way
 /// from the transformed data to their positions and displayed strings on the Y axis.
 ///
@@ -52,6 +53,9 @@ class Range {
 ///      from this range, the data values and label positions are scaled to the Y axis scale.
 ///            e.g. [-1000, 2000]
 class YScalerAndLabelFormatter {
+  // todo-00-last-last : pass yUserLabels from _chartTopContainer.data.yUserLabels! MAKE PRIVATE
+  List<String>? yUserLabels;
+  
   // todo-00-last moved from range
   final List<double> _dataYs;
 
@@ -62,8 +66,8 @@ class YScalerAndLabelFormatter {
   ///   - YContainer.layout
   ///     - YContainer.layoutAutomatically
   ///       - YContainer._layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax)
-  ///         - allStackedDataYs = _chartTopContainer.pointsColumns.flattenPointsValues()
-  ///         - new Range(values: allStackedDataYs, options)
+  ///         - dataYs = _chartTopContainer.pointsColumns.flattenPointsValues()
+  ///         - new Range(values: dataYs, options)
   ///         - yScaler = Range.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: axisYMin, axisYMax: axisYMax,)
   ///           - This creates the distributed labels as follows:
   ///             - distributedLabelYs = Range.distributeLabelsIn(Interval(dataYsMinExtendedTo0, dataYsMaxExtendedTo0,))
@@ -75,30 +79,39 @@ class YScalerAndLabelFormatter {
   ///                 axisYMax: axisYMax,
   ///                 chartOptions: _options);
   ///           - In the end, the yScaler scales from the (extended) dataYMin - dataYMax to the axisYMin - axisYMax. So, given a label's raw value, it will display the raw value, which is what we want.
+  // todo-00-last-last make _ private
   late Interval dataYsEnvelop;
   
   /// Maintains labels created from data values, scaled and unscaled.
+  // TODO-00-LAST CAN THIS BE PRIVATE
   late List<LabelInfo> labelInfos;
   
   final Interval _axisY;
   
   final ChartOptions _options;
 
+  // TODO-00-LAST : MAKE ALL METHODS PRIVATE.
   YScalerAndLabelFormatter({
     required List<double> dataYs,
     // todo-00-last removed : required this.dataYsEnvelop,
     // todo-00-last removed : required List<double> labelYsInDataYsEnvelope,
     required Interval axisY,
     required ChartOptions chartOptions,
+    this.yUserLabels,
   })  : _dataYs = dataYs,
         _axisY = axisY,
         _options = chartOptions {
     
-    dataYsEnvelop = _deriveDataYsExt();
-    List<double> distributedLabelYs = distributeAutoLabelsIn(dataYsEnvelop);
-    
+    List<double> distributedLabelYs;
+    if (isUsingUserLabels) {
+      // todo-00-last-last-done moved pieces of code from manualLayoutExtractLabelsDistribution here
+      dataYsEnvelop = _deriveDataYsEnvelopForUserLabels() ;
+      distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelop);
+    } else {
+      dataYsEnvelop = _deriveDataYsEnvelopForAutoLabels();
+      distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelop);
+    }
     // Create LabelInfos for all labels and point each to this scaler
-    // todo-00-last labelYsInDataYsEnvelope
     labelInfos = distributedLabelYs  // this is the label/DataYs enveloper - all values after transform
         .map((transformedLabelValue) => LabelInfo(
       transformedDataValue: transformedLabelValue,
@@ -107,8 +120,49 @@ class YScalerAndLabelFormatter {
         .toList();
 
     scaleLabelInfos();
-    makeLabelsPresentable();
 
+    if (isUsingUserLabels) {
+      // todo-00-last-last-last finish this
+      // Use list comprehension to iterate two arrays in parallel
+      for(int i = 0; i < labelInfos.length; i += 1) {
+        labelInfos[i].formattedLabel = yUserLabels![i];
+      }
+      
+/* todo-00-last
+      for (LabelInfo labelInfo in labelInfos) {
+        labelInfo.formattedLabel = _options.yContainerOptions.valueToLabel(labelInfo.dataValue);
+      }
+
+      yScaler.setLabelValuesForManualLayout(
+          labelValues: yLabelsDividedInYDataRange,
+          scaledLabelValues: manuallyDistributedLabelYs,
+          formattedYLabels: yUserLabels);
+
+
+      for (int i = 0; i < labelValues.length; i++) {
+        labelInfos[i].dataValue = labelValues[i];
+        labelInfos[i].transformedDataValue = _options.dataContainerOptions.yTransform(labelInfos[i].dataValue);
+        labelInfos[i].axisValue = scaledLabelValues[i];
+        labelInfos[i].formattedLabel = formattedYLabels[i];
+      }
+
+      if (_axisY.min > _axisY.max) {
+        // we are inverting scales, so invert labels.
+        labelInfos = labelInfos.reversed.toList();
+      }
+*/
+
+
+    } else {
+      _formatAutoLabels();
+    }
+
+    // This test is always true. Should address in the bigger context
+    if (_axisY.min > _axisY.max) {
+      // we are inverting scales, so invert labels.
+      labelInfos = labelInfos.reversed.toList();
+    }
+    
     // Collect data for testing. Disabled in production
     collectTestData(
         'for_Range.makeYScalerWithLabelInfosFromDataYsOnScale_test',
@@ -122,6 +176,8 @@ class YScalerAndLabelFormatter {
         ],
         this);
   }
+  
+  bool get isUsingUserLabels => yUserLabels != null;
 
   /// Scales [value]
   ///   - from own scale, given be the merged data and label intervals
@@ -147,10 +203,12 @@ class YScalerAndLabelFormatter {
       labelInfo._scaleLabelValue();
     }
 
+/* todo-00-last-last-last moved at the end
     if (_axisY.min > _axisY.max) {
       // we are inverting scales, so invert labels.
       labelInfos = labelInfos.reversed.toList();
     }
+*/
   }
 
   /// Manual layout helper, forces values and scaled values.
@@ -176,7 +234,7 @@ class YScalerAndLabelFormatter {
   ///
   /// [ChartOptions] allow for customization.
   /// todo 1 maybe make private and wrap - need for manual layout - better, create a constructor for manual layout and move code from containers here
-  void makeLabelsPresentable() {
+  void _formatAutoLabels() {
     for (LabelInfo labelInfo in labelInfos) {
       labelInfo.formattedLabel = _options.yContainerOptions.valueToLabel(labelInfo.dataValue);
     }
@@ -191,6 +249,7 @@ class YScalerAndLabelFormatter {
   /// two ranges: the labels range [dataYsOfLabels] (calculated from [YScalerAndLabelFormatter] [LabelInfo.transformedDataValue.])
   /// and the [dataYsEnvelop] which is also transformed data. Both are not-scaled && transformed.
   ///
+  // TODO-00-LAST : IS THIS ACTUALLY NEEDED? MAYBE THE SCALING IS RIGHT WITHOUT THIS? 
   Interval get mergedLabelYsIntervalWithDataYsEnvelop => Interval(
         dataYsOfLabels.reduce(math.min), // not-scaled && transformed data from  labelInfo.transformedDataValue
         dataYsOfLabels.reduce(math.max),
@@ -202,20 +261,27 @@ class YScalerAndLabelFormatter {
 // todo-13-move-to-interval class
 // todo-13-parametrize-interval-then-remove-toDouble
 // todo-00-last moved here from range
+/* todo-00-last-done removed, put inline, as only one use
   Interval get _dataYsEnvelop => Interval(
         _dataYs.reduce(math.min).toDouble(),
         _dataYs.reduce(math.max).toDouble(),
         // todo-00-last true,
         // todo-00-last true,
       );
+*/
 
 // todo-00-later document
   /// Derive the interval of dataY values, by default extended to start at 0 (all positive values),
   /// or end at 0 (all negative values).
 // todo-00-last moved here from Range
-  Interval _deriveDataYsExt() {
+  Interval _deriveDataYsEnvelopForAutoLabels() {
+    
+/* todo-00-last-done
     double dataYsMin = _dataYsEnvelop.min;
     double dataYsMax = _dataYsEnvelop.max;
+*/
+    double dataYsMin = _dataYs.reduce(math.min);
+    double dataYsMax = _dataYs.reduce(math.max);
 
     Poly polyMin = Poly(from: dataYsMin);
     Poly polyMax = Poly(from: dataYsMax);
@@ -264,6 +330,10 @@ class YScalerAndLabelFormatter {
     return Interval(dataYsMinExt, dataYsMaxExt);
   }
 
+  // todo-00-last-last-last
+  Interval _deriveDataYsEnvelopForUserLabels() {
+      return Interval(_dataYs.reduce(math.min), _dataYs.reduce(math.max));
+  }
 // todo-00-last : moved here from Range
   /// Automatically generates labels from data.
   ///
@@ -308,7 +378,7 @@ class YScalerAndLabelFormatter {
   
 // todo-00-later try to move this to LabelInfo; also refactor and make more generic in respect to log scale.
   /// Makes anywhere from zero to nine label values, of greatest power of
-  /// the passed [dataYsInterval.max].
+  /// the passed [dataYsEnvelop.max].
   ///
   /// Precision is 1 (that is, only leading digit, rest 0s).
   ///
@@ -317,9 +387,9 @@ class YScalerAndLabelFormatter {
   ///   2. [Interval] is <0, 299> then labels=[0, 100, 200]
   ///   3. [Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
-  List<double> distributeAutoLabelsIn(Interval dataYsInterval) {
-    Poly polyMin = Poly(from: dataYsInterval.min);
-    Poly polyMax = Poly(from: dataYsInterval.max);
+  List<double> _distributeAutoLabelsIn(Interval dataYsEnvelop) {
+    Poly polyMin = Poly(from: dataYsEnvelop.min);
+    Poly polyMax = Poly(from: dataYsEnvelop.max);
 
     int powerMax = polyMax.maxPower;
     int coeffMax = polyMax.coefficientAtMaxPower;
@@ -378,6 +448,29 @@ class YScalerAndLabelFormatter {
 
     return labels;
   }
+  
+  // todo-00-last-last-last finish this
+  List<double> _distributeUserLabelsIn(Interval dataYsEnvelop) {
+    double dataStepHeight = (dataYsEnvelop.max - dataYsEnvelop.min) / (yUserLabels!.length - 1);
+
+    /* todo-00-last-last : this code is doing same as label transformedDataValues scaling to axis scale!! 
+    Interval yAxisInterval = Interval(axisYMin, axisYMax);
+
+    double yGridStepHeight = (yAxisInterval.max - yAxisInterval.min) / (yUserLabels!.length - 1);
+
+    //                     this should have same result as scaleY called later in scaleLabelInfos!!
+    List<double> manuallyDistributedLabelYs = List.empty(growable: true);
+    for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
+      manuallyDistributedLabelYs.add(yAxisInterval.min + yGridStepHeight * yIndex);
+    }
+    */
+    List<double> yLabelsDividedInYDataRange = List.empty(growable: true);
+    for (int yIndex = 0; yIndex < yUserLabels!.length; yIndex++) {
+      yLabelsDividedInYDataRange.add(dataYsEnvelop.min + dataStepHeight * yIndex);
+    }
+    return yLabelsDividedInYDataRange;    
+  }
+
 }
 
 /// The [LabelInfo] is a holder for one label, it's numeric value and the displayed label.
