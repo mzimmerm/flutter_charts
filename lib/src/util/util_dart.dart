@@ -11,6 +11,109 @@
 
 import 'dart:math' as math;
 import 'test/generate_test_data_from_app_runs.dart';
+import 'package:decimal/decimal.dart' as decimal;
+
+
+/// A minimal polynomial needed for Y label and axis scaling.
+///
+/// Not fully a polynomial. Uses the [decimal] package.
+class Poly {
+  // ### members
+
+  final decimal.Decimal _dec;
+  final decimal.Decimal _one;
+  final decimal.Decimal _ten;
+
+  // ### constructors
+
+  /// Create
+  Poly({required num from})
+      : _dec = dec(from.toString()),
+        _one = numToDec(1),
+  // 1.0
+        _ten = numToDec(10);
+
+  // ### methods
+
+  // todo-11-last : added static on the 2 methods below. can this improve?
+  static decimal.Decimal dec(String value) => decimal.Decimal.parse(value);
+
+  static decimal.Decimal numToDec(num value) => dec(value.toString());
+
+  int get signum => _dec.signum;
+
+  int get fractLen => _dec.scale;
+
+  int get totalLen => _dec.precision;
+
+  int get coefficientAtMaxPower => (_dec.abs() / numToDec(math.pow(10, maxPower))).toInt();
+
+  int get floorAtMaxPower => (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
+
+  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) * numToDec(math.pow(10, maxPower))).toInt();
+
+  /// Position of first significant non zero digit.
+  ///
+  /// Calculated by starting from 0 at the decimal point, first to the left,
+  /// if no non zero is find on the left, then to the right.
+  ///
+  /// Zeros (0, 0.0 +-0.0 etc) are the only numbers where [maxPower] is 0.
+  int get maxPower {
+    if (totalLen == fractLen) {
+      // pure fraction
+      // multiply by 10 till >= 1.0 (not pure fraction)
+      return _ltOnePower(_dec);
+    }
+    return totalLen - fractLen - 1;
+  }
+
+  int _ltOnePower(decimal.Decimal tester) {
+    if (tester >= _one) throw Exception('$tester Failed: tester < 1.0');
+    int power = 0;
+    while (tester < _one) {
+      tester = tester * _ten;
+      power -= 1; // power = -1, -2, etc
+    }
+    return power;
+  }
+}
+
+// todo 0 add tests; also make constant; also add validation for min before max
+// todo-2: replaced num with double,  parametrize with T instead so it works for both
+
+class Interval {
+  Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
+
+  final double min;
+  final double max;
+  final bool includesMin;
+  final bool includesMax;
+
+  bool includes(num comparable) {
+    // before - read as: if negative, true, if zero test for includes, if positive, false.
+    int beforeMin = comparable.compareTo(min);
+    int beforeMax = comparable.compareTo(max);
+
+    // Hopefully these complications gain some minor speed,
+    // dealing with the obvious cases first.
+    if (beforeMin < 0 || beforeMax > 0) return false;
+    if (beforeMin > 0 && beforeMax < 0) return true;
+    if (beforeMin == 0 && includesMin) return true;
+    if (beforeMax == 0 && includesMax) return true;
+
+    return false;
+  }
+
+  /// Outermost union of this interal with [other].
+  Interval merge(Interval other) {
+    return Interval(math.min(min, other.min), math.max(max, other.max));
+  }
+
+  @override
+  String toString() {
+    return 'Interval($min, $max)';
+  }
+}
 
 // todo-13 Refactor scaling
 /// Scale the [value] that must be from the scale
@@ -133,3 +236,4 @@ double get epsilon => 0.000001;
 String enumName(Enum e) {
   return e.toString().split('.')[1];
 }
+

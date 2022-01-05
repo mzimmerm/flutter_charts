@@ -1,31 +1,20 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas, Color;
-
+import 'dart:math' as math show max;
 import 'package:flutter_charts/src/chart/container_base.dart' show Container;
-
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
-
 import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
-import 'package:tuple/tuple.dart';
-
-import 'dart:math' as math show max, min;
-
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
 import 'package:flutter_charts/src/chart/label_container.dart';
-
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/data.dart';
-
 import 'presenter.dart';
-
-import '../util/range.dart';
+import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
-
+import '../util/util_dart.dart';
 import 'package:flutter_charts/src/chart/line_container.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy;
-
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
@@ -385,14 +374,6 @@ class YContainer extends ChartAreaContainer {
       return;
     }
 
-/* todo-00-last-last-last everything should go thgough the same layout now
-    // todo-13 : there is also YScalerAndLabelContainer '  bool get isUsingUserLabels => yUserLabels != null;'
-    if (_chartTopContainer.data.isUsingUserLabels) {
-      UNUSED_layoutManually(axisYMin, axisYMax);
-    } else {
-      layoutAutomatically(axisYMin, axisYMax);
-    }
-*/
     layoutAutomatically(axisYMin, axisYMax);
 
     double yLabelsContainerWidth =
@@ -402,78 +383,6 @@ class YContainer extends ChartAreaContainer {
     layoutSize = ui.Size(yLabelsContainerWidth, parentLayoutExpansion.height);
   }
 
-  /// Manually layout Y axis by evenly dividing available height to all Y labels.
-  /// Implementation splits Y axis into even number of
-  ///   sections, each of [ChartData.yUserLabels] labels one horizontal guide line.
-  void UNUSED_layoutManually(double axisYMin, double axisYMax) {
-    YScalerAndLabelFormatter yScaler = _UNUSED_layoutManuallyCreateYScalerFromUserYLabels(axisYMin, axisYMax);
-
-    _commonLayout(yScaler);
-  }
-
-  YScalerAndLabelFormatter _UNUSED_layoutManuallyCreateYScalerFromUserYLabels(double axisYMin, double axisYMax) {
-    // todo-00-last move to common layout, same for manual and auto
-    // todo-00-last : Is the iterableNumToDouble needed at all? It was not in manual layout and worked
-    List<double> dataYs =
-    geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
-
-
-    Tuple4 tuple = manualLayoutExtractLabelsDistribution(axisYMin, axisYMax, dataYs);
-    List<double> yLabelsDividedInYDataRange = tuple.item1;
-    List<double> manuallyDistributedLabelYs = tuple.item2;
-    Interval dataYsEnvelop = tuple.item3;
-    List<String> yUserLabels = tuple.item4;
-
-/* todo-00-last
-    Range range = Range(
-      dataYs: dataYs,
-      chartOptions: _chartTopContainer.options,
-    );
-*/
-    
-    var yScaler = YScalerAndLabelFormatter(
-        dataYs: dataYs, // todo-00-last added
-        // todo-00-last removed : dataYsEnvelop: dataYsEnvelop,
-        // todo-00-last removed : labelYsInDataYsEnvelope: manuallyDistributedLabelYs,
-        axisY: Interval(axisYMin, axisYMax),
-        chartOptions: _chartTopContainer.options);
-    
-    // todo-00-last-last : Only setting formattedYLabels is needed. Let us set that in makeLabelsPresentable - maybe make it per label layout 
-    yScaler.setLabelValuesForManualLayout(
-        labelValues: yLabelsDividedInYDataRange,
-        scaledLabelValues: manuallyDistributedLabelYs,
-        formattedYLabels: yUserLabels);
-    return yScaler;
-  }
-
-  // todo-00-last-last start here.
-  Tuple4<List<double>, List<double>, Interval, List<String>> manualLayoutExtractLabelsDistribution(double axisYMin, double axisYMax, List<double> dataYs,) {
-    // In manual layout, ! force yUserLabels non-nullable - they must have been set and validated. Runtime fail if null.
-    List<String> yUserLabels = _chartTopContainer.data.yUserLabels!;
-
-    var dataYsEnvelop = Interval(dataYs.reduce(math.min), dataYs.reduce(math.max)); // used in _deriveDataYsEnvelopForUserLabels
-    // vvvvvvvvvv used in _distributeUserLabelsIn
-    double dataStepHeight = (dataYsEnvelop.max - dataYsEnvelop.min) / (yUserLabels.length - 1);
-
-    Interval yAxisInterval = Interval(axisYMin, axisYMax);
-
-    double yGridStepHeight = (yAxisInterval.max - yAxisInterval.min) / (yUserLabels.length - 1);
-
-    // todo-00-last-last : this code is doing same as label transformedDataValues scaling to axis scale!! 
-    //                     this should have same result as scaleY !!
-    List<double> manuallyDistributedLabelYs = List.empty(growable: true);
-    for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
-      manuallyDistributedLabelYs.add(yAxisInterval.min + yGridStepHeight * yIndex);
-    }
-    
-    List<double> yLabelsDividedInYDataRange = List.empty(growable: true);
-    for (int yIndex = 0; yIndex < yUserLabels.length; yIndex++) {
-      yLabelsDividedInYDataRange.add(dataYsEnvelop.min + dataStepHeight * yIndex);
-    }
-    // ^^^^^^^^^^^^^^
-    
-    return Tuple4(yLabelsDividedInYDataRange, manuallyDistributedLabelYs, dataYsEnvelop, yUserLabels);
-  }
   /// Generates scaled and spaced Y labels from data, then auto layouts
   /// them on the Y axis according to data range [range] and display
   /// range [axisYMin] to [axisYMax].
@@ -493,20 +402,7 @@ class YContainer extends ChartAreaContainer {
     List<double> dataYs =
         geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
-/* todo-00-last removed
-    Range range = Range(
-      dataYs: dataYs,
-      chartOptions: _chartTopContainer.options,
-    );
- */
-/* todo-00-last removed
-    // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = range.makeAutoLayoutYScalerWithLabelInfosFromDataYsOnScale(
-      axisYMin: axisYMin,
-      axisYMax: axisYMax,
-    );
-*/
-     // revert axisYMin/Max to accommodate y axis starting from top
+    // Create formatted labels, with positions scaled to the [axisY] interval.
     YScalerAndLabelFormatter yScaler = YScalerAndLabelFormatter(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
@@ -1052,6 +948,7 @@ abstract class DataContainer extends ChartAreaContainer {
 
   /// Draws the actual data, either as lines with points (line chart),
   /// or bars/columns, stacked or grouped (bar/column charts).
+  // todo-00-later-not-used
   void _drawDataPresentersColumns(ui.Canvas canvas);
 }
 

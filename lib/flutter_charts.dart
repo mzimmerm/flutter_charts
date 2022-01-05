@@ -26,7 +26,7 @@
 ///     2. Or using a path scheme, for example
 ///       ```dart
 ///         _import 'src/chart/data.dart';_ (absolute path)
-///         _import '../util/range.dart';_ (relative path)
+///         _import '../util/y_labels.dart';_ (relative path)
 ///       ```
 ///
 /// Any dart file (any client application) located outside
@@ -101,7 +101,7 @@ export 'src/chart/label_container.dart';
 export 'src/util/random_chart_data.dart';
 
 export 'src/util/util_dart.dart';
-export 'src/util/range.dart';
+export 'src/util/y_labels.dart';
 
 export 'src/chart/data.dart';
 export 'src/chart/container.dart';

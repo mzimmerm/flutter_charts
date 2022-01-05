@@ -55,10 +55,8 @@ void main() {
     double axisYMin = 100.0;
     double axisYMax = 500.0;
 
-    // todo-00-last Range range;
     YScalerAndLabelFormatter yScaler;
 
-    // todo-00-last range = Range(dataYs: [1.0, 22.0, 333.0];
     var dataYs = [1.0, 22.0, 333.0];
     yScaler = YScalerAndLabelFormatter(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
     Interval dataYEnvelop = yScaler.dataYsEnvelop;

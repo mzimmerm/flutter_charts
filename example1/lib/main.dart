@@ -14,7 +14,6 @@ import 'package:tuple/tuple.dart' show Tuple2;
 
 import 'src/util/examples_descriptor.dart';
 import 'dart:io' as io show exit;
-import 'dart:math' as math;
 
 // import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 

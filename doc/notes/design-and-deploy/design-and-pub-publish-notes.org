@@ -1120,18 +1120,19 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
   - [X] Remove Range
   - [X] Fix tests and test
-- [ ] Manual Layout
-  - [ ] use terminology userLabelsDrivenLayout instead of manualLayout
-  - [ ] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
-  - [ ] 
-  - [ ] Fix manual layout to work the same as auto layout
+- [-] Manual Layout
+  - [X] use terminology userLabelsDrivenLayout instead of manualLayout
+  - [X] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
+  - [X] Fix manual layout to work the same as auto layout
+  - [X] Test
+  - [X] push
+  - [X] remove UNUSED methods
   - [ ] Remove !. in code if possible
-  - [ ] Test
-  - [ ] push
-  - [ ] remove UNUSED methods
+  - [ ] remove obsolete comments
+  - [ ] Address todo-00-later-document 
+  - [ ] Address todo-00-later-not-used
   - [ ] Make YScaler members and methods private
   - [ ] Remove YScaler member dataYsEnvelop
-  - [ ] remove obsolete comments
   - [ ] ~Add note to appropriate place that dataYs once out of ChartData are always transformed, then stacked, then potentially scaled !! This is the sequence that always happens. Transform may be identity~
   - [ ] 
   - [ ] 
