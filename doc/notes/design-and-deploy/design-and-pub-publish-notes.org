@@ -527,7 +527,6 @@ comparison:
 
                       
 * IN-PROGRESS-NOW Flutter Charts Enhancements
-
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
 *** DONE Labels auto-fit: scale, tilt or skip labels to fit using *HorizontalLabelsContainer*
@@ -824,7 +823,6 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
 
 
-
 ** IN-PROGRESS-NOW 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
 *** DONE Rename distributedLabels to distributedLabelYs
 *** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
@@ -861,35 +859,49 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] Address todo-00-later-not-used
   - [X] Make YScaler members and methods private
   - [X] Remove YScaler member dataYsEnvelop
-*** TODO Refactor ChartOptions
+*** DONE Refactor ChartOptions so the same class applies for both LineChart and VerticalBarChart
 
-- [ ] Rename in place ChartOptions to CommonChartOptions 
-- [ ] pull loose LineChartOptions members to a LineChartOptions 
-- [ ] convert VerticalBarChartOptions to empty class
-- [ ] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
-- [ ] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
-- [ ] Make code and test work.
-*** TODO Rename any Envelop to Interval
-*** TODO Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
-*** TODO TODO: Rename DataRows to RawDataRows, DataRow to RawDataRow.
+Idea: Only have one ChartOptions class, used both as LineChartOptions and VerticalBarChartOptions.
+
+We lose: Polymorphism (ability to define methods with differenct behavior) on LineChartOptions and VerticalBarChartOptions.
+
+Why it's OK: We are trying to remove all behavior from options anyway, in fact, removing all options.
+
+- [X] pull loose LineChartOptions members to a LineChartOptions 
+- [X] Rename in place ChartOptions to CommonChartOptions 
+- [X] convert VerticalBarChartOptions to empty class
+- [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
+- [X] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
+- [X] Make code and test work.
+*** IN-PROGRESS-NOW Add note that Envelop always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
+*** IN-PROGRESS-NOW Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
+*** IN-PROGRESS-NOW LabelInfo: Make some parts a getter rather than member
+
+- [ ] Convert LabelInfo.rawDataValue to getter
+- [ ] Convert LabelInfo.axisValue to getter
+
+*** IN-PROGRESS-NOW Rename DataRows to RawDataRows, DataRow to RawDataRow.
 
 *We only use dataRows and dataYs which represent transformed data, so make it consistent*
 - [ ] Rename DataRows and related to RawDataRows
 - [ ] Rename DataRow to RawDataRow.
 - [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
 - [ ] Rename LabelInfo.transformedDataValue to dataValue
-- [ ] In the end, 'data', 'dataY' represents transformed. 'rawData' 'rawDataY' represents original data.
+- [ ] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
 - [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-*** TODO LabelInfo: Make some parts a getter rather than member
+*** TODO *Allow to reach to the top level chart by passing a baseclass Chart to top container. From there, both chart data and chart options can be reached.*
 
-- [ ] Convert LabelInfo.rawDataValue to getter
-- [ ] Convert LabelInfo.axisValue to getter
-
+- Is this doable at the moment, or do we need more Morph related changes?
+  
 *** TODO Change AdjustableLabelsChartAreaContainer to a MIXIN.
 
 AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 
-*** TODO Refactor StackableValuePoint nextRightColumnValuePoint
+*** TODO Refactor StackableValuePoint
+
+2 areas:
+
+**** Around nextRightColumnValuePoint
 
 This is often marked as todo-11-later
 The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
@@ -903,12 +915,18 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
 
+    
+**** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
+
 *** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First*
-*** TODO Address todo-00-later
-*** TODO todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-*** TODO Go over remaining // todo-11-later
+*** TODO todo-11-last and todo-11-later (also todo-00)
+
+- Resolve or renumber, and make clear to move them to the *Morph section*.
+  
+*** TODO Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+
 *** TODO Refactor and document Poly
-*** TODO Refactor and document StackableValuePoint - maybe not, *move this to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
+*** TODO Refactor and document StackableValuePoint - maybe not, *move this task to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
 
 **** TODO Rename scaleX to containerX
 Move this to Morphic section
@@ -959,7 +977,7 @@ This needs entity model change:
 - we allow to set both options AND enum chartType on ChartDataRows
 - we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
 Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
-** IN-PROGRESS 4. Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
+** IN-PROGRESS 4. Container and Morph: Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 

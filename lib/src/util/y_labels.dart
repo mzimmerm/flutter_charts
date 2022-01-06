@@ -41,7 +41,17 @@ class YLabelsCreatorAndPositioner {
   final Interval _axisY;
   
   /// The chart options.
-  final ChartOptions _options;
+  final ChartBehavior _chartBehavior;
+  
+  /// The function converts value to label.
+  /// 
+  /// Assigned from a corresponding function [ChartOptions.yContainerOptions.valueToLabel].
+  final Function _valueToLabel;
+
+  /// The function for data inverse transform.
+  /// 
+  /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
+  final Function _yInverseTransform;
 
   /// Generative constructor allows to create labels.
   /// 
@@ -53,11 +63,16 @@ class YLabelsCreatorAndPositioner {
   YLabelsCreatorAndPositioner({
     required List<double> dataYs,
     required Interval axisY,
-    required ChartOptions chartOptions,
+    required ChartBehavior chartBehavior,
+    required Function valueToLabel,
+    required Function yInverseTransform,
     this.yUserLabels,
   })  : _dataYs = dataYs,
         _axisY = axisY,
-        _options = chartOptions {
+        _chartBehavior = chartBehavior,
+        _valueToLabel = valueToLabel,
+        _yInverseTransform = yInverseTransform
+  {
     
     List<double> distributedLabelYs;
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
@@ -86,7 +101,7 @@ class YLabelsCreatorAndPositioner {
       if (_isUsingUserLabels) {
         labelInfo.formattedLabel = yUserLabels![i];
       } else {
-        labelInfo.formattedLabel = _options.yContainerOptions.valueToLabel(labelInfo.dataValue);
+        labelInfo.formattedLabel = _valueToLabel(labelInfo.dataValue);
       }
     }
     
@@ -167,7 +182,7 @@ class YLabelsCreatorAndPositioner {
     double dataYsMinExt, dataYsMaxExt;
 
     if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-      if (_options.startYAxisAtDataMinAllowed) {
+      if (_chartBehavior.startYAxisAtDataMinAllowed) {
         if (signMax <= 0) {
           dataYsMinExt = dataYsMin;
           dataYsMaxExt = dataYsMax;
@@ -243,7 +258,7 @@ class YLabelsCreatorAndPositioner {
       if (signMax <= 0) {
         double startCoeff = 1.0 * signMin * coeffMin;
         int endCoeff = 0;
-        if (_options.startYAxisAtDataMinAllowed) {
+        if (_chartBehavior.startYAxisAtDataMinAllowed) {
           endCoeff = signMax * coeffMax;
         }
         for (double l = startCoeff; l <= endCoeff; l++) {
@@ -253,7 +268,7 @@ class YLabelsCreatorAndPositioner {
         // signMax >= 0
         double startCoeff = 1.0 * 0;
         int endCoeff = signMax * coeffMax;
-        if (_options.startYAxisAtDataMinAllowed) {
+        if (_chartBehavior.startYAxisAtDataMinAllowed) {
           startCoeff = 1.0 * coeffMin;
         }
         for (double l = startCoeff; l <= endCoeff; l++) {
@@ -376,7 +391,7 @@ class LabelInfo {
     required this.transformedDataValue,
     required this.parentYScaler,
   }) {
-    var yInverseTransform = parentYScaler._options.dataContainerOptions.yInverseTransform;
+    var yInverseTransform = parentYScaler._yInverseTransform;
     dataValue = yInverseTransform(transformedDataValue);
   }
 

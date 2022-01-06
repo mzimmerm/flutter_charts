@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' as material show Colors; // any color we 
 import 'dart:math' as math show pi, log, ln10, pow;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter_charts/flutter_charts.dart';
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
@@ -17,6 +18,8 @@ class ChartOptions {
   final YContainerOptions yContainerOptions;
   final DataContainerOptions dataContainerOptions;
   final LabelCommonOptions labelCommonOptions;
+  final LineChartOptions lineChartOptions;
+  final VerticalBarChartOptions verticalBarChartOptions;
 
   const ChartOptions({
     this.iterativeLayoutOptions = const IterativeLayoutOptions(),
@@ -25,6 +28,8 @@ class ChartOptions {
     this.yContainerOptions = const YContainerOptions(),
     this.dataContainerOptions = const DataContainerOptions(),
     this.labelCommonOptions = const LabelCommonOptions(),
+    this.lineChartOptions = const LineChartOptions(),
+    this.verticalBarChartOptions = const VerticalBarChartOptions(),
   });
 
   /// Convenience constructor sets all values to default except labels and gridlines are defined not to show.
@@ -41,14 +46,6 @@ class ChartOptions {
             isYGridlinesShown: false,
           ),
         );
-  
-  /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
-  /// 
-  /// This is the method used in code, instead of using [DataContainerOptions.startYAxisAtDataMinRequested], 
-  /// which is merely a request that may not be granted in some situations. 
-  /// See [DataContainerOptions.startYAxisAtDataMinRequested]
-  bool get startYAxisAtDataMinAllowed => dataContainerOptions.startYAxisAtDataMinRequested;
-
 }
 
 @immutable
@@ -254,13 +251,17 @@ class DataContainerOptions {
   /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
+  /// The request to start Y axis and it's labels at data minimum.
+  /// 
   /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum 
   /// Y data value (transformed with the [yTransform] method).
   ///
-  /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is not allowed in several conditions:
+  /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
+  /// in several conditions:
   ///   - On the [VerticalBarChart]
-  ///   - for some [yTransform]s for example logarithm, where both data and logarithm must start above y value of 0.
-  /// The implementation of this dichotomy is ensure by [ChartOptions.startYAxisAtDataMinAllowed].
+  ///   - For some [yTransform]s for example logarithm transform, 
+  ///     where both data and logarithm must start above y value of 0.
+  /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed].
   final bool startYAxisAtDataMinRequested;
 
   const DataContainerOptions({

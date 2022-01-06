@@ -18,6 +18,19 @@ import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as stra
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
+/// The behavior mixin allows to plug in to the [ChartTopContainer] a behavior that is specific for a line chart
+/// or vertical bar chart. 
+/// 
+/// The behavior is plugged in the container, not the container owner chart.
+mixin ChartBehavior {
+  /// Behavior allows to start Y axis at data minimum (rather than 0).
+  /// 
+  /// The request is asked by [DataContainerOptions.startYAxisAtDataMinRequested],
+  /// but the implementation of this behavior must confirm it. 
+  /// See the extensions of this class for overrides of this method.
+  bool get startYAxisAtDataMinAllowed;
+}
+
 /// Abstract class representing the [Container] of the whole chart.
 ///
 /// Containers calculate coordinates of chart points
@@ -36,7 +49,7 @@ import 'bar/presenter.dart' as bar_presenters;
 ///   - `absolute positions` refer to positions
 ///      "in the coordinates of the chart area" - the full size given to the
 ///      ChartPainter by the application.
-abstract class ChartTopContainer extends Container {
+abstract class ChartTopContainer extends Container with ChartBehavior {
   /// Implements [Container.layoutSize()].
   // todo-13-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
@@ -405,7 +418,9 @@ class YContainer extends ChartAreaContainer {
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartOptions: _chartTopContainer.options,
+      chartBehavior: _chartTopContainer, // only 'as ChartBehavior' mixin needed
+      valueToLabel: _chartTopContainer.options.yContainerOptions.valueToLabel,
+      yInverseTransform:  _chartTopContainer.options.dataContainerOptions.yInverseTransform,
       yUserLabels: _chartTopContainer.data.yUserLabels,
     );
     return yLabelsCreator;
@@ -1395,8 +1410,8 @@ class StackableValuePoint {
   /// See [fromY] for details.
   double toY;
 
-  // ### 3. Group 3, the scaled-coordinates - represent members from group 2, 
-  //        scaled to the container coordinates (display coordinates)
+  // ### 3. Group 3, are the scaled-coordinates - copy-converted from members from group 2, 
+  //        by scaling group 2 members to the container coordinates (display coordinates)
   
   /// The position in the topContainer, through the PointsColumns hierarchy. 
   /// Not actually scaled (because it does not represent any X data), just 

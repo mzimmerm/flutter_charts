@@ -371,38 +371,22 @@ class _ExampleDefiner {
   _ExampleDefiner(this.descriptorOfExampleToRun);
 
   Widget createRequestedChart() {
-    // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
-    //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
-    // If xContainerLabelLayoutStrategy is not set (remains null), the charts instantiate
-    //   the DefaultIterativeLabelLayoutStrategy as we do here.
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-
-    ChartData chartData;
-
-    ChartOptions chartOptions;
-
+    
+    // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
-
-    // Set chartOptions defaults here, so we do not repeat it in every example section,
+    
+    // Declare chartData; the data object will be different in every examples.
+    ChartData chartData;
+    // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
-    switch (chartTypeToShow) {
-      case ExamplesChartTypeEnum.lineChart:
-        chartOptions = LineChartOptions();
-        // example of overwriting defaults of LineChartOptions:
-        //    chartOptions = LineChartOptions(
-        //      chartOptions: const ChartOptions(
-        //        labelCommonOptions: LabelCommonOptions(
-        //          labelTextColor: material.Colors.yellow,
-        //        ),
-        //      ),
-        //      hotspotInnerPaintColor: material.Colors.blue,
-        //    );
-        break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        chartOptions = VerticalBarChartOptions();
-        break;
-    }
+    ChartOptions chartOptions = const ChartOptions();
+    // Declare a null xContainerLabelLayoutStrategy. 
+    // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
+    //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
+    // If xContainerLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
+    //   a DefaultIterativeLabelLayoutStrategy.
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
 
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
@@ -462,24 +446,13 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0:
-        ChartOptions startYAxisAtMinDataChartOptions = const ChartOptions(
+        // Set option which will ask to start Y axis at data minimum.
+        // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+        chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             startYAxisAtDataMinRequested: true,
           ),
         );
-        switch (chartTypeToShow) {
-          case ExamplesChartTypeEnum.lineChart:
-            chartOptions = LineChartOptions(
-              chartOptions: startYAxisAtMinDataChartOptions,
-            );
-            break;
-          case ExamplesChartTypeEnum.verticalBarChart:
-            // Even though minimumYAxisIsAtMinimumYValueRatherThanZero set to true, will not be granted on bar chart
-            chartOptions = VerticalBarChartOptions(
-              chartOptions: startYAxisAtMinDataChartOptions,
-            );
-            break;
-        }
         chartData = ChartData(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
@@ -495,13 +468,11 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0:
-        ChartOptions endYAxisAtMaxDataChartOptions = const ChartOptions(
+        // Ask to end Y axis at maximum data (as all data negative)
+        chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             startYAxisAtDataMinRequested: true,
           ),
-        );
-        chartOptions = LineChartOptions(
-          chartOptions: endYAxisAtMaxDataChartOptions,
         );
         chartData = ChartData(
           dataRows: const [
@@ -517,15 +488,9 @@ class _ExampleDefiner {
         );
         break;
       case ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown:
-        // Set non-default chart options to show no labels
-        switch (chartTypeToShow) {
-          case ExamplesChartTypeEnum.lineChart:
-            chartOptions = LineChartOptions.noLabels();
-            break;
-          case ExamplesChartTypeEnum.verticalBarChart:
-            chartOptions = VerticalBarChartOptions.noLabels();
-            break;
-        }
+        // Set chart options to show no labels
+        chartOptions = const ChartOptions.noLabels();
+
         chartData = ChartData(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
@@ -614,24 +579,12 @@ class _ExampleDefiner {
         break;
         
       case ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale:
-        ChartOptions logChartOptions = const ChartOptions(
+        chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             yTransform: log10,
             yInverseTransform: inverseLog10,
           ),
         );
-        switch (chartTypeToShow) {
-          case ExamplesChartTypeEnum.lineChart:
-            chartOptions = LineChartOptions(
-              chartOptions: logChartOptions,
-            );
-            break;
-          case ExamplesChartTypeEnum.verticalBarChart:
-            chartOptions = VerticalBarChartOptions(
-              chartOptions: logChartOptions,
-            );
-            break;
-        }
         chartData = ChartData(
           dataRows: const [
             [10.0, 600.0, 1000000.0],

@@ -56,9 +56,15 @@ void main() {
     double axisYMax = 500.0;
 
     YLabelsCreatorAndPositioner yScaler;
-
+    
     var dataYs = [1.0, 22.0, 333.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs, 
+      axisY: Interval(axisYMin, axisYMax), 
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     Interval dataYEnvelop = yScaler.dataYsEnvelop;
     List<num> labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, 0.0);
@@ -68,9 +74,15 @@ void main() {
     expect(labels[1], 100.0);
     expect(labels[2], 200.0);
     expect(labels[3], 300.0);
-
+    
     dataYs = [-1.0, -22.0, -333.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
@@ -82,7 +94,13 @@ void main() {
     expect(labels[3], 0.0);
 
     dataYs = [22.0, 10.0, -333.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
@@ -95,7 +113,13 @@ void main() {
     expect(labels[4], 100.0);
 
     dataYs = [-22.0, -10.0, 333.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -22.0);
@@ -108,7 +132,13 @@ void main() {
     expect(labels[4], 300.0);
 
     dataYs = [-1000.0, 0.0, 1000.0, 2000.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
@@ -120,7 +150,13 @@ void main() {
     expect(labels[3], 2000.0);
 
     dataYs = [-1000.0, 0.0, 1000.0];
-    yScaler = YLabelsCreatorAndPositioner(dataYs: dataYs, axisY: Interval(axisYMin, axisYMax), chartOptions: options);
+    yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
     dataYEnvelop = yScaler.dataYsEnvelop;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
@@ -129,10 +165,13 @@ void main() {
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
     expect(labels[2], 1000.0);
-  });
 
+  });
+  
   test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
     ChartOptions options = const ChartOptions();
+    // The requested option (default) must be confirmed with behavior (this mimicks asking for 0 start on any TopChartContainer)
+    ChartBehavior chartBehavior = StartYAxisAtDataMinProhibitedChartBehavior();
 
     // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
     // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
@@ -152,7 +191,7 @@ void main() {
       [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
       [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
     ];
-    rangeTestCore(data, options);
+    rangeTestCore(data, options, chartBehavior);
   });
 
   test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -160,6 +199,8 @@ void main() {
     ChartOptions options = const ChartOptions(
       dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
     );
+    // The requested option must be confirmed with behavior (this mimicks asking for above 0 start on LineChartContainer)
+    ChartBehavior chartBehavior = StartYAxisAtDataMinAllowedChartBehavior();
 
     // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
     // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
@@ -179,12 +220,12 @@ void main() {
       [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
       [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
     ];
-    rangeTestCore(data, options);
+    rangeTestCore(data, options, chartBehavior);
   });
 
 }
 
-void rangeTestCore(List<List<Object>> data, ChartOptions options) {
+void rangeTestCore(List<List<Object>> data, ChartOptions options, ChartBehavior chartBehavior) {
   for (var dataRow in data) {
     List<double> dataYsForRange = dataRow[0] as List<double>;
     double axisYMin = dataRow[1] as double;
@@ -196,8 +237,15 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options) {
     // todo-11-later Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeYScalerWithLabelInfosFromDataYsOnScale not adjust?
-    YLabelsCreatorAndPositioner yScaler = YLabelsCreatorAndPositioner(dataYs: dataYsForRange, axisY: Interval(axisYMax, axisYMin), chartOptions: options);
+    YLabelsCreatorAndPositioner yScaler = YLabelsCreatorAndPositioner(
+      dataYs: dataYsForRange,
+      axisY: Interval(axisYMax, axisYMin),
+      chartBehavior: chartBehavior, // start Y axis at 0
+      valueToLabel: options.yContainerOptions.valueToLabel,
+      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+    );
 
+    
     expect(yScaler.dataYsEnvelop.min, expectedDataEnvelopMin);
     expect(yScaler.dataYsEnvelop.max, expectedDataEnvelopMax);
     expect(yScaler.dataYsOfLabels.length, expectedLabels.length);
@@ -210,3 +258,13 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options) {
   }
 }
 
+
+class StartYAxisAtDataMinAllowedChartBehavior extends Object with ChartBehavior {
+  @override
+  bool get startYAxisAtDataMinAllowed => true;
+}
+
+class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavior {
+  @override
+  bool get startYAxisAtDataMinAllowed => false;
+}

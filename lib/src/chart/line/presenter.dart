@@ -35,7 +35,7 @@ class LineAndHotspotPresenter extends Presenter {
           rowIndex: rowIndex,
           container: container,
         ) {
-    var options = container.options as LineChartOptions;
+    var options = container.options;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
@@ -46,12 +46,12 @@ class LineAndHotspotPresenter extends Presenter {
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = LineContainer(
-        lineFrom: fromPoint, lineTo: toPoint, linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
+        lineFrom: fromPoint, lineTo: toPoint, linePaint: rowDataPaint..strokeWidth = options.lineChartOptions.lineStrokeWidth);
     offsetPoint = fromPoint; // point is the left (from) end of the line
-    innerPaint = ui.Paint()..color = options.hotspotInnerPaintColor;
-    outerPaint = ui.Paint()..color = options.hotspotOuterPaintColor;
-    innerRadius = options.hotspotInnerRadius;
-    outerRadius = options.hotspotOuterRadius;
+    innerPaint = ui.Paint()..color = options.lineChartOptions.hotspotInnerPaintColor;
+    outerPaint = ui.Paint()..color = options.lineChartOptions.hotspotOuterPaintColor;
+    innerRadius = options.lineChartOptions.hotspotInnerRadius;
+    outerRadius = options.lineChartOptions.hotspotOuterRadius;
   }
 }
 
