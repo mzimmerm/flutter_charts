@@ -122,7 +122,8 @@ This just finishes up the publish.
 ** Test the package that was just published
 *** ~cd flutter_charts_sample_app; flutter pub upgrade; flutter pub get; flutter run~
 
-* DONE Add ability to create a Table of Contents to README.org
+* DONE Done
+** DONE Add ability to create a Table of Contents to README.org
 - [X] Install toc-org package
 - [X] Add to init.el
 #+BEGIN_SRC elisp
@@ -133,14 +134,14 @@ This just finishes up the publish.
 - [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
 - [X] So nothing special need be done after the above is configured.
 
-* Terminology and Selected Classes
+* Naming
 
 - (Presenter)Leaf       :: The finest visual element presented in each  "column of view" in chart - that is, all widgets representing series of data displayed above each X label. For example, for Line chart, the leaf would be one line and dot representing one Y value at one X label. For the bar chart, the leaf would be one bar representing one (stacked) Y value at one X label.
 - Classes: Presenter, LineAndHotspotPresenter, VerticalBarPresenter, PresenterCreator
 - Painter               :: Class which paints to chart to canvas. Terminology and class structure taken from Flutter's Painter and Painting classes.
 - Classes: todo
 
-* Older Design Notes
+* NOTE Older Design Notes
 
 ** Towards a new, suggested ~InternalChartData~ class - this is the class Flutter Charts will work from at it's core. *This may change significantly.*
 
@@ -176,7 +177,6 @@ Next, goals and non-goals of this change.
   - ~double DistancedDimension.distance(DimensionPoint point, DimensionPoint point)~ // must satisfy distance properties
   - ~int OrdinalDimension.comparePoints(DimensionPoint point, DimensionPoint point)~
   - ~double DimensionPoint.toDouble()~ - basically, distance from origin on the chart. Required(?) to find a minimum, maximum; We require this for OrdinalDimension as well, where it duplicates order - basically the result is the sequence in a the list of ordered dimension points.
-
 
 For now all members are public but that may change. Also will describe some constructors later.
 
@@ -386,50 +386,14 @@ Also, although "from a separation of data and view" principle I originally put s
 - [ ] ChartOptions.toLabel(label) -> ChartData
 - 
 
-** Refactoring todos
-
-1) [ ] Now we manage rowIndex (seriesIndex) in StackableValuePoint as dataRowIndex. So:
-   + Add rowIndex on Presenter (Leaf) as dataRowIndex.
-
-   + [ ] remove rowIndex from everywhere - createPointPresenter (createPresentor) , _createPresentersInColumn - and when it is needed for color, just use the Presenter.dataRowIndex.
-
-2) [ ] Split Function of vertGridLines- *vertGridLines[col].from.dx* serves both to draw grid lines, and ValuePoints. Add, right in XLayouterOutput, a variable for valuePointX - *what is the difference from labelX???*.
-
-3) [ ] Redefine Points and Presenters internal structure, as (from the bottom) double-linked list of points (forms Columns), and double-linked list of Columns (forms PointsColumns = Data) and Presenters (PresentersColumns)
-
-4) [ ] Member privacy issues
-
-   + [ ] ChartPainter.layouter is forced non-private (_) if we want to allow extensibility outside of the chart package (extensibility by clients).
-   + [ ] Go over usage of private accessing private _chartLayouter._options - suspect. But maybe ok
-
-5) [ ] Think of a way to get rid of the need to upcast in baseclass using " as SomeClass" - 2 occurences in "presenter as presenters.PointAndLinePresenter"
-
-6) [ ] I think yAxisAbsMin/Max passed to layouters is switched. Fix it
-
-7) *REMOVE NOISE OF nextRightPointsColumn nextRightColumnValuePoint*
-
-   1) [ ] *nextRightPointsColumn* IS LIKELY UNUSED, REMOVE but check.
-
-   2) [ ] *nextRightColumnValuePoint*  IS LIKELY UNUSED, REMOVE but check.
-
-8) [ ] Create a document definiting sequence of layouters, and what each does
-   - [ ] particular attention to where scaling happents
-9) [ ] *Legend improvements*
-
-   1) [ ] Implement legend as container, with layout that can wrap.
-
-10) [ ] Fix and test formalities, add docs, add examples, resolve versionning and library dependencies and branches, other preps before push to pub
-    + [ ] Test and ensure empty data work.
-    + [ ] *ADD TESTS FOR RANGE, END TO END ETC*
-
-** Consider Change naming conventions to WX, HY, CY, CX so all names are consistent 
-   - whateverOWX (width along x axis    - when context is offset of some other element)
-   - whateverOHY (height along y axis   - when context is offset of some other element)
+* Consider Change naming conventions to WX, HY, CY, CX so all names are consistent 
+   - whateverOX (width along x axis    - when context is offset of some other element)
+   - whateverOY (height along y axis   - when context is offset of some other element)
    - whateverCX  (X coordinate  )       - if it is just a point
    - whateverCY  (Y coordinate  )       - if it is just a point
    - rare use below v
-   - whateverRWX (width along x axis  - when context is rectangle)
-   - whateverRHY (height along y axis  - when context is rectangle)
+   - whateverRX (width along x axis  - when context is rectangle)
+   - whateverRY (height along y axis  - when context is rectangle)
    - whateverFromCY (Y coordinate from ) - if it is a point which is part of a line
    - whateverToCY (Y coordinate to )     - if it is a point which is part of a line
    - whateverFromCX (Y coordinate from ) - if it is a point which is part of a line
@@ -472,7 +436,7 @@ This section We describe running Flutter Charts in development mode on your devi
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
 
-* Note : geek charts_flutter use this process and associations between CustomPaint and CustomPainter
+* NOTE Geek charts_flutter use this process and associations between CustomPaint and CustomPainter
 geek:
   - ~ChartContainer<D> extends CustomPaint~ = widget that inflates to a custompaint that provides common ChartContext
     - member BaseChart
@@ -873,23 +837,49 @@ Why it's OK: We are trying to remove all behavior from options anyway, in fact, 
 - [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
 - [X] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
 - [X] Make code and test work.
-*** IN-PROGRESS-NOW Add note that Envelop always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
-*** IN-PROGRESS-NOW Rename any _container, container members to _topContainer if it is actually ChartableTopContainer
-*** IN-PROGRESS-NOW LabelInfo: Make some parts a getter rather than member
+*** DONE Add an intermediate between CustomPaint and Chart: ~VerticalBarChart extends widgets.CustomPaint~
 
-- [ ] Convert LabelInfo.rawDataValue to getter
-- [ ] Convert LabelInfo.axisValue to getter
+Add ~FlutterChart extends  widgets.CustomPaint~
+Then ~VerticalBarChart extends FlutterChart~
+Then ~LineChart extends FlutterChart~
+*** DONE Add note that Envelope always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
+*** DONE Rename any _container, container members to topChartContainer if it is actually ChartableTopContainer
+*** DONE ChartTopContainer related - replace final _private + getter with just private
 
-*** IN-PROGRESS-NOW Rename DataRows to RawDataRows, DataRow to RawDataRow.
+Look for places like this
+
+  final ChartTopContainer _chartTopContainer;
+  ChartTopContainer get chartTopContainer => _chartTopContainer;
+
+  What is the general need for a private final with a public getter? Isn't it better to just have a non-private final?  Yes. Changed that.
+*** DONE Rename DataRows to RawDataRows, DataRow to RawDataRow.
 
 *We only use dataRows and dataYs which represent transformed data, so make it consistent*
-- [ ] Rename DataRows and related to RawDataRows
-- [ ] Rename DataRow to RawDataRow.
-- [ ] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
-- [ ] Rename LabelInfo.transformedDataValue to dataValue
+- [-] Rename DataRows and related to RawDataRows
+- [-] Rename DataRow to RawDataRow.
+- [X] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
+- [X] Rename LabelInfo.transformedDataValue to dataValue
 - [ ] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
 - [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-*** TODO *Allow to reach to the top level chart by passing a baseclass Chart to top container. From there, both chart data and chart options can be reached.*
+*** DONE LabelInfo: Make some parts a getter rather than member
+
+- [X] Convert LabelInfo.rawDataValue to getter
+- [X] Convert LabelInfo.axisValue to getter
+*** IN-PROGRESS-NOW Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
+*** IN-PROGRESS-NOW Options access:
+
+- [ ] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
+- [ ] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
+- [ ]
+*** IN-PROGRESS-NOW Look at ~PointsColumns~ as the interesting place where ChartData.dataRows are transferred to the chart.
+*** IN-PROGRESS-NOW Rework imports to use the ~import '../presenter.dart' method rathern than importing the whole flutter_charts package.
+*** IN-PROGRESS-NOW [#B] Try to make as many members as possible final:
+- [X] LabelInfo
+- [ ] YSCaler
+- [ ] Containers - LATER
+- [ ] 
+  
+*** TODO *THINK - Allow to reach to the top level chart by passing a baseclass Chart to top container. From there, both chart data and chart options can be reached.*
 
 - Is this doable at the moment, or do we need more Morph related changes?
   
@@ -918,7 +908,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
     
 **** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
 
-*** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First*
+*** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First - maybe later after Morphs*
 *** TODO todo-11-last and todo-11-later (also todo-00)
 
 - Resolve or renumber, and make clear to move them to the *Morph section*.
@@ -932,8 +922,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 Move this to Morphic section
 **** TODO Rename scaleY to containerY
 Move this to Morphic section
-
-
+*** TODO *DOCUMENT ON PAPER ALL CLASSES USED IN CHARTS*
 *** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
 
 IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.

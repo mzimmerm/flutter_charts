@@ -1,10 +1,10 @@
 /// Example app for flutter_charts.
 ///
 /// All classes without prefix in this code are either
-///       - from material.dart or
-///       - from flutter_charts.dart exports (this library)
-///       Also, material.dart exports many dart files, including widgets.dart,
-///         so Widget classes are referred to without prefix
+/// - from material.dart or
+/// - from flutter_charts.dart exports (this library)
+/// Also, material.dart exports many dart files, including widgets.dart,
+/// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart

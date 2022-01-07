@@ -1,4 +1,3 @@
-import '../options.dart';
 import 'dart:ui' as ui show Color;
 import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 

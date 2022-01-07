@@ -142,7 +142,7 @@ double scaleValue({
     if (fromDomainLength == 0.0 && value == fromDomainMin) {
       // OK to have own scale degenerate, if value is the same as the degenerate min/max
       return toDomainMin;
-      // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelop
+      // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelope
     } else {
       throw StateError(
           'Cannot convert value $value between scales $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
@@ -153,7 +153,7 @@ double scaleValue({
     two: toDomainLength,
     value: 0.0,
   )) {
-    // if value != dataYsEnvelopMin (same as dataYsEnvelopMax), exception
+    // if value != dataYsEnvelopeMin (same as dataYsEnvelopeMax), exception
     if (value != fromDomainMin) {
       throw StateError('Value is not on own scale: $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
       //  else return axisYMin (same as axisYMax)
@@ -165,8 +165,8 @@ double scaleValue({
   // Naming the 0 based coordinates ending with 0
   double value0 = value - fromDomainMin;
   /*
-  double dataYsEnvelopMin0 = 0.0;
-  double dataYsEnvelopMax0 = fromDomainLength;
+  double dataYsEnvelopeMin0 = 0.0;
+  double dataYsEnvelopeMax0 = fromDomainLength;
   double axisYMin0 = 0.0;
   double axisYMax0 = toDomainLength;
   */

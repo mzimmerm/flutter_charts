@@ -16,16 +16,16 @@ class VerticalBarPresenter extends Presenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          container: container,
+          chartTopContainer: chartTopContainer,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = container.data.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
 
@@ -33,7 +33,7 @@ class VerticalBarPresenter extends Presenter {
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
     double barWidth =
-        container.gridStepWidth * container.options.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+        chartTopContainer.xContainer.xGridStep * chartTopContainer.options.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -54,13 +54,13 @@ class VerticalBarLeafCreator extends PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   }) {
     return VerticalBarPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      container: container,
+      chartTopContainer: chartTopContainer,
     );
   }
 }

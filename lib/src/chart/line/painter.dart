@@ -13,7 +13,7 @@ class LineChartPainter extends ChartPainter {
   /// the [LineChartContainer]
   LineChartPainter({
     required line_containers.LineChartTopContainer lineChartContainer,
-  }) : super(chartContainer: lineChartContainer) {
+  }) : super(chartTopContainer: lineChartContainer) {
     lineChartContainer.isStacked = false;
   }
 }

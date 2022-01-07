@@ -65,7 +65,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    Interval dataYEnvelop = yScaler.dataYsEnvelop;
+    Interval dataYEnvelop = yScaler.dataYsEnvelope;
     List<num> labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, 0.0);
     expect(dataYEnvelop.max, 333.0);
@@ -83,7 +83,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    dataYEnvelop = yScaler.dataYsEnvelop;
+    dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
     expect(dataYEnvelop.max, 0.0);
@@ -101,7 +101,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    dataYEnvelop = yScaler.dataYsEnvelop;
+    dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -333.0);
     expect(dataYEnvelop.max, 22.0);
@@ -120,7 +120,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    dataYEnvelop = yScaler.dataYsEnvelop;
+    dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -22.0);
     expect(dataYEnvelop.max, 333.0);
@@ -139,7 +139,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    dataYEnvelop = yScaler.dataYsEnvelop;
+    dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
     expect(dataYEnvelop.max, 2000.0);
@@ -157,7 +157,7 @@ void main() {
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
-    dataYEnvelop = yScaler.dataYsEnvelop;
+    dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
     expect(dataYEnvelop.min, -1000.0);
     expect(dataYEnvelop.max, 1000.0);
@@ -181,15 +181,15 @@ void main() {
       
       // ex11 linear and bar
       /*
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
+      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
       */
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YScalerAndLabelFormatter'],
+      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
     ];
     rangeTestCore(data, options, chartBehavior);
   });
@@ -207,18 +207,18 @@ void main() {
     var data = [
       /*
       // ex32 linear
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YScalerAndLabelFormatter'],
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YScalerAndLabelFormatter'],
+      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
       // ex33 linear
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
+      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
       */
       // ex32 linear
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YScalerAndLabelFormatter'],
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YScalerAndLabelFormatter'],
+      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
       // ex33 linear
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YScalerAndLabelFormatter'],
+      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
+      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
     ];
     rangeTestCore(data, options, chartBehavior);
   });
@@ -246,8 +246,8 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, ChartBehavior 
     );
 
     
-    expect(yScaler.dataYsEnvelop.min, expectedDataEnvelopMin);
-    expect(yScaler.dataYsEnvelop.max, expectedDataEnvelopMax);
+    expect(yScaler.dataYsEnvelope.min, expectedDataEnvelopMin);
+    expect(yScaler.dataYsEnvelope.max, expectedDataEnvelopMax);
     expect(yScaler.dataYsOfLabels.length, expectedLabels.length);
     for (int i = 0; i < yScaler.dataYsOfLabels.length; i++) {
       expect(

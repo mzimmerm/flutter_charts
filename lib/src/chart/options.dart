@@ -258,9 +258,9 @@ class DataContainerOptions {
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
   /// in several conditions:
-  ///   - On the [VerticalBarChart]
-  ///   - For some [yTransform]s for example logarithm transform, 
-  ///     where both data and logarithm must start above y value of 0.
+  /// - On the [VerticalBarChart]
+  /// - For some [yTransform]s for example logarithm transform, 
+  ///   where both data and logarithm must start above y value of 0.
   /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed].
   final bool startYAxisAtDataMinRequested;
 

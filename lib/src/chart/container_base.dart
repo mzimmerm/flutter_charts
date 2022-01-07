@@ -9,14 +9,13 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show Layo
 /// This base class manages
 ///
 /// Roles:
-///   - Container: through the [layout] method.
-///   - Translator (in X and Y direction): through the [applyParentOffset]
-///     method.
-///   - Painter: through the [paint] method.
+/// - Container: through the [layout] method.
+/// - Translator (in X and Y direction): through the [applyParentOffset]
+///   method.
+/// - Painter: through the [paint] method.
 ///
 /// Note on Lifecycle of [Container] : objects should be such that
-///       after construction, methods should be called in the order declared
-///       here.
+///   after construction, methods should be called in the order declared here.
 ///
 abstract class Container {
   /// Manages the layout size during the layout process in [layout()].

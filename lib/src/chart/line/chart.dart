@@ -1,13 +1,7 @@
 import 'package:flutter/widgets.dart' as widgets;
 
 import '../line/painter.dart' as line_painter show LineChartPainter;
-
-/*
- todo-11-data If line chart, add option that allows to start label values on non-zero - start with inimum y value instead.
-              - this is a bug report 
-              - add option userProvidedYLabelsBoundaryMin OR startYLabelsOnMinimumDataValues.
-              - test  on values like 10,000 - 11,000.  
-*/
+import '../chart.dart' as chart;
 
 /// Provides paint for the line chart.
 ///
@@ -22,7 +16,7 @@ import '../line/painter.dart' as line_painter show LineChartPainter;
 ///                              this.size: Size.zero, Widget child })`
 ///       and syntax of a constructor with named parameters
 ///       can be seen in the [LineChart] constructor.
-class LineChart extends widgets.CustomPaint {
+class LineChart extends chart.FlutterChart {
   /// Default constructor accepts size
   const LineChart({
     widgets.Key? key,

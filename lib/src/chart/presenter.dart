@@ -33,7 +33,7 @@ class Presenter {
     required this.point,
     this.nextRightColumnValuePoint,
     required this.rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   });
 }
 
@@ -50,7 +50,7 @@ class PresentersColumn {
 
   PresentersColumn({
     required PointsColumn pointsColumn,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
     required PresenterCreator presenterCreator,
   }) {
     // setup the contained presenters from points
@@ -59,19 +59,19 @@ class PresentersColumn {
         toPresenters: presenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        container: container);
+        chartTopContainer: chartTopContainer);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
         toPresenters: positivePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        container: container);
+        chartTopContainer: chartTopContainer);
     _createPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
         toPresenters: negativePresenters,
         pointsColumn: pointsColumn,
         presenterCreator: presenterCreator,
-        container: container);
+        chartTopContainer: chartTopContainer);
   }
 
   void _createPresentersInColumn({
@@ -79,7 +79,7 @@ class PresentersColumn {
     required List toPresenters,
     required PointsColumn pointsColumn,
     required PresenterCreator presenterCreator,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
@@ -92,7 +92,7 @@ class PresentersColumn {
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: point.dataRowIndex,
-        container: container,
+        chartTopContainer: chartTopContainer,
       );
       toPresenters.add(presenter);
       rowIndex++;
@@ -116,12 +116,12 @@ class PresentersColumn {
 ///
 /// Notes:
 ///   - Each [PresentersColumn] element of [presentersColumns]
-///   manages a link to the [PresentersColumn] on it's right, allowing
-///   walk without the [presentersColumns] list.
+///     manages a link to the [PresentersColumn] on it's right, allowing
+///     walk without the [presentersColumns] list.
 class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   PresentersColumns({
     required PointsColumns pointsColumns,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
     required PresenterCreator presenterCreator,
   }) {
     // iterate "column oriented", that is, over valuePointsColumns.
@@ -129,7 +129,7 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
     for (PointsColumn pointsColumn in pointsColumns) {
       var presentersColumn = PresentersColumn(
         pointsColumn: pointsColumn,
-        container: container,
+        chartTopContainer: chartTopContainer,
         presenterCreator: presenterCreator,
       );
       add(presentersColumn);
@@ -157,6 +157,6 @@ abstract class PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   });
 }

@@ -24,11 +24,11 @@ import '../util/geometry.dart' as geometry;
 /// ways to set text style, until the label fits a predefined allowed size.
 ///
 /// Notes:
-///   - Instances manage the text to be presented as label,
+/// - Instances manage the text to be presented as label,
 ///   and create a member [_textPainter], instance of [widgets.TextPainter]
 ///   from the label. The contained [_textPainter] is used for all layout
 ///   and painting.
-///   - All methods (and constructor) of this class always call
+/// - All methods (and constructor) of this class always call
 ///   [_textPainter.layout] immediately after a change.
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [_textPainter]
@@ -147,12 +147,12 @@ class LabelContainer extends container_base.Container {
   /// vertical direction in that case.
   ///
   /// Implementation and Behaviour:
-  ///   - Because the underlying [_textPainter] is always
-  ///     - created using [widgets.TextPainter.ellipses]
-  ///     - and layed out using `textPainter.layout(maxWidth:)`
-  ///   the subsequent `textPainter.paint(canvas)` call paints the label
-  ///   **as always cropped to it's allocated size [_labelMaxWidth]**.
-  ///   - [_isOverflowingInLabelDirection] can be asked but this is information only.
+  /// - Because the underlying [_textPainter] is always
+  ///   - created using [widgets.TextPainter.ellipses]
+  ///   - and layed out using `textPainter.layout(maxWidth:)`
+  ///     the subsequent `textPainter.paint(canvas)` call paints the label
+  ///     **as always cropped to it's allocated size [_labelMaxWidth]**.
+  /// - [_isOverflowingInLabelDirection] can be asked but this is information only.
   bool _layoutAndCheckOverflowInTextDirection() {
     _textPainter.layout();
 
@@ -205,12 +205,12 @@ class LabelStyle {
 ///
 /// Generally, the owner (immediate parent) of this object decides what
 /// the [parentOffsetTick]s are:
-///   - If owner is a [YContainer], all positions are relative to the top of
-///     the container of y labels
-///   - If owner is a [XContainer] All positions are relative to the left
-///     of the container of x labels
-///   - If owner is Area [ChartContainer], all positions are relative
-///     to the top of the available [chartArea].
+/// - If owner is a [YContainer], all positions are relative to the top of
+///   the container of y labels
+/// - If owner is a [XContainer] All positions are relative to the left
+///   of the container of x labels
+/// - If owner is Area [ChartContainer], all positions are relative
+///   to the top of the available [chartArea].
 ///
 class AxisLabelContainer extends LabelContainer {
   /// UI coordinate of the "axis tick mark", which represent the

@@ -1,9 +1,8 @@
 import 'dart:ui' as ui show Offset, Paint, Color;
 
 import '../presenter.dart';
-import 'package:flutter_charts/src/chart/line/options.dart';
 import '../container.dart';
-import 'package:flutter_charts/src/chart/line_container.dart';
+import '../../chart/line_container.dart';
 
 
 /// Presenter of the atomic/leaf element of one data point on the
@@ -28,18 +27,18 @@ class LineAndHotspotPresenter extends Presenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          container: container,
+          chartTopContainer: chartTopContainer,
         ) {
-    var options = container.options;
+    var options = chartTopContainer.options;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = container.data.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
@@ -67,13 +66,13 @@ class LineAndHotspotLeafCreator extends PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer container,
+    required ChartTopContainer chartTopContainer,
   }) {
     return LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      container: container,
+      chartTopContainer: chartTopContainer,
     );
   }
 }

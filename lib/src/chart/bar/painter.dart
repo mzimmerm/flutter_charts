@@ -13,7 +13,7 @@ class VerticalBarChartPainter extends ChartPainter {
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
     required bar_containers.VerticalBarChartTopContainer verticalBarChartContainer,
-  }) : super(chartContainer: verticalBarChartContainer) {
+  }) : super(chartTopContainer: verticalBarChartContainer) {
     verticalBarChartContainer.isStacked = true;
   }
 }

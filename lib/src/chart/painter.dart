@@ -26,7 +26,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  containers.ChartTopContainer chartContainer;
+  containers.ChartTopContainer chartTopContainer;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -35,7 +35,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// Constructor ensures the [ChartPainter] is initialized with
   /// the [ChartContainer]
   ChartPainter({
-    required this.chartContainer,
+    required this.chartTopContainer,
   });
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
@@ -46,7 +46,7 @@ abstract class ChartPainter extends widgets.CustomPainter {
   /// being able to paint and draw itself.
   ///
   /// The substantial role is to pass the [size] provided by the framework layout
-  /// to [chartContainer.chartArea]. The container needs this information for layout,
+  /// to [chartTopContainer.chartArea]. The container needs this information for layout,
   /// see [containers.ChartContainer.layout()].
   ///
   /// Once the above role is done, it delegates all painting to canvas to the
@@ -65,11 +65,11 @@ abstract class ChartPainter extends widgets.CustomPainter {
     // Once we know the size, let the container manage it's size.
     // This is the layout size. Once done, we can delegate painting
     // to canvas to the [ChartContainer].
-    chartContainer.chartArea = size;
+    chartTopContainer.chartArea = size;
 
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    chartContainer.paint(canvas);
+    chartTopContainer.paint(canvas);
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??

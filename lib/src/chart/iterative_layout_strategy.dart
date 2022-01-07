@@ -111,13 +111,13 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   /// Core of the auto layout strategy.
   ///
-  /// If labels in the [_container] overlap, this method takes the
+  /// If labels in the [_adjustableLabelsContainer] overlap, this method takes the
   /// next prescribed auto-layout action - one of the actions defined in the
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
   void reLayout(LayoutExpansion parentLayoutExpansion) {
-    if (!_container.labelsOverlap()) {
+    if (!_adjustableLabelsContainer.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
       //   to layout(). Exits from iterative layout.
       return;
@@ -142,7 +142,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    _container.layout(parentLayoutExpansion); // will call this function back!
+    _adjustableLabelsContainer.layout(parentLayoutExpansion); // will call this function back!
 
     // print("Iterative layout finished after $_reLayoutsCounter iterations.");
   }
@@ -181,16 +181,16 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 ///
 /// Strategy defines a zero or more sequences of steps,
 /// each performing a specific code to achieve labels fit, for example:
-///   - Skip every 2nd label
-///   - Tilt all labels
-///   - Decrease label font size
+/// - Skip every 2nd label
+/// - Tilt all labels
+/// - Decrease label font size
 abstract class LabelLayoutStrategy {
-  late AdjustableLabelsChartAreaContainer _container;
+  late AdjustableLabelsChartAreaContainer _adjustableLabelsContainer;
 
   LabelLayoutStrategy();
 
-  void onContainer(AdjustableLabelsChartAreaContainer container) {
-    _container = container;
+  void onContainer(AdjustableLabelsChartAreaContainer adjustableLabelsContainer) {
+    _adjustableLabelsContainer = adjustableLabelsContainer;
   }
 
   /// Core of the auto layout strategy.
@@ -199,10 +199,10 @@ abstract class LabelLayoutStrategy {
   /// method to achieve iterative layout.
   ///
   /// Implementations should either not do anything (OnePassLayoutStrategy),
-  /// or check for [_container]'s labels overlap. On overlap,
-  /// it should set some values on [_container]'s labels to
+  /// or check for [_adjustableLabelsContainer]'s labels overlap. On overlap,
+  /// it should set some values on [_adjustableLabelsContainer]'s labels to
   /// make them smaller, less dense, tilt, skip etc, and call
-  /// [Container.layout] iteratively.
+  /// the [Container.layout] iteratively.
   void reLayout(LayoutExpansion parentLayoutExpansion);
 
   /// Should return true if the layout strategy rotates labels during the

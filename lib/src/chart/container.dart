@@ -39,16 +39,12 @@ mixin ChartBehavior {
 /// Creates a simple chart container and call all needed [layout] methods.
 ///
 /// Notes:
-///   - [ChartTopContainer] and it's extensions,
-///     such as [LineChartContainer] and [VerticalBarChartContainer]
-///     are the only container which does not extend [Container]
-///   - Related to above point, the [layout(num size)] is unrelated to
-///     a same name method on [Container].
+/// - [ChartTopContainer] and it's extensions,
+///   such as [LineChartContainer] and [VerticalBarChartContainer]
+///   are the only container which does not extend [Container]
+/// - Related to above point, the [layout(num size)] is unrelated to
+///   a same name method on [Container].
 ///
-/// Terms used:
-///   - `absolute positions` refer to positions
-///      "in the coordinates of the chart area" - the full size given to the
-///      ChartPainter by the application.
 abstract class ChartTopContainer extends Container with ChartBehavior {
   /// Implements [Container.layoutSize()].
   // todo-13-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
@@ -109,18 +105,18 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
-  ///   - [YContainer] area manages and lays out the Y labels area, by calculating
-  ///     sizes required for Y labels (in both X and Y direction).
-  ///     The [YContainer]
-  ///   - [XContainer] area manages and lays out the
-  ///     - X labels area, and the
-  ///     - grid area.
-  ///     In the X direction, takes up all space left after the
-  ///     YContainer layes out the  Y labels area, that is, full width
-  ///     minus [YContainer.yLabelsContainerWidth].
-  ///     In the Y direction, takes
-  ///     up all available chart area, except a top horizontal strip,
-  ///     required to paint half of the topmost label.
+  /// - [YContainer] area manages and lays out the Y labels area, by calculating
+  ///   sizes required for Y labels (in both X and Y direction).
+  ///   The [YContainer]
+  /// - [XContainer] area manages and lays out the
+  ///   - X labels area, and the
+  ///   - grid area.
+  /// In the X direction, takes up all space left after the
+  /// YContainer layes out the  Y labels area, that is, full width
+  /// minus [YContainer.yLabelsContainerWidth].
+  /// In the Y direction, takes
+  /// up all available chart area, except a top horizontal strip,
+  /// required to paint half of the topmost label.
   ChartTopContainer({
     required ChartData chartData,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -294,7 +290,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
   /// Create member [pointsColumns] from [data.dataRows].
   void setupPointsColumns() {
     pointsColumns = PointsColumns(
-      container: this,
+      chartTopContainer: this,
       presenterCreator: presenterCreator,
       isStacked: isStacked,
     );
@@ -317,7 +313,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
     return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
   }
 
-  double get gridStepWidth => xContainer._gridStepWidth;
+  // todo-00-last-remove : double get xGridStep => xContainer._xGridStep;
 }
 
 /// Container of the Y axis labels.
@@ -360,7 +356,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// The remaining horizontal width of [ChartTopContainer.chartArea] minus
   /// [YContainer]'s labels width provides remaining available
-  /// horizontal space for the [GridContainer] and [XContainer].
+  /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer
@@ -372,7 +368,7 @@ class YContainer extends ChartAreaContainer {
     //       axisYMin should be called axisYBottom, and axisYMin should be called axisYTop,
     //       expressing the Y axis starts on top = 0.0, ends on bottom = 400 something.
     double axisYMin =
-        parentLayoutExpansion.height - (_chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
+        parentLayoutExpansion.height - (chartTopContainer.options.xContainerOptions.xBottomMinTicksHeight);
 
     // todo 0-layout: max of this and some padding
     double axisYMax = _yLabelsMaxHeightFromFirstLayout / 2;
@@ -390,7 +386,7 @@ class YContainer extends ChartAreaContainer {
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * _chartTopContainer.options.yContainerOptions.yLabelsPadLR;
+            2 * chartTopContainer.options.yContainerOptions.yLabelsPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, parentLayoutExpansion.height);
   }
@@ -412,16 +408,16 @@ class YContainer extends ChartAreaContainer {
   YLabelsCreatorAndPositioner _createLabelsAndPositionIn(double axisYMin, double axisYMax) {
     // todo-11-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
     List<double> dataYs =
-        geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList();
+        geometry.iterableNumToDouble(chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
     // Create formatted labels, with positions scaled to the [axisY] interval.
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: _chartTopContainer, // only 'as ChartBehavior' mixin needed
-      valueToLabel: _chartTopContainer.options.yContainerOptions.valueToLabel,
-      yInverseTransform:  _chartTopContainer.options.dataContainerOptions.yInverseTransform,
-      yUserLabels: _chartTopContainer.data.yUserLabels,
+      chartBehavior: chartTopContainer, // only 'as ChartBehavior' mixin needed
+      valueToLabel: chartTopContainer.options.yContainerOptions.valueToLabel,
+      yInverseTransform:  chartTopContainer.options.dataContainerOptions.yInverseTransform,
+      yUserLabels: chartTopContainer.data.yUserLabels,
     );
     return yLabelsCreator;
   }
@@ -432,8 +428,8 @@ class YContainer extends ChartAreaContainer {
   void _createContainerForLabelsInCreatorAndLayoutContainer(YLabelsCreatorAndPositioner yLabelsCreator) {
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
-    _chartTopContainer.yLabelsCreator = yLabelsCreator;
-    ChartOptions options = _chartTopContainer.options;
+    chartTopContainer.yLabelsCreator = yLabelsCreator;
+    ChartOptions options = chartTopContainer.options;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -464,7 +460,7 @@ class YContainer extends ChartAreaContainer {
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(
-        ui.Offset(_chartTopContainer.options.yContainerOptions.yLabelsPadLR, labelTopY),
+        ui.Offset(chartTopContainer.options.yContainerOptions.yLabelsPadLR, labelTopY),
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -515,9 +511,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// X labels.
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
-  double _gridStepWidth = 0.0;
+  double _xGridStep = 0.0;
+  double get xGridStep => _xGridStep;
 
-  /// Size allocated for each shown label (>= [_gridStepWidth]
+  /// Size allocated for each shown label (>= [_xGridStep]
   double _shownLabelsStepWidth = 0.0;
 
   /// Constructs the container that holds X labels.
@@ -545,9 +542,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
-    ChartOptions options = _chartTopContainer.options;
+    ChartOptions options = chartTopContainer.options;
 
-    List<String> xUserLabels = _chartTopContainer.data.xUserLabels;
+    List<String> xUserLabels = chartTopContainer.data.xUserLabels;
 
     double yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
 
@@ -555,7 +552,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
     double labelMaxAllowedWidth = availableWidth / xUserLabels.length;
 
-    _gridStepWidth = labelMaxAllowedWidth;
+    _xGridStep = labelMaxAllowedWidth;
 
     int numShownLabels = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
     _shownLabelsStepWidth = availableWidth / numShownLabels;
@@ -579,8 +576,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       //   then find X middle of the bounding rectangle
 
       ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
-      double halfStepWidth = _gridStepWidth / 2;
-      double atIndexOffset = _gridStepWidth * xIndex;
+      double halfStepWidth = _xGridStep / 2;
+      double atIndexOffset = _xGridStep * xIndex;
       double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
       double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
 
@@ -698,12 +695,12 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// Identifying overlap is crucial in labels auto-layout.
   ///
   /// Notes:
-  ///   - [_gridStepWidth] is a limit for each label container width in the X direction.
+  /// - [_xGridStep] is a limit for each label container width in the X direction.
   ///
-  ///   - Labels are layed out evenly, so if any label container's [layoutSize]
-  ///   in the X direction overflows the [_gridStepWidth],
-  ///   labels containers DO overlap. In such situation, the caller should
-  ///   take action to make labels smaller, tilt, or skip.
+  /// - Labels are layed out evenly, so if any label container's [layoutSize]
+  /// in the X direction overflows the [_xGridStep],
+  /// labels containers DO overlap. In such situation, the caller should
+  /// take action to make labels smaller, tilt, or skip.
   ///
   @override
   bool labelsOverlap() {
@@ -750,18 +747,18 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
-///   - [ChartTopContainer] - the whole chart
-///   - [LegendContainer] - manages the legend
-///   - [YContainer] - manages the Y labels layout, which defines:
-///     - Y axis label sizes
-///     - Y positions of Y axis labels, defined as yTickY.
-///       yTicksY s are the Y points of scaled data values
-///       and also Y points on which the Y labels are centered.
-///   - [XContainer] - Equivalent to YContainer, but manages X direction
-///     layout and labels.
-///   - [DataContainer] and extensions - manages the area which displays:
-///     - Data as bar chart, line chart, or other chart type.
-///     - Grid (this includes the X and Y axis).
+/// - [ChartTopContainer] - the whole chart
+/// - [LegendContainer] - manages the legend
+/// - [YContainer] - manages the Y labels layout, which defines:
+///   - Y axis label sizes
+///   - Y positions of Y axis labels, defined as yTickY.
+///     yTicksY s are the Y points of scaled data values
+///     and also Y points on which the Y labels are centered.
+/// - [XContainer] - Equivalent to YContainer, but manages X direction
+///   layout and labels.
+/// - [DataContainer] and extensions - manages the area which displays:
+///   - Data as bar chart, line chart, or other chart type.
+///   - Grid (this includes the X and Y axis).
 ///
 /// See [Container] for discussion of roles of this class.
 /// This extension of  [Container] has the added ability
@@ -773,19 +770,18 @@ abstract class ChartAreaContainer extends Container {
   /// Departure from a top down approach, this allows to
   /// access the parent [ChartTopContainer], which has (currently)
   /// members needed by children.
-  final ChartTopContainer _chartTopContainer;
+  final ChartTopContainer chartTopContainer;
+  // todo-00-last ChartTopContainer get chartTopContainer => _chartTopContainer;
 
   ChartAreaContainer({
-    required ChartTopContainer chartTopContainer,
-  })  : _chartTopContainer = chartTopContainer,
-        super();
+    required this.chartTopContainer,
+  }) : super();
 
-  ChartTopContainer get chartTopContainer => _chartTopContainer;
 }
 
 /// Manages the core chart area which displays and paints (in this order):
-///   - The grid (this includes the X and Y axis).
-///   - Data - as columns of bar chart, line chart, or other chart type
+/// - The grid (this includes the X and Y axis).
+/// - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainer extends ChartAreaContainer {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
@@ -793,8 +789,8 @@ abstract class DataContainer extends ChartAreaContainer {
   /// Columns of presenters.
   ///
   /// Presenters may be:
-  ///   - points and lines in line chart
-  ///   - bars (stacked or grouped) in bar chart
+  /// - points and lines in line chart
+  /// - bars (stacked or grouped) in bar chart
   ///
   /// todo 0 replace with getters; see if members can be made private,  manipulated via YLabelContainer.
   late PresentersColumns presentersColumns;
@@ -824,10 +820,12 @@ abstract class DataContainer extends ChartAreaContainer {
 
   void _layoutGrid() {
     // Vars that layout needs from the [_chartContainer] passed to constructor
+/* todo-00-last remove OR RATHER USE THIS - PUT THIS LESS WORDY BACK.
     ChartOptions options = chartTopContainer.options;
     bool isStacked = chartTopContainer.isStacked;
-    double xGridStep = chartTopContainer.gridStepWidth;
+    double xGridStep = chartTopContainer.xContainer.xGridStep;
     ChartTopContainer chartContainer = chartTopContainer;
+*/
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -836,14 +834,14 @@ abstract class DataContainer extends ChartAreaContainer {
 
     _yGridLinesContainer = GridLinesContainer();
 
-    for (double xTickX in chartContainer.xTickXs) {
+    for (double xTickX in chartTopContainer.xTickXs) {
       // Add vertical yGrid line in the middle or on the left
-      double lineX = isStacked ? xTickX - xGridStep / 2 : xTickX;
+      double lineX = chartTopContainer.isStacked ? xTickX - chartTopContainer.xContainer.xGridStep / 2 : xTickX;
 
       LineContainer yLineContainer = LineContainer(
         lineFrom: ui.Offset(lineX, 0.0),
         lineTo: ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(options),
+        linePaint: gridLinesPaint(chartTopContainer.options),
       );
 
       // Add a new vertical grid line - yGrid line.
@@ -851,10 +849,10 @@ abstract class DataContainer extends ChartAreaContainer {
     }
 
     // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && chartContainer.xTickXs.isNotEmpty) {
-      double x = chartContainer.xTickXs.last + xGridStep / 2;
+    if (chartTopContainer.isStacked && chartTopContainer.xTickXs.isNotEmpty) {
+      double x = chartTopContainer.xTickXs.last + chartTopContainer.xContainer.xGridStep / 2;
       LineContainer yLineContainer = LineContainer(
-          lineFrom: ui.Offset(x, 0.0), lineTo: ui.Offset(x, layoutSize.height), linePaint: gridLinesPaint(options));
+          lineFrom: ui.Offset(x, 0.0), lineTo: ui.Offset(x, layoutSize.height), linePaint: gridLinesPaint(chartTopContainer.options),);
       _yGridLinesContainer.addLine(yLineContainer);
     }
 
@@ -865,11 +863,11 @@ abstract class DataContainer extends ChartAreaContainer {
     _xGridLinesContainer = GridLinesContainer();
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    for (double yTickY in chartContainer.yTickYs) {
+    for (double yTickY in chartTopContainer.yTickYs) {
       LineContainer xLineContainer = LineContainer(
           lineFrom: ui.Offset(0.0, yTickY),
           lineTo: ui.Offset(layoutSize.width, yTickY),
-          linePaint: gridLinesPaint(options));
+          linePaint: gridLinesPaint(chartTopContainer.options));
 
       // Add a new horizontal grid line - xGrid line.
       _xGridLinesContainer._lineContainers.add(xLineContainer);
@@ -908,7 +906,7 @@ abstract class DataContainer extends ChartAreaContainer {
     _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (_chartTopContainer.options.yContainerOptions.isYGridlinesShown) {
+    if (chartTopContainer.options.yContainerOptions.isYGridlinesShown) {
       _yGridLinesContainer.paint(canvas);
     }
   }
@@ -942,7 +940,7 @@ abstract class DataContainer extends ChartAreaContainer {
   void setupPresentersColumns() {
     presentersColumns = PresentersColumns(
       pointsColumns: chartTopContainer.pointsColumns,
-      container: chartTopContainer,
+      chartTopContainer: chartTopContainer,
       presenterCreator: chartTopContainer.presenterCreator,
     );
   }
@@ -1271,11 +1269,11 @@ class LegendContainer extends ChartAreaContainer {
     if (!chartTopContainer.options.legendOptions.isLegendContainerShown) {
       return;
     }
-    ChartOptions options = _chartTopContainer.options;
+    ChartOptions options = chartTopContainer.options;
     double containerMarginTB = options.legendOptions.legendContainerMarginTB;
     double containerMarginLR = options.legendOptions.legendContainerMarginLR;
 
-    List<String> dataRowsLegends = _chartTopContainer.data.dataRowsLegends;
+    List<String> dataRowsLegends = chartTopContainer.data.dataRowsLegends;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -1297,7 +1295,7 @@ class LegendContainer extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      List<ui.Color> dataRowsColors = _chartTopContainer.data.dataRowsColors; //!;
+      List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemLayoutExpansion = parentLayoutExpansion.cloneWith(
@@ -1365,9 +1363,9 @@ class LegendContainer extends ChartAreaContainer {
 /// 2. The [fromY] and [toY] and [dataY] are data-values representing this point's numeric value. 
 ///   *This group's members do NOT change under [applyParentOffset] as they represent data, not coordinates;* 
 ///   they must not change with container (display) size change.
-///   - In addition, the [fromY] and [toY] are stacked, ([dataY] is NOT stacked).
-///     Stacking is achieved by adding the values of [dataY] from the bottom of the stacked values to this point,
-///     by calling the [stackOnAnother] method.
+///   - In addition, the [fromY] and [toY] are stacked, ([dataY] is NOT stacked). Stacking is achieved by adding 
+///   the values of [dataY] from the bottom of the stacked values to this point,
+///   by calling the [stackOnAnother] method.
 /// 
 /// 3. The [scaledX], [scaledY], [scaledFromY], [scaledToY], are scaled-coordinates - 
 ///    represent members from group 2, scaled to the container coordinates (display coordinates).
@@ -1376,18 +1374,16 @@ class LegendContainer extends ChartAreaContainer {
 ///   - The [scaledX] is not converted from any data value (does not represent any data value).
 ///   - The [scaledFrom] and [scaledTo] are [ui.Offset] wrappers for [scaledX], [scaledFromY], [scaledToY].
 ///
-/// Notes:
-///   - This object does not manage it's stacking,
-///     stacking is left for the container that manages this object along with
-///     values before (below) and after (above).
+/// Stacking management:
+/// - This object does not manage it's stacking,
+///   stacking is delegated to the container that manages this object along with
+///   values before (below) and after (above). The managing object is [PointsColumn].
 class StackableValuePoint {
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
   String xLabel;
   /// The transformed but NOT stacked Y data value.
-  /// **ANY dataYs in the chart objects, once they are copied out of ChartData** 
-  /// **are always 1. transformed, then 2. potentially stacked IN PLACE, then 3. potentially scaled IN A COPY!!**
-  /// **This is the sequence that always happens.**'
-  /// **Transform may be identity**
+  /// **ANY [dataYs] are 1. transformed, then 2. potentially stacked IN PLACE, then 3. potentially scaled IN A COPY!!**
+  // todo-00-last Try to make final and private and immutable
   double dataY;
   /// The index of this point in the [PointsColumn] containing this point in it's
   /// [PointsColumn.stackableValuePoints] list.  
@@ -1570,9 +1566,9 @@ class StackableValuePoint {
 ///
 /// Supports to convert the raw data values from the data rows,
 /// into values that are either
-///   - unstacked (such as in the line chart),  in which case it manages
+/// - unstacked (such as in the line chart),  in which case it manages
 ///   [stackableValuePoints] that have values from [ChartData.dataRows].
-///   - stacked (such as in the bar chart), in which case it manages
+/// - stacked (such as in the bar chart), in which case it manages
 ///   [stackableValuePoints] that have values added up from [ChartData.dataRows].
 ///
 /// Negative and positive points must be stacked separately,
@@ -1593,14 +1589,14 @@ class PointsColumn {
 
   PointsColumn? nextRightPointsColumn;
 
-  ///  Construct column from the passed [points].
+  /// Construct column from the passed [points].
   ///
-  ///  Passed points are assumed to:
-  ///    - Be configured with appropriate [predecessorPoint]
-  ///    - Not stacked
-  ///  Creates members [stackedNegativePoints], [stackedPositivePoints]
-  ///  which exist only to be stacked, so the constructor stacks them
-  ///  on creation.
+  /// Passed points are assumed to:
+  /// - Be configured with appropriate [predecessorPoint]
+  /// - Not stacked
+  /// Creates members [stackedNegativePoints], [stackedPositivePoints]
+  /// which exist only to be stacked, so the constructor stacks them
+  /// on creation.
   PointsColumn({
     required List<StackableValuePoint> points,
   }) {
@@ -1656,26 +1652,25 @@ class PointsColumn {
 /// instance, managed in [DataContainer].
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.
-  final ChartTopContainer _container;
+  final ChartTopContainer chartTopContainer;
 
   /// True if chart type presents values stacked.
   final bool _isStacked;
 
-  /// Constructor creates a [PointsColumns] instance from values in
-  /// the passed [container.data.dataRows].
+  /// Constructor creates a [PointsColumns] instance from [ChartData.dataRows] values in
+  /// the passed [ChartTopContainer.data].
   PointsColumns({
-    required ChartTopContainer container,
+    required this.chartTopContainer,
     required PresenterCreator presenterCreator,
     required bool isStacked,
-  })  : _container = container,
-        _isStacked = isStacked {
-    ChartData chartData = container.data;
+  })  : _isStacked = isStacked {
+    ChartData chartData = chartTopContainer.data;
 
     _createStackableValuePointsFromChartData(chartData);
   }
 
-  /// Transposes the passed data in [container.data.dataRows]
-  /// to [_valuePointArrInRows] to [_valuePointArrInColumns].
+  /// Transposes data passed as rows in [chartData.dataRows]
+  /// to [_valuePointArrInRows] and to [_valuePointArrInColumns].
   ///
   /// Creates links on "this column" to "successor in stack" nextRightPointsColumn points - each element is the per column point
   /// below the currently processed point. The currently processed point is
@@ -1691,15 +1686,15 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
 
     // Data points managed row.  Internal only, should be refactored away.
-    List<List<StackableValuePoint>> _valuePointArrInRows = List.empty(growable: true);
+    List<List<StackableValuePoint>> valuePointArrInRows = List.empty(growable: true);
 
     for (int row = 0; row < chartData.dataRows.length; row++) {
       List<num> dataRow = chartData.dataRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
-      _valuePointArrInRows.add(pointsRow);
+      valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < dataRow.length; col++) {
         // yTransform data before placing data point on StackableValuePoint.
-        num colValue = _container.options.dataContainerOptions.yTransform(dataRow[col]);
+        num colValue = chartTopContainer.options.dataContainerOptions.yTransform(dataRow[col]);
 
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
@@ -1713,10 +1708,10 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         rowOfPredecessorPoints[col] = thisPoint;
       }
     }
-    _valuePointArrInRows.toList();
+    valuePointArrInRows.toList();
 
     // Data points managed column. Internal only, should be refactored away.
-    List<List<StackableValuePoint>> _valuePointArrInColumns = transpose(_valuePointArrInRows);
+    List<List<StackableValuePoint>> _valuePointArrInColumns = transpose(valuePointArrInRows);
 
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
@@ -1737,17 +1732,17 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// on the stackable (stacked or unstacked) values.
   ///
   /// Notes:
-  ///   - Iterates this object's [pointsColumns], then the contained
+  /// - Iterates this object's [pointsColumns], then the contained
   ///   [PointsColumn.stackableValuePoints], and scales each point by
   ///   applying its [StackableValuePoint.scale] method.
-  ///   - No scaling of the internal representation stored in [_valuePointArrInRows]
+  /// - No scaling of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
   void scale() {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = _container.xTickXs[col];
-        point.scale(scaledX: scaledX, yLabelsCreator: _container.yLabelsCreator);
+        double scaledX = chartTopContainer.xTickXs[col];
+        point.scale(scaledX: scaledX, yLabelsCreator: chartTopContainer.yLabelsCreator);
       });
       col++;
     }
