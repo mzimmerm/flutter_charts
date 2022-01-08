@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
+
+import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 
 /// Base class which manages, lays out, moves, and paints
 /// graphical elements on the chart, for example individual
@@ -18,20 +19,20 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show Layo
 ///   after construction, methods should be called in the order declared here.
 ///
 abstract class Container {
-  /// Manages the layout size during the layout process in [layout()].
+  /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   ui.Size _layoutSize = ui.Size.zero;
 
   // todo-11-later-not-used
   int _debugLayoutSetCount = 0;
 
-  /// Size after [layout()] has been called.
+  /// Size after [layout] has been called.
   ui.Size get layoutSize => _layoutSize;
 
   /// Change the layout size.
   ///
   /// Supports the layoutSize accumulation during layout.
-  /// Should be only called from inside the [layout()] method.
+  /// Should be only called from inside the [layout] method.
   set layoutSize(ui.Size newLayoutSize) {
     _layoutSize = newLayoutSize;
     _debugLayoutSetCount++;
@@ -52,7 +53,7 @@ abstract class Container {
   ui.Offset offset = ui.Offset.zero;
 
   /// Allow a parent container to move this Container
-  /// after [layout()].
+  /// after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [Container].
@@ -109,6 +110,7 @@ abstract class Container {
 
   // ##### Abstract methods to implement
 
+  // todo-11-last : This should pass Constraints - see [RenderObject]
   void layout(LayoutExpansion parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);

@@ -10,8 +10,9 @@
 // todo 1 - Functions here should eventually be held by a Utility class
 
 import 'dart:math' as math;
-import 'test/generate_test_data_from_app_runs.dart';
 import 'package:decimal/decimal.dart' as decimal;
+
+import 'test/generate_test_data_from_app_runs.dart';
 
 
 /// A minimal polynomial needed for Y label and axis scaling.

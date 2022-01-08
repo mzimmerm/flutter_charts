@@ -59,8 +59,8 @@ enum ExamplesChartTypeEnum {
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example1/lib/main.dart].
 ///
-/// The conversion from enumerates to data and options is in [example1/lib/main.dart] [chartTypeToShow()].
-/// The conversion from enumerates to chart type is in [example1/lib/main.dart] [requestedExampleToRun()].
+/// The conversion from enumerates to data and options is in [example1/lib/main.dart], see 'chartTypeToShow'.
+/// The conversion from enumerates to chart type is in [example1/lib/main.dart] see 'requestedExampleToRun'.
 class ExamplesDescriptor {
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;

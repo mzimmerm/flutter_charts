@@ -787,6 +787,40 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
 
 
+
+** NOTE *Flutter painting classes - CustomPainter, CustomPaint, PaintingContext, RendererBinding, RenderObject, RenderObjectElement*
+
+- ~PaintingContext~
+  - Is the object which creates and holds ~Canvas~ from native call
+  - So whoever creates PaintingContext is where painting process is initiated.
+- ~CustomPaint~ (Widget)
+  - Has ~2 CustomPainters~, one foreground, one background painter. They are called before and after children
+  - ~RenderCustomPaint createRenderObject(BuildContext)~ is the only significant method
+  - *Although a Widget, it does NOT have the ~build~ method*
+- ~RenderCustomPaint~
+  - This provides the canvas to draw on,
+  - ~paint(PaintingContext)~ is the method which does painting.
+  - as CustomPaint, has 2 CustomPainters, one foreground, one background painter.
+  - created in ~RenderObjectElement.mount()~, by calling ~CustomPaint.createRenderObject~
+  - ~_paintWithPainter(Canvas canvas, Offset offset, CustomPainter painter)~ is called when the rendering pipeline is ready to use the ~CustomPainter~ to paint on ~Canvas~
+- *So everything starts in ~RenderObjectElement.mount()~ where the CustomPaint.createRenderObject is called*
+- ~RenderObjectElement~
+  - Is created from ~RenderObjectWidget~ as it's configuration.
+- ~CustomPainter~ (~FlutterChartPainter~ implements it)
+  - Abstract class with 2 abstract methods:
+    - ~paint(Canvas, Size)~ 
+      - called any time needs repainted
+    - ~shouldRepaint(covariant CustomPainter oldDelegate)~
+  - Is used in (member of) ~CustomPaint~ widget and ~RenderCustomPaint~ renderer, and called upon to ~paint(Canvas)~
+- ~RendererBinding~
+  - ~drawFrame()~ seems to do the rendering pipeline generating and drawing frames
+- ~RenderObject~  ~RenderObject IS LIKE CONTAINER IN CHARTS - IT HAS 'layout' and 'paint' protocols.~
+  - Is one object in the render hierarchy. The hierarchy of ~RenderObject~ s is the core of rendering system.
+    -  [RenderObject]s have a [parent], and have a slot called [parentData] in which the parent [RenderObject] can store child-specific data, for example, the child position. The [RenderObject] class also implements the basic layout and paint protocols.
+The method ~build(BuildContext)~ is on 2 base classes:
+- ~State~ which is returned from ~StatefulWidget.createState~
+- ~StatelessWidget~
+
 ** IN-PROGRESS-NOW 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
 *** DONE Rename distributedLabels to distributedLabelYs
 *** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
@@ -865,64 +899,30 @@ Look for places like this
 
 - [X] Convert LabelInfo.rawDataValue to getter
 - [X] Convert LabelInfo.axisValue to getter
-*** IN-PROGRESS-NOW Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
-*** IN-PROGRESS-NOW Options access:
+*** DONE Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
+*** DONE Options access:
 
-- [ ] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
-- [ ] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
+- [X] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
+- [X] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
 - [ ]
-*** IN-PROGRESS-NOW Look at ~PointsColumns~ as the interesting place where ChartData.dataRows are transferred to the chart.
-*** IN-PROGRESS-NOW Rework imports to use the ~import '../presenter.dart' method rathern than importing the whole flutter_charts package.
-*** IN-PROGRESS-NOW [#B] Try to make as many members as possible final:
+*** DONE Try to make as many members as possible final:
 - [X] LabelInfo
-- [ ] YSCaler
-- [ ] Containers - LATER
+- [X] YSCaler
+- [-] Containers - LATER
 - [ ] 
-  
-*** TODO *THINK - Allow to reach to the top level chart by passing a baseclass Chart to top container. From there, both chart data and chart options can be reached.*
+*** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
+*** IN-PROGRESS-NOW Look at ~PointsColumns~ as the interesting place where ChartData.dataRows are transferred to the chart. Start at ~_drawDataPresentersColumns~
 
-- Is this doable at the moment, or do we need more Morph related changes?
-  
-*** TODO Change AdjustableLabelsChartAreaContainer to a MIXIN.
-
-AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
-
-*** TODO Refactor StackableValuePoint
-
-2 areas:
-
-**** Around nextRightColumnValuePoint
-
-This is often marked as todo-11-later
-The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
-However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
-This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
-
-~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
-Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
-
-  LineAndHotspotPresenter({
-    required StackableValuePoint point,
-    StackableValuePoint? nextRightColumnValuePoint,
-
-    
-**** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
-
-*** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First - maybe later after Morphs*
-*** TODO todo-11-last and todo-11-later (also todo-00)
+*** IN-PROGRESS-NOW todo-11-last and todo-11-later (also todo-00)
 
 - Resolve or renumber, and make clear to move them to the *Morph section*.
   
-*** TODO Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+*** IN-PROGRESS-NOW Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
 
 *** TODO Refactor and document Poly
-*** TODO Refactor and document StackableValuePoint - maybe not, *move this task to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
 
-**** TODO Rename scaleX to containerX
-Move this to Morphic section
-**** TODO Rename scaleY to containerY
-Move this to Morphic section
 *** TODO *DOCUMENT ON PAPER ALL CLASSES USED IN CHARTS*
+*** TODO Summarize changes in README.md
 *** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
 
 IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
@@ -971,6 +971,8 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
+
+
 
 *** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
@@ -1036,6 +1038,8 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
 
 - This was easy, only had to make isDistressed public.
 
+
+**** IN-PROGRESS Look at RenderObject which seems very much like Container in FlutterCharts, it has ~paint~ and ~layout~
 **** IN-PROGRESS Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
 - LayoutExpansion
@@ -1066,6 +1070,7 @@ Thoughts:
 - This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
   
 **** TODO Look into remaining usages of "ui.Size get layoutSize"
+
 
 
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
@@ -1152,7 +1157,14 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 
 *** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
 
+
 *** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers but keep the code structure the same~
+**** TODO Refactor and document StackableValuePoint - maybe not, *move this task to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
+
+***** TODO Rename scaleX to containerX
+Move this to Morphic section
+***** TODO Rename scaleY to containerY
+Move this to Morphic section
 **** IN-PROGRESS ~Note: HIERARCHY OF CONTAINERS~
 - ~ChartContainer~
   - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
@@ -1229,10 +1241,34 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 ***** Add 'name' member to Container 
 **** TODO Ensure code sets up the hierarchy correctly 
 ***** Study use of GridLinesContainer, XContainer etc, their membership 
-**** TODO Put ChartOptions only on top Container (ChartContainer, may be there already
-***** remove passing the ChartOptions down
-***** access ChartOptions in Containers via the (get)root 
-***** 
+*** TODO Refactor StackableValuePoint
+
+2 areas:
+
+**** Around nextRightColumnValuePoint
+
+This is often marked as todo-11-later
+The StackableValuePoint maintains a link to predecessor, via it's ~predecessorPoint~ member.
+However, there is also a need (only in LineAndHotspotPresenter) to maintain a link to successor.
+This successor is named ~nextRightColumnValuePoint~, set in _createStackableValuePointsFromChartData using ~nextRightPointsColumn~, and passed around so much.
+
+~Can we remove the nextRightColumnValuePoint everywhere, and place it on StackableValuePoint as successorPoint?~
+Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
+
+  LineAndHotspotPresenter({
+    required StackableValuePoint point,
+    StackableValuePoint? nextRightColumnValuePoint,
+
+    
+**** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
+
+
+
+
+*** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First - maybe later after Morphs*
+
+
+
 *** TODO Remove complexity around passing ChartOptions.
 *** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
 
@@ -1241,3 +1277,13 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
 **** Add name field to Morph 
+*** TODO Morph: Consider making ChartTopContainer.data.dataRows, and everything else except ChartOptions private, and provide a way to construct  ~PointsColumns~ in ~ChartData~ like _createStackableValuePointsFromChartData does.
+*** NOTE *THINK - Allow to reach to the top level chart by passing a baseclass Chart to top container. From there, both chart data and chart options can be reached.*
+
+This is already done - Chart is Paint contains ChartPainter is Painter contains ChartTopContainer. ChartTopContainer is passed to most child Containers.
+
+But we may need improvements on the Morph.
+
+*** TODO Maybe: Change AdjustableLabelsChartAreaContainer to a MIXIN.
+
+AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer

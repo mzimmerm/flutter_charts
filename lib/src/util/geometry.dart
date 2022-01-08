@@ -20,7 +20,7 @@ ui.Offset transform({
 /// Immutable envelope of a rotated copy of [sourceRect].
 ///
 /// Used to create rotated (tilted) labels on the X axis,
-/// which involves [canvas.rotate()].
+/// which involves canvas [Canvas.rotate].
 ///
 /// The [sourceRect] is rotated around it's center, then enveloped by
 /// it's unrotated (parallel to axes) [envelopeRect]. The corners

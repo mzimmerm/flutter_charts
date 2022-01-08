@@ -1,7 +1,8 @@
 import 'dart:math' as math show min, max, pow;
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/test/generate_test_data_from_app_runs.dart';
-import 'util_dart.dart' as util_dart;
+// import 'package:flutter_charts/flutter_charts.dart';
+import 'util_dart.dart';
+import 'test/generate_test_data_from_app_runs.dart';
+import '../chart/container.dart' show ChartBehavior;
 
 /// Creates, scales, and formats the Y labels, from the transformed data 
 /// to their positions and formatted strings on the Y axis.
@@ -19,7 +20,7 @@ import 'util_dart.dart' as util_dart;
 ///   2. Ex2. [labelInfos] ==> [0, 1000, 2000]
 /// From the members [dataYsEnvelope] and [labelInfos], the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// are calculated. The result serves as the '(transformed) data range'. 
-/// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope];
+/// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [labelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class YLabelsCreatorAndPositioner {
@@ -28,16 +29,6 @@ class YLabelsCreatorAndPositioner {
   /// The list of numeric Y values, passed to constructor.
   final List<double> _dataYs;
 
-  /// The [dataYsEnvelope] is created from the input [_dataYs] as it's closure interval,
-  /// possibly extended to start at 0.
-  /// 
-  /// Further, the  [_dataYs] are from the [StackableValuePoint.toY] from the [PointsColumns.flattenPointsValues()].
-  /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
-  late final Interval dataYsEnvelope;
-  
-  /// Maintains labels created from data values, scaled and unscaled.
-  late List<LabelInfo> labelInfos;
-  
   /// Coordinates of the Y axis.
   final Interval _axisY;
   
@@ -53,6 +44,16 @@ class YLabelsCreatorAndPositioner {
   /// 
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _yInverseTransform;
+
+  /// The [dataYsEnvelope] is created from the input [_dataYs] as it's closure interval,
+  /// possibly extended to start at 0.
+  /// 
+  /// Further, the  [_dataYs] are from the [StackableValuePoint.toY] from the [PointsColumns.flattenPointsValues].
+  /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
+  late final Interval dataYsEnvelope;
+
+  /// Maintains labels created from data values, scaled and unscaled.
+  late List<LabelInfo> labelInfos;
 
   /// Generative constructor allows to create labels.
   /// 
@@ -136,7 +137,7 @@ class YLabelsCreatorAndPositioner {
     required double value,
   }) {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
-    return util_dart.scaleValue(
+    return scaleValue(
         value: value.toDouble(),
         fromDomainMin: _mergedLabelYsIntervalWithDataYsEnvelope.min.toDouble(),
         fromDomainMax: _mergedLabelYsIntervalWithDataYsEnvelope.max.toDouble(),
@@ -337,7 +338,7 @@ class YLabelsCreatorAndPositioner {
 ///   function.
 ///   - This value is **not-scaled && transformed**
 ///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
-///     is an [identity()] (this is the default behavior). See [lib/chart/options.dart].
+///     is an identity (this is the default behavior). See [lib/chart/options.dart].
 ///   - This value is passed in the primary generative constructor [LabelInfo].
 /// - The [_axisValue] :  Equals to the **scaled && transformed** dataValue, in other words
 ///   ```dart
@@ -350,7 +351,7 @@ class YLabelsCreatorAndPositioner {
 ///     ```dart
 ///        _axisValue = parentYScaler.scaleY(value: transformedDataValue.toDouble());
 ///        // which does
-///        return util_dart.scaleValue(
+///        return scaleValue(
 ///            value: value.toDouble(),
 ///            fromDomainMin: mergedLabelYsIntervalWithDataYsEnvelop.min.toDouble(),
 ///            fromDomainMax: mergedLabelYsIntervalWithDataYsEnvelop.max.toDouble(),

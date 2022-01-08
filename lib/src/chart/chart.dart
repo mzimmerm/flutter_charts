@@ -8,7 +8,7 @@ abstract class FlutterChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   const FlutterChart({
     widgets.Key? key,
-    required painter.ChartPainter painter,
+    required painter.FlutterChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,

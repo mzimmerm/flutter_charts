@@ -33,7 +33,7 @@ class VerticalBarPresenter extends Presenter {
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
     double barWidth =
-        chartTopContainer.xContainer.xGridStep * chartTopContainer.options.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+        chartTopContainer.xContainer.xGridStep * chartTopContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);

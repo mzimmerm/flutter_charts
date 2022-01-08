@@ -1,6 +1,6 @@
 /// Library of extensions on the [String] class.
 ///
-import 'package:flutter_charts/src/util/util_dart.dart';
+import 'util_dart.dart';
 
 extension StringExtension on String {
   /// Convert this string to enum.

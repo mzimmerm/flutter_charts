@@ -1,7 +1,7 @@
 /// Flutter test which compares expected screenshots to actual screenshots
 /// for the requested example.
 ///
-/// The requested example is given by the app method [requestedExampleToRun()], which
+/// The requested example is given by the app method [requestedExampleToRun], which
 /// in turn is given by the `--dart-define` passed environment to the `flutter test` command.
 ///
 import 'package:flutter_test/flutter_test.dart';

@@ -124,16 +124,16 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
-  /// Stateful widgets must implement the [createState()] method.
+  /// Stateful widgets must implement the [createState] method.
   ///
-  /// The [createState()] method will typically return the
+  /// The [createState] method will typically return the
   /// new state of the widget.
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 /// This state object is created in the stateful widget's [MyHomePage] call to
-/// [MyHomePage.createState()].
+/// [MyHomePage.createState].
 ///
 /// In the rest of the lifecycle, this state object holds on one object,
 /// - [descriptorOfExampleToRun]
@@ -143,19 +143,19 @@ class MyHomePage extends StatefulWidget {
 /// While this home page state object is created only once (hence, the above
 /// state's member [descriptorOfExampleToRun], is created only once, the charts shown
 /// in this demo, the [LineChart] and the [VerticalBarChart], are recreated
-/// in this object's [build()] method - so, **the chart objects are created over
+/// in this object's [build] method - so, **the chart objects are created over
 /// and over**.
 ///
-/// Note: The (each [build()]) recreated chart objects reuse the state's members
+/// Note: The (each [build]) recreated chart objects reuse the state's members
 /// [descriptorOfExampleToRun], so this could be considered
 /// "expensive to create".
 ///
-/// Note: At the same time, because the this state's [build()] calls
+/// Note: At the same time, because the this state's [build] calls
 ///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
 //     Widget chartToRun = definer.createRequestedChart();
 /// recreates lineChartOptions, verticalBarChartOptions, chartData,
 /// and xContainerLabelLayoutStrategy, the core of this state object (all members)
-/// is effectively recreated on each state's [build()] call.
+/// is effectively recreated on each state's [build] call.
 ///
 class _MyHomePageState extends State<MyHomePage> {
   // Note (on null safety):
@@ -184,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // and so nothing would appear to happen.
 
       /// here we create new random data to illustrate state change
-      // defineOptionsAndData();
+      // _ExampleDefiner.createRequestedChart();
     });
   }
 
@@ -656,7 +656,7 @@ class _ExampleDefiner {
         break;
     }
     // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
-    //   depending on the chart type requested by [requestedExampleToRun()]
+    //   depending on the chart type requested by [requestedExampleToRun]
     return chartToRun;
   }
 }

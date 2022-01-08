@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas, Size;
-import 'package:flutter_charts/src/chart/container_base.dart' as container_base show Container;
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
+import 'container_base.dart' as container_base show Container;
+import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends container_base.Container {

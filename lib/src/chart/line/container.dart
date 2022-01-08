@@ -41,6 +41,6 @@ class LineChartTopContainer extends ChartTopContainer {
   ///   
   /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
-  bool get startYAxisAtDataMinAllowed => options.dataContainerOptions.startYAxisAtDataMinRequested;
+  bool get startYAxisAtDataMinAllowed => data.chartOptions.dataContainerOptions.startYAxisAtDataMinRequested;
   
 }

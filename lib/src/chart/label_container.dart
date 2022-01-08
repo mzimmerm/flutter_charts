@@ -1,13 +1,9 @@
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
-
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
-import 'package:flutter_charts/src/chart/container_base.dart' as container_base show Container;
-
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show LayoutExpansion;
-
+import 'container_base.dart' as container_base show Container;
+import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 import '../util/geometry.dart' as geometry;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.

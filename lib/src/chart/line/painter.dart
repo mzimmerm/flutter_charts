@@ -7,8 +7,8 @@ import '../painter.dart';
 /// and setting [line_containers.LineChartContainer.isStacked] to false,
 /// as lines can never be stacked.
 ///
-/// See [ChartPainter] for more information.
-class LineChartPainter extends ChartPainter {
+/// See [FlutterChartPainter] for more information.
+class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
   LineChartPainter({

@@ -1,8 +1,9 @@
-import 'package:flutter_charts/src/chart/container.dart' show AdjustableLabelsChartAreaContainer;
-import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
+
+import 'container.dart' show AdjustableLabelsChartAreaContainer;
+import 'options.dart' show ChartOptions;
+import '../morphic/rendering/constraints.dart';
 
 enum LabelFitMethod {
   rotateLabels,
@@ -15,7 +16,7 @@ enum LabelFitMethod {
 /// Currently only used on the X axis, this strategy defines a sequence of steps,
 /// each performing a specific strategy to achieve labels fit.
 ///
-/// When the [layout()] finds labels overlap, the following steps are taken
+/// When the [layout] finds labels overlap, the following steps are taken
 /// to achieve "fit" of labels: [LabelFitMethod.rotateLabels],
 /// [LabelFitMethod.decreaseLabelFont] and [LabelFitMethod.skipLabels].
 ///

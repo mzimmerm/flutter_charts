@@ -34,7 +34,7 @@ class LineAndHotspotPresenter extends Presenter {
           rowIndex: rowIndex,
           chartTopContainer: chartTopContainer,
         ) {
-    var options = chartTopContainer.options;
+    var options = chartTopContainer.data.chartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();

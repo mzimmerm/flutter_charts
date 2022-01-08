@@ -32,8 +32,8 @@ class ChartData {
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
   /// Can be Strings or numbers.
-  /// If not null, a "manual" layout is used, specifically the [YContainer.layoutManually()].
-  /// If null, a "auto" layout of Y axis is used.
+  /// If not null, a "manual" layout is used in the [YContainer].
+  /// If null, a "auto" layout is used in the [YContainer].
   ///
   final List<String>? yUserLabels;
 

@@ -1,6 +1,6 @@
-import '../bar/chart.dart';
-
 import 'package:flutter/foundation.dart' show immutable;
+
+import '../bar/chart.dart';
 
 /// The options specific for the [VerticalBarChart].
 @immutable

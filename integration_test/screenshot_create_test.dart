@@ -17,9 +17,10 @@ import '../example1/lib/main.dart' as app;
 /// Flutter integration test of one instance of the example app, with example data, options, and chart type
 ///   dictated by the [ExamplesEnum] and [ExamplesChartTypeEnum], set by caller in `--dart-define`.
 ///
-/// The data and options given by the enums are set in [example1/lib/main.dart] method [defineOptionsAndData()].
+/// The data and options given by the enums are set in [example1/lib/main.dart] method 
+/// [_ExampleDefiner.createRequestedChart].
 ///
-/// See [example1/lib/main.dart] method [requestedExampleToRun()] on processed `--dart-define` values.
+/// See [example1/lib/main.dart] method [_ExampleDefiner.createRequestedChart] on processed `--dart-define` values.
 ///
 /// The test can be run from command line or a script as
 /// ```shell
