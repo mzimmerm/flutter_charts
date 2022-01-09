@@ -2,14 +2,16 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 * Table of contents :TOC:noexport:
+- [[#internal-note-convert-all-images-to-width150][Internal note: convert all images to width=150]]
+- [[#examples-with-code][Examples with code]]
+  - [[#ex10randomdata_linechart-ex10randomdata_linechart][ex10RandomData_lineChart <<ex10RandomData_lineChart>>]]
 - [[#latest-release-changes][Latest release changes]]
   - [[#illustration-of-a-new-feature-ability-to-hide-labels-legend-or-gridlines][Illustration of a new feature: ability to hide labels, legend, or gridlines]]
 - [[#installation][Installation]]
   - [[#installing-flutter_charts-as-a-library-package-into-your-app][Installing flutter_charts as a library package into your app]]
   - [[#installing-the-flutter_charts-project-as-a-local-clone-from-github][Installing the flutter_charts project as a local clone from Github]]
 - [[#running-the-examples-included-in-flutter_charts][Running the examples included in flutter_charts]]
-- [[#examples-with-code-linechart-and-verticalbarchart-code-and-resulting-charts][Examples with code: LineChart and VerticalBarChart. Code and resulting charts]]
-  - [[#new-examples][New examples]]
+- [[#old-examples-with-code-linechart-and-verticalbarchart-code-and-resulting-charts][Old Examples with code: LineChart and VerticalBarChart. Code and resulting charts]]
   - [[#example-with-random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels][Example with Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
@@ -22,6 +24,87 @@
   - [[#autolayout-step-5][Autolayout step 5]]
 - [[#known-packages-libraries-and-apps-that-use-this-flutter_charts-package][Known packages, libraries and apps that use this flutter_charts package]]
 - [[#todos][Todos]]
+
+* Internal note: convert all images to width=150
+
+#+begin_src bash :results output raw :eval no-export
+  for file in doc/readme_images/ex*; do
+      rm $file
+  done
+  for file in integration_test/screenshots_expected/ex*; do
+      cp $file doc/readme_images
+  done
+  for file in doc/readme_images/ex*; do
+      copy_name="$(basename $file)"
+      copy_name="${copy_name/%.*/}"
+      convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
+  done
+#+end_src
+
+#+RESULTS:
+
+* IN-PROGRESS Examples with code
+
+
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]  |   |
+
+
+ [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]
+
+
+** ex10RandomData_lineChart <<ex10RandomData_lineChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+
+    // code from switch
+    chartData = RandomChartData.generated(chartOptions: chartOptions);
+
+    // code at the end.
+    // If lineChart, show this
+    var lineChartContainer = LineChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+
+    var lineChart = LineChart(
+      painter: LineChartPainter(
+        lineChartContainer: lineChartContainer,
+      ),
+    );
+    return lineChart;
+    }
+
+    // If verticalBarChart, show this
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+
+    return verticalBarChart;
+  }
+
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
+
 
 * Latest release changes
 
@@ -125,7 +208,7 @@ To run the example application, Android emulator or iOS emulator need to be inst
     #+end_src
     (press q in the terminal to quit the current example and run next)
 
-Sample screenshot from the running example app
+Sample screenshot from running the example app
 
 #+NAME: fig:Line Chart
 #+CAPTION: Line Chart caption
@@ -134,14 +217,7 @@ Sample screenshot from the running example app
 #+ATTR_HTML: :width 300
 [[file:doc/readme_images/ex10RandomData_lineChart.png]]
 
-#+NAME: fig:Vertical Bar Chart
-#+CAPTION: Vertical Bar Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
-
-* Examples with code: LineChart and VerticalBarChart. Code and resulting charts
+* Old Examples with code: LineChart and VerticalBarChart. Code and resulting charts
 
 Flutter Charts code allow to define the following data elements:
 
@@ -154,42 +230,6 @@ Flutter Charts code allow to define the following data elements:
 The examples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
 
 See the section [[*Running the examples included in flutter_charts]] on how to run the code that created the images below.  The code snippets are from the method ~Widget createRequestedChart()~ in ~example1/lib/main.dart~ 
-
-** IN-PROGRESS New examples
-
-Internal note: convert all images to width=150
-
-#+begin_src bash :results output raw :eval no-export
-  for file in doc/readme_images/ex*; do
-      copy_name="$(basename $file)"
-      copy_name="${copy_name/%.*/}"
-      convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
-  done
-#+end_src
-
-
-|    |   |
-
-
- [ [ Heading ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png ] ] Heading link does not work
- 
- [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]
- 
- [[#ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]
- 
-
-*** Heading ex10RandomData_lineChart <<ex10RandomData_lineChart>>
-:PROPERTIES:
-:CUSTOM_ID: ex10RandomData_lineChart
-:END:
-
-
-#+CAPTION: Line Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
-
 
 ** Example with Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 

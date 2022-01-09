@@ -1,0 +1,193 @@
+
+Include this in README
+
+#+BEGIN_SRC bash :results raw output replace
+  # Iterate allowed example tuples in start_emulator_and_generate_examples_descriptor.sh
+  NEWLINE=$'\n'
+  while read enumLine; do
+      if [[ $enumLine =~ "const Tuple2" ]]; then
+          # echo $enumLine
+
+          exampleEnum=${enumLine#*.}
+          exampleEnum=${exampleEnum%%,*}
+          # keep echo $exampleEnum
+
+          chartType=${enumLine##*.}
+          chartType=${chartType/%Chart*/Chart}
+          # keep echo $chartType
+
+          exampleName="${exampleEnum}_${chartType}"
+          tableCellLinks="${tableCellLinks}| [[${exampleName}][file:doc/readme_images/${exampleName}_w150.png]] "
+
+          # todo remove this
+          if [[ "$exampleEnum" = "ex10RandomData" ]]; then
+              printOn=0
+
+              # Start section which writes out header with code
+              codeStr="${codeStr}${NEWLINE}"
+              codeStr="${codeStr}${NEWLINE}** ${exampleName} <<${exampleName}>>"
+              codeStr="${codeStr}${NEWLINE}"
+              codeStr="${codeStr}${NEWLINE}Code"
+              codeStr="${codeStr}${NEWLINE}"
+              codeStr="${codeStr}${NEWLINE}#+begin_src dart"
+              codeStr="${codeStr}${NEWLINE}  Widget chartToRun() {"
+              codeStr="${codeStr}${NEWLINE}    LabelLayoutStrategy? xContainerLabelLayoutStrategy;"
+              codeStr="${codeStr}${NEWLINE}    ChartData chartData;"
+              codeStr="${codeStr}${NEWLINE}    ChartOptions chartOptions = const ChartOptions();"
+
+              # Read the whole main.dart and echo only the section after case ExamplesEnum.ex10RandomData
+              while read codeLine; do
+                  if [[ $codeLine =~ "break;" ]]; then
+                      printOn=0
+                  fi
+                  if [[ $printOn -eq 1 ]]; then
+                      codeStr="${codeStr}${NEWLINE}   ${codeLine}"
+                  fi
+                  if [[ $codeLine =~ "case ExamplesEnum.$exampleEnum" ]]; then
+                      printOn=1
+                  fi
+              done < example1/lib/main.dart
+
+              # Finish code
+              if [[ $chartType = "lineChart" ]]; then
+                 lower="line"
+                 upper="Line"
+              else
+                 lower="verticalBar"
+                 upper="VerticalBar"
+              fi
+
+             codeStr="${codeStr}${NEWLINE}    var ${lower}ChartContainer = ${upper}ChartTopContainer("
+             codeStr="${codeStr}${NEWLINE}      chartData: chartData,"
+             codeStr="${codeStr}${NEWLINE}      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,"
+             codeStr="${codeStr}${NEWLINE}    );"
+             codeStr="${codeStr}${NEWLINE}    "
+             codeStr="${codeStr}${NEWLINE}    var ${lower}Chart = ${upper}Chart("
+             codeStr="${codeStr}${NEWLINE}      painter: ${upper}ChartPainter("
+             codeStr="${codeStr}${NEWLINE}        ${lower}ChartContainer: ${lower}ChartContainer,"
+             codeStr="${codeStr}${NEWLINE}      ),"
+             codeStr="${codeStr}${NEWLINE}    );"
+             codeStr="${codeStr}${NEWLINE}    return verticalBarChart;"
+             codeStr="${codeStr}${NEWLINE}  }"
+             codeStr="${codeStr}${NEWLINE}#+end_src"
+             codeStr="${codeStr}${NEWLINE}"
+             codeStr="${codeStr}${NEWLINE}Result"
+             codeStr="${codeStr}${NEWLINE}"
+             codeStr="${codeStr}${NEWLINE}#+CAPTION: Line Chart caption"
+             codeStr="${codeStr}${NEWLINE}#+ATTR_ORG: :width 300"
+             codeStr="${codeStr}${NEWLINE}#+ATTR_LATEX: :width 2.0in"
+             codeStr="${codeStr}${NEWLINE}#+ATTR_HTML: :width 300"
+             codeStr="${codeStr}${NEWLINE}[[file:doc/readme_images/${exampleName}.png]]"
+
+          fi
+      fi
+  done < example1/lib/src/util/examples_descriptor.dart
+
+
+  # Write out the table cells with images and links to headings
+  echo "${tableCellLinks} |"
+
+  echo "${codeStr}"
+
+  # for each --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart
+  #   read example1/lib/main.dart (open for read only)
+  #   find section between 
+  #      case ExamplesEnum.ex10RandomData
+  #      next case
+  #   read this section into a String codeCoreSection
+  #
+  #   save a String heading starting with Heading
+  #     append fixed lines at the beginning
+  #     append codeSection
+  #     append fixed line at the end depending on line/bar chart
+  #     append CAPTION all the way to large image link
+  #   headings.add(heading)
+  #
+  #   save a string tableCellLink
+  #   tableCellLinks.add(tableCellLink)
+  #
+  # when done, write strings from tableCells and headings
+  # for tableCellLink in tableCellLinks
+  #   print | tableCellLink
+  #
+  # for heading in headings
+  #   print heading
+  #
+  # RUN THIS IN README.org as a shell script, and place result to README.org
+
+  # mzimmermann@home-server:~/tmp> NEWLINE=$'\n'
+  # mzimmermann@home-server:~/tmp> code="aa"
+  # mzimmermann@home-server:~/tmp> code="${code}${NEWLINE}bb"
+  # mzimmermann@home-server:~/tmp> echo "$code"
+  # aa
+  # bb
+
+#+END_SRC
+
+#+RESULTS:
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]] | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]] | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]] | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]] | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]] |
+
+
+** ex10RandomData_lineChart <<ex10RandomData_lineChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+   chartData = RandomChartData.generated(chartOptions: chartOptions);
+    var lineChartContainer = LineChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var lineChart = LineChart(
+      painter: LineChartPainter(
+        lineChartContainer: lineChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex10RandomData_lineChart.png]]
+
+** ex10RandomData_verticalBarChart <<ex10RandomData_verticalBarChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+   chartData = RandomChartData.generated(chartOptions: chartOptions);
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
