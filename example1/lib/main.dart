@@ -370,6 +370,12 @@ class _ExampleDefiner {
 
   _ExampleDefiner(this.descriptorOfExampleToRun);
 
+  /// Runs the example chart with name given in [exampleComboToRun] through command line parameter --dart-define.
+  /// 
+  /// Example assumes Android emulator is running or an Android/iOS device is connected: 
+  /// - Running:
+  ///   `flutter run example1/lib/main.dart --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart`
+  /// will set [exampleComboToRun] to a Tuple corresponding to ex10RandomData/lineChart
   Widget createRequestedChart() {
     
     // Example requested to run

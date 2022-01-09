@@ -1,14 +1,25 @@
 #!/bin/bash
 
+# This script runs a single or all examples in the example app in "example1/lib/main.dart", 
+#   captures screenshot from each example, then runs a follow-up process which
+#   validates that the captured screenshot is the same as expected screenshot (taken way earlier).
+# In more detail, this script runs in 3 steps
+#   1. Sources a program-generating script 'start_emulator_and_generate_examples_descriptor.sh'
+#      which creates a program executed in step 2. This program has multiple lines, 
+#      each line allows to run one example from 'ExamplesEnum'. 
+#   2. For each line in the above script (that is for each example in 'ExamplesEnum'), runs integration test 
+#        'flutter drive --target integration_test/screenshot_create_test.dart'
+#   3. For each line in the above script (that is for each example in 'ExamplesEnum'), runs a flutter widget test
+#        'flutter test  test/screenshot_check_test.dart'
+#      which compares
+#         - screenshot captured in step 2 with
+#         - screenshot expected, captured before any changes
+
 # Exit on error
 set -o errexit
 
-# This script runs integration test in integration_test/screenshot_create_test.dart
-#   which compares screenshots captured                  from the example app in "example1/lib/main.dart",
-#   to screenshots expected, captured before any changes from the example app in "example1/lib/main.dart".
-
 if [[ "$1" == "--help" ]]; then
-  echo Usage: integration_test_validate_screenshots.sh
+  echo Usage: integration_test_validate_screenshots.sh \[exampleEnum\]
   exit 1 
 fi
 
@@ -28,10 +39,11 @@ fi
 
 echo
 echo -------------------------------------
-echo Source script which starts emulator and generates program named "$examples_descriptor_generated_program". 
+echo Source script which starts emulator and generates program with tests for all examples. 
 #   This program can run either integration test (flutter driver) or the app (flutter run), depending on parameters.
 # See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
 source tool/test/start_emulator_and_generate_examples_descriptor.sh "$exampleEnum"
+echo Will run "$examples_descriptor_generated_program".
 examples_descriptor_generated_program=$examples_descriptor_generated_program
 
 echo

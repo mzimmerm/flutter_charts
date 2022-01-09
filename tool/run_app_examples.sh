@@ -14,7 +14,6 @@ if [ -z "$(find . -maxdepth 1 -type d -name integration_test)" ]; then
   exit 1
 fi
 
-
 # Source script which starts emulator and generates program named $examples_descriptor_generated_program. 
 #   This program can run either integration test (flutter driver) or the app (flutter run), 
 #   depending on parameters.

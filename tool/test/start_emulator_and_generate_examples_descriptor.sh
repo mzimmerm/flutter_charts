@@ -1,15 +1,25 @@
 #!/bin/bash
 
-# If Android AVD emulator is not running, starts one.
-# Then, uses the program 
-#    dart run example1/lib/src/util/examples_descriptor.dart
-# to generate a temp script, which name is placed to variable named
-#    $examples_descriptor_generated_program
-# $examples_descriptor_generated_program can be called from another script to repeatedly run the example app for data in ExamplesEnum.
+# Generates a program that can be used to run or test all examples 
+#   defined in enum 'ExamplesEnum'.
+#
+# Should be 'sourced', as it results in setting an environment variable which contains a program name,
+#   which the calling script can run.
+#
+# In more detail, this script does the following:
+#   - If Android AVD emulator is not running, starts one.
+#   - Next, uses the program 
+#     'dart run example1/lib/src/util/examples_descriptor.dart'
+#   to generate a temp script, which name is placed in the variable named
+#     'examples_descriptor_generated_program'
+#   The program $examples_descriptor_generated_program 
+#     can be executed from the script sourcing this script, 
+#     to run the or tests all examples declared in ExamplesEnum.
 
 # Input $1: ExamplesEnum value, for example ex10RandomData. 
-#           If empty or not set, all example screenshots are tested.
-# Output: variable examples_descriptor_generated_program
+#           If empty or not set, all examples are included in the generated run.
+# Output: variable name 'examples_descriptor_generated_program', which contains the name of the 
+#          generated program 
 
 exampleEnum=$1
 
@@ -23,8 +33,8 @@ if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
 fi
 
 echo Check if the emulator named $emulator_used is connected to a running device.
-# The only way to find out is to run ps, searching for the device name,
-#   as "flutter devices" list only the short device name such as e3565
+# The only way to find out if the emulator is connected is to run ps, searching for the device name.
+# The potential alternative "flutter devices" lists only the short device name such as e3565.
 if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
   echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
   flutter emulators --launch "$emulator_used"

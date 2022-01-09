@@ -2,13 +2,14 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 * Table of contents :TOC:noexport:
-- [[#latest-release-tracking-changes-over-time][Latest release, tracking changes over time]]
+- [[#latest-release-changes][Latest release changes]]
   - [[#illustration-of-a-new-feature-ability-to-hide-labels-legend-or-gridlines][Illustration of a new feature: ability to hide labels, legend, or gridlines]]
-- [[#installing-flutter_charts-as-a-library-into-your-app][Installing flutter_charts as a library into your app]]
-- [[#installing-the-flutter_charts-project-locally-from-github-and-running-the-example-app][Installing the flutter_charts project locally from Github, and running the example app]]
-  - [[#installing-the-flutter_charts-project-locally-from-github][Installing the flutter_charts project locally from Github]]
-  - [[#running-the-example-app][Running the example app]]
+- [[#installation][Installation]]
+  - [[#installing-flutter_charts-as-a-library-package-into-your-app][Installing flutter_charts as a library package into your app]]
+  - [[#installing-the-flutter_charts-project-as-a-local-clone-from-github][Installing the flutter_charts project as a local clone from Github]]
+- [[#running-the-examples-included-in-flutter_charts][Running the examples included in flutter_charts]]
 - [[#examples-with-code-linechart-and-verticalbarchart-code-and-resulting-charts][Examples with code: LineChart and VerticalBarChart. Code and resulting charts]]
+  - [[#new-examples][New examples]]
   - [[#example-with-random-data-y-values-random-x-labels-random-colors-random-data-rows-legends-data-generated-y-labels][Example with Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-data-generated-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,]]
   - [[#user-provided-data-y-values-user-provided-x-labels-random-colors-user-provided-data-rows-legends-user-provided-y-labels][User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels]]
@@ -20,10 +21,9 @@
   - [[#autolayout-step-4][Autolayout step 4]]
   - [[#autolayout-step-5][Autolayout step 5]]
 - [[#known-packages-libraries-and-apps-that-use-this-flutter_charts-package][Known packages, libraries and apps that use this flutter_charts package]]
-- [[#an-overview-of-this-library-data-options-classes][An overview of this library: data, options, classes]]
 - [[#todos][Todos]]
 
-* Latest release, tracking changes over time
+* Latest release changes
 
 The latest release is 0.3.0
 
@@ -85,18 +85,16 @@ Result vertical bar chart:
 #+ATTR_HTML: :width 300
 [[file:doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png]]
 
+* Installation
+** Installing flutter_charts as a library package into your app
 
-* Installing flutter_charts as a library into your app
+If you want to use the ~flutter_charts~ library package in your app, please follow instructions in https://pub.dev/packages/flutter_charts/install. This will result in ability of your app to use  ~flutter_charts~.
 
-If you want to use flutter_charts in your app, please follow https://pub.dev/packages/flutter_charts/install.
+** Installing the flutter_charts project as a local clone from Github
 
-* Installing the flutter_charts project locally from Github, and running the example app
+The advantage of installing the source of the ~flutter_charts~ project locally from Github is that you can run the packaged example application and also run the integration and widget tests.
 
-The advantage of installing the full flutter_charts project locally from Github is that you can run the packaged example application and also run the integration and widget tests.
-
-** Installing the flutter_charts project locally from Github
-
-To install flutter_charts project locally from Github, follow these steps:
+To install (clone) the ~flutter_charts~ project from Github to your local system, follow these steps:
 
 - Install Flutter, and items such as Android emulator. Instructions are on the Flutter website https://docs.flutter.dev/get-started/install.
 - Go to https://github.com/mzimmerm/flutter_charts, click on the "Code" button, and follow the instuctions to checkout flutter_charts. A summary of one installation method (download method):
@@ -105,30 +103,29 @@ To install flutter_charts project locally from Github, follow these steps:
 - Unzip the file ~flutter_charts-master.zip~
 - The project will be in the ~$HOME/dev/flutter_charts-master/~ directory
 
+* Running the examples included in flutter_charts
 
-** Running the example app
+This section assumes you installed the flutter_charts project as a local clone from Github, as described in [[*Running the examples included in flutter_charts]]
 
 There is an example application in flutter_charts: ~example1/lib/main.dart~. It shows how the Flutter Charts library can be included in a Flutter application.
 
-To run the example application, Android emulator or iOS emulator need to be installed. See the installation link above. To use the project, you can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow items below:
+To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
-- Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [[*Installing the flutter_charts project locally from Github]] section.
-- ~cd $HOME/dev/flutter_charts-master/~ This is where 
-- Paste any of the lines below to the command line. Each line runs the example app with a different chart example.
-  #+begin_src bash
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex11RandomDataWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex31AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex31AnimalsBySeasonNoLabelsShown --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex40LanguagesWithYOrdinalUserLabelsAndUserColors --dart-define=CHART_TYPE_TO_SHOW=lineChart example1/lib/main.dart
-    flutter run --dart-define=EXAMPLE_TO_RUN=ex50StocksWithNegativesWithUserColors --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart example1/lib/main.dart
-  #+end_src
+- Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [[*Installing the flutter_charts project as a local clone from Github]] section.
+- ~cd $HOME/dev/flutter_charts-master/~  
+- Paste any of the lines below to the command line.
+  - To run one example (actually two, first line chart, next vertical bar chart), run:
+    #+begin_src bash
+      tool/demo/run_all_examples.sh ex10RandomData
+    #+end_src
+    (press q in the terminal to quit the current example and run next)
+  - To run all examples 
+    #+begin_src bash
+      tool/demo/run_all_examples.sh
+    #+end_src
+    (press q in the terminal to quit the current example and run next)
 
-Screenshot from the running example app
+Sample screenshot from the running example app
 
 #+NAME: fig:Line Chart
 #+CAPTION: Line Chart caption
@@ -156,7 +153,43 @@ Flutter Charts code allow to define the following data elements:
 
 The examples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
 
-See the section [[*Running the example app]] on how to run the code that created the images below.  The code snippets are from the method ~Widget createRequestedChart()~ in ~example1/lib/main.dart~ 
+See the section [[*Running the examples included in flutter_charts]] on how to run the code that created the images below.  The code snippets are from the method ~Widget createRequestedChart()~ in ~example1/lib/main.dart~ 
+
+** IN-PROGRESS New examples
+
+Internal note: convert all images to width=150
+
+#+begin_src bash :results output raw :eval no-export
+  for file in doc/readme_images/ex*; do
+      copy_name="$(basename $file)"
+      copy_name="${copy_name/%.*/}"
+      convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
+  done
+#+end_src
+
+
+|    |   |
+
+
+ [ [ Heading ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png ] ] Heading link does not work
+ 
+ [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]
+ 
+ [[#ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]
+ 
+
+*** Heading ex10RandomData_lineChart <<ex10RandomData_lineChart>>
+:PROPERTIES:
+:CUSTOM_ID: ex10RandomData_lineChart
+:END:
+
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
+
 
 ** Example with Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
 
@@ -295,73 +328,49 @@ This section illustrates how the auto layout behaves when less and less horizont
 
 Flutter chart library automatically checks for the X label overlap, and follows with rule-based iterative re-layout, to prevent labels running into each other.
 
-To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' signs on the right of the chart.
+To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' characters on the right of the chart.
 
 ** Autolayout step 1
 
-Let's say there are six labels on a chart, and sufficient space to display labels horizontally. The result may look like this:
+Let's say there are six labels on a chart, and there is sufficient space to display labels horizontally. The result may look like this:
+We can see all x axis labels displayed it full, horizontally oriented.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-1.png]]
 
-We can see all x axis labels displayed it full, horizontally oriented.
-
 ** Autolayout step 2
 
-Next, let us make less available space by taking away some space on the right with a wider text label like this '<<<<<<'
+Next, let us make less available space by taking away some space on the right with a wider text label such as '<<<<<<'
+We can see the labels were automatically tilted by the angle ~LabelLayoutStrategy.labelTiltRadians~ for the labels to fit.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-2.png]]
 
-We can see the labels were automatically tilted by angle ~ChartOptions labelTiltRadians~ for the labels to fit.
-
 ** Autolayout step 3
-Next, let us make even less available space by taking away some space on the right with a wider text label like this '<<<<<<<<<<<'.
+Next, let us make even less available space by taking away some space on the right with a wider text label such as '<<<<<<<<<<<'.
+We can see that labels are not only tilted, but also automatically skipped for labels not to overlap (every 2nd label is skipped, see option ~ChartOptions.iterativeLayoutOptions.showEveryNthLabel~).
 
 [[file:doc/readme_images/README.org_iterative-layout-step-3.png]]
 
-We can see that labels are not only tilted, but also automatically skipped (every 2nd) for labels not to overlap.
-
 ** Autolayout step 4
 
-Next, let us make even less available space some more compared to step 3, with even a wider text label like this '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
+Next, let us make even less available space some more compared to step 3, with even a wider text label such as '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
+We can see even more labels were skipped for labels to prevent overlap, the chart is showing every 5th label.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-4.png]]
-
-We can see even more labels were skipped for labels to prevent overlap, the chart is showing evey 5th label
 
 ** Autolayout step 5
 
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
+Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as the amount of horizontal space is not sufficient.
 
 [[file:doc/readme_images/README.org_iterative-layout-step-5.png]]
-
-Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as there is not enough horizontal space.
 
 * Known packages, libraries and apps that use this flutter_charts package
 
 1. Michael R. Fairhurst's *Language reader app* - see https://github.com/MichaelRFairhurst/flutter-language-reader-app
 
-* An overview of this library: data, options, classes
-
-Before we show several examples of charts, a few notes. 
-
-- The ~ChartData~ class: allows to define data - X labels, Y values, (optional) Y labels, each-dataRow (series) legends, each-dataRow (series) color. The list below provides a summary description of each item
-  - X labels: ~ChartData.xLabels~ allow to define X labels. Setting ~xLabels~ is required, but client can set them to empty strings.
-  - Y values: ~ChartData.dataRows~ allow to define Y values in rows. Assumption: size of each data row in ~ChartData.dataRows~ is the same, and each data row size ==  ~ChartData.xLabels.size~
-  - Y labels (optional): Normally, Y labels are generated from data. The option ~ChartOptions.useUserProvidedYLabels~ (default /true/), asks flutter_charts to data-generate Y labels. If this option is set to /false/, then ~ChartData.yLabels~ must be set. Any number of such user-provided Y labels is allowed.
-  - Each-dataRow (each series) legends: ~ChartData.dataRowsLegends~ allow to define a legend for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsLegends.size~
-  - Each-dataRow (each series) color: ~ChartData.dataRowsColors~ allow to define a color for each data row in  ~ChartData.dataRows~. Assumption:  ~ChartData.dataRows.size~ ==  ~ChartData.dataRowsColors.size~
-- The  ~ChartOptions~ class: allows to define options, by using it's defaults, or setting some options to non default values. There are also ~LineChartOptions~ and ~VerticalBarChartOptions~ classes. 
-- Support for randomly generated data, colors, labels: Flutter Charts also provides randomly generated data, in the class ~RandomChartData~. This class generates:
-  - Y values data, 
-  - X labels, 
-  - Series colors, 
-  - Series legends  
-- Currently the only purpose of ~RandomChartData~ is for use in the examples below. To be clear, ~RandomChartData~ Y values, series colors, and series legends are not completely random - they hardcode some demoable label, legends, color values, and data ranges (data random within the range).
-
-
 
 * TODO Todos
 
-1. During construction of DataRows, enforce default values of Legend names and colors for rows. This fixes issues such as https://github.com/mzimmerm/flutter_charts/issues/18, when users do not set them and expect (reasonably) a default chart to show anyway.
-2. Replace `reduce(fn)` with `fold(initialValue, fn)` throughout code to deal with exceptions when lists are empty. 
-3. Allow scaling y values using a function.
+1. [X] During construction of DataRows, enforce default values of Legend names and colors for rows. This fixes issues such as https://github.com/mzimmerm/flutter_charts/issues/18, when users do not set them and expect (reasonably) a default chart to show anyway.
+2. [ ] Replace `reduce(fn)` with `fold(initialValue, fn)` throughout code to deal with exceptions when lists are empty. 
+3. [X] Allow scaling y values using a function.

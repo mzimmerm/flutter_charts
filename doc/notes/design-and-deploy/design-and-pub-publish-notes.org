@@ -2,13 +2,13 @@
 #+TODO: TODO IN-PROGRESS IN-PROGRESS-NOW LATER DONE NOTE
 
 
-* Bugs and issues - flutter_charts
-- [X] After tons of layout changes, the whole grid disappeared from the line chart only.
-- [ ] The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
-- [X] Chart area needs clipping in the application
-- [X] https://github.com/mzimmerm/flutter_charts/issues/5 - Coloring support: Make line chart dot colors settable
-- 
+* TODO Bugs and issues - flutter_charts
+** TODO The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
  
+** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
+
+IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
+
 * NOTE Layouter general function
 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
@@ -64,7 +64,7 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 *** Tab Installing   - shows automatically
 ** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
 ** *CHANGELOG.md*: - Add comment section for new version and description of changes.
-** *README.org*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~ as, for example:* [ [ file:doc/readme_images/README.org_IMGID.png ] ]
+** *README.org*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~, for example:* [ [file:doc/readme_images/README.org_IMGID.png] ]
 
 The reason is, the published package website only allows links to the ~doc/readme_images~ directory. So all images must be there.
 
@@ -76,8 +76,8 @@ This is the process of adding images to README.org, which survives conversion to
 - [ ] Show the image links directly
 - [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
 - [ ] Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
-- [ ] Change the links in org file by changing =file:= to =file:doc/readme_images/=
-  - [ ] in the org file, this look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
+- [ ] Change the links in org file by search-and-replace the string =file:= to =file:doc/readme_images/=
+  - [ ] in the org file, the result should look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
 
 ** *README.org*: Convert to *README.md* 
 
@@ -911,22 +911,15 @@ Look for places like this
 - [-] Containers - LATER
 - [ ] 
 *** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
-*** IN-PROGRESS-NOW Look at ~PointsColumns~ as the interesting place where ChartData.dataRows are transferred to the chart. Start at ~_drawDataPresentersColumns~
-
 *** IN-PROGRESS-NOW todo-11-last and todo-11-later (also todo-00)
 
 - Resolve or renumber, and make clear to move them to the *Morph section*.
   
-*** IN-PROGRESS-NOW Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-
-*** TODO Refactor and document Poly
-
-*** TODO *DOCUMENT ON PAPER ALL CLASSES USED IN CHARTS*
-*** TODO Summarize changes in README.md
-*** TODO Bug Vertical Bar log Y axis (Ex 52): The number showing is 10,000,000,000 - 10,000 times more than it should
-
-IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
-
+*** IN-PROGRESS-NOW *DOCUMENT ON PAPER ALL CLASSES USED IN CHARTS*
+*** IN-PROGRESS-NOW Summarize changes in README.md and CHANGELOG.md
+*** IN-PROGRESS-NOW Merge to master, Test, commit, push
+*** IN-PROGRESS-NOW Release 0.4.0 from master
+*** IN-PROGRESS-NOW Switch back to flutter_charts_v2
 ** TODO 3. ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
 
 *** TODO Question any place in the library importing import 'package:flutter_charts/flutter_charts.dart'; and change to import only needed sources.
@@ -971,7 +964,6 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
-
 
 
 *** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
@@ -1072,7 +1064,6 @@ Thoughts:
 **** TODO Look into remaining usages of "ui.Size get layoutSize"
 
 
-
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 
 #+begin_src javascript
@@ -1156,7 +1147,6 @@ shoudl be moved to a XContainerManualLayout(new layout class).calculateAndSetAct
 **** TODO What else  - much more
 
 *** TODO ~HUGE - establish hierarchy between rest of current Containers~ (NOT non-container classes like Presenters, PresentersColumn etc)
-
 
 *** TODO ~Convert all Presenter, PointsColumn, PointsColumns etc  to Containers but keep the code structure the same~
 **** TODO Refactor and document StackableValuePoint - maybe not, *move this task to Morph tasks, and as that StackableValuePoint is a Container (Morph)*
@@ -1264,15 +1254,18 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 
 
 
-
 *** TODO Move construction of XContainer, YContainer and others from the ChartTopContainer.layout() method to ChartTopContainer constructors. This may be questionable!! *THINK First - maybe later after Morphs*
-
 
 
 *** TODO Remove complexity around passing ChartOptions.
 *** TODO ChartContainer: Keep the class, but convert to Container where possible in method arguments.
 
 ***** I think in most places, we use ChartContainer  ONLY to pass down ChartOptions. So analyze such uses and convert to Container where possible, and get Options via root.chartOptions.
+*** TODO Look at ~PointsColumns~ as the interesting place where ChartData.dataRows are transferred to the chart. Start at ~_drawDataPresentersColumns~
+*** TODO Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+*** TODO Refactor and document Poly
+
+
 *** TODO Study Morphs what else needs added!
 *** TODO Rename Container into Morph
 **** Add a list of children to Morph
