@@ -15,7 +15,7 @@ import 'line/chart.dart';
 ///
 /// This class does the core of painting the chart, in it's core method [paint].
 ///
-/// Extensions should implement method [_drawDataPresentersColumns], todo-11-document
+/// Extensions should implement method [_drawDataPresentersColumns], todo-11-document or remove
 /// which paints each column with the data representing elements -
 /// lines, or rectangles.
 ///

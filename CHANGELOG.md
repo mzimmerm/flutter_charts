@@ -2,7 +2,7 @@
 
 ## Functional improvements
 
-1. Improvement Summary: Y axis can start at non-zero
+1. Y axis can start at non-zero, request #31. See 
   - Details: Implemented issue request #31 https://github.com/mzimmerm/flutter_charts/issues/31 . Flutter_charts allows the Y axis to start at the minimum Y data values, rather than always from 0.0. 
   - Code Notes: See method `DataContainerOptions.startYAxisAtDataMinRequested` and option `ChartBehavior.startYAxisAtDataMinAllowed`.
   - More Details:
@@ -10,13 +10,14 @@
     - When all Y values are negative, Y axis starts at the minimum and tops at the maximum of Y values.
     - The option `startYAxisAtDataMinRequested` interacts with data transforms such as logarithmic scale, in the sense that the minimum on Y axis is the minimum transformed value.
 
-2. Added logarithmic scale: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. See the option `DataContainerOptions.yTransform`, and the example `ex52AnimalsBySeasonLogarithmicScale` in README.
+2. Added logarithmic scale, request #22
+  - Details: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. See the option `DataContainerOptions.yTransform`, and the example `ex52AnimalsBySeasonLogarithmicScale` in README.
 
 ## API changes
 
 There are API changes in this release. Below may or may not be a full list
 
-1. `ChartData` not 'knows' about `ChartOptions`, as data validation needs to know about options. For example, `ChartData` now needs to check if data are all positive, if the `ChartOptions` ask for a logarithmic scale. 
+1. `ChartData` now 'knows' about `ChartOptions`, as data validation needs to know about options. For example, `ChartData` now needs to check if data are all positive, if the `ChartOptions` ask for a logarithmic scale. 
 
 2. As a consequence of the above change, `ChartOptions` parameter has been removed from the `ChartTopContainer` constructors (such as `VerticalBarChartTopContainer`), and moved to `ChartData` constructors.
 

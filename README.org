@@ -2,7 +2,6 @@
 #+TODO: TODO IN-PROGRESS LATER DONE NOTE
 
 * Table of contents :TOC:noexport:
-- [[#internal-note-convert-all-images-to-width150][Internal note: convert all images to width=150]]
 - [[#examples-with-code][Examples with code]]
   - [[#ex10randomdata_linechart-ex10randomdata_linechart][ex10RandomData_lineChart <<ex10RandomData_lineChart>>]]
   - [[#ex10randomdata_verticalbarchart-ex10randomdata_verticalbarchart][ex10RandomData_verticalBarChart <<ex10RandomData_verticalBarChart>>]]
@@ -23,7 +22,6 @@
   - [[#ex52animalsbyseasonlogarithmicscale_verticalbarchart-ex52animalsbyseasonlogarithmicscale_verticalbarchart][ex52AnimalsBySeasonLogarithmicScale_verticalBarChart <<ex52AnimalsBySeasonLogarithmicScale_verticalBarChart>>]]
   - [[#ex900errorfixuserdataallzero_linechart-ex900errorfixuserdataallzero_linechart][ex900ErrorFixUserDataAllZero_lineChart <<ex900ErrorFixUserDataAllZero_lineChart>>]]
 - [[#latest-release-changes][Latest release changes]]
-  - [[#illustration-of-a-new-feature-ability-to-hide-labels-legend-or-gridlines][Illustration of a new feature: ability to hide labels, legend, or gridlines]]
 - [[#installation][Installation]]
   - [[#installing-flutter_charts-as-a-library-package-into-your-app][Installing flutter_charts as a library package into your app]]
   - [[#installing-the-flutter_charts-project-as-a-local-clone-from-github][Installing the flutter_charts project as a local clone from Github]]
@@ -42,10 +40,6 @@
 - [[#known-packages-libraries-and-apps-that-use-this-flutter_charts-package][Known packages, libraries and apps that use this flutter_charts package]]
 - [[#todos][Todos]]
 - [[#internal-notes-for-exporting-this-document][Internal notes for exporting this document]]
-
-* Internal note: convert all images to width=150
-
-
 
 * Examples with code
 
@@ -1047,65 +1041,9 @@ Result
 
 * Latest release changes
 
-The latest release is 0.3.0
+The latest release is 0.4.0
 
-The file:CHANGELOG.md document describes features and bug fixes in this and older versions.
-
-** Illustration of a new feature: ability to hide labels, legend, or gridlines
-
-Code is for the line chart. See the function ~Widget createRequestedChart()~ in https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart for changes to create a vertical bar chart instead (essentially in this code substitute "Line" for "VerticalBar". For the configuration, the section of interest is around ~ExamplesEnum.ex31AnimalsBySeasonNoLabelsShown~
-
-#+BEGIN_SRC dart
-  // This is how noLabels can be set. See the previous section for a fine control of this option
-  ChartOptions  chartOptions = LineChartOptions.noLabels(); 
-  ChartData  chartData = ChartData();
-  chartData.dataRowsLegends = [
-    'Spring',
-    'Summer',
-    'Fall',
-    'Winter',
-  ];
-  chartData.dataRows = [
-    [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-    [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-    [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-    [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-  ];
-  chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-  chartData.assignDataRowsDefaultColors();
-
-  // This section is shown repeatedly in all examples, to stress how charts are created
-  LineChartTopContainer lineChartContainer = LineChartTopContainer(
-    chartData: chartData,
-    chartOptions: chartOptions,
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  );
-
-  LineChart lineChart = LineChart(
-    painter: LineChartPainter(
-      lineChartContainer: lineChartContainer,
-    ),
-  );
-#+END_SRC
-
-The ~lineChart~ widget can be placed on any Flutter app. The example code is in https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart
-
-Result line chart:
-
-#+CAPTION: Line Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_lineChart.png]]
-
-Result vertical bar chart:
-
-#+NAME: fig:Vertical Bar Chart
-#+CAPTION: Vertical Bar Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png]]
+The file:CHANGELOG.md document describes new features and bug fixes in this and older versions.
 
 * Installation
 ** Installing flutter_charts as a library package into your app
