@@ -1,52 +1,113 @@
 
 # Table of Contents
 
-1.  [Examples with code](#org78701ba)
-    1.  [ex10RandomData\_lineChart ](#org44d0fc3)
-    2.  [ex10RandomData\_verticalBarChart ](#org6a5b3c0)
-    3.  [ex11RandomDataWithLabelLayoutStrategy\_lineChart ](#orga1e147e)
-    4.  [ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart ](#org8981c6d)
-    5.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart ](#orge0a8199)
-    6.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart ](#org9b29f09)
-    7.  [ex31SomeNegativeValues\_lineChart ](#org799d8c4)
-    8.  [ex31SomeNegativeValues\_verticalBarChart ](#org7b6460b)
-    9.  [ex32AllPositiveYsYAxisStartsAbove0\_lineChart ](#org1e001ba)
-    10. [ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart ](#org8cd0c00)
-    11. [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#orge1d17c8)
-    12. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#org3923eb3)
-    13. [ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart ](#org6bba8ad)
-    14. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#org553ce18)
-    15. [ex50StocksWithNegativesWithUserColors\_verticalBarChart ](#orgd7545b9)
-    16. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org230ed17)
-    17. [ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart ](#orga1335cc)
-    18. [ex900ErrorFixUserDataAllZero\_lineChart ](#org31dfe5b)
-2.  [Latest release changes](#orgd6ade7b)
-3.  [Installation](#org4937513)
-    1.  [Installing flutter\_charts as a library package into your app](#org28aace0)
-    2.  [Installing the flutter\_charts project as a local clone from Github](#orgead5361)
-4.  [Running the examples included in flutter\_charts](#orgafddddf)
-5.  [Illustration of the "iterative auto layout" feature](#org6a87f2d)
-    1.  [Autolayout step 1](#org2098b20)
-    2.  [Autolayout step 2](#org5c74292)
-    3.  [Autolayout step 3](#org783e0ca)
-    4.  [Autolayout step 4](#orgeeeff65)
-    5.  [Autolayout step 5](#org8f20882)
-6.  [Known packages, libraries and apps that use this flutter\_charts package](#orgf646458)
-7.  [Todos](#orgdcd9570)
-8.  [Internal notes for exporting this document](#org3c3189f)
+1.  [Examples with code](#org36f6739)
+    1.  [ex10RandomData\_lineChart ](#orgacc561e)
+    2.  [ex10RandomData\_verticalBarChart ](#org85819e7)
+    3.  [ex11RandomDataWithLabelLayoutStrategy\_lineChart ](#orgce05372)
+    4.  [ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart ](#org033b22b)
+    5.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart ](#org587e417)
+    6.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart ](#org91e1a6b)
+    7.  [ex31SomeNegativeValues\_lineChart ](#org49c30c2)
+    8.  [ex31SomeNegativeValues\_verticalBarChart ](#org4b289cc)
+    9.  [ex32AllPositiveYsYAxisStartsAbove0\_lineChart ](#orgd42a2f3)
+    10. [ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart ](#org5e83572)
+    11. [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#orgf856ba1)
+    12. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#orge9bbc22)
+    13. [ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart ](#org8bf69e6)
+    14. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc5cee04)
+    15. [ex50StocksWithNegativesWithUserColors\_verticalBarChart ](#org6932eec)
+    16. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org6d0092e)
+    17. [ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart ](#org47ef7bc)
+    18. [ex900ErrorFixUserDataAllZero\_lineChart ](#org94fde50)
+2.  [Latest release changes](#orgfe79b03)
+3.  [Installation](#org07f67e2)
+    1.  [Installing flutter\_charts as a library package into your app](#org6b0373d)
+    2.  [Installing the flutter\_charts project as a local clone from Github](#org0026998)
+4.  [Running the examples included in flutter\_charts](#orga4839cc)
+5.  [Illustration of the "iterative auto layout" feature](#org4ab3e54)
+    1.  [Autolayout step 1](#org27142b6)
+    2.  [Autolayout step 2](#org7fbe5e9)
+    3.  [Autolayout step 3](#orgfb5a0d4)
+    4.  [Autolayout step 4](#org006f712)
+    5.  [Autolayout step 5](#org844c5a3)
+6.  [Known packages, libraries and apps that use this flutter\_charts package](#org08bd488)
+7.  [Todos](#orgaef4199)
+8.  [Internal notes for exporting this document](#orge717b5f)
 
 
 
-<a id="org78701ba"></a>
+<a id="org36f6739"></a>
 
 # Examples with code
 
 This section contains sample results from flutter\_charts. 
 
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
-<a id="org44d0fc3"></a>
 
-## ex10RandomData\_lineChart <a id="orgffceafb"></a>
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left"><a href="#org5a13571"><img src="/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orga25debd"><img src="/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org93068f3"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org114ea5b"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+
+<tr>
+<td class="org-left"><a href="#org283db53"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org235c8c7"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org6d6ee4e"><img src="/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgd45a80b"><img src="/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+
+<tr>
+<td class="org-left"><a href="#orgc739944"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org2320d26"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgdfec3f2"><img src="/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org474654d"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+
+<tr>
+<td class="org-left"><a href="#org389ec87"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orga62d28f"><img src="/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org72685ff"><img src="/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org800fa92"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+
+<tr>
+<td class="org-left"><a href="#orgdf818d1"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgc4b9ab7"><img src="/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+
+<a id="orgacc561e"></a>
+
+## ex10RandomData\_lineChart <a id="org5a13571"></a>
 
 Code
 
@@ -73,9 +134,9 @@ Result
 ![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
 
-<a id="org6a5b3c0"></a>
+<a id="org85819e7"></a>
 
-## ex10RandomData\_verticalBarChart <a id="org62018ac"></a>
+## ex10RandomData\_verticalBarChart <a id="orga25debd"></a>
 
 Code
 
@@ -102,9 +163,9 @@ Result
 ![img](doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orga1e147e"></a>
+<a id="orgce05372"></a>
 
-## ex11RandomDataWithLabelLayoutStrategy\_lineChart <a id="org7c08f55"></a>
+## ex11RandomDataWithLabelLayoutStrategy\_lineChart <a id="org93068f3"></a>
 
 Code
 
@@ -134,9 +195,9 @@ Result
 ![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
 
 
-<a id="org8981c6d"></a>
+<a id="org033b22b"></a>
 
-## ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart <a id="orge297475"></a>
+## ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart <a id="org114ea5b"></a>
 
 Code
 
@@ -166,9 +227,9 @@ Result
 ![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orge0a8199"></a>
+<a id="org587e417"></a>
 
-## ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart <a id="org8b5ba69"></a>
+## ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart <a id="org283db53"></a>
 
 Code
 
@@ -217,9 +278,9 @@ Result
 ![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
 
 
-<a id="org9b29f09"></a>
+<a id="org91e1a6b"></a>
 
-## ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart <a id="orge90734b"></a>
+## ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart <a id="org235c8c7"></a>
 
 Code
 
@@ -268,9 +329,9 @@ Result
 ![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org799d8c4"></a>
+<a id="org49c30c2"></a>
 
-## ex31SomeNegativeValues\_lineChart <a id="orgf3e499e"></a>
+## ex31SomeNegativeValues\_lineChart <a id="org6d6ee4e"></a>
 
 Code
 
@@ -312,9 +373,9 @@ Result
 ![img](doc/readme_images/ex31SomeNegativeValues_lineChart.png "Line Chart caption")
 
 
-<a id="org7b6460b"></a>
+<a id="org4b289cc"></a>
 
-## ex31SomeNegativeValues\_verticalBarChart <a id="org1e638f2"></a>
+## ex31SomeNegativeValues\_verticalBarChart <a id="orgd45a80b"></a>
 
 Code
 
@@ -356,9 +417,9 @@ Result
 ![img](doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org1e001ba"></a>
+<a id="orgd42a2f3"></a>
 
-## ex32AllPositiveYsYAxisStartsAbove0\_lineChart <a id="org7823ef4"></a>
+## ex32AllPositiveYsYAxisStartsAbove0\_lineChart <a id="orgc739944"></a>
 
 Code
 
@@ -403,9 +464,9 @@ Result
 ![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png "Line Chart caption")
 
 
-<a id="org8cd0c00"></a>
+<a id="org5e83572"></a>
 
-## ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart <a id="orga215b12"></a>
+## ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart <a id="org2320d26"></a>
 
 Code
 
@@ -450,9 +511,9 @@ Result
 ![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orge1d17c8"></a>
+<a id="orgf856ba1"></a>
 
-## ex33AllNegativeYsYAxisEndsBelow0\_lineChart <a id="org3638dbf"></a>
+## ex33AllNegativeYsYAxisEndsBelow0\_lineChart <a id="orgdfec3f2"></a>
 
 Code
 
@@ -496,9 +557,9 @@ Result
 ![img](doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png "Line Chart caption")
 
 
-<a id="org3923eb3"></a>
+<a id="orge9bbc22"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_lineChart <a id="org85d4768"></a>
+## ex35AnimalsBySeasonNoLabelsShown\_lineChart <a id="org474654d"></a>
 
 Code
 
@@ -543,9 +604,9 @@ Result
 ![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
 
 
-<a id="org6bba8ad"></a>
+<a id="org8bf69e6"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart <a id="org45e0439"></a>
+## ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart <a id="org389ec87"></a>
 
 Code
 
@@ -590,9 +651,9 @@ Result
 ![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org553ce18"></a>
+<a id="orgc5cee04"></a>
 
-## ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart <a id="org83a1787"></a>
+## ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart <a id="orga62d28f"></a>
 
 Code
 
@@ -652,9 +713,9 @@ Result
 ![img](doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
 
 
-<a id="orgd7545b9"></a>
+<a id="org6932eec"></a>
 
-## ex50StocksWithNegativesWithUserColors\_verticalBarChart <a id="org17887e6"></a>
+## ex50StocksWithNegativesWithUserColors\_verticalBarChart <a id="org72685ff"></a>
 
 Code
 
@@ -709,9 +770,9 @@ Result
 ![img](doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org230ed17"></a>
+<a id="org6d0092e"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_lineChart <a id="orgb578e00"></a>
+## ex52AnimalsBySeasonLogarithmicScale\_lineChart <a id="org800fa92"></a>
 
 Code
 
@@ -755,9 +816,9 @@ Result
 ![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
 
 
-<a id="orga1335cc"></a>
+<a id="org47ef7bc"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart <a id="org1757740"></a>
+## ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart <a id="orgdf818d1"></a>
 
 Code
 
@@ -801,9 +862,9 @@ Result
 ![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org31dfe5b"></a>
+<a id="org94fde50"></a>
 
-## ex900ErrorFixUserDataAllZero\_lineChart <a id="org8f5fb4d"></a>
+## ex900ErrorFixUserDataAllZero\_lineChart <a id="orgc4b9ab7"></a>
 
 Code
 
@@ -849,7 +910,7 @@ Result
 ![img](doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png "Line Chart caption")
 
 
-<a id="orgd6ade7b"></a>
+<a id="orgfe79b03"></a>
 
 # Latest release changes
 
@@ -858,19 +919,19 @@ The latest release is 0.4.0
 The <CHANGELOG.md> document describes new features and bug fixes in this and older versions.
 
 
-<a id="org4937513"></a>
+<a id="org07f67e2"></a>
 
 # Installation
 
 
-<a id="org28aace0"></a>
+<a id="org6b0373d"></a>
 
 ## Installing flutter\_charts as a library package into your app
 
 If you want to use the `flutter_charts` library package in your app, please follow instructions in <https://pub.dev/packages/flutter_charts/install>. This will result in ability of your app to use  `flutter_charts`.
 
 
-<a id="orgead5361"></a>
+<a id="org0026998"></a>
 
 ## Installing the flutter\_charts project as a local clone from Github
 
@@ -886,17 +947,17 @@ To install (clone) the `flutter_charts` project from Github to your local system
 -   The project will be in the `$HOME/dev/flutter_charts-master/` directory
 
 
-<a id="orgafddddf"></a>
+<a id="orga4839cc"></a>
 
 # Running the examples included in flutter\_charts
 
-This section assumes you installed the flutter\_charts project as a local clone from Github, as described in [4](#orgafddddf)
+This section assumes you installed the flutter\_charts project as a local clone from Github, as described in [4](#orga4839cc)
 
 There is an example application in flutter\_charts: `example1/lib/main.dart`. It shows how the Flutter Charts library can be included in a Flutter application.
 
 To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
--   Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [3.2](#orgead5361) section.
+-   Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [3.2](#org0026998) section.
 -   `cd $HOME/dev/flutter_charts-master/`
 -   Paste any of the lines below to the command line.
     -   To run one example (actually two, first line chart, next vertical bar chart), run:
@@ -915,7 +976,7 @@ Sample screenshot from running the example app
 ![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
 
-<a id="org6a87f2d"></a>
+<a id="org4ab3e54"></a>
 
 # Illustration of the "iterative auto layout" feature
 
@@ -926,7 +987,7 @@ Flutter chart library automatically checks for the X label overlap, and follows 
 To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' characters on the right of the chart.
 
 
-<a id="org2098b20"></a>
+<a id="org27142b6"></a>
 
 ## Autolayout step 1
 
@@ -936,7 +997,7 @@ We can see all x axis labels displayed it full, horizontally oriented.
 ![img](doc/readme_images/README.org_iterative-layout-step-1.png)
 
 
-<a id="org5c74292"></a>
+<a id="org7fbe5e9"></a>
 
 ## Autolayout step 2
 
@@ -946,7 +1007,7 @@ We can see the labels were automatically tilted by the angle `LabelLayoutStrateg
 ![img](doc/readme_images/README.org_iterative-layout-step-2.png)
 
 
-<a id="org783e0ca"></a>
+<a id="orgfb5a0d4"></a>
 
 ## Autolayout step 3
 
@@ -956,7 +1017,7 @@ We can see that labels are not only tilted, but also automatically skipped for l
 ![img](doc/readme_images/README.org_iterative-layout-step-3.png)
 
 
-<a id="orgeeeff65"></a>
+<a id="org006f712"></a>
 
 ## Autolayout step 4
 
@@ -966,7 +1027,7 @@ We can see even more labels were skipped for labels to prevent overlap, the char
 ![img](doc/readme_images/README.org_iterative-layout-step-4.png)
 
 
-<a id="org8f20882"></a>
+<a id="org844c5a3"></a>
 
 ## Autolayout step 5
 
@@ -976,14 +1037,14 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 ![img](doc/readme_images/README.org_iterative-layout-step-5.png)
 
 
-<a id="orgf646458"></a>
+<a id="org08bd488"></a>
 
 # Known packages, libraries and apps that use this flutter\_charts package
 
 1.  Michael R. Fairhurst's **Language reader app** - see <https://github.com/MichaelRFairhurst/flutter-language-reader-app>
 
 
-<a id="orgdcd9570"></a>
+<a id="orgaef4199"></a>
 
 # TODO Todos
 
@@ -992,7 +1053,7 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 3.  [X] Allow scaling y values using a function.
 
 
-<a id="org3c3189f"></a>
+<a id="orge717b5f"></a>
 
 # Internal notes for exporting this document
 
@@ -1013,5 +1074,5 @@ Convert all images to width=150
         convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
     done
 
-1.  Before release, run once the script in heading [1](#org78701ba). If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate. ALSO, make the table with small images 4 cells per row (do this by editing in text mode)
+1.  Before release, run once the script in heading [1](#org36f6739). If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate. ALSO, make the table with small images 4 cells per row (do this by editing in text mode)
 
