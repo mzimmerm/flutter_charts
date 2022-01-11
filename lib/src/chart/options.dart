@@ -161,7 +161,7 @@ class YContainerOptions {
   /// However, Y gridlines (vertical) are showing even when `isXContainerShown = false`.
   /// This option allows to toggle it.
   final bool isYGridlinesShown;
-  
+
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
@@ -209,9 +209,9 @@ class YContainerOptions {
   }
 }
 
-/// Identity transform. 
-/// 
-/// Causes no changes to data. 
+/// Identity transform.
+///
+/// Causes no changes to data.
 T identity<T>(T y) => y;
 
 /// 10-based logarithm.
@@ -239,29 +239,29 @@ class DataContainerOptions {
   /// as a common option in case there is some future overlap use on other
   /// chart types.
   final DataRowsPaintingOrder dataRowsPaintingOrder;
-  
+
   /// The transformation function which is always applied on y data before data are added to the chart internals.
-  /// 
+  ///
   /// Defaults to identity.
   final num Function(num y) yTransform;
 
-  /// User provided inverse to [yTransform]. 
-  /// 
-  /// Defaults to identity. If the [yTransform] is set to a function different from the 
-  /// default [T identity<T>(T y)], user is responsible 
-  /// for providing the [yInverseTransform] as well. Some common inverse functions are exported by 
+  /// User provided inverse to [yTransform].
+  ///
+  /// Defaults to identity. If the [yTransform] is set to a function different from the
+  /// default [T identity<T>(T y)], user is responsible
+  /// for providing the [yInverseTransform] as well. Some common inverse functions are exported by
   /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
   /// The request to start Y axis and it's labels at data minimum.
-  /// 
-  /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum 
+  ///
+  /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
   /// Y data value (transformed with the [yTransform] method).
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
   /// in several conditions:
   /// - On the [VerticalBarChart]
-  /// - For some [yTransform]s for example logarithm transform, 
+  /// - For some [yTransform]s for example logarithm transform,
   ///   where both data and logarithm must start above y value of 0.
   /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed].
   final bool startYAxisAtDataMinRequested;

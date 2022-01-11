@@ -28,12 +28,10 @@ class VerticalBarPresenter extends Presenter {
     List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
-
-
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    double barWidth =
-        chartTopContainer.xContainer.xGridStep * chartTopContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+    double barWidth = chartTopContainer.xContainer.xGridStep *
+        chartTopContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);

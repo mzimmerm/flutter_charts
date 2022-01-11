@@ -68,7 +68,7 @@ class ExamplesDescriptor {
   ExamplesDescriptor({this.exampleRequested});
 
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
-    // 
+    //
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
     //
@@ -88,9 +88,9 @@ class ExamplesDescriptor {
     //
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
-    // 
+    //
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
-    // 
+    //
     const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.lineChart),

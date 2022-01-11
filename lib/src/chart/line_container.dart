@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Offset, Paint, Canvas, Size;
+import 'dart:ui' as ui show Offset, Paint, Canvas;
 import 'container_base.dart' as container_base show Container;
 import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 
@@ -41,8 +41,10 @@ class LineContainer extends container_base.Container {
 
   // todo-13layout-size : This is not called. Call when we manage line segments like other Containers, and call their layout!
   // todo-11-later-not-used
+/*
   ui.Size get _lineContainerLayoutSize => ui.Size(
         (lineFrom.dx - lineTo.dx).abs(),
         (lineFrom.dy - lineTo.dy).abs(),
       );
+*/
 }

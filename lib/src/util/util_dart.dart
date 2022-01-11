@@ -14,7 +14,6 @@ import 'package:decimal/decimal.dart' as decimal;
 
 import 'test/generate_test_data_from_app_runs.dart';
 
-
 /// A minimal polynomial needed for Y label and axis scaling.
 ///
 /// Not fully a polynomial. Uses the [decimal] package.
@@ -24,6 +23,7 @@ class Poly {
   final decimal.Decimal _dec;
   final decimal.Decimal _one;
   final decimal.Decimal _ten;
+  final decimal.Decimal _zero;
 
   // ### constructors
 
@@ -31,8 +31,9 @@ class Poly {
   Poly({required num from})
       : _dec = dec(from.toString()),
         _one = numToDec(1),
-  // 1.0
-        _ten = numToDec(10);
+        // 1.0
+        _ten = numToDec(10),
+        _zero = numToDec(0);
 
   // ### methods
 
@@ -46,11 +47,18 @@ class Poly {
 
   int get totalLen => _dec.precision;
 
-  int get coefficientAtMaxPower => (_dec.abs() / numToDec(math.pow(10, maxPower))).toInt();
+  int get coefficientAtMaxPower =>
+      (_dec.abs() / numToDec(math.pow(10, maxPower))).floor().toInt(); // todo-00-last-done .toInt();
 
-  int get floorAtMaxPower => (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower))).toInt();
+  int get floorAtMaxPower => (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower)))
+      .floor()
+      .toDouble()
+      .toInt(); // todo-00-last-done .toInt();
 
-  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) * numToDec(math.pow(10, maxPower))).toInt();
+  int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) * numToDec(math.pow(10, maxPower)))
+      .floor()
+      .toDouble()
+      .toInt(); // todo-00-last-done .toInt();
 
   /// Position of first significant non zero digit.
   ///
@@ -58,6 +66,22 @@ class Poly {
   /// if no non zero is find on the left, then to the right.
   ///
   /// Zeros (0, 0.0 +-0.0 etc) are the only numbers where [maxPower] is 0.
+  ///
+  int get maxPower {
+    if (_dec == _zero) {
+      return 0;
+    }
+    // Power calcs should be done on positives due to the algorithm
+    decimal.Decimal decAbs = _dec.abs();
+    if (decAbs < _one) {
+      // pure fraction
+      // multiply by 10 till >= 1.0 (not pure fraction)
+      return _ltOnePower(decAbs);
+    }
+    return totalLen - fractLen - 1;
+  }
+
+/*
   int get maxPower {
     if (totalLen == fractLen) {
       // pure fraction
@@ -66,6 +90,7 @@ class Poly {
     }
     return totalLen - fractLen - 1;
   }
+*/
 
   int _ltOnePower(decimal.Decimal tester) {
     if (tester >= _one) throw Exception('$tester Failed: tester < 1.0');
@@ -130,7 +155,6 @@ double scaleValue({
   required double toDomainMin,
   required double toDomainMax,
 }) {
-
   var fromDomainLength = fromDomainMax - fromDomainMin;
   var toDomainLength = toDomainMax - toDomainMin;
   // Handle degenerate cases:
@@ -183,7 +207,7 @@ double scaleValue({
   double scaled = valueOnAxisY0 + toDomainMin;
 
   collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainMin, toDomainMax], scaled);
-  
+
   return scaled;
 }
 
@@ -236,4 +260,3 @@ double get epsilon => 0.000001;
 String enumName(Enum e) {
   return e.toString().split('.')[1];
 }
-

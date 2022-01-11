@@ -15,7 +15,7 @@ import 'line/chart.dart';
 ///
 /// This class does the core of painting the chart, in it's core method [paint].
 ///
-/// Extensions should implement method [_drawDataPresentersColumns],
+/// Extensions should implement method [_drawDataPresentersColumns], todo-11-document
 /// which paints each column with the data representing elements -
 /// lines, or rectangles.
 ///
@@ -45,12 +45,11 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// being able to paint and draw itself.
   ///
   /// The substantial role is to pass the [size] provided by the framework layout
-  /// to [chartTopContainer]'s [chartArea]. The container needs this information for layout,
-  /// see [chartTopContainer]'s [layout].
+  /// to [chartTopContainer]'s [ChartTopContainer.chartArea]. The container needs this information for layout,
+  /// see [chartTopContainer]'s [ChartTopContainer.layout].
   ///
   /// Once the above role is done, it delegates all painting to canvas to the
-  /// [chartTopContainer] .
-  /// todo-00-last-document finish documentation
+  /// [chartTopContainer].
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen

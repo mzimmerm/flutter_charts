@@ -1,4 +1,4 @@
-library flutter_charts; // Not necessary, would default to file name 'flutter_charts.dart' 
+library flutter_charts; // Not necessary, would default to file name 'flutter_charts.dart'
 ///
 /// **This file [root/lib/flutter_charts.dart]
 ///    _IS the flutter_charts library package_,
@@ -103,27 +103,27 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///   - A 'tight closure' - the smallest such interval
 ///   - An 'extension' of such interval. The extension typically starts at 0.0 if all values in List<double> are positive,
 ///     or ends at 0.0 if all values in List<double> are negative.
-///     
-/// - 'dataY' ANY variable named dataYs in the chart objects, once they are copied out of ChartData 
+///
+/// - 'dataY' ANY variable named dataYs in the chart objects, once they are copied out of ChartData
 ///   are always lifecycled in this order
 ///   1. transformed, then
-///   2. potentially stacked IN PLACE, then 
+///   2. potentially stacked IN PLACE, then
 ///   3. potentially scaled IN A COPY!!
 ///   This is the sequence that always happens. The transform is by default an identity
-///   
+///
 /// - 'chart area'  is the full size given to the [ChartPainter] by the application.
-/// 
-/// - 'absolute positions' in 'Container' classes refer to the positions 
-///   "in the coordinates of the 'chart area'". 
-///   
+///
+/// - 'absolute positions' in 'Container' classes refer to the positions
+///   "in the coordinates of the 'chart area'".
+///
 /// - 'data', 'dataY' represents transformed, not-stacked not-scaled data.
-/// 
+///
 /// - 'rawData' 'rawDataY' represents original not-transformed data.
-///   - Most of the code deals with 'transformed data', named 'data', which is nice and short. 
-///     Places in code where we see 'rawData' are not-transformed original data, 
+///   - Most of the code deals with 'transformed data', named 'data', which is nice and short.
+///     Places in code where we see 'rawData' are not-transformed original data,
 ///     except in 'ChartData.dataRows' which contains raw data.
-/// 
-///    
+///
+///
 export 'src/chart/label_container.dart';
 export 'src/util/random_chart_data.dart';
 

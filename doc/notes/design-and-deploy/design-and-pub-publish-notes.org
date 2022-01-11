@@ -54,9 +54,13 @@ IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT I
 - todo-11, todo-12 todo-13 - work in progress (implies todo-10), higher number is higher priority or more immediate. *So -13 is the highest ever priority.*
 ** ~cd flutter_charts~ - Implied default directory
 * NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
+** ~dart pub outdated --no-dev-dependencies --up-to-date --no-dependency-overrides~
+Run this to resolve a warning on pub.dev about "transitive dependencies"
+** ~dart pub upgrade --major-versions decimal~
+Upgrade a package to lates version. Not sure how to do this for all?
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
-** Test app from IntelliJ and ~tool/test/run_all_tests.sh~
+** Test ~tool/test/run_all_tests.sh~
 ** Ensure pub-required files exist: pub the following file in project to show the correct tabs on pub
 *** Tab README.md    - Needs the file
 *** Tab CHANGELOG.md - Needs the file
@@ -64,21 +68,6 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 *** Tab Installing   - shows automatically
 ** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
 ** *CHANGELOG.md*: - Add comment section for new version and description of changes.
-** *README.org*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~, for example:* [ [file:doc/readme_images/README.org_IMGID.png] ]
-
-The reason is, the published package website only allows links to the ~doc/readme_images~ directory. So all images must be there.
-
-*From web: Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory doc/readme_images, and point to then via github*. 
-
-This is the process of adding images to README.org, which survives conversion to README.md, and publishing on pub:
-
-- [ ] Add an image to README.org using the regular image capture.
-- [ ] Show the image links directly
-- [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
-- [ ] Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
-- [ ] Change the links in org file by search-and-replace the string =file:= to =file:doc/readme_images/=
-  - [ ] in the org file, the result should look like =file:doc/readme_images/README.org_iterative-layout-step-4.png=
-
 ** *README.org*: Convert to *README.md* 
 
 To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
@@ -99,7 +88,23 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
   #+END_SRC
 
   *README.md*: This is achieved with: ~M-x replace-string~ then ~doc/readme_images/~ ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/~
-** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path
+** *README.md*: add changes, and *make sure image links point to this link: ~file:/doc/readme_images~, for example:* [ [file:doc/readme_images/README.org_IMGID.png] ]
+
+The reason is, the published package website only allows links to the ~doc/readme_images~ directory. So all images must be there.
+
+*From web: Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory doc/readme_images, and point to then via github*. 
+
+This is the process of adding images to README.org, which survives conversion to README.md, and publishing on pub:
+
+- [ ] Add an image to README.org using the regular image capture.
+- [ ] Show the image links directly
+- [ ] Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
+- [ ] Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
+- [ ] Change the links in the README.MD file by search-and-replace the string 
+  - [ ] replace regex ~[\/]*doc/readme_images~ to  ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images~
+  - [ ] in the README.MD file, the result should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png~
+
+** TODO *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path to http
 ** ~flutter format [--dry-run] .~ # Run the standard formatter. Dot is for currdir
 ** ~flutter analyze~ # Analyze and fix errors
 

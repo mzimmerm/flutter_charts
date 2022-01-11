@@ -6,7 +6,6 @@ import '../chart/data.dart';
 /// Generator of sample data for testing the charts.
 ///
 class RandomChartData extends ChartData {
-
   RandomChartData({
     required dataRows,
     required xUserLabels,

@@ -4,50 +4,50 @@ import 'util_dart.dart';
 import 'test/generate_test_data_from_app_runs.dart';
 import '../chart/container.dart' show ChartBehavior;
 
-/// Creates, scales, and formats the Y labels, from the transformed data 
+/// Creates, scales, and formats the Y labels, from the transformed data
 /// to their positions and formatted strings on the Y axis.
 ///
 /// The following members are most relevant in the creating and formatting labels
 /// - [_dataYs] is a list of numeric Y values, passed to constructor.
 ///   An envelope is created from [_dataYs], possibly extending the closure interval to start or end at 0.
-///   1. Ex1. for [_dataYs] [-600.0 ....  2200.0] ==> [dataYsEnvelope] = [-600.0, 2200.0] 
-///   2. Ex2. for [_dataYs] [600.0 ....  1800.0]  ==> [dataYsEnvelope] = [0.0, 1800.0]     
-/// - [axisY] is the interval of the Y axis coordinates. 
+///   1. Ex1. for [_dataYs] [-600.0 ....  2200.0] ==> [dataYsEnvelope] = [-600.0, 2200.0]
+///   2. Ex2. for [_dataYs] [600.0 ....  1800.0]  ==> [dataYsEnvelope] = [0.0, 1800.0]
+/// - [axisY] is the interval of the Y axis coordinates.
 ///      e.g. [8.0, 400.0]
 /// - [yUserLabels] may be set by user.
 /// - [labelInfos] are labels calculated to represent numeric Y values, ONLY in their highest order.
 ///   1. Ex1. [labelInfos] ==> [-1000, 0, 1000, 2000] (NOT ending at 2200)
 ///   2. Ex2. [labelInfos] ==> [0, 1000, 2000]
 /// From the members [dataYsEnvelope] and [labelInfos], the [_mergedLabelYsIntervalWithDataYsEnvelope]
-/// are calculated. The result serves as the '(transformed) data range'. 
+/// are calculated. The result serves as the '(transformed) data range'.
 /// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [labelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class YLabelsCreatorAndPositioner {
   List<String>? yUserLabels;
-  
+
   /// The list of numeric Y values, passed to constructor.
   final List<double> _dataYs;
 
   /// Coordinates of the Y axis.
   final Interval _axisY;
-  
+
   /// The chart options.
   final ChartBehavior _chartBehavior;
-  
+
   /// The function converts value to label.
-  /// 
+  ///
   /// Assigned from a corresponding function [ChartOptions.yContainerOptions.valueToLabel].
   final Function _valueToLabel;
 
   /// The function for data inverse transform.
-  /// 
+  ///
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _yInverseTransform;
 
   /// The [dataYsEnvelope] is created from the input [_dataYs] as it's closure interval,
   /// possibly extended to start at 0.
-  /// 
+  ///
   /// Further, the  [_dataYs] are from the [StackableValuePoint.toY] from the [PointsColumns.flattenPointsValues].
   /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
   late final Interval dataYsEnvelope;
@@ -56,12 +56,12 @@ class YLabelsCreatorAndPositioner {
   late List<LabelInfo> labelInfos;
 
   /// Generative constructor allows to create labels.
-  /// 
-  /// If [yUserLabels] list of user labels is passed, user labels will be used and distributed linearly between the 
+  ///
+  /// If [yUserLabels] list of user labels is passed, user labels will be used and distributed linearly between the
   /// passed [dataYs] minimum and maximum.
-  /// Otherwise, new labels are automatically generated with values of 
-  /// highest order of numeric values in the passed [dataYs]. 
-  /// See the class comment for examples of how auto labels are created. 
+  /// Otherwise, new labels are automatically generated with values of
+  /// highest order of numeric values in the passed [dataYs].
+  /// See the class comment for examples of how auto labels are created.
   YLabelsCreatorAndPositioner({
     required List<double> dataYs,
     required Interval axisY,
@@ -73,25 +73,24 @@ class YLabelsCreatorAndPositioner {
         _axisY = axisY,
         _chartBehavior = chartBehavior,
         _valueToLabel = valueToLabel,
-        _yInverseTransform = yInverseTransform
-  {
-    
+        _yInverseTransform = yInverseTransform {
     List<double> distributedLabelYs;
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
     if (_isUsingUserLabels) {
-      dataYsEnvelope = _deriveDataYsEnvelopeForUserLabels() ;
+      dataYsEnvelope = _deriveDataYsEnvelopeForUserLabels();
       distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
     } else {
       dataYsEnvelope = _deriveDataYsEnvelopeForAutoLabels();
       distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
     }
     // Create LabelInfos for all labels and point each to this scaler
-    labelInfos = distributedLabelYs  // this is the label/DataYs enveloper - all values after transform
+    labelInfos = distributedLabelYs // this is the label/DataYs enveloper - all values after transform
         .map((transformedLabelValue) => LabelInfo(
-      dataValue: transformedLabelValue,
-      parentYScaler: this,
-    )).toList();
+              dataValue: transformedLabelValue,
+              parentYScaler: this,
+            ))
+        .toList();
 
     // Format and scale the labels we just created
     for (int i = 0; i < labelInfos.length; i++) {
@@ -106,13 +105,13 @@ class YLabelsCreatorAndPositioner {
         labelInfo._formattedLabel = _valueToLabel(labelInfo._rawDataValue);
       }
     }
-    
+
     // This test is always true. Should address in the bigger context
     if (_axisY.min > _axisY.max) {
       // we are inverting scales, so invert labels.
       labelInfos = labelInfos.reversed.toList();
     }
-    
+
     // Collect data for testing. Disabled in production
     collectTestData(
         'for_Range.makeYScalerWithLabelInfosFromDataYsOnScale_test',
@@ -126,7 +125,7 @@ class YLabelsCreatorAndPositioner {
         ],
         this);
   }
-  
+
   bool get _isUsingUserLabels => yUserLabels != null;
 
   /// Scales [value]
@@ -144,7 +143,7 @@ class YLabelsCreatorAndPositioner {
         toDomainMin: _axisY.min,
         toDomainMax: _axisY.max);
   }
-  
+
   // ### Helper accessors to collection of LabelInfos
 
   /// Extracts not-scaled && transformed values where labels from [labelInfos] are positioned.
@@ -159,11 +158,10 @@ class YLabelsCreatorAndPositioner {
       ).merge(dataYsEnvelope); // dataY from PointsColumns, which is also not-scaled && transformed, data
 
   /// Derive the interval of [dataY] values for automatically created labels.
-  /// 
+  ///
   /// This is the closure of the [_dataYs] numeric values, extended (in default situation)
   /// to start at 0 (if all positive values), or end at 0 (if all negative values).
   Interval _deriveDataYsEnvelopeForAutoLabels() {
-    
     double dataYsMin = _dataYs.reduce(math.min);
     double dataYsMax = _dataYs.reduce(math.max);
 
@@ -215,11 +213,11 @@ class YLabelsCreatorAndPositioner {
   }
 
   /// Derive the interval of [dataY] values for user defined labels.
-  /// 
+  ///
   /// This is simply the closure of the [_dataYs] numeric values.
   /// The user defined string labels are then distributed in the returned interval.
   Interval _deriveDataYsEnvelopeForUserLabels() {
-      return Interval(_dataYs.reduce(math.min), _dataYs.reduce(math.max));
+    return Interval(_dataYs.reduce(math.min), _dataYs.reduce(math.max));
   }
 
   /// Automatically generates labels from data.
@@ -228,7 +226,7 @@ class YLabelsCreatorAndPositioner {
   /// which manages [LabelInfo]s for all generated labels.
   ///
   /// The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
-  
+
   /// Makes anywhere from zero to nine label values, of greatest power of
   /// the passed [dataYsEnvelope.max].
   ///
@@ -302,13 +300,13 @@ class YLabelsCreatorAndPositioner {
   }
 
   /// Evenly distributes non-null [yUserLabels] inside the passed interval [dataYsEnvelope].
-  /// 
-  /// The passed interval[dataYsEnvelope] is the closure interval of all Y values 
+  ///
+  /// The passed interval[dataYsEnvelope] is the closure interval of all Y values
   /// [StackableValuePoint.dataY] in all [StackableValuePoint]s created from [ChartData.dataRows].
-  /// 
-  /// The first label from the [yUserLabels] list is positioned on the Y closure minimum values 
-  /// (which corresponds with the start of the Y axis - the horizontal level of the X axis). 
-  /// 
+  ///
+  /// The first label from the [yUserLabels] list is positioned on the Y closure minimum values
+  /// (which corresponds with the start of the Y axis - the horizontal level of the X axis).
+  ///
   /// Preconditions:
   /// - This method assumes that a list of user labels was provided in [ChartData.yUserLabels].
   List<double> _distributeUserLabelsIn(Interval dataYsEnvelope) {
@@ -319,14 +317,14 @@ class YLabelsCreatorAndPositioner {
     for (int yIndex = 0; yIndex < yUserLabels!.length; yIndex++) {
       yLabelsInDataYsEnvelope.add(dataYsEnvelope.min + dataStepHeight * yIndex);
     }
-    return yLabelsInDataYsEnvelope;    
+    return yLabelsInDataYsEnvelope;
   }
 }
 
 /// The [LabelInfo] is a holder for one label, it's numeric value and the displayed label.
 ///
 /// There are four values each [LabelInfo] manages:
-/// - The [_rawDataValue] : The value of dependent (y) variable in data, given by 
+/// - The [_rawDataValue] : The value of dependent (y) variable in data, given by
 ///   the [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
 ///   - This value is **not-scaled && not-transformed**.
 ///   - This value is in the interval extended from the interval of minimum and maximum y in data
@@ -393,9 +391,8 @@ class LabelInfo {
   LabelInfo({
     required num dataValue,
     required YLabelsCreatorAndPositioner parentYScaler,
-  }) : _dataValue = dataValue,
-       _parentYScaler = parentYScaler
-  {
+  })  : _dataValue = dataValue,
+        _parentYScaler = parentYScaler {
     var yInverseTransform = _parentYScaler._yInverseTransform;
     _rawDataValue = yInverseTransform(_dataValue);
   }
@@ -415,4 +412,3 @@ class LabelInfo {
         ' _formattedLabel=$_formattedLabel,';
   }
 }
-

@@ -31,5 +31,4 @@ class LineChartOptions {
     this.hotspotOuterPaintColor = material.Colors.black,
     this.lineStrokeWidth = 3.0,
   });
-  
 }

@@ -7,8 +7,8 @@ import 'package:flutter_charts/flutter_charts.dart';
 /// Manages Chart Data.
 @immutable
 class ChartData {
-  /// Data in rows. 
-  /// 
+  /// Data in rows.
+  ///
   /// Each row of data represents one data series.
   /// Legends per row are managed by [dataRowsLegends].
   ///
@@ -39,7 +39,7 @@ class ChartData {
 
   /// Colors corresponding to each data row (series) in [ChartData].
   final List<ui.Color> dataRowsColors;
-  
+
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
@@ -61,7 +61,7 @@ class ChartData {
   }
 
   bool get isUsingUserLabels => yUserLabels != null;
-  
+
   List<double> get flatten => dataRows.expand((element) => element).toList();
   double get dataYMax => flatten.reduce(math.max);
   double get dataYMin => flatten.reduce(math.min);
@@ -85,7 +85,7 @@ class ChartData {
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
       if (!(dataYMin > 0.0)) {
-         throw StateError('Using logarithmic Y scale requires only positive Y data');
+        throw StateError('Using logarithmic Y scale requires only positive Y data');
       }
     }
   }

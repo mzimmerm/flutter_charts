@@ -29,18 +29,17 @@ class LineChartTopContainer extends ChartTopContainer {
       chartTopContainer: chartTopContainer,
     );
   }
-  
+
   /// Implements [ChartBehavior] mixin abstract method.
-  /// 
+  ///
   /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
-  /// 
+  ///
   /// This is the method used in code logic when building the Y labels and axis.
-  /// 
-  /// The related variable [DataContainerOptions.startYAxisAtDataMinRequested], 
-  /// is merely a request that may not be granted in some situations. 
-  ///   
+  ///
+  /// The related variable [DataContainerOptions.startYAxisAtDataMinRequested],
+  /// is merely a request that may not be granted in some situations.
+  ///
   /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
   bool get startYAxisAtDataMinAllowed => data.chartOptions.dataContainerOptions.startYAxisAtDataMinRequested;
-  
 }

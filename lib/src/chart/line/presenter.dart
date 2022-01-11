@@ -4,7 +4,6 @@ import '../presenter.dart';
 import '../container.dart';
 import '../../chart/line_container.dart';
 
-
 /// Presenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
 /// and the line from this data value point to the next data value point
@@ -45,7 +44,9 @@ class LineAndHotspotPresenter extends Presenter {
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = LineContainer(
-        lineFrom: fromPoint, lineTo: toPoint, linePaint: rowDataPaint..strokeWidth = options.lineChartOptions.lineStrokeWidth);
+        lineFrom: fromPoint,
+        lineTo: toPoint,
+        linePaint: rowDataPaint..strokeWidth = options.lineChartOptions.lineStrokeWidth);
     offsetPoint = fromPoint; // point is the left (from) end of the line
     innerPaint = ui.Paint()..color = options.lineChartOptions.hotspotInnerPaintColor;
     outerPaint = ui.Paint()..color = options.lineChartOptions.hotspotOuterPaintColor;

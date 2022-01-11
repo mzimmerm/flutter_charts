@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
-import 'package:tuple/tuple.dart' show Tuple2;
-
-import 'src/util/examples_descriptor.dart';
-import 'dart:io' as io show exit;
 
 /// Example app for flutter_charts.
 ///
@@ -17,7 +12,7 @@ void main() {
 }
 
 /// Returns a [FlutterChart] instance.
-/// 
+///
 /// This code can be replaced with any sample code snippets in README.md.
 /// See README.md headings named such as
 /// ```md
@@ -96,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Builds the widget that is the home page state.
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

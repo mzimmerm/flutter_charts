@@ -21,11 +21,10 @@ import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 abstract class Container {
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
-  ui.Size _layoutSize = ui.Size.zero;
+  ui.Size layoutSize = ui.Size.zero;
 
-  // todo-11-later-not-used
-  int _debugLayoutSetCount = 0;
-
+/*
+  // todo-11-later-not-used   int _debugLayoutSetCount = 0;
   /// Size after [layout] has been called.
   ui.Size get layoutSize => _layoutSize;
 
@@ -35,10 +34,11 @@ abstract class Container {
   /// Should be only called from inside the [layout] method.
   set layoutSize(ui.Size newLayoutSize) {
     _layoutSize = newLayoutSize;
-    _debugLayoutSetCount++;
+    // todo-11-later unused : _debugLayoutSetCount++;
     // print('Changed layoutSize. It changed $_debugLayoutSetCount times; '
     //     'now it is : $_layoutSize');
   }
+*/
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///

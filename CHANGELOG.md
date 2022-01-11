@@ -1,16 +1,16 @@
-# version 0.4.0 (2022-??)
+# version 0.4.0 (2022-01-10)
 
 ## Functional improvements
 
 1. Improvement Summary: Y axis can start at non-zero
   - Details: Implemented issue request #31 https://github.com/mzimmerm/flutter_charts/issues/31 . Flutter_charts allows the Y axis to start at the minimum Y data values, rather than always from 0.0. 
-  - Code Notes: See method `DataContainerOptions.startYAxisAtDataMinRequested` and option `ChartOptions.startYAxisAtDataMinAllowed`.
+  - Code Notes: See method `DataContainerOptions.startYAxisAtDataMinRequested` and option `ChartBehavior.startYAxisAtDataMinAllowed`.
   - More Details:
-    - The option `startYAxisAtDataMinRequested` is only allowed to be `true` if data values are either all positive or all negative.
+    - The option `startYAxisAtDataMinRequested` should only be `true` if data values are either all positive or all negative.
     - When all Y values are negative, Y axis starts at the minimum and tops at the maximum of Y values.
     - The option `startYAxisAtDataMinRequested` interacts with data transforms such as logarithmic scale, in the sense that the minimum on Y axis is the minimum transformed value.
 
-2. Logarithmic scale: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. 
+2. Added logarithmic scale: This release added logarithmic scale display. Any other reversible transform of data are also supported. This goes a bit beyond the issue request #22 in https://github.com/mzimmerm/flutter_charts/issues/22, which asks for logarithmic scale, but essentially this version implements #22. See the option `DataContainerOptions.yTransform`, and the example `ex52AnimalsBySeasonLogarithmicScale` in README.
 
 ## API changes
 

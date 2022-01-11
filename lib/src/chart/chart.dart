@@ -13,10 +13,10 @@ abstract class FlutterChart extends widgets.CustomPaint {
     widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
-    key: key,
-    painter: painter,
-    foregroundPainter: foregroundPainter,
-    size: size,
-    child: child,
-  );
+          key: key,
+          painter: painter,
+          foregroundPainter: foregroundPainter,
+          size: size,
+          child: child,
+        );
 }

@@ -371,23 +371,22 @@ class _ExampleDefiner {
   _ExampleDefiner(this.descriptorOfExampleToRun);
 
   /// Runs the example chart with name given in [exampleComboToRun] through command line parameter --dart-define.
-  /// 
-  /// Example assumes Android emulator is running or an Android/iOS device is connected: 
+  ///
+  /// Example assumes Android emulator is running or an Android/iOS device is connected:
   /// - Running:
   ///   `flutter run example1/lib/main.dart --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart`
   /// will set [exampleComboToRun] to a Tuple corresponding to ex10RandomData/lineChart
   Widget createRequestedChart() {
-    
     // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
-    
+
     // Declare chartData; the data object will be different in every examples.
     ChartData chartData;
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
     ChartOptions chartOptions = const ChartOptions();
-    // Declare a null xContainerLabelLayoutStrategy. 
+    // Declare a null xContainerLabelLayoutStrategy.
     // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
     //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
     // If xContainerLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
@@ -583,7 +582,7 @@ class _ExampleDefiner {
           chartOptions: chartOptions,
         );
         break;
-        
+
       case ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale:
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(

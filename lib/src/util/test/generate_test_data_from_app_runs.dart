@@ -1,5 +1,5 @@
 /// Generates test data for baseline tests.
-/// 
+///
 /// We can temporarily plug this in code
 ///   to generate test data as a list of function inputs and outputs, printed to stdout,
 ///   from where they can be included in tests (by cutting output from terminal, pasting to test).
