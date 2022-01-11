@@ -42,125 +42,135 @@ This section contains sample results from flutter_charts.
 
 #+BEGIN_SRC bash :results output raw replace :eval no-export :exports none
 
-  NEWLINE=$'\n'
+     NEWLINE=$'\n'
 
-  declare -a exampleEnumWithChartTypes
+     declare -a exampleEnumWithChartTypes
 
-  # Read examples descriptor file and pull out example enum names and chart types
-  #   which are supported in tests. All those examples are guaranteed to be run in example1/lib/main.dart,
-  #   and also screenshot-generated and tested for sameness with expected screenshots
-  #   in integration_test/screenshot_create_test.dart and test/screenshot_create_test.dart.
-  while read enumLine; do
-      if [[ $enumLine =~ "const Tuple2" ]]; then
+     # Read examples descriptor file and pull out example enum names and chart types
+     #   which are supported in tests. All those examples are guaranteed to be run in example1/lib/main.dart,
+     #   and also screenshot-generated and tested for sameness with expected screenshots
+     #   in integration_test/screenshot_create_test.dart and test/screenshot_create_test.dart.
+     while read enumLine; do
+         if [[ $enumLine =~ "const Tuple2" ]]; then
 
-          exampleEnum=${enumLine#*.}
-          exampleEnum=${exampleEnum%%,*}
+             exampleEnum=${enumLine#*.}
+             exampleEnum=${exampleEnum%%,*}
 
-          chartType=${enumLine##*.}
-          chartType=${chartType/%Chart*/Chart}
+             chartType=${enumLine##*.}
+             chartType=${chartType/%Chart*/Chart}
 
-          # Each element has a string with 2 items (space separated items, no spaces inside items allowed)
-          exampleEnumWithChartTypes+=("$exampleEnum $chartType")
-      fi
-  done < example1/lib/src/util/examples_descriptor.dart
+             # Each element has a string with 2 items (space separated items, no spaces inside items allowed)
+             exampleEnumWithChartTypes+=("$exampleEnum $chartType")
+         fi
+     done < example1/lib/src/util/examples_descriptor.dart
 
-  # Generate and write-out the section with small chart images in one table row.
-  tableCellLinks=""
-  for exampleEnumWithChartType in "${exampleEnumWithChartTypes[@]}"; do
-      exampleEnum="${exampleEnumWithChartType% *}"
-      chartType="${exampleEnumWithChartType#* }"
-      exampleName="${exampleEnum}_${chartType}"
-      tableCellLinks="${tableCellLinks}| [[${exampleName}][file:doc/readme_images/${exampleName}_w150.png]] "
-  done
+     # Generate and write-out the section with small chart images in one table row.
+     tableCellLinks=""
+     ncells=1
+     for exampleEnumWithChartType in "${exampleEnumWithChartTypes[@]}"; do
+         exampleEnum="${exampleEnumWithChartType% *}"
+         chartType="${exampleEnumWithChartType#* }"
+         exampleName="${exampleEnum}_${chartType}"
+         tableCellLinks="${tableCellLinks}| [[${exampleName}][file:doc/readme_images/${exampleName}_w150.png]] "
+         # New row after 4 cells: close last cell with | and a newline
+         if [[ $ncells -eq 4 ]]; then
+             tableCellLinks="${tableCellLinks}|${NEWLINE}"
+             ncells=0
+         fi
+         $((ncells=ncells+1))
+     done
 
-  # Write out the table cells with images and links to headings
-  echo "${tableCellLinks} |"
+     # Write out the table cells with images and links to headings
+     emptyCells=""
+     for i in $(seq $((4-$ncells)) 4); do
+         emptyCells="$emptyCells |"
+     done
+     echo "${tableCellLinks} ${emptyCells}"
 
-  for exampleEnumWithChartType in "${exampleEnumWithChartTypes[@]}"; do
-      exampleEnum="${exampleEnumWithChartType% *}"
-      chartType="${exampleEnumWithChartType#* }"
-      exampleName="${exampleEnum}_${chartType}"
+     for exampleEnumWithChartType in "${exampleEnumWithChartTypes[@]}"; do
+         exampleEnum="${exampleEnumWithChartType% *}"
+         chartType="${exampleEnumWithChartType#* }"
+         exampleName="${exampleEnum}_${chartType}"
 
-      # if [[ "$exampleEnum" = ex10RandomData ]]; then
-      # Initialize vars
-      codeStr=""
-      printOn=0
+         # if [[ "$exampleEnum" = ex10RandomData ]]; then
+         # Initialize vars
+         codeStr=""
+         printOn=0
 
-      # Generate section which writes out header with code
-      codeStr="${codeStr}${NEWLINE}"
-      codeStr="${codeStr}${NEWLINE}** ${exampleName} <<${exampleName}>>"
-      codeStr="${codeStr}${NEWLINE}"
-      codeStr="${codeStr}${NEWLINE}Code"
-      codeStr="${codeStr}${NEWLINE}"
-      codeStr="${codeStr}${NEWLINE}#+begin_src dart"
-      codeStr="${codeStr}${NEWLINE}  Widget chartToRun() {"
-      codeStr="${codeStr}${NEWLINE}    LabelLayoutStrategy? xContainerLabelLayoutStrategy;"
-      codeStr="${codeStr}${NEWLINE}    ChartData chartData;"
-      codeStr="${codeStr}${NEWLINE}    ChartOptions chartOptions = const ChartOptions();"
+         # Generate section which writes out header with code
+         codeStr="${codeStr}${NEWLINE}"
+         codeStr="${codeStr}${NEWLINE}** ${exampleName} <<${exampleName}>>"
+         codeStr="${codeStr}${NEWLINE}"
+         codeStr="${codeStr}${NEWLINE}Code"
+         codeStr="${codeStr}${NEWLINE}"
+         codeStr="${codeStr}${NEWLINE}#+begin_src dart"
+         codeStr="${codeStr}${NEWLINE}  Widget chartToRun() {"
+         codeStr="${codeStr}${NEWLINE}    LabelLayoutStrategy? xContainerLabelLayoutStrategy;"
+         codeStr="${codeStr}${NEWLINE}    ChartData chartData;"
+         codeStr="${codeStr}${NEWLINE}    ChartOptions chartOptions = const ChartOptions();"
 
-      # Read the whole main.dart and generate only the section between the line containing
-      # "case ExamplesEnum.ex10RandomData", and the line containing "break;".
-      # This is the section of code that is verified by tests to produce images in "integration_test/expected_screenshots"
-      # which were copied to "doc/readme_images" prior to this Babel script runs in release preparation.
-      while read codeLine; do
-          if [[ $codeLine =~ "break;" ]]; then
-              printOn=0
-          fi
-          if [[ $printOn -eq 1 ]]; then
-              codeStr="${codeStr}${NEWLINE}    ${codeLine}"
-          fi
-          if [[ $codeLine =~ "case ExamplesEnum.${exampleEnum}:" ]]; then
-              printOn=1
-          fi
-      done < example1/lib/main.dart
+         # Read the whole main.dart and generate only the section between the line containing
+         # "case ExamplesEnum.ex10RandomData", and the line containing "break;".
+         # This is the section of code that is verified by tests to produce images in "integration_test/expected_screenshots"
+         # which were copied to "doc/readme_images" prior to this Babel script runs in release preparation.
+         while read codeLine; do
+             if [[ $codeLine =~ "break;" ]]; then
+                 printOn=0
+             fi
+             if [[ $printOn -eq 1 ]]; then
+                 codeStr="${codeStr}${NEWLINE}    ${codeLine}"
+             fi
+             if [[ $codeLine =~ "case ExamplesEnum.${exampleEnum}:" ]]; then
+                 printOn=1
+             fi
+         done < example1/lib/main.dart
 
-      # Finish code
-      if [[ $chartType = "lineChart" ]]; then
-          lower="line"
-          upper="Line"
-      else
-          lower="verticalBar"
-          upper="VerticalBar"
-      fi
+         # Finish code
+         if [[ $chartType = "lineChart" ]]; then
+             lower="line"
+             upper="Line"
+         else
+             lower="verticalBar"
+             upper="VerticalBar"
+         fi
 
-      codeStr="${codeStr}${NEWLINE}    var ${lower}ChartContainer = ${upper}ChartTopContainer("
-      codeStr="${codeStr}${NEWLINE}      chartData: chartData,"
-      codeStr="${codeStr}${NEWLINE}      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,"
-      codeStr="${codeStr}${NEWLINE}    );"
-      codeStr="${codeStr}${NEWLINE}    "
-      codeStr="${codeStr}${NEWLINE}    var ${lower}Chart = ${upper}Chart("
-      codeStr="${codeStr}${NEWLINE}      painter: ${upper}ChartPainter("
-      codeStr="${codeStr}${NEWLINE}        ${lower}ChartContainer: ${lower}ChartContainer,"
-      codeStr="${codeStr}${NEWLINE}      ),"
-      codeStr="${codeStr}${NEWLINE}    );"
-      codeStr="${codeStr}${NEWLINE}    return ${lower}Chart;"
-      codeStr="${codeStr}${NEWLINE}  }"
-      codeStr="${codeStr}${NEWLINE}#+end_src"
-      codeStr="${codeStr}${NEWLINE}"
-      codeStr="${codeStr}${NEWLINE}Result"
-      codeStr="${codeStr}${NEWLINE}"
-      codeStr="${codeStr}${NEWLINE}#+CAPTION: Line Chart caption"
-      codeStr="${codeStr}${NEWLINE}#+ATTR_ORG: :width 300"
-      codeStr="${codeStr}${NEWLINE}#+ATTR_LATEX: :width 2.0in"
-      codeStr="${codeStr}${NEWLINE}#+ATTR_HTML: :width 300"
-      codeStr="${codeStr}${NEWLINE}[[file:doc/readme_images/${exampleName}.png]]"
+         codeStr="${codeStr}${NEWLINE}    var ${lower}ChartContainer = ${upper}ChartTopContainer("
+         codeStr="${codeStr}${NEWLINE}      chartData: chartData,"
+         codeStr="${codeStr}${NEWLINE}      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,"
+         codeStr="${codeStr}${NEWLINE}    );"
+         codeStr="${codeStr}${NEWLINE}    "
+         codeStr="${codeStr}${NEWLINE}    var ${lower}Chart = ${upper}Chart("
+         codeStr="${codeStr}${NEWLINE}      painter: ${upper}ChartPainter("
+         codeStr="${codeStr}${NEWLINE}        ${lower}ChartContainer: ${lower}ChartContainer,"
+         codeStr="${codeStr}${NEWLINE}      ),"
+         codeStr="${codeStr}${NEWLINE}    );"
+         codeStr="${codeStr}${NEWLINE}    return ${lower}Chart;"
+         codeStr="${codeStr}${NEWLINE}  }"
+         codeStr="${codeStr}${NEWLINE}#+end_src"
+         codeStr="${codeStr}${NEWLINE}"
+         codeStr="${codeStr}${NEWLINE}Result"
+         codeStr="${codeStr}${NEWLINE}"
+         codeStr="${codeStr}${NEWLINE}#+CAPTION: Line Chart caption"
+         codeStr="${codeStr}${NEWLINE}#+ATTR_ORG: :width 300"
+         codeStr="${codeStr}${NEWLINE}#+ATTR_LATEX: :width 2.0in"
+         codeStr="${codeStr}${NEWLINE}#+ATTR_HTML: :width 300"
+         codeStr="${codeStr}${NEWLINE}[[file:doc/readme_images/${exampleName}.png]]"
 
 
-      # One example code between "case ExamplesEnum.ex10RandomData", and the line containing "break;" processed,
-      # so write out the header with code and initialize it
-      echo "${codeStr}"
-      # fi
-  done
+         # One example code between "case ExamplesEnum.ex10RandomData", and the line containing "break;" processed,
+         # so write out the header with code and initialize it
+         echo "${codeStr}"
+         # fi
+     done
 
 #+END_SRC
 
-Click on an image to see the code that generated it.
-
-| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]] | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] |
-| [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]] | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]] |
-| [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]] | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]] |
-| [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]] | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]] |
-| [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]] |||
+#+RESULTS:
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                             | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]                             | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]]        | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] |   |
+| [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                       | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]]                |   |
+| [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]]         | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]             | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]             |   |
+| [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]]    | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]]  | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]]          |   |
+| [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]]                      |                                                                                        |                                                                                        |   |
 
 
 ** ex10RandomData_lineChart <<ex10RandomData_lineChart>>
@@ -1038,7 +1048,6 @@ Result
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
 [[file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png]]
-
 
 * Latest release changes
 
