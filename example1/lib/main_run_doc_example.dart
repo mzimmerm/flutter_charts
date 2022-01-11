@@ -41,17 +41,17 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var verticalBarChartContainer = VerticalBarChartTopContainer(
+  var lineChartContainer = LineChartTopContainer(
     chartData: chartData,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 
-  var verticalBarChart = VerticalBarChart(
-    painter: VerticalBarChartPainter(
-      verticalBarChartContainer: verticalBarChartContainer,
+  var lineChart = LineChart(
+    painter: LineChartPainter(
+      lineChartContainer: lineChartContainer,
     ),
   );
-  return verticalBarChart;
+  return lineChart;
 }
 
 class MyApp extends StatelessWidget {
