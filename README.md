@@ -65,40 +65,40 @@ Click on an image to see the code that generated it.
 </colgroup>
 <tbody>
 <tr>
-<td class="org-left"><a href="#org5b3fdbd"><img src="/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org5418f4a"><img src="/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org00f2332"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgd06ae42"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org5b3fdbd"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org5418f4a"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org00f2332"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgd06ae42"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#org69cf24e"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgf212270"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org4e130c6"><img src="/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgc4c3f43"><img src="/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org69cf24e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgf212270"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org4e130c6"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgc4c3f43"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#org18b9b8a"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org335c5b0"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org9deb58a"><img src="/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgb8eb7c3"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org18b9b8a"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org335c5b0"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org9deb58a"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgb8eb7c3"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#orgba9b600"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgece23b5"><img src="/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org966fdea"><img src="/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org17dc892"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgba9b600"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgece23b5"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org966fdea"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org17dc892"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#orgf6276cd"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org9b555c9"><img src="/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgf6276cd"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org9b555c9"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
@@ -132,7 +132,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
 
 <a id="org8039dc8"></a>
@@ -161,7 +161,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
 
 
 <a id="org9cc984a"></a>
@@ -193,7 +193,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
 
 
 <a id="org0257f0a"></a>
@@ -225,7 +225,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
 
 
 <a id="org49e03da"></a>
@@ -276,7 +276,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
 
 
 <a id="orgbd3d2e6"></a>
@@ -327,7 +327,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
 
 
 <a id="orge024393"></a>
@@ -371,7 +371,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex31SomeNegativeValues_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_lineChart.png "Line Chart caption")
 
 
 <a id="orgca0acaf"></a>
@@ -415,7 +415,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
 
 
 <a id="orgf257df2"></a>
@@ -462,7 +462,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png "Line Chart caption")
 
 
 <a id="org7340164"></a>
@@ -509,7 +509,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
 
 
 <a id="orgdb72a53"></a>
@@ -555,7 +555,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png "Line Chart caption")
 
 
 <a id="org3c3f79a"></a>
@@ -602,7 +602,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
 
 
 <a id="org5c33865"></a>
@@ -649,7 +649,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
 
 
 <a id="org75e1070"></a>
@@ -711,7 +711,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
 
 
 <a id="org5ca70ba"></a>
@@ -768,7 +768,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
 
 
 <a id="org369cbfd"></a>
@@ -814,7 +814,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
 
 
 <a id="org9f514f4"></a>
@@ -860,7 +860,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
 
 
 <a id="orga660e4f"></a>
@@ -908,7 +908,7 @@ Code
 
 Result
 
-![img](doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png "Line Chart caption")
 
 
 <a id="org6e7cb91"></a>
@@ -974,175 +974,8 @@ To run the example application, Android emulator or iOS emulator need to be inst
 
 Sample screenshot from running the example app
 
-![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
-
-<a id="org909b0d0"></a>
-
-# Old Examples with code: LineChart and VerticalBarChart. Code and resulting charts
-
-Flutter Charts code allow to define the following data elements:
-
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
-
-
-<colgroup>
-<col  class="org-left" />
-
-<col  class="org-left" />
-</colgroup>
-<tbody>
-<tr>
-<td class="org-left"><i>Data (Y values)</i></td>
-<td class="org-left">User-Provided or Random</td>
-</tr>
-
-
-<tr>
-<td class="org-left"><i>X Labels</i></td>
-<td class="org-left">User-Provided or Random</td>
-</tr>
-
-
-<tr>
-<td class="org-left"><i>Options including Colors</i></td>
-<td class="org-left">User-Provided or Random</td>
-</tr>
-
-
-<tr>
-<td class="org-left"><i>Data Rows Legends</i></td>
-<td class="org-left">User-Provided or Random</td>
-</tr>
-
-
-<tr>
-<td class="org-left"><i>Y Labels</i></td>
-<td class="org-left">User-Provided or Data-Generated</td>
-</tr>
-</tbody>
-</table>
-
-The examples below show a few alternative code snippets (User-Provided or Random data, labels, option) and the resulting charts.
-
-See the section [4](#org979d6b4) on how to run the code that created the images below.  The code snippets are from the method `Widget createRequestedChart()` in `example1/lib/main.dart` 
-
-
-<a id="org7b2efca"></a>
-
-## Example with Random Data (Y values), Random X Labels, Random Colors, Random Data Rows Legends, Data-Generated Y Labels.
-
-This example shows that Data-Generated Y labels are default. Flutter Charts support reasonably intelligently generated Y Labels from data, including dealing with negatives.
-
-Code is for line chart. See the function `Widget createRequestedChart()` in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart> for changes to create a vertical bar chart instead (essentially in this code substitute "Line" for "VerticalBar".
-
-    ChartOptions chartOptions = LineChartOptions();  
-    ChartData chartData = RandomChartData();
-    
-    // This section is shown repeatedly in all examples, to stress how charts are created
-    LineChartTopContainer lineChartContainer = LineChartTopContainer(
-      chartData: chartData,
-      chartOptions: chartOptions,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
-    
-    LineChart lineChart = LineChart(
-      painter: LineChartPainter(
-        lineChartContainer: lineChartContainer,
-      ),
-    );
-
-The `lineChart` widget can be placed on any Flutter app. The example code is in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart>
-
-Result line chart:
-
-![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
-
-Result vertical bar chart:
-
-![img](doc/readme_images/ex10RandomData_verticalBarChart.png "Vertical Bar Chart caption")
-
-
-<a id="orgd99805d"></a>
-
-## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, Data-Generated Y Labels,
-
-Code is for line chart. See the function `Widget createRequestedChart()` in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart> for changes to create a vertical bar chart instead (essentially in this code substitute "Line" for "VerticalBar". Section `ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png`
-
-    ChartOptions chartOptions = LineChartOptions();  
-    LabelLayoutStrategy xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-      options: chartOptions,
-    );
-    ChartData  chartData = ChartData();
-    chartData.dataRowsLegends = [
-      'Spring',
-      'Summer',
-      'Fall',
-      'Winter',
-    ];
-    chartData.dataRows = [
-      [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-      [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-      [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-      [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-    ];
-    chartData.xLabels = ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-    chartData.assignDataRowsDefaultColors();
-    
-    // This section is shown repeatedly in all examples, to stress how charts are created
-    LineChartTopContainer lineChartContainer = LineChartTopContainer(
-      chartData: chartData,
-      chartOptions: chartOptions,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
-    
-    LineChart lineChart = LineChart(
-      painter: LineChartPainter(
-        lineChartContainer: lineChartContainer,
-      ),
-    );
-
-The `lineChart` widget can be placed on any Flutter app. The example code is in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart>
-
-Result line chart:
-
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
-
-Result vertical bar chart:
-
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Vertical Bar Chart caption")
-
-
-<a id="org41177fa"></a>
-
-## User-Provided Data (Y values), User-Provided X Labels, Random Colors, User-Provided Data Rows Legends, User-Provided Y Labels
-
-This example show how to use the option `useUserProvidedYLabels`, and scaling of data to the Y labels range.
-
-For code, please refer to the function `Widget createRequestedChart()` in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart>, section `ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors`
-
-![img](doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
-
-
-<a id="org7f9f07a"></a>
-
-## VerticalBar Chart - one more example, showing positive/negative stacks:
-
-
-<a id="org5fe04ed"></a>
-
-### User-Provided Data (Y values), User-Provided X Labels, User-Provided Colors, User-Provided Data Rows Legends, User-Provided Y Labels
-
-This example has again user defined Y Labels, with a bar chart, using the smart auto-layout of user defined Y Labels. The chart shows negative and positive values similar to %down/%up stock charts.
-
-For code, please refer to the function `Widget createRequestedChart()` in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main.dart>, section `ExamplesEnum.ex50StocksWithNegativesWithUserColors`
-
-![img](doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
-
-(there is a bug here,see Known Bugs)
-
-
-<a id="orgdc3548e"></a>
 
 # Illustration of the "iterative auto layout" feature
 
@@ -1160,7 +993,7 @@ To illustrate "stressed" horizontal space for the chart, we are gradually adding
 Let's say there are six labels on a chart, and there is sufficient space to display labels horizontally. The result may look like this:
 We can see all x axis labels displayed it full, horizontally oriented.
 
-![img](doc/readme_images/README.org_iterative-layout-step-1.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-1.png)
 
 
 <a id="orgf33a27c"></a>
@@ -1170,7 +1003,7 @@ We can see all x axis labels displayed it full, horizontally oriented.
 Next, let us make less available space by taking away some space on the right with a wider text label such as '<<<<<<'
 We can see the labels were automatically tilted by the angle `LabelLayoutStrategy.labelTiltRadians` for the labels to fit.
 
-![img](doc/readme_images/README.org_iterative-layout-step-2.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-2.png)
 
 
 <a id="org4d9d6d5"></a>
@@ -1180,7 +1013,7 @@ We can see the labels were automatically tilted by the angle `LabelLayoutStrateg
 Next, let us make even less available space by taking away some space on the right with a wider text label such as '<<<<<<<<<<<'.
 We can see that labels are not only tilted, but also automatically skipped for labels not to overlap (every 2nd label is skipped, see option `ChartOptions.iterativeLayoutOptions.showEveryNthLabel`).
 
-![img](doc/readme_images/README.org_iterative-layout-step-3.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-3.png)
 
 
 <a id="org3d59435"></a>
@@ -1190,7 +1023,7 @@ We can see that labels are not only tilted, but also automatically skipped for l
 Next, let us make even less available space some more compared to step 3, with even a wider text label such as '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
 We can see even more labels were skipped for labels to prevent overlap, the chart is showing every 5th label.
 
-![img](doc/readme_images/README.org_iterative-layout-step-4.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-4.png)
 
 
 <a id="orge8a31a7"></a>
@@ -1200,7 +1033,9 @@ We can see even more labels were skipped for labels to prevent overlap, the char
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
 Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as the amount of horizontal space is not sufficient.
 
-![img](doc/readme_images/README.org_iterative-layout-step-5.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-5.png)
+
+![img](/doc/readme_images/README.org_iterative-layout-step-5.png)
 
 
 <a id="orgd25de53"></a>
