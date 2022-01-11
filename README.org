@@ -43,7 +43,7 @@
 
 * Examples with code
 
-This section contains sample results from flutter_charts. Click on the images to see the code that generated them, with a larger image.
+This section contains sample results from flutter_charts. 
 
 #+BEGIN_SRC bash :results output raw replace :eval no-export :exports none
 
@@ -159,7 +159,13 @@ This section contains sample results from flutter_charts. Click on the images to
 
 #+END_SRC
 
-| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]] | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]] | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]] | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]] | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]] |
+Click on an image to see the code that generated it.
+
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]] | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] |
+| [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]] | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]] |
+| [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]] | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]] | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]] | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]] |
+| [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]] | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]] |
+| [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]] |||
 
 
 ** ex10RandomData_lineChart <<ex10RandomData_lineChart>>
@@ -1301,7 +1307,8 @@ Convert all images to width=150
       rm $file
   done
   for file in integration_test/screenshots_expected/ex*; do
-      cp $file doc/readme_images
+      # cp $file doc/readme_images
+      convert $file -resize 300 doc/readme_images/$(basename $file)
   done
   for file in doc/readme_images/ex*; do
       copy_name="$(basename $file)"
@@ -1310,6 +1317,5 @@ Convert all images to width=150
   done
 #+end_src
 
-2. Before release, run once the script in heading [[* Examples with code]]. If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate.
-
+2. Before release, run once the script in heading [[* Examples with code]]. If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate. ALSO, make the table with small images 4 cells per row (do this by editing in text mode)
 
