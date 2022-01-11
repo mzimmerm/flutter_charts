@@ -77,7 +77,7 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 
 Reason for this: *From web: Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory ~doc/readme_images~, and point to them via github*. 
 
-** *README.org*: Convert to *README.md* 
+** *README.org*: Convert to *README.md*, and do some manual formatting after conversion 
 
 To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
 
@@ -91,6 +91,8 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
    + Generate md-native TOC:
      - Cursor on top
      - ~M-x: markdown-toc-generate-toc~
+     - Then, ~in the generated MD TOC, remove <a id links~, as the markdown-toc-generate-toc should not add them. They are IDs on headers!. Do this:
+       - regex replace ~ <a id=.*a>~ INCLUDING THE SPACE AT BEGINNING with NOTHING ONLY in the TOC
    + Fix image links in the README.md - links must be converted from the first version to the second: 
     #+BEGIN_SRC markdown
     -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
@@ -110,9 +112,9 @@ First install dartdoc latest compatible with SDK:
 ~flutter pub global activate dartdoc~
 ** ~flutter clean; flutter pub upgrade; flutter pub get; flutter clean; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration tests. Also see https://flutter.io/testing/
 ** ~git add .; git commit; git push~
-** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path to http
 ** ~git checkout master; git fetch; git pull; git merge flutter_charts_v2~
 ** ~git push origin master~
+** *README.md*: on https://github.com/mzimmerm/flutter_charts - check if image links in README.md have a full path to http
 ** ~flutter pub publish --dry-run~
 ** Once the above has no errors or warnings: ~flutter pub publish~
 ** The above will ask for authorization (will generate an auth link and go to the link in browser)
