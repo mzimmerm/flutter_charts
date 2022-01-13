@@ -445,59 +445,6 @@ This section We describe running Flutter Charts in development mode on your devi
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
 
-* NOTE Geek charts_flutter use this process and associations between CustomPaint and CustomPainter
-geek:
-  - ~ChartContainer<D> extends CustomPaint~ = widget that inflates to a custompaint that provides common ChartContext
-    - member BaseChart
-    - member BaseChartState
-  - ~BaseChartState extends State~
-    - ~build(buildContext)~ calls and adds child:   _buildChartContainer() which does:
-      - chartContainer = new ChartContainer
-      - return chartContainer.
-
-From top of example:
-- main
-- creates State instance
-  - in build
-    - creates: SimpleBarChart.withSampleData() 
-      - returns SimpleBarChart(_createSampleData();
-        - where SimpleBarChart extends StatelessWidget
-          - has build(context) where it
-            - returns charts.BarChart(seriesList); <== so this is called from main
-              - BarChart constructor has createCommonChart(BaseChartState) which does
-                - return new common.BarChart(params)
-                - *passed BaseChartState _buildChartContainer creates new ~ChartContainer which is the CustomPaint~
-                - *so this is how far the CustomPaint is created. I create CustomPaint immediately*
-
-
-- ~ChartContainerCustomPaint extends CustomPainter~ (note the switch)
-- ChartContainerRenderObject
-  - _setNewPainter creates ChartContainerCustomPaint (painter)
-    - called in ChartContainerRenderObject.reconfigure
-      - called in ChartContainer.createRenderObject
-        - called during mount. ~so Painter is created during mount~
-
-
-flutter_charts:
-
-- *While FLUTTER CHARTS EXTEND CUSTOM_PAINT, AND HAVE PAINTER (e.g. LineChartPainter extends CustomPainter) AS MEMBER*
-  - *PAINTER HAS CONTAINER AS MEMBER*
-
-so I do (-> means association)
-
-LineChart(is CustomPaint) -> LineChartPainter(is CustomPainter) -> Container
-
-This is the same structure as flutter uses!
-
-comparison:
-
-- ~So container ~ painter (while geek : container ~ paint)~
-- Also geek has RenderCustomPaint which has nothing to do with CustomPaint, and has CustomPainter on it. Looks like they are re-doing this part of Flutter
-- Also geek keeps re-assigning paint's (container's) member painter () different painter (ChildContainerCustomPaint) in _setNewPainter
-- So geek can access painter 2 ways:
-  - From ChartContainer extends CustomPaint (which has CustomPainter)
-  - From RenderCustomPaint which has nothing to do with CustomPaint, and has CustomPainter on it
-
                       
 * IN-PROGRESS-NOW Flutter Charts Enhancements
 ** DONE Items, bugs, refactorings Implemented
@@ -796,41 +743,7 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
 
 
-
-** NOTE *Flutter painting classes - CustomPainter, CustomPaint, PaintingContext, RendererBinding, RenderObject, RenderObjectElement*
-
-- ~PaintingContext~
-  - Is the object which creates and holds ~Canvas~ from native call
-  - So whoever creates PaintingContext is where painting process is initiated.
-- ~CustomPaint~ (Widget)
-  - Has ~2 CustomPainters~, one foreground, one background painter. They are called before and after children
-  - ~RenderCustomPaint createRenderObject(BuildContext)~ is the only significant method
-  - *Although a Widget, it does NOT have the ~build~ method*
-- ~RenderCustomPaint~
-  - This provides the canvas to draw on,
-  - ~paint(PaintingContext)~ is the method which does painting.
-  - as CustomPaint, has 2 CustomPainters, one foreground, one background painter.
-  - created in ~RenderObjectElement.mount()~, by calling ~CustomPaint.createRenderObject~
-  - ~_paintWithPainter(Canvas canvas, Offset offset, CustomPainter painter)~ is called when the rendering pipeline is ready to use the ~CustomPainter~ to paint on ~Canvas~
-- *So everything starts in ~RenderObjectElement.mount()~ where the CustomPaint.createRenderObject is called*
-- ~RenderObjectElement~
-  - Is created from ~RenderObjectWidget~ as it's configuration.
-- ~CustomPainter~ (~FlutterChartPainter~ implements it)
-  - Abstract class with 2 abstract methods:
-    - ~paint(Canvas, Size)~ 
-      - called any time needs repainted
-    - ~shouldRepaint(covariant CustomPainter oldDelegate)~
-  - Is used in (member of) ~CustomPaint~ widget and ~RenderCustomPaint~ renderer, and called upon to ~paint(Canvas)~
-- ~RendererBinding~
-  - ~drawFrame()~ seems to do the rendering pipeline generating and drawing frames
-- ~RenderObject~  ~RenderObject IS LIKE CONTAINER IN CHARTS - IT HAS 'layout' and 'paint' protocols.~
-  - Is one object in the render hierarchy. The hierarchy of ~RenderObject~ s is the core of rendering system.
-    -  [RenderObject]s have a [parent], and have a slot called [parentData] in which the parent [RenderObject] can store child-specific data, for example, the child position. The [RenderObject] class also implements the basic layout and paint protocols.
-The method ~build(BuildContext)~ is on 2 base classes:
-- ~State~ which is returned from ~StatefulWidget.createState~
-- ~StatelessWidget~
-
-** IN-PROGRESS-NOW 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
+** DONE 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
 *** DONE Rename distributedLabels to distributedLabelYs
 *** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
 *** DONE Manual vs Automated layout changes
@@ -920,15 +833,6 @@ Look for places like this
 - [-] Containers - LATER
 - [ ] 
 *** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
-*** IN-PROGRESS-NOW todo-11-last and todo-11-later (also todo-00)
-
-- Resolve or renumber, and make clear to move them to the *Morph section*.
-  
-*** IN-PROGRESS-NOW *DOCUMENT ON PAPER ALL CLASSES USED IN CHARTS*
-*** IN-PROGRESS-NOW Summarize changes in README.md and CHANGELOG.md
-*** IN-PROGRESS-NOW Merge to master, Test, commit, push
-*** IN-PROGRESS-NOW Release 0.4.0 from master
-*** IN-PROGRESS-NOW Switch back to flutter_charts_v2
 ** TODO 3. ChartData further refactoring. Add DataSetsMixin, and add DataPoint, more representing oo behavior
 
 *** TODO Question any place in the library importing import 'package:flutter_charts/flutter_charts.dart'; and change to import only needed sources.
@@ -975,7 +879,30 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
 *** DONE ~Remove _paintYLabels and similar~, just replace with content of the method.
 
 
-*** IN-PROGRESS ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
+*** IN-PROGRESS-NOW Modify Container - Add Layout and Painter base class
+*Lessons for Container*
+
+- ~Volume~ is the shape of Container, after layout
+  - ~Object get surfaceBound~
+- ~BoxVolume~
+  - ~Size get surfaceBound~
+
+- ~Layout~ is base class
+  - does NOT store size or shape, only returns Volume from layout 
+  - abstract method ~Volume layout(covariant Constraints)~ specializations call this and implement this, probably calling super. This maybe eventually configures some constraints caching and debugging. 
+
+- ~Painter is mixin~ 
+  - ~void paint(Canvas)~
+
+- ~Container extends Layout with Painter~
+  - slot ~parent~
+  - slot ~children~
+
+- ~BoxContainer extends Container~
+  - method ~BoxVolume layout(covariant BoxConstraints)~
+    - implemented by calling children.layout
+  
+*** IN-PROGRESS-NOW ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
 - LayoutExpansion is actually a fake - it in facts holds on to the Container size before and after layout. Eventually, convert it to "layoutSize" field instead of the getter.
@@ -1040,8 +967,15 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
 - This was easy, only had to make isDistressed public.
 
 
-**** IN-PROGRESS Look at RenderObject which seems very much like Container in FlutterCharts, it has ~paint~ and ~layout~
-**** IN-PROGRESS Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
+**** NOTE Split layout to layout and layoutImpl?
+
+- ~Layout~ is base class
+  - does NOT store size or shape, only returns from layout and layoutImpl
+  - method ~Volume layoutImpl(covariant Constraints)~ is abstract. Specializations implement this
+  - method ~Volume layout(covariant Constraints)~ is implemented ONLY here NOT in specializations. Is final. Specializations call this. This calls layoutImpl and maybe configures some constraints caching and debugging eventually. Caching and debugging is the only reason to s 
+
+
+**** IN-PROGRESS-NOW Rename LayoutExpansion to BoxSizeConstraint (SizeConstraint equivalent of BoxConstraints to distinguish from BoxConstraints)
 
 - LayoutExpansion
   - make members final
@@ -1073,6 +1007,13 @@ Thoughts:
 **** TODO Look into remaining usages of "ui.Size get layoutSize"
 
 
+
+*** IN-PROGRESS-NOW todo-11-last and todo-11-later (also todo-00)
+
+- Resolve or renumber, and make clear to move them to the *Morph section*.
+
+
+*** 
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 
 #+begin_src javascript
