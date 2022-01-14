@@ -48,17 +48,17 @@ class Poly {
   int get totalLen => _dec.precision;
 
   int get coefficientAtMaxPower =>
-      (_dec.abs() / numToDec(math.pow(10, maxPower))).floor().toInt(); // todo-00-last-done .toInt();
+      (_dec.abs() / numToDec(math.pow(10, maxPower))).floor().toInt();
 
   int get floorAtMaxPower => (numToDec(coefficientAtMaxPower) * numToDec(math.pow(10, maxPower)))
       .floor()
       .toDouble()
-      .toInt(); // todo-00-last-done .toInt();
+      .toInt();
 
   int get ceilAtMaxPower => ((numToDec(coefficientAtMaxPower) + dec('1')) * numToDec(math.pow(10, maxPower)))
       .floor()
       .toDouble()
-      .toInt(); // todo-00-last-done .toInt();
+      .toInt();
 
   /// Position of first significant non zero digit.
   ///
@@ -129,7 +129,7 @@ class Interval {
     return false;
   }
 
-  /// Outermost union of this interal with [other].
+  /// Outermost union of this interval with [other].
   Interval merge(Interval other) {
     return Interval(math.min(min, other.min), math.max(max, other.max));
   }

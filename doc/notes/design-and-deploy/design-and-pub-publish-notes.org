@@ -882,26 +882,9 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
 *** IN-PROGRESS-NOW Modify Container - Add Layout and Painter base class
 *Lessons for Container*
 
-- ~Volume~ is the shape of Container, after layout
-  - ~Object get surfaceBound~
-- ~BoxVolume~
-  - ~Size get surfaceBound~
+See container_base_new.dart
 
-- ~Layout~ is base class
-  - does NOT store size or shape, only returns Volume from layout 
-  - abstract method ~Volume layout(covariant Constraints)~ specializations call this and implement this, probably calling super. This maybe eventually configures some constraints caching and debugging. 
 
-- ~Painter is mixin~ 
-  - ~void paint(Canvas)~
-
-- ~Container extends Layout with Painter~
-  - slot ~parent~
-  - slot ~children~
-
-- ~BoxContainer extends Container~
-  - method ~BoxVolume layout(covariant BoxConstraints)~
-    - implemented by calling children.layout
-  
 *** IN-PROGRESS-NOW ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
