@@ -44,6 +44,10 @@ enum ExamplesEnum {
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
   ex52AnimalsBySeasonLogarithmicScale,
+  ex60LabelsIteration1,
+  ex60LabelsIteration2,
+  ex60LabelsIteration3,
+  ex60LabelsIteration4,
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
 }
@@ -95,6 +99,14 @@ class ExamplesDescriptor {
     //
     const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex60LabelsIteration1, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex60LabelsIteration2, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex60LabelsIteration3, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex60LabelsIteration4, ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];

@@ -231,6 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
     _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
     Widget chartToRun = definer.createRequestedChart();
+    _ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
     // [MyHomePage] extends [StatefulWidget].
     // [StatefulWidget] calls build(context) every time setState is called,
@@ -323,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // this stretch carries | expansion to <--> Expanded children
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('>>>'),
+                  Text(exampleSpecific.leftSqueezeText), // '>>>' by default
                   // LineChart is CustomPaint:
                   // A widget that provides a canvas on which to draw
                   // during the paint phase.
@@ -333,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     // #### Core chart
                     child: chartToRun, // verticalBarChart, lineChart
                   ),
-                  const Text('<<'),
+                  Text(exampleSpecific.rightSqueezeText), // '<<' by default
                   // labels fit horizontally
                   // const Text('<<<<<<'), // default, labels tilted, all present
                   // const Text('<<<<<<<<<<<'),   // labels skipped (shows 3 labels, legend present)
@@ -361,21 +362,49 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+/// The enabler of widget changes in the main test app by the code in [_ExampleDefiner].
+/// 
+/// This enables support for each example ability to manipulate it's environment
+/// (by environment we mean the widgets in main.dart outside the chart).
+/// 
+/// Some examples need to change widgets of the main test app that are not part of the Chart.
+/// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
+/// to test label changes with available space.
+/// 
+/// This class allows to carry such changes from the [_ExampleDefiner] to the widgets in the main app.
+/// 
+class _ExampleSideEffects {
+  String leftSqueezeText = '>>>';
+  String rightSqueezeText = '<<';
+}
+
 /// Defines which example to run.
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
 class _ExampleDefiner {
-  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
 
+  /// Construct the definer object for the example.
   _ExampleDefiner(this.descriptorOfExampleToRun);
 
-  /// Runs the example chart with name given in [exampleComboToRun] through command line parameter --dart-define.
+  /// Tuple which describes the example
+  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
+
+  /// Support for each example manipulate it's environment - the widgets in main.dart outside the chart.
+  _ExampleSideEffects exampleSideEffects = _ExampleSideEffects();
+
+  /// Creates the example chart with name given in [exampleComboToRun] 
+  /// through command line parameter --dart-define.
   ///
   /// Example assumes Android emulator is running or an Android/iOS device is connected:
   /// - Running:
-  ///   `flutter run example1/lib/main.dart --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart`
-  /// will set [exampleComboToRun] to a Tuple corresponding to ex10RandomData/lineChart
+  ///   ```sh
+  ///     flutter run example1/lib/main.dart \
+  ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
+  ///       --dart-define=CHART_TYPE_TO_SHOW=lineChart
+  ///   ```
+  /// will set [exampleComboToRun] to a concrete Tuple of [ExamplesEnum] and [ExamplesChartTypeEnum], 
+  /// such as `Tuple(ex10RandomData, lineChart)`
   Widget createRequestedChart() {
     // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
@@ -392,7 +421,10 @@ class _ExampleDefiner {
     // If xContainerLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
     //   a DefaultIterativeLabelLayoutStrategy.
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-
+    
+    /// Main switch that includes code to all examples.
+    /// The example which [ExamplesEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
+    /// Each example can also generate side effects todo-00
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
         chartData = RandomChartData.generated(chartOptions: chartOptions);
@@ -602,6 +634,81 @@ class _ExampleDefiner {
           ],
           chartOptions: chartOptions,
         );
+        break;
+
+      case ExamplesEnum.ex60LabelsIteration1:
+        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // This example shows the result with sufficient space to show all labels
+        chartData = ChartData(
+          dataRows: const [
+            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+          ],
+          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          dataRowsLegends: const [
+            'Owl count',
+            'Hawk count',
+          ],
+          chartOptions: chartOptions,
+        );
+        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
+        break;
+
+      case ExamplesEnum.ex60LabelsIteration2:
+        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
+        // The iterative layout strategy makes the labels to tilt but show fully.
+        chartData = ChartData(
+          dataRows: const [
+            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+          ],
+          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          dataRowsLegends: const [
+            'Owl count',
+            'Hawk count',
+          ],
+          chartOptions: chartOptions,
+        );
+        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
+        break;
+
+      case ExamplesEnum.ex60LabelsIteration3:
+        // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+        // This example shows the result with sufficient space to show all labels, not even tilted;
+        // The iterative layout strategy causes some labels to be skipped.
+        chartData = ChartData(
+          dataRows: const [
+            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+          ],
+          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          dataRowsLegends: const [
+            'Owl count',
+            'Hawk count',
+          ],
+          chartOptions: chartOptions,
+        );
+        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
+        break;
+
+      case ExamplesEnum.ex60LabelsIteration4:
+      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // This example shows the result with sufficient space to show all labels, not even tilted;
+      // The iterative layout strategy causes more labels to be skipped.
+        chartData = ChartData(
+          dataRows: const [
+            [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+            [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+          ],
+          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          dataRowsLegends: const [
+            'Owl count',
+            'Hawk count',
+          ],
+          chartOptions: chartOptions,
+        );
+        exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
         break;
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:

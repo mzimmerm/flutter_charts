@@ -26,8 +26,15 @@ fi
 if [[ -n "$1" ]]; then
   exampleEnum=$1
   echo
+  echo -------------------------------------
   echo Assuming you asking to run only one test, given by ExamplesEnum: "$exampleEnum"
+  echo Not cleaning screenshots results, to be able to run multiple single examples and keep results.
   echo
+else
+  echo
+  echo -------------------------------------
+  echo Removing old tmp test files, ignoring errors
+  rm --force integration_test/screenshots_tested/*.png
 fi  
   
 #  This script can only run from project top directory.
@@ -45,11 +52,6 @@ echo Source script which starts emulator and generates program with tests for al
 source tool/test/start_emulator_and_generate_examples_descriptor.sh "$exampleEnum"
 echo Will run "$examples_descriptor_generated_program".
 examples_descriptor_generated_program=$examples_descriptor_generated_program
-
-echo
-echo -------------------------------------
-echo Removing old tmp test files, ignoring errors
-rm --force integration_test/screenshots_tested/*.png
 
 echo
 echo -------------------------------------

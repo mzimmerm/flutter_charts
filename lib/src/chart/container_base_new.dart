@@ -89,8 +89,8 @@ abstract class ContainerOriNew {
 
   bool isDistressed = false;
 
-  
-  ContainerNew();
+
+  ContainerOriNew();
 
   // ##### Abstract methods to implement
 
@@ -102,7 +102,9 @@ abstract class ContainerOriNew {
 
 ///////////////////////////////////////////////
 
-/// Shape is the set of points in the Container.
+/// Shape is the set of points in a Container.
+/// 
+/// Returned from [layout].
 class Shape {
   Object? get surface => null; // todo-00 make abstract
 }
