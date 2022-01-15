@@ -449,7 +449,7 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedLabel,
         labelMaxWidth: double.infinity,
         labelTiltMatrix: vector_math.Matrix2.identity(),
-        canvasTiltMatrix: vector_math.Matrix2.identity(),
+        // todo-00-last canvasTiltMatrix: vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
@@ -565,7 +565,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         label: xUserLabels[xIndex],
         labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
-        canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
+        // todo-00-last canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
@@ -656,9 +656,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
+// todo-00-last      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
+      canvas.rotate(labelLayoutStrategy.labelTiltRadians);
 
-      _rotateLabelContainersAsCanvas();
+      _rotateLabelEnvelopesAgainstCanvasToFindOffsets();
       _paintLabelContainers(canvas);
 
       canvas.restore();
@@ -668,9 +669,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     }
   }
 
-  void _rotateLabelContainersAsCanvas() {
+  void _rotateLabelEnvelopesAgainstCanvasToFindOffsets() {
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-      xLabelContainer.rotateLabelWithCanvas();
+      xLabelContainer.rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();
     }
   }
 
@@ -1160,7 +1161,7 @@ class LegendItemContainer extends Container {
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(),
-      canvasTiltMatrix: vector_math.Matrix2.identity(),
+      // todo-00-last canvasTiltMatrix: vector_math.Matrix2.identity(),
       labelStyle: _labelStyle,
     );
 

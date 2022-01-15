@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # This script runs a single or all examples in the example app in "example1/lib/main.dart", 
-#   captures screenshot from each example, then runs a follow-up process which
-#   validates that the captured screenshot is the same as expected screenshot (taken way earlier).
+#   captures a screenshot from each example, then runs a follow-up process which
+#   validates that the captured screenshot is the same as an expected screenshot (taken earlier and validated).
 # In more detail, this script runs in 3 steps
 #   1. Sources a program-generating script 'start_emulator_and_generate_examples_descriptor.sh'
 #      which creates a program executed in step 2. This program has multiple lines, 

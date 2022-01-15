@@ -18,6 +18,9 @@ import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 /// Note on Lifecycle of [Container] : objects should be such that
 ///   after construction, methods should be called in the order declared here.
 ///
+// todo-00-last: Container core rule: I do not expose position, offset, or layoutSize. 
+//                 I stay put until someone calls transform on me, OR it's special case applyParentOffset.
+//               Is that possible?
 abstract class Container {
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super

@@ -17,6 +17,7 @@ ui.Offset transform({
   return vector2ToOffset(matrix * offsetToVector2(offset));
 }
 
+
 /// Immutable envelope of a rotated copy of [sourceRect].
 ///
 /// Used to create rotated (tilted) labels on the X axis,
@@ -43,14 +44,14 @@ ui.Offset transform({
 ///     +-x------+ <-- x = TL
 ///     |.  .    |
 ///     x     .  | <-- x = TR
-///     | .     .|                -PI/4, text direction: \
+///     | .     .|                +PI/4, text direction: \
 ///     |   .   .x <-- x = BR                             \
 ///     +------x-+ <-- x = BL                              v
 ///
 ///     +------x-+ <-- x = TR
 ///     |    .  .|                                          ^
 ///     |   .    x <-- x = BR                              /
-///     | .    . |                 +PI/4, text direction: /
+///     | .    . |                 -PI/4, text direction: /
 ///     x.   .   | <-- x = TL
 ///     +-x------+ <-- x = BL
 
@@ -123,7 +124,8 @@ class EnvelopedRotatedRect {
     _bottomLeft = movedToCenterAsOrigin.bottomLeft;
     _bottomRight = movedToCenterAsOrigin.bottomRight;
 
-    // Rotate all corners of the rectangle. Coordinates are the
+    // Rotate all corners of the rectangle. If the _rotatorMatrix angle is positive, 
+    // rotation is CLOCKWISE from +x to +y axis - see Offset.atan2 and Math.atan2 documentation.
     _topLeft = transform(matrix: _rotatorMatrix, offset: _topLeft);
     _topRight = transform(matrix: _rotatorMatrix, offset: _topRight);
     _bottomLeft = transform(matrix: _rotatorMatrix, offset: _bottomLeft);

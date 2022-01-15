@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
@@ -33,14 +35,21 @@ import '../util/geometry.dart' as geometry;
 class LabelContainer extends container_base.Container {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
+  
+  // todo-00-last
+  Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
   /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
-  final vector_math.Matrix2 _canvasTiltMatrix;
+  // todo-00-last final vector_math.Matrix2 _canvasTiltMatrix;
 
-  /// Angle by which label is tilted.
+  /// Rotation matrix representing the angle by which the label is tilted.
+  /// 
+  /// For tilted labels, this is the backward rotation matrix todo-00
+  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
+  /// (pivoted on origin, once all chart offsets are applied to label).
   final vector_math.Matrix2 _labelTiltMatrix;
 
   /// [TextPainter] wrapped in this label container.
@@ -65,11 +74,11 @@ class LabelContainer extends container_base.Container {
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
-    required vector_math.Matrix2 canvasTiltMatrix,
+    // todo-00-last required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
   })  : _labelMaxWidth = labelMaxWidth,
         _labelTiltMatrix = labelTiltMatrix,
-        _canvasTiltMatrix = canvasTiltMatrix,
+        // todo-00-last _canvasTiltMatrix = canvasTiltMatrix,
         // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
           text: widgets.TextSpan(
@@ -104,10 +113,18 @@ class LabelContainer extends container_base.Container {
 
   // #####  Implementors of method in superclass [Container].
 
+  // todo-00-last: 
+  @override
+  void applyParentOffset(ui.Offset offset) {
+    super.applyParentOffset(offset);
+    offsetOfPotentiallyRotatedLabel += offset;
+  }
+  
   /// Implementor of method in superclass [Container].
   @override
   void paint(ui.Canvas canvas) {
-    _textPainter.paint(canvas, offset);
+    // todo-00-last _textPainter.paint(canvas, offset);
+    _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
   /// Implementor of method in superclass [Container].
@@ -119,7 +136,9 @@ class LabelContainer extends container_base.Container {
     _tiltedLabelEnvelope = _createLabelEnvelope();
   }
 
+/* todo-00-last
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
+    // todo-00-last : Just make offset zero
     assert(offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -127,6 +146,18 @@ class LabelContainer extends container_base.Container {
       rotateMatrix: _labelTiltMatrix,
     );
   }
+*/
+  
+  geometry.EnvelopedRotatedRect _createLabelEnvelope() {
+    // todo-00-last : Just make offset zero
+    // todo-00-last assert(offset == ui.Offset.zero);
+    // Only after layout, we know the envelope of tilted label
+    return geometry.EnvelopedRotatedRect.centerRotatedFrom(
+      rect: ui.Offset.zero & _textPainter.size, // offset & size => Rect
+      rotateMatrix: _labelTiltMatrix,
+    );
+  }
+  
 
   // ##### Internal methods
 
@@ -237,20 +268,20 @@ class AxisLabelContainer extends LabelContainer {
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
-    required vector_math.Matrix2 canvasTiltMatrix,
+    // todo-00-last required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
   }) : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
-          canvasTiltMatrix: canvasTiltMatrix,
+    // todo-00-last canvasTiltMatrix: canvasTiltMatrix,
           labelStyle: labelStyle,
         );
 
   /// Rotate this label around origin along with Canvas, to achieve label tilt.
   ///
   /// Must be called only in paint()
-  void rotateLabelWithCanvas() {
+  void rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt() {
     // In paint(), this label's offset is now the "absolute" offset in the chart
     // The point in the tilted rectangle, where [TextPainter] should start
     // painting the label is always topLeft in the envelope.
@@ -258,9 +289,30 @@ class AxisLabelContainer extends LabelContainer {
     // the [_tiltedLabelEnvelope.topLeft] in the "absolute" coordinates,
     // then rotate the result with Canvas.
 
+    // 
+/* todo-00-last
+    vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
+    canvasTiltMatrix.invert();
     offset = geometry.transform(
-      matrix: _canvasTiltMatrix,
+      // todo-00-last matrix: _canvasTiltMatrix,
+      matrix: canvasTiltMatrix,
       offset: (offset + _tiltedLabelEnvelope.topLeft),
     );
+*/
+    vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
+    canvasTiltMatrix.invert();
+    offsetOfPotentiallyRotatedLabel = geometry.transform(
+      // todo-00-last matrix: _canvasTiltMatrix,
+      matrix: canvasTiltMatrix,
+      offset: (offsetOfPotentiallyRotatedLabel + _tiltedLabelEnvelope.topLeft),
+    );
+    
+    // todo-00-last: This is the only place where offset is set directly, outside applyParentOffset. Is it possible, instead of setting direct,  call it?
+    // No, because applyParentOffset adds , but here we need to wipe it out.
+    // For this purpose, we should add a FIELD to LabelContainer , say offsetForPainting, that is kept in sync with offset.
+    // Then offset can remain completely private, managed only by:
+    // Container.transform with special case Container.translate=applyParentOffset. 
   }
+
+  
 }
