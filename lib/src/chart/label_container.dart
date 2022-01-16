@@ -36,20 +36,14 @@ class LabelContainer extends container_base.Container {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
   
-  // todo-00-last
+  /// Offset of this [LabelContainer]'s label, created by the [_textPainter].
+  /// 
   Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
-
-  /// For tilted labels, this is the forward rotation matrix
-  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
-  /// (pivoted on origin, once all chart offsets are applied to label).
-  /// This is always the inverse of [_labelTiltMatrix].
-  // todo-00-last final vector_math.Matrix2 _canvasTiltMatrix;
 
   /// Rotation matrix representing the angle by which the label is tilted.
   /// 
-  /// For tilted labels, this is the backward rotation matrix todo-00
-  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
-  /// (pivoted on origin, once all chart offsets are applied to label).
+  /// Tilting of labels is achieve by applying this [Matrix2] on the 
+  /// rectangle which surrounds the label text.
   final vector_math.Matrix2 _labelTiltMatrix;
 
   /// [TextPainter] wrapped in this label container.
@@ -74,11 +68,9 @@ class LabelContainer extends container_base.Container {
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
-    // todo-00-last required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
   })  : _labelMaxWidth = labelMaxWidth,
         _labelTiltMatrix = labelTiltMatrix,
-        // todo-00-last _canvasTiltMatrix = canvasTiltMatrix,
         // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
           text: widgets.TextSpan(
@@ -113,17 +105,24 @@ class LabelContainer extends container_base.Container {
 
   // #####  Implementors of method in superclass [Container].
 
-  // todo-00-last: 
+  // todo-01-document : 
+  /// Calls super method, then adds the passed [offset] the locally-kept slot
+  /// [offsetOfPotentiallyRotatedLabel].
   @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
-    offsetOfPotentiallyRotatedLabel += offset;
+    // todo-00-last: For [LabelContainers] for which Canvas will be rotated counter-clockwise,
+    //               offset needs to be rotated clockwise before adding it.
+    //////////// vvvvvvvvvvvv added
+    rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();    
+    ////////////^^^^^^^^^^^^^^^
+    
+    // offsetOfPotentiallyRotatedLabel += offset;
   }
   
   /// Implementor of method in superclass [Container].
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-last _textPainter.paint(canvas, offset);
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
@@ -136,21 +135,33 @@ class LabelContainer extends container_base.Container {
     _tiltedLabelEnvelope = _createLabelEnvelope();
   }
 
-/* todo-00-last
-  geometry.EnvelopedRotatedRect _createLabelEnvelope() {
-    // todo-00-last : Just make offset zero
-    assert(offset == ui.Offset.zero);
-    // Only after layout, we know the envelope of tilted label
-    return geometry.EnvelopedRotatedRect.centerRotatedFrom(
-      rect: offset & _textPainter.size, // offset & size => Rect
-      rotateMatrix: _labelTiltMatrix,
+  /// Rotate this label around origin along with Canvas, to achieve label tilt.
+  ///
+  /// Must be called only in paint()
+  void rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt() {
+    // In paint(), this label's offset is now the "absolute" offset in the chart
+    // The point in the tilted rectangle, where [TextPainter] should start
+    // painting the label is always topLeft in the envelope.
+    // The envelope is kept at (0,0), so find the full offset of
+    // the [_tiltedLabelEnvelope.topLeft] in the "absolute" coordinates,
+    // then rotate the result with Canvas.
+
+    // 
+    vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
+    canvasTiltMatrix.invert();
+/* todo-00-last: removed
+    offsetOfPotentiallyRotatedLabel = geometry.transform(
+      matrix: canvasTiltMatrix,
+      offset: (offsetOfPotentiallyRotatedLabel + _tiltedLabelEnvelope.topLeft),
+    );
+*/
+    offsetOfPotentiallyRotatedLabel = geometry.transform(
+      matrix: canvasTiltMatrix,
+      offset: (offset + _tiltedLabelEnvelope.topLeft),
     );
   }
-*/
-  
+
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
-    // todo-00-last : Just make offset zero
-    // todo-00-last assert(offset == ui.Offset.zero);
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
       rect: ui.Offset.zero & _textPainter.size, // offset & size => Rect
@@ -262,57 +273,21 @@ class AxisLabelContainer extends LabelContainer {
   /// but both x and y label containers can be skipped
   /// (tick dashes should not?).
   ///
+  // todo-01 how is this used?
   double parentOffsetTick = 0.0;
 
   AxisLabelContainer({
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
-    // todo-00-last required vector_math.Matrix2 canvasTiltMatrix,
     required LabelStyle labelStyle,
   }) : super(
           label: label,
           labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
-    // todo-00-last canvasTiltMatrix: canvasTiltMatrix,
           labelStyle: labelStyle,
         );
 
-  /// Rotate this label around origin along with Canvas, to achieve label tilt.
-  ///
-  /// Must be called only in paint()
-  void rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt() {
-    // In paint(), this label's offset is now the "absolute" offset in the chart
-    // The point in the tilted rectangle, where [TextPainter] should start
-    // painting the label is always topLeft in the envelope.
-    // The envelope is kept at (0,0), so find the full offset of
-    // the [_tiltedLabelEnvelope.topLeft] in the "absolute" coordinates,
-    // then rotate the result with Canvas.
-
-    // 
-/* todo-00-last
-    vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
-    canvasTiltMatrix.invert();
-    offset = geometry.transform(
-      // todo-00-last matrix: _canvasTiltMatrix,
-      matrix: canvasTiltMatrix,
-      offset: (offset + _tiltedLabelEnvelope.topLeft),
-    );
-*/
-    vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
-    canvasTiltMatrix.invert();
-    offsetOfPotentiallyRotatedLabel = geometry.transform(
-      // todo-00-last matrix: _canvasTiltMatrix,
-      matrix: canvasTiltMatrix,
-      offset: (offsetOfPotentiallyRotatedLabel + _tiltedLabelEnvelope.topLeft),
-    );
-    
-    // todo-00-last: This is the only place where offset is set directly, outside applyParentOffset. Is it possible, instead of setting direct,  call it?
-    // No, because applyParentOffset adds , but here we need to wipe it out.
-    // For this purpose, we should add a FIELD to LabelContainer , say offsetForPainting, that is kept in sync with offset.
-    // Then offset can remain completely private, managed only by:
-    // Container.transform with special case Container.translate=applyParentOffset. 
-  }
 
   
 }

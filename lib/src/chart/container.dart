@@ -449,7 +449,6 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedLabel,
         labelMaxWidth: double.infinity,
         labelTiltMatrix: vector_math.Matrix2.identity(),
-        // todo-00-last canvasTiltMatrix: vector_math.Matrix2.identity(),
         labelStyle: labelStyle,
       );
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
@@ -565,7 +564,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         label: xUserLabels[xIndex],
         labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
-        // todo-00-last canvasTiltMatrix: labelLayoutStrategy.canvasTiltMatrix,
         labelStyle: labelStyle,
       );
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
@@ -656,10 +654,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
       // Tilted X labels. Must use canvas and offset coordinate rotation.
       canvas.save();
-// todo-00-last      canvas.rotate(-1 * labelLayoutStrategy.labelTiltRadians);
       canvas.rotate(labelLayoutStrategy.labelTiltRadians);
 
-      _rotateLabelEnvelopesAgainstCanvasToFindOffsets();
+      // todo-00-last : moved from here to reLayout rotation section : rotateLabelEnvelopesAgainstCanvasToFindOffsets();
       _paintLabelContainers(canvas);
 
       canvas.restore();
@@ -669,7 +666,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     }
   }
 
-  void _rotateLabelEnvelopesAgainstCanvasToFindOffsets() {
+  @override
+  void rotateLabelEnvelopesAgainstCanvasToFindOffsets() {
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();
     }
@@ -742,6 +740,10 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
     // Must initialize in body, as access to 'this' not available in initializer.
     _labelLayoutStrategy.onContainer(this);
   }
+
+  /// todo-00-last added abstract that can be called from LayoutStrategy.reLayout
+  /// 
+  void rotateLabelEnvelopesAgainstCanvasToFindOffsets();
 }
 
 /// Base class which manages, lays out, moves, and paints
@@ -1161,7 +1163,6 @@ class LegendItemContainer extends Container {
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(),
-      // todo-00-last canvasTiltMatrix: vector_math.Matrix2.identity(),
       labelStyle: _labelStyle,
     );
 

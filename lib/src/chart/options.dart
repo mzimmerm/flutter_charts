@@ -85,8 +85,7 @@ class IterativeLayoutOptions {
     this.decreaseLabelFontRatio = 1.0,
     this.showEveryNthLabel = 1,
     this.multiplyLabelSkip = 2,
-    // todo-00-last this.labelTiltRadians = math.pi / 4,
-    this.labelTiltRadians = -math.pi / 4, // negative rotation is counter-clockwise which is what we want
+    this.labelTiltRadians = -math.pi / 4, // negative rotation is counter-clockwise, generally preferred for labels
   });
 }
 

@@ -36,7 +36,7 @@ ui.Offset transform({
 /// *Note that the rotation origin ("pivot") is NOT the center of the coordinate
 /// system, but the center of the rectangle*.
 ///
-/// Positive rotations are counter clockwise, as in math.
+/// Positive rotations are clockwise, which is DIFFERENT from math.
 ///
 /// Pictorial example of the corners of the [sourceRect]
 /// rotated by (about) by -PI/4 (first picture) and +PI/4 (second)

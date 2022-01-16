@@ -66,17 +66,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   final double _decreaseLabelFontRatio;
 
+  /// Angle by which labels are tilted.
+  /// 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
   /// (pivoted on origin, once all chart offsets are applied to label).
   /// This is always the inverse of [_labelTiltMatrix].
   /// Just passed down to [LabelContainer]s.
-  // todo-00-last vector_math.Matrix2 _canvasTiltMatrix = vector_math.Matrix2.identity();
-  // todo-00-last 
-  // todo-00-last @override
-  // todo-00-last vector_math.Matrix2 get canvasTiltMatrix => _canvasTiltMatrix;
 
-  /// Angle by which labels are tilted.
   /// Just passed down to [LabelContainer]s.
   /// todo-01-last document 
   vector_math.Matrix2 _labelTiltMatrix = vector_math.Matrix2.identity();
@@ -155,23 +152,34 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
       throw StateError('angle must be between -PI and +PI');
     }
 
-    _makeTiltMatricesFromTiltRadians();
+    // todo-00-last moved inline_makeTiltMatricesFromTiltRadians();
+
+    _labelTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
+
+    // todo-00-last moved here from paint()
+    _adjustableLabelsContainer.rotateLabelEnvelopesAgainstCanvasToFindOffsets();
+    
   }
 
+/* todo-00-last
   void _makeTiltMatricesFromTiltRadians() {
-    // todo-00-last _canvasTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
-    // label is actually tilted in the direction when canvas is rotated back,
-    //   so the label tilt is inverse of the canvas tilt
-    // todo-00-last : _labelTiltMatrix = vector_math.Matrix2.rotation(-_labelTiltRadians);
+    // The label tilt is inverse of the canvas tilt
     _labelTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
   }
+*/
 
   void _reLayoutDecreaseLabelFont() {
+    // Reinitialize the tilt matrix, as previous tilt iteration may have set a rotation.
+    _labelTiltMatrix = vector_math.Matrix2.identity();
+
     // Decrease font (already init-ted from options), and call layout again
     _labelFontSize *= _decreaseLabelFontRatio;
   }
 
   void _reLayoutSkipLabels() {
+    // Reinitialize the tilt matrix, as previous tilt iteration may have set a rotation.
+    _labelTiltMatrix = vector_math.Matrix2.identity();
+    
     // Most advanced; Keep list of labels, but only display every nth
     _showEveryNthLabel *= _multiplyLabelSkip;
   }
@@ -213,18 +221,9 @@ abstract class LabelLayoutStrategy {
   /// This is needed by paint methods to rotate canvas.
   bool get isRotateLabelsReLayout;
 
-  /// For tilted labels, this is the forward rotation matrix
-  /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
-  /// (pivoted on origin, once all chart offsets are applied to label).
-  /// This is always the inverse of [labelTiltMatrix].
-  /// Just passed down to [LabelContainer]s.
-  // todo-00-last vector_math.Matrix2 get canvasTiltMatrix => vector_math.Matrix2.identity();
-
   /// Rotation matrix corresponding to the angle by which labels are tilted.
   /// 
-  /// So, it is the inverse rotation matrix
-  /// 
-  /// The reason for 
+  /// Identity for horizontal labels.
   /// Just passed down to [LabelContainer]s.
   vector_math.Matrix2 get labelTiltMatrix => vector_math.Matrix2.identity();
 
