@@ -142,7 +142,7 @@ class LabelContainer extends container_base.Container {
 
     offsetOfPotentiallyRotatedLabel = geometry.transform(
       matrix: canvasTiltMatrix,
-      offset: (offset + _tiltedLabelEnvelope.topLeft),
+      offset: (this.offset + _tiltedLabelEnvelope.topLeft),
     );
   }
   
