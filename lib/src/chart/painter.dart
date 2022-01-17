@@ -15,10 +15,6 @@ import 'line/chart.dart';
 ///
 /// This class does the core of painting the chart, in it's core method [paint].
 ///
-/// Extensions should implement method [_drawDataPresentersColumns], todo-11-document or remove
-/// which paints each column with the data representing elements -
-/// lines, or rectangles.
-///
 /// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class FlutterChartPainter extends widgets.CustomPainter {

@@ -424,7 +424,8 @@ class _ExampleDefiner {
     
     /// Main switch that includes code to all examples.
     /// The example which [ExamplesEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
-    /// Each example can also generate side effects todo-01 document
+    /// Each example can also generate side effects in [exampleSideEffects], which allow the code in this 
+    /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
         chartData = RandomChartData.generated(chartOptions: chartOptions);
@@ -588,10 +589,10 @@ class _ExampleDefiner {
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
         // In each column, adding it's absolute values should add to same number:
-        // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
+        // todo-04-examples 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
 
         chartData = ChartData(
-          // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
+          // each column should add to same number. everything else is relative.
           dataRows: const [
             [-9.0, -8.0, -8.0, -5.0, -8.0],
             [-1.0, -2.0, -4.0, -1.0, -1.0],

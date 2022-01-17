@@ -399,7 +399,7 @@ class LabelInfo {
 
   /// Scales this [LabelInfo] to the position on the Y axis.
   void _scaleLabelValue() {
-    // todo-13 consider what to do about the toDouble() - ensure higher up so if parent scaler not set by now, scaledLabelValue remains null.
+    // todo-02 consider what to do about the toDouble() - ensure higher up so if parent scaler not set by now, scaledLabelValue remains null.
     _axisValue = _parentYScaler.scaleY(value: _dataValue.toDouble());
   }
 

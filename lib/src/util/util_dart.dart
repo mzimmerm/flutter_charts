@@ -140,7 +140,7 @@ class Interval {
   }
 }
 
-// todo-13 Refactor scaling
+// todo-02 Refactor scaling
 /// Scale the [value] that must be from the scale
 /// given by [fromDomainMin] - [fromDomainMax]
 /// to the "to scale" given by  [toDomainMin] - [toDomainMax].
@@ -231,7 +231,7 @@ bool bothHaveValue({
   return math.min(one, two) == value && value == math.max(one, two) && math.min(one, two) == value;
 }
 
-/* todo-13-make-transpose-generics : original version before nullability
+/* todo-02-make-transpose-generics : original version before nullability
 List<List<T>> transpose<T>(List<List<T>> colsInRows) {
   int nRows = colsInRows.length;
   if (colsInRows.length == 0) return colsInRows;

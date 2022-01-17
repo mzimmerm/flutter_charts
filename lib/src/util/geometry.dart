@@ -23,7 +23,8 @@ ui.Offset transform({
 /// Used to create rotated (tilted) labels on the X axis,
 /// which involves canvas [Canvas.rotate].
 ///
-/// The [sourceRect] is rotated around it's center, then enveloped by
+/// The [sourceRect] is copied, then centered at origin, 
+/// then rotated around it's center, then enveloped by
 /// it's unrotated (parallel to axes) [envelopeRect]. The corners
 /// of the rotated copy of the [sourceRect] are maintained as
 ///  [topLeft], [topRight], [bottomLeft], [bottomRight].
@@ -154,9 +155,9 @@ class EnvelopedRotatedRect {
     // The _envelopeRect now gives us the topLeft where the painting can start,
     //   while guaranteed that the full rotated labelText will fit into _envelopRect.
 
-    // shift is generally large positive, from the already layed out X axis labels, 
-    //   to the envelope around coordinate center.
-    // Adding shift to the _topLeft (which is generally small negative the centered beginnning of untilted text),
+    // shift is generally large positive, from the already layed out X axis label [_sourceRect], 
+    //   to the envelope [_envelopeRect] around the coordinate center.
+    // Adding shift to the _topLeft (which is generally a small negative the centered beginning of non-tilted text),
     // Gets us back to the area of layed out X axis labels.
     ui.Offset shift = _sourceRect.topLeft - _envelopeRect.topLeft;
     _envelopeRect = _envelopeRect.shift(shift);

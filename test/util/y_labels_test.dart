@@ -234,7 +234,7 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, ChartBehavior 
     double expectedDataEnvelopMin = dataRow[4] as double;
     double expectedDataEnvelopMax = dataRow[5] as double;
 
-    // todo-11-later Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
+    // Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeYScalerWithLabelInfosFromDataYsOnScale not adjust?
     YLabelsCreatorAndPositioner yScaler = YLabelsCreatorAndPositioner(

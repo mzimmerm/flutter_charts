@@ -47,7 +47,7 @@ mixin ChartBehavior {
 ///
 abstract class ChartTopContainer extends Container with ChartBehavior {
   /// Implements [Container.layoutSize].
-  // todo-13-layout-size-note-only : no change; ChartContainer is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
+  /// [ChartTopContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
   ui.Size get layoutSize => chartArea;
 
@@ -238,7 +238,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
       chartTopContainer: this,
     );
 
-    // todo-13-layout : this is where most non-Container elements are layed out.
+    // todo-01-morph-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
     dataContainer.layout(dataContainerLayoutExpansion);
     dataContainer.applyParentOffset(dataContainerOffset);
@@ -405,7 +405,7 @@ class YContainer extends ChartAreaContainer {
 
   /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
   YLabelsCreatorAndPositioner _createLabelsAndPositionIn(double axisYMin, double axisYMax) {
-    // todo-11-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
+    // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
     List<double> dataYs = geometry.iterableNumToDouble(chartTopContainer.pointsColumns.flattenPointsValues()).toList();
 
     // Create formatted labels, with positions scaled to the [axisY] interval.
@@ -420,7 +420,7 @@ class YContainer extends ChartAreaContainer {
     return yLabelsCreator;
   }
 
-  // todo-11-last-morph Rework to call layout on each AxisLabelContainer.
+  // todo-01-morph Rework to call layout on each AxisLabelContainer.
   /// Takes labels in the passed [yLabelsCreator], and creates a [AxisLabelContainer] from each label,
   /// then collects the created [AxisLabelContainer]s into the [_yLabelContainers] (member list of Y label containers).
   void _createContainerForLabelsInCreatorAndLayoutContainer(YLabelsCreatorAndPositioner yLabelsCreator) {
@@ -451,6 +451,8 @@ class YContainer extends ChartAreaContainer {
         labelTiltMatrix: vector_math.Matrix2.identity(),  // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
+      yLabelContainer.layout(LayoutExpansion.unused()); // todo-00-last added
+
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
       yLabelContainer.parentOffsetTick = yTickY;
@@ -488,7 +490,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   double get yLabelsMaxHeight {
-    // todo-11-later-replace-this-pattern-with-fold - look for '? 0.0'
+    // todo-04-replace-this-pattern-with-fold - look for '? 0.0'
     return _yLabelContainers.isEmpty
         ? 0.0
         : _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
@@ -566,6 +568,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
+      xLabelContainer.layout(LayoutExpansion.unused()); // todo-00-last added
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
@@ -585,7 +588,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTopY,
       );
 
-      xLabelContainer.applyParentOffset(labelLeftTop);
+      // todo-00-last-last : additional offset for envelope : xLabelContainer.applyParentOffset(labelLeftTop);
+      xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
 
       _xLabelContainers.add(xLabelContainer);
     }
@@ -719,7 +723,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo-13-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+// todo-01-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
 //          in AdjustableLabelsChartAreaContainer
 //          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
@@ -895,7 +899,7 @@ abstract class DataContainer extends ChartAreaContainer {
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
-    // todo-13-important : problem : this call actually sets absolute values on Presenters !!
+    // todo-01-morph-important : problem : this call actually sets absolute values on Presenters !!
     setupPresentersColumns();
   }
 
@@ -962,10 +966,8 @@ abstract class DataContainer extends ChartAreaContainer {
     return presenters;
   }
 
-/* todo-11-morph
-  /// Any [DataContainer] should []. But complaining of unused.
   void _drawDataPresentersColumns(ui.Canvas canvas);
-*/
+  
 }
 
 /// Provides the data area container for the bar chart.
@@ -989,6 +991,7 @@ class VerticalBarChartDataContainer extends DataContainer {
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
+  @override
   void _drawDataPresentersColumns(ui.Canvas canvas) {
     PresentersColumns presentersColumns = this.presentersColumns;
 
@@ -1039,6 +1042,7 @@ class LineChartDataContainer extends DataContainer {
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
+  @override
   void _drawDataPresentersColumns(ui.Canvas canvas) {
     var presentersColumns = this.presentersColumns;
     for (PresentersColumn presentersColumn in presentersColumns) {
@@ -1107,14 +1111,14 @@ class GridLinesContainer extends Container {
   /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
   // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  // todo-13-layout look into this
+  // todo-01 look into this
   @override
   ui.Size get layoutSize => throw StateError('todo-2 implement this.');
 }
 
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
-// todo-13-last-morph : should this extend ChartAreaContainer?
+// todo-01-morph : should this extend ChartAreaContainer?
 class LegendItemContainer extends Container {
   /// Container of label
   late LabelContainer _labelContainer;
@@ -1168,6 +1172,7 @@ class LegendItemContainer extends Container {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
+    _labelContainer.layout(LayoutExpansion.unused()); //todo-00-last added
 
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
@@ -1360,7 +1365,7 @@ class LegendContainer extends ChartAreaContainer {
   }
 }
 
-// todo-11-later Try to make members final and private and class immutable
+// todo-01 Try to make members final and private and class immutable
 /// Represents one Y numeric value in the [ChartData.dataRows],
 /// with added information about the X coordinate (display coordinate).
 ///
@@ -1506,7 +1511,7 @@ class StackableValuePoint {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  // todo-11-last-morph : Calling this 'scale' is suspect - this does not do any X dimension scaling at all!
+  // todo-01-morph : Calling this 'scale' is suspect - this does not do any X dimension scaling at all!
   //                Analyze the uses of the 'scale' term in the system, probably needs improvement.
   StackableValuePoint scale({
     required double scaledX,
@@ -1516,7 +1521,7 @@ class StackableValuePoint {
     scaledY = yLabelsCreator.scaleY(value: dataY);
     scaledFromY = yLabelsCreator.scaleY(value: fromY);
     scaledToY = yLabelsCreator.scaleY(value: toY);
-    // todo-11-last-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
+    // todo-01-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
     scaledFrom = ui.Offset(scaledX, scaledFromY);
     scaledTo = ui.Offset(scaledX, scaledToY);
 
@@ -1678,7 +1683,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     _createStackableValuePointsFromChartData(chartData);
   }
 
-  // todo-11-morph : Create this object, PointsColumns here and return. Maybe this should be converted to factory constructor?
+  // todo-01-morph : Create this object, PointsColumns here and return. Maybe this should be converted to factory constructor?
   //                 Also, this class PointsColumns is a list, why do we need the nextRightPointsColumn at all???
   /// Constructs internals of this object, the [PointsColumns].
   ///
@@ -1711,7 +1716,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
-            xLabel: 'initial', // todo-11-last-morph : xLabel: null : consider
+            xLabel: 'initial', // todo-01-morph : xLabel: null : consider
             dataY: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
@@ -1805,7 +1810,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   }
 }
 
-// todo-11-last: In null safety, I had to replace T with a concrete StackableValuePoint.
+// todo-01: In null safety, I had to replace T with a concrete StackableValuePoint.
 //               can this be improved? This need may be a typing bug in Dart
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
 List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsInRows) {

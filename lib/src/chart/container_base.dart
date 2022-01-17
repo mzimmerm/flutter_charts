@@ -18,7 +18,7 @@ import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 /// Note on Lifecycle of [Container] : objects should be such that
 ///   after construction, methods should be called in the order declared here.
 ///
-// todo-00-last: Container core rule: I do not expose position, offset, or layoutSize. 
+// todo-00: Container core rule: I do not expose position, offset, or layoutSize. 
 //                 I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
 abstract class Container {
@@ -96,7 +96,7 @@ abstract class Container {
 
   // ##### Abstract methods to implement
 
-  // todo-11-last : This should pass Constraints - see [RenderObject]
+  // todo-01-morph : This should pass Constraints - see [RenderObject]
   void layout(LayoutExpansion parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);

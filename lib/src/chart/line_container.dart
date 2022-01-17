@@ -13,7 +13,7 @@ class LineContainer extends container_base.Container {
     required this.lineTo,
     required this.linePaint,
   }) {
-    // todo-13-layout-size-add
+    // todo-01-morph-layout-size - should this be set?
     // layoutSize = _lineContainerLayoutSize;
   }
 
@@ -36,11 +36,10 @@ class LineContainer extends container_base.Container {
     super.applyParentOffset(offset);
     lineFrom += offset;
     lineTo += offset;
-    // todo-13-layout-size-add : layoutSize = _lineContainerLayoutSize
+    // todo-01-morph-layout-size-add : layoutSize = _lineContainerLayoutSize
   }
 
-  // todo-13layout-size : This is not called. Call when we manage line segments like other Containers, and call their layout!
-  // todo-11-later-not-used
+  // todo-01-morph : This is not called. Call when we manage line segments like other Containers, and call their layout!
 /*
   ui.Size get _lineContainerLayoutSize => ui.Size(
         (lineFrom.dx - lineTo.dx).abs(),

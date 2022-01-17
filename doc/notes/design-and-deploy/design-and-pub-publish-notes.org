@@ -996,7 +996,21 @@ Thoughts:
 - Resolve or renumber, and make clear to move them to the *Morph section*.
 
 
-*** 
+*** NOTE Allowed comments
+
+--- only allowed comments
+00
+00-last
+00-last-last
+00-doc
+-
+01
+01-doc
+01-last //rare use
+-
+02
+02-last //rare use
+
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 
 #+begin_src javascript

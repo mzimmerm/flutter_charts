@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
+import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
@@ -55,6 +56,8 @@ class LabelContainer extends container_base.Container {
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
+  
+  Offset get tiltedLabelEnvelopeTopLeft => _tiltedLabelEnvelope.topLeft; // todo-00-last-last added
 
   // Allows to configure certain sizes, colors, and layout.
   // final LabelStyle _labelStyle;
@@ -81,7 +84,7 @@ class LabelContainer extends container_base.Container {
           textAlign: labelStyle.textAlign,
           // center in available space
           textScaleFactor: labelStyle.textScaleFactor,
-          // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+          // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
         ),
         //  textScaleFactor does nothing ??
         super() {
@@ -95,17 +98,16 @@ class LabelContainer extends container_base.Container {
     //   textAlign: _labelStyle.textAlign,
     //   // center in available space
     //   textScaleFactor: _labelStyle.textScaleFactor,
-    //   // todo-11 removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+    //   // todo-02 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     // ); //  textScaleFactor does nothing ??
 
     // Make sure to call layout - this instance is always "clean"
     //   without need to call layout or introducing _isLayoutNeeded
-    layout(LayoutExpansion.unused());
+    // todo-00-last : moved layout after construction : layout(LayoutExpansion.unused());
   }
 
   // #####  Implementors of method in superclass [Container].
 
-  // todo-01-document : 
   /// Calls super method, then adds the passed [offset] to the locally-kept slot
   /// [offsetOfPotentiallyRotatedLabel].
   /// 
@@ -129,10 +131,28 @@ class LabelContainer extends container_base.Container {
   /// and [offset] is also large, after all parent offsets applied. In this situation,
   /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
   /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
+  /// 
+  // todo-01-morph : this implementation only works for tilting in [XContainer] because first call to it is 
+  //                 made in [XContainer.layout], after label container is created, as 
+  //                    `xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
+  //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
+  //                    value, which is OVERWRITTEN by the last call described below; 
+  //                    also, the accumulated non-rotated this.offset is kept on super slot
+  //                    This is what we want - we want to keep the non-rotated this.offset on super slot,
+  //                    and only do the rotation on the last call (last before paint)
+  //                 The last call is made in [ChartTopContainer.layout] inside
+  //                     `xContainer.applyParentOffset(xContainerOffset)` as
+  //                 as
+  //                    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
+  //                      xLabelContainer.applyParentOffset(offset);
+  //                    }
+  //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset 
+  //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint. 
   @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
     
+    // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
     // Transform the point [offset + _tiltedLabelEnvelope.topLeft] against the tilt of labels.
     // No-op for non-tilted labels, where _labelTiltMatrix is identity, 
@@ -142,7 +162,8 @@ class LabelContainer extends container_base.Container {
 
     offsetOfPotentiallyRotatedLabel = geometry.transform(
       matrix: canvasTiltMatrix,
-      offset: (this.offset + _tiltedLabelEnvelope.topLeft),
+      // todo-00-last-last : additional offset for envelope done earlier : offset: (this.offset + _tiltedLabelEnvelope.topLeft),
+      offset: (this.offset),
     );
   }
   
@@ -163,18 +184,10 @@ class LabelContainer extends container_base.Container {
   /// 
   @override
   void layout(LayoutExpansion parentLayoutExpansion) {
-    // todo-13-layout : cannot set _layoutExpansion here, as it is private in another src file
+    // todo-01-morph : cannot set _layoutExpansion here, as it is private in another src file
     //                  it does not appear needed.
-    _layoutAndCheckOverflowInTextDirection();
-  }
-
-  // todo-01-document
-  geometry.EnvelopedRotatedRect _createLabelEnvelope() {
-    // Only after layout, we know the envelope of tilted label
-    return geometry.EnvelopedRotatedRect.centerRotatedFrom(
-      rect: ui.Offset.zero & _textPainter.size, // offset & size => Rect
-      rotateMatrix: _labelTiltMatrix,
-    );
+    Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
+    layoutSize = sizeAndOverflow.item1;
   }
 
   // ##### Internal methods
@@ -198,12 +211,12 @@ class LabelContainer extends container_base.Container {
   ///     the subsequent `textPainter.paint(canvas)` call paints the label
   ///     **as always cropped to it's allocated size [_labelMaxWidth]**.
   /// - [_isOverflowingInLabelDirection] can be asked but this is information only.
-  bool _layoutAndCheckOverflowInTextDirection() {
+  Tuple2<Size, bool> _layoutAndCheckOverflowInTextDirection() {
     _textPainter.layout();
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
-    layoutSize = _tiltedLabelEnvelope.size;
+    Size layoutSize = _tiltedLabelEnvelope.size;
 
     if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
@@ -212,8 +225,19 @@ class LabelContainer extends container_base.Container {
       layoutSize = _tiltedLabelEnvelope.size;
     }
 
-    return isOverflowingHorizontally;
+    return Tuple2(layoutSize, isOverflowingHorizontally);
   }
+
+  /// Creates the envelope rectangle [EnvelopedRotatedRect], which [EnvelopedRotatedRect.topLeft] 
+  /// is used to position this [LabelContainer] for painting with or without tilt.
+  geometry.EnvelopedRotatedRect _createLabelEnvelope() {
+    // Only after layout, we know the envelope of tilted label
+    return geometry.EnvelopedRotatedRect.centerRotatedFrom(
+      rect: ui.Offset.zero & _textPainter.size, // offset & size => Rect
+      rotateMatrix: _labelTiltMatrix,
+    );
+  }
+
 }
 
 /// Class for value objects which group the text styles that may affect
@@ -280,7 +304,7 @@ class AxisLabelContainer extends LabelContainer {
   /// but both x and y label containers can be skipped
   /// (tick dashes should not?).
   ///
-  // todo-01 how is this used?
+  // todo-03 how is this used?
   double parentOffsetTick = 0.0;
 
   AxisLabelContainer({
@@ -294,7 +318,4 @@ class AxisLabelContainer extends LabelContainer {
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
         );
-
-
-  
 }

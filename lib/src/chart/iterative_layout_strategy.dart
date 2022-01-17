@@ -27,7 +27,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   // todo-2 try using Mixins
 
   /// Constructor uses default values from [ChartOptions]
-  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+  // todo-01 : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
   //                But they still need to default from options or somewhere?
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
@@ -78,16 +78,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   final double _decreaseLabelFontRatio;
 
-  /// Angle by which labels are tilted.
+  /// Matrix representing rotation by the angle by which labels are tilted.
   /// 
   /// For tilted labels, this is the forward rotation matrix
   /// to apply on both Canvas AND label envelope's topLeft offset's coordinate
   /// (pivoted on origin, once all chart offsets are applied to label).
-  /// This is always the inverse of [_labelTiltMatrix].
   /// Just passed down to [LabelContainer]s.
-
-  /// Just passed down to [LabelContainer]s.
-  /// todo-01-last document 
   vector_math.Matrix2 _labelTiltMatrix = vector_math.Matrix2.identity();
 
   @override

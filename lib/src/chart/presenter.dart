@@ -23,7 +23,7 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 /// value point.
 class Presenter {
   // Not actually stored here, but could be
-  // todo-13-unused
+  // todo-01-morph-unused
   StackableValuePoint point;
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
@@ -82,7 +82,7 @@ class PresentersColumn {
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
-      // todo-11-later nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+      // todo-01-last nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       StackableValuePoint? nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.stackableValuePoints[rowIndex]
           : null;
