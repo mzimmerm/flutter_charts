@@ -26,6 +26,18 @@ enum LabelFitMethod {
 class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   // todo-2 try using Mixins
 
+  /// Constructor uses default values from [ChartOptions]
+  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+  //                But they still need to default from options or somewhere?
+  DefaultIterativeLabelLayoutStrategy({
+    required ChartOptions options,
+  })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
+        _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
+        _maxLabelReLayouts = options.iterativeLayoutOptions.maxLabelReLayouts,
+        _multiplyLabelSkip = options.iterativeLayoutOptions.multiplyLabelSkip,
+        _labelFontSize = options.labelCommonOptions.labelFontSize,
+        _labelTiltRadians = options.iterativeLayoutOptions.labelTiltRadians;
+  
   /// Members related to re-layout (iterative layout).
   /// The values are incremental, each re-layout "accumulates" changes
   /// from previous layouts.
@@ -80,19 +92,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
 
   @override
   vector_math.Matrix2 get labelTiltMatrix => _labelTiltMatrix;
-
-  /// Constructor uses default values from [ChartOptions]
-  // todo-11-last : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-  //                But they still need to default from options or somewhere?
-  DefaultIterativeLabelLayoutStrategy({
-    required ChartOptions options,
-  })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
-        _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
-        _maxLabelReLayouts = options.iterativeLayoutOptions.maxLabelReLayouts,
-        _multiplyLabelSkip = options.iterativeLayoutOptions.multiplyLabelSkip,
-        _labelFontSize = options.labelCommonOptions.labelFontSize,
-        _labelTiltRadians = options.iterativeLayoutOptions.labelTiltRadians;
-
+  
   LabelFitMethod _atDepth(int depth) {
     switch (depth) {
       case 1:
@@ -141,11 +141,14 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    _adjustableLabelsContainer.layout(parentLayoutExpansion); // will call this function back!
-
-    // print("Iterative layout finished after $_reLayoutsCounter iterations.");
+    
+    // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
+    _adjustableLabelsContainer.layout(parentLayoutExpansion);
   }
 
+  /// Prepares the rotation matrix [_labelTiltMatrix] for tilting labels.
+  /// 
+  /// The matrix will be used by the [_adjustableLabelsContainer] to tilt it's labels.
   void _reLayoutRotateLabels() {
     //  angle must be in interval `<-math.pi, +math.pi>`
     if (!(-1 * math.pi <= _labelTiltRadians && _labelTiltRadians <= math.pi)) {
@@ -154,18 +157,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     
     // Make the tilt matrix from the rotation angle
     _labelTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
-
-    // todo-00-last moved here from paint() - review It COULD BE THIS IS NOT NEEDED, AS THE  _tiltedLabelEnvelope.topLeft IN THE CALL INSIDE IS ALWAYS 0.0/0.0
-    // todo-00-last : trying if needed : _adjustableLabelsContainer.rotateLabelEnvelopesAgainstCanvasToFindOffsets();
     
   }
-
-/* todo-00-last
-  void _makeTiltMatricesFromTiltRadians() {
-    // The label tilt is inverse of the canvas tilt
-    _labelTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
-  }
-*/
 
   void _reLayoutDecreaseLabelFont() {
     // Reinitialize the tilt matrix, as previous tilt iteration may have set a rotation.

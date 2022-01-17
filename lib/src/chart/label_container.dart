@@ -106,45 +106,37 @@ class LabelContainer extends container_base.Container {
   // #####  Implementors of method in superclass [Container].
 
   // todo-01-document : 
-  /// Calls super method, then adds the passed [offset] the locally-kept slot
+  /// Calls super method, then adds the passed [offset] to the locally-kept slot
   /// [offsetOfPotentiallyRotatedLabel].
+  /// 
+  /// In more details:  After calling super, rotate the point at which label will start painting -
+  /// the [offset] + [_tiltedLabelEnvelope.topLeft] - by the tilt angle against the 
+  /// tilt (this angle is represented by [_labelTiltMatrix] inverse).
+  /// 
+  /// In *non-tilted labels*, the [_tiltedLabelEnvelope] was created as
+  /// ```dart
+  ///   ui.Offset.zero & _textPainter.size, // offset & size => Rect
+  /// ```
+  /// so the [_tiltedLabelEnvelope.topLeft] is always origin ([0.0, 0.0]).
+  /// In addition, the [_labelTiltMatrix] is identity, so this method will set 
+  /// ```dart
+  ///   offsetOfPotentiallyRotatedLabel = offset
+  /// ```
+  /// to the value of [offset] (large, after all parent offsets applied).
+  /// 
+  /// In the *tilted labels*, the [_tiltedLabelEnvelope.topLeft] 
+  /// is a small value below origin such as [0.0, 30.0], 
+  /// and [offset] is also large, after all parent offsets applied. In this situation,
+  /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
+  /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
   @override
   void applyParentOffset(ui.Offset offset) {
     super.applyParentOffset(offset);
-    // todo-00-last: For [LabelContainers] for which Canvas will be rotated counter-clockwise,
-    //               offset needs to be rotated clockwise before adding it.
-    rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();    
     
-  }
-  
-  /// Implementor of method in superclass [Container].
-  @override
-  void paint(ui.Canvas canvas) {
-    _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
-  }
-
-  /// Implementor of method in superclass [Container].
-  @override
-  void layout(LayoutExpansion parentLayoutExpansion) {
-    // todo-13-layout : cannot set _layoutExpansion here, as it is private in another src file
-    // it does not appear needed.
-    _layoutAndCheckOverflowInTextDirection();
-    _tiltedLabelEnvelope = _createLabelEnvelope();
-  }
-
-  /// Rotate this label around origin along with Canvas, to achieve label tilt.
-  ///
-  /// Must be called only in paint()
-  /// todo-00-last : Why is this called twice? How does it work in detail? Is perhaps the topLeft NULL in one of the calls?
-  void rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt() {
-    // In paint(), this label's offset is now the "absolute" offset in the chart
-    // The point in the tilted rectangle, where [TextPainter] should start
-    // painting the label is always topLeft in the envelope.
-    // The envelope is kept at (0,0), so find the full offset of
-    // the [_tiltedLabelEnvelope.topLeft] in the "absolute" coordinates,
-    // then rotate the result with Canvas.
-
-    // 
+    // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
+    // Transform the point [offset + _tiltedLabelEnvelope.topLeft] against the tilt of labels.
+    // No-op for non-tilted labels, where _labelTiltMatrix is identity, 
+    //   and  _tiltedLabelEnvelope.topLeft is center - (0.0, 0.0).
     vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
     canvasTiltMatrix.invert();
 
@@ -153,7 +145,30 @@ class LabelContainer extends container_base.Container {
       offset: (offset + _tiltedLabelEnvelope.topLeft),
     );
   }
+  
+  /// Implementor of method in superclass [Container].
+  @override
+  void paint(ui.Canvas canvas) {
+    _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
+  }
 
+  /// Lays out this [LabelContainer].
+  /// 
+  /// The layout step 1 is calling the contained [_textPainter.layout];
+  /// step 2 is creating the [_tiltedLabelEnvelope] around the horizontally layed out [_textPainter]
+  /// by calling
+  /// ```dart
+  ///   _tiltedLabelEnvelope = _createLabelEnvelope();
+  /// ```
+  /// 
+  @override
+  void layout(LayoutExpansion parentLayoutExpansion) {
+    // todo-13-layout : cannot set _layoutExpansion here, as it is private in another src file
+    //                  it does not appear needed.
+    _layoutAndCheckOverflowInTextDirection();
+  }
+
+  // todo-01-document
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -161,7 +176,6 @@ class LabelContainer extends container_base.Container {
       rotateMatrix: _labelTiltMatrix,
     );
   }
-  
 
   // ##### Internal methods
 

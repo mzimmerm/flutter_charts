@@ -116,7 +116,7 @@ class EnvelopedRotatedRect {
       return;
     }
 
-    // shift = translate rect to coordinates where center = origin of rect
+    // shift = copy and translate rect so that origin = center of rect
     ui.Rect movedToCenterAsOrigin = rect.shift(-rect.center);
 
     _topLeft = movedToCenterAsOrigin.topLeft;
@@ -138,16 +138,26 @@ class EnvelopedRotatedRect {
     double minY = rotOffsets.map((offset) => offset.dy).reduce(math.min);
     double maxY = rotOffsets.map((offset) => offset.dy).reduce(math.max);
 
+    // _envelopRect is always centered at origin, and envelopes the rotated original rect moved to origin:
+    // that is, the _envelopRect envelops the movedToCenterAsOrigin
     _envelopeRect = ui.Rect.fromPoints(
       ui.Offset(minX, minY),
       ui.Offset(maxX, maxY),
     );
 
     //  After rotation and envelope creation, both [envelopeRect]
-    //  and the corners of the rotated rectangle
-    //  (the [topLeft], [topRight], [bottomLeft], [bottomRight]), are then
-    // shifted so that the [envelopeRect.topLeft] = [sourceRect.topLeft]
+    //    and the corners of the rotated rectangle
+    //    (the [topLeft], [topRight], [bottomLeft], [bottomRight]), are then
+    //    shifted so that the [envelopeRect.topLeft] = [sourceRect.topLeft]
+    // The _sourceRect was the already offset rectangle bounds of the labelText,
+    //   we shift the _envelopeRect.topLeft to the position of _sourceRect.topLeft.
+    // The _envelopeRect now gives us the topLeft where the painting can start,
+    //   while guaranteed that the full rotated labelText will fit into _envelopRect.
 
+    // shift is generally large positive, from the already layed out X axis labels, 
+    //   to the envelope around coordinate center.
+    // Adding shift to the _topLeft (which is generally small negative the centered beginnning of untilted text),
+    // Gets us back to the area of layed out X axis labels.
     ui.Offset shift = _sourceRect.topLeft - _envelopeRect.topLeft;
     _envelopeRect = _envelopeRect.shift(shift);
 

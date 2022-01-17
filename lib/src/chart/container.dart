@@ -448,7 +448,7 @@ class YContainer extends ChartAreaContainer {
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedLabel,
         labelMaxWidth: double.infinity,
-        labelTiltMatrix: vector_math.Matrix2.identity(),
+        labelTiltMatrix: vector_math.Matrix2.identity(),  // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
@@ -563,7 +563,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       var xLabelContainer = AxisLabelContainer(
         label: xUserLabels[xIndex],
         labelMaxWidth: double.infinity,
-        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix,
+        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
@@ -680,13 +680,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     }
   }
 
-  @override
-  void rotateLabelEnvelopesAgainstCanvasToFindOffsets() {
-    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-      xLabelContainer.rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();
-    }
-  }
-
   void _paintLabelContainers(canvas) {
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
@@ -754,11 +747,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
     // Must initialize in body, as access to 'this' not available in initializer.
     _labelLayoutStrategy.onContainer(this);
   }
-
-  /// todo-01 document 
-  /// Abstract method should be implemented by rotating the 
-  /// [AdjustableLabel]s against their intended tilt. 
-  void rotateLabelEnvelopesAgainstCanvasToFindOffsets();
 }
 
 /// Base class which manages, lays out, moves, and paints
@@ -1177,7 +1165,7 @@ class LegendItemContainer extends Container {
     _labelContainer = LabelContainer(
       label: _label,
       labelMaxWidth: labelMaxWidth,
-      labelTiltMatrix: vector_math.Matrix2.identity(),
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
 

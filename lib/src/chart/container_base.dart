@@ -26,23 +26,6 @@ abstract class Container {
   /// Should be only mentioned in this class, not super
   ui.Size layoutSize = ui.Size.zero;
 
-/*
-  // todo-11-later-not-used   int _debugLayoutSetCount = 0;
-  /// Size after [layout] has been called.
-  ui.Size get layoutSize => _layoutSize;
-
-  /// Change the layout size.
-  ///
-  /// Supports the layoutSize accumulation during layout.
-  /// Should be only called from inside the [layout] method.
-  set layoutSize(ui.Size newLayoutSize) {
-    _layoutSize = newLayoutSize;
-    // todo-11-later unused : _debugLayoutSetCount++;
-    // print('Changed layoutSize. It changed $_debugLayoutSetCount times; '
-    //     'now it is : $_layoutSize');
-  }
-*/
-
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
   /// That means, it is the offset from (0,0) of the canvas. There is only one
