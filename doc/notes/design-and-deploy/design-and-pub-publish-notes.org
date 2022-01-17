@@ -9,50 +9,6 @@
 
 IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
 
-* NOTE Layouter general function
-
-*The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
-
-1. *SizeConstraint is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(sizeConstraintDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
-2. *PreferredSize is returned up* from layout and also stored on child (happens also in 1).               
-3. Once we know all children sizes:
-4. Parent decides, based on it's layout algorithm,
-   the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf() <= layoutSize effect: child.layoutSize [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.layoutSize and this.offset is set on me (parent)
-6. Step 4 includes *Parent sets actual layoutSize and position down on child*.
-
-
-#+BEGIN_SRC python
-  def layout(Size sizeConstraintFromParent):     # 1. sizeConstraints go down (as this is called in parent context)
-    if this is leaf:
-      this.layoutSize = calculate own layoutSize (may be e.g. size of rectangle if this is a rectangle) if not withit SizeConstraint, exception???
-      return this.layoutSize                # 2. sizes go up
-    else:
-      for child in children:
-        # All children are offered the full layoutSize of parent. If greedy, that is a problem 
-        Size layoutSize = child.layout(constraintFromParent) # ignore return, we have it in side-effect
-      calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()
-      return this.layoutSize ????
-
-
-  # For example, for flow layout, each child is given the layoutSize it previously asked, and moved by predecessors layoutSizes.
-  # !!!!!!!!!!!!!!! this replaces applyParentOffset
-  def calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf():
-    Offset currentOffset = 0
-    Size myLayoutSize = 0
-    for child in children:
-      child.layoutSize = child.layoutSize         # Size goes down - no change in one pass layout
-      child.offset += currentOffset   # 3. Actual position goes down
-      currentOffset += new Offset(child.layoutSize.width, 0) # just shift next child some more to the right.
-      myLayoutSize = currentOffset + child.layoutSize
-    this.layoutSize = myLayoutSize
-#+END_SRC   
-* NOTE How are todos used in code
-
-- todo-1 long term low priority
-- todo-2 long term higher priority
-- todo-10 release-blocker (created typically during a new work in progress)
-- todo-11, todo-12 todo-13 - work in progress (implies todo-10), higher number is higher priority or more immediate. *So -13 is the highest ever priority.*
-** ~cd flutter_charts~ - Implied default directory
 * NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~dart pub outdated --no-dev-dependencies --up-to-date --no-dependency-overrides~
 Run this to resolve a warning on pub.dev about "transitive dependencies"
@@ -439,13 +395,27 @@ This section We describe running Flutter Charts in development mode on your devi
 
    #+BEGIN_SRC sh
    cd DIRECTORY_OF_CHOICE/flutter_charts 
-   flutter run example/lib/main.dart 
+   flutter run example1/lib/main.dart 
    #+END_SRC
 
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 
   - Start IntelliJ IDE, create a project in the ~DIRECTORY_OF_CHOICE/flutter_charts~ start an Android emulator, then click on the Run button in Intellij (which should show the ~file:../../../example/lib/main.dart~ in the run button).
-
                       
+* NOTE Allowed todos
+
+--- only allowed comments
+00
+00-last
+00-last-last
+00-doc
+-
+01
+01-doc
+01-last //rare use
+-
+02
+02-last //rare use
+
 * IN-PROGRESS-NOW Flutter Charts Enhancements
 ** DONE Items, bugs, refactorings Implemented
 *** DONE Re-implement the layout more generically and clearly. Space saving changes such as /tilting/ labels
@@ -872,7 +842,55 @@ This needs entity model change:
 - we allow to set both options AND enum chartType on ChartDataRows
 - we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
 Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
-** IN-PROGRESS 4. Container and Morph: Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
+** IN-PROGRESS-NOW 4. Define Layouter algorithm
+
+*The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
+
+1. *SizeConstraint is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(sizeConstraintDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
+2. *PreferredSize is returned up* from layout and also stored on child (happens also in 1).               
+3. Once we know all children sizes:
+4. Parent decides, based on it's layout algorithm,
+   the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf() <= layoutSize effect: child.layoutSize [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.layoutSize and this.offset is set on me (parent)
+6. Step 4 includes *Parent sets actual layoutSize and position down on child*.
+
+
+#+BEGIN_SRC python
+  def layout(Size sizeConstraintFromParent):     # 1. sizeConstraints go down (as this is called in parent context)
+    if this is leaf:
+      this.layoutSize = calculate own layoutSize (may be e.g. size of rectangle if this is a rectangle) if not withit SizeConstraint, exception???
+      return this.layoutSize                # 2. sizes go up
+    else:
+      for child in children:
+        # All children are offered the full layoutSize of parent. If greedy, that is a problem 
+        Size layoutSize = child.layout(constraintFromParent) # ignore return, we have it in side-effect
+      calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()
+      return this.layoutSize ????
+
+
+  # For example, for flow layout, each child is given the layoutSize it previously asked, and moved by predecessors layoutSizes.
+  # !!!!!!!!!!!!!!! this replaces applyParentOffset
+  def calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf():
+    Offset currentOffset = 0
+    Size myLayoutSize = 0
+    for child in children:
+      child.layoutSize = child.layoutSize         # Size goes down - no change in one pass layout
+      child.offset += currentOffset   # 3. Actual position goes down
+      currentOffset += new Offset(child.layoutSize.width, 0) # just shift next child some more to the right.
+      myLayoutSize = currentOffset + child.layoutSize
+    this.layoutSize = myLayoutSize
+#+END_SRC
+
+#+begin_src dart
+
+  Size layout(Constraint constraint) {
+    for (child in children) {
+      Size childSize = layout(child);
+      Offset childPosition = findChildPosition(child, childSize, constraint);
+      child.applyParentOffset(childPosition);
+    }
+  }
+#+end_src
+** IN-PROGRESS 5. Container and Morph: Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
 
 *** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
@@ -884,7 +902,7 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
 
 See container_base_new.dart
 
-
+*** IN-PROGRESS-NOW Core layout algorithm
 *** IN-PROGRESS-NOW ~LayoutExpansion: Refactor LayoutExpansion to SizeConstraint and clarify role of SizeConstraint~
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
@@ -995,21 +1013,6 @@ Thoughts:
 
 - Resolve or renumber, and make clear to move them to the *Morph section*.
 
-
-*** NOTE Allowed comments
-
---- only allowed comments
-00
-00-last
-00-last-last
-00-doc
--
-01
-01-doc
-01-last //rare use
--
-02
-02-last //rare use
 
 *** TODO ~In Container, provide a default paint() method rather than abstract, like this~
 

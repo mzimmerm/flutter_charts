@@ -52,12 +52,25 @@ class LabelContainer extends container_base.Container {
   final widgets.TextPainter _textPainter;
 
   /// Minimum envelope around the contained label (and hence, this container).
-  /// It is created and kept such that the envelope topLeft = (0.0, 0.0),
+  /// It is created and kept such that the envelope topLeft = Offset.zero,
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
   
-  Offset get tiltedLabelEnvelopeTopLeft => _tiltedLabelEnvelope.topLeft; // todo-00-last-last added
+  /// Position where paint starts painting the label, expressed
+  /// in the coordinate system in which this [_tiltedLabelEnvelope.envelopeRect] topLeft 
+  /// (NOT the _tiltedLabelEnvelope.topLeft) is at the origin. 
+  /// 
+  /// The returned value is the offset (before any rotation!), 
+  /// needed to reach the point where the text in the [_textPainter]
+  /// should start painting the tilted or non-tilted situation. 
+  /// In the non-tilted situation, the returned value is always Offset.zero. 
+  Offset get tiltedLabelEnvelopeTopLeft {
+    if (_labelTiltMatrix == vector_math.Matrix2.identity()) {
+      assert (_tiltedLabelEnvelope.topLeft == Offset.zero);
+    }
+    return _tiltedLabelEnvelope.topLeft;
+  }
 
   // Allows to configure certain sizes, colors, and layout.
   // final LabelStyle _labelStyle;
@@ -100,10 +113,6 @@ class LabelContainer extends container_base.Container {
     //   textScaleFactor: _labelStyle.textScaleFactor,
     //   // todo-02 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     // ); //  textScaleFactor does nothing ??
-
-    // Make sure to call layout - this instance is always "clean"
-    //   without need to call layout or introducing _isLayoutNeeded
-    // todo-00-last : moved layout after construction : layout(LayoutExpansion.unused());
   }
 
   // #####  Implementors of method in superclass [Container].
@@ -154,15 +163,14 @@ class LabelContainer extends container_base.Container {
     
     // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
-    // Transform the point [offset + _tiltedLabelEnvelope.topLeft] against the tilt of labels.
+    // Transform the point where label painting starts against the tilt of labels.
     // No-op for non-tilted labels, where _labelTiltMatrix is identity, 
-    //   and  _tiltedLabelEnvelope.topLeft is center - (0.0, 0.0).
+    //   and  _tiltedLabelEnvelope.topLeft is center = Offset.zero.
     vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
     canvasTiltMatrix.invert();
 
     offsetOfPotentiallyRotatedLabel = geometry.transform(
       matrix: canvasTiltMatrix,
-      // todo-00-last-last : additional offset for envelope done earlier : offset: (this.offset + _tiltedLabelEnvelope.topLeft),
       offset: (this.offset),
     );
   }

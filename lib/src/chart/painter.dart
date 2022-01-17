@@ -68,7 +68,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
-    // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
+    // canvas.clipRect(ui.Offset.zero & size); // Offset & Size => Rect
   }
 
   /// Implementing abstract in super.

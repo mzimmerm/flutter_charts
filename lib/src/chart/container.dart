@@ -279,7 +279,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
-    // canvas.clipRect(const ui.Offset(0.0, 0.0) & size); // Offset & Size => Rect
+    // canvas.clipRect(const ui.Offset.zero & size); // Offset & Size => Rect
   }
 
   /// Abstract method creates the [DataContainer],
@@ -451,7 +451,7 @@ class YContainer extends ChartAreaContainer {
         labelTiltMatrix: vector_math.Matrix2.identity(),  // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
-      yLabelContainer.layout(LayoutExpansion.unused()); // todo-00-last added
+      yLabelContainer.layout(LayoutExpansion.unused());
 
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
@@ -568,7 +568,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
-      xLabelContainer.layout(LayoutExpansion.unused()); // todo-00-last added
+      xLabelContainer.layout(LayoutExpansion.unused());
       xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
@@ -588,7 +588,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTopY,
       );
 
-      // todo-00-last-last : additional offset for envelope : xLabelContainer.applyParentOffset(labelLeftTop);
+      // labelLeftTop + offset for envelope
       xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
 
       _xLabelContainers.add(xLabelContainer);
@@ -1163,7 +1163,7 @@ class LegendItemContainer extends Container {
         parentLayoutExpansion.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       isDistressed = true;
-      layoutSize = const ui.Size(0.0, 0.0);
+      layoutSize = ui.Size.zero;
       return;
     }
     _labelContainer = LabelContainer(
@@ -1172,7 +1172,7 @@ class LegendItemContainer extends Container {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    _labelContainer.layout(LayoutExpansion.unused()); //todo-00-last added
+    _labelContainer.layout(LayoutExpansion.unused());
 
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
@@ -1452,10 +1452,10 @@ class StackableValuePoint {
   /// point - for example, for VerticalBar, bottom left and top right of each bar
   /// representing this value point (data point).
   /// Wrapper for [scaledX], [scaledFromY]
-  ui.Offset scaledFrom = const ui.Offset(0.0, 0.0);
+  ui.Offset scaledFrom = ui.Offset.zero;
 
   /// Wrapper for [scaledX], [scaledToY]
-  ui.Offset scaledTo = const ui.Offset(0.0, 0.0);
+  ui.Offset scaledTo = ui.Offset.zero;
 
   /// The generative constructor of objects for this class.
   StackableValuePoint({

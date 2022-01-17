@@ -111,7 +111,7 @@ class Shape {
 
 class BoxShape extends Shape {
   @override
-  ui.Size get surface => const ui.Size(0.0, 0.0);
+  ui.Size get surface => ui.Size.zero;
 }
 
 //  todo-03 add distance and angle
