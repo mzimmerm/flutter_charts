@@ -151,13 +151,12 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     if (!(-1 * math.pi <= _labelTiltRadians && _labelTiltRadians <= math.pi)) {
       throw StateError('angle must be between -PI and +PI');
     }
-
-    // todo-00-last moved inline_makeTiltMatricesFromTiltRadians();
-
+    
+    // Make the tilt matrix from the rotation angle
     _labelTiltMatrix = vector_math.Matrix2.rotation(_labelTiltRadians);
 
-    // todo-00-last moved here from paint()
-    _adjustableLabelsContainer.rotateLabelEnvelopesAgainstCanvasToFindOffsets();
+    // todo-00-last moved here from paint() - review It COULD BE THIS IS NOT NEEDED, AS THE  _tiltedLabelEnvelope.topLeft IN THE CALL INSIDE IS ALWAYS 0.0/0.0
+    // todo-00-last : trying if needed : _adjustableLabelsContainer.rotateLabelEnvelopesAgainstCanvasToFindOffsets();
     
   }
 

@@ -113,11 +113,8 @@ class LabelContainer extends container_base.Container {
     super.applyParentOffset(offset);
     // todo-00-last: For [LabelContainers] for which Canvas will be rotated counter-clockwise,
     //               offset needs to be rotated clockwise before adding it.
-    //////////// vvvvvvvvvvvv added
     rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt();    
-    ////////////^^^^^^^^^^^^^^^
     
-    // offsetOfPotentiallyRotatedLabel += offset;
   }
   
   /// Implementor of method in superclass [Container].
@@ -138,6 +135,7 @@ class LabelContainer extends container_base.Container {
   /// Rotate this label around origin along with Canvas, to achieve label tilt.
   ///
   /// Must be called only in paint()
+  /// todo-00-last : Why is this called twice? How does it work in detail? Is perhaps the topLeft NULL in one of the calls?
   void rotateLabelEnvelopeAgainstCanvasToFindOffsetToPaintIt() {
     // In paint(), this label's offset is now the "absolute" offset in the chart
     // The point in the tilted rectangle, where [TextPainter] should start
@@ -149,12 +147,7 @@ class LabelContainer extends container_base.Container {
     // 
     vector_math.Matrix2 canvasTiltMatrix = _labelTiltMatrix.clone();
     canvasTiltMatrix.invert();
-/* todo-00-last: removed
-    offsetOfPotentiallyRotatedLabel = geometry.transform(
-      matrix: canvasTiltMatrix,
-      offset: (offsetOfPotentiallyRotatedLabel + _tiltedLabelEnvelope.topLeft),
-    );
-*/
+
     offsetOfPotentiallyRotatedLabel = geometry.transform(
       matrix: canvasTiltMatrix,
       offset: (offset + _tiltedLabelEnvelope.topLeft),

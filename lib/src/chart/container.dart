@@ -646,6 +646,21 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     }
   }
 
+  /// Paints this [XContainer] on the passed [canvas].
+  /// 
+  /// Delegates painting to all contained [LabelContainer]s. 
+  /// Any contained [LabelContainer] must have been offset to the appropriate position.
+  /// 
+  /// A special situation is when the [LabelContainer]s are tilted, say counterclockwise. 
+  /// Because labels are always painted horizontally in the screen coordinate system, we much tilt them
+  /// by painting them on a rotated position.
+  /// This is achieved as follows: At the moment of calling this [paint],
+  /// the top-left corner of the container (where the label will start painting), must be moved
+  /// by rotation from the it's intended position clockwise. The [canvas]
+  /// will be saved, then rotated, then labels painted horizontally into the offset, 
+  /// then the canvas rotated back for further painting.
+  /// The canvas rotation back counterclockwise 'carries' with it the horizontally painted labels,
+  /// which end up in the intended position but rotated counterclockwise. 
   @override
   void paint(ui.Canvas canvas) {
     if (!chartTopContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
@@ -656,7 +671,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       canvas.save();
       canvas.rotate(labelLayoutStrategy.labelTiltRadians);
 
-      // todo-00-last : moved from here to reLayout rotation section : rotateLabelEnvelopesAgainstCanvasToFindOffsets();
       _paintLabelContainers(canvas);
 
       canvas.restore();
@@ -741,8 +755,9 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
     _labelLayoutStrategy.onContainer(this);
   }
 
-  /// todo-00-last added abstract that can be called from LayoutStrategy.reLayout
-  /// 
+  /// todo-01 document 
+  /// Abstract method should be implemented by rotating the 
+  /// [AdjustableLabel]s against their intended tilt. 
   void rotateLabelEnvelopesAgainstCanvasToFindOffsets();
 }
 
