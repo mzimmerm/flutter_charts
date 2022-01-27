@@ -880,15 +880,45 @@ Now this presents a problem as to API: Now we are not creating LineChart, or Ver
     this.layoutSize = myLayoutSize
 #+END_SRC
 
+*TAKEAWAY 1: Each Layout (or Container?) has _constraints as a member. Default is FlowConstraints. Generally, each specific Layout class should have a specific Constraints class*
+
+*TAKEAWAY 2: Layout (or Container?) defines layout(Constraints) which should NOT be overriden, and layoutWithConstraints() which is to be overriden. layoutWithConstraints() should generally distribute available Constraint among children, set child.constraints, and call child.layout(child.constraints) for all children*
+
+*TAKEAWAY 3: Stuff around getMinIntrinsicWidth/getMaxIntrinsicWidth on every child*
+
+*TAKEAWAY 4: - see RenderWrap (extends RenderBox extends RenderObject) - this seems to have lots of interesting stuff*
+See also: ~childSize = layoutChild(child, childConstraints);~
+
+*TAKEAWAY 5: computeDryLayout(Constraints) / getDryLayout(Constraints) - This method should return the [Size] that this [RenderBox] would like to be given the provided [BoxConstraints].* This layout is called "dry" layout as opposed to the regular "wet" layout run performed by [performLayout] because it computes the desired size for the given constraints without changing any internal state.
+
 #+begin_src dart
 
-  Size layout(Constraint constraint) {
+  Size layout(Constraints constraints) {
+
+    this._constraints = constraints;
+
+    children = useExistingChildrenOrCreateChildren(); // return children by default
+
+    List<Size> childrenSizes = [];
+
     for (child in children) {
-      Size childSize = layout(child);
-      Offset childPosition = findChildPosition(child, childSize, constraint);
+
+      Size childSize = child.layout(TODO1_WHICH_CONSTRAINTS);
+      childrenSizes.add(childSize);
+    }
+
+    for (child in children) {
+      Offset childPosition = TODO2_WHICH_CONSTRAINTS.findChildPositionIn(childIndex, children, childrenSizes);
       child.applyParentOffset(childPosition);
     }
+
+    Size size = TODO3_WHICH_CONSTRAINTS.calculateSize(children, childrenSizes); // default calls calculateSizeAsTightestEnvelopeOfAllChildrenForLeafUseMaxExtent()
+
+    return size;
   }
+
+  // In Flutter, performLayout() often calls layout(Constraints), and Constraints live on RenderObject (Container)
+  // In Flutter, Constraints is NOT a widget
 #+end_src
 ** IN-PROGRESS 5. Container and Morph: Deeper refactorings to make flutter_charts a bit like Morphic (marginally like it)
 

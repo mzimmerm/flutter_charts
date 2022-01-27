@@ -221,6 +221,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
     );
 
     yContainer.layout(yContainerLayoutExpansion);
+
     yContainerSize = yContainer.layoutSize;
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
     yContainer.applyParentOffset(yContainerOffset);
@@ -400,30 +401,10 @@ class YContainer extends ChartAreaContainer {
   void _createLabelsAndLayoutThisContainerWithLabels(double axisYMin, double axisYMax) {
     YLabelsCreatorAndPositioner yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
 
-    _createContainerForLabelsInCreatorAndLayoutContainer(yLabelsCreator);
-  }
-
-  /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
-  YLabelsCreatorAndPositioner _createLabelsAndPositionIn(double axisYMin, double axisYMax) {
-    // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
-    List<double> dataYs = geometry.iterableNumToDouble(chartTopContainer.pointsColumns.flattenPointsValues()).toList();
-
-    // Create formatted labels, with positions scaled to the [axisY] interval.
-    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
-      dataYs: dataYs,
-      axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: chartTopContainer, // only 'as ChartBehavior' mixin needed
-      valueToLabel: chartTopContainer.data.chartOptions.yContainerOptions.valueToLabel,
-      yInverseTransform: chartTopContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
-      yUserLabels: chartTopContainer.data.yUserLabels,
-    );
-    return yLabelsCreator;
-  }
-
-  // todo-01-morph Rework to call layout on each AxisLabelContainer.
-  /// Takes labels in the passed [yLabelsCreator], and creates a [AxisLabelContainer] from each label,
-  /// then collects the created [AxisLabelContainer]s into the [_yLabelContainers] (member list of Y label containers).
-  void _createContainerForLabelsInCreatorAndLayoutContainer(YLabelsCreatorAndPositioner yLabelsCreator) {
+    // _createContainerForLabelsInCreatorAndLayoutContainer(yLabelsCreator);
+    // todo-01-morph Rework to call layout on each AxisLabelContainer.
+    /// Takes labels in the passed [yLabelsCreator], and creates a [AxisLabelContainer] from each label,
+    /// then collects the created [AxisLabelContainer]s into the [_yLabelContainers] (member list of Y label containers).
     // Retain this scaler to be accessible to client code,
     // e.g. for coordinates of value points.
     chartTopContainer.yLabelsCreator = yLabelsCreator;
@@ -448,7 +429,7 @@ class YContainer extends ChartAreaContainer {
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedLabel,
         labelMaxWidth: double.infinity,
-        labelTiltMatrix: vector_math.Matrix2.identity(),  // No tilted labels in YContainer
+        labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
       yLabelContainer.layout(LayoutExpansion.unused());
@@ -464,6 +445,24 @@ class YContainer extends ChartAreaContainer {
 
       _yLabelContainers.add(yLabelContainer);
     }
+  }
+
+  /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
+  YLabelsCreatorAndPositioner _createLabelsAndPositionIn(double axisYMin, double axisYMax) {
+    // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartTopContainer.data (etc)
+    List<double> dataYs = geometry.iterableNumToDouble(chartTopContainer.pointsColumns.flattenPointsValues()).toList();
+
+    // Create formatted labels, with positions scaled to the [axisY] interval.
+    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
+      dataYs: dataYs,
+      axisY: Interval(axisYMin, axisYMax),
+      chartBehavior: chartTopContainer,
+      // only 'as ChartBehavior' mixin needed
+      valueToLabel: chartTopContainer.data.chartOptions.yContainerOptions.valueToLabel,
+      yInverseTransform: chartTopContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
+      yUserLabels: chartTopContainer.data.yUserLabels,
+    );
+    return yLabelsCreator;
   }
 
   @override
@@ -511,6 +510,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
   double _xGridStep = 0.0;
+
   double get xGridStep => _xGridStep;
 
   /// Size allocated for each shown label (>= [_xGridStep]
@@ -651,20 +651,20 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   /// Paints this [XContainer] on the passed [canvas].
-  /// 
-  /// Delegates painting to all contained [LabelContainer]s. 
+  ///
+  /// Delegates painting to all contained [LabelContainer]s.
   /// Any contained [LabelContainer] must have been offset to the appropriate position.
-  /// 
-  /// A special situation is when the [LabelContainer]s are tilted, say counterclockwise. 
+  ///
+  /// A special situation is when the [LabelContainer]s are tilted, say counterclockwise.
   /// Because labels are always painted horizontally in the screen coordinate system, we much tilt them
   /// by painting them on a rotated position.
   /// This is achieved as follows: At the moment of calling this [paint],
   /// the top-left corner of the container (where the label will start painting), must be moved
   /// by rotation from the it's intended position clockwise. The [canvas]
-  /// will be saved, then rotated, then labels painted horizontally into the offset, 
+  /// will be saved, then rotated, then labels painted horizontally into the offset,
   /// then the canvas rotated back for further painting.
   /// The canvas rotation back counterclockwise 'carries' with it the horizontally painted labels,
-  /// which end up in the intended position but rotated counterclockwise. 
+  /// which end up in the intended position but rotated counterclockwise.
   @override
   void paint(ui.Canvas canvas) {
     if (!chartTopContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
@@ -967,7 +967,6 @@ abstract class DataContainer extends ChartAreaContainer {
   }
 
   void _drawDataPresentersColumns(ui.Canvas canvas);
-  
 }
 
 /// Provides the data area container for the bar chart.
