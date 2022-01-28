@@ -6,14 +6,15 @@
 /// Also, material.dart exports many dart files, including widgets.dart,
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:tuple/tuple.dart' show Tuple2;
+import 'dart:io' as io show exit;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
-import 'package:tuple/tuple.dart' show Tuple2;
 
 import 'src/util/examples_descriptor.dart';
-import 'dart:io' as io show exit;
 
 // import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
@@ -362,6 +363,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+/// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
+/// which is the source for user-specific font on labels.
+class MyLabelCommonOptions extends LabelCommonOptions {
+  const MyLabelCommonOptions(
+  ) : super ();
+  
+  @override
+  get labelTextStyle =>
+      const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
+        fontFamily: GoogleFonts.comforter().fontFamily,
+      );
+}
+
 /// The enabler of widget changes in the main test app by the code in [_ExampleDefiner].
 /// 
 /// This enables support for each example ability to manipulate it's environment
@@ -412,9 +426,11 @@ class _ExampleDefiner {
 
     // Declare chartData; the data object will be different in every examples.
     ChartData chartData;
+    
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
     ChartOptions chartOptions = const ChartOptions();
+
     // Declare a null xContainerLabelLayoutStrategy.
     // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
     //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
@@ -428,19 +444,14 @@ class _ExampleDefiner {
     /// [createRequestedChart] method to influence the returned chart's surrounding widgets in the main app.
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
-        chartData = RandomChartData.generated(chartOptions: chartOptions);
-        break;
-
-      case ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy:
-        xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-          options: chartOptions,
-        );
+        // Example shows a demo-type data generated randomly in a range.
         chartData = RandomChartData.generated(chartOptions: chartOptions);
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
-        // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-        // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+        // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+        // The xContainerLabelLayoutStrategy, if set to null or not set at all, 
+        //   defaults to DefaultIterativeLabelLayoutStrategy
         // Clients can also create their own LayoutStrategy.
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
@@ -465,6 +476,7 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex31SomeNegativeValues:
+        // Example shows a mix of positive and negative data values.
         chartData = ChartData(
           dataRows: const [
             [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
@@ -484,8 +496,10 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0:
-        // Set option which will ask to start Y axis at data minimum.
-        // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+        // Example shows how to create ChartOptions instance 
+        //   which will request to start Y axis at data minimum.
+        // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+        //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             startYAxisAtDataMinRequested: true,
@@ -506,7 +520,10 @@ class _ExampleDefiner {
         break;
 
       case ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0:
-        // Ask to end Y axis at maximum data (as all data negative)
+        // Example shows how to create ChartOptions instance
+        //   which will request to end Y axis at maximum data (as all data negative).
+        // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+        //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
             startYAxisAtDataMinRequested: true,
@@ -521,6 +538,42 @@ class _ExampleDefiner {
           dataRowsLegends: const [
             'Off zero 1',
             'Off zero 2',
+          ],
+          chartOptions: chartOptions,
+        );
+        break;
+      case ExamplesEnum.ex34OptionsDefiningUserTextStyleOnLabels:
+        // Example shows how to use user-defined font in the chart labels.
+        // In fact, same approach can be used more generally, to set any property 
+        //   in user-defined TextStyle (font, font color, etc - any property available on TextStyle) on labels. 
+        // To achieve setting any member of TextStyle, 
+        //   client can declare their own extension of 'LabelCommonOptions', and override the `labelTextStyle` getter.
+        // A sample declaration of the class MyLabelCommonOptions, is given here as a comment.
+        // ```dart
+        //    class MyLabelCommonOptions extends LabelCommonOptions {
+        //      const MyLabelCommonOptions(
+        //        ) : super ();
+        //
+        //      @override
+        //      get labelTextStyle =>
+        //        const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
+        //          fontFamily: GoogleFonts.comforter().fontFamily,
+        //        );
+        //    }
+        // ```
+        // Given such extended class, declare ChartOptions as follows:
+        chartOptions = const ChartOptions(
+          labelCommonOptions: MyLabelCommonOptions(),
+          );
+        chartData = ChartData(
+          dataRows: const [
+            [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
+            [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
+          ],
+          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          dataRowsLegends: const [
+            'Font Test Series1',
+            'Font Test Series2',
           ],
           chartOptions: chartOptions,
         );

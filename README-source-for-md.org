@@ -1160,7 +1160,7 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 3. [X] Allow scaling y values using a function.
 
 * Internal notes for exporting this document
-1. Before a release, run the following script to refresh the 'expected' screenshots. If the test ~tool/demo/run_all_examples.sh~ succeeds, it is quarenteed the 'expected' screenshots are same as those produced by the code in ~example1/lib/main.dart~, which is used to generate code in this README file.
+1. Before a release, run the following babel script to refresh the 'expected' screenshots (by clicking C-c twice). If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example1/lib/main.dart~, which is used to generate code in this README file.
 
 Convert all images to width=150  
 #+begin_src bash :results output silent :eval no-export

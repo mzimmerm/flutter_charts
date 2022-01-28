@@ -278,27 +278,37 @@ class DataContainerOptions {
 
 @immutable
 class LabelCommonOptions {
-  final double labelFontSize;
-  final ui.Color labelTextColor;
+  // Options which are included in TextStyle (labelFontSize and labelTextColor) 
+  //   now set in LabelCommonOptions.get labelTextStyle
+  //   final ui.Color labelFontSize;
+  //   final ui.Color labelTextColor;
   final ui.TextDirection labelTextDirection;
   final ui.TextAlign labelTextAlign;
   final double labelTextScaleFactor;
 
   const LabelCommonOptions({
-    this.labelFontSize = 14.0,
-    this.labelTextColor = const ui.Color(0xFF757575), // was causing compile err: material.Colors.grey[600],
+    // this.labelFontSize = 14.0,
+    // this.labelTextColor = const ui.Color(0xFF757575),
     this.labelTextDirection = ui.TextDirection.ltr,
     this.labelTextAlign = ui.TextAlign.center,
     this.labelTextScaleFactor = 1.0,
   });
 
-  /// Text style for both X and Y labels.
+  /// Text style for all labels (X labels, Y labels, legend labels).
   ///
-  /// The (future) iterative container can change this default for labels to fit.
-  widgets.TextStyle get labelTextStyle => widgets.TextStyle(
-        color: labelTextColor,
-        fontSize: labelFontSize,
-      );
+  /// To set any properties that can be set in Flutter [TextStyle]
+  ///   (for example label text color, label font size, label font family),
+  ///   the client has to create their own extension of `LabelCommonOptions`, overriding the getter `labelTextStyle`,
+  ///   and setting such properties.
+  /// See example `ex34OptionsDefiningUserTextStyleOnLabels`.
+  /// 
+  /// Also, the iterative container can change label font size for labels to fit.
+  /// See [DefaultIterativeLabelLayoutStrategy] regarding label font size changes.
+  /// 
+  widgets.TextStyle get labelTextStyle => const widgets.TextStyle(
+    color: ui.Color(0xFF757575), // was causing compile err: material.Colors.grey[600],
+    fontSize: 14.0,
+  );
 }
 
 enum DataRowsPaintingOrder {

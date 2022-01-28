@@ -1,4 +1,20 @@
-# version 0.4.0 (2022-01-10)
+# Version 0.5.0 (2022-01-28)
+
+## Functional improvements
+
+1. To address issue #36, this version allows flutter_charts labels to use a custom font family.
+   See example `ex34OptionsDefiningUserTextStyleOnLabels`.
+
+## API changes
+
+The `ChartOptions` that were previously set in LabelCommonOptions AND which are properties of Flutter `TextStyle`, 
+(previously `LabelCommonOptions.labelFontSize` and `LabelCommonOptions.labelTextColor`) are removed in this version.  
+In this version, such properties can be set as named parameters defined in the getter `LabelCommonOptions.labelTextStyle`.
+To set those property values, the client has to create their own extension of `LabelCommonOptions`, overriding the getter `labelTextStyle`,
+and setting such properties.
+See example `ex34OptionsDefiningUserTextStyleOnLabels`.
+
+# Version 0.4.0 (2022-01-10)
 
 ## Functional improvements
 
@@ -21,13 +37,13 @@ There are API changes in this release. Below may or may not be a full list
 
 2. As a consequence of the above change, `ChartOptions` parameter has been removed from the `ChartTopContainer` constructors (such as `VerticalBarChartTopContainer`), and moved to `ChartData` constructors.
 
-# version 0.3.1 (2021-12-19)
+# Version 0.3.1 (2021-12-19)
 
 1. Fixed error when all passed data are 0.0
 
 
 
-# version 0.3.0 (2021-12-17)
+# Version 0.3.0 (2021-12-17)
 
 ## API changes
 1. `VerticalBarChart`, `LineChart` API changes: Removed the container parameter from the constructor of VerticalBarChart and LineChart.
@@ -89,19 +105,19 @@ tool/test/run_all_tests.sh
 
 This is part of a process to make everything a container. Getting there.
 
-# version 0.2.0 (2021-03-07)
+# Version 0.2.0 (2021-03-07)
 
 Support for null safety.
 
-# version 0.1.10 (2018-09-30)
+# Version 0.1.10 (2018-09-30)
 
 Corrected formatting, and a few formal changes from pub auto-checking.
 
-# version 0.1.9 (2018-09-28)
+# Version 0.1.9 (2018-09-28)
 
 Compatibility with Dart 2.0
 
-# version 0.1.8 (2018-06-20)
+# Version 0.1.8 (2018-06-20)
 
 ## Enhancements
 

@@ -622,8 +622,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   LabelStyle _styleForLabels(ChartOptions options) {
-    widgets.TextStyle labelTextStyle = widgets.TextStyle(
-      color: options.labelCommonOptions.labelTextStyle.color,
+    // Use widgets.TextStyle obtained from ChartOptions and "extend it" as a copy, so a 
+    //   (potentially modified) TextStyle from Options is used in all places in flutter_charts.
+
+    widgets.TextStyle labelTextStyle = options.labelCommonOptions.labelTextStyle.copyWith(
       fontSize: labelLayoutStrategy.labelFontSize,
     );
 

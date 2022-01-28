@@ -35,11 +35,11 @@ void main(List<String> args) {
 /// Describes the full set of charts shown in examples or integration tests.
 enum ExamplesEnum {
   ex10RandomData,
-  ex11RandomDataWithLabelLayoutStrategy,
   ex30AnimalsBySeasonWithLabelLayoutStrategy,
   ex31SomeNegativeValues,
   ex32AllPositiveYsYAxisStartsAbove0,
   ex33AllNegativeYsYAxisEndsBelow0,
+  ex34OptionsDefiningUserTextStyleOnLabels,
   ex35AnimalsBySeasonNoLabelsShown,
   ex40LanguagesWithYOrdinalUserLabelsAndUserColors,
   ex50StocksWithNegativesWithUserColors,
@@ -76,9 +76,6 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
     //
-    const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex11RandomDataWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
-    //
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
     //
@@ -89,6 +86,8 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0, ExamplesChartTypeEnum.lineChart),
+    //
+    const Tuple2(ExamplesEnum.ex34OptionsDefiningUserTextStyleOnLabels, ExamplesChartTypeEnum.lineChart),
     //
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),

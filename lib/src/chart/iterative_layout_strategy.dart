@@ -35,7 +35,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _showEveryNthLabel = options.iterativeLayoutOptions.showEveryNthLabel,
         _maxLabelReLayouts = options.iterativeLayoutOptions.maxLabelReLayouts,
         _multiplyLabelSkip = options.iterativeLayoutOptions.multiplyLabelSkip,
-        _labelFontSize = options.labelCommonOptions.labelFontSize,
+        // labelCommonOptions.labelFontSize and labelColor now set in LabelCommonOptions.get labelTextStyle
+        _labelFontSize = options.labelCommonOptions.labelTextStyle.fontSize!,
         _labelTiltRadians = options.iterativeLayoutOptions.labelTiltRadians;
   
   /// Members related to re-layout (iterative layout).

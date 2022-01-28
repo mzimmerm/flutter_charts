@@ -11,9 +11,23 @@ IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT I
 
 * NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~dart pub outdated --no-dev-dependencies --up-to-date --no-dependency-overrides~
-Run this to resolve a warning on pub.dev about "transitive dependencies"
-** ~dart pub upgrade --major-versions decimal~
-Upgrade a package to lates version. Not sure how to do this for all?
+Run this to resolve a warning on pub.dev about "transitive dependencies".
+
+When run, some packages may show starting with * as redish, for example:
+
+PACKAGE   *1.8.0   1.8.1       1.8.1       1.8.1    
+
+If they do and are DIRECT DEPENDENCIES, run on those packages:
+
+~dart pub upgrade --major-versions PACKAGE~
+
+If the * are not direct dependencies, no action needed.
+
+(For example, I had to do:
+
+~dart pub upgrade --major-versions decimal~
+To upgrade decimal to latest version, so that pub.dev does not complain about "transitive dependencies". Not sure how to do this for all?
+
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
 ** Test ~tool/test/run_all_tests.sh~
@@ -24,23 +38,25 @@ Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and al
 *** Tab Installing   - shows automatically
 ** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
 ** *CHANGELOG.md*: - Add comment section for new version and description of changes.
-** *README.org*:   - Ensure all linked images are in flutter_charts/doc/readme_images. 2022-01-10: All images are placed there by a script, so this section not needed
-- For captured images, add an image to README.org using the regular image capture.
+** *README-source-for-md.org*:   - NOT NEEDED: Ensure all linked images are in flutter_charts/doc/readme_images.
+
+2022-01-10: All new images are placed to readme_images by the babel ssctipt in [[*Examples with code]], so this is not needed
+- For captured images, add an image to README-source-for-md.org using the regular image capture.
 - Show the image links directly
-- Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README.org_20180618_000741_0oAyud.png= to =README.org_iterative-layout-step-4.png=
+- Rename the images to a readable names, both on disk (wdir-) and in org file, for example: =README-source-for-md.org_20180618_000741_0oAyud.png= to =README-source-for-md.org_iterative-layout-step-4.png=
 - Move the image from ~flutter_charts~ to ~flutter_charts/doc/readme_images~
 
 
 Reason for this: *From web: Images are not allowed on pub  https://pub.dartlang.org. When new images are added to README, we need to put the images somewhere outside pub, README.md must only contain links to the images. We decided to store images in a special directory ~doc/readme_images~, and point to them via github*. 
 
-** *README.org*: Convert to *README.md*, and do some manual formatting after conversion 
+** *README-source-for-md.org*: Convert to *README.md*, and do some manual formatting after conversion 
 
-To convert *README.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
+To convert *README-source-for-md.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
 
-1. Ensure that the *README.org* file which has the "Table of contents" heading marked as :TOC:noexport: (*Table of contents :TOC:noexport:*) - this causes the TOC update on every save.
+1. Ensure that the *README-source-for-md.org* file has the heading "Table of contents" heading marked as :TOC:noexport: (*Table of contents :TOC:noexport:*) - this causes the TOC update on every save of the org file.
    - The :noexport: is currently needed , otherwise error Unable to resolve link: "link-converted-from-first-heading"
-2. *README.org*: When ready to export to MD, follow the instructions in the header [[file:../../../README.org::*Internal notes for exporting this document][Internal notes for exporting this document]] regarding running 2 scripts, one to copy latest images to ~doc/readme_images~, and another to generate examples code, and links to images.
-3. *README.org*: Export org to md: ~C-c C-e m m~ in the org file to create the generated md file
+2. *README-source-for-md.org*: When ready to export to MD, follow the instructions in the README org file, header [[file:../../../README-source-for-md.org::*Internal notes for exporting this document][Internal notes for exporting this document]] regarding running 2 scripts, one to copy latest images to ~doc/readme_images~, and another to generate examples code, and links to images.
+3. *README-source-for-md.org*: Export org to md: ~C-c C-e m m~ in the org file to create the generated md file
 4. *README.md*:
    + NOT NEEDED - Delete the TOC generated by the org -> md export, the whole section , including the header named "# Table of Contents" (still needed with :TOC:noexport:)
    + NOT NEEDED - Delete the <a id="YYYY"></a> generated by org conversion: ~delete-matching-lines ^<a id=~
@@ -51,8 +67,8 @@ To convert *README.org* to *README.md*, we need to do a few extra steps for READ
        - rNOT NEEDED - egex replace ~ <a id=.*a>~ INCLUDING THE SPACE AT BEGINNING with NOTHING ONLY in the TOC
    + *Fix image links in the README.md* - links must be converted from the first version to the second: 
     #+BEGIN_SRC markdown
-    -![img](doc/readme_images/README.org_20171102_180657_27063rZs.png)
-    +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_20171102_180657_27063rZs.png)
+    -![img](doc/readme_images/README-source-for-md.org_20171102_180657_27063rZs.png)
+    +![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README-source-for-md.org_20171102_180657_27063rZs.png)
     #+END_SRC
    + The above is achieved with:
      - replace-regex ~[\/]*doc/readme_images~ to  ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images~
@@ -88,15 +104,15 @@ This just finishes up the publish.
 *** ~cd flutter_charts_sample_app; flutter pub upgrade; flutter pub get; flutter run~
 
 * DONE Done
-** DONE Add ability to create a Table of Contents to README.org
+** DONE Add ability to create a Table of Contents to README-source-for-md.org
 - [X] Install toc-org package
 - [X] Add to init.el
-#+BEGIN_SRC elisp
-(if (require 'toc-org nil t)
-(add-hook 'org-mode-hook 'toc-org-enable)
-(warn "toc-org not found"))
-#+END_SRC
-- [X] Every time README.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
+  #+BEGIN_SRC elisp
+  (if (require 'toc-org nil t)
+  (add-hook 'org-mode-hook 'toc-org-enable)
+  (warn "toc-org not found"))
+  #+END_SRC
+- [X] Every time README-source-for-md.org is saved, first heading with a :TOC: tag will be updated with the current table of contents.
 - [X] So nothing special need be done after the above is configured.
 
 * Naming
