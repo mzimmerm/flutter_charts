@@ -309,6 +309,14 @@ class LabelCommonOptions {
     color: ui.Color(0xFF757575), // was causing compile err: material.Colors.grey[600],
     fontSize: 14.0,
   );
+
+/*
+  widgets.TextStyle get labelTextStyle => GoogleFonts.getFont(
+        'Comforter',
+        fontSize: 14.0,
+        color: const ui.Color(0xFF757575),
+      );
+*/
 }
 
 enum DataRowsPaintingOrder {

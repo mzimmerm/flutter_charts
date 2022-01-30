@@ -17,7 +17,7 @@ publish_to: https://pub.dartlang.org # OR 'none' if no publishing.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.4.0
+version: 0.5.0
 
 # Without the "environment" section, we get message on
 #   `flutter packages pub publish`:
@@ -86,6 +86,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the Icons class.
   uses-material-design: true
+
+  # If using a client-specific font, such as GoogleFonts, installing fonts is needed, in conjunction with
+  # setting `GoogleFonts.config.allowRuntimeFetching = false;` in main.dart.
+  # But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
+  fonts:
+    - family: 'Comforter'
+      fonts:
+        - asset: google_fonts/Comforter-Regular.ttf
 
   # To add assets to your application, add an assets section here, in
   # this "flutter" section, as in:

@@ -16,6 +16,9 @@ import 'package:flutter_charts/src/util/string_extension.dart' show StringExtens
 
 import 'src/util/examples_descriptor.dart';
 
+import 'dart:ui' as ui show Color;
+
+
 // import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
 /// Example of simple line chart usage in an application.
@@ -73,6 +76,11 @@ void main() {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     io.exit(0);
   }
+  
+  // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with 
+  // installing the fonts in pubspec.yaml. 
+  // But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const MyApp());
 }
@@ -369,11 +377,22 @@ class MyLabelCommonOptions extends LabelCommonOptions {
   const MyLabelCommonOptions(
   ) : super ();
   
+  /// Override [labelTextStyle] with a new font, color, etc.
   @override
+  get labelTextStyle => GoogleFonts.comforter(
+        textStyle: const TextStyle(
+          color: ui.Color(0xFF757575),
+          fontSize: 14.0,
+          fontWeight: FontWeight.w400, // Regular
+        ),
+      );
+  
+  /* This alternative works in an app as well, but not in integration test. All style set in options defaults.
   get labelTextStyle =>
       const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
         fontFamily: GoogleFonts.comforter().fontFamily,
       );
+  */
 }
 
 /// The enabler of widget changes in the main test app by the code in [_ExampleDefiner].
@@ -546,25 +565,39 @@ class _ExampleDefiner {
         // Example shows how to use user-defined font in the chart labels.
         // In fact, same approach can be used more generally, to set any property 
         //   in user-defined TextStyle (font, font color, etc - any property available on TextStyle) on labels. 
-        // To achieve setting any member of TextStyle, 
+        // To achieve setting custom fonts and/or any member of TextStyle, 
         //   client can declare their own extension of 'LabelCommonOptions', and override the `labelTextStyle` getter.
         // A sample declaration of the class MyLabelCommonOptions, is given here as a comment.
         // ```dart
-        //    class MyLabelCommonOptions extends LabelCommonOptions {
-        //      const MyLabelCommonOptions(
+        //      /// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
+        //      /// which is the source for user-specific font on labels.
+        //      class MyLabelCommonOptions extends LabelCommonOptions {
+        //        const MyLabelCommonOptions(
         //        ) : super ();
-        //
-        //      @override
-        //      get labelTextStyle =>
-        //        const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
-        //          fontFamily: GoogleFonts.comforter().fontFamily,
+        //  
+        //        /// Override [labelTextStyle] with a new font, color, etc.
+        //        @override
+        //        get labelTextStyle => GoogleFonts.comforter(
+        //          textStyle: const TextStyle(
+        //          color: ui.Color(0xFF757575),
+        //          fontSize: 14.0,
+        //          fontWeight: FontWeight.w400, // Regular
+        //          ),
         //        );
-        //    }
+        //  
+        //        /* This alternative works in an app as well, but not in the integration test. All style set in options defaults.
+        //        get labelTextStyle =>
+        //          const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
+        //            fontFamily: GoogleFonts.comforter().fontFamily,
+        //          );
+        //        */
+        //      }
         // ```
         // Given such extended class, declare ChartOptions as follows:
         chartOptions = const ChartOptions(
           labelCommonOptions: MyLabelCommonOptions(),
           );
+        // Then proceed as usual
         chartData = ChartData(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],

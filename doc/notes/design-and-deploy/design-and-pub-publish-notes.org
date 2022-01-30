@@ -30,14 +30,20 @@ To upgrade decimal to latest version, so that pub.dev does not complain about "t
 
 ** ~flutter pub upgrade; flutter pub get~
 Upgrades packages listed in ~pubspec.yaml~ to the highest version listed (and also available on pub) 
-** Test ~tool/test/run_all_tests.sh~
-** Ensure pub-required files exist: pub the following file in project to show the correct tabs on pub
-*** Tab README.md    - Needs the file
-*** Tab CHANGELOG.md - Needs the file
-*** Tab Example      - this tab appears if the project has and ~example/lib/main.dart~ file ~file://./../../../../flutter_charts/example/lib/main.dart~ exists
-*** Tab Installing   - shows automatically
+** Test ~tool/test/run_all_tests.sh~ - details below
+
+Run ~d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds~
+
+** Ensure pub-required files exist: Check the following files exist
+
+*** README.md    - pub needs the file to show Readme tab
+*** CHANGELOG.md - pub needs the file to show Changelog tab
+*** example dir  - pub needs this dir to show Example tab to show.
+
+this tab appears if the project has the ~example/lib/main.dart~ file.
+*** pubspec.yaml - pub needs this to show Installing tab
 ** *pubspec.yaml*: - Increase version number "version: 0.X.Y"
-** *CHANGELOG.md*: - Add comment section for new version and description of changes.
+** *CHANGELOG.md*: - Add section for new version and description of changes.
 ** *README-source-for-md.org*:   - NOT NEEDED: Ensure all linked images are in flutter_charts/doc/readme_images.
 
 2022-01-10: All new images are placed to readme_images by the babel ssctipt in [[*Examples with code]], so this is not needed
@@ -53,7 +59,7 @@ Reason for this: *From web: Images are not allowed on pub  https://pub.dartlang.
 
 To convert *README-source-for-md.org* to *README.md*, we need to do a few extra steps for README.md image links to be readable on https://pub.dartlang.org.
 
-1. Ensure that the *README-source-for-md.org* file has the heading "Table of contents" heading marked as :TOC:noexport: (*Table of contents :TOC:noexport:*) - this causes the TOC update on every save of the org file.
+1. Ensure that the *README-source-for-md.org* file has the heading ~Table of contents :TOC:noexport:~ - this causes the TOC update on every save of the org file.
    - The :noexport: is currently needed , otherwise error Unable to resolve link: "link-converted-from-first-heading"
 2. *README-source-for-md.org*: When ready to export to MD, follow the instructions in the README org file, header [[file:../../../README-source-for-md.org::*Internal notes for exporting this document][Internal notes for exporting this document]] regarding running 2 scripts, one to copy latest images to ~doc/readme_images~, and another to generate examples code, and links to images.
 3. *README-source-for-md.org*: Export org to md: ~C-c C-e m m~ in the org file to create the generated md file
@@ -72,17 +78,19 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
     #+END_SRC
    + The above is achieved with:
      - replace-regex ~[\/]*doc/readme_images~ to  ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images~
-     - in the README.MD file, the result should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png~
+     - in the README.MD file, the result inside <img src= sections should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png~
 
-** ~dart format --line-length=120 src~
+** ~dart format --line-length=120 lib~
 ** ~dart format --line-length=120 example1~
 ** ~dart format --line-length=120 tool~
+** ~dart format --line-length=120 integration_test~
+** ~NO dart format test~
 ** ~flutter analyze~ # Analyze and fix errors Must be clean to run dartdoc
 ** ~dartdoc~ # Generate documentation in doc/api directory as static HTML files.
 First install dartdoc latest compatible with SDK:
 
 ~flutter pub global activate dartdoc~
-** ~flutter clean; flutter pub upgrade; flutter pub get; flutter clean; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration tests. Also see https://flutter.io/testing/
+** ~flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh~ which runs ~flutter test~ and integration and drive tests. Also see https://flutter.io/testing/
 ** ~git add .; git commit; git push~
 ** ~git checkout master; git fetch; git pull; git merge flutter_charts_v2~
 ** ~git push origin master~

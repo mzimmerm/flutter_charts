@@ -3,7 +3,9 @@
 ## Functional improvements
 
 1. To address issue #36, this version allows flutter_charts labels to use a custom font family.
-   See example `ex34OptionsDefiningUserTextStyleOnLabels`.
+   See the section for `ex34OptionsDefiningUserTextStyleOnLabels` in https://pub.dev/packages/flutter_charts
+.   
+   Also see https://github.com/mzimmerm/flutter_charts/blob/master/doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png
 
 ## API changes
 
@@ -12,7 +14,22 @@ The `ChartOptions` that were previously set in LabelCommonOptions AND which are 
 In this version, such properties can be set as named parameters defined in the getter `LabelCommonOptions.labelTextStyle`.
 To set those property values, the client has to create their own extension of `LabelCommonOptions`, overriding the getter `labelTextStyle`,
 and setting such properties.
+ See the section for `ex34OptionsDefiningUserTextStyleOnLabels` in https://pub.dev/packages/flutter_charts
+.   
+## Other changes
+
+Google Fonts family `Comforter` was installed in this library to present examples of flutter_charts labels with a custom font family, 
+and a line such as `GoogleFonts.config.allowRuntimeFetching = false;` was added to `main.dart`.
+
+This is needed because of an apparent Flutter integration tests bug: for a custom font family such as Google Fonts to be used in integration driver tests,
+the fonts need to be installed. This is ONLY for the benefit of integration tests. To run the app, none of the 2 changes are needed!
+
+See notes in `pubspec.yaml` and in code around `Comforter`. 
+
+I may consider removing those fonts, but keep them in this version for demonstration. 
+
 See example `ex34OptionsDefiningUserTextStyleOnLabels`.
+
 
 # Version 0.4.0 (2022-01-10)
 

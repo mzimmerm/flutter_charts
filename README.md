@@ -1,47 +1,56 @@
 
 # Table of Contents
 
-1.  [Examples with code](#org36f6739)
-    1.  [ex10RandomData\_lineChart ](#orgacc561e)
-    2.  [ex10RandomData\_verticalBarChart ](#org85819e7)
-    3.  [ex11RandomDataWithLabelLayoutStrategy\_lineChart ](#orgce05372)
-    4.  [ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart ](#org033b22b)
-    5.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart ](#org587e417)
-    6.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart ](#org91e1a6b)
-    7.  [ex31SomeNegativeValues\_lineChart ](#org49c30c2)
-    8.  [ex31SomeNegativeValues\_verticalBarChart ](#org4b289cc)
-    9.  [ex32AllPositiveYsYAxisStartsAbove0\_lineChart ](#orgd42a2f3)
-    10. [ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart ](#org5e83572)
-    11. [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#orgf856ba1)
-    12. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#orge9bbc22)
-    13. [ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart ](#org8bf69e6)
-    14. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc5cee04)
-    15. [ex50StocksWithNegativesWithUserColors\_verticalBarChart ](#org6932eec)
-    16. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org6d0092e)
-    17. [ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart ](#org47ef7bc)
-    18. [ex900ErrorFixUserDataAllZero\_lineChart ](#org94fde50)
-2.  [Latest release changes](#orgfe79b03)
-3.  [Installation](#org07f67e2)
-    1.  [Installing flutter\_charts as a library package into your app](#org6b0373d)
-    2.  [Installing the flutter\_charts project as a local clone from Github](#org0026998)
-4.  [Running the examples included in flutter\_charts](#orga4839cc)
-5.  [Illustration of the "iterative auto layout" feature](#org4ab3e54)
-    1.  [Autolayout step 1](#org27142b6)
-    2.  [Autolayout step 2](#org7fbe5e9)
-    3.  [Autolayout step 3](#orgfb5a0d4)
-    4.  [Autolayout step 4](#org006f712)
-    5.  [Autolayout step 5](#org844c5a3)
-6.  [Known packages, libraries and apps that use this flutter\_charts package](#org08bd488)
-7.  [Todos](#orgaef4199)
-8.  [Internal notes for exporting this document](#orge717b5f)
+1.  [Examples with code](#org70673f2)
+    1.  [ex10RandomData\_lineChart ](#org3eb3441)
+    2.  [ex10RandomData\_verticalBarChart ](#orgbe8fa25)
+    3.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart ](#orgda02a3d)
+    4.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart ](#org78a229d)
+    5.  [ex31SomeNegativeValues\_lineChart ](#orgbf36cdb)
+    6.  [ex31SomeNegativeValues\_verticalBarChart ](#org3432df0)
+    7.  [ex32AllPositiveYsYAxisStartsAbove0\_lineChart ](#org763be56)
+    8.  [ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart ](#orgfe5d568)
+    9.  [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#org86b4136)
+    10. [ex34OptionsDefiningUserTextStyleOnLabels\_lineChart ](#org260cba6)
+    11. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#org3d3c134)
+    12. [ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart ](#org7a1ade3)
+    13. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc6be307)
+    14. [ex50StocksWithNegativesWithUserColors\_verticalBarChart ](#org91f6516)
+    15. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org77e5f4f)
+    16. [ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart ](#org042b202)
+    17. [ex60LabelsIteration1\_verticalBarChart ](#orgada2279)
+    18. [ex60LabelsIteration2\_verticalBarChart ](#orgd3771d7)
+    19. [ex60LabelsIteration3\_verticalBarChart ](#org547dcea)
+    20. [ex60LabelsIteration4\_verticalBarChart ](#org95e404c)
+    21. [ex900ErrorFixUserDataAllZero\_lineChart ](#orgc87cb9f)
+2.  [Latest release changes](#orgeaf773f)
+3.  [Installation](#org03b46dd)
+    1.  [Installing flutter\_charts as a library package into your app](#org30b6b7c)
+    2.  [Installing the flutter\_charts project as a local clone from Github](#org03fe7ad)
+4.  [Running the examples included in flutter\_charts](#org0430cd4)
+5.  [Illustration of the "iterative auto layout" feature](#org84b6d75)
+    1.  [Autolayout step 1](#org13982d7)
+    2.  [Autolayout step 2](#orgc1d8a8f)
+    3.  [Autolayout step 3](#org030cb34)
+    4.  [Autolayout step 4](#orga7d9ad4)
+    5.  [Autolayout step 5](#org435b9c8)
+6.  [Known packages, libraries and apps that use this flutter\_charts package](#org269d91a)
+7.  [Todos](#org44f7bdf)
+8.  [Internal notes for exporting this document](#org91e5332)
 
 
 
-<a id="org36f6739"></a>
+<a id="org70673f2"></a>
 
 # Examples with code
 
-This section contains sample results from flutter\_charts. 
+This section contains sample charts from flutter\_charts, with code that generated the charts. The code for each chart is in a method
+
+    Widget chartToRun() {
+     // .. code which generates the sample chart
+    }
+
+To quickly test the code, you can paste the method `chartToRun()` into the sample main app provided in <https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main_run_doc_example.dart>.
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -54,49 +63,50 @@ This section contains sample results from flutter\_charts.
 <col  class="org-left" />
 
 <col  class="org-left" />
-
-<col  class="org-left" />
 </colgroup>
 <tbody>
 <tr>
-<td class="org-left"><a href="#org5a13571"><img src="/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orga25debd"><img src="/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org93068f3"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org114ea5b"><img src="/doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left">&#xa0;</td>
+<td class="org-left"><a href="#org2ed092d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org20acd52"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orga260a0c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org79c67fb"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#org283db53"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org235c8c7"><img src="/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org6d6ee4e"><img src="/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgd45a80b"><img src="/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left">&#xa0;</td>
+<td class="org-left"><a href="#org3060b69"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgb5f44f1"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgbd56dc9"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orge19a63d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#orgc739944"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org2320d26"><img src="/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgdfec3f2"><img src="/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org474654d"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left">&#xa0;</td>
+<td class="org-left"><a href="#orgd322ff6"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgcdf5631"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgd400995"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org9227186"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#org389ec87"><img src="/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orga62d28f"><img src="/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org72685ff"><img src="/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org800fa92"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left">&#xa0;</td>
+<td class="org-left"><a href="#orgd962a15"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org6246d9c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org673ceb3"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org807928e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#orgdf818d1"><img src="/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgc4b9ab7"><img src="/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgbdb2c57"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgfe51f7b"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orga666d35"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org8f86d1f"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_verticalBarChart_w150.png" alt="nil"/></a></td>
+</tr>
+
+
+<tr>
+<td class="org-left"><a href="#org429502d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
@@ -105,9 +115,9 @@ This section contains sample results from flutter\_charts.
 </table>
 
 
-<a id="orgacc561e"></a>
+<a id="org3eb3441"></a>
 
-## ex10RandomData\_lineChart <a id="org5a13571"></a>
+## ex10RandomData\_lineChart <a id="org2ed092d"></a>
 
 Code
 
@@ -115,6 +125,7 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
+      // Example shows a demo-type data generated randomly in a range.
       chartData = RandomChartData.generated(chartOptions: chartOptions);
       var lineChartContainer = LineChartTopContainer(
         chartData: chartData,
@@ -131,12 +142,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
 
-<a id="org85819e7"></a>
+<a id="orgbe8fa25"></a>
 
-## ex10RandomData\_verticalBarChart <a id="orga25debd"></a>
+## ex10RandomData\_verticalBarChart <a id="org20acd52"></a>
 
 Code
 
@@ -144,6 +155,7 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
+      // Example shows a demo-type data generated randomly in a range.
       chartData = RandomChartData.generated(chartOptions: chartOptions);
       var verticalBarChartContainer = VerticalBarChartTopContainer(
         chartData: chartData,
@@ -160,44 +172,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orgce05372"></a>
+<a id="orgda02a3d"></a>
 
-## ex11RandomDataWithLabelLayoutStrategy\_lineChart <a id="org93068f3"></a>
-
-Code
-
-    Widget chartToRun() {
-      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-      ChartData chartData;
-      ChartOptions chartOptions = const ChartOptions();
-      xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-      options: chartOptions,
-      );
-      chartData = RandomChartData.generated(chartOptions: chartOptions);
-      var lineChartContainer = LineChartTopContainer(
-        chartData: chartData,
-        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-      );
-    
-      var lineChart = LineChart(
-        painter: LineChartPainter(
-          lineChartContainer: lineChartContainer,
-        ),
-      );
-      return lineChart;
-    }
-
-Result
-
-![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
-
-
-<a id="org033b22b"></a>
-
-## ex11RandomDataWithLabelLayoutStrategy\_verticalBarChart <a id="org114ea5b"></a>
+## ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart <a id="orga260a0c"></a>
 
 Code
 
@@ -205,40 +185,9 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
-      xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-      options: chartOptions,
-      );
-      chartData = RandomChartData.generated(chartOptions: chartOptions);
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
-        chartData: chartData,
-        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-      );
-    
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
-        ),
-      );
-      return verticalBarChart;
-    }
-
-Result
-
-![img](doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
-
-
-<a id="org587e417"></a>
-
-## ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart <a id="org283db53"></a>
-
-Code
-
-    Widget chartToRun() {
-      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-      ChartData chartData;
-      ChartOptions chartOptions = const ChartOptions();
-      // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-      // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+      // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+      // The xContainerLabelLayoutStrategy, if set to null or not set at all,
+      //   defaults to DefaultIterativeLabelLayoutStrategy
       // Clients can also create their own LayoutStrategy.
       xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
       options: chartOptions,
@@ -275,12 +224,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png "Line Chart caption")
 
 
-<a id="org91e1a6b"></a>
+<a id="org78a229d"></a>
 
-## ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart <a id="org235c8c7"></a>
+## ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart <a id="org79c67fb"></a>
 
 Code
 
@@ -288,8 +237,9 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
-      // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-      // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+      // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+      // The xContainerLabelLayoutStrategy, if set to null or not set at all,
+      //   defaults to DefaultIterativeLabelLayoutStrategy
       // Clients can also create their own LayoutStrategy.
       xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
       options: chartOptions,
@@ -326,12 +276,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org49c30c2"></a>
+<a id="orgbf36cdb"></a>
 
-## ex31SomeNegativeValues\_lineChart <a id="org6d6ee4e"></a>
+## ex31SomeNegativeValues\_lineChart <a id="org3060b69"></a>
 
 Code
 
@@ -339,6 +289,7 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
+      // Example shows a mix of positive and negative data values.
       chartData = ChartData(
       dataRows: const [
       [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
@@ -370,12 +321,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex31SomeNegativeValues_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_lineChart.png "Line Chart caption")
 
 
-<a id="org4b289cc"></a>
+<a id="org3432df0"></a>
 
-## ex31SomeNegativeValues\_verticalBarChart <a id="orgd45a80b"></a>
+## ex31SomeNegativeValues\_verticalBarChart <a id="orgb5f44f1"></a>
 
 Code
 
@@ -383,6 +334,7 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
+      // Example shows a mix of positive and negative data values.
       chartData = ChartData(
       dataRows: const [
       [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
@@ -414,12 +366,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orgd42a2f3"></a>
+<a id="org763be56"></a>
 
-## ex32AllPositiveYsYAxisStartsAbove0\_lineChart <a id="orgc739944"></a>
+## ex32AllPositiveYsYAxisStartsAbove0\_lineChart <a id="orgbd56dc9"></a>
 
 Code
 
@@ -427,8 +379,10 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
-      // Set option which will ask to start Y axis at data minimum.
-      // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+      // Example shows how to create ChartOptions instance
+      //   which will request to start Y axis at data minimum.
+      // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+      //   as it does not make sense there.
       chartOptions = const ChartOptions(
       dataContainerOptions: DataContainerOptions(
       startYAxisAtDataMinRequested: true,
@@ -461,12 +415,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png "Line Chart caption")
 
 
-<a id="org5e83572"></a>
+<a id="orgfe5d568"></a>
 
-## ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart <a id="org2320d26"></a>
+## ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart <a id="orge19a63d"></a>
 
 Code
 
@@ -474,8 +428,10 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
-      // Set option which will ask to start Y axis at data minimum.
-      // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+      // Example shows how to create ChartOptions instance
+      //   which will request to start Y axis at data minimum.
+      // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+      //   as it does not make sense there.
       chartOptions = const ChartOptions(
       dataContainerOptions: DataContainerOptions(
       startYAxisAtDataMinRequested: true,
@@ -508,12 +464,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orgf856ba1"></a>
+<a id="org86b4136"></a>
 
-## ex33AllNegativeYsYAxisEndsBelow0\_lineChart <a id="orgdfec3f2"></a>
+## ex33AllNegativeYsYAxisEndsBelow0\_lineChart <a id="orgd322ff6"></a>
 
 Code
 
@@ -521,7 +477,10 @@ Code
       LabelLayoutStrategy? xContainerLabelLayoutStrategy;
       ChartData chartData;
       ChartOptions chartOptions = const ChartOptions();
-      // Ask to end Y axis at maximum data (as all data negative)
+      // Example shows how to create ChartOptions instance
+      //   which will request to end Y axis at maximum data (as all data negative).
+      // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+      //   as it does not make sense there.
       chartOptions = const ChartOptions(
       dataContainerOptions: DataContainerOptions(
       startYAxisAtDataMinRequested: true,
@@ -554,12 +513,88 @@ Code
 
 Result
 
-![img](doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png "Line Chart caption")
 
 
-<a id="orge9bbc22"></a>
+<a id="org260cba6"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_lineChart <a id="org474654d"></a>
+## ex34OptionsDefiningUserTextStyleOnLabels\_lineChart <a id="orgcdf5631"></a>
+
+Code
+
+    Widget chartToRun() {
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+      ChartData chartData;
+      ChartOptions chartOptions = const ChartOptions();
+      // Example shows how to use user-defined font in the chart labels.
+      // In fact, same approach can be used more generally, to set any property
+      //   in user-defined TextStyle (font, font color, etc - any property available on TextStyle) on labels.
+      // To achieve setting custom fonts and/or any member of TextStyle,
+      //   client can declare their own extension of 'LabelCommonOptions', and override the `labelTextStyle` getter.
+      // A sample declaration of the class MyLabelCommonOptions, is given here as a comment.
+      // ```dart
+      //      /// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
+      //      /// which is the source for user-specific font on labels.
+      //      class MyLabelCommonOptions extends LabelCommonOptions {
+      //        const MyLabelCommonOptions(
+      //        ) : super ();
+      //
+      //        /// Override [labelTextStyle] with a new font, color, etc.
+      //        @override
+      //        get labelTextStyle => GoogleFonts.comforter(
+      //          textStyle: const TextStyle(
+      //          color: ui.Color(0xFF757575),
+      //          fontSize: 14.0,
+      //          fontWeight: FontWeight.w400, // Regular
+      //          ),
+      //        );
+      //
+      //        /* This alternative works in an app as well, but not in the integration test. All style set in options defaults.
+      //        get labelTextStyle =>
+      //          const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
+      //            fontFamily: GoogleFonts.comforter().fontFamily,
+      //          );
+      //        */
+      //      }
+      // ```
+      // Given such extended class, declare ChartOptions as follows:
+      chartOptions = const ChartOptions(
+      labelCommonOptions: MyLabelCommonOptions(),
+      );
+      // Then proceed as usual
+      chartData = ChartData(
+      dataRows: const [
+      [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
+      [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
+      ],
+      xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      dataRowsLegends: const [
+      'Font Test Series1',
+      'Font Test Series2',
+      ],
+      chartOptions: chartOptions,
+      );
+      var lineChartContainer = LineChartTopContainer(
+        chartData: chartData,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    
+      var lineChart = LineChart(
+        painter: LineChartPainter(
+          lineChartContainer: lineChartContainer,
+        ),
+      );
+      return lineChart;
+    }
+
+Result
+
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png "Line Chart caption")
+
+
+<a id="org3d3c134"></a>
+
+## ex35AnimalsBySeasonNoLabelsShown\_lineChart <a id="orgd400995"></a>
 
 Code
 
@@ -601,12 +636,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png "Line Chart caption")
 
 
-<a id="org8bf69e6"></a>
+<a id="org7a1ade3"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart <a id="org389ec87"></a>
+## ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart <a id="org9227186"></a>
 
 Code
 
@@ -648,12 +683,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
 
 
-<a id="orgc5cee04"></a>
+<a id="orgc6be307"></a>
 
-## ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart <a id="orga62d28f"></a>
+## ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart <a id="orgd962a15"></a>
 
 Code
 
@@ -710,12 +745,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png "Line Chart caption")
 
 
-<a id="org6932eec"></a>
+<a id="org91f6516"></a>
 
-## ex50StocksWithNegativesWithUserColors\_verticalBarChart <a id="org72685ff"></a>
+## ex50StocksWithNegativesWithUserColors\_verticalBarChart <a id="org6246d9c"></a>
 
 Code
 
@@ -727,10 +762,10 @@ Code
       //        This shows a bug where negatives go below X axis.
       // If we want the chart to show User-Provided textual Y labels with
       // In each column, adding it's absolute values should add to same number:
-      // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
+      // todo-04-examples 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
     
       chartData = ChartData(
-      // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
+      // each column should add to same number. everything else is relative.
       dataRows: const [
       [-9.0, -8.0, -8.0, -5.0, -8.0],
       [-1.0, -2.0, -4.0, -1.0, -1.0],
@@ -767,12 +802,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org6d0092e"></a>
+<a id="org77e5f4f"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_lineChart <a id="org800fa92"></a>
+## ex52AnimalsBySeasonLogarithmicScale\_lineChart <a id="org673ceb3"></a>
 
 Code
 
@@ -813,12 +848,12 @@ Code
 
 Result
 
-![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png "Line Chart caption")
 
 
-<a id="org47ef7bc"></a>
+<a id="org042b202"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart <a id="orgdf818d1"></a>
+## ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart <a id="org807928e"></a>
 
 Code
 
@@ -859,12 +894,187 @@ Code
 
 Result
 
-![img](doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
 
 
-<a id="org94fde50"></a>
+<a id="orgada2279"></a>
 
-## ex900ErrorFixUserDataAllZero\_lineChart <a id="orgc4b9ab7"></a>
+## ex60LabelsIteration1\_verticalBarChart <a id="orgbdb2c57"></a>
+
+Code
+
+    Widget chartToRun() {
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+      ChartData chartData;
+      ChartOptions chartOptions = const ChartOptions();
+      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // This example shows the result with sufficient space to show all labels
+      chartData = ChartData(
+      dataRows: const [
+      [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+      [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+      ],
+      xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+      dataRowsLegends: const [
+      'Owl count',
+      'Hawk count',
+      ],
+      chartOptions: chartOptions,
+      );
+      exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
+      var verticalBarChartContainer = VerticalBarChartTopContainer(
+        chartData: chartData,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    
+      var verticalBarChart = VerticalBarChart(
+        painter: VerticalBarChartPainter(
+          verticalBarChartContainer: verticalBarChartContainer,
+        ),
+      );
+      return verticalBarChart;
+    }
+
+Result
+
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_verticalBarChart.png "Line Chart caption")
+
+
+<a id="orgd3771d7"></a>
+
+## ex60LabelsIteration2\_verticalBarChart <a id="orgfe51f7b"></a>
+
+Code
+
+    Widget chartToRun() {
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+      ChartData chartData;
+      ChartOptions chartOptions = const ChartOptions();
+      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
+      // The iterative layout strategy makes the labels to tilt but show fully.
+      chartData = ChartData(
+      dataRows: const [
+      [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+      [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+      ],
+      xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+      dataRowsLegends: const [
+      'Owl count',
+      'Hawk count',
+      ],
+      chartOptions: chartOptions,
+      );
+      exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
+      var verticalBarChartContainer = VerticalBarChartTopContainer(
+        chartData: chartData,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    
+      var verticalBarChart = VerticalBarChart(
+        painter: VerticalBarChartPainter(
+          verticalBarChartContainer: verticalBarChartContainer,
+        ),
+      );
+      return verticalBarChart;
+    }
+
+Result
+
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_verticalBarChart.png "Line Chart caption")
+
+
+<a id="org547dcea"></a>
+
+## ex60LabelsIteration3\_verticalBarChart <a id="orga666d35"></a>
+
+Code
+
+    Widget chartToRun() {
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+      ChartData chartData;
+      ChartOptions chartOptions = const ChartOptions();
+      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // This example shows the result with sufficient space to show all labels, not even tilted;
+      // The iterative layout strategy causes some labels to be skipped.
+      chartData = ChartData(
+      dataRows: const [
+      [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+      [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+      ],
+      xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+      dataRowsLegends: const [
+      'Owl count',
+      'Hawk count',
+      ],
+      chartOptions: chartOptions,
+      );
+      exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
+      var verticalBarChartContainer = VerticalBarChartTopContainer(
+        chartData: chartData,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    
+      var verticalBarChart = VerticalBarChart(
+        painter: VerticalBarChartPainter(
+          verticalBarChartContainer: verticalBarChartContainer,
+        ),
+      );
+      return verticalBarChart;
+    }
+
+Result
+
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_verticalBarChart.png "Line Chart caption")
+
+
+<a id="org95e404c"></a>
+
+## ex60LabelsIteration4\_verticalBarChart <a id="org8f86d1f"></a>
+
+Code
+
+    Widget chartToRun() {
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+      ChartData chartData;
+      ChartOptions chartOptions = const ChartOptions();
+      // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+      // This example shows the result with sufficient space to show all labels, not even tilted;
+      // The iterative layout strategy causes more labels to be skipped.
+      chartData = ChartData(
+      dataRows: const [
+      [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+      [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+      ],
+      xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+      dataRowsLegends: const [
+      'Owl count',
+      'Hawk count',
+      ],
+      chartOptions: chartOptions,
+      );
+      exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
+      var verticalBarChartContainer = VerticalBarChartTopContainer(
+        chartData: chartData,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    
+      var verticalBarChart = VerticalBarChart(
+        painter: VerticalBarChartPainter(
+          verticalBarChartContainer: verticalBarChartContainer,
+        ),
+      );
+      return verticalBarChart;
+    }
+
+Result
+
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_verticalBarChart.png "Line Chart caption")
+
+
+<a id="orgc87cb9f"></a>
+
+## ex900ErrorFixUserDataAllZero\_lineChart <a id="org429502d"></a>
 
 Code
 
@@ -907,31 +1117,31 @@ Code
 
 Result
 
-![img](doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart.png "Line Chart caption")
 
 
-<a id="orgfe79b03"></a>
+<a id="orgeaf773f"></a>
 
 # Latest release changes
 
-The latest release is 0.4.0
+The latest release is 0.5.0
 
 The <CHANGELOG.md> document describes new features and bug fixes in this and older versions.
 
 
-<a id="org07f67e2"></a>
+<a id="org03b46dd"></a>
 
 # Installation
 
 
-<a id="org6b0373d"></a>
+<a id="org30b6b7c"></a>
 
 ## Installing flutter\_charts as a library package into your app
 
 If you want to use the `flutter_charts` library package in your app, please follow instructions in <https://pub.dev/packages/flutter_charts/install>. This will result in ability of your app to use  `flutter_charts`.
 
 
-<a id="org0026998"></a>
+<a id="org03fe7ad"></a>
 
 ## Installing the flutter\_charts project as a local clone from Github
 
@@ -947,17 +1157,17 @@ To install (clone) the `flutter_charts` project from Github to your local system
 -   The project will be in the `$HOME/dev/flutter_charts-master/` directory
 
 
-<a id="orga4839cc"></a>
+<a id="org0430cd4"></a>
 
 # Running the examples included in flutter\_charts
 
-This section assumes you installed the flutter\_charts project as a local clone from Github, as described in [4](#orga4839cc)
+This section assumes you installed the flutter\_charts project as a local clone from Github, as described in [4](#org0430cd4)
 
 There is an example application in flutter\_charts: `example1/lib/main.dart`. It shows how the Flutter Charts library can be included in a Flutter application.
 
 To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
--   Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [3.2](#org0026998) section.
+-   Important: Make sure an Android or iOS emulator is running, or you have a physical device connected. See the [3.2](#org03fe7ad) section.
 -   `cd $HOME/dev/flutter_charts-master/`
 -   Paste any of the lines below to the command line.
     -   To run one example (actually two, first line chart, next vertical bar chart), run:
@@ -973,10 +1183,10 @@ To run the example application, Android emulator or iOS emulator need to be inst
 
 Sample screenshot from running the example app
 
-![img](doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart.png "Line Chart caption")
 
 
-<a id="org4ab3e54"></a>
+<a id="org84b6d75"></a>
 
 # Illustration of the "iterative auto layout" feature
 
@@ -987,64 +1197,64 @@ Flutter chart library automatically checks for the X label overlap, and follows 
 To illustrate "stressed" horizontal space for the chart, we are gradually adding a text widget containing and increasing number of '<' characters on the right of the chart.
 
 
-<a id="org27142b6"></a>
+<a id="org13982d7"></a>
 
 ## Autolayout step 1
 
 Let's say there are six labels on a chart, and there is sufficient space to display labels horizontally. The result may look like this:
 We can see all x axis labels displayed it full, horizontally oriented.
 
-![img](doc/readme_images/README.org_iterative-layout-step-1.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-1.png)
 
 
-<a id="org7fbe5e9"></a>
+<a id="orgc1d8a8f"></a>
 
 ## Autolayout step 2
 
 Next, let us make less available space by taking away some space on the right with a wider text label such as '<<<<<<'
 We can see the labels were automatically tilted by the angle `LabelLayoutStrategy.labelTiltRadians` for the labels to fit.
 
-![img](doc/readme_images/README.org_iterative-layout-step-2.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-2.png)
 
 
-<a id="orgfb5a0d4"></a>
+<a id="org030cb34"></a>
 
 ## Autolayout step 3
 
 Next, let us make even less available space by taking away some space on the right with a wider text label such as '<<<<<<<<<<<'.
 We can see that labels are not only tilted, but also automatically skipped for labels not to overlap (every 2nd label is skipped, see option `ChartOptions.iterativeLayoutOptions.showEveryNthLabel`).
 
-![img](doc/readme_images/README.org_iterative-layout-step-3.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-3.png)
 
 
-<a id="org006f712"></a>
+<a id="orga7d9ad4"></a>
 
 ## Autolayout step 4
 
 Next, let us make even less available space some more compared to step 3, with even a wider text label such as '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.
 We can see even more labels were skipped for labels to prevent overlap, the chart is showing every 5th label.
 
-![img](doc/readme_images/README.org_iterative-layout-step-4.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-4.png)
 
 
-<a id="org844c5a3"></a>
+<a id="org435b9c8"></a>
 
 ## Autolayout step 5
 
 Last, let us take away extreme amount of horizontal space by using '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
 Here we can see the "default auto layout" finally gave up, and overlaps labels. Also, the legend is now hidded, as the amount of horizontal space is not sufficient.
 
-![img](doc/readme_images/README.org_iterative-layout-step-5.png)
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/README.org_iterative-layout-step-5.png)
 
 
-<a id="org08bd488"></a>
+<a id="org269d91a"></a>
 
 # Known packages, libraries and apps that use this flutter\_charts package
 
 1.  Michael R. Fairhurst's **Language reader app** - see <https://github.com/MichaelRFairhurst/flutter-language-reader-app>
 
 
-<a id="orgaef4199"></a>
+<a id="org44f7bdf"></a>
 
 # TODO Todos
 
@@ -1053,26 +1263,32 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 3.  [X] Allow scaling y values using a function.
 
 
-<a id="orge717b5f"></a>
+<a id="org91e5332"></a>
 
 # Internal notes for exporting this document
 
-1.  Before a release, run the following script to refresh the 'expected' screenshots. If the test `tool/demo/run_all_examples.sh` succeeds, it is quarenteed the 'expected' screenshots are same as those produced by the code in `example1/lib/main.dart`, which is used to generate code in this README file.
+Before a new release, perform these steps:
 
-Convert all images to width=150  
+1.  Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin\_src section. If the test `tool/demo/run_all_examples.sh` succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in `example1/lib/main.dart`. The `example1/lib/main.dart` is also used to generate images gallery with links to code in this README file on top.
+    
+    Convert expected screenshots to readme\_images, while converting to 2 versions, one with width=150, one with 300  
+    
+        for file in https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex*; do
+            rm $file
+        done
+        for file in integration_test/screenshots_expected/ex*; do
+            # cp $file https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images
+            convert $file -resize 300 https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/$(basename $file)
+        done
+        for file in https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex*; do
+            copy_name="$(basename $file)"
+            copy_name="${copy_name/%.*/}"
+            convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
+        done
 
-    for file in doc/readme_images/ex*; do
-        rm $file
-    done
-    for file in integration_test/screenshots_expected/ex*; do
-        # cp $file doc/readme_images
-        convert $file -resize 300 doc/readme_images/$(basename $file)
-    done
-    for file in doc/readme_images/ex*; do
-        copy_name="$(basename $file)"
-        copy_name="${copy_name/%.*/}"
-        convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
-    done
+2.  Delete the section AFTER the end\_src in [1](#org70673f2), all the way to above the heading [2](#orgeaf773f)
 
-1.  Before release, run once the script in heading [1](#org36f6739). If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate. ALSO, make the table with small images 4 cells per row (do this by editing in text mode)
+3.  Run once the script in [1](#org70673f2). If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, go to Step 2, as the example sections would accumulate.
+
+4.  Remove the "RESULTS:" generated in the step before.
 

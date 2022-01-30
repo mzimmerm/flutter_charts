@@ -5,8 +5,6 @@
 - [[#examples-with-code][Examples with code]]
   - [[#ex10randomdata_linechart-ex10randomdata_linechart][ex10RandomData_lineChart <<ex10RandomData_lineChart>>]]
   - [[#ex10randomdata_verticalbarchart-ex10randomdata_verticalbarchart][ex10RandomData_verticalBarChart <<ex10RandomData_verticalBarChart>>]]
-  - [[#ex11randomdatawithlabellayoutstrategy_linechart-ex11randomdatawithlabellayoutstrategy_linechart][ex11RandomDataWithLabelLayoutStrategy_lineChart <<ex11RandomDataWithLabelLayoutStrategy_lineChart>>]]
-  - [[#ex11randomdatawithlabellayoutstrategy_verticalbarchart-ex11randomdatawithlabellayoutstrategy_verticalbarchart][ex11RandomDataWithLabelLayoutStrategy_verticalBarChart <<ex11RandomDataWithLabelLayoutStrategy_verticalBarChart>>]]
   - [[#ex30animalsbyseasonwithlabellayoutstrategy_linechart-ex30animalsbyseasonwithlabellayoutstrategy_linechart][ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart>>]]
   - [[#ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart-ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart][ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart>>]]
   - [[#ex31somenegativevalues_linechart-ex31somenegativevalues_linechart][ex31SomeNegativeValues_lineChart <<ex31SomeNegativeValues_lineChart>>]]
@@ -14,12 +12,17 @@
   - [[#ex32allpositiveysyaxisstartsabove0_linechart-ex32allpositiveysyaxisstartsabove0_linechart][ex32AllPositiveYsYAxisStartsAbove0_lineChart <<ex32AllPositiveYsYAxisStartsAbove0_lineChart>>]]
   - [[#ex32allpositiveysyaxisstartsabove0_verticalbarchart-ex32allpositiveysyaxisstartsabove0_verticalbarchart][ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart <<ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart>>]]
   - [[#ex33allnegativeysyaxisendsbelow0_linechart-ex33allnegativeysyaxisendsbelow0_linechart][ex33AllNegativeYsYAxisEndsBelow0_lineChart <<ex33AllNegativeYsYAxisEndsBelow0_lineChart>>]]
+  - [[#ex34optionsdefiningusertextstyleonlabels_linechart-ex34optionsdefiningusertextstyleonlabels_linechart][ex34OptionsDefiningUserTextStyleOnLabels_lineChart <<ex34OptionsDefiningUserTextStyleOnLabels_lineChart>>]]
   - [[#ex35animalsbyseasonnolabelsshown_linechart-ex35animalsbyseasonnolabelsshown_linechart][ex35AnimalsBySeasonNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoLabelsShown_lineChart>>]]
   - [[#ex35animalsbyseasonnolabelsshown_verticalbarchart-ex35animalsbyseasonnolabelsshown_verticalbarchart][ex35AnimalsBySeasonNoLabelsShown_verticalBarChart <<ex35AnimalsBySeasonNoLabelsShown_verticalBarChart>>]]
   - [[#ex40languageswithyordinaluserlabelsandusercolors_linechart-ex40languageswithyordinaluserlabelsandusercolors_linechart][ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart <<ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart>>]]
   - [[#ex50stockswithnegativeswithusercolors_verticalbarchart-ex50stockswithnegativeswithusercolors_verticalbarchart][ex50StocksWithNegativesWithUserColors_verticalBarChart <<ex50StocksWithNegativesWithUserColors_verticalBarChart>>]]
   - [[#ex52animalsbyseasonlogarithmicscale_linechart-ex52animalsbyseasonlogarithmicscale_linechart][ex52AnimalsBySeasonLogarithmicScale_lineChart <<ex52AnimalsBySeasonLogarithmicScale_lineChart>>]]
   - [[#ex52animalsbyseasonlogarithmicscale_verticalbarchart-ex52animalsbyseasonlogarithmicscale_verticalbarchart][ex52AnimalsBySeasonLogarithmicScale_verticalBarChart <<ex52AnimalsBySeasonLogarithmicScale_verticalBarChart>>]]
+  - [[#ex60labelsiteration1_verticalbarchart-ex60labelsiteration1_verticalbarchart][ex60LabelsIteration1_verticalBarChart <<ex60LabelsIteration1_verticalBarChart>>]]
+  - [[#ex60labelsiteration2_verticalbarchart-ex60labelsiteration2_verticalbarchart][ex60LabelsIteration2_verticalBarChart <<ex60LabelsIteration2_verticalBarChart>>]]
+  - [[#ex60labelsiteration3_verticalbarchart-ex60labelsiteration3_verticalbarchart][ex60LabelsIteration3_verticalBarChart <<ex60LabelsIteration3_verticalBarChart>>]]
+  - [[#ex60labelsiteration4_verticalbarchart-ex60labelsiteration4_verticalbarchart][ex60LabelsIteration4_verticalBarChart <<ex60LabelsIteration4_verticalBarChart>>]]
   - [[#ex900errorfixuserdataallzero_linechart-ex900errorfixuserdataallzero_linechart][ex900ErrorFixUserDataAllZero_lineChart <<ex900ErrorFixUserDataAllZero_lineChart>>]]
 - [[#latest-release-changes][Latest release changes]]
 - [[#installation][Installation]]
@@ -38,7 +41,15 @@
 
 * Examples with code
 
-This section contains sample results from flutter_charts. 
+This section contains sample charts from flutter_charts, with code that generated the charts. The code for each chart is in a method
+
+#+begin_src dart
+  Widget chartToRun() {
+   // .. code which generates the sample chart
+  }
+#+end_src
+
+To quickly test the code, you can paste the method ~chartToRun()~ into the sample main app provided in https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main_run_doc_example.dart.
 
 #+BEGIN_SRC bash :results output raw replace :eval no-export :exports none
 
@@ -168,11 +179,12 @@ This section contains sample results from flutter_charts.
 
 #+END_SRC
 
-| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                             | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]                             | [[ex11RandomDataWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart_w150.png]]        | [[ex11RandomDataWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart_w150.png]] |   |
-| [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] | [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                       | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]]                |   |
-| [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]]         | [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]             | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]             |   |
-| [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]]    | [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]]  | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]]          |   |
-| [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]] | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]]                      |                                                                                        |                                                                                        |   |
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                                   | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]                        | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] |
+| [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                           | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]]                | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]]         |
+| [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]                 | [[ex34OptionsDefiningUserTextStyleOnLabels_lineChart][file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png]]     | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]           | [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]]           |
+| [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]]        | [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]]        |
+| [[ex60LabelsIteration1_verticalBarChart][file:doc/readme_images/ex60LabelsIteration1_verticalBarChart_w150.png]]                      | [[ex60LabelsIteration2_verticalBarChart][file:doc/readme_images/ex60LabelsIteration2_verticalBarChart_w150.png]]                  | [[ex60LabelsIteration3_verticalBarChart][file:doc/readme_images/ex60LabelsIteration3_verticalBarChart_w150.png]]                | [[ex60LabelsIteration4_verticalBarChart][file:doc/readme_images/ex60LabelsIteration4_verticalBarChart_w150.png]]                       |
+| [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]]                     |                                                                                        |                                                                                      |                                                                                             |
 
 
 ** ex10RandomData_lineChart <<ex10RandomData_lineChart>>
@@ -184,6 +196,7 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
+    // Example shows a demo-type data generated randomly in a range.
     chartData = RandomChartData.generated(chartOptions: chartOptions);
     var lineChartContainer = LineChartTopContainer(
       chartData: chartData,
@@ -217,6 +230,7 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
+    // Example shows a demo-type data generated randomly in a range.
     chartData = RandomChartData.generated(chartOptions: chartOptions);
     var verticalBarChartContainer = VerticalBarChartTopContainer(
       chartData: chartData,
@@ -241,78 +255,6 @@ Result
 [[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
 
 
-** ex11RandomDataWithLabelLayoutStrategy_lineChart <<ex11RandomDataWithLabelLayoutStrategy_lineChart>>
-
-Code
-
-#+begin_src dart
-  Widget chartToRun() {
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-    ChartData chartData;
-    ChartOptions chartOptions = const ChartOptions();
-    xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-    options: chartOptions,
-    );
-    chartData = RandomChartData.generated(chartOptions: chartOptions);
-    var lineChartContainer = LineChartTopContainer(
-      chartData: chartData,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
-    
-    var lineChart = LineChart(
-      painter: LineChartPainter(
-        lineChartContainer: lineChartContainer,
-      ),
-    );
-    return lineChart;
-  }
-#+end_src
-
-Result
-
-#+CAPTION: Line Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_lineChart.png]]
-
-
-** ex11RandomDataWithLabelLayoutStrategy_verticalBarChart <<ex11RandomDataWithLabelLayoutStrategy_verticalBarChart>>
-
-Code
-
-#+begin_src dart
-  Widget chartToRun() {
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-    ChartData chartData;
-    ChartOptions chartOptions = const ChartOptions();
-    xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
-    options: chartOptions,
-    );
-    chartData = RandomChartData.generated(chartOptions: chartOptions);
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
-      chartData: chartData,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
-    
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
-      ),
-    );
-    return verticalBarChart;
-  }
-#+end_src
-
-Result
-
-#+CAPTION: Line Chart caption
-#+ATTR_ORG: :width 300
-#+ATTR_LATEX: :width 2.0in
-#+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex11RandomDataWithLabelLayoutStrategy_verticalBarChart.png]]
-
-
 ** ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart>>
 
 Code
@@ -322,8 +264,9 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
-    // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-    // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+    // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+    // The xContainerLabelLayoutStrategy, if set to null or not set at all,
+    //   defaults to DefaultIterativeLabelLayoutStrategy
     // Clients can also create their own LayoutStrategy.
     xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
     options: chartOptions,
@@ -377,8 +320,9 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
-    // Shows explicit use of DefaultIterativeLabelLayoutStrategy with Random values and labels.
-    // The xContainerLabelLayoutStrategy, if set to null or not set at all, defaults to DefaultIterativeLabelLayoutStrategy
+    // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
+    // The xContainerLabelLayoutStrategy, if set to null or not set at all,
+    //   defaults to DefaultIterativeLabelLayoutStrategy
     // Clients can also create their own LayoutStrategy.
     xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
     options: chartOptions,
@@ -432,6 +376,7 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
+    // Example shows a mix of positive and negative data values.
     chartData = ChartData(
     dataRows: const [
     [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
@@ -480,6 +425,7 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
+    // Example shows a mix of positive and negative data values.
     chartData = ChartData(
     dataRows: const [
     [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
@@ -528,8 +474,10 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
-    // Set option which will ask to start Y axis at data minimum.
-    // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+    // Example shows how to create ChartOptions instance
+    //   which will request to start Y axis at data minimum.
+    // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+    //   as it does not make sense there.
     chartOptions = const ChartOptions(
     dataContainerOptions: DataContainerOptions(
     startYAxisAtDataMinRequested: true,
@@ -579,8 +527,10 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
-    // Set option which will ask to start Y axis at data minimum.
-    // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
+    // Example shows how to create ChartOptions instance
+    //   which will request to start Y axis at data minimum.
+    // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+    //   as it does not make sense there.
     chartOptions = const ChartOptions(
     dataContainerOptions: DataContainerOptions(
     startYAxisAtDataMinRequested: true,
@@ -630,7 +580,10 @@ Code
     LabelLayoutStrategy? xContainerLabelLayoutStrategy;
     ChartData chartData;
     ChartOptions chartOptions = const ChartOptions();
-    // Ask to end Y axis at maximum data (as all data negative)
+    // Example shows how to create ChartOptions instance
+    //   which will request to end Y axis at maximum data (as all data negative).
+    // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
+    //   as it does not make sense there.
     chartOptions = const ChartOptions(
     dataContainerOptions: DataContainerOptions(
     startYAxisAtDataMinRequested: true,
@@ -669,6 +622,86 @@ Result
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
 [[file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart.png]]
+
+
+** ex34OptionsDefiningUserTextStyleOnLabels_lineChart <<ex34OptionsDefiningUserTextStyleOnLabels_lineChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+    // Example shows how to use user-defined font in the chart labels.
+    // In fact, same approach can be used more generally, to set any property
+    //   in user-defined TextStyle (font, font color, etc - any property available on TextStyle) on labels.
+    // To achieve setting custom fonts and/or any member of TextStyle,
+    //   client can declare their own extension of 'LabelCommonOptions', and override the `labelTextStyle` getter.
+    // A sample declaration of the class MyLabelCommonOptions, is given here as a comment.
+    // ```dart
+    //      /// An example user-defined extension of [LabelCommonOptions] overrides the [LabelCommonOptions.labelTextStyle]
+    //      /// which is the source for user-specific font on labels.
+    //      class MyLabelCommonOptions extends LabelCommonOptions {
+    //        const MyLabelCommonOptions(
+    //        ) : super ();
+    //
+    //        /// Override [labelTextStyle] with a new font, color, etc.
+    //        @override
+    //        get labelTextStyle => GoogleFonts.comforter(
+    //          textStyle: const TextStyle(
+    //          color: ui.Color(0xFF757575),
+    //          fontSize: 14.0,
+    //          fontWeight: FontWeight.w400, // Regular
+    //          ),
+    //        );
+    //
+    //        /* This alternative works in an app as well, but not in the integration test. All style set in options defaults.
+    //        get labelTextStyle =>
+    //          const ChartOptions().labelCommonOptions.labelTextStyle.copyWith(
+    //            fontFamily: GoogleFonts.comforter().fontFamily,
+    //          );
+    //        */
+    //      }
+    // ```
+    // Given such extended class, declare ChartOptions as follows:
+    chartOptions = const ChartOptions(
+    labelCommonOptions: MyLabelCommonOptions(),
+    );
+    // Then proceed as usual
+    chartData = ChartData(
+    dataRows: const [
+    [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
+    [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
+    ],
+    xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    dataRowsLegends: const [
+    'Font Test Series1',
+    'Font Test Series2',
+    ],
+    chartOptions: chartOptions,
+    );
+    var lineChartContainer = LineChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var lineChart = LineChart(
+      painter: LineChartPainter(
+        lineChartContainer: lineChartContainer,
+      ),
+    );
+    return lineChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart.png]]
 
 
 ** ex35AnimalsBySeasonNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoLabelsShown_lineChart>>
@@ -852,10 +885,10 @@ Code
     //        This shows a bug where negatives go below X axis.
     // If we want the chart to show User-Provided textual Y labels with
     // In each column, adding it's absolute values should add to same number:
-    // todo-11-examples 100 would make more sense, to represent 100% of stocks in each category.
+    // todo-04-examples 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
     
     chartData = ChartData(
-    // each column should add to same number. everything else is relative. todo-11-examples maybe no need to add to same number.
+    // each column should add to same number. everything else is relative.
     dataRows: const [
     [-9.0, -8.0, -8.0, -5.0, -8.0],
     [-1.0, -2.0, -4.0, -1.0, -1.0],
@@ -1000,6 +1033,197 @@ Result
 [[file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png]]
 
 
+** ex60LabelsIteration1_verticalBarChart <<ex60LabelsIteration1_verticalBarChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+    // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+    // This example shows the result with sufficient space to show all labels
+    chartData = ChartData(
+    dataRows: const [
+    [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+    [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+    ],
+    xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+    dataRowsLegends: const [
+    'Owl count',
+    'Hawk count',
+    ],
+    chartOptions: chartOptions,
+    );
+    exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex60LabelsIteration1_verticalBarChart.png]]
+
+
+** ex60LabelsIteration2_verticalBarChart <<ex60LabelsIteration2_verticalBarChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+    // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+    // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
+    // The iterative layout strategy makes the labels to tilt but show fully.
+    chartData = ChartData(
+    dataRows: const [
+    [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+    [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+    ],
+    xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+    dataRowsLegends: const [
+    'Owl count',
+    'Hawk count',
+    ],
+    chartOptions: chartOptions,
+    );
+    exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex60LabelsIteration2_verticalBarChart.png]]
+
+
+** ex60LabelsIteration3_verticalBarChart <<ex60LabelsIteration3_verticalBarChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+    // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+    // This example shows the result with sufficient space to show all labels, not even tilted;
+    // The iterative layout strategy causes some labels to be skipped.
+    chartData = ChartData(
+    dataRows: const [
+    [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+    [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+    ],
+    xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+    dataRowsLegends: const [
+    'Owl count',
+    'Hawk count',
+    ],
+    chartOptions: chartOptions,
+    );
+    exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex60LabelsIteration3_verticalBarChart.png]]
+
+
+** ex60LabelsIteration4_verticalBarChart <<ex60LabelsIteration4_verticalBarChart>>
+
+Code
+
+#+begin_src dart
+  Widget chartToRun() {
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    ChartData chartData;
+    ChartOptions chartOptions = const ChartOptions();
+    // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
+    // This example shows the result with sufficient space to show all labels, not even tilted;
+    // The iterative layout strategy causes more labels to be skipped.
+    chartData = ChartData(
+    dataRows: const [
+    [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
+    [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
+    ],
+    xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+    dataRowsLegends: const [
+    'Owl count',
+    'Hawk count',
+    ],
+    chartOptions: chartOptions,
+    );
+    exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
+    var verticalBarChartContainer = VerticalBarChartTopContainer(
+      chartData: chartData,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+    
+    var verticalBarChart = VerticalBarChart(
+      painter: VerticalBarChartPainter(
+        verticalBarChartContainer: verticalBarChartContainer,
+      ),
+    );
+    return verticalBarChart;
+  }
+#+end_src
+
+Result
+
+#+CAPTION: Line Chart caption
+#+ATTR_ORG: :width 300
+#+ATTR_LATEX: :width 2.0in
+#+ATTR_HTML: :width 300
+[[file:doc/readme_images/ex60LabelsIteration4_verticalBarChart.png]]
+
+
 ** ex900ErrorFixUserDataAllZero_lineChart <<ex900ErrorFixUserDataAllZero_lineChart>>
 
 Code
@@ -1053,7 +1277,7 @@ Result
 
 * Latest release changes
 
-The latest release is 0.4.0
+The latest release is 0.5.0
 
 The file:CHANGELOG.md document describes new features and bug fixes in this and older versions.
 
@@ -1160,23 +1384,31 @@ Here we can see the "default auto layout" finally gave up, and overlaps labels. 
 3. [X] Allow scaling y values using a function.
 
 * Internal notes for exporting this document
-1. Before a release, run the following babel script to refresh the 'expected' screenshots (by clicking C-c twice). If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example1/lib/main.dart~, which is used to generate code in this README file.
 
-Convert all images to width=150  
-#+begin_src bash :results output silent :eval no-export
-  for file in doc/readme_images/ex*; do
-      rm $file
-  done
-  for file in integration_test/screenshots_expected/ex*; do
-      # cp $file doc/readme_images
-      convert $file -resize 300 doc/readme_images/$(basename $file)
-  done
-  for file in doc/readme_images/ex*; do
-      copy_name="$(basename $file)"
-      copy_name="${copy_name/%.*/}"
-      convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
-  done
-#+end_src
+Before a new release, perform these steps:
 
-2. Before release, run once the script in heading [[* Examples with code]]. If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, delete the generated examples header sections, as they would accumulate. ALSO, make the table with small images 4 cells per row (do this by editing in text mode)
+1. Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin_src section. If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example1/lib/main.dart~. The ~example1/lib/main.dart~ is also used to generate images gallery with links to code in this README file on top.
+
+  Convert expected screenshots to readme_images, while converting to 2 versions, one with width=150, one with 300  
+  #+begin_src bash :results output silent :eval no-export
+    for file in doc/readme_images/ex*; do
+        rm $file
+    done
+    for file in integration_test/screenshots_expected/ex*; do
+        # cp $file doc/readme_images
+        convert $file -resize 300 doc/readme_images/$(basename $file)
+    done
+    for file in doc/readme_images/ex*; do
+        copy_name="$(basename $file)"
+        copy_name="${copy_name/%.*/}"
+        convert  $file -resize 150 $(dirname $file)/${copy_name}_w150.png
+    done
+  #+end_src
+
+2. Delete the section AFTER the end_src in [[* Examples with code]], all the way to above the heading [[* Latest release changes]]
+
+3. Run once the script in [[* Examples with code]]. If generates examples from code. Should be run once, manually, before export to MD. Before export to MD, delete the line "RESULTS". The manually generated sections will be exported to MD during export. Before running again, go to Step 2, as the example sections would accumulate.
+
+4. Remove the "RESULTS:" generated in the step before.
+   
 
