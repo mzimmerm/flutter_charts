@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
-import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
+// import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 
@@ -45,22 +45,6 @@ abstract class Container {
   /// this [Container].
   void applyParentOffset(ui.Offset offset) {
     this.offset += offset;
-  }
-
-  // todo-2 move _tiltMatrix to container base, similar to offset and comment as unused
-  /// Maintains current tiltMatrix, a sum of all tiltMatrixs
-  /// passed in subsequent calls to [applyParentTiltMatrix] during object
-  /// lifetime.
-  vector_math.Matrix2 _tiltMatrix = vector_math.Matrix2.identity();
-
-  /// Provides access to tiltMatrix for extension's [paint] methods.
-  vector_math.Matrix2 get tiltMatrix => _tiltMatrix;
-
-  /// Tilt may apply to the whole container.
-  /// todo-2 unused? move to base class? similar to offset?
-  void applyParentTiltMatrix(vector_math.Matrix2 tiltMatrix) {
-    if (tiltMatrix == vector_math.Matrix2.identity()) return;
-    _tiltMatrix = _tiltMatrix * tiltMatrix;
   }
 
   /// [skipByParent] instructs the parent container that this container should not be

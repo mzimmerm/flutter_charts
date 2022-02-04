@@ -138,6 +138,36 @@ class Interval {
   String toString() {
     return 'Interval($min, $max)';
   }
+
+  @override
+  bool operator ==(Object other) {
+    bool typeSame = other is Interval &&
+        other.runtimeType == runtimeType;
+    if (!typeSame) {
+      return false;
+    }
+
+    // now Dart knows other is LayedOutLineSegments, but for clarity:
+    Interval otherInterval = other;
+    
+    return (min == otherInterval.min && 
+        max == otherInterval.max && 
+        includesMin == otherInterval.includesMin &&
+        includesMax == otherInterval.includesMax);
+   
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    return min.hashCode + 13*max.hashCode + 17*includesMin.hashCode + 23*includesMax.hashCode;
+  }
+  
+}
+
+class LineSegment extends Interval {
+  LineSegment(double min, double max)
+      : super(min, max, true, false);
 }
 
 // todo-02 Refactor scaling
