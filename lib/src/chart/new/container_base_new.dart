@@ -140,6 +140,7 @@ class LengthsLayouter {
       case Packing.loose:
         totalLength ??= _sumLengths;
         assert(totalLength! >= _sumLengths);
+        _freeLength = totalLength! - _sumLengths;
         break;
     }
   }
@@ -206,8 +207,8 @@ class LengthsLayouter {
 
   List<util_dart.LineSegment> _snapOrLooseLayoutAndMapLengthsToSegments(util_dart.LineSegment Function(util_dart.LineSegment?, double ) fromPreviousLengthLayoutThis ) {
     List<util_dart.LineSegment> lineSegments = [];
+    util_dart.LineSegment? previousSegment;
     for (int i = 0; i < lengths.length; i++) {
-      util_dart.LineSegment? previousSegment;
       if (i == 0) {
         previousSegment = null;
       } 
