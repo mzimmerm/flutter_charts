@@ -71,13 +71,13 @@ main() {
 
     test('LengthsLayouter.layout() Matrjoska Center, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaCenterTotalLength27Added12.layout();
-      double halfOfAddedLength = 6.0;
+      double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by halfOfAddedLength to the right
-      expect(segments.lineSegments[0], LineSegment(5.0+halfOfAddedLength, 10.0+halfOfAddedLength));
-      expect(segments.lineSegments[1], LineSegment(2.5+halfOfAddedLength, 12.5+halfOfAddedLength));
-      expect(segments.lineSegments[2], LineSegment(0.0+halfOfAddedLength, 15.0+halfOfAddedLength));
+      // Compared to no total length enforced, move everything by halfOfFreePadding to the right
+      expect(segments.lineSegments[0], LineSegment(5.0+halfOfFreePadding, 10.0+halfOfFreePadding));
+      expect(segments.lineSegments[1], LineSegment(2.5+halfOfFreePadding, 12.5+halfOfFreePadding));
+      expect(segments.lineSegments[2], LineSegment(0.0+halfOfFreePadding, 15.0+halfOfFreePadding));
     });
   });
 
@@ -170,14 +170,14 @@ main() {
 
     test('LengthsLayouter.layout() Snap Center, total length more than required', () {
       LayedOutLineSegments segments = snapCenterTotalLength42Added12.layout();
-      double halfOfAddedLength = 6.0;
+      double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by halfOfAddedLength to the right, 
+      // Compared to no total length enforced, move everything by halfOfFreePadding to the right, 
       // to center the whole group (which is snapped together) 
-      expect(segments.lineSegments[0], LineSegment(0.0+halfOfAddedLength, 5.0+halfOfAddedLength));
-      expect(segments.lineSegments[1], LineSegment(5.0+halfOfAddedLength, 15.0+halfOfAddedLength));
-      expect(segments.lineSegments[2], LineSegment(15.0+halfOfAddedLength, 30.0+halfOfAddedLength));
+      expect(segments.lineSegments[0], LineSegment(0.0+halfOfFreePadding, 5.0+halfOfFreePadding));
+      expect(segments.lineSegments[1], LineSegment(5.0+halfOfFreePadding, 15.0+halfOfFreePadding));
+      expect(segments.lineSegments[2], LineSegment(15.0+halfOfFreePadding, 30.0+halfOfFreePadding));
     });
   });
 
