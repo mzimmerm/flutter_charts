@@ -111,16 +111,56 @@ abstract class ContainerBridgeToNew {
   */
 }
 
-/// Expresses mutually exclusive layouts for a list of lengths (imagined as ordered line segments) on a line.
+/// [Packing] describes mutually exclusive layouts for a list of lengths 
+/// (imagined as ordered line segments) on a line.
 /// 
 /// The supported packing methods
-/// - Matrjoska packing places each smaller segment fully into the next larger  one (next means next by size). 
+/// - Matrjoska packing places each smaller segment fully into the next larger one (next means next by size). 
 ///   Order does not matter.
 /// - Snap packing places each next segment's begin point just right of it's predecessor's end point.
 /// - Loose packing is like snap packing, but, in addition, there can be a space between neighbour segments.
 /// 
 /// The only layout not described (and not allowed) is a partial overlap of any two lengths.
-enum Packing { matrjoska, snap, loose }
+enum Packing { 
+  /// todo-00-document
+  matrjoska,
+  /// [Packing.snap] should make elements snap together into a group with no padding between elements.
+  /// 
+  /// If the available [LengthsLayouter._freeLength] is zero, 
+  /// the result is the same for any [Align] value.
+  /// 
+  /// If the available [LengthsLayouter._freeLength] is non zero:
+  /// 
+  /// - For [Align.min] or [Align.max] : Also aligns the group to min or max boundary.
+  ///   For [Align.min], there is no padding between min and first element of the group,
+  ///   all the padding [LengthsLayouter._freeLength] is after the end of the group; 
+  ///   similarly for [Align.max], for which the group end is aligned with the end,
+  ///   and all the padding [LengthsLayouter._freeLength] is before the group.
+  /// - For [Align.center] : The elements are packed into a group and the group centered.
+  ///   That means, when [LengthsLayouter._freeLength] is available, half of the free length pads 
+  ///   the group on the boundaries
+  ///   
+  snap,
+  /// [Packing.loose] should make elements float, padded with a portion of 
+  /// the available [LengthsLayouter._freeLength].
+  /// 
+  /// If the available [LengthsLayouter._freeLength] is zero, 
+  /// the result is the same for any [Align] value, 
+  /// and also the same as the result of [Packing.snap] for any [Align] value: 
+  /// All elements are packed together.
+  ///
+  /// If the available [LengthsLayouter._freeLength] is non zero:
+  /// 
+  /// - For [Align.min] or [Align.max] : Aligns the first element start to the min,
+  ///   or the last element end to the max, respectively. 
+  ///   The available [LengthsLayouter._freeLength] is distributed evenly 
+  ///   as padding between elements and at the end (for [Align.min]) or at the beginning (for [Align.max]).
+  /// - For [Align.center] : Same proportions of [LengthsLayouter._freeLength] 
+  ///   are distributed as padding at the beginning, between elements, and at the end.
+  ///   
+  loose,
+}
+
 enum Align { min, center, max }
 
 class LengthsLayouter {
@@ -226,21 +266,19 @@ class LengthsLayouter {
     return _snapOrLooseLayoutLineSegmentFor(_looseStartOffset, previousSegment, length);
   }
 
-  util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(double Function(int, bool) getStartOffset, util_dart.LineSegment? previousSegment, double length,) {
+  util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(double Function(bool) getStartOffset, util_dart.LineSegment? previousSegment, double length,) {
     bool isFirstLength = false;
     if (previousSegment == null) {
       isFirstLength = true;
       previousSegment = util_dart.LineSegment(0.0, 0.0);
     }
-    int lengthsCount = lengths.length;
-
-    double startOffset = getStartOffset( lengthsCount, isFirstLength);
+    double startOffset = getStartOffset(isFirstLength);
     double start = startOffset + previousSegment.max;
     double end = startOffset + previousSegment.max + length;
     return util_dart.LineSegment(start, end);
   }
   
-  double _snapStartOffset(int lengthsCount, bool isFirstLength) {
+  double _snapStartOffset(bool isFirstLength) {
     double freeLengthLeft, startOffset;
     switch (align) {
       case Align.min:
@@ -259,19 +297,20 @@ class LengthsLayouter {
     return startOffset;
   }
 
-  double _looseStartOffset(int lengthsCount, bool isFirstLength) {
+  double _looseStartOffset(bool isFirstLength) {
+    int lengthsCount = lengths.length;
     double freeLengthLeft, startOffset;
     switch (align) {
       case Align.min:
-        freeLengthLeft = _freeLength / lengthsCount;
-        startOffset = isFirstLength ? freeLengthLeft : 0.0;
+        freeLengthLeft = lengthsCount != 0 ? _freeLength / lengthsCount : _freeLength;
+        startOffset = isFirstLength ? 0.0 : freeLengthLeft;
         break;
       case Align.center:
-        freeLengthLeft = _freeLength / (lengthsCount + 1);
+        freeLengthLeft = lengthsCount != 0 ? _freeLength / (lengthsCount + 1) : _freeLength;
         startOffset = freeLengthLeft;
         break;
       case Align.max:
-        freeLengthLeft = _freeLength / lengthsCount;
+        freeLengthLeft = lengthsCount !=0 ? _freeLength / lengthsCount : _freeLength;
         startOffset = freeLengthLeft;
         break;
     }
