@@ -1,5 +1,5 @@
 import 'package:flutter_charts/src/chart/new/container_base_new.dart' show Packing, Align, LengthsLayouter, LayedOutLineSegments;
-import 'package:flutter_charts/src/util/util_dart.dart' show Interval, LineSegment;
+import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
 import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
@@ -97,13 +97,13 @@ main() {
 
     test('LengthsLayouter.layout() Matrjoska Max, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaMaxTotalLength27Added12.layout();
-      double fullAddedLength = 12.0;
+      double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by fullAddedLength to the right
-      expect(segments.lineSegments[0], LineSegment(10.0+fullAddedLength, 15.0+fullAddedLength));
-      expect(segments.lineSegments[1], LineSegment(5.0+fullAddedLength, 15.0+fullAddedLength));
-      expect(segments.lineSegments[2], LineSegment(0.0+fullAddedLength, 15.0+fullAddedLength));
+      // Compared to no total length enforced, move everything by fullFreePadding to the right
+      expect(segments.lineSegments[0], LineSegment(10.0+fullFreePadding, 15.0+fullFreePadding));
+      expect(segments.lineSegments[1], LineSegment(5.0+fullFreePadding, 15.0+fullFreePadding));
+      expect(segments.lineSegments[2], LineSegment(0.0+fullFreePadding, 15.0+fullFreePadding));
     });
   });
 
@@ -198,13 +198,13 @@ main() {
 
     test('LengthsLayouter.layout() Snap Max, total length more than required', () {
       LayedOutLineSegments segments = snapMaxTotalLength42Added12.layout();
-      double fullAddedLength = 12.0;
+      double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by fullAddedLength to the right
-      expect(segments.lineSegments[0], LineSegment(0.0+fullAddedLength, 5.0+fullAddedLength));
-      expect(segments.lineSegments[1], LineSegment(5.0+fullAddedLength, 15.0+fullAddedLength));
-      expect(segments.lineSegments[2], LineSegment(15.0+fullAddedLength, 30.0+fullAddedLength));
+      // Compared to no total length enforced, move everything by fullFreePadding to the right
+      expect(segments.lineSegments[0], LineSegment(0.0+fullFreePadding, 5.0+fullFreePadding));
+      expect(segments.lineSegments[1], LineSegment(5.0+fullFreePadding, 15.0+fullFreePadding));
+      expect(segments.lineSegments[2], LineSegment(15.0+fullFreePadding, 30.0+fullFreePadding));
     });
   });
 
@@ -246,14 +246,14 @@ main() {
     test('LengthsLayouter.layout() Loose Min, total length more than required', () {
       LayedOutLineSegments segments = looseMinTotalLength42Added12.layout();
       int lengthsCount = 3;
-      double freeLengthLeft = 12.0 / lengthsCount;
+      double freePadding = 12.0 / lengthsCount;
 
       expect(segments.lineSegments.length, 3);
-      // Aligns first element to min, then adds left padding freeLengthLeft long after every element,
-      // so the rightmost element has a padding freeLengthLeft long.
+      // Aligns first element to min, then adds left padding freePadding long after every element,
+      // so the rightmost element has a padding freePadding long.
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0+freeLengthLeft*1, 15.0+freeLengthLeft*1));
-      expect(segments.lineSegments[2], LineSegment(15.0+freeLengthLeft*2, 30.0+freeLengthLeft*2));
+      expect(segments.lineSegments[1], LineSegment(5.0+freePadding*1, 15.0+freePadding*1));
+      expect(segments.lineSegments[2], LineSegment(15.0+freePadding*2, 30.0+freePadding*2));
     });
   });
 
@@ -275,14 +275,14 @@ main() {
     test('LengthsLayouter.layout() Loose Center, total length more than required', () {
       LayedOutLineSegments segments = looseCenterTotalLength42Added12.layout();
       int lengthsCount = 3;
-      double freeLengthLeft = 12.0 / (lengthsCount + 1); // 3.0
+      double freePadding = 12.0 / (lengthsCount + 1); // 3.0
 
       expect(segments.lineSegments.length, 3);
-      // Aligns last element end to max, then adds left padding freeLengthLeft long after every element,
-      // and the first element has a padding freeLengthLeft long.
-      expect(segments.lineSegments[0], LineSegment(0.0+freeLengthLeft*1, 5.0+freeLengthLeft*1));
-      expect(segments.lineSegments[1], LineSegment(5.0+freeLengthLeft*2, 15.0+freeLengthLeft*2));
-      expect(segments.lineSegments[2], LineSegment(15.0+freeLengthLeft*3, 30.0+freeLengthLeft*3));
+      // Aligns last element end to max, then adds left padding freePadding long after every element,
+      // and the first element has a padding freePadding long.
+      expect(segments.lineSegments[0], LineSegment(0.0+freePadding*1, 5.0+freePadding*1));
+      expect(segments.lineSegments[1], LineSegment(5.0+freePadding*2, 15.0+freePadding*2));
+      expect(segments.lineSegments[2], LineSegment(15.0+freePadding*3, 30.0+freePadding*3));
     });
   });
 
@@ -295,8 +295,8 @@ main() {
       LayedOutLineSegments segments = looseMaxNoTotalLength.layout();
 
       expect(segments.lineSegments.length, 3);
-      // Aligns first element to max, then adds left padding freeLengthLeft long after every element,
-      // so the rightmost element has a padding freeLengthLeft long.
+      // Aligns first element to max, then adds left padding freePadding long after every element,
+      // so the rightmost element has a padding freePadding long.
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
@@ -305,14 +305,14 @@ main() {
     test('LengthsLayouter.layout() Loose Max, total length more than required', () {
       LayedOutLineSegments segments = looseMaxTotalLength42Added12.layout();
       int lengthsCount = 3;
-      double freeLengthLeft = 12.0 / lengthsCount; // 4.0
+      double freePadding = 12.0 / lengthsCount; // 4.0
 
       expect(segments.lineSegments.length, 3);
-      // Aligns last element end to max, then adds left padding freeLengthLeft long after every element,
-      // and the first element has a padding freeLengthLeft long.
-      expect(segments.lineSegments[0], LineSegment(0.0+freeLengthLeft*1, 5.0+freeLengthLeft*1));
-      expect(segments.lineSegments[1], LineSegment(5.0+freeLengthLeft*2, 15.0+freeLengthLeft*2));
-      expect(segments.lineSegments[2], LineSegment(15.0+freeLengthLeft*3, 30.0+freeLengthLeft*3));
+      // Aligns last element end to max, then adds left padding freePadding long after every element,
+      // and the first element has a padding freePadding long.
+      expect(segments.lineSegments[0], LineSegment(0.0+freePadding*1, 5.0+freePadding*1));
+      expect(segments.lineSegments[1], LineSegment(5.0+freePadding*2, 15.0+freePadding*2));
+      expect(segments.lineSegments[2], LineSegment(15.0+freePadding*3, 30.0+freePadding*3));
     });
   });
 

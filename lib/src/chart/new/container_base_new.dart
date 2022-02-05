@@ -126,36 +126,38 @@ enum Packing {
   matrjoska,
   /// [Packing.snap] should make elements snap together into a group with no padding between elements.
   /// 
-  /// If the available [LengthsLayouter._freeLength] is zero, 
+  /// If the available [LengthsLayouter._freePadding] is zero, 
   /// the result is the same for any [Align] value.
   /// 
-  /// If the available [LengthsLayouter._freeLength] is non zero:
+  /// If the available [LengthsLayouter._freePadding] is non zero:
   /// 
   /// - For [Align.min] or [Align.max] : Also aligns the group to min or max boundary.
   ///   For [Align.min], there is no padding between min and first element of the group,
-  ///   all the padding [LengthsLayouter._freeLength] is after the end of the group; 
+  ///   all the padding [LengthsLayouter._freePadding] is after the end of the group; 
   ///   similarly for [Align.max], for which the group end is aligned with the end,
-  ///   and all the padding [LengthsLayouter._freeLength] is before the group.
+  ///   and all the padding [LengthsLayouter._freePadding] is before the group.
   /// - For [Align.center] : The elements are packed into a group and the group centered.
-  ///   That means, when [LengthsLayouter._freeLength] is available, half of the free length pads 
+  ///   That means, when [LengthsLayouter._freePadding] is available, half of the free length pads 
   ///   the group on the boundaries
   ///   
   snap,
   /// [Packing.loose] should make elements float, padded with a portion of 
-  /// the available [LengthsLayouter._freeLength].
+  /// the available [LengthsLayouter._freePadding].
   /// 
-  /// If the available [LengthsLayouter._freeLength] is zero, 
+  /// If the available [LengthsLayouter._freePadding] is zero, 
   /// the result is the same for any [Align] value, 
   /// and also the same as the result of [Packing.snap] for any [Align] value: 
   /// All elements are packed together.
   ///
-  /// If the available [LengthsLayouter._freeLength] is non zero:
+  /// If the available [LengthsLayouter._freePadding] is non zero:
   /// 
   /// - For [Align.min] or [Align.max] : Aligns the first element start to the min,
   ///   or the last element end to the max, respectively. 
-  ///   The available [LengthsLayouter._freeLength] is distributed evenly 
-  ///   as padding between elements and at the end (for [Align.min]) or at the beginning (for [Align.max]).
-  /// - For [Align.center] : Same proportions of [LengthsLayouter._freeLength] 
+  ///   For [Align.min], the available [LengthsLayouter._freePadding] is distributed evenly 
+  ///   as padding between elements and at the end. First element start is at the boundary.
+  ///   For [Align.max], the available [LengthsLayouter._freePadding] is distributed evenly 
+  ///   as padding at the beginning, and between elements. Last element end is at the boundary.
+  /// - For [Align.center] : Same proportions of [LengthsLayouter._freePadding] 
   ///   are distributed as padding at the beginning, between elements, and at the end.
   ///   
   loose,
@@ -174,13 +176,13 @@ class LengthsLayouter {
       case Packing.matrjoska:
         totalLength ??= _maxLength;
         assert(totalLength! >= _maxLength);
-        _freeLength = totalLength! - _maxLength;
+        _freePadding = totalLength! - _maxLength;
         break;
       case Packing.snap:
       case Packing.loose:
         totalLength ??= _sumLengths;
         assert(totalLength! >= _sumLengths);
-        _freeLength = totalLength! - _sumLengths;
+        _freePadding = totalLength! - _sumLengths;
         break;
     }
   }
@@ -189,7 +191,7 @@ class LengthsLayouter {
   final Packing packing;
   final Align align;
   late double? totalLength;
-  late final double _freeLength;
+  late final double _freePadding;
 
   LayedOutLineSegments layout() {
     LayedOutLineSegments layedOutLineSegments;
@@ -231,14 +233,14 @@ class LengthsLayouter {
         end = length;
         break;
       case Align.center:
-        double freeLengthLeft = _freeLength / 2;
+        double freePadding = _freePadding / 2;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
-        start = freeLengthLeft + matrjoskaInnerRoomLeft;
-        end = freeLengthLeft + matrjoskaInnerRoomLeft + length;
+        start = freePadding + matrjoskaInnerRoomLeft;
+        end = freePadding + matrjoskaInnerRoomLeft + length;
         break;
       case Align.max:
-        start = _freeLength + _maxLength - length;
-        end = _freeLength + _maxLength;
+        start = _freePadding + _maxLength - length;
+        end = _freePadding + _maxLength;
         break;
     }
 
@@ -279,19 +281,19 @@ class LengthsLayouter {
   }
   
   double _snapStartOffset(bool isFirstLength) {
-    double freeLengthLeft, startOffset;
+    double freePadding, startOffset;
     switch (align) {
       case Align.min:
-        freeLengthLeft = 0.0;
-        startOffset = freeLengthLeft;
+        freePadding = 0.0;
+        startOffset = freePadding;
         break;
       case Align.center:
-        freeLengthLeft = _freeLength / 2; // for center, half freeLength to the left
-        startOffset = isFirstLength ? freeLengthLeft : 0.0;
+        freePadding = _freePadding / 2; // for center, half freeLength to the left
+        startOffset = isFirstLength ? freePadding : 0.0;
         break;
       case Align.max:
-        freeLengthLeft = _freeLength; // for max, all freeLength to the left
-        startOffset = isFirstLength ? freeLengthLeft : 0.0;
+        freePadding = _freePadding; // for max, all freeLength to the left
+        startOffset = isFirstLength ? freePadding : 0.0;
         break;
     }
     return startOffset;
@@ -299,19 +301,19 @@ class LengthsLayouter {
 
   double _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
-    double freeLengthLeft, startOffset;
+    double freePadding, startOffset;
     switch (align) {
       case Align.min:
-        freeLengthLeft = lengthsCount != 0 ? _freeLength / lengthsCount : _freeLength;
-        startOffset = isFirstLength ? 0.0 : freeLengthLeft;
+        freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
+        startOffset = isFirstLength ? 0.0 : freePadding;
         break;
       case Align.center:
-        freeLengthLeft = lengthsCount != 0 ? _freeLength / (lengthsCount + 1) : _freeLength;
-        startOffset = freeLengthLeft;
+        freePadding = lengthsCount != 0 ? _freePadding / (lengthsCount + 1) : _freePadding;
+        startOffset = freePadding;
         break;
       case Align.max:
-        freeLengthLeft = lengthsCount !=0 ? _freeLength / lengthsCount : _freeLength;
-        startOffset = freeLengthLeft;
+        freePadding = lengthsCount !=0 ? _freePadding / lengthsCount : _freePadding;
+        startOffset = freePadding;
         break;
     }
     return startOffset;
@@ -367,11 +369,11 @@ class LayedOutLineSegments {
     
     // now Dart knows other is LayedOutLineSegments, but for clarity:
     LayedOutLineSegments otherSegment = other;
-    if (lineSegments.length != other.lineSegments.length) {
+    if (lineSegments.length != otherSegment.lineSegments.length) {
       return false;
     }
     for (int i = 0; i < lineSegments.length; i++) {
-      if (lineSegments[i] != other.lineSegments[i]) {
+      if (lineSegments[i] != otherSegment.lineSegments[i]) {
         return false;
       }
     }

@@ -154,8 +154,6 @@ class Interval {
         max == otherInterval.max && 
         includesMin == otherInterval.includesMin &&
         includesMax == otherInterval.includesMax);
-   
-    return true;
   }
 
   @override
