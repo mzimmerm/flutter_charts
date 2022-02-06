@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
+import 'package:flutter_charts/src/chart/new/container_base_new.dart';
+
 import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 
 /// Base class which manages, lays out, moves, and paints
@@ -18,10 +20,7 @@ import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 /// Note on Lifecycle of [Container] : objects should be such that
 ///   after construction, methods should be called in the order declared here.
 ///
-// todo-00: Container core rule: I do not expose position, offset, or layoutSize. 
-//                 I stay put until someone calls transform on me, OR it's special case applyParentOffset.
-//               Is that possible?
-abstract class Container {
+abstract class ContainerOld {
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   ui.Size layoutSize = ui.Size.zero;
@@ -76,7 +75,7 @@ abstract class Container {
 
   bool isDistressed = false;
 
-  Container();
+  ContainerOld();
 
   // ##### Abstract methods to implement
 
@@ -85,3 +84,5 @@ abstract class Container {
 
   void paint(ui.Canvas canvas);
 }
+
+abstract class Container extends ContainerBridgeToNew {}

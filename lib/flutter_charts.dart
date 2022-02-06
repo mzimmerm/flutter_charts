@@ -132,7 +132,6 @@ export 'src/util/y_labels.dart';
 
 export 'src/chart/data.dart';
 export 'src/chart/container.dart';
-// export 'src/chart/new/container_base_new.dart'; // todo-00-last added so can use in tests
 
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';

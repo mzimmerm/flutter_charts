@@ -11,6 +11,7 @@ echo Running Dart files testing, which is still run with Flutter
 flutter test test/util/y_labels_test.dart
 flutter test test/util/string_extension_test.dart
 flutter test test/util/util_dart_test.dart
+flutter test test/container_base/lengths_layouter_test.dart
 
 echo
 echo -------------------------------------
@@ -19,6 +20,11 @@ flutter test test/widget_test.dart
 
 echo
 echo -------------------------------------
-echo Running wrapper around Flutter integration tests for screenshots
+echo RERUNNING All Flutter tests, showing all names
+flutter test
+
+echo
+echo -------------------------------------
+echo Running a wrapper around Flutter integration tests for screenshots
 echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
 tool/test/integration_test_validate_screenshots.sh

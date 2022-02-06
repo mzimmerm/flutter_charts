@@ -9,6 +9,25 @@
 
 IN STACKED CHART, WE FIRST PASS LOG(Y), THEN ADD LOG(YS) DURING STACKING. THAT IS WRONG. THE STACKABLE COLUMNS MUST FIRS ACCEPT un-transformed, THEN ADD DURING STACKING, THEN DO transform (LOG). An alternative is to un-transform, then add, then re-transform. Third alternative is to store on StackableValuePoint both rawData as well as Data.
 
+** TODO On Feb 5, 2022, all of the sudden, with no changes a new issue appeared: Error: No named parameter with the name 'displayLarge'.
+
+Details: When running
+
+~flutter test test/widget_test.dart~
+
+new error
+*Error: No named parameter with the name 'displayLarge'.*
+
+This is an annoying newly introduced bug by Google fonts presence. OMG this is bad.
+
+A workaround is here:
+
+https://stackoverflow.com/questions/70997381/flutter-error-no-named-parameter-with-the-name-displaylarge
+
+bug core is here:
+
+https://github.com/material-foundation/google-fonts-flutter/issues/219
+
 * NOTE *Pub - Publish flutter_charts* : Workflow of publishing new version on flutter_charts on https://pub.dartlang.org
 ** ~dart pub outdated --no-dev-dependencies --up-to-date --no-dependency-overrides~
 Run this to resolve a warning on pub.dev about "transitive dependencies".

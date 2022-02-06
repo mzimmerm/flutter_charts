@@ -21,7 +21,7 @@ main() {
 
 
     test('LengthsLayouter.layout() Matrjoska Min, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaMinNoTotalLength.layout();
+      LayedOutLineSegments segments = matrjoskaMinNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
@@ -30,7 +30,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Matrjoska Min, total length same as required', () {
-      LayedOutLineSegments segments = matrjoskaMinTotalLength15.layout();
+      LayedOutLineSegments segments = matrjoskaMinTotalLength15.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -45,7 +45,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Matrjoska Min, total length more than required', () {
-      LayedOutLineSegments segments = matrjoskaMinTotalLength27Added12.layout();
+      LayedOutLineSegments segments = matrjoskaMinTotalLength27Added12.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -61,7 +61,7 @@ main() {
         lengths: lengths, packing: Packing.matrjoska, align: Align.center, totalLength: 27.0);
     
     test('LengthsLayouter.layout() Matrjoska Center, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaCenterNoTotalLength.layout();
+      LayedOutLineSegments segments = matrjoskaCenterNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], LineSegment(5.0, 10.0));
@@ -70,7 +70,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Matrjoska Center, total length more than required', () {
-      LayedOutLineSegments segments = matrjoskaCenterTotalLength27Added12.layout();
+      LayedOutLineSegments segments = matrjoskaCenterTotalLength27Added12.layoutLengths();
       double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
@@ -87,7 +87,7 @@ main() {
         lengths: lengths, packing: Packing.matrjoska, align: Align.max, totalLength: 27.0);
 
     test('LengthsLayouter.layout() Matrjoska Max, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaMaxNoTotalLength.layout();
+      LayedOutLineSegments segments = matrjoskaMaxNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], LineSegment(10.0, 15.0));
@@ -96,7 +96,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Matrjoska Max, total length more than required', () {
-      LayedOutLineSegments segments = matrjoskaMaxTotalLength27Added12.layout();
+      LayedOutLineSegments segments = matrjoskaMaxTotalLength27Added12.layoutLengths();
       double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
@@ -119,7 +119,7 @@ main() {
 
 
     test('LengthsLayouter.layout() Snap Min, no total length enforced', () {
-      LayedOutLineSegments segments = snapMinNoTotalLength.layout();
+      LayedOutLineSegments segments = snapMinNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
@@ -128,7 +128,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Snap Min, total length same as required', () {
-      LayedOutLineSegments segments = snapMinTotalLength30.layout();
+      LayedOutLineSegments segments = snapMinTotalLength30.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -143,7 +143,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Snap Min, total length more than required', () {
-      LayedOutLineSegments segments = snapMinTotalLength42Added12.layout();
+      LayedOutLineSegments segments = snapMinTotalLength42Added12.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -159,7 +159,7 @@ main() {
         lengths: lengths, packing: Packing.snap, align: Align.center, totalLength: 42.0);
 
     test('LengthsLayouter.layout() Snap Center, no total length enforced', () {
-      LayedOutLineSegments segments = snapCenterNoTotalLength.layout();
+      LayedOutLineSegments segments = snapCenterNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // As in Snap Min
@@ -169,7 +169,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Snap Center, total length more than required', () {
-      LayedOutLineSegments segments = snapCenterTotalLength42Added12.layout();
+      LayedOutLineSegments segments = snapCenterTotalLength42Added12.layoutLengths();
       double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
@@ -187,7 +187,7 @@ main() {
         lengths: lengths, packing: Packing.snap, align: Align.max, totalLength: 42.0);
 
     test('LengthsLayouter.layout() Snap Max, no total length enforced', () {
-      LayedOutLineSegments segments = snapMaxNoTotalLength.layout();
+      LayedOutLineSegments segments = snapMaxNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // As in Snap Min, and as in SnapCenter
@@ -197,7 +197,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Snap Max, total length more than required', () {
-      LayedOutLineSegments segments = snapMaxTotalLength42Added12.layout();
+      LayedOutLineSegments segments = snapMaxTotalLength42Added12.layoutLengths();
       double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
@@ -208,7 +208,7 @@ main() {
     });
   });
 
-  // ### Packing.loose todo-00-last 
+  // ### Packing.loose
 
   group('LengthsLayouter.layout() Loose Min,', () {
     var looseMinNoTotalLength = LengthsLayouter(lengths: lengths, packing: Packing.loose, align: Align.min);
@@ -220,7 +220,7 @@ main() {
 
 
     test('LengthsLayouter.layout() Loose Min, no total length enforced', () {
-      LayedOutLineSegments segments = looseMinNoTotalLength.layout();
+      LayedOutLineSegments segments = looseMinNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
@@ -229,7 +229,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Loose Min, total length same as required', () {
-      LayedOutLineSegments segments = looseMinTotalLength30.layout();
+      LayedOutLineSegments segments = looseMinTotalLength30.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -244,7 +244,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Loose Min, total length more than required', () {
-      LayedOutLineSegments segments = looseMinTotalLength42Added12.layout();
+      LayedOutLineSegments segments = looseMinTotalLength42Added12.layoutLengths();
       int lengthsCount = 3;
       double freePadding = 12.0 / lengthsCount;
 
@@ -263,7 +263,7 @@ main() {
         lengths: lengths, packing: Packing.loose, align: Align.center, totalLength: 42.0);
 
     test('LengthsLayouter.layout() Loose Center, no total length enforced', () {
-      LayedOutLineSegments segments = looseCenterNoTotalLength.layout();
+      LayedOutLineSegments segments = looseCenterNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // As in Loose Min
@@ -273,7 +273,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Loose Center, total length more than required', () {
-      LayedOutLineSegments segments = looseCenterTotalLength42Added12.layout();
+      LayedOutLineSegments segments = looseCenterTotalLength42Added12.layoutLengths();
       int lengthsCount = 3;
       double freePadding = 12.0 / (lengthsCount + 1); // 3.0
 
@@ -292,7 +292,7 @@ main() {
         lengths: lengths, packing: Packing.loose, align: Align.max, totalLength: 42.0);
 
     test('LengthsLayouter.layout() Loose Max, no total length enforced', () {
-      LayedOutLineSegments segments = looseMaxNoTotalLength.layout();
+      LayedOutLineSegments segments = looseMaxNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Aligns first element to max, then adds left padding freePadding long after every element,
@@ -303,7 +303,7 @@ main() {
     });
 
     test('LengthsLayouter.layout() Loose Max, total length more than required', () {
-      LayedOutLineSegments segments = looseMaxTotalLength42Added12.layout();
+      LayedOutLineSegments segments = looseMaxTotalLength42Added12.layoutLengths();
       int lengthsCount = 3;
       double freePadding = 12.0 / lengthsCount; // 4.0
 

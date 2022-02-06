@@ -12,7 +12,7 @@ import '../../morphic/rendering/constraints.dart' show LayoutExpansion;
 /// abstract method Shape layout(covariant Constraints) specializations call 
 /// this and implement this, probably calling super.
 /// This maybe eventually configures some constraints caching and debugging.
-abstract class Layout {
+abstract class Layouter {
   Shape layout({required covariant ContainerConstraints constraints});
 }
 
@@ -20,13 +20,34 @@ mixin Painter {
   void paint(ui.Canvas canvas);
 }
 
-abstract class ContainerNew extends Layout with Painter {
+abstract class ContainerNew extends Layouter with Painter {
   ContainerNew? parent;
   List<ContainerNew>? children;
 }
 
+// todo-00: Container core rule: I do not expose position, offset, or layoutSize.
 
-/// Work this into a bridge Container between Container and ContainerNew (Morph)
+//               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
+//               Is that possible?
+
+/// - [X] Check if ContainerBridgeToNew is same as Container
+/// - [X] Rename (just the class, no refactoring) Container to ContainerOld
+/// - [X] Create new class Container (in container_base.dart, NOT here) extends ContainerBridgeToNew
+/// - [X] Finish todo-00-last
+/// - [X] Run all tests 
+/// - [X] Commit and tag as latest before changing LayoutExpansion to BoxContainerConstraints
+/// - [ ] Rename todo-00 to todo-00-last
+/// - [ ] See org file for this, search all notes on Constraints!!
+/// - [ ] Replace LayoutExpansion with BoxContainerConstraints
+/// - [ ] Run all tests 
+/// - [ ] Commit and tag as latest before split ContainerBridgeToNew to Layouter and Painter
+/// - [ ] ContainerBridgeToNew: add parent and children as described in ContainerNew
+/// - [ ] create BoxLayouter (extends nothing, extend Layouter is for later), with old methods
+/// - [ ] create Painter, extends nothing, with old methods
+/// - [ ] ContainerBridgeToNew split to BoxLayouter and Painter, both with old methods
+/// - [ ] Work to finish AxisDirectionBoxLayouter extends BoxLayouter, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
+
+/// Work this into a bridge Container between Container and ContainerNew (Morph). Let Container extend from this
 abstract class ContainerBridgeToNew {
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
@@ -86,7 +107,7 @@ abstract class ContainerBridgeToNew {
 
   // ##### Abstract methods to implement
 
-  // todo-01-morph : This should pass Constraints - see [RenderObject]
+  // todo-00 - replace LayoutExpansion with BoxContainerConstraints
   void layout(LayoutExpansion parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);
@@ -110,6 +131,8 @@ abstract class ContainerBridgeToNew {
   }
   */
 }
+
+// todo-00-done : LengthsLayouter -------------------------------------------------------------------------------------
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths 
 /// (imagined as ordered line segments) on a line.
@@ -193,7 +216,7 @@ class LengthsLayouter {
   late double? totalLength;
   late final double _freePadding;
 
-  LayedOutLineSegments layout() {
+  LayedOutLineSegments layoutLengths() {
     LayedOutLineSegments layedOutLineSegments;
     switch (packing) {
       case Packing.matrjoska:
@@ -205,7 +228,6 @@ class LengthsLayouter {
             lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor));
         break;
       case Packing.loose:
-      // todo-00-last
         layedOutLineSegments = LayedOutLineSegments(
             lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor));
         break;
@@ -225,7 +247,6 @@ class LengthsLayouter {
   /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLength].
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
-    // todo-00-last : let the case always set start/end, and repeat code rather than be smart.
     double start, end;
     switch (align) {
       case Align.min:
@@ -319,39 +340,6 @@ class LengthsLayouter {
     return startOffset;
   }
   
-  /*
-  /// Alignment applies to alignment of all segments snapped. There is is no inner alignment as is matrjoska. 
-  util_dart.LineSegment _snapLayoutLineSegmentFor(util_dart.LineSegment? previousSegment, double length) {
-    bool isFirstLength = false;
-    if (previousSegment == null) {
-      isFirstLength = true;
-      previousSegment = util_dart.LineSegment(0.0, 0.0);
-    }
-    int lengthsCount = lengths.length;
-    
-    double startOffset = _snapStartOffset(lengthsCount, isFirstLength);
-    double start = startOffset + previousSegment.max;
-    double end = startOffset + previousSegment.max + length;
-
-    return util_dart.LineSegment(start, end);
-  }
-
-  /// Alignment applies to alignment of all segments loose. There is is no inner alignment as is matrjoska. 
-  util_dart.LineSegment _looseLayoutLineSegmentFor(util_dart.LineSegment? previousSegment, double length) {
-    bool isFirstLength = false;
-    if (previousSegment == null) {
-      isFirstLength = true;
-      previousSegment = util_dart.LineSegment(0.0, 0.0);
-    }
-    int lengthsCount = lengths.length;
-
-    double startOffset = _looseStartOffset( lengthsCount, isFirstLength);
-    double start = startOffset + previousSegment.max;
-    double end = startOffset + previousSegment.max + length;
-    return util_dart.LineSegment(start, end);
-  }
-  
-   */
 }
 
 class LayedOutLineSegments {
@@ -386,12 +374,12 @@ class LayedOutLineSegments {
   }
 }
 
-/////////////////////////////////////////////// 
-// Future: 
-//   - Shape and extensions
-//   - Layout
-//   - Painter
-//   - ContainerNew and extensions
+// todo-00 : AxisDirectionBoxLayouter, base class for Column and Row layouter
+
+
+/// - members 
+
+// todo-01 : Shape and extensions (Box, Pie), Container and extensions, Layout, Painter -------------------------------
 
 /// Shape is the set of points in a Container.
 /// 
@@ -405,8 +393,8 @@ class BoxShape extends Shape {
   ui.Size get surface => ui.Size.zero;
 }
 
-//  todo-03 add distance and angle
 class Pie {
+  // todo-03 add distance and angle
 }
 
 class PieShape
@@ -414,8 +402,9 @@ class PieShape
 Pie? get surface => null; // todo-03 implement
 }
 
+// todo-01 : Constraints and extensions -------------------------------------------------------------------------------
+
 class ContainerConstraints {
-  // todo-00-implement. Migrate LayoutExpansion to this
 }
 class BoxContainerConstraints extends ContainerConstraints {
   // todo-00-implement. Migrate LayoutExpansion to this
