@@ -6,7 +6,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
 import 'container_base.dart' as container_base show Container;
-import '../morphic/rendering/constraints.dart' show LayoutExpansion;
+import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
@@ -191,7 +191,7 @@ class LabelContainer extends container_base.Container {
   /// ```
   /// 
   @override
-  void layout(LayoutExpansion parentLayoutExpansion) {
+  void layout(BoxContainerConstraints parentLayoutExpansion) {
     // todo-01-morph : cannot set _layoutExpansion here, as it is private in another src file
     //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();

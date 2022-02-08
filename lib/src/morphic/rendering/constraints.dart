@@ -1,3 +1,7 @@
+import 'dart:ui' show Size;
+
+import 'package:flutter_charts/src/chart/new/container_base_new.dart';
+
 /// Defines how a container [layout] should expand the container in a direction.
 ///
 /// Direction can be "width" or "height".
@@ -13,38 +17,37 @@
 ///   where we want to put the data container to the right of the Y labels.
 /// - If direction style is [Unused], the [layout] should fail on attempted
 ///   looking at such
-///
-class LayoutExpansion {
-  final double width;
-  final double height;
+///   todo-00-document 
+class BoxContainerConstraints extends ContainerConstraints {
+  Size minSize;
+  Size maxSize;
 
-  LayoutExpansion({
-    required this.width,
-    required this.height,
-    bool used = true,
-  }) {
-    if (used && width <= 0.0) {
-      throw StateError('Invalid width $width');
-    }
-    if (used && height <= 0.0) {
-      throw StateError('Invalid height $height');
-    }
+  BoxContainerConstraints({required this.minSize, required this.maxSize,});
+  BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size,);
+  BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
+  BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
+  Size get size {
+    assert(isExact);
+    return minSize;
   }
+  
+  bool get isExact => minSize == maxSize;
 
   /// Named constructor for unused expansion
-  LayoutExpansion.unused()
-      : this(
-          width: -1.0,
-          height: -1.0,
-          used: false,
-        );
+  BoxContainerConstraints.unused()
+      : this.exactBox(size: const Size(
+          -1.0,
+          -1.0,
+        ));
 
-  LayoutExpansion cloneWith({
+  BoxContainerConstraints cloneWith({
     double? width,
     double? height,
   }) {
-    height ??= this.height;
-    width ??= this.width;
-    return LayoutExpansion(width: width, height: height);
+    assert(isExact);
+    height ??= minSize.height;
+    width ??= minSize.width;
+    return BoxContainerConstraints.exactBox(size: Size(width, height));
   }
+
 }

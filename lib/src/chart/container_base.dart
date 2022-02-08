@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Size, Offset, Canvas;
 
 import 'package:flutter_charts/src/chart/new/container_base_new.dart';
 
-import '../morphic/rendering/constraints.dart' show LayoutExpansion;
+import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 /// Base class which manages, lays out, moves, and paints
 /// graphical elements on the chart, for example individual
@@ -80,7 +80,7 @@ abstract class ContainerOld {
   // ##### Abstract methods to implement
 
   // todo-01-morph : This should pass Constraints - see [RenderObject]
-  void layout(LayoutExpansion parentLayoutExpansion);
+  void layout(BoxContainerConstraints parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);
 }

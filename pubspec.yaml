@@ -88,9 +88,16 @@ flutter:
   # the Icons class.
   uses-material-design: true
 
-  # If using a client-specific font, such as GoogleFonts, installing fonts is needed, in conjunction with
-  # setting `GoogleFonts.config.allowRuntimeFetching = false;` in main.dart.
-  # But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
+  # Self-host google fonts as assets require this section.
+  # Using Google Fonts as assets requires the client download ("install") the font files stated in assets, 
+  # google_fonts/Comforter-Regular.ttf in the font we chose.
+  # Installing the fonts is needed in conjunction with setting `GoogleFonts.config.allowRuntimeFetching = false;`
+  # in main.dart.
+  # These 2 items (installing fonts and setting the configuration), are needed ONLY in integration tests. 
+  # App works without those 2 additions.
+  # However, be aware that the default `GoogleFonts.config.allowRuntimeFetching = true;`
+  # potentially violates Europe's General Data Protection Regulation (GDPR), because the user's IP address
+  # is exposed outside Europe. That is another reason to self-host (download) the fonts. 
   fonts:
     - family: 'Comforter'
       fonts:

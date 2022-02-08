@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
 import 'container_base.dart' as container_base show Container;
-import '../morphic/rendering/constraints.dart' show LayoutExpansion;
+import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends container_base.Container {
@@ -26,7 +26,7 @@ class LineContainer extends container_base.Container {
 
   /// Implementor of method in superclass [Container].
   @override
-  void layout(LayoutExpansion parentLayoutExpansion) {
+  void layout(BoxContainerConstraints parentLayoutExpansion) {
     throw StateError('No need to call layout on $runtimeType.');
   }
 

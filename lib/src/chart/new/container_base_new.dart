@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Size, Offset, Canvas;
 import 'dart:math' as math show max;
 
 import '../../util/util_dart.dart' as util_dart show LineSegment;
-import '../../morphic/rendering/constraints.dart' show LayoutExpansion;
+import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 
 /// todo-01-doc
@@ -25,7 +25,7 @@ abstract class ContainerNew extends Layouter with Painter {
   List<ContainerNew>? children;
 }
 
-// todo-00: Container core rule: I do not expose position, offset, or layoutSize.
+// todo-01: Container core rule: I do not expose position, offset, or layoutSize.
 
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
@@ -33,14 +33,15 @@ abstract class ContainerNew extends Layouter with Painter {
 /// - [X] Check if ContainerBridgeToNew is same as Container
 /// - [X] Rename (just the class, no refactoring) Container to ContainerOld
 /// - [X] Create new class Container (in container_base.dart, NOT here) extends ContainerBridgeToNew
-/// - [X] Finish todo-00-last
+/// - [X] Finish todos last
 /// - [X] Run all tests 
 /// - [X] Commit and tag as latest before changing LayoutExpansion to BoxContainerConstraints
-/// - [ ] Rename todo-00 to todo-00-last
-/// - [ ] See org file for this, search all notes on Constraints!!
+/// - [X] Rename todo to last
+/// - [X] See org file for this, search all notes on Constraints!!
 /// - [ ] Replace LayoutExpansion with BoxContainerConstraints
 /// - [ ] Run all tests 
 /// - [ ] Commit and tag as latest before split ContainerBridgeToNew to Layouter and Painter
+/// - [ ] Rename todo-00 to last
 /// - [ ] ContainerBridgeToNew: add parent and children as described in ContainerNew
 /// - [ ] create BoxLayouter (extends nothing, extend Layouter is for later), with old methods
 /// - [ ] create Painter, extends nothing, with old methods
@@ -107,8 +108,7 @@ abstract class ContainerBridgeToNew {
 
   // ##### Abstract methods to implement
 
-  // todo-00 - replace LayoutExpansion with BoxContainerConstraints
-  void layout(LayoutExpansion parentLayoutExpansion);
+  void layout(BoxContainerConstraints parentLayoutExpansion);
 
   void paint(ui.Canvas canvas);
 
@@ -132,7 +132,7 @@ abstract class ContainerBridgeToNew {
   */
 }
 
-// todo-00-done : LengthsLayouter -------------------------------------------------------------------------------------
+// todo-01-done : LengthsLayouter -------------------------------------------------------------------------------------
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths 
 /// (imagined as ordered line segments) on a line.
@@ -145,9 +145,10 @@ abstract class ContainerBridgeToNew {
 /// 
 /// The only layout not described (and not allowed) is a partial overlap of any two lengths.
 enum Packing { 
-  /// todo-00-document
+  /// [Packing.matrjoska] should layout elements so that the smallest element is fully
+  /// inside the next larger element, and so on. The largest element contains all smaller elements.
   matrjoska,
-  /// [Packing.snap] should make elements snap together into a group with no padding between elements.
+  /// [Packing.snap] should layout elements in a way they snap together into a group with no padding between elements.
   /// 
   /// If the available [LengthsLayouter._freePadding] is zero, 
   /// the result is the same for any [Align] value.
@@ -164,8 +165,9 @@ enum Packing {
   ///   the group on the boundaries
   ///   
   snap,
-  /// [Packing.loose] should make elements float, padded with a portion of 
-  /// the available [LengthsLayouter._freePadding].
+  /// [Packing.loose] should layout elements so that they are separated with even amount of padding, 
+  /// if the available padding defined by [LengthsLayouter._freePadding] is not zero. 
+  /// If the available padding is zero, layout is the same as [Packing.snap] with no padding. 
   /// 
   /// If the available [LengthsLayouter._freePadding] is zero, 
   /// the result is the same for any [Align] value, 
@@ -385,7 +387,7 @@ class LayedOutLineSegments {
 /// 
 /// Returned from [layout].
 class Shape {
-  Object? get surface => null; // todo-00 make abstract
+  Object? get surface => null; // todo-01 make abstract
 }
 
 class BoxShape extends Shape {
@@ -406,17 +408,13 @@ Pie? get surface => null; // todo-03 implement
 
 class ContainerConstraints {
 }
-class BoxContainerConstraints extends ContainerConstraints {
-  // todo-00-implement. Migrate LayoutExpansion to this
-}
 class PieContainerConstraints extends ContainerConstraints {
-  // todo-00-implement. Migrate LayoutExpansion to this
 }
 abstract class BoxContainer extends ContainerNew {
 
 @override  
 BoxShape layout({required covariant BoxContainerConstraints constraints}) {
-  // todo-00 implement by calling children.layout - implement flow layout by default
+  // todo-01 implement by calling children.layout - implement flow layout by default
   return BoxShape();
 }
 
