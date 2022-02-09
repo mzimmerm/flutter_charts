@@ -112,7 +112,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
-  void reLayout(BoxContainerConstraints parentLayoutExpansion) {
+  void reLayout(BoxContainerConstraints boxConstraints) {
     if (!_adjustableLabelsContainer.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
       //   to layout(). Exits from iterative layout.
@@ -140,7 +140,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
     
     // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
-    _adjustableLabelsContainer.layout(parentLayoutExpansion);
+    _adjustableLabelsContainer.layout(boxConstraints);
   }
 
   /// Prepares the rotation matrix [_labelTiltMatrix] for tilting labels.
@@ -203,7 +203,7 @@ abstract class LabelLayoutStrategy {
   /// it should set some values on [_adjustableLabelsContainer]'s labels to
   /// make them smaller, less dense, tilt, skip etc, and call
   /// the [Container.layout] iteratively.
-  void reLayout(BoxContainerConstraints parentLayoutExpansion);
+  void reLayout(BoxContainerConstraints boxConstraints);
 
   /// Should return true if the layout strategy rotates labels during the
   /// current reLayout.

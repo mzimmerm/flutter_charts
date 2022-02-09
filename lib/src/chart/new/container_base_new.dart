@@ -5,26 +5,6 @@ import 'dart:math' as math show max;
 import '../../util/util_dart.dart' as util_dart show LineSegment;
 import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
-
-/// todo-01-doc
-/// Layout is a base class
-/// does NOT store size or shape, only returns Shape from layout
-/// abstract method Shape layout(covariant Constraints) specializations call 
-/// this and implement this, probably calling super.
-/// This maybe eventually configures some constraints caching and debugging.
-abstract class Layouter {
-  Shape layout({required covariant ContainerConstraints constraints});
-}
-
-mixin Painter {
-  void paint(ui.Canvas canvas);
-}
-
-abstract class ContainerNew extends Layouter with Painter {
-  ContainerNew? parent;
-  List<ContainerNew>? children;
-}
-
 // todo-01: Container core rule: I do not expose position, offset, or layoutSize.
 
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
@@ -38,7 +18,7 @@ abstract class ContainerNew extends Layouter with Painter {
 /// - [X] Commit and tag as latest before changing LayoutExpansion to BoxContainerConstraints
 /// - [X] Rename todo to last
 /// - [X] See org file for this, search all notes on Constraints!!
-/// - [ ] Replace LayoutExpansion with BoxContainerConstraints
+/// - [X] Replace LayoutExpansion with BoxContainerConstraints
 /// - [ ] Run all tests 
 /// - [ ] Commit and tag as latest before split ContainerBridgeToNew to Layouter and Painter
 /// - [ ] Rename todo-00 to last
@@ -108,8 +88,19 @@ abstract class ContainerBridgeToNew {
 
   // ##### Abstract methods to implement
 
-  void layout(BoxContainerConstraints parentLayoutExpansion);
-
+  void layout(BoxContainerConstraints boxConstraints);
+  
+  // todo-01 : split:
+  //           - Container to BoxContainer and PieContainer
+  //           - Shape to BoxShape (wraps Size) and PieShape
+  //           - ContainerConstraint to BoxContainerConstraint and PieContainerConstraint 
+  // todo-01 : Change this base class Container.layout to 
+  //               Shape layout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on parentSandbox 
+  //           This base layout maybe eventually configures some constraints caching and debugging.
+  //           Extensions of Container: BoxContainer, PieContainer override layout as
+  //               BoxShape layout({required covariant BoxContainerConstraints constraints}); // Must set BoxShape (essentially, this is Size)  on parentSandbox 
+  //               PieShape layout({required covariant PieContainerConstraints constraints}); // Must set PieShape on parentSandbox
+  
   void paint(ui.Canvas canvas);
 
   /* END of ContainerBridgeToNew: KEEP
@@ -188,8 +179,10 @@ enum Packing {
   loose,
 }
 
+/// todo-00-document
 enum Align { min, center, max }
 
+/// todo-00-document
 class LengthsLayouter {
   LengthsLayouter({
     required this.lengths,
@@ -344,6 +337,7 @@ class LengthsLayouter {
   
 }
 
+/// todo-00-document
 class LayedOutLineSegments {
   LayedOutLineSegments({required this.lineSegments});
 
@@ -409,13 +403,4 @@ Pie? get surface => null; // todo-03 implement
 class ContainerConstraints {
 }
 class PieContainerConstraints extends ContainerConstraints {
-}
-abstract class BoxContainer extends ContainerNew {
-
-@override  
-BoxShape layout({required covariant BoxContainerConstraints constraints}) {
-  // todo-01 implement by calling children.layout - implement flow layout by default
-  return BoxShape();
-}
-
 }

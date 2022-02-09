@@ -78,7 +78,7 @@ class LabelContainer extends container_base.Container {
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// Does not set parent container's [_layoutExpansion] and [_chartTopContainer].
+  /// todo-01 : Does not set parent container's [_boxConstraints] and [chartTopContainer].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     required String label,
@@ -191,8 +191,8 @@ class LabelContainer extends container_base.Container {
   /// ```
   /// 
   @override
-  void layout(BoxContainerConstraints parentLayoutExpansion) {
-    // todo-01-morph : cannot set _layoutExpansion here, as it is private in another src file
+  void layout(BoxContainerConstraints boxConstraints) {
+    // todo-01-morph : cannot set _boxConstraints here, as it is private in another src file
     //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
     layoutSize = sizeAndOverflow.item1;

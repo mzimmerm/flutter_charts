@@ -903,7 +903,7 @@ Look for places like this
 - [-] Containers - LATER
 - [ ] 
 *** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
-** IN-PROGRESS-NOW 3. ~Constraints and LayoutExpansion: Refactor LayoutExpansion to BoxContainerConstraints and clarify role of BoxContainerConstraints~
+** DONE 3. ~Constraints and LayoutExpansion: Refactor LayoutExpansion to BoxContainerConstraints and clarify role of BoxContainerConstraints~
 *** DONE DONE in Constraints
 **** DONE Study function of LayoutExpansion and remove the GrowDoNotFill, TryFill, definition, parameters, arguments, and passing down entirely.
 
@@ -967,7 +967,7 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
 
 
 
-*** IN-PROGRESS-NOW ~Add BoxContainerConstraints and refactor LayoutExpansion into it~
+*** DONE ~Add BoxContainerConstraints and refactor LayoutExpansion into it~
 
 - [X] Add fields minSize, maxSize
 - [X] Add Constructors, first on LayoutExpansion
@@ -979,14 +979,14 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
   - [X] BoxContainerConstraints.outsideBox({required Size size})
     - [X] sets min=size, max=infinity
 - [X] Add method size : throws exception if min != max, then return min
-- [-] Code changes:
+- [X] Code changes:
   - [X] Make width, height private (this will show lots of errors)
   - [X] Replace most LayoutExpansion constructors with .exactBox(size: Size(with, height))
   - [X] Search where LayoutExpansion.width or height is used, replace it with LayoutExpansion.size.width
-  - [ ] Remove members width, height
-- [ ] Refactor/rename LayoutExpansion to BoxContainerConstraints
+  - [X] Remove members width, height
+- [X] Refactor/rename LayoutExpansion to BoxContainerConstraints
  
-** TODO 4. Split Container to Layouter and Painter
+** IN-PROGRESS-NOW 4. Split Container to Layouter and Painter
 See container_base_new.dart *Lessons for Container*
 
 ** TODO 5. Container new structural changes (additions not worked in current code yet)
@@ -1062,7 +1062,7 @@ For the Container deep refactoring:
 **** TODO How do we want the Containers lifecycle eventually?
 
 - Generally, Containers lifecycle should be as follows.
-  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know od
+  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know of
     - create Root (ChartContainer)
     - add all children recursively 
   - Layout
@@ -1075,7 +1075,10 @@ For the Container deep refactoring:
 **** TODO Add members and methods to Container class: parent, children, traverse(), flatten(), parentSandbox (maybe this in Layouter)
 
 - [ ] Add hierarchy stuff
-  - [ ] ~parentSandbox~
+  - [ ] ~BoxContainerParentSandbox parentSandbox~
+    - [ ] layoutSize
+    - [ ] constraint
+    - [ ] ?
   - [ ] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
   - [ ] ~children~ should be just a List<Containers>
   - [ ] ~traverse()~ 
@@ -1137,7 +1140,7 @@ Thoughts:
   - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
   - paint() - Paint the layed out Containers, skipping those marked to skip
 
-*** IN-PROGRESS-NOW Core of Layouter algorithm 
+*** IN-PROGRESS-NOW Implement core of Layouter algorithm 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
 
 1. *BoxContainerConstraints is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(boxContainerConstraintsDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
@@ -1274,3 +1277,6 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   }
 #+end_src
 
+
+
+*** TODO Apply Layouter algorithm ONLY in Legends panel as a proof of concept
