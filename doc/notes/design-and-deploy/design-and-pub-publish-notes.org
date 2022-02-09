@@ -992,12 +992,46 @@ At the moment, *there is no need to split Container to Layouter and Painter*. I 
 
 So this was NOT done.
 
-** TODO 5. Container new structural changes (additions not worked in current code yet)
-*** TODO Make Containers (Layouters?) a hierarchy and add fields, towards "Everything is a container"
+** DONE 5. Container structural changes: Make Containers (Layouters?) a hierarchy and add fields, towards "Everything is a container"
+*** DONE Add members and methods to Container class: parent, children, traverse(), flatten(), parentSandbox (maybe this in Layouter)
 
-**** NOTE ~Notes ON HIERARCHY OF CONTAINERS~
+- [X] Add ~BoxContainerParentSandbox parentSandbox~ and move parent managed fields here
+- [-] Add hierarchy fields
+  - [X] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
+  - [X] ~children~ should be just a List<Containers>
+  - [ ] ~traverse()~ 
+  - [X] ~flatten()~ 
+  - [ ] ~isUniqueName()~
+  - [X] ~isRoot()~
+  - [X] ~addChild(Container)~ - can never be root
+  - [X] ~name~ not null, required
+- [ ] Add Constructors
+  - [ ] ~Container.root~, configure as root
+    - member ~name~ set in all constructors or defaults to random string, functions as unique key. later Ensure name unique in hierarchy. 
+  - [ ] constructor from children by passing children: List<Container>
+- [ ] Layout related stuff
+  - [?] LATER/NOT AT ALL: add member ~boxContainerConstraints~ - NOT NOW, LATER - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
+  - [L] implement default method ~layout(BoxContainerConstraints)~ - see [[Layouter general function]]
+  - [?] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
+    - applies offset on self (call super)
 
-Current Containers:
+*** research which containers hold on parents and children
+** IN-PROGRESS-NOW ~6. HIERARCHY OF CONTAINERS - notes and progress towards "everything is a container"~
+
+*** NOTE How do we want the Containers lifecycle eventually?
+
+- Generally, Containers lifecycle should be as follows.
+  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know of
+    - create Root (ChartContainer)
+    - create and add all children 
+  - Layout
+    - called by root.layout(BoxContainerConstraints)
+    - side effects
+      - set layoutSize on all members in hierarchy (currently not done)
+      - set offset (applyParentOffset) on all members in hierarchy 
+  - Paint 
+  
+*** NOTE Containers and Container-like classes overview
 
 - ~ChartContainer~
   - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
@@ -1008,22 +1042,28 @@ Current Containers:
   - ~XContainer~ 
     - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
   - ~DataContainer~
-    - has GridLinesContainer _xGridLinesContainer; // is container, checked all the way down
-    - has GridLinesContainer _yGridLinesContainer; // is container, checked all the way down
-    - has PresentersColumns presentersColumns (is List<PresentersColumn>; // NOT a container
-      - PresentersColumns // NOT a container
+    - has ~GridLinesContainer~ _xGridLinesContainer; // is container, checked all the way down
+    - has ~GridLinesContainer~ _yGridLinesContainer; // is container, checked all the way down
+    - has ~PresentersColumns~ presentersColumns (is List<PresentersColumn>; // NOT a container
+      - ~PresentersColumns~ // NOT a container
         - During constructions, calls self(CustomList).add(PresentersColumn)
-      - PresentersColumn  //  NOT a container 
-        - List<Presenter> presenters;
+      - ~PresentersColumn~  //  NOT a container 
+        - ~List<Presenter> presenters;~
         - During construction, calls ~_createPresentersInColumn~
           - accepts:
-            - PointsColumn // END. NOT a container
-              - has List<StackableValuePoint> points;
+            - ~PointsColumn~ // END. NOT a container
+              - has ~List<StackableValuePoint> points;~
             - OR
-            - List<StackableValuePoint> fromPoints,
+            - ~List<StackableValuePoint> fromPoints,~
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
 
-For the Container deep refactoring:
+*** IN-PROGRESS-NOW Ensure code sets up the parent/child hierarchy correctly in SOME existing containers
+
+- [ ] Which container to start?
+- [ ] Next few container
+- [ ] containers or container-like to leave for later.
+
+*** TODO Todos for the Container deep refactoring to make "everything is a Container":
 
 - [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
   - [ ] First experiment on ~PresentersColumns~
@@ -1062,55 +1102,7 @@ For the Container deep refactoring:
   - [ ] PointsColumns
   - [ ] NOT StackableValuePoint
   - [ ] May need a special extension of Containers for some of the above.
-**** TODO How do we want the Containers lifecycle eventually?
-
-- Generally, Containers lifecycle should be as follows.
-  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know of
-    - create Root (ChartContainer)
-    - add all children recursively 
-  - Layout
-    - called by root.layout(BoxContainerConstraints)
-    - side effects
-      - set layoutSize on all members in hierarchy (currently not done)
-      - set offset (applyParentOffset) on all members in hierarchy 
-  - Paint 
-  
-**** TODO Add members and methods to Container class: parent, children, traverse(), flatten(), parentSandbox (maybe this in Layouter)
-
-- [ ] Add hierarchy stuff
-  - [ ] ~BoxContainerParentSandbox parentSandbox~
-    - [ ] layoutSize
-    - [ ] offset
-    - [ ] constraint
-    - [ ] skipByParent
-    - [ ] enableSkipOnDistressedSize
-    - [ ] isDistressed
-  - [ ] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
-  - [ ] ~children~ should be just a List<Containers>
-  - [ ] ~traverse()~ 
-  - [ ] ~flatten()~ 
-  - [ ] ~isUniqueName()~
-  - [ ] ~isRoot()~
-- [ ] Add Content management stuff
-  - [ ] ~addChild(Container)~ - can never be root
-  - [ ] ~name~ not null, required
-- [ ] Add Constructors
-  - [ ] ~Container.root~, configure as root
-    - member ~name~ set in all constructors or defaults to random string, functions as unique key. later Ensure name unique in hierarchy. 
-  - [ ] constructor from children by passing children: List<Container>
-- [ ] Layout related stuff
-  - [ ] LATER/NOT AT ALL: add member ~boxContainerConstraints~ - NOT NOW, LATER - ONLY PASSED TO LAYOUT, NO NEED TO HOLD ON TO - But flutter holds on to constraints in RenderObject 
-  - [ ] add member ~layoutSize~
-  - [ ] keep member ~layoutOffset~
-  - [ ] implement default method ~layout(BoxContainerConstraints)~ - see [[Layouter general function]]
-  - [ ] add abstract method ~calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()~ # Calculates children's positions in self based on what the layout actually is
-  - [ ] ~applyParentOffset~ removed (BUT KEEP AT FIRST) - replaced by calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf
-    - applies offset on self (call super)
-
-**** TODO Ensure code sets up the hierarchy correctly on all existing Containers,  
-***** Study use of GridLinesContainer, XContainer etc, their membership 
-***** research which containers hold on parents and children
-** TODO 6. Container: Refactorings to use Container new structure from item 5
+** TODO 7. Container: Refactorings SOME containers to use Container new structure from item 6
 *** DONE DONE in Container
 **** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
 
@@ -1132,7 +1124,7 @@ AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutS
   
 *** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
 *** TODO ~HUGE - establish hierarchy between current Containers other than children of ChartContainer~ (NOT non-container classes like Presenter, PointsColumn, PointsColumns )
-** IN-PROGRESS 7. Layouter algorithm: define and implement
+** IN-PROGRESS 8. Layouter algorithm: define and implement
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
 
 *** TODO Core Problem of layout *Maybe not a problem, see useExistingChildrenOrCreateChildren* - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout

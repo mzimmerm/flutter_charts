@@ -1161,7 +1161,8 @@ class LegendItemContainer extends BoxContainer {
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      isDistressed = true;
+      // todo-00-last : replacing isDistressed with parentOrderedToSkip : isDistressed = true;
+      parentOrderedToSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }
@@ -1223,8 +1224,9 @@ class LegendItemContainer extends BoxContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
-    if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
-
+    // todo-00-last : replacing isDistressed with parentOrderedToSkip : if (isDistressed) return;
+    if (parentOrderedToSkip) return;
+    
     _labelContainer.paint(canvas);
     canvas.drawRect(
       _indicatorRect,
@@ -1234,7 +1236,8 @@ class LegendItemContainer extends BoxContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
+    // todo-00-last : replacing isDistressed with parentOrderedToSkip : if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
+    if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
