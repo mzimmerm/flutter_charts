@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'dart:math' as math show max;
+import 'dart:math' as math show max, Rectangle;
 
 import '../../util/util_dart.dart' as util_dart show LineSegment;
 import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
@@ -10,18 +10,6 @@ import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
 
-/// - [X] Check if ContainerBridgeToNew is same as Container
-/// - [X] Rename (just the class, no refactoring) Container to ContainerOld
-/// - [X] Create new class Container (in container_base.dart, NOT here) extends ContainerBridgeToNew
-/// - [X] Finish todos last
-/// - [X] Run all tests 
-/// - [X] Commit and tag as latest before changing LayoutExpansion to BoxContainerConstraints
-/// - [X] Rename todo to last
-/// - [X] See org file for this, search all notes on Constraints!!
-/// - [X] Replace LayoutExpansion with BoxContainerConstraints
-/// - [ ] Run all tests 
-/// - [ ] Commit and tag as latest before split ContainerBridgeToNew to Layouter and Painter
-/// - [ ] Rename todo-00 to last
 /// - [ ] ContainerBridgeToNew: add parent and children as described in ContainerNew
 /// - [ ] create BoxLayouter (extends nothing, extend Layouter is for later), with old methods
 /// - [ ] create Painter, extends nothing, with old methods
@@ -29,11 +17,41 @@ import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 /// - [ ] Work to finish AxisDirectionBoxLayouter extends BoxLayouter, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
 
 /// Work this into a bridge Container between Container and ContainerNew (Morph). Let Container extend from this
-abstract class ContainerBridgeToNew {
+abstract class BoxContainerNew {
+
+  /// Default generative constructor
+  BoxContainerNew() : _parentSandbox = BoxContainerParentSandbox();
+
+  // Fields managed by Container
+
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   ui.Size layoutSize = ui.Size.zero;
+
+  /// If size constraints imposed by parent are too tight,
+  /// some internal calculations of sizes may lead to negative values,
+  /// making painting of this containerNew not possible.
+  ///
+  /// Setting the [allowParentToSkipOnDistressedSize] `true` helps to solve such situation.
+  /// It causes the containerNew not be painted
+  /// (skipped during layout) when space is constrained too much
+  /// (not enough space to reasonably paint the containerNew contents).
+  /// Note that setting this to `true` may result
+  /// in surprizing behavior, instead of exceptions.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  ///
+  /// Unlike [parentOrderedToSkip], which directs the parent to ignore this containerNew,
+  /// [allowParentToSkipOnDistressedSize] is intended to be checked in code
+  /// for some invalid conditions, and if they are reached, bypass painting
+  /// the containerNew.
+  bool allowParentToSkipOnDistressedSize = true;
+
+  // Fields managed by Sandbox
   
+  final BoxContainerParentSandbox _parentSandbox;
+
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
   /// That means, it is the offset from (0,0) of the canvas. There is only one
@@ -44,48 +62,21 @@ abstract class ContainerBridgeToNew {
   ///
   /// It is a sum of all offsets passed in subsequent calls
   /// to [applyParentOffset] during object lifetime.
-  ui.Offset offset = ui.Offset.zero;
+  ui.Offset get offset => _parentSandbox.offset;
 
   /// Allow a parent containerNew to move this ContainerNew
   /// after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [ContainerNew].
-  void applyParentOffset(ui.Offset offset) {
-    this.offset += offset;
-  }
-
-  /// [skipByParent] instructs the parent containerNew that this containerNew should not be
-  /// painted or layed out - as if it collapsed to zero size.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  bool skipByParent = false;
-
-  /// If size constraints imposed by parent are too tight,
-  /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this containerNew not possible.
-  ///
-  /// Setting the [enableSkipOnDistressedSize] `true` helps to solve such situation.
-  /// It causes the containerNew not be painted
-  /// (skipped during layout) when space is constrained too much
-  /// (not enough space to reasonably paint the containerNew contents).
-  /// Note that setting this to `true` may result
-  /// in surprizing behavior, instead of exceptions.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  ///
-  /// Unlike [skipByParent], which directs the parent to ignore this containerNew,
-  /// [enableSkipOnDistressedSize] is intended to be checked in code
-  /// for some invalid conditions, and if they are reached, bypass painting
-  /// the containerNew.
-  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
-
-  bool isDistressed = false;
+  void applyParentOffset(ui.Offset offset) => _parentSandbox.offset += offset;
   
-  ContainerBridgeToNew();
+  set parentOrderedToSkip(bool skip) => _parentSandbox.parentOrderedToSkip = skip;
+  bool get parentOrderedToSkip => _parentSandbox.parentOrderedToSkip;
 
+  bool get isDistressed => _parentSandbox.isDistressed;
+  set isDistressed(bool distressed) => _parentSandbox.isDistressed = distressed;
+  
   // ##### Abstract methods to implement
 
   void layout(BoxContainerConstraints boxConstraints);
@@ -121,6 +112,43 @@ abstract class ContainerBridgeToNew {
     _transformMatrix = _transformMatrix * transformMatrix;
   }
   */
+}
+
+// todo-00-last : BoxContainerParentSandbox
+
+// todo-00-document
+class BoxContainerParentSandbox {
+  
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top ContainerNew, passed to all children in the
+  /// [paint(Canvas, Size)].
+  ///
+  ///
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
+  /// to [applyParentOffset] during object lifetime.
+  ui.Offset offset = ui.Offset.zero;
+
+  /// Allow a parent containerNew to move this ContainerNew
+  /// after [layout].
+  ///
+  /// Override if parent move needs to propagate to internals of
+  /// this [ContainerNew].
+  void applyParentOffset(ui.Offset offset) {
+    this.offset += offset;
+  }
+
+  /// [parentOrderedToSkip] instructs the parent containerNew that this containerNew should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  bool parentOrderedToSkip = false;
+
+  bool isDistressed = false;
+  
 }
 
 // todo-01-done : LengthsLayouter -------------------------------------------------------------------------------------
@@ -380,22 +408,39 @@ class LayedOutLineSegments {
 /// Shape is the set of points in a Container.
 /// 
 /// Returned from [layout].
+/// todo-01
 class Shape {
-  Object? get surface => null; // todo-01 make abstract
+  Object? get surface => null; // represents non positioned surface after getting size in layout
+  Object? get positionedSurface => null;  // represents surface after positioning during layout
 }
 
 class BoxShape extends Shape {
   @override
   ui.Size get surface => ui.Size.zero;
+  @override
+  math.Rectangle get positionedSurface => const math.Rectangle(0.0, 0.0, 0.0, 0.0);
 }
 
+/// Represents non-positioned pie shape. Internal coordinates are polar, but can ask for containing rectangle.
+/// Equivalent to Size in Box shapes (internally in cartesian coordinates)
 class Pie {
-  // todo-03 add distance and angle
+  // todo-03 add distance and angle, and implement
+  double angle = 0.0; // radians
+  double radius = 0.0; // pixels ?
 }
 
-class PieShape
-{
-Pie? get surface => null; // todo-03 implement
+/// Represents a positioned pie shape. Positioning is in Cartesian coordinates represented by Offset.
+/// Equivalent to Rectangle in Box shapes.
+class PositionedPie extends Pie {
+  ui.Offset offset = const ui.Offset(0.0, 0.0);
+}
+
+// todo-03 implement
+class PieShape extends Shape {
+  @override
+  Pie get surface => Pie();
+  @override
+  PositionedPie get positionedSurface => PositionedPie();
 }
 
 // todo-01 : Constraints and extensions -------------------------------------------------------------------------------
@@ -404,3 +449,5 @@ class ContainerConstraints {
 }
 class PieContainerConstraints extends ContainerConstraints {
 }
+
+// BoxContainerConstraints - see constraints.dart

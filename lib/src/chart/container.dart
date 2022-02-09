@@ -9,7 +9,7 @@ import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
 import '../util/util_dart.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
-import 'container_base.dart' show Container;
+import 'container_base.dart' show BoxContainer;
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
 import 'label_container.dart';
@@ -31,7 +31,7 @@ mixin ChartBehavior {
   bool get startYAxisAtDataMinAllowed;
 }
 
-/// Abstract class representing the [Container] of the whole chart.
+/// Abstract class representing the [BoxContainer] of the whole chart.
 ///
 /// Containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
@@ -41,12 +41,12 @@ mixin ChartBehavior {
 /// Notes:
 /// - [ChartTopContainer] and it's extensions,
 ///   such as [LineChartContainer] and [VerticalBarChartContainer]
-///   are the only container which does not extend [Container]
+///   are the only container which does not extend [BoxContainer]
 /// - Related to above point, the [layout(num size)] is unrelated to
-///   a same name method on [Container].
+///   a same name method on [BoxContainer].
 ///
-abstract class ChartTopContainer extends Container with ChartBehavior {
-  /// Implements [Container.layoutSize].
+abstract class ChartTopContainer extends BoxContainer with ChartBehavior {
+  /// Implements [BoxContainer.layoutSize].
   /// [ChartTopContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
   ui.Size get layoutSize => chartArea;
@@ -123,7 +123,7 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super();
 
-  /// Implements [Container.layout] for the chart as a whole.
+  /// Implements [BoxContainer.layout] for the chart as a whole.
   ///
   /// Uses this container's [chartArea] as available size
   ///
@@ -258,10 +258,10 @@ abstract class ChartTopContainer extends Container with ChartBehavior {
   /// and the data values, column by column, in [drawDataPresentersColumns].
   ///
   /// Before the actual canvas painting, at the beginning of this method,
-  /// this class's [layout] is performed, which recursively lays out all member [Container]s.
+  /// this class's [layout] is performed, which recursively lays out all member [BoxContainer]s.
   /// Once this top container is layed out, the [paint] is called on all
-  /// member [Container]s ([YContainer],[XContainer] etc),
-  /// which recursively paints the leaf [Container]s lines, rectangles and circles
+  /// member [BoxContainer]s ([YContainer],[XContainer] etc),
+  /// which recursively paints the leaf [BoxContainer]s lines, rectangles and circles
   /// in their calculated layout positions.
   @override
   void paint(ui.Canvas canvas) {
@@ -569,7 +569,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelStyle: labelStyle,
       );
       xLabelContainer.layout(BoxContainerConstraints.unused());
-      xLabelContainer.skipByParent = !_isLabelOnIndexShown(xIndex);
+      xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
       //   then find X middle of the bounding rectangle
@@ -688,7 +688,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   void _paintLabelContainers(canvas) {
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-      if (!xLabelContainer.skipByParent) xLabelContainer.paint(canvas);
+      if (!xLabelContainer.parentOrderedToSkip) xLabelContainer.paint(canvas);
     }
   }
 
@@ -715,7 +715,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   @override
   bool labelsOverlap() {
     if (_xLabelContainers.any((axisLabelContainer) =>
-        !axisLabelContainer.skipByParent && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+        !axisLabelContainer.parentOrderedToSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       return true;
     }
 
@@ -733,7 +733,7 @@ abstract class AdjustableLabels {
   bool labelsOverlap();
 }
 
-/// Provides ability to connect [LabelLayoutStrategy] to [Container],
+/// Provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
 /// (actually currently the [ChartAreaContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
@@ -770,11 +770,11 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 ///   - Data as bar chart, line chart, or other chart type.
 ///   - Grid (this includes the X and Y axis).
 ///
-/// See [Container] for discussion of roles of this class.
-/// This extension of  [Container] has the added ability
+/// See [BoxContainer] for discussion of roles of this class.
+/// This extension of  [BoxContainer] has the added ability
 /// to access the container's parent, which is handled by
 /// [chartTopContainer].
-abstract class ChartAreaContainer extends Container {
+abstract class ChartAreaContainer extends BoxContainer {
   /// The chart top level.
   ///
   /// Departure from a top down approach, this allows to
@@ -809,7 +809,7 @@ abstract class DataContainer extends ChartAreaContainer {
           chartTopContainer: chartTopContainer,
         );
 
-  /// Implements [Container.layout] for data area.
+  /// Implements [BoxContainer.layout] for data area.
   ///
   /// Uses all available space in the passed [boxConstraints],
   /// which it divides between it's children.
@@ -1072,7 +1072,7 @@ class LineChartDataContainer extends DataContainer {
 }
 
 ///
-class GridLinesContainer extends Container {
+class GridLinesContainer extends BoxContainer {
   final List<LineContainer> _lineContainers = List.empty(growable: true);
 
   GridLinesContainer() : super();
@@ -1081,7 +1081,7 @@ class GridLinesContainer extends Container {
     _lineContainers.add(lineContainer);
   }
 
-  /// Implements the abstract [Container.layout].
+  /// Implements the abstract [BoxContainer.layout].
   @override
   void layout(BoxContainerConstraints boxConstraints) {
     for (LineContainer lineContainer in _lineContainers) {
@@ -1097,7 +1097,7 @@ class GridLinesContainer extends Container {
     }
   }
 
-  /// Implements the abstract [Container.layout].
+  /// Implements the abstract [BoxContainer.layout].
   @override
   void paint(ui.Canvas canvas) {
     for (LineContainer lineContainer in _lineContainers) {
@@ -1105,7 +1105,7 @@ class GridLinesContainer extends Container {
     }
   }
 
-  /// Implementor of method in superclass [Container].
+  /// Implementor of method in superclass [BoxContainer].
   ///
   /// Return the size of the outermost rectangle which contains all lines
   ///   in the member _xLineContainers.
@@ -1118,7 +1118,7 @@ class GridLinesContainer extends Container {
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
 // todo-01-morph : should this extend ChartAreaContainer?
-class LegendItemContainer extends Container {
+class LegendItemContainer extends BoxContainer {
   /// Container of label
   late LabelContainer _labelContainer;
 
@@ -1160,7 +1160,7 @@ class LegendItemContainer extends Container {
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    if (enableSkipOnDistressedSize && labelMaxWidth <= 0.0) {
+    if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       isDistressed = true;
       layoutSize = ui.Size.zero;
       return;

@@ -986,8 +986,11 @@ Note: We can add at most a getter later (Flutter RenderObject and RenderBox has 
   - [X] Remove members width, height
 - [X] Refactor/rename LayoutExpansion to BoxContainerConstraints
  
-** IN-PROGRESS-NOW 4. Split Container to Layouter and Painter
-See container_base_new.dart *Lessons for Container*
+** DONE 4. NO - Split Container to Layouter and Painter
+
+At the moment, *there is no need to split Container to Layouter and Painter*. I do not think we will ever use Layouter by itself, without paint(Canvas). Layouters such as Column or Row, when painted, just call their children.
+
+So this was NOT done.
 
 ** TODO 5. Container new structural changes (additions not worked in current code yet)
 *** TODO Make Containers (Layouters?) a hierarchy and add fields, towards "Everything is a container"
@@ -1077,8 +1080,11 @@ For the Container deep refactoring:
 - [ ] Add hierarchy stuff
   - [ ] ~BoxContainerParentSandbox parentSandbox~
     - [ ] layoutSize
+    - [ ] offset
     - [ ] constraint
-    - [ ] ?
+    - [ ] skipByParent
+    - [ ] enableSkipOnDistressedSize
+    - [ ] isDistressed
   - [ ] ~parent~ [on top member it should be Contaier.root (in ChartContainer)]
   - [ ] ~children~ should be just a List<Containers>
   - [ ] ~traverse()~ 

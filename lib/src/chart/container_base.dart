@@ -17,7 +17,7 @@ import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 ///   method.
 /// - Painter: through the [paint] method.
 ///
-/// Note on Lifecycle of [Container] : objects should be such that
+/// Note on Lifecycle of [BoxContainer] : objects should be such that
 ///   after construction, methods should be called in the order declared here.
 ///
 abstract class ContainerOld {
@@ -41,7 +41,7 @@ abstract class ContainerOld {
   /// after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
-  /// this [Container].
+  /// this [BoxContainer].
   void applyParentOffset(ui.Offset offset) {
     this.offset += offset;
   }
@@ -85,4 +85,4 @@ abstract class ContainerOld {
   void paint(ui.Canvas canvas);
 }
 
-abstract class Container extends ContainerBridgeToNew {}
+abstract class BoxContainer extends BoxContainerNew {}
