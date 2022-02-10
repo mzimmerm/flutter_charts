@@ -1120,7 +1120,7 @@ class GridLinesContainer extends BoxContainer {
 // todo-01-morph : should this extend ChartAreaContainer?
 class LegendItemContainer extends BoxContainer {
   /// Container of label
-  late LabelContainer _labelContainer;
+  // todo-00-done : replacing with Container._children and addChild : late LabelContainer _labelContainer;
 
   /// Rectangle of the legend color square series indicator
   late ui.Rect _indicatorRect;
@@ -1161,23 +1161,35 @@ class LegendItemContainer extends BoxContainer {
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      // todo-00-last : replacing isDistressed with parentOrderedToSkip : isDistressed = true;
       parentOrderedToSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }
+    
+/* todo-00-done :
     _labelContainer = LabelContainer(
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
+    addChild(_labelContainer); // todo-00-done
     _labelContainer.layout(BoxContainerConstraints.unused());
-
+*/
+    LabelContainer labelContainer = LabelContainer(
+      label: _label,
+      labelMaxWidth: labelMaxWidth,
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelStyle: _labelStyle,
+    );
+    addChild(labelContainer); // todo-00-done
+    labelContainer.layout(BoxContainerConstraints.unused());
+    
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
     // 1. layout the _labelContainer - this also provides height
-    ui.Size labelContainerSize = _labelContainer.layoutSize;
+    // todo-00-done : ui.Size labelContainerSize = _labelContainer.layoutSize;
+    ui.Size labelContainerSize = labelContainer.layoutSize;
     // 2. Y Center the indicator and label on same horizontal Y level
     //   ind stands for "indicator" - the series color indicator square
     double indAndLabelCenterY = math.max(
@@ -1203,14 +1215,29 @@ class LegendItemContainer extends BoxContainer {
     );
 
     // 5. Place the label within this container
+/* todo-00-done :
     _labelContainer.applyParentOffset(ui.Offset(
+      labelOffsetX,
+      labelOffsetY,
+    ));
+*/
+    labelContainer.applyParentOffset(ui.Offset(
       labelOffsetX,
       labelOffsetY,
     ));
 
     // 6. And store the layout size on member
+/* todo-00-done :
     layoutSize = ui.Size(
       _indicatorRect.width + indicatorToLabelPad + _labelContainer.layoutSize.width + betweenLegendItemsPadding,
+      math.max(
+        labelContainerSize.height,
+        _indicatorRect.height,
+      ),
+    );
+*/
+    layoutSize = ui.Size(
+      _indicatorRect.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
       math.max(
         labelContainerSize.height,
         _indicatorRect.height,
@@ -1224,10 +1251,13 @@ class LegendItemContainer extends BoxContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-last : replacing isDistressed with parentOrderedToSkip : if (isDistressed) return;
     if (parentOrderedToSkip) return;
     
-    _labelContainer.paint(canvas);
+    // todo-00-done : replacing with Container._children and addChild : _labelContainer.paint(canvas);
+    for (var labelContainer in children) {
+      labelContainer.paint(canvas);
+    }
+    // todo-00-last-last : This needs to be looked at, not part of base layout and paint processing
     canvas.drawRect(
       _indicatorRect,
       _indicatorPaint,
@@ -1236,12 +1266,14 @@ class LegendItemContainer extends BoxContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    // todo-00-last : replacing isDistressed with parentOrderedToSkip : if (isDistressed) return; // todo-10 this should not be, only if distress actually happens
     if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
-    _labelContainer.applyParentOffset(offset);
+    // todo-00-done : replacing with Container._children and addChild : _labelContainer.applyParentOffset(offset);
+    for (var labelContainer in children) {
+      labelContainer.applyParentOffset(offset);
+    }
   }
 }
 
@@ -1264,7 +1296,7 @@ class LegendContainer extends ChartAreaContainer {
   // ### calculated values
 
   /// Results of laying out the legend labels. Each member is one series label.
-  late List<LegendItemContainer> _legendItemContainers;
+  // todo-00-done : replacing with Container._children and addChild : late List<LegendItemContainer> _legendItemContainers;
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
@@ -1304,7 +1336,7 @@ class LegendContainer extends ChartAreaContainer {
 
     double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
 
-    _legendItemContainers = List<LegendItemContainer>.empty(growable: true);
+    // todo-00-done : replacing with Container._children and addChild : _legendItemContainers = List<LegendItemContainer>.empty(growable: true);
 
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
@@ -1333,13 +1365,15 @@ class LegendContainer extends ChartAreaContainer {
         ),
       );
 
-      _legendItemContainers.add(legendItemContainer);
+      // todo-00-done : replacing with Container._children and addChild : _legendItemContainers.add(legendItemContainer);
+      addChild(legendItemContainer);
     }
 
     layoutSize = ui.Size(
       boxConstraints.size.width,
-      _legendItemContainers.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) +
-          (2.0 * containerMarginTB),
+      // todo-00-done : replacing with Container._children and addChild : _legendItemContainers.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) + (2.0 * containerMarginTB),
+      children.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) + (2.0 * containerMarginTB),
+      
     );
   }
 
@@ -1351,7 +1385,8 @@ class LegendContainer extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
-    for (LegendItemContainer legendItemContainer in _legendItemContainers) {
+    // todo-00-done : replacing with Container._children and addChild : for (LegendItemContainer legendItemContainer in _legendItemContainers) {
+    for (BoxContainer legendItemContainer in children) {
       legendItemContainer.applyParentOffset(offset);
     }
   }
@@ -1361,7 +1396,8 @@ class LegendContainer extends ChartAreaContainer {
     if (!chartTopContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
-    for (LegendItemContainer legendItemContainer in _legendItemContainers) {
+    // todo-00-done : replacing with Container._children and addChild : for (LegendItemContainer legendItemContainer in _legendItemContainers) {
+    for (BoxContainer legendItemContainer in children) {
       legendItemContainer.paint(canvas);
     }
   }

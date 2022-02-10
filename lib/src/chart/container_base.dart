@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_charts/src/chart/new/container_base_new.dart' show BoxContainerVisitor;
 
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
@@ -87,7 +88,7 @@ abstract class ContainerOld {
 
 abstract class BoxContainer {
 
-  /// Default generative constructor
+  /// Default generative constructor. Prepares [_parentSandbox].
   BoxContainer() : _parentSandbox = BoxContainerParentSandbox();
 
   // ----------- Fields managed by Container
@@ -119,18 +120,23 @@ abstract class BoxContainer {
   late final BoxContainer _parent;
   
   final List<BoxContainer> _children = [];
+
+  void addChild(BoxContainer boxContainer) {
+    boxContainer._parent = boxContainer;
+    _children.add(boxContainer);
+  }
+
+  List<BoxContainer> get children => _children;
   
   bool isRoot = false;
   
   String name = 'DefaultBoxContainerName';
   
-  void addChild(BoxContainer boxContainer) => _children.add(boxContainer);
-  
   void traverseAndApply(BoxContainerVisitor visitor) {
     // todo-03
   }
 
-  // ------------ Fields managed by Sandbox
+  // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
   final BoxContainerParentSandbox _parentSandbox;
 
@@ -151,7 +157,11 @@ abstract class BoxContainer {
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [ContainerNew].
-  void applyParentOffset(ui.Offset offset) => _parentSandbox.applyParentOffset(offset);
+  void applyParentOffset(ui.Offset offset) {
+    // todo-01-last : add caller arg, pass caller=this and check : assert(caller == _parent);
+    //                same on all methods delegated to _parentSandbox
+    _parentSandbox.applyParentOffset(offset);
+  }
 
   set parentOrderedToSkip(bool skip) {
     if (skip && !allowParentToSkipOnDistressedSize) {
@@ -160,9 +170,6 @@ abstract class BoxContainer {
     _parentSandbox.parentOrderedToSkip = skip;
   }
   bool get parentOrderedToSkip => _parentSandbox.parentOrderedToSkip;
-
-  // todo-00-last : replacing isDistressed with parentOrderedToSkip : bool get isDistressed => _parentSandbox.isDistressed;
-  // todo-00-last : replacing isDistressed with parentOrderedToSkip : set isDistressed(bool distressed) => _parentSandbox.isDistressed = distressed;
 
   // ##### Abstract methods to implement
 
@@ -201,8 +208,6 @@ abstract class BoxContainer {
   */
 }
 
-// todo-00-last : BoxContainerParentSandbox
-
 // todo-00-document
 /// Only parent containers of the container that owns this object should be allowed to 
 /// get or set any field inside this object.
@@ -235,7 +240,5 @@ class BoxContainerParentSandbox {
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
   bool parentOrderedToSkip = false;
-
-// todo-00-last : replacing isDistressed with parentOrderedToSkip : bool isDistressed = false;
-
+  
 }

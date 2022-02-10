@@ -12,11 +12,6 @@ import 'package:flutter_charts/src/chart/container_base.dart' show BoxContainer;
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
 
-// todo-00-last ---------
-
-//  - [ ] Work to finish AxisDirectionBoxLayouter extends BoxLayouter, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
-
-
 // todo-01-done : LengthsLayouter -------------------------------------------------------------------------------------
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths 
@@ -264,7 +259,8 @@ class LayedOutLineSegments {
   }
 }
 
-// todo-00 : AxisDirectionBoxLayouter, base class for Column and Row layouter
+// todo-00-last : AxisDirectionBoxLayouter, base class for Column and Row layouter
+//                AxisDirectionBoxLayouter extends BoxLayouter, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
 
 
 /// - members 
