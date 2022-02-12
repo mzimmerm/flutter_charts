@@ -827,7 +827,7 @@ class _ExampleDefiner {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartTopContainer lineChartContainer = LineChartTopContainer(
+        LineChartRootContainer lineChartContainer = LineChartRootContainer(
           chartData: chartData,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
@@ -840,7 +840,7 @@ class _ExampleDefiner {
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
+        VerticalBarChartRootContainer verticalBarChartContainer = VerticalBarChartRootContainer(
           chartData: chartData,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );

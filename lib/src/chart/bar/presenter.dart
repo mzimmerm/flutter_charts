@@ -16,22 +16,22 @@ class VerticalBarPresenter extends Presenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartTopContainer: chartTopContainer,
+          chartRootContainer: chartRootContainer,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    double barWidth = chartTopContainer.xContainer.xGridStep *
-        chartTopContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+    double barWidth = chartRootContainer.xContainer.xGridStep *
+        chartRootContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -52,13 +52,13 @@ class VerticalBarLeafCreator extends PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) {
     return VerticalBarPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartTopContainer: chartTopContainer,
+      chartRootContainer: chartRootContainer,
     );
   }
 }

@@ -21,7 +21,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  containers.ChartTopContainer chartTopContainer;
+  containers.ChartRootContainer chartRootContainer;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -30,7 +30,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// Constructor ensures the [FlutterChartPainter] is initialized with
   /// the [ChartContainer]
   FlutterChartPainter({
-    required this.chartTopContainer,
+    required this.chartRootContainer,
   });
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
@@ -41,11 +41,11 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// being able to paint and draw itself.
   ///
   /// The substantial role is to pass the [size] provided by the framework layout
-  /// to [chartTopContainer]'s [ChartTopContainer.chartArea]. The container needs this information for layout,
-  /// see [chartTopContainer]'s [ChartTopContainer.layout].
+  /// to [chartRootContainer]'s [ChartRootContainer.chartArea]. The container needs this information for layout,
+  /// see [chartRootContainer]'s [ChartRootContainer.layout].
   ///
   /// Once the above role is done, it delegates all painting to canvas to the
-  /// [chartTopContainer].
+  /// [chartRootContainer].
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen
@@ -60,11 +60,11 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     // Once we know the size, let the container manage it's size.
     // This is the layout size. Once done, we can delegate painting
     // to canvas to the [ChartContainer].
-    chartTopContainer.chartArea = size;
+    chartRootContainer.chartArea = size;
 
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    chartTopContainer.paint(canvas);
+    chartRootContainer.paint(canvas);
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??

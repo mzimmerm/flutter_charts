@@ -9,8 +9,8 @@ import 'presenter.dart';
 /// The core override is setting the [presenterCreator] -
 /// object which makes instances of [VerticalBarPresenter]s,
 /// which are, in turn, used to present each data value.
-class VerticalBarChartTopContainer extends ChartTopContainer {
-  VerticalBarChartTopContainer({
+class VerticalBarChartRootContainer extends ChartRootContainer {
+  VerticalBarChartRootContainer({
     required ChartData chartData,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -22,10 +22,10 @@ class VerticalBarChartTopContainer extends ChartTopContainer {
 
   @override
   VerticalBarChartDataContainer createDataContainer({
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) {
     return VerticalBarChartDataContainer(
-      chartTopContainer: chartTopContainer,
+      chartRootContainer: chartRootContainer,
     );
   }
 

@@ -41,7 +41,7 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var lineChartContainer = LineChartTopContainer(
+  var lineChartContainer = LineChartRootContainer(
     chartData: chartData,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );

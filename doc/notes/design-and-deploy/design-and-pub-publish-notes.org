@@ -592,7 +592,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 **** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
 
 *** LATER Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-** DONE 1. Add logarithmic scale. 
+** DONE Add logarithmic scale. 
 *** NOTE Doc: YLabels, YScaler, and their layout in flutter_charts
 
 ChartData yLabels and dataRowsColors behave differently.
@@ -813,102 +813,7 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] *Data displayed inside the chart use transformed data values, displayed labels show raw data values*
   - [X] On  axisYMin than it is really axisYBottom (which is on the bottom of the chart, but has the max value). Similar to Max
 
-** DONE 2. Easier, superficial charts cleanup and refactoring after Logarithmic scale (but not related)
-*** DONE Rename distributedLabels to distributedLabelYs
-*** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
-*** DONE Manual vs Automated layout changes
-
-- [X] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
-  #+begin_src dart
-    Range range = Range(
-      values: allStackedDataYs,
-      chartOptions: _chartTopContainer.options,
-    );
-
-    // revert axisYMin/Max to accommodate y axis starting from top
-    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
-      axisYMin: axisYMin,
-      axisYMax: axisYMax,
-    );
-  #+end_src
-- [X] Remove Range and pull it's functionality to YScalerAndLabelFormatter
-- [X] Range only manages a list of values, that represents labels anyway! Do this:
-  - [X] Move the 2 members from Range to YScalerAndLabelFormatter
-  - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
-  - [X] Remove Range
-  - [X] Fix tests and test
-- [X] Manual Layout
-  - [X] use terminology userLabelsDrivenLayout instead of manualLayout
-  - [X] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
-  - [X] Fix manual layout to work the same as auto layout
-  - [X] Test
-  - [X] push
-  - [X] remove UNUSED methods
-  - [X] remove or rename obsolete comments
-  - [X] Address todo-00-later-document 
-  - [X] Address todo-00-later-not-used
-  - [X] Make YScaler members and methods private
-  - [X] Remove YScaler member dataYsEnvelop
-*** DONE Refactor ChartOptions so the same class applies for both LineChart and VerticalBarChart
-
-Idea: Only have one ChartOptions class, used both as LineChartOptions and VerticalBarChartOptions.
-
-We lose: Polymorphism (ability to define methods with differenct behavior) on LineChartOptions and VerticalBarChartOptions.
-
-Why it's OK: We are trying to remove all behavior from options anyway, in fact, removing all options.
-
-- [X] pull loose LineChartOptions members to a LineChartOptions 
-- [X] Rename in place ChartOptions to CommonChartOptions 
-- [X] convert VerticalBarChartOptions to empty class
-- [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
-- [X] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
-- [X] Make code and test work.
-*** DONE Add an intermediate between CustomPaint and Chart: ~VerticalBarChart extends widgets.CustomPaint~
-
-Add ~FlutterChart extends  widgets.CustomPaint~
-Then ~VerticalBarChart extends FlutterChart~
-Then ~LineChart extends FlutterChart~
-*** DONE Add note that Envelope always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
-*** DONE Rename any _container, container members to topChartContainer if it is actually ChartableTopContainer
-*** DONE ChartTopContainer related - replace final _private + getter with just private
-
-Look for places like this
-
-  final ChartTopContainer _chartTopContainer;
-  ChartTopContainer get chartTopContainer => _chartTopContainer;
-
-  What is the general need for a private final with a public getter? Isn't it better to just have a non-private final?  Yes. Changed that.
-*** DONE Rename DataRows to RawDataRows, DataRow to RawDataRow.
-
-*We only use dataRows and dataYs which represent transformed data, so make it consistent*
-- [-] Rename DataRows and related to RawDataRows
-- [-] Rename DataRow to RawDataRow.
-- [X] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
-- [X] Rename LabelInfo.transformedDataValue to dataValue
-- [ ] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
-- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
-*** DONE LabelInfo: Make some parts a getter rather than member
-
-- [X] Convert LabelInfo.rawDataValue to getter
-- [X] Convert LabelInfo.axisValue to getter
-*** DONE Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
-*** DONE Options access:
-
-- [X] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
-- [X] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
-- [ ]
-*** DONE Try to make as many members as possible final:
-- [X] LabelInfo
-- [X] YSCaler
-- [-] Containers - LATER
-- [ ] 
-*** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
-** IN-PROGRESS-NOW ~3. SOME Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code~
-
-*** NOTE ~SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
-
-*** 
-** NOTE Containers structure analyzed
+** NOTE 1. Containers structure analyzed
 
 *** NOTE How do we want the Containers lifecycle eventually?
 
@@ -948,10 +853,8 @@ Look for places like this
             - OR
             - ~List<StackableValuePoint> fromPoints,~
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
-
-** IN-PROGRESS 8. New Layouter algorithm
+** IN-PROGRESS 2. Implement new Layouter algorithm
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
-
 *** TODO Core Problem of layout *Maybe not a problem, see useExistingChildrenOrCreateChildren* - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout
 
 This is a core design issue. Think about this and review. This may not be salvageable. 
@@ -963,7 +866,7 @@ Thoughts:
   - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
   - paint() - Paint the layed out Containers, skipping those marked to skip
 
-*** IN-PROGRESS-NOW Implement core of Layouter algorithm 
+*** IN-PROGRESS-NOW Layouter algorithm 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
 
 1. *BoxContainerConstraints is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(boxContainerConstraintsDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
@@ -973,32 +876,6 @@ Thoughts:
    the size and position to actually give to each child :                                    parent context: calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf() <= layoutSize effect: child.layoutSize [overrides previous value] and child.offset (within parent) [new value] is set on each child. this.layoutSize and this.offset is set on me (parent)
 6. Step 4 includes *Parent sets actual layoutSize and position down on child*.
 
-
-#+BEGIN_SRC python
-  def layout(Constraint boxContainerConstraintsFromParent):     # 1. boxContainerConstraintss go down (as this is called in parent context)
-    if this is leaf:
-      this.layoutSize = calculate own layoutSize (may be e.g. size of rectangle if this is a rectangle) if not withit BoxContainerConstraints, exception???
-      return this.layoutSize                # 2. sizes go up
-    else:
-      for child in children:
-        # All children are offered the full layoutSize of parent. If greedy, that is a problem 
-        Size layoutSize = child.layout(constraintFromParent) # ignore return, we have it in side-effect
-      calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf()
-      return this.layoutSize ????
-
-
-  # For example, for flow layout, each child is given the layoutSize it previously asked, and moved by predecessors layoutSizes.
-  # !!!!!!!!!!!!!!! this replaces applyParentOffset
-  def calculateAndSetActualChildrenLayoutSizesAndOffsetsInSelf():
-    Offset currentOffset = 0
-    Size myLayoutSize = 0
-    for child in children:
-      child.layoutSize = child.layoutSize         # Size goes down - no change in one pass layout
-      child.offset += currentOffset   # 3. Actual position goes down
-      currentOffset += new Offset(child.layoutSize.width, 0) # just shift next child some more to the right.
-      myLayoutSize = currentOffset + child.layoutSize
-    this.layoutSize = myLayoutSize
-#+END_SRC
 
 *TAKEAWAY 1*: Each Layout (or Container?) has _constraints as a member. Default is FlowConstraints. Generally, each specific Layout class should have a specific Constraints class
 
@@ -1023,11 +900,11 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   /// Parent data
   Size size;
   Constraint constraint;
-  Offset positionInParent; // result of step 23
+  Offset offsetInParent; // result of step 23
   
-  List<Container> useExistingChildrenOrCreateChildren();
+  List<Container> step01UseExistingChildrenOrCreateChildren();
 
-  Offset findChildPositionIn(childIndex, List<ContainerSize> childrenContainerSizes);
+  Offset findChildOffsetIn(childIndex, List<ContainerSize> childrenContainerSizes);
 
   /// Given the constraints passed to layout, suggest how they should be distributed to children.
   /// This is layout specific. Most layouts will suggest for each child, the full constrains passed to it!
@@ -1036,7 +913,7 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 
   /// side effects:
   /// - Set child.size on all children
-  void step12AskChildrenToSetDesiredSizes() {
+  void step12AskChildrenToCallLayoutThenSetDesiredSizes() {
     for (child in children) {
       // todo-00-last
       child.layoutStep1AndSetSize();
@@ -1044,43 +921,43 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   }
 
   /// Final constraints set on children
-  void step21SetConstraintsOnChildrenFromDesiredSizes() { /* todo-00-last */ };
+  void step21DistributeConstraintsOnChildrenBasedOnDesiredSizes() { /* todo-00-last */ };
 
   /// Final sizes determination
-  void step22AskChildrenToSetFinalSizes() { /* todo-00-last */ };
+  void step22AskChildrenToSetFinalSizesWithinTheirConstraints() { /* todo-00-last */ };
 
   /// Final layout step
-  void step23PositionChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize() { /* todo-00-last */ };
+  void step23OffsetChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize() { /* todo-00-last */ };
 
   // Final apply parent offset
   void step24ApplyParentOffsetsOnChildren() { /* todo-00-last */ };
 
 
-  /// Layout means to establish size of this component and position it in parent.
+  /// Layout means to establish size of this component and offset it in parent.
   /// Layout in this implementation is iterative by asking children to layout. All called methods are also iterative
   /// side effects:
   /// - Set child.size on all children
   /// - Set child.constraint on all children
   Size layout(Constraints constraints) {
 
-    _children = useExistingChildrenOrCreateChildren(); // return _children by default
+    _children = step01UseExistingChildrenOrCreateChildren(); // return _children by default
 
     // Sizes from Constraints Pass 1
-    step11SetConstraintsOnChildrenFromMy(constraints);
-    step12AskChildrenToSetDesiredSizes();
+    step11SetConstraintsOnChildrenFromMy(constraints); // Just set child.constraints = constraints on all children
+    step12AskChildrenToCallDesiredLayoutThenSetDesiredSizes(); // call child.layout(child.constraint)
 
     // Sizes from Constraints Pass 2
-    step21SetConstraintsOnChildrenFromDesiredSizes();
+    step21DistributeConstraintsOnChildrenBasedOnDesiredSizes();
     step22AskChildrenToSetFinalSizes();
 
     // Layout children within me 
-    step23PositionChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize();
+    step23OffsetChildrenInMeBasedOnFinalSizesAndMyLayoutPropertiesAlsoSetMySize();
     // ^^ This is the core of layout. Maybe this comes from a mixin. Needs lots of helper methods.
     //    Helpers for Row container:
-    //      PositionSizes
+    //      OffsetSizes
 
 
-    // Apply offset from _position
+    // Apply offset from _offset
     step24ApplyParentOffsetsOnChildren();
 
     return size;
@@ -1089,22 +966,72 @@ See also: ~childSize = layoutChild(child, childConstraints);~
   // In Flutter, performLayout() often calls layout(Constraints), and Constraints live on RenderObject (Container)
   // In Flutter, Constraints is NOT a widget
 
-  class PositionSizes {
+  class OffsetSizes {
     Offset startOffset;
     List<Size> sizes;
     mainAxisAlign from enum AxisAlign = { max, center, min }
     crossAxisAlign from enum AxisAlign = { max, center, min }
     void convertSizesToRectangles();
-    List<Offset> positionSizesAccordingToAlign();
+    List<Offset> offsetSizesAccordingToAlign();
 
   }
 #+end_src
 
 
+*** IN-PROGRESS-NOW Layouter algorith #2
 
-*** TODO Apply Layouter algorithm ONLY in Legends panel as a proof of concept
-** TODO 9. New Box/Column layouts
-** TODO 4. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
+Core ideas
+
+- [ ] BoxContainer 
+  - [ ] add field isRoot, set to false
+- [ ] RootBoxContainer, set isRoot to true, add abstract rootLayout(Constraints)
+- [ ] Rename ChartTopContainer to ChartRootContainer
+- [ ] ChartRootContainer extends RootBoxContainer
+- [ ] Add to BoxConstainer, field _sandbox, intended to be changed by the owner (not parent)
+- [ ] BoxContainerSandbox new class
+  - fields childrenGreedyInMainAxisDirection, childrenGreedyInCrossAxisDirection List of children with Size infinity in that direction
+  - fields childrenInLayoutOrder
+  - fields mainAxisDirection, crossAxisDirection, set to none, X, Y, default none. add method isLayout, returns true if any of the axisdirection is set
+- [ ] Allow 0, 1 children to be greedy in MainAxisDirection, otherwise exception
+- [ ] ~rootLayout(Constraints)~
+  - if !root Exception
+  - ~step00_Recurse_createChildrenOrUseChildrenFromConstructor()~ // children should NOT need constraints or layoutSize during construction
+    - if (children not empty) return
+    - create child1
+    - addChild(child1)
+    - call child1.step00_Recurse_createChildrenOrUseChildrenFromConstructor()
+      .. etc
+  - ~step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast~
+    - sets up childrenGreedyInMainAxisDirection,  childrenGreedyInCrossAxisDirection
+    - if exactly 1 child greedy in MainAxisDirection, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
+  - this.constraints = passedConstraints 
+  - ~step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()~ // layout specific. only children changed, then next method. Default sets same constraints
+    - // node-pre-descend
+    - // node-descend  
+    - for (child in children)
+      - // child-pre-descend
+      - child.constraints = this.constraints
+      - // child-descend
+      - child.step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()
+      - // child-post-descend
+    - // node-post-descend     
+  - ~step30_Recurse_AskChildrenToSetLayoutSizesWithinTheirConstraints_NodePostDescendOffsetChildrenInMe()~
+    - for (child in children)
+      - ~child.step30_Recurse_AskChildrenToSetLayoutSizesWithinTheirConstraints_NodePostDescendOffsetChildrenInMe()~
+    - // node-post-descend : All children processed or no children
+    - ~step31_OffsetChildrenInMeBasedOnTheirSizesAndMyLayouter_ThenSetMySize()~
+      - for (child in children)
+        - child.offset += previousChild.offset + previousChild.size;  // layout specific
+      - this.size = sum of children sizes; // layout specific
+- 
+** TODO 3. Implement new Box/Column layouters
+*** IN-PROGRESS-NOW ~AxisDirectionBoxLayouter~, base class for Column and Row layouter
+
+** TODO 4. SOME Containers (LegendContainer): Use the new Layouter algorithm + new Box/Column layouts instead of custom code
+
+*** NOTE ~SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
+
+** TODO 5. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 
 *** LATER Ensure code sets up the parent/child hierarchy correctly in SOME existing containers
 
@@ -1177,9 +1104,99 @@ AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutS
 *** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
 *** TODO ~HUGE - establish hierarchy between current Containers other than children of ChartContainer~ (NOT non-container classes like Presenter, PointsColumn, PointsColumns )
 ** DONE DONE in new Containers refactoring and new Layout refactoring
-*** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
+*** DONE Easier cleanup and refactoring after Logarithmic scale (but not related)
+**** DONE Rename distributedLabels to distributedLabelYs
+**** DONE Rename yLabelsDividedInYAxisRange  to manuallyDistributedLabelYs
+**** DONE Manual vs Automated layout changes
 
-*** DONE Remove _paintYLabels and similar, just replace with content of the method.
+- [X] Manual layout does not use Range. Make it use Range and work semantically same as manual layout:
+  #+begin_src dart
+    Range range = Range(
+      values: allStackedDataYs,
+      chartOptions: _chartTopContainer.options,
+    );
+
+    // revert axisYMin/Max to accommodate y axis starting from top
+    YScalerAndLabelFormatter yScaler = range.makeYScalerWithLabelInfosFromDataYsOnScale(
+      axisYMin: axisYMin,
+      axisYMax: axisYMax,
+    );
+  #+end_src
+- [X] Remove Range and pull it's functionality to YScalerAndLabelFormatter
+- [X] Range only manages a list of values, that represents labels anyway! Do this:
+  - [X] Move the 2 members from Range to YScalerAndLabelFormatter
+  - [X] Move Range.makeYScalerWithLabelInfosFromDataYsOnScale to YScalerAndLabelFormatter private method, called from it's constructor
+  - [X] Remove Range
+  - [X] Fix tests and test
+- [X] Manual Layout
+  - [X] use terminology userLabelsDrivenLayout instead of manualLayout
+  - [X] Find code commonalities between userLabelsDrivenLayout and autoLabelsDrivenLayout
+  - [X] Fix manual layout to work the same as auto layout
+  - [X] Test
+  - [X] push
+  - [X] remove UNUSED methods
+  - [X] remove or rename obsolete comments
+  - [X] Address todo-00-later-document 
+  - [X] Address todo-00-later-not-used
+  - [X] Make YScaler members and methods private
+  - [X] Remove YScaler member dataYsEnvelop
+**** DONE Refactor ChartOptions so the same class applies for both LineChart and VerticalBarChart
+
+Idea: Only have one ChartOptions class, used both as LineChartOptions and VerticalBarChartOptions.
+
+We lose: Polymorphism (ability to define methods with differenct behavior) on LineChartOptions and VerticalBarChartOptions.
+
+Why it's OK: We are trying to remove all behavior from options anyway, in fact, removing all options.
+
+- [X] pull loose LineChartOptions members to a LineChartOptions 
+- [X] Rename in place ChartOptions to CommonChartOptions 
+- [X] convert VerticalBarChartOptions to empty class
+- [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
+- [X] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
+- [X] Make code and test work.
+**** DONE Add an intermediate between CustomPaint and Chart: ~VerticalBarChart extends widgets.CustomPaint~
+
+Add ~FlutterChart extends  widgets.CustomPaint~
+Then ~VerticalBarChart extends FlutterChart~
+Then ~LineChart extends FlutterChart~
+**** DONE Add note that Envelope always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
+**** DONE Rename any _container, container members to topChartContainer if it is actually ChartableTopContainer
+**** DONE ChartTopContainer related - replace final _private + getter with just private
+
+Look for places like this
+
+  final ChartTopContainer _chartTopContainer;
+  ChartTopContainer get chartTopContainer => _chartTopContainer;
+
+  What is the general need for a private final with a public getter? Isn't it better to just have a non-private final?  Yes. Changed that.
+**** DONE Rename DataRows to RawDataRows, DataRow to RawDataRow.
+
+*We only use dataRows and dataYs which represent transformed data, so make it consistent*
+- [-] Rename DataRows and related to RawDataRows
+- [-] Rename DataRow to RawDataRow.
+- [X] Rename LabelInfo.dataValue -> LabelInfo.rawDataValue
+- [X] Rename LabelInfo.transformedDataValue to dataValue
+- [ ] In the end, 'data', 'dataY' represents transformed, not-stacked not-scaled. 'rawData' 'rawDataY' represents original not-transformed data.
+- [ ] This is nice because 'data' is short, and most of the codes deals with 'transformed data', named 'data', which is short . Places in code where we see 'rawData' are not-transformed original data.
+**** DONE LabelInfo: Make some parts a getter rather than member
+
+- [X] Convert LabelInfo.rawDataValue to getter
+- [X] Convert LabelInfo.axisValue to getter
+**** DONE Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
+**** DONE Options access:
+
+- [X] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
+- [X] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
+- [ ]
+**** DONE Try to make as many members as possible final:
+- [X] LabelInfo
+- [X] YSCaler
+- [-] Containers - LATER
+- [ ] 
+**** DONE Rework imports to use the ~import '../presenter.dart'~ method rathern than importing the whole flutter_charts package.
+**** DONE Move all painting from ChartPainter.paint to ChartContainer.paint
+
+**** DONE Remove _paintYLabels and similar, just replace with content of the method.
 
 *** DONE Refactored SOME Containers = LegendContainer, LegendItemContainer, LabelContainer
 

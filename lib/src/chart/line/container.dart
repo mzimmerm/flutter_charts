@@ -10,8 +10,8 @@ import 'presenter.dart';
 /// The core override is setting the [presenterCreator] -
 /// object which makes instances of [LineAndHotspotPresenter]s,
 /// which are, in turn, used to present each data value.
-class LineChartTopContainer extends ChartTopContainer {
-  LineChartTopContainer({
+class LineChartRootContainer extends ChartRootContainer {
+  LineChartRootContainer({
     required ChartData chartData,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -23,10 +23,10 @@ class LineChartTopContainer extends ChartTopContainer {
 
   @override
   LineChartDataContainer createDataContainer({
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) {
     return LineChartDataContainer(
-      chartTopContainer: chartTopContainer,
+      chartRootContainer: chartRootContainer,
     );
   }
 

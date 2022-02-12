@@ -26,18 +26,18 @@ class LineAndHotspotPresenter extends Presenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) : super(
           point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartTopContainer: chartTopContainer,
+          chartRootContainer: chartRootContainer,
         ) {
-    var options = chartTopContainer.data.chartOptions;
+    var options = chartRootContainer.data.chartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
@@ -67,13 +67,13 @@ class LineAndHotspotLeafCreator extends PresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartTopContainer chartTopContainer,
+    required ChartRootContainer chartRootContainer,
   }) {
     return LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartTopContainer: chartTopContainer,
+      chartRootContainer: chartRootContainer,
     );
   }
 }

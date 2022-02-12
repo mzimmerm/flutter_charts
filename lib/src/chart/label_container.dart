@@ -78,7 +78,7 @@ class LabelContainer extends container_base.BoxContainer {
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// todo-01 : Does not set parent container's [_boxConstraints] and [chartTopContainer].
+  /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     required String label,
@@ -149,7 +149,7 @@ class LabelContainer extends container_base.BoxContainer {
   //                    also, the accumulated non-rotated this.offset is kept on super slot
   //                    This is what we want - we want to keep the non-rotated this.offset on super slot,
   //                    and only do the rotation on the last call (last before paint)
-  //                 The last call is made in [ChartTopContainer.layout] inside
+  //                 The last call is made in [ChartRootContainer.layout] inside
   //                     `xContainer.applyParentOffset(xContainerOffset)` as
   //                 as
   //                    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {

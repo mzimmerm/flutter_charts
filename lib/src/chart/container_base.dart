@@ -86,6 +86,7 @@ abstract class ContainerOld {
   void paint(ui.Canvas canvas);
 }
 
+
 abstract class BoxContainer {
 
   /// Default generative constructor. Prepares [_parentSandbox].
@@ -170,6 +171,7 @@ abstract class BoxContainer {
     _parentSandbox.parentOrderedToSkip = skip;
   }
   bool get parentOrderedToSkip => _parentSandbox.parentOrderedToSkip;
+  
 
   // ##### Abstract methods to implement
 
@@ -240,5 +242,8 @@ class BoxContainerParentSandbox {
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
   bool parentOrderedToSkip = false;
+  
+  // todo-00-last-done
+  BoxContainerConstraints constraints = BoxContainerConstraints.exactBox(size: const ui.Size(0.0, 0.0));
   
 }
