@@ -983,29 +983,27 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 Core ideas
 
 - [ ] BoxContainer 
-  - [ ] add field isRoot, set to false
-- [ ] RootBoxContainer, set isRoot to true, add abstract rootLayout(Constraints)
-- [ ] Rename ChartTopContainer to ChartRootContainer
-- [ ] ChartRootContainer extends RootBoxContainer
-- [ ] Add to BoxConstainer, field _sandbox, intended to be changed by the owner (not parent)
-- [ ] BoxContainerSandbox new class
-  - fields childrenGreedyInMainAxisDirection, childrenGreedyInCrossAxisDirection List of children with Size infinity in that direction
+- [X] RootBoxContainer, add abstract rootLayout(Constraints)
+- [X] Rename ChartTopContainer to ChartRootContainer
+- [X] ChartRootContainer extends RootBoxContainer
+- [X] Add to BoxContainer, field _layoutSandbox, intended to be changed by the owner (not parent)
+- [X] BoxContainerSandbox new class
+  - fields childrenGreedyAlongMainLayoutAxis, childrenGreedyAlongCrossLayoutAxis List of children with Size infinity in that direction
   - fields childrenInLayoutOrder
-  - fields mainAxisDirection, crossAxisDirection, set to none, X, Y, default none. add method isLayout, returns true if any of the axisdirection is set
-- [ ] Allow 0, 1 children to be greedy in MainAxisDirection, otherwise exception
-- [ ] ~rootLayout(Constraints)~
-  - if !root Exception
-  - ~step00_Recurse_createChildrenOrUseChildrenFromConstructor()~ // children should NOT need constraints or layoutSize during construction
+  - fields mainLayoutAxis, crossLayoutAxis, set to none, X, Y, default none. add method isLayout, returns true if any of the layoutAxis is set
+- [X] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
+- [-] ~rootLayout(Constraints)~
+  - [X] ~step00_Recurse_createChildrenOrUseChildrenFromConstructor()~ // children should NOT need constraints or layoutSize during construction
     - if (children not empty) return
     - create child1
     - addChild(child1)
     - call child1.step00_Recurse_createChildrenOrUseChildrenFromConstructor()
       .. etc
-  - ~step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast~
-    - sets up childrenGreedyInMainAxisDirection,  childrenGreedyInCrossAxisDirection
-    - if exactly 1 child greedy in MainAxisDirection, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
-  - this.constraints = passedConstraints 
-  - ~step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()~ // layout specific. only children changed, then next method. Default sets same constraints
+  - [X] ~step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast~
+    - sets up childrenGreedyAlongMainLayoutAxis,  childrenGreedyAlongCrossLayoutAxis
+    - if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
+  - [ ] this._layoutSandbox.constraints = passedConstraints 
+  - [X] ~step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()~ // layout specific. only children changed, then next method. Default sets same constraints
     - // node-pre-descend
     - // node-descend  
     - for (child in children)
@@ -1015,7 +1013,7 @@ Core ideas
       - child.step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()
       - // child-post-descend
     - // node-post-descend     
-  - ~step30_Recurse_AskChildrenToSetLayoutSizesWithinTheirConstraints_NodePostDescendOffsetChildrenInMe()~
+  - [X] ~step30_Recurse_AskChildrenToSetLayoutSizesWithinTheirConstraints_NodePostDescendOffsetChildrenInMe()~
     - for (child in children)
       - ~child.step30_Recurse_AskChildrenToSetLayoutSizesWithinTheirConstraints_NodePostDescendOffsetChildrenInMe()~
     - // node-post-descend : All children processed or no children
@@ -1025,7 +1023,7 @@ Core ideas
       - this.size = sum of children sizes; // layout specific
 - 
 ** TODO 3. Implement new Box/Column layouters
-*** IN-PROGRESS-NOW ~AxisDirectionBoxLayouter~, base class for Column and Row layouter
+*** IN-PROGRESS-NOW ~BoxLayouter~, base class for Column and Row layouter
 
 ** TODO 4. SOME Containers (LegendContainer): Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 

@@ -1,4 +1,4 @@
-import 'package:flutter_charts/src/chart/new/container_base_new.dart' show Packing, Align, LengthsLayouter, LayedOutLineSegments;
+import 'package:flutter_charts/src/chart/container_layouter_base.dart' show Packing, Align, LengthsLayouter, LayedOutLineSegments;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.

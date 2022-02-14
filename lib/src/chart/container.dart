@@ -9,7 +9,7 @@ import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
 import '../util/util_dart.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
-import 'container_base.dart' show BoxContainer;
+import 'container_base.dart' show BoxContainer, RootBoxContainer;
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
 import 'label_container.dart';
@@ -45,7 +45,13 @@ mixin ChartBehavior {
 /// - Related to above point, the [layout(num size)] is unrelated to
 ///   a same name method on [BoxContainer].
 ///
-abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
+abstract class ChartRootContainer extends RootBoxContainer with ChartBehavior {
+  
+  @override
+  void rootLayout(BoxContainerConstraints boxContainerConstraints) {
+    
+  }
+  
   /// Implements [BoxContainer.layoutSize].
   /// [ChartRootContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
   @override
@@ -1257,7 +1263,7 @@ class LegendItemContainer extends BoxContainer {
     for (var labelContainer in children) {
       labelContainer.paint(canvas);
     }
-    // todo-00-last-last : This needs to be looked at, not part of base layout and paint processing
+    // todo-00 : This needs to be looked at, not part of base layout and paint processing
     canvas.drawRect(
       _indicatorRect,
       _indicatorPaint,

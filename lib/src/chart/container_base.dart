@@ -1,8 +1,12 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_charts/src/chart/new/container_base_new.dart' show BoxContainerVisitor;
+// import 'package:flutter/foundation.dart';
+import 'package:flutter_charts/src/chart/new/container_base_new.dart' 
+    show BoxContainerVisitor;
+import 'package:flutter_charts/src/chart/container_layouter_base.dart'
+    show LayoutAxis;
+
 
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
@@ -86,18 +90,28 @@ abstract class ContainerOld {
   void paint(ui.Canvas canvas);
 }
 
+abstract class RootBoxContainer extends BoxContainer {
+  void rootLayout(BoxContainerConstraints boxContainerConstraints) {
+    step00_Recurse_createChildrenOrUseChildrenFromConstructor();
+    step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
+    step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints();
+    step30_Recurse_NodePostDescend_DoCoreLayout301();
+  }
+}
 
 abstract class BoxContainer {
 
   /// Default generative constructor. Prepares [_parentSandbox].
-  BoxContainer() : _parentSandbox = BoxContainerParentSandbox();
+  BoxContainer()
+      : _parentSandbox = BoxContainerParentSandbox(),
+        _layoutSandbox = BoxContainerLayoutSandbox();
 
   // ----------- Fields managed by Container
-
+  late final BoxContainer _parent;
+  final List<BoxContainer> _children = [];
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   ui.Size layoutSize = ui.Size.zero;
-
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
   /// making painting of this containerNew not possible.
@@ -117,10 +131,13 @@ abstract class BoxContainer {
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the containerNew.
   bool allowParentToSkipOnDistressedSize = true;
-  
-  late final BoxContainer _parent;
-  
-  final List<BoxContainer> _children = [];
+  LayoutAxis mainLayoutAxis = LayoutAxis.none;
+  LayoutAxis crossLayoutAxis = LayoutAxis.none;
+  bool get isLayout => mainLayoutAxis != LayoutAxis.none || crossLayoutAxis != LayoutAxis.none;
+
+  void traverseAndApply(BoxContainerVisitor visitor) {
+    // todo-03
+  }
 
   void addChild(BoxContainer boxContainer) {
     boxContainer._parent = boxContainer;
@@ -128,19 +145,23 @@ abstract class BoxContainer {
   }
 
   List<BoxContainer> get children => _children;
-  
-  bool isRoot = false;
-  
-  String name = 'DefaultBoxContainerName';
-  
-  void traverseAndApply(BoxContainerVisitor visitor) {
-    // todo-03
+
+  double layoutLengthAlongMainLayoutAxis() {
+    if (mainLayoutAxis == LayoutAxis.horizontal) {
+      return layoutSize.width;
+    }    
+    if (mainLayoutAxis == LayoutAxis.vertical) {
+      return layoutSize.height;
+    }
+    return 0.0;
   }
 
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
   final BoxContainerParentSandbox _parentSandbox;
-
+  /// Member used during the [layout] processing.
+  final BoxContainerLayoutSandbox _layoutSandbox;
+  
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
   /// That means, it is the offset from (0,0) of the canvas. There is only one
@@ -176,7 +197,91 @@ abstract class BoxContainer {
   // ##### Abstract methods to implement
 
   void layout(BoxContainerConstraints boxConstraints);
+  
+  /// Create and add children of this container.
+  ///   - if (children not empty) return
+  ///   - create child1
+  ///   - addChild(child1)
+  ///   - call child1.step00_Recurse_createChildrenOrUseChildrenFromConstructor()
+  ///     .. etc
+  void step00_Recurse_createChildrenOrUseChildrenFromConstructor() {} // todo-00-last : make abstract
 
+  void step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
+    // sets up childrenGreedyInMainLayoutAxis,  childrenGreedyInCrossLayoutAxis
+    // if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
+    // this.constraints = passedConstraints
+    int numGreedyAlongMainLayoutAxis = 0;
+    BoxContainer? greedyChild;
+    for (var child in children) {
+      child.step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
+      if (child.layoutLengthAlongMainLayoutAxis() == double.infinity) {
+        numGreedyAlongMainLayoutAxis += 1;
+        greedyChild = child;
+      }
+      _layoutSandbox.addedSizeOfAllChildren += ui.Offset(child.layoutSize.width, child.layoutSize.height);
+    }
+    if (numGreedyAlongMainLayoutAxis >= 2) {
+      throw StateError('Max one child can ask for unlimited (greedy) size along main layout axis. Violated in $this');
+    }
+    _layoutSandbox.childrenInLayoutOrderGreedyLast = List.from(children);
+    if (greedyChild != null) {
+      _layoutSandbox.childrenInLayoutOrderGreedyLast
+          ..remove(greedyChild)
+          ..add(greedyChild);
+    }
+  }
+
+  // layout specific. only children changed, then next method. Default sets same constraints
+  void step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints() {
+    // node-pre-descend
+    // node-descend  
+    for (var child in _layoutSandbox.childrenInLayoutOrderGreedyLast) {
+      // child-pre-descend
+      child._layoutSandbox.constraints = _layoutSandbox.constraints;
+      // child-descend
+      child.step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints();
+      // child-post-descend
+    }
+    // node-post-descend 
+  }
+
+  void step30_Recurse_NodePostDescend_DoCoreLayout301() {
+    // node-pre-descend
+    // node-descend  
+    for (var child in children) {
+      // child-pre-descend
+      // child-descend
+      child.step30_Recurse_NodePostDescend_DoCoreLayout301();
+      // child-post-descend
+    }    
+    // node-post-descend
+    step301_PostDescend_IfLeafSetMySize_Otherwise_OffsetChildrenInMe_ThenSetMySize(); // todo-00-last layout specific
+  }
+  
+  void step301_PostDescend_IfLeafSetMySize_Otherwise_OffsetChildrenInMe_ThenSetMySize() {
+    if (_layoutSandbox.childrenInLayoutOrderGreedyLast.isEmpty) {
+      step301_IfLeafSetMySizeWithinConstraints();
+    } else {
+      step301_IfNotLeafLayouterSpecificOffsetChildrenAndSetMySizeWithinConstraints();
+    }
+  }
+
+  // Exception or visual indication if "my size" is NOT "within my constraints"
+  void step301_IfNotLeafLayouterSpecificOffsetChildrenAndSetMySizeWithinConstraints() {
+    BoxContainer? previousChild;
+    for (var child in _layoutSandbox.childrenInLayoutOrderGreedyLast) {
+      // todo-00 : add static method on Size to do Size + Size.
+      /* todo-00-last : implement this for RowLayouter and ColumnLayouter
+      ui.Size previousChildOffset = previousChild != null ? previousChild.offset : const ui.Size(0.0, 0.0);
+      child.applyParentOffset(previousChild.offset + child.layoutSize); 
+      layoutSize = const ui.Size(0.0, 0.0); // sum of children sizes;
+      */
+      previousChild = child;
+    }
+  }
+  
+  void step301_IfLeafSetMySizeWithinConstraints() {} // todo-00-last : make abstract
+  
   // todo-01 : split:
   //           - Container to BoxContainer and PieContainer
   //           - Shape to BoxShape (wraps Size) and PieShape
@@ -243,7 +348,18 @@ class BoxContainerParentSandbox {
   /// appropriate support for collapse to work.
   bool parentOrderedToSkip = false;
   
-  // todo-00-last-done
-  BoxContainerConstraints constraints = BoxContainerConstraints.exactBox(size: const ui.Size(0.0, 0.0));
+  // todo-00-done : added then removed : BoxContainerConstraints constraints = BoxContainerConstraints.exactBox(size: const ui.Size(0.0, 0.0));
+  
+}
+
+// todo-00-done BoxContainerLayoutSandbox - a new class -----------------------------------------------------------------
+
+// todo-01-last : try to make non-nullable and final
+class BoxContainerLayoutSandbox {
+  List<BoxContainer> childrenInLayoutOrderGreedyLast = [];
+  // List<BoxContainer> childrenGreedyAlongMainLayoutAxis = [];
+  // List<BoxContainer> childrenGreedyAlongCrossLayoutAxis = [];
+  ui.Size addedSizeOfAllChildren = const ui.Size(0.0, 0.0);
+  BoxContainerConstraints? constraints;
   
 }
