@@ -90,15 +90,6 @@ abstract class ContainerOld {
   void paint(ui.Canvas canvas);
 }
 
-abstract class RootBoxContainer extends BoxContainer {
-  void rootLayout(BoxContainerConstraints boxContainerConstraints) {
-    step00_Recurse_createChildrenOrUseChildrenFromConstructor();
-    step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
-    step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints();
-    step30_Recurse_NodePostDescend_DoCoreLayout301();
-  }
-}
-
 abstract class BoxContainer {
 
   /// Default generative constructor. Prepares [_parentSandbox].
@@ -109,6 +100,8 @@ abstract class BoxContainer {
   // ----------- Fields managed by Container
   late final BoxContainer _parent;
   final List<BoxContainer> _children = [];
+  bool isRoot = false;
+  bool get isLeaf => children.isEmpty;
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   ui.Size layoutSize = ui.Size.zero;
@@ -158,6 +151,7 @@ abstract class BoxContainer {
 
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
+  // todo-00-last : consider moving some fields to layoutSandbox
   final BoxContainerParentSandbox _parentSandbox;
   /// Member used during the [layout] processing.
   final BoxContainerLayoutSandbox _layoutSandbox;
@@ -197,23 +191,54 @@ abstract class BoxContainer {
   // ##### Abstract methods to implement
 
   void layout(BoxContainerConstraints boxConstraints);
-  
-  /// Create and add children of this container.
-  ///   - if (children not empty) return
-  ///   - create child1
-  ///   - addChild(child1)
-  ///   - call child1.step00_Recurse_createChildrenOrUseChildrenFromConstructor()
-  ///     .. etc
-  void step00_Recurse_createChildrenOrUseChildrenFromConstructor() {} // todo-00-last : make abstract
 
-  void step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
+  // Core recursive layout method.
+  // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
+  void newCoreLayout() {
+    if (isRoot) {
+      rootStep1_setRootConstraint();
+      rootStep2_Recurse_setupContainerHierarchy();
+      rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
+      // todo-00-last : make sure it is set before call : _layoutSandbox.constraints = boxContainerConstraints;
+    }
+    // node-pre-descend
+    step301_PreDescend_DistributeMyConstraintToImmediateChildren();
+    // node-descend  
+    for (var child in children) {
+      // child-pre-descend
+      // child-descend
+      child.newCoreLayout();
+      // child-post-descend
+    }
+    // node-post-descend
+    step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize(); // todo-00-last layout specific
+  }
+
+  /// Create and add children of this container.
+  void rootStep2_Recurse_setupContainerHierarchy() {
+    for (var child in children) {
+      child.createChildrenOrUseChildrenFromConstructor();
+      child.rootStep2_Recurse_setupContainerHierarchy();
+    }
+  } 
+  
+  // todo-00-last make abstract, each Container must implement. Layouter has this no-op.
+  // Create children one after another, or do nothing if children were created in constructor.
+  // Any child created here must be added to the list of children.
+  //   - if (we do not want any children created here (may exist from constructor)) return
+  //   - create childN
+  //   - addChild(childN)
+  //   - etc
+  void createChildrenOrUseChildrenFromConstructor() {}
+
+  void rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
     // sets up childrenGreedyInMainLayoutAxis,  childrenGreedyInCrossLayoutAxis
     // if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
     // this.constraints = passedConstraints
     int numGreedyAlongMainLayoutAxis = 0;
     BoxContainer? greedyChild;
     for (var child in children) {
-      child.step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
+      child.rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       if (child.layoutLengthAlongMainLayoutAxis() == double.infinity) {
         numGreedyAlongMainLayoutAxis += 1;
         greedyChild = child;
@@ -231,56 +256,46 @@ abstract class BoxContainer {
     }
   }
 
-  // layout specific. only children changed, then next method. Default sets same constraints
-  void step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints() {
-    // node-pre-descend
-    // node-descend  
-    for (var child in _layoutSandbox.childrenInLayoutOrderGreedyLast) {
-      // child-pre-descend
-      child._layoutSandbox.constraints = _layoutSandbox.constraints;
-      // child-descend
-      child.step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints();
-      // child-post-descend
-    }
-    // node-post-descend 
+  void rootStep1_setRootConstraint() {
+    // todo-00-last implement where needed
   }
-
-  void step30_Recurse_NodePostDescend_DoCoreLayout301() {
-    // node-pre-descend
-    // node-descend  
-    for (var child in children) {
-      // child-pre-descend
-      // child-descend
-      child.step30_Recurse_NodePostDescend_DoCoreLayout301();
-      // child-post-descend
-    }    
-    // node-post-descend
-    step301_PostDescend_IfLeafSetMySize_Otherwise_OffsetChildrenInMe_ThenSetMySize(); // todo-00-last layout specific
+  // Layout specific. only children changed, then next method. Default sets same constraints
+  void step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
+    for (var child in _layoutSandbox.childrenInLayoutOrderGreedyLast) {
+      // todo-00-last - how does this differ for Column, Row, etc?
+      child._layoutSandbox.constraints = _layoutSandbox.constraints;
+    }
   }
   
-  void step301_PostDescend_IfLeafSetMySize_Otherwise_OffsetChildrenInMe_ThenSetMySize() {
-    if (_layoutSandbox.childrenInLayoutOrderGreedyLast.isEmpty) {
-      step301_IfLeafSetMySizeWithinConstraints();
+  void step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize() {
+    if (isLeaf) {
+      step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints();
     } else {
-      step301_IfNotLeafLayouterSpecificOffsetChildrenAndSetMySizeWithinConstraints();
+      step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints();
     }
   }
 
+  // Layouter specific!
   // Exception or visual indication if "my size" is NOT "within my constraints"
-  void step301_IfNotLeafLayouterSpecificOffsetChildrenAndSetMySizeWithinConstraints() {
+  void step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints() {
     BoxContainer? previousChild;
     for (var child in _layoutSandbox.childrenInLayoutOrderGreedyLast) {
       // todo-00 : add static method on Size to do Size + Size.
-      /* todo-00-last : implement this for RowLayouter and ColumnLayouter
+      // todo-00-last-last : need method for envelop of list of children except last greedy
+      /* todo-00-last-last : implement this for RowLayouter and ColumnLayouter
+          MAYBE THIS NEEDS TO BE A SEPARATE ABSTRACT METHOD 
       ui.Size previousChildOffset = previousChild != null ? previousChild.offset : const ui.Size(0.0, 0.0);
       child.applyParentOffset(previousChild.offset + child.layoutSize); 
-      layoutSize = const ui.Size(0.0, 0.0); // sum of children sizes;
+      layoutSize = const ui.Size(0.0, 0.0); // size of children envelop
+      IF THIS IS A LAST CHILD, AND IT IS GREEDY, RE-SET THE CHILD CONSTRAINT AS MY_CONSTRAINT minus ENVELOP OF PREVIOUS CHILDREN
+      THEN CALCULATE THIS GREEDY CHILD LAYOUT AND SET SIZE.
       */
       previousChild = child;
     }
   }
   
-  void step301_IfLeafSetMySizeWithinConstraints() {} // todo-00-last : make abstract
+  
+  void step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints() {} // todo-00-last : make abstract
   
   // todo-01 : split:
   //           - Container to BoxContainer and PieContainer

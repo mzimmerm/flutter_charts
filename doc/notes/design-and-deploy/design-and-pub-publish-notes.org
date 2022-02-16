@@ -866,7 +866,7 @@ Thoughts:
   - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
   - paint() - Paint the layed out Containers, skipping those marked to skip
 
-*** IN-PROGRESS-NOW Layouter algorithm 
+*** DONE ~NOT USED : Layouter algorith~ 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
 
 1. *BoxContainerConstraints is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(boxContainerConstraintsDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
@@ -978,21 +978,21 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 #+end_src
 
 
-*** IN-PROGRESS-NOW Layouter algorith #2
+*** DONE ~Layouter algorith #2 - USED~
 
 Core ideas
 
-- [ ] BoxContainer 
-- [X] RootBoxContainer, add abstract rootLayout(Constraints)
+- [X] BoxContainer 
+- [X] add abstract rootLayout() - assumes constraints set!!
 - [X] Rename ChartTopContainer to ChartRootContainer
-- [X] ChartRootContainer extends RootBoxContainer
+- [X] NOOO : ChartRootContainer extends RootBoxContainer
 - [X] Add to BoxContainer, field _layoutSandbox, intended to be changed by the owner (not parent)
 - [X] BoxContainerSandbox new class
   - fields childrenGreedyAlongMainLayoutAxis, childrenGreedyAlongCrossLayoutAxis List of children with Size infinity in that direction
   - fields childrenInLayoutOrder
   - fields mainLayoutAxis, crossLayoutAxis, set to none, X, Y, default none. add method isLayout, returns true if any of the layoutAxis is set
 - [X] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
-- [-] ~rootLayout(Constraints)~
+- [X] ~rootLayout()~
   - [X] ~step00_Recurse_createChildrenOrUseChildrenFromConstructor()~ // children should NOT need constraints or layoutSize during construction
     - if (children not empty) return
     - create child1
@@ -1002,7 +1002,7 @@ Core ideas
   - [X] ~step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast~
     - sets up childrenGreedyAlongMainLayoutAxis,  childrenGreedyAlongCrossLayoutAxis
     - if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
-  - [ ] this._layoutSandbox.constraints = passedConstraints 
+  - [X] this._layoutSandbox.constraints = passedConstraints 
   - [X] ~step20_Recurse_CalculateAndSetChildrenConstraints_FromMyConstraints()~ // layout specific. only children changed, then next method. Default sets same constraints
     - // node-pre-descend
     - // node-descend  
@@ -1025,9 +1025,20 @@ Core ideas
 ** TODO 3. Implement new Box/Column layouters
 *** IN-PROGRESS-NOW ~BoxLayouter~, base class for Column and Row layouter
 
+LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM LAYOUT.
+
+- [ ] ~BoxLayouter extends BoxContainer~
+  - [ ] what methods or fields has BoxLayouter which BoxContainer does not have?
+  - [ ] layout axis is already in Container, keep there for now
+  - [ ] NO SPECIAL METHOD ADDED.
+  - [ ] ~Add constructor BoxLayouter(children: List<BoxContainer>). How does it change what we are doing in BoxContainer?~
+- [ ] ~RowLayouter~
+  - [ ] implement step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints specifically.
 ** TODO 4. SOME Containers (LegendContainer): Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 
 *** NOTE ~SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
+
+Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 
 ** TODO 5. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 

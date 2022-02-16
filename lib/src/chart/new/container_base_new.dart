@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Size, Offset;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'dart:math' as math show max, Rectangle;
+import 'dart:math' as math show Rectangle;
 
 // import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 // import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;

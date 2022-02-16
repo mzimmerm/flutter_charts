@@ -1,5 +1,8 @@
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'dart:math' as math show max;
+import 'dart:ui' as ui show Size, Offset;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 
 /// todo-00-document
 enum LayoutAxis {
@@ -65,38 +68,57 @@ enum Packing {
 /// todo-00-document
 enum Align { min, center, max }
 
+/// Properties of [BoxLayouter] describe packing and alignment of the layed out elements along
+/// either a main axis or cross axis.
+/// 
+/// This class is also used to describe packing and alignment of the layed out elements 
+/// for the [LengthsLayouter], where it serves to describe the one-dimensional packing and alignment.
+class BoxLayoutProperties {
+  final Packing packing;
+  final Align align;
+  double? totalLength;
+  BoxLayoutProperties({
+    required this.packing,
+    required this.align,
+    this.totalLength,
+  });
+}
+
+
 /// todo-00-document
 class LengthsLayouter {
   LengthsLayouter({
     required this.lengths,
-    required this.packing,
-    required this.align,
-    this.totalLength,
+    required this.boxLayoutProperties,
   }) {
-    switch (packing) {
+    switch (boxLayoutProperties.packing) {
       case Packing.matrjoska:
-        totalLength ??= _maxLength;
-        assert(totalLength! >= _maxLength);
-        _freePadding = totalLength! - _maxLength;
+        boxLayoutProperties.totalLength ??= _maxLength;
+        assert(boxLayoutProperties.totalLength! >= _maxLength);
+        _freePadding = boxLayoutProperties.totalLength! - _maxLength;
         break;
       case Packing.snap:
       case Packing.loose:
-        totalLength ??= _sumLengths;
-        assert(totalLength! >= _sumLengths);
-        _freePadding = totalLength! - _sumLengths;
+      boxLayoutProperties.totalLength ??= _sumLengths;
+        assert(boxLayoutProperties.totalLength! >= _sumLengths);
+        _freePadding = boxLayoutProperties.totalLength! - _sumLengths;
         break;
     }
   }
 
   final List<double> lengths;
+  /// todo-00-last Refactor so that packing, align, totalLength is organized in [BoxLayoutProperties].
+/*
   final Packing packing;
   final Align align;
-  late double? totalLength;
+  double? totalLength;
+*/
+  BoxLayoutProperties boxLayoutProperties;
   late final double _freePadding;
 
   LayedOutLineSegments layoutLengths() {
     LayedOutLineSegments layedOutLineSegments;
-    switch (packing) {
+    switch (boxLayoutProperties.packing) {
       case Packing.matrjoska:
         layedOutLineSegments = LayedOutLineSegments(
             lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false));
@@ -126,7 +148,7 @@ class LengthsLayouter {
   /// as well as the whole largest Matrjoska alignment inside the available [totalLength].
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
     double start, end;
-    switch (align) {
+    switch (boxLayoutProperties.align) {
       case Align.min:
         start = 0.0;
         end = length;
@@ -181,7 +203,7 @@ class LengthsLayouter {
 
   double _snapStartOffset(bool isFirstLength) {
     double freePadding, startOffset;
-    switch (align) {
+    switch (boxLayoutProperties.align) {
       case Align.min:
         freePadding = 0.0;
         startOffset = freePadding;
@@ -201,7 +223,7 @@ class LengthsLayouter {
   double _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
     double freePadding, startOffset;
-    switch (align) {
+    switch (boxLayoutProperties.align) {
       case Align.min:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         startOffset = isFirstLength ? 0.0 : freePadding;
@@ -234,7 +256,7 @@ class LayedOutLineSegments {
       return false;
     }
 
-    // now Dart knows other is LayedOutLineSegments, but for clarity:
+    // Dart knows other is LayedOutLineSegments, but for clarity:
     LayedOutLineSegments otherSegment = other;
     if (lineSegments.length != otherSegment.lineSegments.length) {
       return false;
@@ -253,6 +275,150 @@ class LayedOutLineSegments {
   }
 }
 
-// todo-00-last : BoxLayouter, base class for Column and Row layouter
+abstract class LayoutableBox {
+ ui.Size get size;
+ ui.Offset get offset;
+ // set offset(ui.Offset offset);
+ void applyParentOffset(ui.Offset offset);
+}
+
+/// todo-00-last-last  convert to extension of BoxContainer - or a mixin?.
+/// Layouter of a list of [LayoutableBox]s.
+/// 
+/// The role of this class is to lay out boxes along the main axis and the cross axis,
+/// given layout properties for alignment and packing.
+/// 
+/// Created from the [layoutableBoxes], a list of [LayoutableBox]s, and the definitions
+/// of [mainLayoutAxis] and [crossLayoutAxis], along with the alignment and packing properties 
+/// along each of those axis, [mainAxisBoxLayoutProperties] and [crossAxisBoxLayoutProperties]
+/// 
+/// The core function of this class is to layout (offset) the member boxes [layoutableBoxes] 
+/// by the side effects of the method [layoutAndOffsetBoxes]. 
+class BoxLayouter {
+  
+  BoxLayouter({
+    required this.layoutableBoxes,
+    required this.mainLayoutAxis,
+    required this.crossLayoutAxis,
+    required this.mainAxisBoxLayoutProperties,
+    required this.crossAxisBoxLayoutProperties,
+  }) {
+    assert(mainLayoutAxis != LayoutAxis.none);
+    assert(crossLayoutAxis != LayoutAxis.none);
+    assert(mainLayoutAxis != crossLayoutAxis);
+  }
+
+  // todo-00-last Same members as in BoxContainer. Later, move or delegate them from BoxContainer here
+  List<LayoutableBox> layoutableBoxes = [];
+  LayoutAxis mainLayoutAxis = LayoutAxis.none;
+  LayoutAxis crossLayoutAxis = LayoutAxis.none;
+  bool get isLayout => mainLayoutAxis != LayoutAxis.none || crossLayoutAxis != LayoutAxis.none;
+  
+  BoxLayoutProperties mainAxisBoxLayoutProperties;
+  BoxLayoutProperties crossAxisBoxLayoutProperties;
+
+  /// Lays out all elements in [layoutableBoxes], by setting offset on each [LayoutableBox] element.
+  /// 
+  /// The offset on each [LayoutableBox] element is calculated using the [mainAxisLayoutProperties]
+  /// in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
+  /// 
+  /// Implementation detail: The processing is calling the [LengthsLayouter.layoutLengths], method.
+  /// There are two instances of the [LengthsLayouter] created, one
+  /// for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),  
+  /// another for the [crossLayoutAxis] (using the [crossAxisLayoutProperties]).
+  // todo-00-last-last : This must be called somewhere!!
+  void layoutAndOffsetBoxes() {
+    // Create a LengthsLayouter along each axis (main, cross).
+    LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties);
+    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(crossLayoutAxis, crossAxisBoxLayoutProperties);
+    
+    // Layout the lengths along each axis to line segments (offset-ed lengths).   
+    LayedOutLineSegments mainAxisLayedOutSegments = mainAxisLengthsLayouter.layoutLengths();
+    LayedOutLineSegments crossAxisLayedOutSegments = crossAxisLengthsLayouter.layoutLengths();
+    
+    // Convert the line segments to Offsets (in each axis)
+    List<ui.Offset> layedOutOffsets = _convertLayedOutSegmentsToOffsets(
+      mainLayoutAxis,
+      mainAxisLayedOutSegments,
+      crossAxisLayedOutSegments,
+      );
+    
+    // Apply the offsets obtained by layouting onto the layoutableBoxes
+    assert(layedOutOffsets.length == layoutableBoxes.length);
+    for (int i =  layoutableBoxes.length; i < layedOutOffsets.length; i++) {
+      layoutableBoxes[i].applyParentOffset(layedOutOffsets[i]);
+    }
+  }
+  
+  /// todo-00-document
+  List<ui.Offset> _convertLayedOutSegmentsToOffsets(
+      LayoutAxis mainLayoutAxis,
+      LayedOutLineSegments mainAxisLayedOutSegments,
+      LayedOutLineSegments crossAxisLayedOutSegments,
+      ) {
+
+    if (mainAxisLayedOutSegments.lineSegments.length != crossAxisLayedOutSegments.lineSegments.length) {
+      throw StateError('Segments differ in lengths: main=$mainAxisLayedOutSegments, cross=$crossAxisLayedOutSegments');
+    }
+    
+    List<ui.Offset> layedOutOffsets = [];
+
+    for (int i = 0; i < mainAxisLayedOutSegments.lineSegments.length; i++) {
+      ui.Offset offset = _segmentsToOffset(
+        mainLayoutAxis, mainAxisLayedOutSegments.lineSegments[i], crossAxisLayedOutSegments.lineSegments[i]);
+      layedOutOffsets.add(offset);
+    }
+    return layedOutOffsets;
+  }
+
+  /// Converts two [util_dart.LineSegment] to [Offset] according to [mainLayoutAxis].
+  ui.Offset _segmentsToOffset(
+      LayoutAxis mainLayoutAxis, util_dart.LineSegment mainSegment, util_dart.LineSegment crossSegment) {
+    ui.Offset offset;
+
+    // Only the segments' beginnings are used for offset on BoxLayouter. 
+    // The segments' ends are already taken into account in BoxLayouter.size.
+    switch (mainLayoutAxis) {
+      case LayoutAxis.horizontal:
+        return ui.Offset(mainSegment.min, crossSegment.min);
+        break;
+      case LayoutAxis.vertical:
+        return offset = ui.Offset(crossSegment.min, mainSegment.min);
+      case LayoutAxis.none:
+        throw StateError('Asking for a segment offset, but layoutAxis is none.');
+    }
+  }
+
+  /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
+  /// 
+  /// The passed objects must both correspond to either main axis or the cross axis.
+  LengthsLayouter _lengthsLayouterAlong(LayoutAxis layoutAxis, BoxLayoutProperties axisLayoutProperties) {
+    List<double> lengthsAlongLayoutAxis = _lengthsAlongLayoutAxis(layoutAxis);
+    LengthsLayouter lengthsLayouterAlongLayoutAxis = LengthsLayouter(
+      lengths: lengthsAlongLayoutAxis,
+      boxLayoutProperties: axisLayoutProperties,
+    );
+    return lengthsLayouterAlongLayoutAxis;
+  }
+  
+  /// Returns the passed [size]'s width or height along the passed [layoutAxis].
+  double _lengthAlongLayoutAxis(LayoutAxis layoutAxis, ui.Size size) {
+    switch(layoutAxis) {
+      case LayoutAxis.horizontal:
+        return size.width;
+      case LayoutAxis.vertical:
+        return size.height;
+      case LayoutAxis.none:
+        throw StateError('Asking for a length along the layout axis, but layoutAxis is none.');
+    }
+  }
+  
+  /// Creates and returns a list of lengths of the [layoutableBoxes]
+  /// measured along the passed [layoutAxis].
+  List<double> _lengthsAlongLayoutAxis(LayoutAxis layoutAxis) => 
+      layoutableBoxes.map((layoutableBox) => _lengthAlongLayoutAxis(layoutAxis, layoutableBox.size)).toList();
+  
+}
+// todo-00-last : BoxLayouter, base class for ColumnLayouter and RowLayouter
 //                BoxLayouter extends BoxContainer, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
 

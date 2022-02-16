@@ -9,7 +9,7 @@ import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
 import '../util/util_dart.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
-import 'container_base.dart' show BoxContainer, RootBoxContainer;
+import 'container_base.dart' show BoxContainer;
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
 import 'label_container.dart';
@@ -45,11 +45,11 @@ mixin ChartBehavior {
 /// - Related to above point, the [layout(num size)] is unrelated to
 ///   a same name method on [BoxContainer].
 ///
-abstract class ChartRootContainer extends RootBoxContainer with ChartBehavior {
+abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   
   @override
-  void rootLayout(BoxContainerConstraints boxContainerConstraints) {
-    
+  void newCoreLayout() {
+    // todo-00-last
   }
   
   /// Implements [BoxContainer.layoutSize].
