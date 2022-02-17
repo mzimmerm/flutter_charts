@@ -1,8 +1,9 @@
 import 'dart:ui' show Size;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/new/container_base_new.dart';
 
+class ContainerConstraints {
+}
 
 /// Defines how a container [layout] should expand the container in a direction.
 ///

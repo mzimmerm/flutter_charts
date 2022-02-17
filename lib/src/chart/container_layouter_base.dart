@@ -1,12 +1,107 @@
+import 'dart:ui' as ui show Size, Offset, Canvas;
 import 'dart:math' as math show max;
-import 'dart:ui' as ui show Size, Offset;
-
 import 'package:flutter/material.dart';
-import 'package:flutter_charts/src/chart/container_base.dart' show BoxContainer;
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:tuple/tuple.dart';
 
-import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
+
+
+
+/// Base class which manages, lays out, moves, and paints
+/// graphical elements on the chart, for example individual
+/// labels, but also a collection of labels.
+///
+/// This base class manages
+///
+/// Roles:
+/// - Container: through the [layout] method.
+/// - Translator (in X and Y direction): through the [applyParentOffset]
+///   method.
+/// - Painter: through the [paint] method.
+///
+/// Note on Lifecycle of [BoxContainer] : objects should be such that
+///   after construction, methods should be called in the order declared here.
+///
+abstract class ContainerOld {
+  /// Manages the layout size during the layout process in [layout].
+  /// Should be only mentioned in this class, not super
+  ui.Size layoutSize = ui.Size.zero;
+
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top Container, passed to all children in the
+  /// [paint(Canvas, Size)].
+  ///
+  ///
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
+  /// to [applyParentOffset] during object lifetime.
+  ui.Offset offset = ui.Offset.zero;
+
+  /// Allow a parent container to move this Container
+  /// after [layout].
+  ///
+  /// Override if parent move needs to propagate to internals of
+  /// this [BoxContainer].
+  void applyParentOffset(ui.Offset offset) {
+    this.offset += offset;
+  }
+
+  /// [skipByParent] instructs the parent container that this container should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  bool skipByParent = false;
+
+  /// If size constraints imposed by parent are too tight,
+  /// some internal calculations of sizes may lead to negative values,
+  /// making painting of this container not possible.
+  ///
+  /// Setting the [enableSkipOnDistressedSize] `true` helps to solve such situation.
+  /// It causes the container not be painted
+  /// (skipped during layout) when space is constrained too much
+  /// (not enough space to reasonably paint the container contents).
+  /// Note that setting this to `true` may result
+  /// in surprizing behavior, instead of exceptions.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  ///
+  /// Unlike [skipByParent], which directs the parent to ignore this container,
+  /// [enableSkipOnDistressedSize] is intended to be checked in code
+  /// for some invalid conditions, and if they are reached, bypass painting
+  /// the container.
+  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
+
+  bool isDistressed = false;
+
+  ContainerOld();
+
+  // ##### Abstract methods to implement
+
+  // todo-01-morph : This should pass Constraints - see [RenderObject]
+  void layout(BoxContainerConstraints boxConstraints);
+
+  void paint(ui.Canvas canvas);
+}
+
+/// [BoxContainerHierarchy] is repeated here and in [BoxLayouter] 
+/// to make clear that both [BoxContainer] and [BoxLayouter]
+/// have the same  [BoxContainerHierarchy] trait (capability, role).
+abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
+  
+  /// Default generative constructor. Prepares [parentSandbox].
+  BoxContainer() {
+    parentSandbox = BoxLayouterParentSandbox();
+    layoutSandbox = BoxLayouterLayoutSandbox();
+  }
+ 
+  void paint(ui.Canvas canvas);
+
+}
 
 /// todo-00-document
 enum LayoutAxis {
@@ -114,7 +209,7 @@ class LengthsLayouter {
         break;
       case Packing.snap:
       case Packing.loose:
-      boxLayoutProperties.totalLength ??= _sumLengths;
+        boxLayoutProperties.totalLength ??= _sumLengths;
         assert(boxLayoutProperties.totalLength! >= _sumLengths);
         _freePadding = boxLayoutProperties.totalLength! - _sumLengths;
         break;
@@ -175,7 +270,7 @@ class LengthsLayouter {
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
-    break;
+        break;
       case Align.max:
         freePadding = _freePadding;
         start = freePadding + _maxLength - length;
@@ -209,8 +304,8 @@ class LengthsLayouter {
   }
 
   util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(
-      Tuple2<double, double> Function(bool) getStartOffset, 
-      util_dart.LineSegment? previousSegment, 
+      Tuple2<double, double> Function(bool) getStartOffset,
+      util_dart.LineSegment? previousSegment,
       double length,
       ) {
     bool isFirstLength = false;
@@ -284,7 +379,7 @@ class LayedOutLineSegments {
 
   final List<util_dart.LineSegment> lineSegments;
   final double totalLayedOutLength;
-  
+
   /// Calculates length of all layed out [lineSegments].
   /// 
   /// Because the [lineSegments] are created 
@@ -335,10 +430,10 @@ mixin BoxContainerHierarchy {
 
 // todo-00-last : Get rid of this or improve.
 abstract class LayoutableBox {
- ui.Size layoutSize = Size.zero;
- void applyParentOffset(ui.Offset offset);
- BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox();
- void newCoreLayout();
+  ui.Size layoutSize = Size.zero;
+  void applyParentOffset(ui.Offset offset);
+  BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox();
+  void newCoreLayout();
 }
 
 /// Layouter of a list of [LayoutableBox]s.
@@ -353,7 +448,7 @@ abstract class LayoutableBox {
 /// The core function of this class is to layout (offset) the member boxes [layoutableBoxes] 
 /// by the side effects of the method [offsetChildrenAccordingToLayouter]. 
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
-  
+
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
   @override
@@ -374,11 +469,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   List<LayoutableBox> get layoutableBoxes => children;
   LayoutAxis mainLayoutAxis = LayoutAxis.none; // todo-00 : consider default to horizontal (Row layout)
   bool get isLayout => mainLayoutAxis != LayoutAxis.none;
-  
+
   BoxLayoutProperties mainAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
   BoxLayoutProperties crossAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
 
   /// Member used during the [layout] processing.
+  @override
   BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox(); // todo-00-last : MAKE NOT NULLABLE 
 
   /// Greedy is defined as asking for layoutSize infinity.
@@ -386,13 +482,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///           [step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
   ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy => _lengthAlong(mainLayoutAxis, layoutSize) == double.infinity;
-  
+
   bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
-  
+
   LayoutableBox get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
 
   ui.Size childrenLayoutSizeAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
-    
+
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
 
     double mainLayedOutLength = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.totalLayedOutLength;
@@ -420,12 +516,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       mainLayoutAxis,
       mainAndCrossLayedOutSegments,
       notGreedyChildren,
-      );
-    
+    );
+
     // Apply the offsets obtained by layouting onto the layoutableBoxes
     _offsetChildren(layedOutOffsets, notGreedyChildren);
   }
-  
+
   _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross).
     LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties, notGreedyChildren);
@@ -449,7 +545,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       notGreedyChildren[i].applyParentOffset(layedOutOffsets[i]);
     }
   }
-  
+
   /// todo-00-document
   List<ui.Offset> _convertLayedOutSegmentsToOffsets(
       LayoutAxis mainLayoutAxis,
@@ -458,7 +554,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       ) {
     var mainAxisLayedOutSegments = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments;
     var crossAxisLayedOutSegments = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments;
-    
+
     if (mainAxisLayedOutSegments.lineSegments.length !=
         crossAxisLayedOutSegments.lineSegments.length) {
       throw StateError('Segments differ in lengths: main=$mainAxisLayedOutSegments, cross=$crossAxisLayedOutSegments');
@@ -468,7 +564,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
     for (int i = 0; i < mainAxisLayedOutSegments.lineSegments.length; i++) {
       ui.Offset offset = _convertSegmentsToOffset(
-        mainLayoutAxis, mainAxisLayedOutSegments.lineSegments[i], crossAxisLayedOutSegments.lineSegments[i]);
+          mainLayoutAxis, mainAxisLayedOutSegments.lineSegments[i], crossAxisLayedOutSegments.lineSegments[i]);
       layedOutOffsets.add(offset);
     }
     return layedOutOffsets;
@@ -483,7 +579,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
         return ui.Offset(mainSegment.min, crossSegment.min);
-        break;
       case LayoutAxis.vertical:
         return ui.Offset(crossSegment.min, mainSegment.min);
       case LayoutAxis.none:
@@ -498,7 +593,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
         return ui.Size(mainLength, crossLength);
-        break;
       case LayoutAxis.vertical:
         return ui.Size(crossLength, mainLength);
       case LayoutAxis.none:
@@ -530,12 +624,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     );
     return lengthsLayouterAlongLayoutAxis;
   }
-  
+
   /// Creates and returns a list of lengths of the [layoutableBoxes]
   /// measured along the passed [layoutAxis].
   List<double> _lengthsOfChildrenAlong(LayoutAxis layoutAxis, List<LayoutableBox> notGreedyChildren) =>
       notGreedyChildren.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
-  
+
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
   // todo-00-last : consider merging layoutSandbox and parentSandbox
@@ -600,6 +694,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // Core recursive layout method.
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
+  @override
   void newCoreLayout() {
     if (isRoot) {
       rootStep1_setRootConstraint();
@@ -705,7 +800,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       offsetChildrenAccordingToLayouter(children);
     }
   }
-  
+
   void step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints() {} // todo-00-last : make abstract
 }
 
@@ -768,3 +863,26 @@ class BoxLayouterParentSandbox {
 // todo-00-done : added then removed : BoxContainerConstraints constraints = BoxContainerConstraints.exactBox(size: const ui.Size(0.0, 0.0));
 
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* END of BoxContainer: KEEP
+  // todo-02 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform, 
+  //           ParentTiltTransform, ParentSheerTransform etc. 
+  /// Maintains current tiltMatrix, a sum of all tiltMatrixs
+  /// passed in subsequent calls to [applyParentTransformMatrix] during object
+  /// lifetime.
+  vector_math.Matrix2 _transformMatrix = vector_math.Matrix2.identity();
+
+  /// Provides access to tiltMatrix for extension's [paint] methods.
+  vector_math.Matrix2 get transformMatrix => _transformMatrix;
+
+  /// Tilt may apply to the whole containerNew.
+  /// todo-2 unused? move to base class? similar to offset?
+  void applyParentTransformMatrix(vector_math.Matrix2 transformMatrix) {
+    if (transformMatrix == vector_math.Matrix2.identity()) return;
+    _transformMatrix = _transformMatrix * transformMatrix;
+  }
+  */
+
+
+

@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
-import 'container_base.dart' as container_base show BoxContainer;
+import 'container_layouter_base.dart' as container_base show BoxContainer;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.

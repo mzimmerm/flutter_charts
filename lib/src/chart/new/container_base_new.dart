@@ -1,15 +1,14 @@
 import 'dart:ui' as ui show Size, Offset;
-// import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show Rectangle;
 
-// import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
-// import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show ContainerConstraints;
 
-import 'package:flutter_charts/src/chart/container_base.dart' show BoxContainer;
-
-// todo-01: Container core rule: I do not expose position, offset, or layoutSize.
+// todo-01: Container core rules: 
+//           1) I do not expose position, offset, or layoutSize.
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
+//           2) The layout() method finds, iteratively, the sizes of all Container children of the top Container. 
+//              The paint() method must NOT paint beyond the size of any Container
 
 
 // todo-01 : Shape and extensions (Box, Pie), Container and extensions, Layout, Painter -------------------------------
@@ -54,8 +53,6 @@ class PieShape extends Shape {
 
 // todo-01 : Constraints and extensions -------------------------------------------------------------------------------
 
-class ContainerConstraints {
-}
 class PieContainerConstraints extends ContainerConstraints {
 }
 

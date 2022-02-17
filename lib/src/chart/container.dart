@@ -9,7 +9,7 @@ import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
 import '../util/util_dart.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
-import 'container_base.dart' show BoxContainer;
+import 'container_layouter_base.dart' show BoxContainer;
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
 import 'label_container.dart';
