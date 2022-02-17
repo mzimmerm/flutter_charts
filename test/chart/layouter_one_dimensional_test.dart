@@ -1,5 +1,5 @@
-import 'package:flutter_charts/src/chart/container_layouter_base.dart'
-    show Packing, Align, LengthsLayouter, LayedOutLineSegments, BoxLayoutProperties;
+import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
+    show Packing, Lineup, LengthsLayouter, LayedOutLineSegments, OneDimLayoutProperties;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
@@ -14,16 +14,16 @@ main() {
   group('LengthsLayouter.layout() Matrjoska Min,', () {
     var matrjoskaMinNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.min),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left),
     );
     // Testing exception so create in test : var matrjoskaMinTotalLength10Exception
     var matrjoskaMinTotalLength15 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.min, totalLength: 15.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 15.0),
     );
     var matrjoskaMinTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.min, totalLength: 27.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 27.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Min, no total length enforced', () {
@@ -51,8 +51,8 @@ main() {
       expect(
           () => LengthsLayouter(
                 lengths: lengths,
-                boxLayoutProperties:
-                    BoxLayoutProperties(packing: Packing.matrjoska, align: Align.min, totalLength: 10.0),
+                oneDimLayoutProperties:
+                    OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -73,11 +73,11 @@ main() {
   group('LengthsLayouter.layout() Matrjoska Center,', () {
     var matrjoskaCenterNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center),
     );
     var matrjoskaCenterTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.center, totalLength: 27.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center, totalLength: 27.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Center, no total length enforced', () {
@@ -107,11 +107,11 @@ main() {
   group('LengthsLayouter.layout() Matrjoska Max,', () {
     var matrjoskaMaxNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.max),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.right),
     );
     var matrjoskaMaxTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.matrjoska, align: Align.max, totalLength: 27.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.right, totalLength: 27.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Max, no total length enforced', () {
@@ -143,16 +143,16 @@ main() {
   group('LengthsLayouter.layout() Snap Min,', () {
     var snapMinNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.min),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left),
     );
     // Testing exception so create in test : var snapMinTotalLength10Exception
     var snapMinTotalLength30 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.min, totalLength: 30.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 30.0),
     );
     var snapMinTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.min, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Snap Min, no total length enforced', () {
@@ -180,7 +180,7 @@ main() {
       expect(
           () => LengthsLayouter(
                 lengths: lengths,
-                boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.min, totalLength: 10.0),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -200,11 +200,11 @@ main() {
   group('LengthsLayouter.layout() Snap Center,', () {
     var snapCenterNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.center),
     );
     var snapCenterTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.center, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.center, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Snap Center, no total length enforced', () {
@@ -235,11 +235,11 @@ main() {
   group('LengthsLayouter.layout() Snap Max,', () {
     var snapMaxNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.max),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.right),
     );
     var snapMaxTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.snap, align: Align.max, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.right, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Snap Max, no total length enforced', () {
@@ -271,16 +271,16 @@ main() {
   group('LengthsLayouter.layout() Loose Min,', () {
     var looseMinNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.min),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left),
     );
     // Testing exception so create in test : var looseMinTotalLength10Exception
     var looseMinTotalLength30 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.min, totalLength: 30.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 30.0),
     );
     var looseMinTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.min, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Loose Min, no total length enforced', () {
@@ -308,7 +308,7 @@ main() {
       expect(
           () => LengthsLayouter(
                 lengths: lengths,
-                boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.min, totalLength: 10.0),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -331,11 +331,11 @@ main() {
   group('LengthsLayouter.layout() Loose Center,', () {
     var looseCenterNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center),
     );
     var looseCenterTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.center, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Loose Center, no total length enforced', () {
@@ -367,11 +367,11 @@ main() {
   group('LengthsLayouter.layout() Loose Max,', () {
     var looseMaxNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.max),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.right),
     );
     var looseMaxTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      boxLayoutProperties: BoxLayoutProperties(packing: Packing.loose, align: Align.max, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.right, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Loose Max, no total length enforced', () {

@@ -228,7 +228,7 @@ class YLabelsCreatorAndPositioner {
   /// The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
 
   /// Makes anywhere from zero to nine label values, of greatest power of
-  /// the passed [dataYsEnvelope.max].
+  /// the passed [dataYsEnvelope.right].
   ///
   /// Precision is 1 (that is, only leading digit, rest 0s).
   ///

@@ -1,8 +1,8 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
-import 'dart:math' as math show max;
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
+import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart' 
+    show Lineup, Packing, OneDimLayoutProperties, LengthsLayouter, LayedOutLineSegments;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 
@@ -95,8 +95,8 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   
   /// Default generative constructor. Prepares [parentSandbox].
   BoxContainer() {
-    parentSandbox = BoxLayouterParentSandbox();
-    layoutSandbox = BoxLayouterLayoutSandbox();
+    parentSandbox = _BoxLayouterParentSandbox();
+    layoutSandbox = _BoxLayouterLayoutSandbox();
   }
  
   void paint(ui.Canvas canvas);
@@ -121,300 +121,6 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
   }
 }
 
-/// [Packing] describes mutually exclusive layouts for a list of lengths 
-/// (imagined as ordered line segments) on a line.
-/// 
-/// The supported packing methods
-/// - Matrjoska packing places each smaller segment fully into the next larger one (next means next by size). 
-///   Order does not matter.
-/// - Snap packing places each next segment's begin point just right of it's predecessor's end point.
-/// - Loose packing is like snap packing, but, in addition, there can be a space between neighbour segments.
-/// 
-/// The only layout not described (and not allowed) is a partial overlap of any two lengths.
-enum Packing {
-  /// [Packing.matrjoska] should layout elements so that the smallest element is fully
-  /// inside the next larger element, and so on. The largest element contains all smaller elements.
-  matrjoska,
-  /// [Packing.snap] should layout elements in a way they snap together into a group with no padding between elements.
-  /// 
-  /// If the available [LengthsLayouter._freePadding] is zero, 
-  /// the result is the same for any [Align] value.
-  /// 
-  /// If the available [LengthsLayouter._freePadding] is non zero:
-  /// 
-  /// - For [Align.min] or [Align.max] : Also aligns the group to min or max boundary.
-  ///   For [Align.min], there is no padding between min and first element of the group,
-  ///   all the padding [LengthsLayouter._freePadding] is after the end of the group; 
-  ///   similarly for [Align.max], for which the group end is aligned with the end,
-  ///   and all the padding [LengthsLayouter._freePadding] is before the group.
-  /// - For [Align.center] : The elements are packed into a group and the group centered.
-  ///   That means, when [LengthsLayouter._freePadding] is available, half of the free length pads 
-  ///   the group on the boundaries
-  ///   
-  snap,
-  /// [Packing.loose] should layout elements so that they are separated with even amount of padding, 
-  /// if the available padding defined by [LengthsLayouter._freePadding] is not zero. 
-  /// If the available padding is zero, layout is the same as [Packing.snap] with no padding. 
-  /// 
-  /// If the available [LengthsLayouter._freePadding] is zero, 
-  /// the result is the same for any [Align] value, 
-  /// and also the same as the result of [Packing.snap] for any [Align] value: 
-  /// All elements are packed together.
-  ///
-  /// If the available [LengthsLayouter._freePadding] is non zero:
-  /// 
-  /// - For [Align.min] or [Align.max] : Aligns the first element start to the min,
-  ///   or the last element end to the max, respectively. 
-  ///   For [Align.min], the available [LengthsLayouter._freePadding] is distributed evenly 
-  ///   as padding between elements and at the end. First element start is at the boundary.
-  ///   For [Align.max], the available [LengthsLayouter._freePadding] is distributed evenly 
-  ///   as padding at the beginning, and between elements. Last element end is at the boundary.
-  /// - For [Align.center] : Same proportions of [LengthsLayouter._freePadding] 
-  ///   are distributed as padding at the beginning, between elements, and at the end.
-  ///   
-  loose,
-}
-
-/// todo-00-document
-enum Align { min, center, max }
-
-/// Properties of [BoxLayouter] describe packing and alignment of the layed out elements along
-/// either a main axis or cross axis.
-/// 
-/// This class is also used to describe packing and alignment of the layed out elements 
-/// for the [LengthsLayouter], where it serves to describe the one-dimensional packing and alignment.
-class BoxLayoutProperties {
-  final Packing packing;
-  final Align align;
-  double? totalLength;
-  BoxLayoutProperties({
-    required this.packing,
-    required this.align,
-    this.totalLength,
-  });
-}
-
-
-/// todo-00-document
-class LengthsLayouter {
-  LengthsLayouter({
-    required this.lengths,
-    required this.boxLayoutProperties,
-  }) {
-    switch (boxLayoutProperties.packing) {
-      case Packing.matrjoska:
-        boxLayoutProperties.totalLength ??= _maxLength;
-        assert(boxLayoutProperties.totalLength! >= _maxLength);
-        _freePadding = boxLayoutProperties.totalLength! - _maxLength;
-        break;
-      case Packing.snap:
-      case Packing.loose:
-        boxLayoutProperties.totalLength ??= _sumLengths;
-        assert(boxLayoutProperties.totalLength! >= _sumLengths);
-        _freePadding = boxLayoutProperties.totalLength! - _sumLengths;
-        break;
-    }
-  }
-
-  final List<double> lengths;
-  BoxLayoutProperties boxLayoutProperties;
-  late final double _freePadding;
-  double totalLayedOutLength = 0.0; // can change multiple times, set after each child length in lengths
-
-  LayedOutLineSegments layoutLengths() {
-    LayedOutLineSegments layedOutLineSegments;
-    switch (boxLayoutProperties.packing) {
-      case Packing.matrjoska:
-        layedOutLineSegments = LayedOutLineSegments(
-          lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
-          totalLayedOutLength: totalLayedOutLength,
-        );
-        break;
-      case Packing.snap:
-        layedOutLineSegments = LayedOutLineSegments(
-          lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor),
-          totalLayedOutLength: totalLayedOutLength,
-        );
-        break;
-      case Packing.loose:
-        layedOutLineSegments = LayedOutLineSegments(
-          lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor),
-          totalLayedOutLength: totalLayedOutLength,
-        );
-        break;
-    }
-    return layedOutLineSegments;
-  }
-
-  double get _sumLengths => lengths.fold(0.0, (previousLength, length) => previousLength + length);
-
-  double get _maxLength => lengths.fold(0.0, (previousValue, length) => math.max(previousValue, length));
-
-  /// Intended for use in  [Packing.matrjoska], creates and returns a [util_dart.LineSegment] for the passed [length], 
-  /// positioning the [util_dart.LineSegment] according to [align].
-  /// 
-  /// [Packing.matrjoska] ignores order of lengths, so there is no dependence on lenght predecessor.
-  /// 
-  /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
-  /// as well as the whole largest Matrjoska alignment inside the available [totalLength].
-  util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
-    double start, end, freePadding;
-    switch (boxLayoutProperties.align) {
-      case Align.min:
-        freePadding = _freePadding;
-        start = 0.0;
-        end = length;
-        break;
-      case Align.center:
-        freePadding = _freePadding / 2;
-        double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
-        start = freePadding + matrjoskaInnerRoomLeft;
-        end = freePadding + matrjoskaInnerRoomLeft + length;
-        break;
-      case Align.max:
-        freePadding = _freePadding;
-        start = freePadding + _maxLength - length;
-        end = freePadding + _maxLength;
-        break;
-    }
-    totalLayedOutLength = _maxLength + _freePadding;
-
-    return util_dart.LineSegment(start, end);
-  }
-
-  List<util_dart.LineSegment> _snapOrLooseLayoutAndMapLengthsToSegments(util_dart.LineSegment Function(util_dart.LineSegment?, double ) fromPreviousLengthLayoutThis ) {
-    List<util_dart.LineSegment> lineSegments = [];
-    util_dart.LineSegment? previousSegment;
-    for (int i = 0; i < lengths.length; i++) {
-      if (i == 0) {
-        previousSegment = null;
-      }
-      previousSegment = fromPreviousLengthLayoutThis(previousSegment, lengths[i]);
-      lineSegments.add(previousSegment);
-    }
-    return lineSegments;
-  }
-
-  util_dart.LineSegment _snapLayoutLineSegmentFor(util_dart.LineSegment? previousSegment, double length,) {
-    return _snapOrLooseLayoutLineSegmentFor(_snapStartOffset, previousSegment, length);
-  }
-
-  util_dart.LineSegment _looseLayoutLineSegmentFor(util_dart.LineSegment? previousSegment, double length,) {
-    return _snapOrLooseLayoutLineSegmentFor(_looseStartOffset, previousSegment, length);
-  }
-
-  util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(
-      Tuple2<double, double> Function(bool) getStartOffset,
-      util_dart.LineSegment? previousSegment,
-      double length,
-      ) {
-    bool isFirstLength = false;
-    if (previousSegment == null) {
-      isFirstLength = true;
-      previousSegment = util_dart.LineSegment(0.0, 0.0);
-    }
-    Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
-    double startOffset = startOffsetAndRightPad.item1;
-    double rightPad = startOffsetAndRightPad.item2;
-    double start = startOffset + previousSegment.max;
-    double end = startOffset + previousSegment.max + length;
-    totalLayedOutLength = end + rightPad;
-    return util_dart.LineSegment(start, end);
-  }
-
-  /// 
-  /// [length] needed to set [totalLayedOutLength] every time this is called for each child. Value of last child sticks.
-  Tuple2<double, double> _snapStartOffset(bool isFirstLength) {
-    double freePadding, startOffset, freePaddingRight;
-    switch (boxLayoutProperties.align) {
-      case Align.min:
-        freePadding = 0.0;
-        freePaddingRight = _freePadding;
-        startOffset = freePadding;
-        break;
-      case Align.center:
-        freePadding = _freePadding / 2; // for center, half freeLength to the left
-        freePaddingRight = freePadding;
-        startOffset = isFirstLength ? freePadding : 0.0;
-        break;
-      case Align.max:
-        freePadding = _freePadding; // for max, all freeLength to the left
-        freePaddingRight = 0.0;
-        startOffset = isFirstLength ? freePadding : 0.0;
-        break;
-    }
-    return Tuple2(startOffset, freePaddingRight);
-  }
-
-  /// 
-  /// [length] needed to set [totalLayedOutLength] every time this is called for each child. Value of last child sticks.
-  Tuple2<double, double> _looseStartOffset(bool isFirstLength) {
-    int lengthsCount = lengths.length;
-    double freePadding, startOffset, freePaddingRight;
-    switch (boxLayoutProperties.align) {
-      case Align.min:
-        freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
-        freePaddingRight = freePadding;
-        startOffset = isFirstLength ? 0.0 : freePadding;
-        break;
-      case Align.center:
-        freePadding = lengthsCount != 0 ? _freePadding / (lengthsCount + 1) : _freePadding;
-        freePaddingRight = freePadding;
-        startOffset = freePadding;
-        break;
-      case Align.max:
-        freePadding = lengthsCount !=0 ? _freePadding / lengthsCount : _freePadding;
-        freePaddingRight = 0.0;
-        startOffset = freePadding;
-        break;
-    }
-    return Tuple2(startOffset, freePaddingRight);
-  }
-
-}
-
-/// todo-00-document
-class LayedOutLineSegments {
-  LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLength});
-
-  final List<util_dart.LineSegment> lineSegments;
-  final double totalLayedOutLength;
-
-  /// Calculates length of all layed out [lineSegments].
-  /// 
-  /// Because the [lineSegments] are created 
-  /// in [LayedOutLineSegments.layoutLengths] and start at offset 0.0 first to last,
-  /// the total length is between 0.0 and the end of the last [util_dart.LineSegment] element in [lineSegments].
-  /// As the [lineSegments] are all in 0.0 based coordinates, the last element end is the length of all [lineSegments].
-  /// 
-  double get totalLength => lineSegments.isNotEmpty ? lineSegments.last.max : 0.0;
-
-  @override
-  bool operator ==(Object other) {
-    bool typeSame = other is LayedOutLineSegments &&
-        other.runtimeType == runtimeType;
-    if (!typeSame) {
-      return false;
-    }
-
-    // Dart knows other is LayedOutLineSegments, but for clarity:
-    LayedOutLineSegments otherSegment = other;
-    if (lineSegments.length != otherSegment.lineSegments.length) {
-      return false;
-    }
-    for (int i = 0; i < lineSegments.length; i++) {
-      if (lineSegments[i] != otherSegment.lineSegments[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @override
-  int get hashCode {
-    return lineSegments.fold(0, (previousValue, lineSegment) => previousValue + lineSegment.hashCode);
-  }
-}
 
 mixin BoxContainerHierarchy {
   late final BoxContainer? parent;
@@ -432,7 +138,7 @@ mixin BoxContainerHierarchy {
 abstract class LayoutableBox {
   ui.Size layoutSize = Size.zero;
   void applyParentOffset(ui.Offset offset);
-  BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox();
+  _BoxLayouterLayoutSandbox layoutSandbox = _BoxLayouterLayoutSandbox();
   void newCoreLayout();
 }
 
@@ -443,7 +149,7 @@ abstract class LayoutableBox {
 /// 
 /// Created from the [layoutableBoxes], a list of [LayoutableBox]s, and the definitions
 /// of [mainLayoutAxis] and [crossLayoutAxis], along with the alignment and packing properties 
-/// along each of those axis, [mainAxisBoxLayoutProperties] and [crossAxisBoxLayoutProperties]
+/// along each of those axis, [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
 /// 
 /// The core function of this class is to layout (offset) the member boxes [layoutableBoxes] 
 /// by the side effects of the method [offsetChildrenAccordingToLayouter]. 
@@ -470,12 +176,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   LayoutAxis mainLayoutAxis = LayoutAxis.none; // todo-00 : consider default to horizontal (Row layout)
   bool get isLayout => mainLayoutAxis != LayoutAxis.none;
 
-  BoxLayoutProperties mainAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
-  BoxLayoutProperties crossAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
+  OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
+  OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
 
   /// Member used during the [layout] processing.
   @override
-  BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox(); // todo-00-last : MAKE NOT NULLABLE 
+  _BoxLayouterLayoutSandbox layoutSandbox = _BoxLayouterLayoutSandbox(); // todo-00-last : MAKE NOT NULLABLE 
 
   /// Greedy is defined as asking for layoutSize infinity.
   /// todo-00 : The greedy methods should check if called BEFORE
@@ -524,8 +230,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross).
-    LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties, notGreedyChildren);
-    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(axisPerpendicularTo(mainLayoutAxis), crossAxisBoxLayoutProperties, notGreedyChildren);
+    LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisLayoutProperties, notGreedyChildren);
+    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(axisPerpendicularTo(mainLayoutAxis), crossAxisLayoutProperties, notGreedyChildren);
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout lengths' according it's rules.
@@ -615,12 +321,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
   /// 
   /// The passed objects must both correspond to either main axis or the cross axis.
-  LengthsLayouter _lengthsLayouterAlong(LayoutAxis layoutAxis, BoxLayoutProperties axisLayoutProperties,
+  LengthsLayouter _lengthsLayouterAlong(LayoutAxis layoutAxis, OneDimLayoutProperties axisLayoutProperties,
       List<LayoutableBox> notGreedyChildren,) {
     List<double> lengthsAlongLayoutAxis = _lengthsOfChildrenAlong(layoutAxis, notGreedyChildren);
     LengthsLayouter lengthsLayouterAlongLayoutAxis = LengthsLayouter(
       lengths: lengthsAlongLayoutAxis,
-      boxLayoutProperties: axisLayoutProperties,
+      oneDimLayoutProperties: axisLayoutProperties,
     );
     return lengthsLayouterAlongLayoutAxis;
   }
@@ -633,7 +339,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
   // todo-00-last : consider merging layoutSandbox and parentSandbox
-  BoxLayouterParentSandbox? parentSandbox; // todo-00-last make NON NULL
+  _BoxLayouterParentSandbox? parentSandbox; // todo-00-last make NON NULL
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
@@ -814,13 +520,8 @@ class _MainAndCrossLayedOutSegments {
 
 }
 
-// todo-00-last : BoxLayouter, base class for ColumnLayouter and RowLayouter
-//                BoxLayouter extends BoxContainer, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
-
-// todo-00-done BoxContainerLayoutSandbox - a new class -----------------------------------------------------------------
-
 // todo-01-last : try to make non-nullable and final
-class BoxLayouterLayoutSandbox {
+class _BoxLayouterLayoutSandbox {
   List<BoxLayouter> childrenInLayoutOrderGreedyLast = [];
   ui.Size addedSizeOfAllChildren = const ui.Size(0.0, 0.0);
   BoxContainerConstraints? constraints;
@@ -830,7 +531,7 @@ class BoxLayouterLayoutSandbox {
 // todo-00-document
 /// Only parent containers of the container that owns this object should be allowed to 
 /// get or set any field inside this object.
-class BoxLayouterParentSandbox {
+class _BoxLayouterParentSandbox {
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
@@ -859,9 +560,7 @@ class BoxLayouterParentSandbox {
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
   bool parentOrderedToSkip = false;
-
-// todo-00-done : added then removed : BoxContainerConstraints constraints = BoxContainerConstraints.exactBox(size: const ui.Size(0.0, 0.0));
-
+  
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
