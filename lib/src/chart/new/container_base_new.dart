@@ -61,13 +61,4 @@ class PieContainerConstraints extends ContainerConstraints {
 
 // BoxContainerConstraints - see constraints.dart
 
-// todo-03 : BoxContainerVisitor, ..
-
-class BoxContainerVisitor {
-  /// todo-03 implement, return true if this was allowed to visit the passed [boxContainer].
-  bool visit(BoxContainer boxContainer) {
-    return false;
-  }
-}
-
 

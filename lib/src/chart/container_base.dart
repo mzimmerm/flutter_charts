@@ -2,10 +2,10 @@ import 'dart:ui' as ui show Size, Offset, Canvas;
 // import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // import 'package:flutter/foundation.dart';
-import 'package:flutter_charts/src/chart/new/container_base_new.dart' 
-    show BoxContainerVisitor;
+// import 'package:flutter_charts/src/chart/new/container_base_new.dart';
+
 import 'package:flutter_charts/src/chart/container_layouter_base.dart'
-    show BoxLayouter, BoxContainerHierarchy, BoxContainerLayoutSandbox, BoxContainerParentSandbox;
+    show BoxLayouter, BoxContainerHierarchy, BoxLayouterLayoutSandbox, BoxLayouterParentSandbox, LayoutableBox;
 
 
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
@@ -90,21 +90,17 @@ abstract class ContainerOld {
   void paint(ui.Canvas canvas);
 }
 
-abstract class BoxContainer extends BoxContainerBase with BoxLayouter {
+/// [BoxContainerHierarchy] is repeated here and in [BoxLayouter] 
+/// to make clear that both [BoxContainer] and [BoxLayouter]
+/// have the same  [BoxContainerHierarchy] trait (capability, role).
+abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   
   /// Default generative constructor. Prepares [parentSandbox].
   BoxContainer() {
-    parentSandbox = BoxContainerParentSandbox();
-    layoutSandbox = BoxContainerLayoutSandbox();
+    parentSandbox = BoxLayouterParentSandbox();
+    layoutSandbox = BoxLayouterLayoutSandbox();
   }
-}
-
-abstract class BoxContainerBase extends Object with BoxContainerHierarchy {
  
-  void traverseAndApply(BoxContainerVisitor visitor) {
-    // todo-00 rename the BoxContainerVisitor
-  }
-  
   void paint(ui.Canvas canvas);
 
 /* END of ContainerBridgeToNew: KEEP

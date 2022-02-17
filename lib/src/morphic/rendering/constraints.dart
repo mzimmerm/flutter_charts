@@ -1,6 +1,8 @@
 import 'dart:ui' show Size;
 
+import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new/container_base_new.dart';
+
 
 /// Defines how a container [layout] should expand the container in a direction.
 ///
@@ -33,6 +35,33 @@ class BoxContainerConstraints extends ContainerConstraints {
   
   bool get isExact => minSize == maxSize;
 
+  bool containsFully(Size size) { 
+    return size.width <= maxSize.width && size.height <= maxSize.height
+        && size.width >= minSize.width && size.height >= minSize.height;
+  }
+
+  Size sizeLeftAfter(Size takenSize, LayoutAxis mainLayoutAxis) {
+    if (!containsFully(takenSize)) {
+      throw StateError('This constraints $toString() does not fully contain takenSize=$takenSize');
+    }
+    Size size;
+    switch (mainLayoutAxis) {
+      // Treat none as horizontal, although that is a question
+      case LayoutAxis.none:
+      case LayoutAxis.horizontal:
+      // Make place right from takenSize. This should be layout specific, maybe
+        size = Size(maxSize.width - takenSize.width, maxSize.height);
+        assert(containsFully(size));
+        break;
+      case LayoutAxis.vertical:
+      // Make place below from takenSize. This should be layout specific, maybe
+        size = Size(maxSize.width, maxSize.height - takenSize.height);
+        assert(containsFully(size));
+        break;
+    }
+    return size;
+  }
+  
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused()
       : this.exactBox(size: const Size(
@@ -50,4 +79,8 @@ class BoxContainerConstraints extends ContainerConstraints {
     return BoxContainerConstraints.exactBox(size: Size(width, height));
   }
 
+  @override
+  String toString() {
+    return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
+  } 
 }

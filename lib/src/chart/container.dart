@@ -49,7 +49,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   
   @override
   void newCoreLayout() {
-    // todo-00-last
+    // todo-00
   }
   
   /// Implements [BoxContainer.layoutSize].

@@ -33,6 +33,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 15.0);
     });
 
     test('LengthsLayouter.layout() Matrjoska Min, total length same as required', () {
@@ -43,6 +44,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 15.0);
     });
 
     test('LengthsLayouter.layout() Matrjoska Min, total length less than needed, should Exception', () {
@@ -59,10 +61,12 @@ main() {
       LayedOutLineSegments segments = matrjoskaMinTotalLength27Added12.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      // Result should be same as with no total length enforced
+      // Result should be same as with no total length enforced. 
+      // The whole padding of 12 is on the right.
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 27.0);
     });
   });
 
@@ -83,6 +87,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(5.0, 10.0));
       expect(segments.lineSegments[1], LineSegment(2.5, 12.5));
       expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 15.0);
     });
 
     test('LengthsLayouter.layout() Matrjoska Center, total length more than required', () {
@@ -90,10 +95,12 @@ main() {
       double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by halfOfFreePadding to the right
+      // Compared to no total length enforced, move everything by halfOfFreePadding to the right.
+      // The padding of 12 is half on the left (6) and half on the right (6)
       expect(segments.lineSegments[0], LineSegment(5.0 + halfOfFreePadding, 10.0 + halfOfFreePadding));
       expect(segments.lineSegments[1], LineSegment(2.5 + halfOfFreePadding, 12.5 + halfOfFreePadding));
       expect(segments.lineSegments[2], LineSegment(0.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
+      expect(segments.totalLayedOutLength, 27.0);
     });
   });
 
@@ -114,6 +121,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(10.0, 15.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 15.0);
     });
 
     test('LengthsLayouter.layout() Matrjoska Max, total length more than required', () {
@@ -121,10 +129,12 @@ main() {
       double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by fullFreePadding to the right
+      // Compared to no total length enforced, move everything by fullFreePadding to the right.
+      // The whole padding of 12 is on the left.
       expect(segments.lineSegments[0], LineSegment(10.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[1], LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
+      expect(segments.totalLayedOutLength, 27.0);
     });
   });
 
@@ -152,6 +162,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Snap Min, total length same as required', () {
@@ -162,6 +173,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Snap Min, total length less than needed, should Exception', () {
@@ -181,6 +193,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 
@@ -202,6 +215,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Snap Center, total length more than required', () {
@@ -214,6 +228,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0 + halfOfFreePadding, 5.0 + halfOfFreePadding));
       expect(segments.lineSegments[1], LineSegment(5.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
       expect(segments.lineSegments[2], LineSegment(15.0 + halfOfFreePadding, 30.0 + halfOfFreePadding));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 
@@ -235,6 +250,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Snap Max, total length more than required', () {
@@ -246,6 +262,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0 + fullFreePadding, 5.0 + fullFreePadding));
       expect(segments.lineSegments[1], LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], LineSegment(15.0 + fullFreePadding, 30.0 + fullFreePadding));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 
@@ -273,6 +290,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Loose Min, total length same as required', () {
@@ -283,6 +301,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Loose Min, total length less than needed, should Exception', () {
@@ -305,6 +324,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 1, 15.0 + freePadding * 1));
       expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 2, 30.0 + freePadding * 2));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 
@@ -326,6 +346,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Loose Center, total length more than required', () {
@@ -339,6 +360,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
       expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
       expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 
@@ -361,6 +383,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
     });
 
     test('LengthsLayouter.layout() Loose Max, total length more than required', () {
@@ -374,6 +397,7 @@ main() {
       expect(segments.lineSegments[0], LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
       expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
       expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
+      expect(segments.totalLayedOutLength, 42.0);
     });
   });
 }

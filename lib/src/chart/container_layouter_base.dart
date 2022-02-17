@@ -4,6 +4,7 @@ import 'dart:ui' as ui show Size, Offset;
 import 'package:flutter/material.dart';
 import 'package:flutter_charts/src/chart/container_base.dart' show BoxContainer;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
+import 'package:tuple/tuple.dart';
 
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
@@ -110,29 +111,30 @@ class LengthsLayouter {
   }
 
   final List<double> lengths;
-  /// todo-00-last Refactor so that packing, align, totalLength is organized in [BoxLayoutProperties].
-/*
-  final Packing packing;
-  final Align align;
-  double? totalLength;
-*/
   BoxLayoutProperties boxLayoutProperties;
   late final double _freePadding;
+  double totalLayedOutLength = 0.0; // can change multiple times, set after each child length in lengths
 
   LayedOutLineSegments layoutLengths() {
     LayedOutLineSegments layedOutLineSegments;
     switch (boxLayoutProperties.packing) {
       case Packing.matrjoska:
         layedOutLineSegments = LayedOutLineSegments(
-            lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false));
+          lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
+          totalLayedOutLength: totalLayedOutLength,
+        );
         break;
       case Packing.snap:
         layedOutLineSegments = LayedOutLineSegments(
-            lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor));
+          lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor),
+          totalLayedOutLength: totalLayedOutLength,
+        );
         break;
       case Packing.loose:
         layedOutLineSegments = LayedOutLineSegments(
-            lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor));
+          lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor),
+          totalLayedOutLength: totalLayedOutLength,
+        );
         break;
     }
     return layedOutLineSegments;
@@ -150,23 +152,26 @@ class LengthsLayouter {
   /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLength].
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
-    double start, end;
+    double start, end, freePadding;
     switch (boxLayoutProperties.align) {
       case Align.min:
+        freePadding = _freePadding;
         start = 0.0;
         end = length;
         break;
       case Align.center:
-        double freePadding = _freePadding / 2;
+        freePadding = _freePadding / 2;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
-        break;
+    break;
       case Align.max:
-        start = _freePadding + _maxLength - length;
-        end = _freePadding + _maxLength;
+        freePadding = _freePadding;
+        start = freePadding + _maxLength - length;
+        end = freePadding + _maxLength;
         break;
     }
+    totalLayedOutLength = _maxLength + _freePadding;
 
     return util_dart.LineSegment(start, end);
   }
@@ -192,64 +197,91 @@ class LengthsLayouter {
     return _snapOrLooseLayoutLineSegmentFor(_looseStartOffset, previousSegment, length);
   }
 
-  util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(double Function(bool) getStartOffset, util_dart.LineSegment? previousSegment, double length,) {
+  util_dart.LineSegment _snapOrLooseLayoutLineSegmentFor(
+      Tuple2<double, double> Function(bool) getStartOffset, 
+      util_dart.LineSegment? previousSegment, 
+      double length,
+      ) {
     bool isFirstLength = false;
     if (previousSegment == null) {
       isFirstLength = true;
       previousSegment = util_dart.LineSegment(0.0, 0.0);
     }
-    double startOffset = getStartOffset(isFirstLength);
+    Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
+    double startOffset = startOffsetAndRightPad.item1;
+    double rightPad = startOffsetAndRightPad.item2;
     double start = startOffset + previousSegment.max;
     double end = startOffset + previousSegment.max + length;
+    totalLayedOutLength = end + rightPad;
     return util_dart.LineSegment(start, end);
   }
 
-  double _snapStartOffset(bool isFirstLength) {
-    double freePadding, startOffset;
+  /// 
+  /// [length] needed to set [totalLayedOutLength] every time this is called for each child. Value of last child sticks.
+  Tuple2<double, double> _snapStartOffset(bool isFirstLength) {
+    double freePadding, startOffset, freePaddingRight;
     switch (boxLayoutProperties.align) {
       case Align.min:
         freePadding = 0.0;
+        freePaddingRight = _freePadding;
         startOffset = freePadding;
         break;
       case Align.center:
         freePadding = _freePadding / 2; // for center, half freeLength to the left
+        freePaddingRight = freePadding;
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
       case Align.max:
         freePadding = _freePadding; // for max, all freeLength to the left
+        freePaddingRight = 0.0;
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
     }
-    return startOffset;
+    return Tuple2(startOffset, freePaddingRight);
   }
 
-  double _looseStartOffset(bool isFirstLength) {
+  /// 
+  /// [length] needed to set [totalLayedOutLength] every time this is called for each child. Value of last child sticks.
+  Tuple2<double, double> _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
-    double freePadding, startOffset;
+    double freePadding, startOffset, freePaddingRight;
     switch (boxLayoutProperties.align) {
       case Align.min:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
+        freePaddingRight = freePadding;
         startOffset = isFirstLength ? 0.0 : freePadding;
         break;
       case Align.center:
         freePadding = lengthsCount != 0 ? _freePadding / (lengthsCount + 1) : _freePadding;
+        freePaddingRight = freePadding;
         startOffset = freePadding;
         break;
       case Align.max:
         freePadding = lengthsCount !=0 ? _freePadding / lengthsCount : _freePadding;
+        freePaddingRight = 0.0;
         startOffset = freePadding;
         break;
     }
-    return startOffset;
+    return Tuple2(startOffset, freePaddingRight);
   }
 
 }
 
 /// todo-00-document
 class LayedOutLineSegments {
-  LayedOutLineSegments({required this.lineSegments});
+  LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLength});
 
   final List<util_dart.LineSegment> lineSegments;
+  final double totalLayedOutLength;
+  
+  /// Calculates length of all layed out [lineSegments].
+  /// 
+  /// Because the [lineSegments] are created 
+  /// in [LayedOutLineSegments.layoutLengths] and start at offset 0.0 first to last,
+  /// the total length is between 0.0 and the end of the last [util_dart.LineSegment] element in [lineSegments].
+  /// As the [lineSegments] are all in 0.0 based coordinates, the last element end is the length of all [lineSegments].
+  /// 
+  double get totalLength => lineSegments.isNotEmpty ? lineSegments.last.max : 0.0;
 
   @override
   bool operator ==(Object other) {
@@ -290,14 +322,14 @@ mixin BoxContainerHierarchy {
   }
 }
 
+// todo-00-last : Get rid of this or improve.
 abstract class LayoutableBox {
- ui.Size get layoutSize;
- // ui.Offset get layoutableBoxOffset;
- // set offset(ui.Offset offset);
+ // todo-00-last-last-last-done : added setter as wall: ui.Size get layoutSize;
+ ui.Size layoutSize = Size.zero;
  void applyParentOffset(ui.Offset offset);
+ BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox();
 }
 
-/// todo-00-last-last  convert to extension of BoxContainer - or a mixin?.
 /// Layouter of a list of [LayoutableBox]s.
 /// 
 /// The role of this class is to lay out boxes along the main axis and the cross axis,
@@ -308,12 +340,12 @@ abstract class LayoutableBox {
 /// along each of those axis, [mainAxisBoxLayoutProperties] and [crossAxisBoxLayoutProperties]
 /// 
 /// The core function of this class is to layout (offset) the member boxes [layoutableBoxes] 
-/// by the side effects of the method [layoutAndOffsetBoxes]. 
+/// by the side effects of the method [offsetChildrenAccordingToLayouter]. 
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
-
-
+  
   /// Manages the layout size during the layout process in [layout].
   /// Should be only mentioned in this class, not super
+  @override
   ui.Size layoutSize = ui.Size.zero;
 
 /* todo-00-last-last move to BoxContainer constructor, especially the asserts
@@ -330,7 +362,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 */
 
-  // todo-00-last Same members as in BoxContainer. Later, move or delegate them from BoxContainer here
   // List<LayoutableBox> layoutableBoxes = []; // todo-00-last-last-last : these are children!!
   List<LayoutableBox> get layoutableBoxes => children;
   LayoutAxis mainLayoutAxis = LayoutAxis.none;
@@ -340,21 +371,29 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   BoxLayoutProperties mainAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
   BoxLayoutProperties crossAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
 
-  BoxContainerLayoutSandbox layoutSandbox = BoxContainerLayoutSandbox(); // // todo-00-last-last-done : moved from  BoxContainer MAKE NOT NULLABLE 
+  /// Member used during the [layout] processing.
+  BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox(); // todo-00-last : MAKE NOT NULLABLE 
 
-  /// todo-00-last-last-done : moved here from BoxContainerBase, then replaced with _lengthAlongLayoutAxis
-/*
-  double layoutLengthAlongMainLayoutAxis() {
-    if (mainLayoutAxis == LayoutAxis.horizontal) {
-      return layoutSize.width;
-    }
-    if (mainLayoutAxis == LayoutAxis.vertical) {
-      return layoutSize.height;
-    }
-    return 0.0;
-  }
-*/
+  /// Greedy is defined as asking for layoutSize infinity.
+  /// todo-00 : The greedy methods should check if called BEFORE
+  ///           [step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
+  ///           Maybe there should be a way to express greediness permanently.
+  bool get isGreedy => _lengthAlong(mainLayoutAxis, layoutSize) == double.infinity;
   
+  bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
+  
+  LayoutableBox get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
+
+  ui.Size childrenLayoutSizeAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
+    
+    _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
+
+    double mainLayedOutLength = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.totalLayedOutLength;
+    double crossLayedOutLength = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.totalLayedOutLength;
+
+    return _convertLengthsToSize(mainLayoutAxis, mainLayedOutLength, crossLayedOutLength);
+  }
+
   /// Lays out all elements in [layoutableBoxes], by setting offset on each [LayoutableBox] element.
   /// 
   /// The offset on each [LayoutableBox] element is calculated using the [mainAxisLayoutProperties]
@@ -364,45 +403,65 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// There are two instances of the [LengthsLayouter] created, one
   /// for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),  
   /// another for the [crossLayoutAxis] (using the [crossAxisLayoutProperties]).
-  // todo-00-last-last : This must be called somewhere!!
-  void layoutAndOffsetBoxes() {
-    // Create a LengthsLayouter along each axis (main, cross).
-    LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties);
-    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(crossLayoutAxis, crossAxisBoxLayoutProperties);
-    
-    // Layout the lengths along each axis to line segments (offset-ed lengths).   
-    LayedOutLineSegments mainAxisLayedOutSegments = mainAxisLengthsLayouter.layoutLengths();
-    LayedOutLineSegments crossAxisLayedOutSegments = crossAxisLengthsLayouter.layoutLengths();
-    
+  // todo-00-last-last : 
+  void offsetChildrenAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
+    // Create a LengthsLayouter along each axis (main, cross), convert it to LayoutSegments,
+    // then package into a wrapper class.
+    _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
+
     // Convert the line segments to Offsets (in each axis)
     List<ui.Offset> layedOutOffsets = _convertLayedOutSegmentsToOffsets(
       mainLayoutAxis,
-      mainAxisLayedOutSegments,
-      crossAxisLayedOutSegments,
+      mainAndCrossLayedOutSegments,
+      notGreedyChildren,
       );
     
     // Apply the offsets obtained by layouting onto the layoutableBoxes
-    assert(layedOutOffsets.length == layoutableBoxes.length);
-    for (int i =  layoutableBoxes.length; i < layedOutOffsets.length; i++) {
-      layoutableBoxes[i].applyParentOffset(layedOutOffsets[i]);
+    _offsetChildren(layedOutOffsets, notGreedyChildren);
+  }
+  
+  _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
+    // Create a LengthsLayouter along each axis (main, cross).
+    LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties, notGreedyChildren);
+    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(crossLayoutAxis, crossAxisBoxLayoutProperties, notGreedyChildren);
+
+    // Layout the lengths along each axis to line segments (offset-ed lengths).
+    // This is layouter specific - each layouter does 'layout lengths' according it's rules.
+    // The 'layout lengths' step actually includes offsetting the lengths, and also calculating the totalLayedOutLength,
+    //   which is the total length of children.
+    _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _MainAndCrossLayedOutSegments(
+      mainAxisLayedOutSegments: mainAxisLengthsLayouter.layoutLengths(),
+      crossAxisLayedOutSegments: crossAxisLengthsLayouter.layoutLengths(),
+    );
+    return mainAndCrossLayedOutSegments;
+  }
+
+  void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren) {
+    // Apply the offsets obtained by layouting onto the layoutableBoxes
+    assert(layedOutOffsets.length == notGreedyChildren.length);
+    for (int i =  notGreedyChildren.length; i < layedOutOffsets.length; i++) {
+      notGreedyChildren[i].applyParentOffset(layedOutOffsets[i]);
     }
   }
   
   /// todo-00-document
   List<ui.Offset> _convertLayedOutSegmentsToOffsets(
       LayoutAxis mainLayoutAxis,
-      LayedOutLineSegments mainAxisLayedOutSegments,
-      LayedOutLineSegments crossAxisLayedOutSegments,
+      _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments,
+      List<LayoutableBox> notGreedyChildren
       ) {
-
-    if (mainAxisLayedOutSegments.lineSegments.length != crossAxisLayedOutSegments.lineSegments.length) {
+    var mainAxisLayedOutSegments = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments;
+    var crossAxisLayedOutSegments = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments;
+    
+    if (mainAxisLayedOutSegments.lineSegments.length !=
+        crossAxisLayedOutSegments.lineSegments.length) {
       throw StateError('Segments differ in lengths: main=$mainAxisLayedOutSegments, cross=$crossAxisLayedOutSegments');
     }
-    
+
     List<ui.Offset> layedOutOffsets = [];
 
     for (int i = 0; i < mainAxisLayedOutSegments.lineSegments.length; i++) {
-      ui.Offset offset = _segmentsToOffset(
+      ui.Offset offset = _convertSegmentsToOffset(
         mainLayoutAxis, mainAxisLayedOutSegments.lineSegments[i], crossAxisLayedOutSegments.lineSegments[i]);
       layedOutOffsets.add(offset);
     }
@@ -410,9 +469,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   /// Converts two [util_dart.LineSegment] to [Offset] according to [mainLayoutAxis].
-  ui.Offset _segmentsToOffset(
+  ui.Offset _convertSegmentsToOffset(
       LayoutAxis mainLayoutAxis, util_dart.LineSegment mainSegment, util_dart.LineSegment crossSegment) {
-    ui.Offset offset;
 
     // Only the segments' beginnings are used for offset on BoxLayouter. 
     // The segments' ends are already taken into account in BoxLayouter.size.
@@ -421,17 +479,33 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         return ui.Offset(mainSegment.min, crossSegment.min);
         break;
       case LayoutAxis.vertical:
-        return offset = ui.Offset(crossSegment.min, mainSegment.min);
+        return ui.Offset(crossSegment.min, mainSegment.min);
       case LayoutAxis.none:
-        throw StateError('Asking for a segment offset, but layoutAxis is none.');
+        throw StateError('Asking for a segments to Offset conversion, but layoutAxis is none.');
     }
   }
 
+  /// Converts two [util_dart.LineSegment] to [Offset] according to [mainLayoutAxis].
+  ui.Size _convertLengthsToSize(
+      LayoutAxis mainLayoutAxis, double mainLength, double crossLength) {
+
+    switch (mainLayoutAxis) {
+      case LayoutAxis.horizontal:
+        return ui.Size(mainLength, crossLength);
+        break;
+      case LayoutAxis.vertical:
+        return ui.Size(crossLength, mainLength);
+      case LayoutAxis.none:
+        throw StateError('Asking for lenghts to Size, but layoutAxis is none.');
+    }
+  }
+  
   /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
   /// 
   /// The passed objects must both correspond to either main axis or the cross axis.
-  LengthsLayouter _lengthsLayouterAlong(LayoutAxis layoutAxis, BoxLayoutProperties axisLayoutProperties) {
-    List<double> lengthsAlongLayoutAxis = _lengthsAlongLayoutAxis(layoutAxis);
+  LengthsLayouter _lengthsLayouterAlong(LayoutAxis layoutAxis, BoxLayoutProperties axisLayoutProperties,
+      List<LayoutableBox> notGreedyChildren,) {
+    List<double> lengthsAlongLayoutAxis = _lengthsOfChildrenAlong(layoutAxis, notGreedyChildren);
     LengthsLayouter lengthsLayouterAlongLayoutAxis = LengthsLayouter(
       lengths: lengthsAlongLayoutAxis,
       boxLayoutProperties: axisLayoutProperties,
@@ -440,7 +514,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
   
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
-  double _lengthAlongLayoutAxis(LayoutAxis layoutAxis, ui.Size size) {
+  double _lengthAlong(LayoutAxis layoutAxis, ui.Size size) {
     switch(layoutAxis) {
       case LayoutAxis.horizontal:
         return size.width;
@@ -453,18 +527,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   
   /// Creates and returns a list of lengths of the [layoutableBoxes]
   /// measured along the passed [layoutAxis].
-  List<double> _lengthsAlongLayoutAxis(LayoutAxis layoutAxis) => 
-      layoutableBoxes.map((layoutableBox) => _lengthAlongLayoutAxis(layoutAxis, layoutableBox.layoutSize)).toList();
+  List<double> _lengthsOfChildrenAlong(LayoutAxis layoutAxis, List<LayoutableBox> notGreedyChildren) =>
+      notGreedyChildren.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
   
-////////////////////////////////////////////////////////////// todo-00-last-last moved here from BoxContainerBase
-
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
-  // todo-00-last : consider moving some fields to layoutSandbox
-  BoxContainerParentSandbox? parentSandbox; // todo-00-last-last make NON NULL
-
-  /// Member used during the [layout] processing.
-// todo-00-last-last-done : moved to BoxLayouter  final BoxContainerLayoutSandbox layoutSandbox;
+  // todo-00-last : consider merging layoutSandbox and parentSandbox
+  BoxLayouterParentSandbox? parentSandbox; // todo-00-last-last make NON NULL
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
@@ -483,8 +552,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [ContainerNew].
+  @override
   void applyParentOffset(ui.Offset offset) {
-    // todo-01-last : add caller arg, pass caller=this and check : assert(caller == _parent);
+    // todo-01-last : add caller arg, pass caller=this and check : assert(caller == parent);
     //                same on all methods delegated to parentSandbox
     parentSandbox!.applyParentOffset(offset);
   }
@@ -517,10 +587,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// for some invalid conditions, and if they are reached, bypass painting
   /// the containerNew.
   bool allowParentToSkipOnDistressedSize = true;
-  // todo-00-last-last-done : LayoutAxis mainLayoutAxis = LayoutAxis.none;
-  // todo-00-last-last-done : LayoutAxis crossLayoutAxis = LayoutAxis.none;
-  // todo-00-last-last-done : bool get isLayout => mainLayoutAxis != LayoutAxis.none || crossLayoutAxis != LayoutAxis.none;
-
 
   // ##### Abstract methods to implement
 
@@ -574,8 +640,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     for (var child in children) {
       child.rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       // _lengthAlongLayoutAxis(LayoutAxis layoutAxis, ui.Size size)
-      if (child._lengthAlongLayoutAxis(mainLayoutAxis, child.layoutSize) == double.infinity) {
-      // todo-00-last-last-done : if (child.layoutLengthAlongMainLayoutAxis() == double.infinity) {
+      if (child.isGreedy) {
         numGreedyAlongMainLayoutAxis += 1;
         greedyChild = child;
       }
@@ -607,18 +672,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (isLeaf) {
       step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints();
     } else {
-      step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints();
+      step301_IfNotLeafOffsetChildrenThenSetMySizeAndCheckIfMySizeFitWithinConstraints();
     }
   }
 
   // Layouter specific!
   // Exception or visual indication if "my size" is NOT "within my constraints"
-  void step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints() {
+  void step301_IfNotLeafOffsetChildrenThenSetMySizeAndCheckIfMySizeFitWithinConstraints() {
     BoxLayouter? previousChild;
-    for (var child in layoutSandbox.childrenInLayoutOrderGreedyLast) {
-      // todo-00 : add static method on Size to do Size + Size.
-      // todo-00-last-last : need method for envelop of list of children except last greedy
-      /* todo-00-last-last : implement this for RowLayouter and ColumnLayouter
+    if (hasGreedyChild) {
+      for (var child in layoutSandbox.childrenInLayoutOrderGreedyLast) {
+        // todo-00 : add static method on Size to do Size + Size.
+        // todo-00-last-last : need method for envelop of list of children except last greedy
+        /* todo-00-last-last : implement this for RowLayouter and ColumnLayouter
           MAYBE THIS NEEDS TO BE A SEPARATE ABSTRACT METHOD 
       ui.Size previousChildOffset = previousChild != null ? previousChild.offset : const ui.Size(0.0, 0.0);
       child.applyParentOffset(previousChild.offset + child.layoutSize); 
@@ -626,11 +692,25 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       IF THIS IS A LAST CHILD, AND IT IS GREEDY, RE-SET THE CHILD CONSTRAINT AS MY_CONSTRAINT minus ENVELOP OF PREVIOUS CHILDREN
       THEN CALCULATE THIS GREEDY CHILD LAYOUT AND SET SIZE.
       */
-      previousChild = child;
+        previousChild = child;
+      }
+      List<LayoutableBox> notGreedyChildren = layoutSandbox.childrenInLayoutOrderGreedyLast.toList();
+      notGreedyChildren.removeLast();
+      offsetChildrenAccordingToLayouter(notGreedyChildren);
+      Size notGreedyChildrenSizeAccordingToLayouter = childrenLayoutSizeAccordingToLayouter(notGreedyChildren);
+      // Re-calculate Size left for the Greedy child and set it's constraint to it.
+      // todo-00-last-last : now re-size, re-layout and offset the greedy child
+      BoxContainerConstraints? constraints = firstGreedyChild.layoutSandbox.constraints;
+      Size layoutSizeLeftForGreedyChild = constraints!.sizeLeftAfter(notGreedyChildrenSizeAccordingToLayouter, mainLayoutAxis);
+      firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
+      firstGreedyChild.layoutSandbox.constraints = BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
+      
+
+    } else {
+      offsetChildrenAccordingToLayouter(children);
     }
   }
-
-
+  
   void step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints() {} // todo-00-last : make abstract
 
 // todo-01 : split:
@@ -645,16 +725,25 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 //               PieShape layout({required covariant PieContainerConstraints constraints}); // Must set PieShape on parentSandbox
 
 }
+
+class _MainAndCrossLayedOutSegments {
+  _MainAndCrossLayedOutSegments({
+    required this.mainAxisLayedOutSegments,
+    required this.crossAxisLayedOutSegments,
+  });
+  LayedOutLineSegments mainAxisLayedOutSegments;
+  LayedOutLineSegments crossAxisLayedOutSegments;
+
+}
+
 // todo-00-last : BoxLayouter, base class for ColumnLayouter and RowLayouter
 //                BoxLayouter extends BoxContainer, uses LengthsLayouter to modify Container.children.layoutSize and Container.children.offset
 
 // todo-00-done BoxContainerLayoutSandbox - a new class -----------------------------------------------------------------
 
 // todo-01-last : try to make non-nullable and final
-class BoxContainerLayoutSandbox {
+class BoxLayouterLayoutSandbox {
   List<BoxLayouter> childrenInLayoutOrderGreedyLast = [];
-  // List<BoxContainer> childrenGreedyAlongMainLayoutAxis = [];
-  // List<BoxContainer> childrenGreedyAlongCrossLayoutAxis = [];
   ui.Size addedSizeOfAllChildren = const ui.Size(0.0, 0.0);
   BoxContainerConstraints? constraints;
 
@@ -663,7 +752,7 @@ class BoxContainerLayoutSandbox {
 // todo-00-document
 /// Only parent containers of the container that owns this object should be allowed to 
 /// get or set any field inside this object.
-class BoxContainerParentSandbox {
+class BoxLayouterParentSandbox {
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
