@@ -103,7 +103,11 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
  
   void paint(ui.Canvas canvas);
 
-/* END of ContainerBridgeToNew: KEEP
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+/* END of BoxContainer: KEEP
   // todo-02 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform, 
   //           ParentTiltTransform, ParentSheerTransform etc. 
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
@@ -121,6 +125,6 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     _transformMatrix = _transformMatrix * transformMatrix;
   }
   */
-}
+
 
 

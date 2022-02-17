@@ -59,6 +59,17 @@ class ContainerConstraints {
 class PieContainerConstraints extends ContainerConstraints {
 }
 
-// BoxContainerConstraints - see constraints.dart
+// todo-01 : BoxContainerConstraints - see constraints.dart ------------------------------------------------------------
+
+// todo-01 : split:
+//           - Container to BoxContainer and PieContainer
+//           - Shape to BoxShape (wraps Size) and PieShape
+//           - ContainerConstraint to BoxContainerConstraint and PieContainerConstraint 
+// todo-01 : Change Container.newCoreLayout to 
+//               Shape newCoreLayout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on parentSandbox 
+//           This base newCoreLayout maybe eventually configures some constraints caching and debugging.
+//           Extensions of Container: BoxContainer, PieContainer override layout as
+//               BoxShape newCoreLayout({required covariant BoxContainerConstraints constraints}); // Must set BoxShape (essentially, this is Size)  on parentSandbox 
+//               PieShape newCoreLayout({required covariant PieContainerConstraints constraints}); // Must set PieShape on parentSandbox
 
 

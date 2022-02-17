@@ -15,6 +15,17 @@ enum LayoutAxis {
   vertical
 }
 
+LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
+  switch(layoutAxis) {
+    case LayoutAxis.horizontal:
+      return LayoutAxis.vertical;
+    case LayoutAxis.vertical:
+      return LayoutAxis.horizontal;
+    case LayoutAxis.none:
+      throw StateError('Cannot ask for axis perpendicular to none.');
+  }
+}
+
 /// [Packing] describes mutually exclusive layouts for a list of lengths 
 /// (imagined as ordered line segments) on a line.
 /// 
@@ -324,10 +335,10 @@ mixin BoxContainerHierarchy {
 
 // todo-00-last : Get rid of this or improve.
 abstract class LayoutableBox {
- // todo-00-last-last-last-done : added setter as wall: ui.Size get layoutSize;
  ui.Size layoutSize = Size.zero;
  void applyParentOffset(ui.Offset offset);
  BoxLayouterLayoutSandbox layoutSandbox = BoxLayouterLayoutSandbox();
+ void newCoreLayout();
 }
 
 /// Layouter of a list of [LayoutableBox]s.
@@ -348,25 +359,21 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   ui.Size layoutSize = ui.Size.zero;
 
-/* todo-00-last-last move to BoxContainer constructor, especially the asserts
+/* todo-00-last-last move to BoxContainer extensions constructor, especially the asserts
   BoxLayouter({
     required this.layoutableBoxes,
     required this.mainLayoutAxis,
-    required this.crossLayoutAxis,
     required this.mainAxisBoxLayoutProperties,
     required this.crossAxisBoxLayoutProperties,
   }) {
     assert(mainLayoutAxis != LayoutAxis.none);
-    assert(crossLayoutAxis != LayoutAxis.none);
-    assert(mainLayoutAxis != crossLayoutAxis);
   }
 */
 
-  // List<LayoutableBox> layoutableBoxes = []; // todo-00-last-last-last : these are children!!
+  // List<LayoutableBox> layoutableBoxes = []; // todo-00-last-last : these are children!!
   List<LayoutableBox> get layoutableBoxes => children;
-  LayoutAxis mainLayoutAxis = LayoutAxis.none;
-  LayoutAxis crossLayoutAxis = LayoutAxis.none;
-  bool get isLayout => mainLayoutAxis != LayoutAxis.none || crossLayoutAxis != LayoutAxis.none;
+  LayoutAxis mainLayoutAxis = LayoutAxis.none; // todo-00 : consider default to horizontal (Row layout)
+  bool get isLayout => mainLayoutAxis != LayoutAxis.none;
   
   BoxLayoutProperties mainAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
   BoxLayoutProperties crossAxisBoxLayoutProperties = BoxLayoutProperties(packing: Packing.snap, align: Align.min);
@@ -402,8 +409,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Implementation detail: The processing is calling the [LengthsLayouter.layoutLengths], method.
   /// There are two instances of the [LengthsLayouter] created, one
   /// for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),  
-  /// another for the [crossLayoutAxis] (using the [crossAxisLayoutProperties]).
-  // todo-00-last-last : 
+  /// another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
   void offsetChildrenAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross), convert it to LayoutSegments,
     // then package into a wrapper class.
@@ -423,7 +429,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross).
     LengthsLayouter mainAxisLengthsLayouter = _lengthsLayouterAlong(mainLayoutAxis, mainAxisBoxLayoutProperties, notGreedyChildren);
-    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(crossLayoutAxis, crossAxisBoxLayoutProperties, notGreedyChildren);
+    LengthsLayouter crossAxisLengthsLayouter = _lengthsLayouterAlong(axisPerpendicularTo(mainLayoutAxis), crossAxisBoxLayoutProperties, notGreedyChildren);
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout lengths' according it's rules.
@@ -499,7 +505,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         throw StateError('Asking for lenghts to Size, but layoutAxis is none.');
     }
   }
-  
+
+  /// Returns the passed [size]'s width or height along the passed [layoutAxis].
+  double _lengthAlong(LayoutAxis layoutAxis, ui.Size size) {
+    switch(layoutAxis) {
+      case LayoutAxis.horizontal:
+        return size.width;
+      case LayoutAxis.vertical:
+        return size.height;
+      case LayoutAxis.none:
+        throw StateError('Asking for a length along the layout axis, but layoutAxis is none.');
+    }
+  }
+
   /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
   /// 
   /// The passed objects must both correspond to either main axis or the cross axis.
@@ -513,18 +531,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return lengthsLayouterAlongLayoutAxis;
   }
   
-  /// Returns the passed [size]'s width or height along the passed [layoutAxis].
-  double _lengthAlong(LayoutAxis layoutAxis, ui.Size size) {
-    switch(layoutAxis) {
-      case LayoutAxis.horizontal:
-        return size.width;
-      case LayoutAxis.vertical:
-        return size.height;
-      case LayoutAxis.none:
-        throw StateError('Asking for a length along the layout axis, but layoutAxis is none.');
-    }
-  }
-  
   /// Creates and returns a list of lengths of the [layoutableBoxes]
   /// measured along the passed [layoutAxis].
   List<double> _lengthsOfChildrenAlong(LayoutAxis layoutAxis, List<LayoutableBox> notGreedyChildren) =>
@@ -533,7 +539,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // ------------ Fields managed by Sandbox and methods delegated to Sandbox.
 
   // todo-00-last : consider merging layoutSandbox and parentSandbox
-  BoxLayouterParentSandbox? parentSandbox; // todo-00-last-last make NON NULL
+  BoxLayouterParentSandbox? parentSandbox; // todo-00-last make NON NULL
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
@@ -679,51 +685,28 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // Layouter specific!
   // Exception or visual indication if "my size" is NOT "within my constraints"
   void step301_IfNotLeafOffsetChildrenThenSetMySizeAndCheckIfMySizeFitWithinConstraints() {
-    BoxLayouter? previousChild;
     if (hasGreedyChild) {
-      for (var child in layoutSandbox.childrenInLayoutOrderGreedyLast) {
-        // todo-00 : add static method on Size to do Size + Size.
-        // todo-00-last-last : need method for envelop of list of children except last greedy
-        /* todo-00-last-last : implement this for RowLayouter and ColumnLayouter
-          MAYBE THIS NEEDS TO BE A SEPARATE ABSTRACT METHOD 
-      ui.Size previousChildOffset = previousChild != null ? previousChild.offset : const ui.Size(0.0, 0.0);
-      child.applyParentOffset(previousChild.offset + child.layoutSize); 
-      layoutSize = const ui.Size(0.0, 0.0); // size of children envelop
-      IF THIS IS A LAST CHILD, AND IT IS GREEDY, RE-SET THE CHILD CONSTRAINT AS MY_CONSTRAINT minus ENVELOP OF PREVIOUS CHILDREN
-      THEN CALCULATE THIS GREEDY CHILD LAYOUT AND SET SIZE.
-      */
-        previousChild = child;
-      }
       List<LayoutableBox> notGreedyChildren = layoutSandbox.childrenInLayoutOrderGreedyLast.toList();
       notGreedyChildren.removeLast();
       offsetChildrenAccordingToLayouter(notGreedyChildren);
+      // Calculate the size of envelop of all non-greedy children, layed out using this layouter.
       Size notGreedyChildrenSizeAccordingToLayouter = childrenLayoutSizeAccordingToLayouter(notGreedyChildren);
-      // Re-calculate Size left for the Greedy child and set it's constraint to it.
-      // todo-00-last-last : now re-size, re-layout and offset the greedy child
+      // Re-calculate Size left for the Greedy child, 
+      // and set the greedy child's constraint and layoutSize to the re-calculated size left.
       BoxContainerConstraints? constraints = firstGreedyChild.layoutSandbox.constraints;
       Size layoutSizeLeftForGreedyChild = constraints!.sizeLeftAfter(notGreedyChildrenSizeAccordingToLayouter, mainLayoutAxis);
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
       firstGreedyChild.layoutSandbox.constraints = BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
-      
-
+      // Having set a finite constraint on Greedy child, re-layout the Greedy child again.
+      firstGreedyChild.newCoreLayout();
+      // When the greedy child is re-layed out, we can deal with this node as if it had no greedy children - offset
+      offsetChildrenAccordingToLayouter(children);
     } else {
       offsetChildrenAccordingToLayouter(children);
     }
   }
   
   void step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints() {} // todo-00-last : make abstract
-
-// todo-01 : split:
-//           - Container to BoxContainer and PieContainer
-//           - Shape to BoxShape (wraps Size) and PieShape
-//           - ContainerConstraint to BoxContainerConstraint and PieContainerConstraint 
-// todo-01 : Change this base class Container.layout to 
-//               Shape layout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on parentSandbox 
-//           This base layout maybe eventually configures some constraints caching and debugging.
-//           Extensions of Container: BoxContainer, PieContainer override layout as
-//               BoxShape layout({required covariant BoxContainerConstraints constraints}); // Must set BoxShape (essentially, this is Size)  on parentSandbox 
-//               PieShape layout({required covariant PieContainerConstraints constraints}); // Must set PieShape on parentSandbox
-
 }
 
 class _MainAndCrossLayedOutSegments {
