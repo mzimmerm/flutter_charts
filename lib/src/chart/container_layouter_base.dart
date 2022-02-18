@@ -94,7 +94,8 @@ abstract class ContainerOld {
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   
   /// Default generative constructor. Prepares [parentSandbox].
-  BoxContainer() {
+  BoxContainer()  {
+    children = [];
     parentSandbox = _BoxLayouterParentSandbox();
     layoutSandbox = _BoxLayouterLayoutSandbox();
   }
@@ -123,8 +124,8 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 
 
 mixin BoxContainerHierarchy {
-  late final BoxContainer? parent;
-  final List<BoxContainer> children = [];
+  late final BoxContainer? parent;  // will be initialized when addChild(this) is called on this parent
+  late final List<BoxContainer> children; // will be initialized in concrete impls such as ColumnLayouter
   bool get isRoot => parent == null;
   bool get isLeaf => children.isEmpty;
 
@@ -142,16 +143,16 @@ abstract class LayoutableBox {
   void newCoreLayout();
 }
 
-/// Layouter of a list of [LayoutableBox]s.
+/// Layouter of a list of [LayoutableBox]es.
 /// 
 /// The role of this class is to lay out boxes along the main axis and the cross axis,
 /// given layout properties for alignment and packing.
 /// 
-/// Created from the [layoutableBoxes], a list of [LayoutableBox]s, and the definitions
+/// Created from the [children], a list of [LayoutableBox]es, and the definitions
 /// of [mainLayoutAxis] and [crossLayoutAxis], along with the alignment and packing properties 
 /// along each of those axis, [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
 /// 
-/// The core function of this class is to layout (offset) the member boxes [layoutableBoxes] 
+/// The core function of this class is to layout (offset) the member [children] 
 /// by the side effects of the method [offsetChildrenAccordingToLayouter]. 
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
@@ -159,20 +160,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Should be only mentioned in this class, not super
   @override
   ui.Size layoutSize = ui.Size.zero;
-
-/* todo-00-last-last move to BoxContainer extensions constructor, especially the asserts
-  BoxLayouter({
-    required this.layoutableBoxes,
-    required this.mainLayoutAxis,
-    required this.mainAxisBoxLayoutProperties,
-    required this.crossAxisBoxLayoutProperties,
-  }) {
-    assert(mainLayoutAxis != LayoutAxis.none);
-  }
-*/
-
-  // List<LayoutableBox> layoutableBoxes = []; // todo-00-last-last : these are children!!
-  List<LayoutableBox> get layoutableBoxes => children;
+  
+  // List<LayoutableBox> get layoutableBoxes => children; // Each child is a LayoutableBox
   LayoutAxis mainLayoutAxis = LayoutAxis.none; // todo-00 : consider default to horizontal (Row layout)
   bool get isLayout => mainLayoutAxis != LayoutAxis.none;
 
@@ -203,7 +192,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return _convertLengthsToSize(mainLayoutAxis, mainLayedOutLength, crossLayedOutLength);
   }
 
-  /// Lays out all elements in [layoutableBoxes], by setting offset on each [LayoutableBox] element.
+  /// Lays out all elements in [children], a list of [LayoutableBox]es, 
+  /// by setting offset on each [LayoutableBox] element.
   /// 
   /// The offset on each [LayoutableBox] element is calculated using the [mainAxisLayoutProperties]
   /// in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
@@ -217,14 +207,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // then package into a wrapper class.
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
 
-    // Convert the line segments to Offsets (in each axis)
+    // Convert the line segments to Offsets (in each axis), which are position where notGreedyChildren
+    // will be layed out.
     List<ui.Offset> layedOutOffsets = _convertLayedOutSegmentsToOffsets(
       mainLayoutAxis,
       mainAndCrossLayedOutSegments,
       notGreedyChildren,
     );
 
-    // Apply the offsets obtained by layouting onto the layoutableBoxes
+    // Apply the offsets obtained by this specific [Layouter] onto the [LayoutableBox]es [children]
     _offsetChildren(layedOutOffsets, notGreedyChildren);
   }
 
@@ -244,8 +235,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return mainAndCrossLayedOutSegments;
   }
 
+  /// Applies the offsets obtained by this specific [Layouter] onto the [LayoutableBox]es [children].
   void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren) {
-    // Apply the offsets obtained by layouting onto the layoutableBoxes
     assert(layedOutOffsets.length == notGreedyChildren.length);
     for (int i =  notGreedyChildren.length; i < layedOutOffsets.length; i++) {
       notGreedyChildren[i].applyParentOffset(layedOutOffsets[i]);
@@ -331,7 +322,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return lengthsLayouterAlongLayoutAxis;
   }
 
-  /// Creates and returns a list of lengths of the [layoutableBoxes]
+  /// Creates and returns a list of lengths of the [LayoutableBox]es [notGreedyChildren]
   /// measured along the passed [layoutAxis].
   List<double> _lengthsOfChildrenAlong(LayoutAxis layoutAxis, List<LayoutableBox> notGreedyChildren) =>
       notGreedyChildren.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
@@ -509,6 +500,33 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   void step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints() {} // todo-00-last : make abstract
 }
+
+class RowLayouter extends BoxContainer {
+  RowLayouter({
+    required List<BoxContainer> children,
+  }) {
+    // Fields declared from parent mixin portion cannot be initialized in initializer,
+    //   but in constructor here. 
+    // As a result, mixin fields can still be final, bust must be late, as they are 
+    //   always initialized in concrete implementations.
+    this.children = children;
+    mainLayoutAxis = LayoutAxis.horizontal;
+    mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
+    crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
+  }
+  
+  // todo-00-last-last make abstract or implement
+  @override
+  void paint(ui.Canvas canvas) {}
+
+  // todo-00-last-last make abstract or implement
+  @override
+  void layout(BoxContainerConstraints boxConstraints) {}
+
+}
+
+
+// Helper classes ------------------------------------------------------------------------------------------------------
 
 class _MainAndCrossLayedOutSegments {
   _MainAndCrossLayedOutSegments({
