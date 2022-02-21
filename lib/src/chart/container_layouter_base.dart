@@ -458,7 +458,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void rootStep1_setRootConstraint() {
     // todo-00-last implement where needed
   }
-  // Layout specific. only children changed, then next method. Default sets same constraints
+  
+  // Layout specific. Only children should be changed by setting constraints,
+  //   created from this BoxLayouter constraints. Default sets same constraints.
   void step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
     for (var child in layoutSandbox.childrenInLayoutOrderGreedyLast) {
       // todo-00-last - how does this differ for Column, Row, etc?
@@ -466,6 +468,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
+  // Layout specific. Offsets children hierarchically (layout children), which positions them in this [BoxLayouter].
+  // Then, sets this object's size as the envelope of all layed out children.
   void step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize() {
     if (isLeaf) {
       step301_IfLeafSetMySizeFromInternalsToFitWithinConstraints();
@@ -511,8 +515,8 @@ class RowLayouter extends BoxContainer {
     //   always initialized in concrete implementations.
     this.children = children;
     mainLayoutAxis = LayoutAxis.horizontal;
-    mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
-    crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
+    mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center);
+    crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center);
   }
   
   // todo-00-last-last make abstract or implement
