@@ -5,7 +5,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
-import 'container_layouter_base.dart' as container_base show BoxContainer;
+import 'container_layouter_base.dart' show BoxContainer;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
@@ -33,7 +33,7 @@ import '../util/geometry.dart' as geometry;
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 
-class LabelContainer extends container_base.BoxContainer {
+class LabelContainer extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
   
@@ -191,7 +191,7 @@ class LabelContainer extends container_base.BoxContainer {
   /// ```
   /// 
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // todo-01-morph : cannot set _boxConstraints here, as it is private in another src file
     //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();

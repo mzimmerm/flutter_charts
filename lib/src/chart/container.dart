@@ -48,7 +48,7 @@ mixin ChartBehavior {
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   
   @override
-  void newCoreLayout() {
+  void newCoreLayout(BoxContainer parentBoxContainer) {
     // todo-00
   }
   
@@ -68,7 +68,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late ui.Size chartArea;
 
   /// Base Areas of chart.
-  late LegendContainer legendContainer;
+  late LegendContainerOriginalKeep legendContainerOriginalKeep;
   late XContainer xContainer;
   late YContainer yContainer;
   late DataContainer dataContainer;
@@ -151,7 +151,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// The actual layout algorithm should be made pluggable.
   ///
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -162,14 +162,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartArea.width,
       chartArea.height,)
     );
-    legendContainer = LegendContainer(
+    legendContainerOriginalKeep = LegendContainerOriginalKeep(
       chartRootContainer: this,
     );
 
-    legendContainer.layout(legendBoxConstraints);
-    ui.Size legendContainerSize = legendContainer.layoutSize;
+    legendContainerOriginalKeep.layout(legendBoxConstraints, legendContainerOriginalKeep);
+    ui.Size legendContainerSize = legendContainerOriginalKeep.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
-    legendContainer.applyParentOffset(legendContainerOffset);
+    legendContainerOriginalKeep.applyParentOffset(legendContainerOffset);
 
     // ### 3. Ask [YContainer] to provide Y label container width.
     //        This provides the remaining width left for the [XContainer]
@@ -186,7 +186,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
 
-    yContainerFirst.layout(yContainerBoxConstraints);
+    yContainerFirst.layout(yContainerBoxConstraints, yContainerFirst);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
     yContainer = yContainerFirst;
     ui.Size yContainerSize = yContainer.layoutSize;
@@ -203,7 +203,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
-    xContainer.layout(xContainerBoxConstraints);
+    xContainer.layout(xContainerBoxConstraints, xContainer);
 
     ui.Size xContainerSize = xContainer.layoutSize;
     ui.Offset xContainerOffset = ui.Offset(yContainerSize.width, chartArea.height - xContainerSize.height);
@@ -226,7 +226,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
 
-    yContainer.layout(yContainerBoxConstraints);
+    yContainer.layout(yContainerBoxConstraints, yContainer);
 
     yContainerSize = yContainer.layoutSize;
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
@@ -247,7 +247,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // todo-01-morph-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
-    dataContainer.layout(dataContainerBoxConstraints);
+    dataContainer.layout(dataContainerBoxConstraints, dataContainer);
     dataContainer.applyParentOffset(dataContainerOffset);
   }
 
@@ -273,14 +273,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    layout( BoxContainerConstraints.exactBox(size: ui.Size(chartArea.width, chartArea.height)));
+    layout( BoxContainerConstraints.exactBox(size: ui.Size(chartArea.width, chartArea.height)), this);
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);
     // Draws the X labels area of the chart.
     xContainer.paint(canvas);
     // Draws the legend area of the chart.
-    legendContainer.paint(canvas);
+    legendContainerOriginalKeep.paint(canvas);
     // Draws the grid, then data area - bars (bar chart), lines and points (line chart).
     dataContainer.paint(canvas);
 
@@ -364,7 +364,7 @@ class YContainer extends ChartAreaContainer {
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer
     //   coordinates.
     // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
@@ -438,7 +438,7 @@ class YContainer extends ChartAreaContainer {
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
-      yLabelContainer.layout(BoxContainerConstraints.unused());
+      yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
@@ -543,7 +543,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   ///   in the sense that all tilting logic is hidden in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -574,7 +574,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
-      xLabelContainer.layout(BoxContainerConstraints.unused());
+      xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
 
       // Core of X layout calcs - lay out label to find the size that is takes,
@@ -617,7 +617,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
     //   whichever comes first.
-    labelLayoutStrategy.reLayout(boxConstraints);
+    labelLayoutStrategy.reLayout(boxConstraints, this);
   }
 
   // xlabels area without padding
@@ -823,7 +823,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// First lays out the Grid, then, based on the available size,
   /// scales the columns to the [YContainer]'s scale.
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     layoutSize = ui.Size(boxConstraints.size.width, boxConstraints.size.height);
 
     _layoutGrid();
@@ -1089,9 +1089,9 @@ class GridLinesContainer extends BoxContainer {
 
   /// Implements the abstract [BoxContainer.layout].
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     for (LineContainer lineContainer in _lineContainers) {
-      lineContainer.layout(boxConstraints);
+      lineContainer.layout(boxConstraints, lineContainer);
     }
   }
 
@@ -1156,7 +1156,7 @@ class LegendItemContainer extends BoxContainer {
   }
 
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
@@ -1177,7 +1177,7 @@ class LegendItemContainer extends BoxContainer {
       labelStyle: _labelStyle,
     );
     addChild(labelContainer);
-    labelContainer.layout(BoxContainerConstraints.unused());
+    labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
     
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
@@ -1286,7 +1286,7 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// Evenly divides the [availableWidth] to all legend items.
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
@@ -1327,7 +1327,7 @@ class LegendContainer extends ChartAreaContainer {
         options: options,
       );
 
-      legendItemContainer.layout(legendItemBoxConstraints);
+      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
 
       legendItemContainer.applyParentOffset(
         ui.Offset(
@@ -1343,6 +1343,108 @@ class LegendContainer extends ChartAreaContainer {
       boxConstraints.size.width,
       children.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) + (2.0 * containerMarginTB),
       
+    );
+  }
+
+  @override
+  void applyParentOffset(ui.Offset offset) {
+    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+      return;
+    }
+    // super not really needed - only child containers are offset.
+    super.applyParentOffset(offset);
+
+    for (BoxContainer legendItemContainer in children) {
+      legendItemContainer.applyParentOffset(offset);
+    }
+  }
+
+  @override
+  void paint(ui.Canvas canvas) {
+    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+      return;
+    }
+    for (BoxContainer legendItemContainer in children) {
+      legendItemContainer.paint(canvas);
+    }
+  }
+}
+
+class LegendContainerOriginalKeep extends ChartAreaContainer {
+  // ### calculated values
+
+  /// Constructs the container that holds the data series legends labels and
+  /// color indicators.
+  ///
+  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
+  LegendContainerOriginalKeep({
+    required ChartRootContainer chartRootContainer,
+  }) : super(
+    chartRootContainer: chartRootContainer,
+  );
+
+  /// Lays out the legend area.
+  ///
+  /// Evenly divides the [availableWidth] to all legend items.
+  @override
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+      return;
+    }
+    ChartOptions options = chartRootContainer.data.chartOptions;
+    double containerMarginTB = options.legendOptions.legendContainerMarginTB;
+    double containerMarginLR = options.legendOptions.legendContainerMarginLR;
+
+    List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+    // First paint all legends, to figure out max height of legends to center all
+    // legends label around common center.
+
+    double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
+
+    // Layout legend core: for each row, create and position
+    //   - an indicator rectangle and it's paint
+    //   - label painter
+    for (int index = 0; index < dataRowsLegends.length; index++) {
+      ui.Paint indicatorPaint = ui.Paint();
+      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+      indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
+
+      var legendItemBoxConstraints = boxConstraints.cloneWith(
+        width: legendItemWidth,
+      );
+      var legendItemContainer = LegendItemContainer(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+      );
+
+      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
+
+      legendItemContainer.applyParentOffset(
+        ui.Offset(
+          containerMarginLR + index * legendItemWidth,
+          containerMarginTB,
+        ),
+      );
+
+      addChild(legendItemContainer);
+    }
+
+    layoutSize = ui.Size(
+      boxConstraints.size.width,
+      children.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) + (2.0 * containerMarginTB),
+
     );
   }
 

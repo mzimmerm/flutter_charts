@@ -2,6 +2,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
 import 'container.dart' show AdjustableLabelsChartAreaContainer;
+import 'container_layouter_base.dart' show BoxContainer;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart';
 
@@ -112,7 +113,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
-  void reLayout(BoxContainerConstraints boxConstraints) {
+  void reLayout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     if (!_adjustableLabelsContainer.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
       //   to layout(). Exits from iterative layout.
@@ -140,7 +141,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
     
     // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
-    _adjustableLabelsContainer.layout(boxConstraints);
+    _adjustableLabelsContainer.layout(boxConstraints, _adjustableLabelsContainer);
   }
 
   /// Prepares the rotation matrix [_labelTiltMatrix] for tilting labels.
@@ -203,7 +204,7 @@ abstract class LabelLayoutStrategy {
   /// it should set some values on [_adjustableLabelsContainer]'s labels to
   /// make them smaller, less dense, tilt, skip etc, and call
   /// the [Container.layout] iteratively.
-  void reLayout(BoxContainerConstraints boxConstraints);
+  void reLayout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer);
 
   /// Should return true if the layout strategy rotates labels during the
   /// current reLayout.
