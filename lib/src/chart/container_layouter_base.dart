@@ -104,6 +104,34 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
 
 }
 
+// todo-00-last-last How and where should we use this?
+class BoxContainerNullParentOfRoot extends BoxContainer {
+  
+  final String _nullMessage = 'BoxContainerNullParentOfRoot: Method intentionally not implemented.';
+  
+  @override
+  bool get isRoot => throw UnimplementedError(_nullMessage);
+
+  @override
+  BoxContainer get parent => throw UnimplementedError(_nullMessage);
+
+  @override
+  List<BoxContainer> get children => throw UnimplementedError(_nullMessage);
+
+  @override
+  set children(List<BoxContainer> children) => throw UnimplementedError(_nullMessage);
+
+  @override
+  void paint(Canvas canvas) {
+    throw UnimplementedError(_nullMessage);
+  }
+
+  @override
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    throw UnimplementedError(_nullMessage);
+  }
+}
+
 /// todo-00-document
 enum LayoutAxis {
   none,
@@ -363,8 +391,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     parentSandbox!.parentOrderedToSkip = skip;
   }
   bool get parentOrderedToSkip => parentSandbox!.parentOrderedToSkip;
-
-
+  
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
   /// making painting of this containerNew not possible.
@@ -389,10 +416,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer);
 
-  // Core recursive layout method.
+  // Core recursive layout method --------------------------------------------------------------------------------------
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
   void newCoreLayout(BoxContainer parentBoxContainer) {
+    // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep1_setRootConstraints(parentBoxContainer);
       rootStep2_Recurse_setupContainerHierarchy(parentBoxContainer);
@@ -414,8 +442,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Create and add children of this container.
   void rootStep2_Recurse_setupContainerHierarchy(BoxContainer parentBoxContainer) {
-    for (var child in children) {
-      child.createChildrenOrUseChildrenFromConstructor(parentBoxContainer);
+    BoxContainer selfOrReplacedWithContainer = buildContainerOrSelf(parentBoxContainer);
+    for (var child in selfOrReplacedWithContainer.children) {
       child.rootStep2_Recurse_setupContainerHierarchy(parentBoxContainer);
     }
   }
@@ -427,7 +455,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   //   - create childN
   //   - addChild(childN)
   //   - etc
-  void createChildrenOrUseChildrenFromConstructor(BoxContainer parentBoxContainer) {}
+  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+    return this as BoxContainer;
+  }
 
   void rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast(BoxContainer parentBoxContainer) {
     // sets up childrenGreedyInMainLayoutAxis,  childrenGreedyInCrossLayoutAxis
@@ -456,7 +486,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   void rootStep1_setRootConstraints(BoxContainer parentBoxContainer) {
-    // todo-00-last implement where needed
+    throw UnimplementedError('Must be implemented');
+    // todo-00-last implement where needed - on root. Anywhere else?
   }
   
   // Layout specific. Only children should be changed by setting constraints,
@@ -528,7 +559,6 @@ class RowLayouter extends BoxContainer {
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {}
 
 }
-
 
 // Helper classes ------------------------------------------------------------------------------------------------------
 
