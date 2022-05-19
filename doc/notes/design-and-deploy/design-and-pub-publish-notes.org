@@ -1034,6 +1034,11 @@ LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM L
   - [ ] ~Add constructor BoxLayouter(children: List<BoxContainer>). How does it change what we are doing in BoxContainer?~
 - [ ] ~RowLayouter~
   - [ ] implement step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints specifically.
+- [ ] todo-00-last-last-done : review and remove as this is tested as working
+- [ ] todo-00-last-last : should this be changed to todo-00-last-done?
+- [ ] todo-00-last : are there any?
+- [ ] todo-00 : are there any?
+- [ ] todo-00-last-last-last : review where we are
 ** TODO 4. SOME Containers (LegendContainer): Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 
 *** NOTE ~SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~

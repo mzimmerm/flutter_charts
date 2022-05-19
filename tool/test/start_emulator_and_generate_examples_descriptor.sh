@@ -38,8 +38,8 @@ echo Check if the emulator named $emulator_used is connected to a running device
 if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
   echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
   flutter emulators --launch "$emulator_used"
-  echo Sleep 20 to give the emulator time to start fully.
-  sleep 20
+  echo Sleep 40 to give the emulator time to start fully.
+  sleep 40
   echo The AVD emulator $emulator_used succesfully launched.
 else
   echo The emulator $emulator_used appears running and connected.

@@ -3,6 +3,9 @@
 # Runs all tests - dart unit tests, flutter widget tests (both in directory 'test'), 
 #   and flutter integration tests (=driver tests) (in directory 'integration_test'
 
+# Run as:
+#   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+ 
 set -e
 
 echo
