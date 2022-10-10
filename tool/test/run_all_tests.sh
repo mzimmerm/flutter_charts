@@ -3,9 +3,12 @@
 # Runs all tests - dart unit tests, flutter widget tests (both in directory 'test'), 
 #   and flutter integration tests (=driver tests) (in directory 'integration_test'
 
-# Run as:
+# To run all examples:
 #   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
- 
+
+# To run one example:
+# tool/test/run_all_tests.sh ex31SomeNegativeValues
+
 set -e
 
 echo
@@ -30,4 +33,4 @@ echo
 echo -------------------------------------
 echo Running a wrapper around Flutter integration tests for screenshots
 echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
-tool/test/integration_test_validate_screenshots.sh
+tool/test/integration_test_validate_screenshots.sh $1
