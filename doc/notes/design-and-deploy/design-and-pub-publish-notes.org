@@ -853,6 +853,19 @@ e^loge(x) = x ; e^loge(10) = 10
             - OR
             - ~List<StackableValuePoint> fromPoints,~
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
+
+
+** IN-PROGRESS-NOW Tool updates 2022-10-10
+
+- [X] Update Flutter to latest: ~flutter channel stable; flutter upgrade~; AFTER, needed to comment out ~analyzer: ^2.8.0~ from pubspec.yaml, otherwise ~flutter pub upgrade~ fails)
+- [ ] Test (needed to upgrade images by DELETING all screenshots_expected and screenshots_tested, then RUNNING ~run_all_tests.sh~ which will FAIL but only after creating missing images. Copy them to screenshots_expected, THEN run ~run_all_tests.sh~ again)
+- [ ] Update IntelliJ community edition to latest
+- [ ] Update Flutter plugin to latest
+- [ ] Test
+- [ ] 
+- [ ] 
+- [ ] 
+- 
 ** IN-PROGRESS 2. Implement new Layouter algorithm
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
 *** TODO Core Problem of layout *Maybe not a problem, see useExistingChildrenOrCreateChildren* - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout

@@ -75,7 +75,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
   lints: ^1.0.1 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
-  analyzer: ^2.8.0
+  # 2022-10-10-removed-as-flutter-pub-upgrade-fails analyzer: ^2.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
