@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script runs a single or all examples in the example app in "example1/lib/main.dart", 
+# This script runs a single or all examples in the example app in "example/lib/main.dart",
 #   captures a screenshot from each example, then runs a follow-up process which
 #   validates that the captured screenshot is the same as an expected screenshot (taken earlier and validated).
 # In more detail, this script runs in 3 steps

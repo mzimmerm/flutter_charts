@@ -432,7 +432,7 @@ class _ExampleDefiner {
   /// Example assumes Android emulator is running or an Android/iOS device is connected:
   /// - Running:
   ///   ```sh
-  ///     flutter run example1/lib/main.dart \
+  ///     flutter run example/lib/main.dart \
   ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
   ///       --dart-define=CHART_TYPE_TO_SHOW=lineChart
   ///   ```

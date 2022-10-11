@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 
-import '../example1/lib/src/util/examples_descriptor.dart';
+import '../example/lib/src/util/examples_descriptor.dart';
 
 /// Path to screenshot file the test uses for each test.
 String relativePath(String screenshotDirName, Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {

@@ -9,7 +9,7 @@
 # In more detail, this script does the following:
 #   - If Android AVD emulator is not running, starts one.
 #   - Next, uses the program 
-#     'dart run example1/lib/src/util/examples_descriptor.dart'
+#     'dart run example/lib/src/util/examples_descriptor.dart'
 #   to generate a temp script, which name is placed in the variable named
 #     'examples_descriptor_generated_program'
 #   The program $examples_descriptor_generated_program 
@@ -60,9 +60,9 @@ echo Emulator $emulator_used is running as device_id="$device_id".
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
-echo Running dart run example1/lib/src/util/examples_descriptor.dart 
+echo Running dart run example/lib/src/util/examples_descriptor.dart
 echo   to create $examples_descriptor_generated_program
-dart run example1/lib/src/util/examples_descriptor.dart "$exampleEnum" > $examples_descriptor_generated_program
+dart run example/lib/src/util/examples_descriptor.dart "$exampleEnum" > $examples_descriptor_generated_program
 
 chmod u+x $examples_descriptor_generated_program
 

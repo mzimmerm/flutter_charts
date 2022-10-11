@@ -9,7 +9,7 @@
 // Removing import for whole flutter_charts.
 //    import 'package:flutter_charts/flutter_charts.dart' show enumName;
 // Reason: As part of a shell script, this needs to run as
-//    dart run example1/lib/src/util/examples_descriptor.dart
+//    dart run example/lib/src/util/examples_descriptor.dart
 // But, because importing flutter_charts.dart does
 //    import 'dart:ui'
 // then during 'dart run' we get messages such as :
@@ -61,10 +61,10 @@ enum ExamplesChartTypeEnum {
 /// Represents examples and tests to be run.
 ///
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
-///   for the flutter_charts example app in [example1/lib/main.dart].
+///   for the flutter_charts example app in [example/lib/main.dart].
 ///
-/// The conversion from enumerates to data and options is in [example1/lib/main.dart], see 'chartTypeToShow'.
-/// The conversion from enumerates to chart type is in [example1/lib/main.dart] see 'requestedExampleToRun'.
+/// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartTypeToShow'.
+/// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
 class ExamplesDescriptor {
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;
@@ -139,7 +139,7 @@ class ExamplesDescriptor {
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
-          '\$2' // ' example1/lib/main.dart'
+          '\$2' // ' example/lib/main.dart'
           );
     }
   }

@@ -49,7 +49,7 @@ This section contains sample charts from flutter_charts, with code that generate
   }
 #+end_src
 
-To quickly test the code, you can paste the method ~chartToRun()~ into the sample main app provided in https://github.com/mzimmerm/flutter_charts/blob/master/example1/lib/main_run_doc_example.dart.
+To quickly test the code, you can paste the method ~chartToRun()~ into the sample main app provided in https://github.com/mzimmerm/flutter_charts/blob/master/example/lib/main_run_doc_example.dart.
 
 #+BEGIN_SRC bash :results output raw replace :eval no-export :exports none
 
@@ -58,7 +58,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
   declare -a exampleEnumWithChartTypes
 
   # Read examples descriptor file and pull out example enum names and chart types
-  #   which are supported in tests. All those examples are guaranteed to be run in example1/lib/main.dart,
+  #   which are supported in tests. All those examples are guaranteed to be run in example/lib/main.dart,
   #   and also screenshot-generated and tested for sameness with expected screenshots
   #   in integration_test/screenshot_create_test.dart and test/screenshot_create_test.dart.
   while read enumLine; do
@@ -73,7 +73,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
           # Each element has a string with 2 items (space separated items, no spaces inside items allowed)
           exampleEnumWithChartTypes+=("$exampleEnum $chartType")
       fi
-  done < example1/lib/src/util/examples_descriptor.dart
+  done < example/lib/src/util/examples_descriptor.dart
 
   # Generate and write-out the section with small chart images in one table row.
   tableCellLinks=""
@@ -137,7 +137,7 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
           if [[ $codeLine =~ "case ExamplesEnum.${exampleEnum}:" ]]; then
               printOn=1
           fi
-      done < example1/lib/main.dart
+      done < example/lib/main.dart
 
       # Finish code
       if [[ $chartType = "lineChart" ]]; then
@@ -1303,7 +1303,7 @@ To install (clone) the ~flutter_charts~ project from Github to your local system
 
 This section assumes you installed the flutter_charts project as a local clone from Github, as described in [[*Running the examples included in flutter_charts]]
 
-There is an example application in flutter_charts: ~example1/lib/main.dart~. It shows how the Flutter Charts library can be included in a Flutter application.
+There is an example application in flutter_charts: ~example/lib/main.dart~. It shows how the Flutter Charts library can be included in a Flutter application.
 
 To run the example application, Android emulator or iOS emulator need to be installed. You can use an IDE or command line. Instructions here are for the command line. Start in the unzipped directory, and follow the steps below:
 
@@ -1405,7 +1405,7 @@ In all above, you can add cleanup and timing as follows:
 
 Before a new release, perform these steps:
 
-1. Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin_src section. If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example1/lib/main.dart~. The ~example1/lib/main.dart~ is also used to generate images gallery with links to code in this README file on top.
+1. Run the following babel script which refreshes the 'expected' screenshots and also creates a 150px wide version. Do so by clicking C-c twice in the begin_src section. If the test ~tool/demo/run_all_examples.sh~ succeeds, it is guarenteed the 'expected' screenshots are same as those produced by the code in ~example/lib/main.dart~. The ~example/lib/main.dart~ is also used to generate images gallery with links to code in this README file on top.
 
   Convert expected screenshots to readme_images, while converting to 2 versions, one with width=150, one with 300  
   #+begin_src bash :results output silent :eval no-export

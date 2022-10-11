@@ -100,7 +100,7 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
      - in the README.MD file, the result inside <img src= sections should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png~
 
 ** ~dart format --line-length=120 lib~
-** ~dart format --line-length=120 example1~
+** ~dart format --line-length=120 example~
 ** ~dart format --line-length=120 tool~
 ** ~dart format --line-length=120 integration_test~
 ** ~NO dart format test~
@@ -919,7 +919,7 @@ This section We describe running Flutter Charts in development mode on your devi
 
    #+BEGIN_SRC sh
    cd DIRECTORY_OF_CHOICE/flutter_charts 
-   flutter run example1/lib/main.dart 
+   flutter run example/lib/main.dart
    #+END_SRC
 
 7. (Alternative to 6.) Run  Flutter Charts demo app from IDE. This will work only with method 5. 

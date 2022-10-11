@@ -10,8 +10,8 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-import '../example1/lib/src/util/examples_descriptor.dart';
-import '../example1/lib/main.dart' as app;
+import '../example/lib/src/util/examples_descriptor.dart';
+import '../example/lib/main.dart' as app;
 
 void main() {
   test('after screenshot integration, test for sameness', () {

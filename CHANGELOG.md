@@ -89,7 +89,7 @@ There are API changes in this release. Below may or may not be a full list
 
 ## Functional improvements
 
-1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example1/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
+1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
     ```dart
       ChartOptions chartOptions = VerticalBarChartOptions.noLabels();
     ```

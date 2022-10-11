@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs the passed example or all examples in 'example1/lib/main.dart'.
+# Runs the passed example or all examples in 'example/lib/main.dart'.
 # If an example name is passed, it must be an existing allowed ExamplesEnum name
 
 set -o errexit
@@ -44,5 +44,5 @@ echo Running the app with all examples for the examples_descriptor.
 echo The argument --device-id="$device_id" after flutter run is not needed if only one device is connected.
 bash -x "$examples_descriptor_generated_program" \
         "flutter  run" \
-        " example1/lib/main.dart"
+        " example/lib/main.dart"
 
