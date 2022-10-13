@@ -12,7 +12,7 @@ import '../util/geometry.dart' as geometry;
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
 /// The [layoutSize] is exactly that of by the contained
-/// layed out [_textPainter] (this [LabelContainer] has no margins, padding,
+/// layed out [_textPainter] (this [LabelContainerOriginalKeep] has no margins, padding,
 /// or additional content in addition to the [_textPainter).
 ///
 /// However, if this object is tilted, as specified by [_labelTiltMatrix], the
@@ -33,11 +33,11 @@ import '../util/geometry.dart' as geometry;
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 
-class LabelContainer extends BoxContainer {
+class LabelContainerOriginalKeep extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
   
-  /// Offset of this [LabelContainer]'s label, created by the [_textPainter].
+  /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
   Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
 
@@ -80,7 +80,7 @@ class LabelContainer extends BoxContainer {
   ///
   /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
-  LabelContainer({
+  LabelContainerOriginalKeep({
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
@@ -181,7 +181,7 @@ class LabelContainer extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  /// Lays out this [LabelContainer].
+  /// Lays out this [LabelContainerOriginalKeep].
   /// 
   /// The layout step 1 is calling the contained [_textPainter.layout];
   /// step 2 is creating the [_tiltedLabelEnvelope] around the horizontally layed out [_textPainter]
@@ -237,7 +237,7 @@ class LabelContainer extends BoxContainer {
   }
 
   /// Creates the envelope rectangle [EnvelopedRotatedRect], which [EnvelopedRotatedRect.topLeft] 
-  /// is used to position this [LabelContainer] for painting with or without tilt.
+  /// is used to position this [LabelContainerOriginalKeep] for painting with or without tilt.
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -249,11 +249,11 @@ class LabelContainer extends BoxContainer {
 }
 
 // todo-done-00 : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point
-class LegendLabelContainer extends BoxContainer {
+class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
 
-  /// Offset of this [LabelContainer]'s label, created by the [_textPainter].
+  /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
   Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
 
@@ -296,7 +296,7 @@ class LegendLabelContainer extends BoxContainer {
   ///
   /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
-  LegendLabelContainer({
+  LegendLabelContainerNewLegendSpecificKeep({
     required String label,
     required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
@@ -397,7 +397,7 @@ class LegendLabelContainer extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  /// Lays out this [LabelContainer].
+  /// Lays out this [LabelContainerOriginalKeep].
   /// 
   /// The layout step 1 is calling the contained [_textPainter.layout];
   /// step 2 is creating the [_tiltedLabelEnvelope] around the horizontally layed out [_textPainter]
@@ -459,7 +459,7 @@ class LegendLabelContainer extends BoxContainer {
   }
 
   /// Creates the envelope rectangle [EnvelopedRotatedRect], which [EnvelopedRotatedRect.topLeft] 
-  /// is used to position this [LabelContainer] for painting with or without tilt.
+  /// is used to position this [LabelContainerOriginalKeep] for painting with or without tilt.
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -471,7 +471,7 @@ class LegendLabelContainer extends BoxContainer {
 }
 
 /// Class for value objects which group the text styles that may affect
-/// [LabelContainer]'s instances layout.
+/// [LabelContainerOriginalKeep]'s instances layout.
 class LabelStyle {
   widgets.TextStyle textStyle;
   ui.TextDirection textDirection;
@@ -486,7 +486,7 @@ class LabelStyle {
   });
 }
 
-/// Subclass of [LabelContainer] is extended with member [parentOffsetTick],
+/// Subclass of [LabelContainerOriginalKeep] is extended with member [parentOffsetTick],
 /// which maintains the container's center position in
 /// immediate parent's coordinates.
 ///
@@ -511,7 +511,7 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-class AxisLabelContainer extends LabelContainer {
+class AxisLabelContainer extends LabelContainerOriginalKeep {
   /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///

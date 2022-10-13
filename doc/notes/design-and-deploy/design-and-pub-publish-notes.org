@@ -1281,7 +1281,7 @@ Only needed later
     - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
 
 
-IMPORTANT: ~BoxContainer~ implements ~BoxLayouter~, ONLY ADDS METHOD ~paint(Canvas)~
+IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ONLY ADDS METHOD ~paint(Canvas)~ to ~BoxLayouter~
 
 - [ ] Study LegendItemContainer Originalkeep and NewKeep
 - [ ] last, there was an intent to experiment with some LegendItemContainer changes. Study differences between New and Original.
@@ -1297,6 +1297,7 @@ IMPORTANT: ~BoxContainer~ implements ~BoxLayouter~, ONLY ADDS METHOD ~paint(Canv
 - Study alignment and packing
 
 
+
 *** DONE review of todos
 
 - todo-00-last-last-last : review where we are
@@ -1309,17 +1310,30 @@ IMPORTANT: ~BoxContainer~ implements ~BoxLayouter~, ONLY ADDS METHOD ~paint(Canv
 
 ** TODO 5. Use the new Layouter algorithm + new Box/Column ON SOME Containers (LegendContainer) instead of custom code. REST of Containers (*which*) use original code.
 
-*** NOTE ~New Layout on SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
+*** NOTE ~New Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
+
+Currently we have the following classes
 
 - [ ] LegendContainerOriginalKeep
+  - Created in ChartRootContainer.layout()
+  - 
 - [ ] LegendContainerNewKeep
+  
 - [ ] LegendItemContainerOriginalKeep
 - [ ] LegendItemContainerNewKeep
-  - [ ] Difference from original?
-    - [ ] 
-- [ ] LabelContainer
-- [ ] LegendLabelContainer
-- 
+  
+- [ ] LabelContainerOriginalKeep (used in both LEGEND and AXIS labels)
+- [ ] LegendLabelContainerNewLegendSpecificKeep
+
+- [ ] LegendIndicatorRectContainer - NEW CLASS TO INDICATE LEGEND RECTANGLE.
+
+
+Containment structure (contained children created in layout()):
+
+~LegendContainer~ contains ~LegendItemContainer~ contains ~LabelContainer~ AND ~LegendIndicatorRectContainer~ . ~LabelContainer~ contains ~TextPainter~
+
+
+
 *** NOTE ~Old Layout on SOME Containers = IN-PROGRESS-NOW~
 
 *** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
