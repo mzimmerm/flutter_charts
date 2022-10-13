@@ -248,7 +248,7 @@ class LabelContainer extends BoxContainer {
 
 }
 
-// todo-00-last-last-done : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point
+// todo-done-00 : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point
 class LegendLabelContainer extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
@@ -406,7 +406,8 @@ class LegendLabelContainer extends BoxContainer {
   ///   _tiltedLabelEnvelope = _createLabelEnvelope();
   /// ```
   /// 
-  // todo-00-last-last-done : Here, below the top of the 'detached' BoxContainer hierarchy , rename the the layout() method, to newCoreLayout.
+  // todo-done-00 : Here, in LegendLabelContainer, (below the top of the 'detached' BoxContainer hierarchy),
+  //                         renamed the the layout() method, to newCoreLayout.
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     throw StateError('Should not be called in BoxContainer, except on top detached root');
@@ -417,7 +418,6 @@ class LegendLabelContainer extends BoxContainer {
     // todo-01-morph : cannot set _boxConstraints here, as it is private in another src file
     //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
-    // todo-00-last-last-done layoutSize = sizeAndOverflow.item1;
   }
 
   // ##### Internal methods

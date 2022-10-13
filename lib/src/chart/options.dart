@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' as material show Colors; // any color we 
 import 'dart:math' as math show pi, log, ln10, pow;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter_charts/flutter_charts.dart';
 
 import 'line/options.dart';
 import 'bar/options.dart';
@@ -98,10 +99,10 @@ class LegendOptions {
   // is the square that shows the color of each dataRow (color of lines or bars)
   // together with data series name (legend name).
 
-  /// Margin on the left/right of the LegendContainer
+  /// Margin on the left/right of the [LegendContainerOriginalKeep]
   final double legendContainerMarginLR;
 
-  /// Margin on the top/bottom of the LegendContainer
+  /// Margin on the top/bottom of the  [LegendContainerOriginalKeep]
   final double legendContainerMarginTB;
 
   /// Between each legend item pairs (indicator + label)

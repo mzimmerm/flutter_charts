@@ -1,5 +1,5 @@
 #+OPTIONS: toc:3
-#+TODO: TODO IN-PROGRESS IN-PROGRESS-NOW LATER DONE NOTE
+#+TODO: TODO IN-PROGRESS IN-PROGRESS-NOW LATER HOLD DONE-THIS-ITERATION DONE NOTE
 
 
 * TODO Bugs and issues - flutter_charts
@@ -1074,7 +1074,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
 
 
-** IN-PROGRESS 2. Implement new Layouter algorithm
+** DONE-THIS-ITERATION 2. Implement new Layouter algorithm
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
 *** TODO Core Problem of layout *Maybe not a problem, see useExistingChildrenOrCreateChildren* - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout
 
@@ -1087,7 +1087,7 @@ Thoughts:
   - layout() - Layout Container and children. If there is not enough space, delete some containers created during setup(), or skip them in layout  
   - paint() - Paint the layed out Containers, skipping those marked to skip
 
-*** DONE ~NOT USED : Layouter algorith~ 
+*** NOTE ~NOT USED : Layouter algorith #1~ 
 *The one-pass layout method in a Container* (or in Layouter mixin if we put Layouter on Container) should work like this:
 
 1. *BoxContainerConstraints is passed down* to layout call.                                               parent context: ~Size childPreferredSize = child.layout(boxContainerConstraintsDefinedByParent)~  <= side effect: child.size is set (=childPreferredSize) 
@@ -1199,7 +1199,7 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 #+end_src
 
 
-*** DONE ~Layouter algorith #2 - USED~
+*** DONE ~USING: Implemented Layouter algorith #2~
 
 Core ideas
 
@@ -1242,31 +1242,89 @@ Core ideas
       - for (child in children)
         - child.offset += previousChild.offset + previousChild.size;  // layout specific
       - this.size = sum of children sizes; // layout specific
-- 
-** TODO 3. Implement new Box/Column layouters
-*** IN-PROGRESS-NOW ~BoxLayouter~, base class for Column and Row layouter
 
-LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM LAYOUT.
 
-- [ ] ~BoxLayouter extends BoxContainer~
+
+*** DONE-THIS-ITERATION Core Layouter Rules
+
+1. LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM LAYOUT.
+2. 
+3. 
+
+        
+** HOLD 3. Implement new Box/Column layouters
+
+*** HOLD Implement ColumnLayouter similar to RowLayouter
+
+Only needed later
+
+*** HOLD (Likely NOT NEEDED) Consider if we should reverse the class hierarchy between ~BoxLayouter~ and ~BoxContainer~
+
+
+- [X]  Currently: ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
+- [ ] Consider: ~BoxLayouter extends BoxContainer~. Below are some notes how it could be done
   - [ ] what methods or fields has BoxLayouter which BoxContainer does not have?
+    - [ ] 
   - [ ] layout axis is already in Container, keep there for now
   - [ ] NO SPECIAL METHOD ADDED.
   - [ ] ~Add constructor BoxLayouter(children: List<BoxContainer>). How does it change what we are doing in BoxContainer?~
-- [ ] ~RowLayouter~
-  - [ ] implement step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints specifically.
-- [ ] todo-00-last-last-done : review and remove as this is tested as working
-- [ ] todo-00-last-last : should this be changed to todo-00-last-done?
-- [ ] todo-00-last : are there any?
-- [ ] todo-00 : are there any?
-- [ ] todo-00-last-last-last : review where we are
-** TODO 4. SOME Containers (LegendContainer): Use the new Layouter algorithm + new Box/Column layouts instead of custom code
+  - [ ] ~RowLayouter~
+    - [ ] implement step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints specifically.
 
-*** NOTE ~SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
 
-Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 
-** TODO 5. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
+** IN-PROGRESS-NOW 4. 2022-10-10 Review
+
+- abstract class ~LayoutableBox~ 
+  - implementations:
+    - mixin ~BoxLayouter~ on ~BoxContainerHierarchy~ implements ~LayoutableBox~
+    - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
+
+
+IMPORTANT: ~BoxContainer~ implements ~BoxLayouter~, ONLY ADDS METHOD ~paint(Canvas)~
+
+- [ ] Study LegendItemContainer Originalkeep and NewKeep
+- [ ] last, there was an intent to experiment with some LegendItemContainer changes. Study differences between New and Original.
+
+
+
+ 
+- On which interface is layout()?
+- On which interface is newCoreLayout()?
+- why do we have layout() and newCoreLayout()? - We want to use them simultaneously for some time
+
+
+- Study alignment and packing
+
+
+*** DONE review of todos
+
+- todo-00-last-last-last : review where we are
+- todo-00-last-last : 
+- todo-00-last : are there any? Yes, about 10
+- todo-00 : There are 2
+- *Use todo-done-00 todo-done-01 etc. Here the 00, 01, 02 indicates order, not priority*
+- todo-01-document
+
+
+** TODO 5. Use the new Layouter algorithm + new Box/Column ON SOME Containers (LegendContainer) instead of custom code. REST of Containers (*which*) use original code.
+
+*** NOTE ~New Layout on SOME Containers = LegendContainer, LegendItemContainer, LabelContainer~
+
+- [ ] LegendContainerOriginalKeep
+- [ ] LegendContainerNewKeep
+- [ ] LegendItemContainerOriginalKeep
+- [ ] LegendItemContainerNewKeep
+  - [ ] Difference from original?
+    - [ ] 
+- [ ] LabelContainer
+- [ ] LegendLabelContainer
+- 
+*** NOTE ~Old Layout on SOME Containers = IN-PROGRESS-NOW~
+
+*** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
+
+** TODO 6. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 
 *** LATER Ensure code sets up the parent/child hierarchy correctly in SOME existing containers
 

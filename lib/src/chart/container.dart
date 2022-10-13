@@ -357,7 +357,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// Out of calls to all container's [layout] by the parent
   /// [ChartRootContainer.layout], the call to this object's [layout] is second,
-  /// after [LegendContainer.layout].
+  /// after [LegendContainerNewKeep.layout].
   /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
@@ -765,7 +765,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
 /// - [ChartRootContainer] - the whole chart
-/// - [LegendContainer] - manages the legend
+/// - [LegendContainerNewKeep] - manages the legend
 /// - [YContainer] - manages the Y labels layout, which defines:
 ///   - Y axis label sizes
 ///   - Y positions of Y axis labels, defined as yTickY.
@@ -1124,8 +1124,7 @@ class GridLinesContainer extends BoxContainer {
 
 /// Represents one layed out item of the legend:  The rectangle for the color
 /// indicator, [_indicatorRect], followed by the series label text.
-// todo-00-last-last-last : Rename to LegendItemContainerOriginalKeep 
-class LegendItemContainer extends BoxContainer {
+class LegendItemContainerOriginalKeep extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
   late ui.Rect _indicatorRect;
@@ -1138,7 +1137,7 @@ class LegendItemContainer extends BoxContainer {
   final LabelStyle _labelStyle;
   final String _label;
 
-  LegendItemContainer({
+  LegendItemContainerOriginalKeep({
     required String label,
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
@@ -1255,8 +1254,7 @@ class LegendItemContainer extends BoxContainer {
 }
 
 
-// todo-00-last-last : See comments around LegendContainer of what changes should be done in this class to reflect function as a part of new Layouter Container.
-// todo-00-last-last-last : Reverting to the old version : put back and rename LegendItemContainer to LegendItemContainerOriginalKeep
+// todo-00-last-last-last : See comments around LegendContainerNewKeep of what changes should be done in this class to reflect function as a part of new Layouter Container.
 class LegendItemContainerNewKeep extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
@@ -1288,7 +1286,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
-  // todo-00-last-last-last : replace layout with newCoreLayout, and make changes similar to LegendContainer layout
+  // todo-00-last-last-last : replace layout with newCoreLayout, and make changes similar to LegendContainerNewKeep layout
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // Save a few repeated values, calculated the width given to LabelContainer,
@@ -1396,25 +1394,15 @@ class LegendItemContainerNewKeep extends BoxContainer {
 /// Currently, each individual legend item is given the same size, so legends
 /// texts should be short.
 ///
-/// This [ChartAreaContainer] operates as follows:
+/// This extension of [ChartAreaContainer] operates as follows:
 /// - Horizontally available space is all used (filled).
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
 
-// LegendContainer (plugged in 'fake' root)
-// todo-00-last-last : buildContainerOrSelf(parentBoxContainer): 
-//                      - move the code from layout() to buildContainerOrSelf(parentBoxContainer), overriding it  
-//                      - rootStep1_setRootConstraints(parentBoxContainer) : override by setting layoutSandbox.constraints = parentBoxContainer.constraints
-// todo-00-last-last : rootStep1_setRootConstraints(parentBoxContainer) : 
-//                      - override by setting layoutSandbox.constraints = parentBoxContainer.constraints
-// todo-00-last-last : layout() :
-//                      - move existing code to buildContainerOrSelf, call and return newCoreLayout() instead
-// todo-00-last-last : Because LegendContainer is a plugged in 'fake' root, override isRoot and return true.
-// todo-00-last-last : 
-// todo-00-last-last : 
+// todo-done-00 : LegendContainerNewKeep (plugged in as 'fake' root of new Container and Layout hierarchy by setting isRoot true)
 
-class LegendContainer extends ChartAreaContainer {
+class LegendContainerNewKeep extends ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and
@@ -1422,7 +1410,7 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
-  LegendContainer({
+  LegendContainerNewKeep({
     required ChartRootContainer chartRootContainer,
   }) : super(
           chartRootContainer: chartRootContainer,
@@ -1431,23 +1419,27 @@ class LegendContainer extends ChartAreaContainer {
   /// Lays out the legend area.
   ///
   /// Evenly divides the [availableWidth] to all legend items.
+  // todo-done-00 : moved old layout() code to buildContainerOrSelf, calling and returning newCoreLayout() instead
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // todo-00-last-last-done: on the top of the 'detached' BoxContainer hierarchy, keep the layout() method, but call newCoreLayout immediately.
+    // On the top of the 'detached' BoxContainer hierarchy, keep the layout() method, but call newCoreLayout immediately.
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
+    // todo-done-00 : This flips from using layout90 on parents to using newCoreLayout() on children
     return newCoreLayout(parentBoxContainer);
   }
-  
+
+  // todo-done-00 : overrode by setting layoutSandbox.constraints = parentBoxContainer.constraints
   @override
   void rootStep1_setRootConstraints(BoxContainer parentBoxContainer)  {
       layoutSandbox.constraints = parentBoxContainer.layoutSandbox.constraints;
   }
-  
+
+  // todo-done-00 : - moved the code from layout() to buildContainerOrSelf(parentBoxContainer), overriding it
   @override
   BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
-    List<BoxContainer> children = []; // todo-00-last-last-done
+    List<BoxContainer> children = [];
     
     ChartOptions options = chartRootContainer.data.chartOptions;
     double containerMarginTB = options.legendOptions.legendContainerMarginTB;
@@ -1466,7 +1458,7 @@ class LegendContainer extends ChartAreaContainer {
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
     
-    // todo-00-last-last-done: Create variable boxConstraints to replace the one originally passed in
+    // Create variable boxConstraints to replace the one originally passed in
     BoxContainerConstraints boxConstraints = layoutSandbox.constraints!;
     
     double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
@@ -1479,39 +1471,17 @@ class LegendContainer extends ChartAreaContainer {
       List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
-/*    todo-00-last-last-done : removed :
-      var legendItemBoxConstraints = boxConstraints.cloneWith(
-        width: legendItemWidth,
-      );
-*/
-      var legendItemContainer = LegendItemContainer(
+      // todo-00-last-last : watch here after starting to use LegendItemContainerNewKeep
+      var legendItemContainer = LegendItemContainerNewKeep(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
         indicatorPaint: indicatorPaint,
         options: options,
       );
 
-      /* todo-00-last-last-done : removed : 
-      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
-
-      legendItemContainer.applyParentOffset(
-        ui.Offset(
-          containerMarginLR + index * legendItemWidth,
-          containerMarginTB,
-        ),
-      );
-      */
-      
-      // todo-00-last-last-done : replaced with children.add : addChild(legendItemContainer);
+      // todo-done-00 : Original layout(): addChild(legendItemContainer) => newCoreLayout(): children.add(legendItemContainer);
       children.add(legendItemContainer);
     }
-
-/* todo-00-last-last-done : removed
-    layoutSize = ui.Size(
-      boxConstraints.size.width,
-      children.map((legendItemContainer) => legendItemContainer.layoutSize.height).reduce(math.max) + (2.0 * containerMarginTB),
-    );
-*/
 
     RowLayouter thisLegendContainer = RowLayouter(children: children);
     
@@ -1540,6 +1510,10 @@ class LegendContainer extends ChartAreaContainer {
       legendItemContainer.paint(canvas);
     }
   }
+
+  // todo-done-00 : Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
+  @override
+  bool get isRoot => true;
 }
 
 class LegendContainerOriginalKeep extends ChartAreaContainer {
@@ -1594,7 +1568,9 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
       var legendItemBoxConstraints = boxConstraints.cloneWith(
         width: legendItemWidth,
       );
-      var legendItemContainer = LegendItemContainer(
+
+      // todo-00-last-last : watch here after starting to use LegendItemContainerNewKeep
+      var legendItemContainer = LegendItemContainerOriginalKeep(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
         indicatorPaint: indicatorPaint,
