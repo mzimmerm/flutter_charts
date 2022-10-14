@@ -69,7 +69,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late ui.Size chartArea;
 
   /// Base Areas of chart.
-  late LegendContainerOriginalKeep legendContainerOriginalKeep;
+  late LegendContainerNewKeep legendContainer; // todo-done-00 : replaced with new Legend layout : LegendContainer legendContainerOriginalKeep;
   late XContainer xContainer;
   late YContainer yContainer;
   late DataContainer dataContainer;
@@ -163,14 +163,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartArea.width,
       chartArea.height,)
     );
-    legendContainerOriginalKeep = LegendContainerOriginalKeep(
+    legendContainer = LegendContainerNewKeep( // todo-done-00 : replaced with new Legend layout : LegendContainerOriginalKeep(
       chartRootContainer: this,
     );
 
-    legendContainerOriginalKeep.layout(legendBoxConstraints, legendContainerOriginalKeep);
-    ui.Size legendContainerSize = legendContainerOriginalKeep.layoutSize;
+    legendContainer.layout(legendBoxConstraints, legendContainer);
+    ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
-    legendContainerOriginalKeep.applyParentOffset(legendContainerOffset);
+    legendContainer.applyParentOffset(legendContainerOffset);
 
     // ### 3. Ask [YContainer] to provide Y label container width.
     //        This provides the remaining width left for the [XContainer]
@@ -281,7 +281,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // Draws the X labels area of the chart.
     xContainer.paint(canvas);
     // Draws the legend area of the chart.
-    legendContainerOriginalKeep.paint(canvas);
+    legendContainer.paint(canvas);
     // Draws the grid, then data area - bars (bar chart), lines and points (line chart).
     dataContainer.paint(canvas);
 
@@ -1252,7 +1252,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
 }
 
 
-// todo-00-last-last-last : See comments around LegendContainerNewKeep of what changes should be done in this class to reflect function as a part of new Layouter Container.
+// todo-done-00: See comments around LegendContainerNewKeep of what changes should be done in this class to reflect function as a part of new Layouter Container.
 class LegendItemContainerNewKeep extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
@@ -1265,6 +1265,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
   final LabelStyle _labelStyle;
   final String _label;
+  late double _labelMaxWidth; // todo-done-00 : added to maintain between internal method calls
 
   LegendItemContainerNewKeep({
     required String label,
@@ -1278,43 +1279,80 @@ class LegendItemContainerNewKeep extends BoxContainer {
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        super() {
+        super();
+
+  // todo-00-last-last-last : ??? Below the 'fake' root of hierarchy, no layout(), calling and returning newCoreLayout() instead
+  @override
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    // // todo-00-last-last-last : ??? This flips from using layout90 on parents to using newCoreLayout() on children
+    return newCoreLayout(parentBoxContainer);
   }
 
   @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // Save a few repeated values, calculated the width given to LabelContainer,
-    //   and create the LabelContainer.
-    // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
-
+  void newCoreLayout(BoxContainer parentBoxContainer) {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
+
+    // todo-done-00 : added this to get the constraints this test is using. Not sure this
+    BoxContainerConstraints boxConstraints = layoutSandbox.constraints!;
+
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
+    _labelMaxWidth = labelMaxWidth; // todo-done-00
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       parentOrderedToSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }
+    super.newCoreLayout(parentBoxContainer);
+  }
+
+  // todo-00-last-last-last: overrode by setting layoutSandbox.constraints = parentBoxContainer.constraints
+  @override
+  void rootStep1_setRootConstraints(BoxContainer parentBoxContainer)  {
+    layoutSandbox.constraints = parentBoxContainer.layoutSandbox.constraints;
+  }
+
+  // todo-done-00 : - moved the code from layout() to buildContainerOrSelf(parentBoxContainer), overriding it
+  @override
+  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+    // Save a few repeated values, calculated the width given to LabelContainer,
+    //   and create the LabelContainer.
+    // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
+
+    // Create array for children of this container; they will be returned in RowLayouter
+    List<BoxContainer> children = [];
 
     // Create member containers, add as children, and lay them out
     LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
-    addChild(indRectContainer);
+    children.add(indRectContainer); // todo-done-00 addChild(indRectContainer);
     indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
+    /* todo-00-last-last : KEEP THIS SECTION
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
       label: _label,
-      labelMaxWidth: labelMaxWidth,
+      labelMaxWidth: _labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    addChild(labelContainer);
+    children.add(labelContainer); // todo-done-00 addChild(labelContainer);
     labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
+    */
 
+    RowLayouter thisLegendItemContainer = RowLayouter(children: children);
+
+    return thisLegendItemContainer;
+
+
+    /* todo-done-00 : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
     // 2. Y Center the indicator and label on same horizontal Y level
@@ -1354,6 +1392,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
     // Make sure we fit all available width
     assert(boxConstraints.size.width + 1.0 >= layoutSize.width); // todo-2 within epsilon
+    */
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
@@ -1488,8 +1527,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   // todo-done-00 : - moved the code from layout() to buildContainerOrSelf(parentBoxContainer), overriding it
   @override
   BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
-    List<BoxContainer> children = [];
-    
+
     ChartOptions options = chartRootContainer.data.chartOptions;
     double containerMarginTB = options.legendOptions.legendContainerMarginTB;
     double containerMarginLR = options.legendOptions.legendContainerMarginLR;
@@ -1506,12 +1544,21 @@ class LegendContainerNewKeep extends ChartAreaContainer {
 
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
-    
+
+    /* todo-done-00 : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
+
     // Create variable boxConstraints to replace the one originally passed in
     BoxContainerConstraints boxConstraints = layoutSandbox.constraints!;
-    
     double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
-    
+    */
+
+    // Create array for children of this container; they will be returned in RowLayouter
+    List<BoxContainer> children = [];
+
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
     //   - label painter
@@ -1528,12 +1575,34 @@ class LegendContainerNewKeep extends ChartAreaContainer {
         options: options,
       );
 
+      /* todo-done-00  todo-done-00 : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
+      var legendItemContainer = LegendItemContainerOriginalKeep(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+      );
+
+      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
+
+      legendItemContainer.applyParentOffset(
+        ui.Offset(
+          containerMarginLR + index * legendItemWidth,
+          containerMarginTB,
+        ),
+      );
+      addChild(legendItemContainer);
+      */
       // todo-done-00 : Original layout(): addChild(legendItemContainer) => newCoreLayout(): children.add(legendItemContainer);
       children.add(legendItemContainer);
     }
 
     RowLayouter thisLegendContainer = RowLayouter(children: children);
-    
+
     return thisLegendContainer;
   }
 

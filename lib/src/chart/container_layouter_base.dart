@@ -95,12 +95,17 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   
   /// Default generative constructor. Prepares [parentSandbox].
   BoxContainer()  {
-    children = [];
+    // todo-00-last-last-last : children = []; removed this, removed late final and initialized in BoxContainerHierarchy.
     parentSandbox = _BoxLayouterParentSandbox();
     layoutSandbox = _BoxLayouterLayoutSandbox();
   }
  
-  void paint(ui.Canvas canvas);
+  void paint(ui.Canvas canvas) {
+    // todo-done-00 : This was abstract, I implemented it like this
+    for(var child in children) {
+      child.paint(canvas);
+    }
+  }
 
 }
 
@@ -153,7 +158,12 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 
 mixin BoxContainerHierarchy {
   late final BoxContainer? parent;  // will be initialized when addChild(this) is called on this parent
-  late final List<BoxContainer> children; // will be initialized in concrete impls such as ColumnLayouter
+  // todo-done-00 : todo-00-last-important : late final List<BoxContainer> children; // will be initialized in concrete impls such as ColumnLayouter
+  //          Removed the late final. Some extensions (eg. LineChartContainer)
+  //          need to start with empty array, initialized in BoxContainer.
+  //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
+  //          in BoxContainer)
+  List<BoxContainer> children = []; // will be initialized in concrete impls such as ColumnLayouter
   bool get isRoot => parent == null;
   bool get isLeaf => children.isEmpty;
 
@@ -414,7 +424,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // ##### Abstract methods to implement
 
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer);
+  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    // todo-done-00 : This was abstract, I implemented it like this
+    newCoreLayout(parentBoxContainer);
+  }
 
   // Core recursive layout method --------------------------------------------------------------------------------------
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
@@ -550,14 +563,16 @@ class RowLayouter extends BoxContainer {
     crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center);
   }
   
-  // todo-00-last-last make abstract or implement
+  /* todo-00-last-last : this was empty implementation. I removed it to use default super
   @override
   void paint(ui.Canvas canvas) {}
+  */
 
-  // todo-00-last-last make abstract or implement
+  /* todo-00-last-last : this was empty implementation. I removed it to use default super.
+     BUT SHOULD ROW LAYOUT HAVE SPECIFIC IMPLEMENTATION? LIKELY!!!
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {}
-
+  */
 }
 
 // Helper classes ------------------------------------------------------------------------------------------------------
