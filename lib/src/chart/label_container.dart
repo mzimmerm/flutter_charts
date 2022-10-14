@@ -407,7 +407,7 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   /// ```
   /// 
   // todo-done-00 : Here, in LegendLabelContainer, (below the top of the 'detached' BoxContainer hierarchy),
-  //                         renamed the the layout() method, to newCoreLayout.
+  //                         renamed the layout() method, to newCoreLayout.
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     throw StateError('Should not be called in BoxContainer, except on top detached root');

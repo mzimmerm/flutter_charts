@@ -1122,13 +1122,15 @@ class GridLinesContainer extends BoxContainer {
   ui.Size get layoutSize => throw StateError('todo-2 implement this.');
 }
 
-/// Represents one layed out item of the legend:  The rectangle for the color
-/// indicator, [_indicatorRect], followed by the series label text.
-// todo-00-last-last-last-last-progress : Changing this to use a real Container instead of Rectangle
+/// Represents one item of the legend:  The rectangle for the series color
+/// indicator, followed by the series label text.
+///
+/// Two child containers are created during the [layout]:
+///    - [LegendIndicatorRectContainer] indRectContainer for the series color indicator
+///    - [LabelContainerOriginalKeep] labelContainer for the series label
 class LegendItemContainerOriginalKeep extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
-  // todo-done-00 : moved to RectContainer : late ui.Rect _indicatorRect;
 
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
@@ -1151,9 +1153,6 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super() {
-    // There is no need to create the _indicatorRect in the constructor,
-    // as layout will move it, recreating it.
-    // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
   @override
@@ -1207,19 +1206,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     double indOffsetX = 0.0; // indicator starts on the left
     double labelOffsetX = indOffsetX + indRectContainer.layoutSize.width + indicatorToLabelPad;
 
-    // todo-done-00
-    // 4. Create the indicator square, and place it within this container
-    //   (this would be in applyParentOffset for the indicator, if it was an object)
-    // _indicatorRect = ui.Rect.fromLTWH(
-    //   indOffsetX,
-    //   indOffsetY,
-    //   indicatorSquareSide,
-    //   indicatorSquareSide,
-    // );
-
-    // 5. Place the rectangle and label within this container
-
-    // todo-done-00
+    // 4. Position the child rectangle and label within this container
     indRectContainer.applyParentOffset(ui.Offset(
       indOffsetX,
       indOffsetY,
@@ -1229,15 +1216,6 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       labelOffsetX,
       labelOffsetY,
     ));
-
-    // 6. And store the layout size on member
-    // layoutSize = ui.Size(
-    //   _indicatorRect.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
-    //   math.max(
-    //     labelContainerSize.height,
-    //     _indicatorRect.height,
-    //   ),
-    // );
 
     // 6. And store the layout size on member of self
     layoutSize = ui.Size(
@@ -1260,12 +1238,6 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.paint(canvas);
     }
-
-    // todo-done-00
-    // canvas.drawRect(
-    //   _indicatorRect,
-    //   _indicatorPaint,
-    // );
   }
 
   @override
@@ -1273,7 +1245,6 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
-    // todo-done-00 : _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.applyParentOffset(offset);
     }
@@ -1285,7 +1256,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
 class LegendItemContainerNewKeep extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
-  late ui.Rect _indicatorRect;
+  // todo-done-00 : moved to RectContainer : late ui.Rect _indicatorRect;
 
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
@@ -1308,16 +1279,14 @@ class LegendItemContainerNewKeep extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super() {
-    // There is no need to create the _indicatorRect in the constructor,
-    // as layout will move it, recreating it.
-    // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
-  // todo-00-last-last-last : replace layout with newCoreLayout, and make changes similar to LegendContainerNewKeep layout
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
+    // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
+
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -1329,55 +1298,57 @@ class LegendItemContainerNewKeep extends BoxContainer {
       return;
     }
 
-    LegendLabelContainerNewLegendSpecificKeep legendLabelContainer = LegendLabelContainerNewLegendSpecificKeep(
+    // Create member containers, add as children, and lay them out
+    LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
+      indicatorPaint: _indicatorPaint,
+      options: _options,
+    );
+    addChild(indRectContainer);
+    indRectContainer.layout(BoxContainerConstraints.unused(), this);
+
+    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
       label: _label,
       labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    addChild(legendLabelContainer);
-    legendLabelContainer.layout(BoxContainerConstraints.unused(), legendLabelContainer);
+    addChild(labelContainer);
+    labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
 
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
-    // 1. layout the _labelContainer - this also provides height
-    ui.Size labelContainerSize = legendLabelContainer.layoutSize;
     // 2. Y Center the indicator and label on same horizontal Y level
     //   ind stands for "indicator" - the series color indicator square
     double indAndLabelCenterY = math.max(
-      labelContainerSize.height,
-      indicatorSquareSide,
+      labelContainer.layoutSize.height,
+      indRectContainer.layoutSize.height,
     ) /
         2.0;
-    double indOffsetY = indAndLabelCenterY - indicatorSquareSide / 2.0;
-    double labelOffsetY = indAndLabelCenterY - labelContainerSize.height / 2.0;
+    double indOffsetY = indAndLabelCenterY - indRectContainer.layoutSize.height / 2.0;
+    double labelOffsetY = indAndLabelCenterY - labelContainer.layoutSize.height / 2.0;
 
     // 3. Calc the X offset to both indicator and label, so indicator is left,
     //    then padding, then the label
     double indOffsetX = 0.0; // indicator starts on the left
-    double labelOffsetX = indOffsetX + indicatorSquareSide + indicatorToLabelPad;
+    double labelOffsetX = indOffsetX + indRectContainer.layoutSize.width + indicatorToLabelPad;
 
-    // 4. Create the indicator square, and place it within this container
-    //   (this is applyParentOffset for the indicator, if it was an object)
-    _indicatorRect = ui.Rect.fromLTWH(
+    // 4. Position the child rectangle and label within this container
+    indRectContainer.applyParentOffset(ui.Offset(
       indOffsetX,
       indOffsetY,
-      indicatorSquareSide,
-      indicatorSquareSide,
-    );
+    ));
 
-    // 5. Place the label within this container
-    legendLabelContainer.applyParentOffset(ui.Offset(
+    labelContainer.applyParentOffset(ui.Offset(
       labelOffsetX,
       labelOffsetY,
     ));
 
-    // 6. And store the layout size on member
+    // 6. And store the layout size on member of self
     layoutSize = ui.Size(
-      _indicatorRect.width + indicatorToLabelPad + legendLabelContainer.layoutSize.width + betweenLegendItemsPadding,
+      indRectContainer.layoutSize.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
       math.max(
-        labelContainerSize.height,
-        _indicatorRect.height,
+        labelContainer.layoutSize.height,
+        indRectContainer.layoutSize.height,
       ),
     );
 
@@ -1390,14 +1361,9 @@ class LegendItemContainerNewKeep extends BoxContainer {
   void paint(ui.Canvas canvas) {
     if (parentOrderedToSkip) return;
 
-    for (var labelContainer in children) {
-      labelContainer.paint(canvas);
+    for (var rectThenLabelContainer in children) {
+      rectThenLabelContainer.paint(canvas);
     }
-    // todo-00 : This needs to be looked at, not part of base layout and paint processing
-    canvas.drawRect(
-      _indicatorRect,
-      _indicatorPaint,
-    );
   }
 
   @override
@@ -1405,45 +1371,32 @@ class LegendItemContainerNewKeep extends BoxContainer {
     if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
-    _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
-    for (var labelContainer in children) {
-      labelContainer.applyParentOffset(offset);
+    for (var rectThenLabelContainer in children) {
+      rectThenLabelContainer.applyParentOffset(offset);
     }
   }
 }
 
 // todo-done-00 : Added this class as copy of LegendItemContainerOriginalKeep=.LegendItemContainerNewKeep This represents the colored rectangle on the legend
-// todo-00-last-last-last-last-progress : Work this into the old container hierarchy and test
+/// Represents the series color indicator square in the legend.
 class LegendIndicatorRectContainer extends BoxContainer {
 
-  /// Rectangle of the legend color square series indicator
+  /// Rectangle of the legend color square series indicator.
+  /// This is moved to offset then [paint]ed using rectangle paint primitive.
   late ui.Rect _indicatorRect;
 
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
 
-  // double _indicatorSquareSide; // todo-done-00 : added and removed, no use for this, set from options
-
   final ChartOptions _options;
 
-  // final LabelStyle _labelStyle;
-  // final String _label;
-
   LegendIndicatorRectContainer({
-    // required String label,
-    // required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
     required ChartOptions options,
   })  :
-        // _label = label,
-        // _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        // todo-done-00 : _indicatorSquareSide =  options.legendOptions.legendColorIndicatorWidth,
-        // todo-done-00 : moved here from layout
-        // todo-00-last-last-last-last-progress
-        // 4. Create the indicator square, and place it within this container
-        //  (this is applyParentOffset for the indicator, if it was an object)
+        // Create the indicator square, later offset in applyParentOffset
         _indicatorRect = ui.Rect.fromLTWH(
           0.0, // indOffsetX,
           0.0, // indOffsetY,
@@ -1451,100 +1404,22 @@ class LegendIndicatorRectContainer extends BoxContainer {
           options.legendOptions.legendColorIndicatorWidth,
         ),
         super() {
-    // todo-00-last-last-last-last-progress : change this comment
-    // There is no need to create the _indicatorRect in the constructor,
-    // as layout will move it, recreating it.
-    // So _indicatorPaint is argument, _indicatorRect is created in layout().
   }
 
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // Save a few repeated values, calculated the width given to LabelContainer,
-    //   and create the LabelContainer.
-    // _indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
-    // double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
-    // double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
-    // double labelMaxWidth =
-    //     boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    // if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-    //   parentOrderedToSkip = true;
-    //   layoutSize = ui.Size.zero;
-    //  return;
-    // }
 
-    // LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
-    //   // label: _label,
-    //   // labelMaxWidth: labelMaxWidth,
-    //   labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-    //   // labelStyle: _labelStyle,
-    // );
-    // addChild(labelContainer);
-    // labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
-
-    // Layout legend item elements (indicator, pad, label) flowing from left:
-
-    // 1. layout the _labelContainer - this also provides height
-    // ui.Size labelContainerSize = labelContainer.layoutSize;
-    // 2. Y Center the indicator and label on same horizontal Y level
-    //   ind stands for "indicator" - the series color indicator square
-    // double indAndLabelCenterY = math.max(
-    //   labelContainerSize.height,
-    //   indicatorSquareSide,
-    // ) /
-    //     2.0;
-
-     // todo-done-00 : No need for this, all done in constructor or applyParentOffset
-    //  double indOffsetY = indAndLabelCenterY - indicatorSquareSide / 2.0;
-    //  double indOffsetY = 0.0; // todo-00-last-last-last-last-progress
-    //  double labelOffsetY = indAndLabelCenterY - labelContainerSize.height / 2.0;
-    //
-    // // 3. Calc the X offset to both indicator and label, so indicator is left,
-    // //    then padding, then the label
-    // double indOffsetX = 0.0; // indicator starts on the left
-    // double labelOffsetX = indOffsetX + indicatorSquareSide + indicatorToLabelPad;
-    //
-    // // 4. Create the indicator square, and place it within this container
-    // //   (this is applyParentOffset for the indicator, if it was an object)
-    // _indicatorRect = ui.Rect.fromLTWH(
-    //   indOffsetX,
-    //   indOffsetY,
-    //   _indicatorSquareSide,
-    //   _indicatorSquareSide,
-    // );
-
-    // // 5. Place the label within this container
-    // labelContainer.applyParentOffset(ui.Offset(
-    //   labelOffsetX,
-    //   labelOffsetY,
-    // ));
-
-    // 6. And store the layout size on member
-    // layoutSize = ui.Size(
-    //   _indicatorRect.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
-    //   math.max(
-    //     labelContainerSize.height,
-    //     _indicatorRect.height,
-    //   ),
-    // );
-
-    // This container has no children, just set the layout size.
+    // This container has no children, there is nothing to layout, just set self layout size.
     layoutSize = ui.Size(
       _indicatorRect.width,
       _indicatorRect.height,
     );
-
-    // Make sure we fit all available width
-    // assert(boxConstraints.size.width + 1.0 >= layoutSize.width); // todo-2 within epsilon
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
     if (parentOrderedToSkip) return;
-
-    // for (var labelContainer in children) {
-    //   labelContainer.paint(canvas);
-    // }
 
     canvas.drawRect(
       _indicatorRect,
@@ -1558,15 +1433,13 @@ class LegendIndicatorRectContainer extends BoxContainer {
 
     super.applyParentOffset(offset);
     _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
-    // for (var labelContainer in children) {
-    //   labelContainer.applyParentOffset(offset);
-    // }
   }
 }
 
 /// Lays out the legend area for the chart.
 ///
-/// The legend area contains individual legend items. Each legend item
+/// The legend area contains individual legend items represented
+/// by [LegendItemContainerNewKeep]. Each legend item
 /// has a color square and text, which describes one data row (that is,
 /// one data series).
 ///
@@ -1578,9 +1451,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-
-// todo-done-00 : LegendContainerNewKeep (plugged in as 'fake' root of new Container and Layout hierarchy by setting isRoot true)
-
 class LegendContainerNewKeep extends ChartAreaContainer {
   // ### calculated values
 
