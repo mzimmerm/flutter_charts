@@ -31,6 +31,7 @@ class BoxContainerConstraints extends ContainerConstraints {
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
 
+  // todo-00-last-last-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused()
       : this.exactBox(size: const Size(

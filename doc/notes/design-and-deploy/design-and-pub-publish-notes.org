@@ -1245,11 +1245,29 @@ Core ideas
 
 
 
-*** DONE-THIS-ITERATION Core Layouter Rules
+*** IN-PROGRESS-NOW Core Layouter Rules
 
 1. LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM LAYOUT.
-2. 
+2. Each BoxContainer must build itself using buildContainerOrSelf
 3. 
+4. OLD
+#+BEGIN_SRC dart
+  /// Create and add children of this container.
+  // todo-done-01 : Removed. Each BoxContainer must build itself using buildContainerOrSelf
+  /*
+  void rootStep2_Recurse_buildContainerHierarchy(BoxContainer parentBoxContainer) {
+    late BoxContainer selfOrReplacedWithContainer;
+    if (isRoot) {
+      // todo-00-last-last-last : think about this. This code requires that the root container builds the whole
+      //  hierarchy when its buildContainerOrSelf is called. Is that guaranteed?
+      selfOrReplacedWithContainer = buildContainerOrSelf(parentBoxContainer);
+    }
+    for (var child in selfOrReplacedWithContainer.children) {
+      child.rootStep2_Recurse_buildContainerHierarchy(parentBoxContainer);
+    }
+  }
+  */
+#+END_SRC
 
         
 ** HOLD 3. Implement new Box/Column layouters
@@ -1345,22 +1363,9 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 
 
-*** DONE review of todos
-
-- todo-00-last-last-last : review where we are
-- todo-00-last-last : 
-- todo-00-last : are there any? Yes, about 10
-- todo-00 : There are 2
-- *Use todo-done-00 todo-done-01 etc. Here the 00, 01, 02 indicates order, not priority*
-- todo-01-document
-
-
 ** IN-PROGRESS 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (*which??*) use original code.
 
 *** IN-PROGRESS-NOW ~New Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
-
-**** IN-PROGRESS-NOW LEGEND: Place old containers to library of it's own: ~src/chart/container_legend_old_layout.dart~
-
 
 **** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 

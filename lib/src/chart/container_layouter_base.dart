@@ -6,88 +6,6 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 
-
-
-/// Base class which manages, lays out, moves, and paints
-/// graphical elements on the chart, for example individual
-/// labels, but also a collection of labels.
-///
-/// This base class manages
-///
-/// Roles:
-/// - Container: through the [layout] method.
-/// - Translator (in X and Y direction): through the [applyParentOffset]
-///   method.
-/// - Painter: through the [paint] method.
-///
-/// Note on Lifecycle of [BoxContainer] : objects should be such that
-///   after construction, methods should be called in the order declared here.
-///
-abstract class ContainerOld {
-  /// Manages the layout size during the layout process in [layout].
-  /// Should be only mentioned in this class, not super
-  ui.Size layoutSize = ui.Size.zero;
-
-  /// Current absolute offset, set by parent (and it's parent etc, to root).
-  ///
-  /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top Container, passed to all children in the
-  /// [paint(Canvas, Size)].
-  ///
-  ///
-  ///
-  /// It is a sum of all offsets passed in subsequent calls
-  /// to [applyParentOffset] during object lifetime.
-  ui.Offset offset = ui.Offset.zero;
-
-  /// Allow a parent container to move this Container
-  /// after [layout].
-  ///
-  /// Override if parent move needs to propagate to internals of
-  /// this [BoxContainer].
-  void applyParentOffset(ui.Offset offset) {
-    this.offset += offset;
-  }
-
-  /// [skipByParent] instructs the parent container that this container should not be
-  /// painted or layed out - as if it collapsed to zero size.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  bool skipByParent = false;
-
-  /// If size constraints imposed by parent are too tight,
-  /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this container not possible.
-  ///
-  /// Setting the [enableSkipOnDistressedSize] `true` helps to solve such situation.
-  /// It causes the container not be painted
-  /// (skipped during layout) when space is constrained too much
-  /// (not enough space to reasonably paint the container contents).
-  /// Note that setting this to `true` may result
-  /// in surprizing behavior, instead of exceptions.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  ///
-  /// Unlike [skipByParent], which directs the parent to ignore this container,
-  /// [enableSkipOnDistressedSize] is intended to be checked in code
-  /// for some invalid conditions, and if they are reached, bypass painting
-  /// the container.
-  bool enableSkipOnDistressedSize = true; // todo-10 set to true for distress test
-
-  bool isDistressed = false;
-
-  ContainerOld();
-
-  // ##### Abstract methods to implement
-
-  // todo-01-morph : This should pass Constraints - see [RenderObject]
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer);
-
-  void paint(ui.Canvas canvas);
-}
-
 /// [BoxContainerHierarchy] is repeated here and in [BoxLayouter] 
 /// to make clear that both [BoxContainer] and [BoxLayouter]
 /// have the same  [BoxContainerHierarchy] trait (capability, role).
@@ -132,6 +50,7 @@ class BoxContainerNullParentOfRoot extends BoxContainer {
   BoxContainer get parent => throw UnimplementedError(_nullMessage);
 
   @override
+  // todo-00-last-last-last-last : who is the parent? We have another 'children' on BoxContainerHierarchy without the 'get'
   List<BoxContainer> get children => throw UnimplementedError(_nullMessage);
 
   @override
@@ -173,6 +92,7 @@ mixin BoxContainerHierarchy {
   //          need to start with empty array, initialized in BoxContainer.
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
+  // todo-00-important : can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   List<BoxContainer> children = []; // will be initialized in concrete impls such as ColumnLayouter
   bool get isRoot => parent == null;
   bool get isLeaf => children.isEmpty;
@@ -183,7 +103,7 @@ mixin BoxContainerHierarchy {
   }
 }
 
-// todo-00-last : Get rid of this or improve.
+// todo-01-document as interface for [BoxLayouter] and [BoxContainer].
 abstract class LayoutableBox {
 
   // todo-00-last-last-last : Can layoutSize be only a getter?
@@ -241,7 +161,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep1_setRootConstraints(parentBoxContainer);
-      // todo-done-01 : removed : rootStep2_Recurse_buildContainerHierarchy(parentBoxContainer);
       rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast(parentBoxContainer);
       // todo-00-last : make sure it is set before call : layoutableBoxLayoutSandbox.constraints = boxContainerConstraints;
     }
@@ -288,8 +207,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   void rootStep1_setRootConstraints(BoxContainer parentBoxContainer) {
-    throw UnimplementedError('Must be implemented');
-    // todo-00-last implement where needed - on root. Anywhere else?
+    // todo-done-important : SHOULD THIS BE ONLY ON THIS = ROOT??
+    layoutableBoxLayoutSandbox.constraints = parentBoxContainer.layoutableBoxLayoutSandbox.constraints;
   }
 
   // Layout specific. Only children should be changed by setting constraints,
@@ -547,30 +466,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // todo-done-00 : This was abstract, I implemented it like this . Where is it declared?
+    // todo-00-last-last-last-last-last : Throw exception if this is instanceof new layout LEGEND containers
     newCoreLayout(parentBoxContainer);
   }
-
-  /// Create and add children of this container.
-  // todo-done-01 : Removed. Each BoxContainer must build itself using buildContainerOrSelf
-  /*
-  void rootStep2_Recurse_buildContainerHierarchy(BoxContainer parentBoxContainer) {
-    late BoxContainer selfOrReplacedWithContainer;
-    if (isRoot) {
-      // todo-00-last-last-last : think about this. This code requires that the root container builds the whole
-      //  hierarchy when its buildContainerOrSelf is called. Is that guaranteed?
-      selfOrReplacedWithContainer = buildContainerOrSelf(parentBoxContainer);
-    }
-    for (var child in selfOrReplacedWithContainer.children) {
-      child.rootStep2_Recurse_buildContainerHierarchy(parentBoxContainer);
-    }
-  }
-  */
-
-  /* todo-done-01 : Moved this from this BoxLayouter to BoxContainer
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
-    return this as BoxContainer;
-  }
-  */
 
 }
 

@@ -69,7 +69,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late ui.Size chartArea;
 
   /// Base Areas of chart.
-  late LegendContainerNewKeep legendContainer; // todo-done-00 : replaced with new Legend layout : LegendContainer legendContainerOriginalKeep;
+  // todo-done-important : We wrap this in simple RowLayouter, so must declare only as some parent of RowLayouter, e.g. BoxContainer : late LegendContainerNewKeep legendContainer; // todo-done-00 : replaced with new Legend layout : LegendContainer legendContainerOriginalKeep;
+  late BoxContainer legendContainer; // todo-done-00 : replaced with new Legend layout : LegendContainer legendContainerOriginalKeep;
   late XContainer xContainer;
   late YContainer yContainer;
   late DataContainer dataContainer;
@@ -178,7 +179,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // todo-done-01 : Added call to buildContainerOrSelf. On the top of the container branch in which we use the new
     //  layout (that is, on [legendContainer]), we must first call [buildContainerOrSelf], then [layout]
-    legendContainer.buildContainerOrSelf(parentBoxContainer);
+    legendContainer = legendContainer.buildContainerOrSelf(parentBoxContainer);
+    // todo-done-important : Before calling layout on the 'fake' root of new container layout, set the externally imposed constraints on the root - legendContainer here. Also set parent to null
+    legendContainer.parent = null;
+    legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
     legendContainer.layout(legendBoxConstraints, legendContainer);
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
@@ -1212,15 +1216,16 @@ class LegendItemContainerNewKeep extends BoxContainer {
     // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
 
     // Create array for children of this container; they will be returned in RowLayouter
-    List<BoxContainer> children = [];
+    // todo-done-03 : removed : List<BoxContainer> children = [];
 
     // Create member containers, add as children, and lay them out
     LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
-    children.add(indRectContainer); // todo-done-00 addChild(indRectContainer);
-    indRectContainer.layout(BoxContainerConstraints.unused(), this);
+    // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : children.add(indRectContainer); // todo-done-00 addChild(indRectContainer);
+    addChild(indRectContainer);
+    // todo-done-important : layout on self on children should NOT be called in build : indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
     /* todo-00-last-last : KEEP THIS SECTION
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
@@ -1229,12 +1234,13 @@ class LegendItemContainerNewKeep extends BoxContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    children.add(labelContainer); // todo-done-00 addChild(labelContainer);
-    labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
+    // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : children.add(labelContainer); // todo-done-00 addChild(labelContainer);
+    addChild(labelContainer);
+    // todo-done-important : layout on self on children should NOT be called in build : labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
     */
 
-    this.children = children;
-    for (BoxContainer child in this.children) {
+    // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : this.children = children;
+    for (BoxContainer child in children) {
       child.buildContainerOrSelf(this);
     }
     RowLayouter thisLegendItemContainer = RowLayouter(children: [this]);
@@ -1336,17 +1342,19 @@ class LegendIndicatorRectContainer extends BoxContainer {
           options.legendOptions.legendColorIndicatorWidth,
           options.legendOptions.legendColorIndicatorWidth,
         ),
-        super() {
-  }
+        super(); // {} or colon
 
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
 
+/* todo-done-04 : Containers using new layout should never call layout, except the top !
     // This container has no children, there is nothing to layout, just set self layout size.
     layoutSize = ui.Size(
       _indicatorRect.width,
       _indicatorRect.height,
     );
+*/
+  throw StateError('Should not be called');
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
@@ -1365,7 +1373,9 @@ class LegendIndicatorRectContainer extends BoxContainer {
     if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
-    _indicatorRect = _indicatorRect.translate(offset.dx, offset.dy);
+    // Translate the rectangle by the already incremented self offset stored on BoxLayouter
+    // (self offset is delegated to _offset on it's layout sandbox)
+    _indicatorRect = _indicatorRect.translate(this.offset.dx, this.offset.dy);
   }
 }
 
@@ -1451,7 +1461,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     */
 
     // Create array for children of this container; they will be returned in RowLayouter
-    List<BoxContainer> children = [];
+    // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : List<BoxContainer> children = [];
 
     // Layout legend core: for each row, create and position
     //   - an indicator rectangle and it's paint
@@ -1469,7 +1479,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
         options: options,
       );
 
-      /* todo-done-00  todo-done-00 : Nothing layout specific, we do autolayout.
+      /* todo-done-00 : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
           - crate and return new RowLayouter with all the children in it
@@ -1492,15 +1502,16 @@ class LegendContainerNewKeep extends ChartAreaContainer {
       addChild(legendItemContainer);
       */
       // todo-done-00 : Original layout(): addChild(legendItemContainer) => newCoreLayout(): children.add(legendItemContainer);
-      children.add(legendItemContainer);
+      // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : children.add(legendItemContainer);
+      addChild(legendItemContainer);
     }
 
-    this.children = children;
+    // todo-done-03 : back to addChild, as it established BoxContainerHierarchy.parent!!! : this.children = children;
     // todo-00-last-last-last-last : We need to remove this repetition and make it part of framework
-    for (BoxContainer child in this.children) {
+    for (BoxContainer child in children) {
       child.buildContainerOrSelf(this);
     }
-    RowLayouter thisLegendContainer = RowLayouter(children: [this]);
+    LegendContainerNewKeep thisLegendContainer = this; // todo-done-04 : No need to wrap single container : RowLayouter thisLegendContainer = RowLayouter(children: [this]);
 
     return thisLegendContainer;
   }
