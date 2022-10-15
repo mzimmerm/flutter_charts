@@ -25,10 +25,19 @@ class BoxContainerConstraints extends ContainerConstraints {
   Size minSize;
   Size maxSize;
 
+  // Named constructors
   BoxContainerConstraints({required this.minSize, required this.maxSize,});
   BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size,);
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
+
+  /// Named constructor for unused expansion
+  BoxContainerConstraints.unused()
+      : this.exactBox(size: const Size(
+    -1.0,
+    -1.0,
+  ));
+
   Size get size {
     assert(isExact);
     return minSize;
@@ -47,8 +56,9 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
     Size size;
     switch (mainLayoutAxis) {
-      // Treat none as horizontal, although that is a question
-      case LayoutAxis.none:
+      // Treat defaultHorizontal as horizontal, although that is a question, why we need defaultHorizontal at all,
+      //  perhaps just to mean it is used in Containers, while Layouter needs either horizontal or vertical.
+      case LayoutAxis.defaultHorizontal:
       case LayoutAxis.horizontal:
       // Make place right from takenSize. This should be layout specific, maybe
         size = Size(maxSize.width - takenSize.width, maxSize.height);
@@ -63,13 +73,7 @@ class BoxContainerConstraints extends ContainerConstraints {
     return size;
   }
   
-  /// Named constructor for unused expansion
-  BoxContainerConstraints.unused()
-      : this.exactBox(size: const Size(
-          -1.0,
-          -1.0,
-        ));
-
+  /// Clone of this object with different size.
   BoxContainerConstraints cloneWith({
     double? width,
     double? height,

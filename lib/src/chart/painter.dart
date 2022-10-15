@@ -40,11 +40,12 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// (see class comment), hence it provides a "hook" into the chart
   /// being able to paint and draw itself.
   ///
-  /// The substantial role is to pass the [size] provided by the framework layout
-  /// to [chartRootContainer]'s [ChartRootContainer.chartArea]. The container needs this information for layout,
+  /// A substantial duty of this [paint] method is to pass the [size] provided by the framework layout
+  /// to [chartRootContainer]'s [ChartRootContainer.chartArea]. The [chartRootContainer] needs the [size]
+  /// to provide top size constraints for it's layout,
   /// see [chartRootContainer]'s [ChartRootContainer.layout].
   ///
-  /// Once the above role is done, it delegates all painting to canvas to the
+  /// Once the above role is done, this method delegates all painting to canvas to the
   /// [chartRootContainer].
   @override
   void paint(ui.Canvas canvas, ui.Size size) {

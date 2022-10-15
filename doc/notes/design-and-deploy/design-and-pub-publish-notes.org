@@ -1199,7 +1199,7 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 #+end_src
 
 
-*** DONE ~USING: Implemented Layouter algorith #2~
+*** DONE ~USING: Layouter algorith #2~
 
 Core ideas
 
@@ -1273,7 +1273,31 @@ Only needed later
 
 
 
-** IN-PROGRESS-NOW 4. 2022-10-10 Review
+** IN-PROGRESS 4. 2022-10-10 Review
+
+*** Classes
+
+*Legend classes for new layout*
+
+Created in ChartRootContainer.layout():
+- [X] LegendContainerOriginalKeep
+- [X] LegendContainerNewKeep
+  
+Created in the above LegendContainerNewKeep.build  
+- [X] LegendItemContainerOriginalKeep
+- [X] LegendItemContainerNewKeep
+
+Created in the above LegendItemContainerNewKeep.build  
+- [X] LabelContainerOriginalKeep (used in both old LEGEND and AXIS labels)
+- [X] LegendLabelContainerNewLegendSpecificKeep (copy of the above, used in new LEGEND)
+
+Sibling to LegendLabelContainerNewLegendSpecificKeep  
+- [X] LegendIndicatorRectContainer - NEW CLASS TO INDICATE LEGEND RECTANGLE.
+
+
+*Container classes and structure (contained children created in build()):*
+
+~LegendContainer~ contains ~LegendItemContainer~ contains ~LabelContainer~ AND ~LegendIndicatorRectContainer~ . ~LabelContainer~ contains ~TextPainter~
 
 - abstract class ~LayoutableBox~ 
   - implementations:
@@ -1281,20 +1305,43 @@ Only needed later
     - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
 
 
-IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ONLY ADDS METHOD ~paint(Canvas)~ to ~BoxLayouter~
+*** Sequence of calls to start layout
+
+- ~FlutterChartPainter.paint~ calls
+- ~ChartRootContainer.paint~ calls
+- ~ChartRootContainer.layout~ which creates in order
+- The ~LegendContainerNewKeep~, ~YContainer~, ~XContainer~ etc.
+  - After each container is created, it's ~layout~ is immediately called.
+
+    
+IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
 
 - [ ] Study LegendItemContainer Originalkeep and NewKeep
 - [ ] last, there was an intent to experiment with some LegendItemContainer changes. Study differences between New and Original.
 
 
-
+*** Questions to investigate
  
-- On which interface is layout()?
-- On which interface is newCoreLayout()?
-- why do we have layout() and newCoreLayout()? - We want to use them simultaneously for some time
+- [ ] On which interface is layout()?
+- [ ] On which interface is newCoreLayout()?
+- [ ] why do we have layout() and newCoreLayout()? - We want to use them simultaneously for some time
+- [ ] BoxLayouter vs LayoutableBox:
+  - ~LayoutableBox~:
+    - abstract class which interface is implemented by *both* ~BoxLayouter~ and ~BoxContainer~
+    #+begin_src dart
+      abstract class LayoutableBox {
+        ui.Size layoutSize = ui.Size.zero;
+        void applyParentOffset(ui.Offset offset);
+        _BoxLayouterLayoutSandbox layoutableBoxLayoutSandbox = _BoxLayouterLayoutSandbox();
+        void newCoreLayout(BoxContainer parentBoxContainer);
+    #+end_src 
+    - [X] NOT a problem: ~ui.Size layoutSize~ is defined in both ~LayoutableBox~ and ~BoxLayouter~: NOT A PROBLEM, AS  ~BoxLayouter~ IMPLEMENTS  ~LayoutableBox~. IMPLEMENTS in Dart requires to re-implement all methods of the implemented class!!!
+- [ ] 
+- [ ] 
+- [ ] 
 
 
-- Study alignment and packing
+- [ ] Study alignment and packing
 
 
 
@@ -1308,35 +1355,16 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 - todo-01-document
 
 
-** TODO 5. Use the new Layouter algorithm + new Box/Column ON SOME Containers (LegendContainer) instead of custom code. REST of Containers (*which*) use original code.
+** IN-PROGRESS 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (*which??*) use original code.
 
-*** NOTE ~New Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
+*** IN-PROGRESS-NOW ~New Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
 
-Currently we have the following classes
-
-- [ ] LegendContainerOriginalKeep
-  - Created in ChartRootContainer.layout()
-  - 
-- [ ] LegendContainerNewKeep
-  
-- [ ] LegendItemContainerOriginalKeep
-- [ ] LegendItemContainerNewKeep
-  
-- [ ] LabelContainerOriginalKeep (used in both LEGEND and AXIS labels)
-- [ ] LegendLabelContainerNewLegendSpecificKeep
-
-- [ ] LegendIndicatorRectContainer - NEW CLASS TO INDICATE LEGEND RECTANGLE.
+**** IN-PROGRESS-NOW LEGEND: Place old containers to library of it's own: ~src/chart/container_legend_old_layout.dart~
 
 
-Containment structure (contained children created in layout()):
+**** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 
-~LegendContainer~ contains ~LegendItemContainer~ contains ~LabelContainer~ AND ~LegendIndicatorRectContainer~ . ~LabelContainer~ contains ~TextPainter~
-
-
-
-*** NOTE ~Old Layout on SOME Containers = IN-PROGRESS-NOW~
-
-*** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
+*** NOTE Old Layout on REST of Containers - for now
 
 ** TODO 6. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 

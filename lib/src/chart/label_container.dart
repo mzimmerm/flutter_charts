@@ -33,6 +33,10 @@ import '../util/geometry.dart' as geometry;
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 
+// todo-00-last : LabelContainerOriginalKeep was copied for the new layout experiments
+//                to LegendLabelContainerNewLegendSpecificKeep. Need to address
+//                if both copies are needed!
+
 class LabelContainerOriginalKeep extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
