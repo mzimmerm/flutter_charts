@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.flutter_charts">
+    package="com.example.flutter_charts">
    <application
         android:label="flutter_charts"
         android:name="${applicationName}"
@@ -20,10 +20,6 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <!-- mz added and removed line below based on https://stackoverflow.com/questions/59344254/i-got-problem-with-generatedpluginregistrant-registerwith-method-and-methodchann -->
-            <!-- mz the issue to fix was error during running screenshot tests. The problem was caused by presence of directory name "example", so this is not needed. -->
-            <!-- meta-data android:name="flutterEmbedding" android:value="2"/-->
-        
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

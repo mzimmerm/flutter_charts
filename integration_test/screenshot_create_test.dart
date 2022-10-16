@@ -25,7 +25,7 @@ import '../example/lib/main.dart' as app;
 /// The test can be run from command line or a script as
 /// ```shell
 ///         cd dev/my-projects-source/public-on-github/flutter_charts
-///         flutter emulator --launch "Nexus_6_API_29_2"
+///         flutter emulator --launch "Nexus_6_API_33"
 ///         sleep 20
 ///         flutter clean
 ///         flutter pub upgrade

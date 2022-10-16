@@ -2,7 +2,7 @@
 
 tool/test/run_all_tests.sh 
 tool/test/run_one_screenshot_test.sh ex10RandomData
-flutter emulator --launch "Nexus_6_API_29_2"
+flutter emulator --launch "Nexus_6_API_33"
 flutter create --template=app flutter_charts_app
 flutter pub get
 flutter pub upgrade
