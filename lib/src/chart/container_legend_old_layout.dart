@@ -1,24 +1,13 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas, Color;
+import 'dart:ui' as ui show Size, Offset, Paint, Canvas, Color;
 import 'dart:math' as math show max;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
-import '../util/collection.dart' as custom_collection show CustomList;
-import '../util/y_labels.dart';
-import '../util/geometry.dart' as geometry;
-import '../util/util_dart.dart';
 import 'container.dart';
-import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
-import 'data.dart';
-import 'iterative_layout_strategy.dart' as strategy;
 import 'label_container.dart';
-import 'line_container.dart';
-import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
-import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer;
 
 class LegendContainerOriginalKeep extends ChartAreaContainer {
   // ### calculated values
@@ -90,7 +79,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
         ),
       );
 
-      addChild(legendItemContainer);
+      addChild(this, legendItemContainer);
     }
 
     layoutSize = ui.Size(
@@ -148,8 +137,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        super() {
-  }
+        super();
 
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
@@ -173,7 +161,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
-    addChild(indRectContainer);
+    addChild(this, indRectContainer);
     indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
@@ -182,7 +170,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    addChild(labelContainer);
+    addChild(this, labelContainer);
     labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
 
     // Layout legend item elements (indicator, pad, label) flowing from left:

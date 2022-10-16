@@ -49,7 +49,7 @@ mixin ChartBehavior {
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   
   @override
-  void newCoreLayout(BoxContainer rootBoxContainer) {
+  void newCoreLayout() {
     // todo-00
   }
   
@@ -182,6 +182,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     legendContainer.parent = null;
     legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
     legendContainer = legendContainer.buildContainerOrSelf(parentBoxContainer);
+    // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
@@ -1176,12 +1177,13 @@ class LegendItemContainerNewKeep extends BoxContainer {
   // todo-00-last-last-last : ??? Below the 'fake' root of hierarchy, no layout(), calling and returning newCoreLayout() instead
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // Important: This flips from using layout90 on parents to using newCoreLayout() on children
-    return newCoreLayout(parentBoxContainer);
+    // Important: This flips from using layout() on parents to using newCoreLayout() on children
+    // todo-00-important : is this called?
+    return newCoreLayout();
   }
 
   @override
-  void newCoreLayout(BoxContainer rootBoxContainer) {
+  void newCoreLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -1196,13 +1198,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
       layoutSize = ui.Size.zero;
       return;
     }
-    super.newCoreLayout(rootBoxContainer);
-  }
-
-  // todo-00-last-last-last: overrode by setting layoutableBoxLayoutSandbox.constraints = parentBoxContainer.constraints
-  @override
-  void rootStep1_setRootConstraints(BoxContainer parentBoxContainer)  {
-    layoutableBoxLayoutSandbox.constraints = parentBoxContainer.layoutableBoxLayoutSandbox.constraints;
+    super.newCoreLayout();
   }
 
   // Important: When migrating from old layout to new layout,
@@ -1425,13 +1421,8 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
-    // Important: This flips from using layout90 on parents to using newCoreLayout() on children
-    return newCoreLayout(parentBoxContainer);
-  }
-
-  @override
-  void rootStep1_setRootConstraints(BoxContainer parentBoxContainer)  {
-      layoutableBoxLayoutSandbox.constraints = parentBoxContainer.layoutableBoxLayoutSandbox.constraints;
+    // Important: This flips from using layout() on parents to using newCoreLayout() on children
+    newCoreLayout();
   }
 
   @override

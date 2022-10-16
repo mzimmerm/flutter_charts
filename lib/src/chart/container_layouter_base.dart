@@ -112,7 +112,7 @@ abstract class LayoutableBox {
   _BoxLayouterLayoutSandbox layoutableBoxLayoutSandbox = _BoxLayouterLayoutSandbox();
   // todo-00-last : consider merging layoutableBoxLayoutSandbox and layoutableBoxParentSandbox
   _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox(); // todo-00-last make NON NULL
-  void newCoreLayout(BoxContainer parentBoxContainer);
+  void newCoreLayout();
 }
 
 /// Layouter of a list of [LayoutableBox]es.
@@ -156,42 +156,43 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
-  void newCoreLayout(BoxContainer rootBoxContainer) {
+  void newCoreLayout() {
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
-      rootStep1_setRootConstraints(rootBoxContainer);
-      rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast(/*rootBoxContainer*/);
+      rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       assert(layoutableBoxLayoutSandbox.constraints.size != const Size(-1.0, -1.0));
     }
     // A. node-pre-descend
-    step301_PreDescend_DistributeMyConstraintToImmediateChildren(/*rootBoxContainer*/);
+    step301_PreDescend_DistributeMyConstraintToImmediateChildren();
     // B. node-descend
     for (var child in children) {
       // 1. child-pre-descend (empty)
       // 2. child-descend
-      child.newCoreLayout(rootBoxContainer); // todo-00-last-last-last-last : what is the rootBoxContainer? Why not 'this'???
+      child.newCoreLayout();
       // 3. child-post-descend (empty
     }
     // C. node-post-descend
-    step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize(/*rootBoxContainer*/); // todo-00-last layout specific
+    // todo-00-important layout specific
+    step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize();
   }
 
   // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
 
   // 2.1 Layout methods
-  void rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast(/*BoxContainer parentBoxContainer*/) {
+  void rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
     // sets up childrenGreedyInMainLayoutAxis,  childrenGreedyInCrossLayoutAxis
     // if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
     // this.constraints = passedConstraints
     int numGreedyAlongMainLayoutAxis = 0;
     BoxLayouter? greedyChild;
     for (var child in children) {
-      child.rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast(/*rootBoxContainer*/);
+      child.rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       // _lengthAlongLayoutAxis(LayoutAxis layoutAxis, ui.Size size)
       if (child.isGreedy) {
         numGreedyAlongMainLayoutAxis += 1;
         greedyChild = child;
       }
+      // todo-00-important : not used, and not working
       layoutableBoxLayoutSandbox.addedSizeOfAllChildren =
           layoutableBoxLayoutSandbox.addedSizeOfAllChildren + ui.Offset(child.layoutSize.width, child.layoutSize.height);
 
@@ -208,14 +209,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  void rootStep1_setRootConstraints(BoxContainer parentBoxContainer) {
-    // todo-00-last-important : SHOULD THIS BE ONLY ON THIS = ROOT??
-    layoutableBoxLayoutSandbox.constraints = parentBoxContainer.layoutableBoxLayoutSandbox.constraints;
-  }
-
   // Layout specific. Only children should be changed by setting constraints,
   //   created from this BoxLayouter constraints. Default sets same constraints.
-  void step301_PreDescend_DistributeMyConstraintToImmediateChildren(/*BoxContainer parentBoxContainer*/) {
+  void step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
     for (var child in layoutableBoxLayoutSandbox.childrenInLayoutOrderGreedyLast) {
       // todo-00-important - how does this differ for Column, Row, etc?
       child.layoutableBoxLayoutSandbox.constraints = layoutableBoxLayoutSandbox.constraints;
@@ -224,17 +220,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // Layout specific. Offsets children hierarchically (layout children), which positions them in this [BoxLayouter].
   // Then, sets this object's size as the envelope of all layed out children.
-  void step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize(/*BoxContainer parentBoxContainer*/) {
+  void step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize() {
     if (isLeaf) {
       step302_IfLeaf_SetMySize_FromInternals_ToFit_WithinConstraints();
     } else {
-      step302_IfNotLeaf_OffsetChildren_Then_SetMySize_AndCheck_IfMySizeFit_WithinConstraints(/*rootBoxContainer*/);
+      step302_IfNotLeaf_OffsetChildren_Then_SetMySize_AndCheck_IfMySizeFit_WithinConstraints();
     }
   }
 
   // Layouter specific!
   // Exception or visual indication if "my size" is NOT "within my constraints"
-  void step302_IfNotLeaf_OffsetChildren_Then_SetMySize_AndCheck_IfMySizeFit_WithinConstraints(/*BoxContainer parentBoxContainer*/) {
+  void step302_IfNotLeaf_OffsetChildren_Then_SetMySize_AndCheck_IfMySizeFit_WithinConstraints() {
     if (hasGreedyChild) {
       List<LayoutableBox> notGreedyChildren = layoutableBoxLayoutSandbox.childrenInLayoutOrderGreedyLast.toList();
       notGreedyChildren.removeLast();
@@ -248,7 +244,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
       firstGreedyChild.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
       // Having set a finite constraint on Greedy child, re-layout the Greedy child again.
-      firstGreedyChild.newCoreLayout(firstGreedyChild as BoxContainer);
+      // (firstGreedyChild as BoxContainer).layoutableBoxLayoutSandbox.constraints
+      firstGreedyChild.newCoreLayout();
       // When the greedy child is re-layed out, we can deal with this node as if it had no greedy children - offset
       offsetChildrenAccordingToLayouter(children);
     } else {
@@ -477,7 +474,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     ) {
       throw StateError('Should not be called on $this');
     }
-    newCoreLayout(parentBoxContainer);
+    newCoreLayout();
   }
 
 }

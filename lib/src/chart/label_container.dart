@@ -405,7 +405,7 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
 
   // todo-00-important : When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
-  void newCoreLayout(BoxContainer parentBoxContainer) { // void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+  void newCoreLayout() {
     // todo-00-last-last : What does this do??
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
   }

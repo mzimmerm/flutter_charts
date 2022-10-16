@@ -5,9 +5,6 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:flutter_charts/flutter_charts.dart';
 
-import 'line/options.dart';
-import 'bar/options.dart';
-
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
 /// Generally, some defaults are provided here. Some options, mostly sizing
