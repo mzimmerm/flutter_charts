@@ -403,10 +403,11 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  // todo-00-important : When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
+  // When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
   void newCoreLayout() {
     // todo-00-last-last : What does this do??
+    //                    When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
   }
 

@@ -1245,6 +1245,10 @@ Core ideas
 
 
 
+** IN-PROGRESS-NOW Installing new version of Android sdk-tools
+
+<file:~/dev/my-projects-source/public-on-github/flutter_experiments/doc/flutter-notes.org::*2. Intall Android sdk-tools>
+
 ** IN-PROGRESS-NOW Core Layouter Rules
 
 These are the rules we implement

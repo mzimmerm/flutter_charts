@@ -1174,14 +1174,6 @@ class LegendItemContainerNewKeep extends BoxContainer {
         _options = options,
         super();
 
-  // todo-00-last-last-last : ??? Below the 'fake' root of hierarchy, no layout(), calling and returning newCoreLayout() instead
-  @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // Important: This flips from using layout() on parents to using newCoreLayout() on children
-    // todo-00-important : is this called?
-    return newCoreLayout();
-  }
-
   @override
   void newCoreLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
@@ -1336,7 +1328,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
         ),
         super(); // {} or colon
 
-  // todo-done-important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals  !!!!
+  // todo-00-done-important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals  !!!!
   @override
   ui.Size get layoutSize => ui.Size(
   _indicatorRect.width,
@@ -1346,19 +1338,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
   @override
   set layoutSize(ui.Size size) {
     layoutSize = size;
-  }
-
-  @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-
-/* todo-done-04 : Containers using new layout should never call layout, except the top !
-    // This container has no children, there is nothing to layout, just set self layout size.
-    layoutSize = ui.Size(
-      _indicatorRect.width,
-      _indicatorRect.height,
-    );
-*/
-  throw StateError('Should not be called');
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.

@@ -28,7 +28,6 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   }
 
   void paint(ui.Canvas canvas) {
-    // todo-done-00 : This was abstract, I implemented it like this
     // todo-00-last-important : should this do something else?
     for(var child in children) {
       child.paint(canvas);
@@ -97,7 +96,7 @@ mixin BoxContainerHierarchy {
   bool get isLeaf => children.isEmpty;
 
   void addChild(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
-    childOfThis.parent = thisBoxContainer; // todo-done-important boxContainer;
+    childOfThis.parent = thisBoxContainer;
     children.add(childOfThis);
   }
 }
@@ -250,6 +249,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       offsetChildrenAccordingToLayouter(children);
     } else {
       offsetChildrenAccordingToLayouter(children);
+      // todo-00-last-important : Now when but when those lengths are calculated,
+      //          we have to set the layoutSize on self, as envelope of all children offsets and sizes!
+
     }
   }
 
@@ -303,6 +305,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // Create a LengthsLayouter along each axis (main, cross), convert it to LayoutSegments,
     // then package into a wrapper class.
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
+    print('mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
 
     // Convert the line segments to Offsets (in each axis), which are position where notGreedyChildren
     // will be layed out.
@@ -311,9 +314,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       mainAndCrossLayedOutSegments,
       notGreedyChildren,
     );
+    // todo-00-last-important start here. The mainAndCrossLayedOutSegments seems OK (has 20), but layedOutOffsets are all 0
+    print('layedOutOffsets = $layedOutOffsets');
 
     // Apply the offsets obtained by this specific [Layouter] onto the [LayoutableBox]es [children]
     _offsetChildren(layedOutOffsets, notGreedyChildren);
+
   }
 
   _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
@@ -335,7 +341,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Applies the offsets obtained by this specific [Layouter] onto the [LayoutableBox]es [children].
   void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren) {
     assert(layedOutOffsets.length == notGreedyChildren.length);
-    for (int i =  notGreedyChildren.length; i < layedOutOffsets.length; i++) {
+    for (int i = 0; i < layedOutOffsets.length; i++) {
       notGreedyChildren[i].applyParentOffset(layedOutOffsets[i]);
     }
   }
@@ -373,9 +379,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     switch (mainLayoutAxis) {
       case LayoutAxis.defaultHorizontal:
       case LayoutAxis.horizontal:
-        return ui.Offset(mainSegment.min, crossSegment.min);
+        return ui.Offset(crossSegment.max, mainSegment.min);
       case LayoutAxis.vertical:
-        return ui.Offset(crossSegment.min, mainSegment.min);
+        return ui.Offset(mainSegment.max, crossSegment.min);
     }
   }
 
@@ -419,6 +425,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Creates and returns a list of lengths of the [LayoutableBox]es [notGreedyChildren]
   /// measured along the passed [layoutAxis].
   List<double> _lengthsOfChildrenAlong(LayoutAxis layoutAxis, List<LayoutableBox> notGreedyChildren) =>
+      // todo-00-last-important : This gets the layoutableBox.layoutSize
+      //     but when those lengths are calculated, we have to set the layoutSize on parent, as envelope of all children offsets and sizes!
       notGreedyChildren.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
 
   // 3. Fields managed by Sandboxes and methods delegated to Sandboxes -------------------------------------------------
