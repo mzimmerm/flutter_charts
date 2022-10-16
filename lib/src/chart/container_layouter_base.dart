@@ -1,5 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 import 'package:flutter/material.dart';
+import 'package:flutter_charts/flutter_charts.dart';
+// import 'package:flutter_charts/src/chart/container.dart';
 
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart' 
     show Lineup, Packing, OneDimLayoutProperties, LengthsLayouter, LayedOutLineSegments;
@@ -11,12 +13,8 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSe
 /// have the same  [BoxContainerHierarchy] trait (capability, role).
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   
-  /// Default generative constructor. Noop. todo-00-last : Should this do something
-  BoxContainer() {
-    // todo-00-last-last-last : children = []; removed this, removed late final and initialized in BoxContainerHierarchy.
-    // todo-done-00 : initialized at declaration point : layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
-    // todo-done-00 : initialized at declaration point : layoutableBoxLayoutSandbox = _BoxLayouterLayoutSandbox();
-  }
+  /// Default empty generative constructor. Noop. todo-00-last : Should this do something more ?
+  BoxContainer();
 
   // todo-00-last make abstract, each Container must implement. Layouter has this no-op.
   // Create children one after another, or do nothing if children were created in constructor.
@@ -31,6 +29,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
 
   void paint(ui.Canvas canvas) {
     // todo-done-00 : This was abstract, I implemented it like this
+    // todo-00-last-important : should this do something else?
     for(var child in children) {
       child.paint(canvas);
     }
@@ -87,12 +86,12 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 
 mixin BoxContainerHierarchy {
   late final BoxContainer? parent;  // will be initialized when addChild(this) is called on this parent
-  // todo-done-00 : todo-00-last-important : late final List<BoxContainer> children; // will be initialized in concrete impls such as ColumnLayouter
-  //          Removed the late final. Some extensions (eg. LineChartContainer)
+  // todo-00-last-important:
+  //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
   //          need to start with empty array, initialized in BoxContainer.
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
-  // todo-00-important : can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
+  //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   List<BoxContainer> children = []; // will be initialized in concrete impls such as ColumnLayouter
   bool get isRoot => parent == null;
   bool get isLeaf => children.isEmpty;
@@ -207,7 +206,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   void rootStep1_setRootConstraints(BoxContainer parentBoxContainer) {
-    // todo-done-important : SHOULD THIS BE ONLY ON THIS = ROOT??
+    // todo-00-last-important : SHOULD THIS BE ONLY ON THIS = ROOT??
     layoutableBoxLayoutSandbox.constraints = parentBoxContainer.layoutableBoxLayoutSandbox.constraints;
   }
 
@@ -465,8 +464,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // ##### Abstract methods to implement
 
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // todo-done-00 : This was abstract, I implemented it like this . Where is it declared?
-    // todo-00-last-last-last-last-last : Throw exception if this is instanceof new layout LEGEND containers
+    if (this is LegendItemContainerNewKeep || this is LegendIndicatorRectContainer || this is LegendLabelContainerNewLegendSpecificKeep) {
+      throw StateError('Should not be called on $this');
+    }
     newCoreLayout(parentBoxContainer);
   }
 

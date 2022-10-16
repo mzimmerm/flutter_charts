@@ -252,7 +252,8 @@ class LabelContainerOriginalKeep extends BoxContainer {
 
 }
 
-// todo-done-00 : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point
+// todo-00-last : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point?
+
 class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   /// Max width of label (outside constraint)
   final double _labelMaxWidth;
@@ -401,26 +402,9 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  /// Lays out this [LabelContainerOriginalKeep].
-  /// 
-  /// The layout step 1 is calling the contained [_textPainter.layout];
-  /// step 2 is creating the [_tiltedLabelEnvelope] around the horizontally layed out [_textPainter]
-  /// by calling
-  /// ```dart
-  ///   _tiltedLabelEnvelope = _createLabelEnvelope();
-  /// ```
-  /// 
-  // todo-done-00 : Here, in LegendLabelContainer, (below the top of the 'detached' BoxContainer hierarchy),
-  //                         renamed the layout() method, to newCoreLayout.
-  @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    throw StateError('Should not be called in BoxContainer, except on top detached root');
-  }
-  
   @override
   void newCoreLayout(BoxContainer parentBoxContainer) { // void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    // todo-01-morph : cannot set _boxConstraints here, as it is private in another src file
-    //                  it does not appear needed.
+    // todo-00-last-last : What does this do??
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
   }
 

@@ -1,5 +1,5 @@
 #+OPTIONS: toc:3
-#+TODO: TODO IN-PROGRESS IN-PROGRESS-NOW LATER HOLD DONE-THIS-ITERATION DONE NOTE
+#+TODO: TODO TODO-NEXT IN-PROGRESS IN-PROGRESS-NOW LATER HOLD DONE-THIS-ITERATION DONE NOTE
 
 
 * TODO Bugs and issues - flutter_charts
@@ -1245,12 +1245,20 @@ Core ideas
 
 
 
-*** IN-PROGRESS-NOW Core Layouter Rules
+** IN-PROGRESS-NOW Core Layouter Rules
 
-1. LAYOUT COMMITS TO A SIZE WITHIN CONSTRAINT; PAINT MUST COMMIT TO THE SIZE FROM LAYOUT.
-2. Each BoxContainer must build itself using buildContainerOrSelf
-3. 
-4. OLD
+These are the rules we implement
+
+1. [ ] ~newCoreLayout~ implementation must ensure resulting ~layoutSize~ is within the passed constraint; ~paint()~ must ensure all painting is within ~layoutSize & offset~ (layout size offset by offset) from layout.
+2. [ ] Each BoxContainer must build itself and immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChild~, then, for all children calling ~child.buildContainerOrSelf(this)~
+3. [ ] ~layout()~  should never be called, except on top
+4. [ ] ~newCoreLayout~ on self or children should NEVER be called in ~buildContainerOrSelf~
+5. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
+6. [ ] Important: Ensure (manually for now), that each ~BoxContainer~:
+   - EITHER wraps it's children in auto-layouter (~RowLayouter or ColumnLayouter~), and uses non-overriden default ~newCoreLayout~
+   - OR     adds its' children directly, and uses overriden ~newCoreLayout~ which lays out children manually in code, similar to what we do in old ~layout~
+7. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
+8. [ ] OLD
 #+BEGIN_SRC dart
   /// Create and add children of this container.
   // todo-done-01 : Removed. Each BoxContainer must build itself using buildContainerOrSelf
@@ -1269,7 +1277,7 @@ Core ideas
   */
 #+END_SRC
 
-        
+
 ** HOLD 3. Implement new Box/Column layouters
 
 *** HOLD Implement ColumnLayouter similar to RowLayouter
@@ -1371,7 +1379,40 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 *** NOTE Old Layout on REST of Containers - for now
 
-** TODO 6. REST Containers : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
+
+** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
+
+This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.
+
+*** TODO General notes on this migration
+
+The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer)~ method typically does:
+
+1. Use options and the available passed ~boxConstraints~ to manually divide space between children. The division results in 2 things for each child 
+   1.1 The ~sizeOfChild~  = boxConstraints size divided into number oof children
+   1.2 The ~offsetOfhild~ = sizeOfChild * indexOfChild in children array
+2. children size one-by-one loop:
+   - 2.0. create new ~childBoxConstraints~ object from ~sizeOfChild~,
+the manually divided and allocated space for the child
+   - 2.1 create new ~child~
+   - 2.2 call ~child.layout(childBoxConstraints, this);~
+   - 2.3 call ~child.applyParentOffset(offsetOfChild)~
+   - 2.4 call ~addChild(child)~
+3. set ~layoutSize~ = sum of sizes of all children in the layout direction, max child size in the cross-layout direction.
+
+To migrate the code in the old MANUAL layout, do this:
+
+1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~
+   - Notes:
+     - The ~boxConstraints~ from the old layout code is replaced with ~parentBoxContainer.constraints~
+2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout(parentBoxContainer)~
+   - Notes:
+     - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.
+     - Instead of 2.2 call to child.layout we call ~child.newCoreLayout(this)~
+
+
+   
+** TODO 7. REST Containers 2. : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
 
 *** LATER Ensure code sets up the parent/child hierarchy correctly in SOME existing containers
 
