@@ -411,7 +411,7 @@ class _ExampleSideEffects {
   String rightSqueezeText = '<<';
 }
 
-/// Defines which example to run.
+/// Defines the examples to run.
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
@@ -424,6 +424,9 @@ class _ExampleDefiner {
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
 
   /// Support for each example manipulate it's environment - the widgets in main.dart outside the chart.
+  ///
+  /// [exampleSideEffects] contain simple text strings such as '>>' and '<<', which are when running examples,
+  /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.
   _ExampleSideEffects exampleSideEffects = _ExampleSideEffects();
 
   /// Creates the example chart with name given in [exampleComboToRun] 

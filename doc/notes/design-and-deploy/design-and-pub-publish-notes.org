@@ -1254,9 +1254,9 @@ These are the rules we implement
 3. [ ] ~layout()~  should never be called, except on top
 4. [ ] ~newCoreLayout~ on self or children should NEVER be called in ~buildContainerOrSelf~
 5. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
-6. [ ] Important: Ensure (manually for now), that each ~BoxContainer~:
-   - EITHER wraps it's children in auto-layouter (~RowLayouter or ColumnLayouter~), and uses non-overriden default ~newCoreLayout~
-   - OR     adds its' children directly, and uses overriden ~newCoreLayout~ which lays out children manually in code, similar to what we do in old ~layout~
+6. [ ] *Important: actual children of container : Ensure (manually for now), that each ~BoxContainer~*:
+   - EITHER wraps it's actual children in auto-layouter (~RowLayouter or ColumnLayouter~), and uses non-overriden default ~newCoreLayout~. This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~), the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
+   - OR     adds its' actual children directly, and uses overriden ~newCoreLayout~ which lays out children manually in code, similar to what we do in old ~layout~
 7. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
 8. [ ] OLD
 #+BEGIN_SRC dart
@@ -1384,7 +1384,7 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.
 
-*** TODO General notes on this migration
+*** TODO How to do this code migration to new layout performed manually
 
 The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer)~ method typically does:
 
@@ -1405,6 +1405,7 @@ To migrate the code in the old MANUAL layout, do this:
 1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~
    - Notes:
      - The ~boxConstraints~ from the old layout code is replaced with ~parentBoxContainer.constraints~
+     - In of ~2.4~ (addChild), we have a new argument 'this', so we call ~addChild(this, child)~
 2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout(parentBoxContainer)~
    - Notes:
      - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
+import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
@@ -402,6 +403,7 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
+  // todo-00-important : When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
   void newCoreLayout(BoxContainer parentBoxContainer) { // void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // todo-00-last-last : What does this do??
