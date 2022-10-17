@@ -1306,7 +1306,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator.
   /// This is moved to offset then [paint]ed using rectangle paint primitive.
-  late ui.Rect _indicatorRect;
+  late ui.Size _indicatorSize;
 
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
@@ -1320,9 +1320,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         // Create the indicator square, later offset in applyParentOffset
-        _indicatorRect = ui.Rect.fromLTWH(
-          0.0, // indOffsetX,
-          0.0, // indOffsetY,
+        _indicatorSize = ui.Size(
           options.legendOptions.legendColorIndicatorWidth,
           options.legendOptions.legendColorIndicatorWidth,
         ),
@@ -1331,8 +1329,8 @@ class LegendIndicatorRectContainer extends BoxContainer {
   // todo-00-done-important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals  !!!!
   @override
   ui.Size get layoutSize => ui.Size(
-  _indicatorRect.width,
-  _indicatorRect.height,
+  _indicatorSize.width,
+  _indicatorSize.height,
   );
 
   @override
@@ -1346,8 +1344,9 @@ class LegendIndicatorRectContainer extends BoxContainer {
   void paint(ui.Canvas canvas) {
     if (parentOrderedToSkip) return;
 
+    ui.Rect indicatorRect = offset & _indicatorSize;
     canvas.drawRect(
-      _indicatorRect,
+      indicatorRect,
       _indicatorPaint,
     );
   }
@@ -1359,7 +1358,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
     super.applyParentOffset(offset);
     // Translate the rectangle by the already incremented self offset stored on BoxLayouter
     // (self offset is delegated to _offset on it's layout sandbox)
-    _indicatorRect = _indicatorRect.translate(this.offset.dx, this.offset.dy);
+    // todo-00-done : remove : _indicatorSize = _indicatorSize.translate(this.offset.dx, this.offset.dy);
   }
 }
 

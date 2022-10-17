@@ -13,7 +13,7 @@ import 'dart:math' as math;
 import 'package:decimal/decimal.dart' as decimal;
 
 import 'test/generate_test_data_from_app_runs.dart';
-import 'dart:ui' as ui show Offset, Size, Rect;
+import 'dart:ui' as ui show Rect;
 
 /// A minimal polynomial needed for Y label and axis scaling.
 ///

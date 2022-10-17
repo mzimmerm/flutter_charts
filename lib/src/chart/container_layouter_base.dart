@@ -139,6 +139,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // todo-00-last-last : to check if applyParentOffset is invoked from parent : add caller argument, pass caller=this and check : assert(caller == BoxContainerHierarchy.parent);
     //                same on all methods delegated to layoutableBoxParentSandbox
     layoutableBoxParentSandbox.applyParentOffset(offset);
+
+    for (var child in children) {
+      child.layoutableBoxParentSandbox.applyParentOffset(offset);
+    }
   }
 
   /// Member used during the [layout] processing.
@@ -316,7 +320,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // then package into a wrapper class.
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
     print(
-        'mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
+        'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
+    print(
+        'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
 
     // Convert the line segments to Offsets (in each axis), which are position where notGreedyChildren
     // will be layed out.
@@ -389,9 +395,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     switch (mainLayoutAxis) {
       case LayoutAxis.defaultHorizontal:
       case LayoutAxis.horizontal:
-        return ui.Offset(crossSegment.max, mainSegment.min);
+        return ui.Offset(mainSegment.min, crossSegment.min);
       case LayoutAxis.vertical:
-        return ui.Offset(mainSegment.max, crossSegment.min);
+        return ui.Offset(crossSegment.min, mainSegment.min);
     }
   }
 
