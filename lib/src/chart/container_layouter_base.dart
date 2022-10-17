@@ -46,7 +46,6 @@ class BoxContainerNullParentOfRoot extends BoxContainer {
   BoxContainer get parent => throw UnimplementedError(_nullMessage);
 
   @override
-  // todo-00-last-last-last-last : who is the parent? We have another 'children' on BoxContainerHierarchy without the 'get'
   List<BoxContainer> get children => throw UnimplementedError(_nullMessage);
 
   @override
@@ -97,8 +96,11 @@ mixin BoxContainerHierarchy {
 
 // todo-01-document as interface for [BoxLayouter] and [BoxContainer].
 abstract class LayoutableBox {
-  // todo-00-last-last-last : Can layoutSize be only a getter?
-  // todo-00-last-last-last : Should layoutSize be on the _BoxLayouterLayoutSandbox and only a getter on implementors ????!!!!!
+  /// Size after the box has been layed out.
+  ///
+  // todo-00-last-last : Should layoutSize be on the _BoxLayouterLayoutSandbox and only a getter on implementors ????!!!!!
+  //       There must be a layoutSize setter available on the sandbox (or here),  as the newCoreLayout must be able to set this [layoutSize]
+  ///   on parent after all children were layoud out.
   ui.Size layoutSize = ui.Size.zero;
 
   void applyParentOffset(ui.Offset offset);
@@ -137,6 +139,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// this [ContainerNew].
   @override
   void applyParentOffset(ui.Offset offset) {
+
+    if (parentOrderedToSkip) return;
+
     // todo-00-last-last : to check if applyParentOffset is invoked from parent : add caller argument, pass caller=this and check : assert(caller == BoxContainerHierarchy.parent);
     //                same on all methods delegated to layoutableBoxParentSandbox
     layoutableBoxParentSandbox.applyParentOffset(offset);

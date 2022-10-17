@@ -20,7 +20,8 @@ class ContainerConstraints {
 ///   where we want to put the data container to the right of the Y labels.
 /// - If direction style is [Unused], the [layout] should fail on attempted
 ///   looking at such
-///   todo-01-document 
+///   todo-01-document
+
 class BoxContainerConstraints extends ContainerConstraints {
   Size minSize;
   Size maxSize;
@@ -31,7 +32,7 @@ class BoxContainerConstraints extends ContainerConstraints {
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
 
-  // todo-00-last-last-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
+  // todo-00-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused()
       : this.exactBox(size: const Size(

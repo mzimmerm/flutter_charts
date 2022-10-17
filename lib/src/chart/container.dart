@@ -7,7 +7,7 @@ import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/collection.dart' as custom_collection show CustomList;
 import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
-import '../util/util_dart.dart'; // todo-00-important name this to make explicit what is used ???
+import '../util/util_dart.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
@@ -163,27 +163,22 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartArea.width,
       chartArea.height,)
     );
-    // todo-00-last-last-last-last : This is the place where new Legend layout starts
-    //   We need to to
-    //   - create the root of the new container hierarchy (LegendContainerNewKeep),
-    //   - then call it's build method,
-    //   - then call it's layout method.
-    //   The Container thus
-    //   - needs a interface method which builds it. Implementations should build up it's children hierarchy, and
-    //   return Container (or BoxContainer)
-    //
+
+    // Build the (new layout) LegendContainer
     legendContainer = LegendContainerNewKeep(
       chartRootContainer: this,
     );
 
-    // Call to buildContainerOrSelf.
     // Important: On [legendContainer] which is the top of the 'fake' layout branch
-    //   we must 1) set parent, 2) set external constraints, 3) call [buildContainerOrSelf], 3) call [layout]
+    //   we must 1) set parent, 2) set external constraints, 3) call [buildContainerOrSelf] and replace
+    //   the legendContainer with the built version which may be wrap of original, 4) call [layout]
+    //   5) applyParentOffset (which is zero but for the sake of making explicit)
     legendContainer.parent = null;
     legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
     legendContainer = legendContainer.buildContainerOrSelf(parentBoxContainer);
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
+
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
     legendContainer.applyParentOffset(legendContainerOffset);
@@ -1196,8 +1191,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
   // Important: When migrating from old layout to new layout,
   //            move the code from layout() to buildContainerOrSelf(parentBoxContainer).
   //            layout() should not be called on new layout, except on 'fake' root.
-  @override
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelfOLD(BoxContainer parentBoxContainer) {
 
     // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
     List<BoxContainer> children = [];
@@ -1280,6 +1274,46 @@ class LegendItemContainerNewKeep extends BoxContainer {
     */
   }
 
+
+  /// Important: Use wrapping as Flutter
+  @override
+  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+
+    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    List<BoxContainer> children = [];
+
+    // Create member containers, add as children, and lay them out
+    LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
+      indicatorPaint: _indicatorPaint,
+      options: _options,
+    );
+    children.add(indRectContainer);
+
+    /* todo-00-last-last-last : KEEP THIS SECTION - PUT BACK THIS LABEL
+    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
+      label: _label,
+      labelMaxWidth: _labelMaxWidth,
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelStyle: _labelStyle,
+    );
+    children.add(labelContainer);
+    */
+
+    // todo-00-last-important : vvvv We need to remove this repetition and make it part of framework
+
+    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
+    RowLayouter rowLayouter = RowLayouter(children: children);
+
+    addChild(this, rowLayouter);
+
+    for (BoxContainer child in rowLayouter.children) {
+      child.buildContainerOrSelf(this);
+    }
+    LegendItemContainerNewKeep thisItemLegendContainer = this;
+
+    return thisItemLegendContainer;
+  }
+
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
@@ -1306,7 +1340,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator.
   /// This is moved to offset then [paint]ed using rectangle paint primitive.
-  late ui.Size _indicatorSize;
+  late final ui.Size _indicatorSize;
 
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
@@ -1326,7 +1360,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
         ),
         super(); // {} or colon
 
-  // todo-00-done-important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals  !!!!
+  // Important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals!
   @override
   ui.Size get layoutSize => ui.Size(
   _indicatorSize.width,
@@ -1349,16 +1383,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
       indicatorRect,
       _indicatorPaint,
     );
-  }
-
-  @override
-  void applyParentOffset(ui.Offset offset) {
-    if (parentOrderedToSkip) return;
-
-    super.applyParentOffset(offset);
-    // Translate the rectangle by the already incremented self offset stored on BoxLayouter
-    // (self offset is delegated to _offset on it's layout sandbox)
-    // todo-00-done : remove : _indicatorSize = _indicatorSize.translate(this.offset.dx, this.offset.dy);
   }
 }
 
@@ -1517,7 +1541,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     }
   }
 
-  // todo-done-00 : Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
+  // Important: Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
   @override
   bool get isRoot => true;
 }

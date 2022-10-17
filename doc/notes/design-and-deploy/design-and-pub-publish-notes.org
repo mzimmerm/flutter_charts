@@ -1245,10 +1245,6 @@ Core ideas
 
 
 
-** IN-PROGRESS-NOW Installing new version of Android sdk-tools
-
-<file:~/dev/my-projects-source/public-on-github/flutter_experiments/doc/flutter-notes.org::*2. Intall Android sdk-tools>
-
 ** IN-PROGRESS-NOW Core Layouter Rules
 
 These are the rules we implement
@@ -1377,10 +1373,17 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 ** IN-PROGRESS 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (*which??*) use original code.
 
-*** IN-PROGRESS-NOW ~New Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
+*** IN-PROGRESS ~Use the new Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
 
 **** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 
+**** IN-PROGRESS-NOW Continue new Layout on LEGEND
+
+- [ ] in build, try to nest like in Flutter
+- [ ] 
+- [ ] 
+- [ ] 
+  
 *** NOTE Old Layout on REST of Containers - for now
 
 
