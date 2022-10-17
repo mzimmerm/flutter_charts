@@ -136,7 +136,7 @@ class LengthsLayouter {
   /// Intended for use in  [Packing.matrjoska], creates and returns a [util_dart.LineSegment] for the passed [length], 
   /// positioning the [util_dart.LineSegment] according to [lineup].
   /// 
-  /// [Packing.matrjoska] ignores order of lengths, so there is no dependence on lenght predecessor.
+  /// [Packing.matrjoska] ignores order of lengths, so there is no dependence on length predecessor.
   /// 
   /// Also, for [Packing.matrjoska], the [lineup] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLength].

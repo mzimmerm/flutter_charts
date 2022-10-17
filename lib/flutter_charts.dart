@@ -2,7 +2,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///
 /// **This file [root/lib/flutter_charts.dart]
 ///    _IS the flutter_charts library package_,
-///    and can be used by _external code_ OR _code inside this lib_.**
+///    and can be used by _external code_ OR _code inside this lib/src_.**
 ///
 /// The core of how library packages work in Dart can be summarized in A, B, below:
 ///
@@ -22,12 +22,12 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 /// Code in this project, under [root/lib] directory can import this package's code two ways:
 ///     1. Either using the same package: scheme, as above external code, for example
 ///       ```dart
-///         _import 'package:flutter_charts/flutter_charts.dart';_
+///         import 'package:flutter_charts/flutter_charts.dart';
 ///       ```
 ///     2. Or using a path scheme, for example
 ///       ```dart
-///         _import 'src/chart/data.dart';_ (absolute path)
-///         _import '../util/y_labels.dart';_ (relative path)
+///         import 'src/chart/data.dart'; // absolute path
+///         import '../util/y_labels.dart'; // relative path
 ///       ```
 ///
 /// Any dart file (any client application) located outside
@@ -56,7 +56,8 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///      to some other project). So this file, _flutter_charts.dart_
 ///      provides the public API to our package `flutter_charts`.
 ///      All classes (and only those classes) listed "exported" in this file,
-///      are visible externally to other packages (libraries) and applications which depend on it.
+///      are visible externally to other packages (libraries) and applications
+///      which depend on it.
 ///
 /// 3. Third:  Why so complicated?
 ///      This is an unfortunate result Dart

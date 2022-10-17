@@ -1,8 +1,9 @@
 import 'package:test/test.dart'; // Dart test package
 import 'package:flutter_charts/flutter_charts.dart';
+import 'dart:ui' as ui show Rect;
 
 void main() {
-  test('scaleValue test - test for linear scaling utility', () {
+  test('scaleValue - test linear scaling utility', () {
     expect(scaleValue(
       value: 1.0,
       fromDomainMin: 1.0,
@@ -13,7 +14,7 @@ void main() {
       10.0,);
   });
 
-  test('scaleValue test - test for linear scaling utility, from generated data', () {
+  test('scaleValue - test linear scaling utility, from generated data', () {
     var data = [
       [1.0, 1.0, 2.0, 10.0, 20.0, 10.0],
       [2.0, 1.0, 2.0, 10.0, 20.0, 20.0],
@@ -107,5 +108,14 @@ void main() {
         dataRow[5],
       );
     }
+  });
+
+  test('outerRectangle - test creating outer rectangle from a list of rectangles', () {
+    ui.Rect rect1 = const ui.Rect.fromLTRB(1.0, 2.0, 3.0, 4.0);
+    ui.Rect rect2 = const ui.Rect.fromLTRB(10.0, 20.0, 30.0, 40.0);
+    expect(
+      outerRectangle([rect1, rect2]),
+      const ui.Rect.fromLTRB(1.0, 2.0, 39.0, 58.0),
+    );
   });
 }

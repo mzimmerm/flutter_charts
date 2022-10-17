@@ -1337,7 +1337,8 @@ class LegendIndicatorRectContainer extends BoxContainer {
 
   @override
   set layoutSize(ui.Size size) {
-    layoutSize = size;
+    throw StateError('Should not be invoked');
+    // layoutSize = size;
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
