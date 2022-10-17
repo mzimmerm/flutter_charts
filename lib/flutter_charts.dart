@@ -129,6 +129,7 @@ export 'src/chart/label_container.dart';
 export 'src/util/random_chart_data.dart';
 
 export 'src/util/util_dart.dart';
+export 'src/util/util_flutter.dart';
 export 'src/util/y_labels.dart';
 
 export 'src/chart/data.dart';

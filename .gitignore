@@ -33,11 +33,11 @@ INTERNAL-GITIGNORE/
 .history
 .svn/
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+# 2022-10-17 : Keeping IntelliJ related
+# *.iml
+# *.ipr
+# *.iws
+# .idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line

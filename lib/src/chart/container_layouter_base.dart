@@ -6,7 +6,8 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show Lineup, Packing, OneDimLayoutProperties, LengthsLayouter, LayedOutLineSegments;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment, outerRectangle;
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
+import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show outerRectangle;
 
 /// [BoxContainerHierarchy] is repeated here and in [BoxLayouter]
 /// to make clear that both [BoxContainer] and [BoxLayouter]
@@ -260,7 +261,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren() {
-    ui.Rect childrenOuterRectangle = util_dart
+    ui.Rect childrenOuterRectangle = util_flutter
         .outerRectangle(children.map((BoxContainer child) => child.boundingRectangle()).toList(growable: false));
     layoutSize = childrenOuterRectangle.size;
   }
