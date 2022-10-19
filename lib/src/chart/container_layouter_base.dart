@@ -29,7 +29,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   //   - create childN
   //   - addChild(childN)
   //   - etc
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelf() {
     return this;
   }
 
@@ -167,6 +167,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
   void newCoreLayout() {
+    if (isLeaf) {
+      return;
+    }
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();

@@ -1257,8 +1257,9 @@ These are the rules we implement
 6. [ ] *Important: actual children of container : Ensure (manually for now), that each ~BoxContainer~*:
    - EITHER wraps it's actual children in auto-layouter (~RowLayouter or ColumnLayouter~), and uses non-overriden default ~newCoreLayout~. This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~), the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
    - OR     adds its' actual children directly, and uses overriden ~newCoreLayout~ which lays out children manually in code, similar to what we do in old ~layout~
-7. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
-8. [ ] OLD
+7. [ ] Leaf ~BoxContainer~ does not need to implement neither ~buildContainerOrSelf~ (super returns this) nor  ~newCoreLayout~ (super returns when isLeaf). So leaf only needs to implement ~paint~ and ~get layoutSize~
+8. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
+9. [ ] OLD
 #+BEGIN_SRC dart
   /// Create and add children of this container.
   // todo-done-01 : Removed. Each BoxContainer must build itself using buildContainerOrSelf

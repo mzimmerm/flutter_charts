@@ -175,7 +175,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
     legendContainer.parent = null;
     legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
-    legendContainer = legendContainer.buildContainerOrSelf(parentBoxContainer);
+    legendContainer = legendContainer.buildContainerOrSelf();
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
 
@@ -1192,9 +1192,9 @@ class LegendItemContainerNewKeep extends BoxContainer {
   }
 
   // Important: When migrating from old layout to new layout,
-  //            move the code from layout() to buildContainerOrSelf(parentBoxContainer).
+  //            move the code from layout() to buildContainerOrSelf().
   //            layout() should not be called on new layout, except on 'fake' root.
-  BoxContainer buildContainerOrSelfOLD(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelfOLD() {
 
     // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
     List<BoxContainer> children = [];
@@ -1224,7 +1224,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     addChild(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf(this);
+      child.buildContainerOrSelf();
     }
     LegendItemContainerNewKeep thisItemLegendContainer = this;
 
@@ -1280,7 +1280,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
   /// Important: Use wrapping as Flutter
   @override
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelf() {
 
     // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
     List<BoxContainer> children = [];
@@ -1310,7 +1310,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     addChild(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf(this);
+      child.buildContainerOrSelf();
     }
     LegendItemContainerNewKeep thisItemLegendContainer = this;
 
@@ -1373,7 +1373,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
   @override
   set layoutSize(ui.Size size) {
     throw StateError('Should not be invoked');
-    // layoutSize = size;
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
@@ -1433,7 +1432,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     newCoreLayout();
   }
 
-  BoxContainer buildContainerOrSelfOLD(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelfOLD() {
 
     ChartOptions options = chartRootContainer.data.chartOptions;
     double containerMarginTB = options.legendOptions.legendContainerMarginTB;
@@ -1515,7 +1514,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     addChild(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf(this);
+      child.buildContainerOrSelf();
     }
     LegendContainerNewKeep thisLegendContainer = this;
 
@@ -1523,7 +1522,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   }
 
   @override
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelf() {
 
     ChartOptions options = chartRootContainer.data.chartOptions;
 
@@ -1567,7 +1566,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     addChild(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf(this);
+      child.buildContainerOrSelf();
     }
     LegendContainerNewKeep thisLegendContainer = this;
 
@@ -1606,7 +1605,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
             ),
           ],
 */
-              ).buildContainerOrSelf(this),
+              ).buildContainerOrSelf(),
           ],
         ),
       ],
