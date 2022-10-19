@@ -1379,10 +1379,21 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 **** IN-PROGRESS-NOW Continue new Layout on LEGEND
 
-- [ ] in build, try to nest like in Flutter
+- [ ] *in build, try to nest like in Flutter*
+  - [ ] *FOR THAT, WE NEED TO*
+    - [ ] ENFORCE ALL BoxContainer CONSTRUCTORS TO ACCEPT REQUIRED 'CHILDREN'*
+    - [ ] Give BoxContainer a factory constructor, and move code from buildContainerOrSelf to the factory constructor
+      - [ ] To do this:
+        - [ ] remove argument parentBoxContainer from ~buildContainerOrSelf(BoxContainer parentBoxContainer)~. It can be accessed via parent anyway!
+        - [ ] Rename  ~buildContainerOrSelf()~ to factory ~buildContainerOrSelf()~
 - [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+
+
+  Map map = Map() ..
+['a'] = 'a'..
+['b'] = 2..
+['c'] = true;
   
 *** NOTE Old Layout on REST of Containers - for now
 

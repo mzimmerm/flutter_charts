@@ -802,7 +802,8 @@ abstract class ChartAreaContainer extends BoxContainer {
 
   ChartAreaContainer({
     required this.chartRootContainer,
-  }) : super();
+    List<BoxContainer>? children,
+  }) : super(children: children);
 }
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -1160,6 +1161,8 @@ class LegendItemContainerNewKeep extends BoxContainer {
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
     required ChartOptions options,
+    // todo-00-lost-last-last-last
+    List<BoxContainer>? children,
   })  :
   // We want to only create as much as we can in layout for clarity,
   // as a price, need to hold on on label and style from constructor
@@ -1167,7 +1170,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        super();
+        super(children: children);
 
   @override
   void newCoreLayout() {
@@ -1411,8 +1414,10 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   /// all available horizontal space, and only use necessary vertical space.
   LegendContainerNewKeep({
     required ChartRootContainer chartRootContainer,
+    List<BoxContainer>? children,
   }) : super(
           chartRootContainer: chartRootContainer,
+          children: children,
         );
 
   /// Lays out the legend area.
@@ -1428,8 +1433,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     newCoreLayout();
   }
 
-  @override
-  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+  BoxContainer buildContainerOrSelfOLD(BoxContainer parentBoxContainer) {
 
     ChartOptions options = chartRootContainer.data.chartOptions;
     double containerMarginTB = options.legendOptions.legendContainerMarginTB;
@@ -1516,6 +1520,98 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     LegendContainerNewKeep thisLegendContainer = this;
 
     return thisLegendContainer;
+  }
+
+  @override
+  BoxContainer buildContainerOrSelf(BoxContainer parentBoxContainer) {
+
+    ChartOptions options = chartRootContainer.data.chartOptions;
+
+    List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+/* todo-00-last-last-last-last-done
+    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    List<BoxContainer> children = [];
+
+    // Layout legend core: for each row, create and position
+    //   - an indicator rectangle and it's paint
+    //   - label painter
+    for (int index = 0; index < dataRowsLegends.length; index++) {
+      ui.Paint indicatorPaint = ui.Paint();
+      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+      indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
+
+      var legendItemContainer = LegendItemContainerNewKeep(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+      );
+
+      children.add(legendItemContainer);
+    }
+
+    // todo-00-last-important : vvvv We need to remove this repetition and make it part of framework
+
+    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
+    RowLayouter rowLayouter = RowLayouter(children: children);
+
+    addChild(this, rowLayouter);
+
+    for (BoxContainer child in rowLayouter.children) {
+      child.buildContainerOrSelf(this);
+    }
+    LegendContainerNewKeep thisLegendContainer = this;
+
+    return thisLegendContainer;
+*/
+
+    // todo-00-last-last-last-last : We already have what we need for Flutter-style work!!!
+    //                               It is just that the Flutter style does not lend itself for mode complex or descriptive code,
+    //                                because collections-for only must have expression (usually a new Container) after for loop!
+    //
+    return LegendContainerNewKeep( // On 'fake' root, simply recreate the object and set required values
+      chartRootContainer: chartRootContainer,
+      children: [
+        RowLayouter(
+          children: [
+            // this..children = [
+            // Using collections-for. But it is primitive, we cannot have a block
+            for (int index = 0; index < dataRowsLegends.length; index++)
+              // ui.Paint indicatorPaint = ui.Paint();
+              // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+              // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
+
+              LegendItemContainerNewKeep(
+                label: dataRowsLegends[index],
+                labelStyle: labelStyle,
+                indicatorPaint: (ui.Paint()
+                  ..color = chartRootContainer.data.dataRowsColors
+                      .elementAt(index % chartRootContainer.data.dataRowsColors.length)), //
+                options: options,
+/*
+          children: [
+            RowLayouter(children:
+            [
+
+            ],
+            ),
+          ],
+*/
+              ).buildContainerOrSelf(this),
+          ],
+        ),
+      ],
+    )..layoutableBoxLayoutSandbox.constraints =
+        layoutableBoxLayoutSandbox.constraints; // On 'fake' root, set requested values
   }
 
   @override

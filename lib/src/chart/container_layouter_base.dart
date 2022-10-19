@@ -13,8 +13,14 @@ import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show 
 /// to make clear that both [BoxContainer] and [BoxLayouter]
 /// have the same  [BoxContainerHierarchy] trait (capability, role).
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
+
   /// Default empty generative constructor. Noop. todo-00-last : Should this do something more ?
-  BoxContainer();
+  BoxContainer({List<BoxContainer>? children}) {
+    children != null ? this.children = children : this.children = [];
+    for (var child in this.children!) {
+      child.parent = this;
+    }
+  }
 
   // todo-00-last make abstract, each Container must implement. Layouter has this no-op.
   // Create children one after another, or do nothing if children were created in constructor.
@@ -519,7 +525,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (this is LegendItemContainerNewKeep ||
         this is LegendIndicatorRectContainer ||
         this is LegendLabelContainerNewLegendSpecificKeep ||
-        this is RowLayouter ||
+        // Remove as new layout rendering starts with RowLayouter : this is RowLayouter ||
         this is ColumnLayouter) {
       throw StateError('Should not be called on $this');
     }
@@ -530,17 +536,20 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 class RowLayouter extends BoxContainer {
   RowLayouter({
     required List<BoxContainer> children,
-  }) {
+  }) : super (children: children) { // todo-00-last-last-last-last added super children
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
-    // As a result, mixin fields can still be final, bust must be late, as they are
+    // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
+     // todo-00-last-last-last-last removed section
+/*
     this.children = children;
     // Establish parent in the hierarchy
     for (BoxContainer child in this.children) {
       child.parent = this;
       // addChild(this, child); // todo-00-important : this causes concurrent modification exception
     }
+*/
     mainLayoutAxis = LayoutAxis.horizontal;
     mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center);
     crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center);
