@@ -189,7 +189,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     layoutableBoxParentSandbox.applyParentOffset(offset);
 
     for (var child in children) {
-      child.layoutableBoxParentSandbox.applyParentOffset(offset);
+      child.applyParentOffset(offset);
     }
   }
 
@@ -205,9 +205,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void newCoreLayout() {
     print('In newCoreLayout: this = $this. this.children = $children.');
     print('In newCoreLayout: parent of $this = $parent.');
+/* todo-00-last-last-last-last
     if (isLeaf) {
       return;
     }
+*/
 
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {

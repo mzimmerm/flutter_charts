@@ -1315,6 +1315,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
   void paint(ui.Canvas canvas) {
     if (parentOrderedToSkip) return;
 
+    // todo-00-last-last-last-last : Should painting generally just call super as applyParentOffset?
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.paint(canvas);
     }
@@ -1322,12 +1323,15 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
+    // todo-00-last-last-last-last : Move this skipping to super, then remove the special implementations in LEGEND
     if (parentOrderedToSkip) return;
 
     super.applyParentOffset(offset);
+/* todo-00-last-last-last-last-last
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.applyParentOffset(offset);
     }
+ */
   }
 }
 
@@ -1559,9 +1563,11 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
 
+/* todo-00-last-last-last-last-last
     for (BoxContainer legendItemContainer in children) {
       legendItemContainer.applyParentOffset(offset);
     }
+*/
   }
 
   @override
