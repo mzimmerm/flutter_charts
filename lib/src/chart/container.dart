@@ -1276,6 +1276,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
   }
 
 
+
   /// Important: Use wrapping as Flutter
   @override
   BoxContainer buildContainerOrSelf() {
@@ -1300,15 +1301,16 @@ class LegendItemContainerNewKeep extends BoxContainer {
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
+/* todo-00-last-last-last-last-last done : Moved the check to parent so removed this method
   @override
   void paint(ui.Canvas canvas) {
     if (parentOrderedToSkip) return;
 
-    // todo-00-last-last-last-last-last : Should painting generally just call super as applyParentOffset?
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.paint(canvas);
     }
   }
+ */
 }
 
 /// Represents the series color indicator square in the legend.
@@ -1351,7 +1353,8 @@ class LegendIndicatorRectContainer extends BoxContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
-    if (parentOrderedToSkip) return;
+    // todo-00-last-last-last-last : create general rules for paint() on leafs: 1) Call super for the sideeffect of parentOrderedToSkip, 2) Do special painting
+    // todo-00-last-last-last-last-last : done removed. If parent ordered to skip, should not reached here! : if (parentOrderedToSkip) return;
 
     ui.Rect indicatorRect = offset & _indicatorSize;
     canvas.drawRect(
@@ -1533,8 +1536,8 @@ class LegendContainerNewKeep extends ChartAreaContainer {
 
   @override
   void applyParentOffset(ui.Offset offset) {
-    // todo-00-last-last-last-last-last
     // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
+    //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT SOME LEAFS (SUCH AS LABEL WHICH ROTATES)
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
@@ -1545,6 +1548,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   @override
   void paint(ui.Canvas canvas) {
     // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
+    //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT ALL LEAFS
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }

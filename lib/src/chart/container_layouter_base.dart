@@ -55,8 +55,10 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     return this;
   }
 
+  // todo-00-last-last-last-last : In new layout, should paint() extensions (except leafs?) generally just call super as applyParentOffset?
   void paint(ui.Canvas canvas) {
-    // todo-00-last-important : should this do something else?
+    if (parentOrderedToSkip) return; // todo-00-last-last-last-last-last : added here in hope extensions, except leafs, can then remove the method
+
     for (var child in children) {
       child.paint(canvas);
     }
