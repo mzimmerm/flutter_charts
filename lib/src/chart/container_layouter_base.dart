@@ -55,9 +55,20 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     return this;
   }
 
-  // todo-00-last-last-last-last : In new layout, should paint() extensions (except leafs?) generally just call super as applyParentOffset?
+  /// General rules for paint() on extensions
+  ///  1) In non-leafs: [paint] override not needed. Details:
+  ///    -  This default implementation, parentOrderedToSkip stop painting the node
+  ///          under first parent that orders children to skip
+  ///  2) In leafs: [paint] override always(?) needed.
+  ///    - Override should do:
+  ///      - `if (parentOrderedToSkip) return;` - this is required if the leaf's parent is the first up who ordered to skip
+  ///      - perform any canvas drawing needed by calling [canvas.draw]
+  ///      - if the container contains Flutter-level widgets that have the [paint] method, also call paint on them,
+  ///        for example, [_textPainter.paint]
+  ///      - no super call needed.
+  ///
   void paint(ui.Canvas canvas) {
-    if (parentOrderedToSkip) return; // todo-00-last-last-last-last-last : added here in hope extensions, except leafs, can then remove the method
+    if (parentOrderedToSkip) return;
 
     for (var child in children) {
       child.paint(canvas);
@@ -113,7 +124,7 @@ mixin BoxContainerHierarchy {
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  // todo-00-last-last-last-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
+  // todo-00-last-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
   List<BoxContainer> children = ChildrenNotSetSingleton();
   bool get isRoot => parent == null;
 
@@ -581,8 +592,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 class RowLayouter extends BoxContainer {
   RowLayouter({
     required List<BoxContainer> children,
-    // todo-00-last-last-last-last : added super children. We have to do this on every BoxContainer extension ...
-    //                              maybe we let extensions manage children fully? How much repetition?
   }) : super (children: children) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.

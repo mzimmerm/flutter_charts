@@ -302,7 +302,7 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   ///
   /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
-  // Important:  todo-00-last-last-last-last : LabelContainerOriginalKeep was copied for the new layout experiments
+  // Important: todo-00-last-last-last-last LabelContainerOriginalKeep was copied for the new layout experiments
   //                 to this LegendLabelContainerNewLegendSpecificKeep. Need to address if both copies are needed!
   LegendLabelContainerNewLegendSpecificKeep({
     required String label,
@@ -408,8 +408,9 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   // When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
   void newCoreLayout() {
+    // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
-    // todo-00-last-last-last-last : maybe as in Rect container on legend, provide only a getter and prevent setter. Or maybe this should be done in super???
+    // Set the layout size for parent to know how big this manually layed out label is.
     layoutSize = sizeAndOverflow.item1;
   }
 

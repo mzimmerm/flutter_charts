@@ -1299,18 +1299,6 @@ class LegendItemContainerNewKeep extends BoxContainer {
       ],
     );
   }
-
-  /// Overridden super's [paint] to also paint the rectangle indicator square.
-/* todo-00-last-last-last-last-last done : Moved the check to parent so removed this method
-  @override
-  void paint(ui.Canvas canvas) {
-    if (parentOrderedToSkip) return;
-
-    for (var rectThenLabelContainer in children) {
-      rectThenLabelContainer.paint(canvas);
-    }
-  }
- */
 }
 
 /// Represents the series color indicator square in the legend.
@@ -1353,9 +1341,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-last-last-last-last : create general rules for paint() on leafs: 1) Call super for the sideeffect of parentOrderedToSkip, 2) Do special painting
-    // todo-00-last-last-last-last-last : done removed. If parent ordered to skip, should not reached here! : if (parentOrderedToSkip) return;
-
     ui.Rect indicatorRect = offset & _indicatorSize;
     canvas.drawRect(
       indicatorRect,
@@ -1397,6 +1382,12 @@ class LegendContainerNewKeep extends ChartAreaContainer {
           children: children,
         ) {
     parent = null;
+    // If option set to hide (not shown), set the member [parentOrderedToSkip = true],
+    //  which will cause offset and paint of self and all children to be skipped by the default implementations
+    //  of [paint] and [applyParentOffset].
+    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+      parentOrderedToSkip = true;
+    }
   }
 
   /// Lays out the legend area.
@@ -1405,7 +1396,8 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
-    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    // todo-00-last-last--last-last-last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    if (parentOrderedToSkip) {
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
@@ -1534,29 +1526,34 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     );
   }
 
+/* todo-00-last-last-last-last-last no longer needed, once we set member parentOrderedToSkip,
   @override
   void applyParentOffset(ui.Offset offset) {
     // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
     //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT SOME LEAFS (SUCH AS LABEL WHICH ROTATES)
-    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    // todo-00-last-last-last-last-last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    if (parentOrderedToSkip) {
       return;
     }
     // super not really needed - only child containers are offset.
     super.applyParentOffset(offset);
   }
+*/
 
+/* todo-00-last-last-last-last-last no longer needed, once we set member parentOrderedToSkip,
   @override
   void paint(ui.Canvas canvas) {
     // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
     //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT ALL LEAFS
-    if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    // todo-00-last-last--last-last--last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
+    if (parentOrderedToSkip) {
       return;
     }
     for (BoxContainer legendItemContainer in children) {
       legendItemContainer.paint(canvas);
     }
   }
-
+*/
   // Important: Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
   @override
   bool get isRoot => true;
