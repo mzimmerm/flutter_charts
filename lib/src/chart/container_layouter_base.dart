@@ -24,25 +24,20 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     if (children != null) { //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children!;
     }
-      // todo-00-last-last-last-last added this block, to enforce either children passed, or set in here by calling build
-      // todo-00-last-last-last-last - can this be in baseclass???
+      // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
       if (children == null) { //  &&  this.children == ChildrenNotSetSingleton()) {
         BoxContainer builtContainer = buildContainerOrSelf();
         if (builtContainer != this) {
           this.children = [builtContainer];
         } else {
+          // This may require consideration .. maybe exception, because buildContainerOrSelf is never called, but
+          //  I guess still can be called manually.
           this.children = [];
         }
       }
       makeMeParentOfMyChildren();
-
-/* todo-00-last-last-last-last
-    children != null ? this.children = children : this.children = [];
-    for (var child in this.children!) {
-      child.parent = this;
-    }
-*/
   }
+
   void makeMeParentOfMyChildren() {
     for (var child in children!) {
       child.parent = this;
@@ -116,7 +111,8 @@ mixin BoxContainerHierarchy {
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  List<BoxContainer> children = ChildrenNotSetSingleton(); // todo-00-last-last-last-last : Made children nullable : List<BoxContainer> children= []; // will be initialized in concrete impls such as ColumnLayouter
+  // todo-00-last-last-last-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
+  List<BoxContainer> children = ChildrenNotSetSingleton();
   bool get isRoot => parent == null;
 
   bool get isLeaf => children.isEmpty;
@@ -209,11 +205,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void newCoreLayout() {
     print('In newCoreLayout: this = $this. this.children = $children.');
     print('In newCoreLayout: parent of $this = $parent.');
-/* todo-00-last-last-last-last : put back
     if (isLeaf) {
       return;
     }
-*/
+
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
@@ -583,20 +578,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 class RowLayouter extends BoxContainer {
   RowLayouter({
     required List<BoxContainer> children,
-  }) : super (children: children) { // todo-00-last-last-last-last added super children
+    // todo-00-last-last-last-last : added super children. We have to do this on every BoxContainer extension ...
+    //                              maybe we let extensions manage children fully? How much repetition?
+  }) : super (children: children) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
-     // todo-00-last-last-last-last removed section
-/*
-    this.children = children;
-    // Establish parent in the hierarchy
-    for (BoxContainer child in this.children) {
-      child.parent = this;
-      // addChild(this, child); // todo-00-important : this causes concurrent modification exception
-    }
-*/
     mainLayoutAxis = LayoutAxis.horizontal;
     mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center);
     crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center);
