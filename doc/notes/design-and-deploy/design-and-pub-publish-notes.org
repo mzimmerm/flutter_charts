@@ -517,7 +517,7 @@ So this was NOT done.
   - [X] ~flatten()~ 
   - [ ] ~isUniqueName()~
   - [X] ~isRoot()~
-  - [X] ~addChild(Container)~ - can never be root
+  - [X] ~addChildToHierarchyDeprecated(Container)~ - can never be root
   - [X] ~name~ not null, required
 - [ ] Add Constructors
   - [ ] ~Container.root~, configure as root
@@ -1217,7 +1217,7 @@ Core ideas
   - [X] ~step00_Recurse_createChildrenOrUseChildrenFromConstructor()~ // children should NOT need constraints or layoutSize during construction
     - if (children not empty) return
     - create child1
-    - addChild(child1)
+    - addChildToHierarchyDeprecated(child1)
     - call child1.step00_Recurse_createChildrenOrUseChildrenFromConstructor()
       .. etc
   - [X] ~step10_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast~
@@ -1250,7 +1250,7 @@ Core ideas
 These are the rules we implement
 
 1. [ ] ~newCoreLayout~ implementation must ensure resulting ~layoutSize~ is within the passed constraint; ~paint()~ must ensure all painting is within ~layoutSize & offset~ (layout size offset by offset) from layout.
-2. [ ] Each BoxContainer must build itself and immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChild~, then, for all children calling ~child.buildContainerOrSelf(this)~
+2. [ ] Each BoxContainer must build itself and immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChildToHierarchyDeprecated~, then, for all children calling ~child.buildContainerOrSelf(this)~
 3. [ ] ~layout()~  should never be called, except on top
 4. [ ] ~newCoreLayout~ on self or children should NEVER be called in ~buildContainerOrSelf~
 5. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
@@ -1416,7 +1416,7 @@ the manually divided and allocated space for the child
    - 2.1 create new ~child~
    - 2.2 call ~child.layout(childBoxConstraints, this);~
    - 2.3 call ~child.applyParentOffset(offsetOfChild)~
-   - 2.4 call ~addChild(child)~
+   - 2.4 call ~addChildToHierarchyDeprecated(child)~
 3. set ~layoutSize~ = sum of sizes of all children in the layout direction, max child size in the cross-layout direction.
 
 To migrate the code in the old MANUAL layout, do this:
@@ -1424,7 +1424,7 @@ To migrate the code in the old MANUAL layout, do this:
 1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~
    - Notes:
      - The ~boxConstraints~ from the old layout code is replaced with ~parentBoxContainer.constraints~
-     - In of ~2.4~ (addChild), we have a new argument 'this', so we call ~addChild(this, child)~
+     - In of ~2.4~ (addChildToHierarchyDeprecated), we have a new argument 'this', so we call ~addChildToHierarchyDeprecated(this, child)~
 2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout(parentBoxContainer)~
    - Notes:
      - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.
@@ -1439,9 +1439,9 @@ To migrate the code in the old MANUAL layout, do this:
 - [X] Which containers to convert to hierarchy?
   - [X] ~LegendContainer~ - contains LegendItemContainers children
     - Had member  ~_legendItemContainers~ for children. 
-    - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChild~ , but also some code reordering, where addChild is called immediately after the child ~LegendItemContainer~ is created  
+    - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
     - Removed member ~_legendItemContainers~
-    - added ~addChild(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
+    - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
   - [X] ~LegendItemContainer~ - contains ~LabelContainer~
     - Had single child member named ~_labelContainer~
     - Removed the single child, and started to use ~children~ to manage it instead of the single child member.

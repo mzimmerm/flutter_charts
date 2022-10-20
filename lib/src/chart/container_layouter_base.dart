@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'package:flutter/material.dart';
 import 'package:flutter_charts/flutter_charts.dart';
@@ -9,15 +10,41 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxC
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show outerRectangle;
 
+import '../util/collection.dart' as custom_collection show CustomList;
+
 /// [BoxContainerHierarchy] is repeated here and in [BoxLayouter]
 /// to make clear that both [BoxContainer] and [BoxLayouter]
 /// have the same  [BoxContainerHierarchy] trait (capability, role).
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
 
   /// Default empty generative constructor. Noop. todo-00-last : Should this do something more ?
-  BoxContainer({List<BoxContainer>? children}) {
+  BoxContainer({
+    List<BoxContainer>? children,
+  }) {
+    if (children != null) { //  && this.children != ChildrenNotSetSingleton()) {
+      this.children = children!;
+    }
+      // todo-00-last-last-last-last added this block, to enforce either children passed, or set in here by calling build
+      // todo-00-last-last-last-last - can this be in baseclass???
+      if (children == null) { //  &&  this.children == ChildrenNotSetSingleton()) {
+        BoxContainer builtContainer = buildContainerOrSelf();
+        if (builtContainer != this) {
+          this.children = [builtContainer];
+        } else {
+          this.children = [];
+        }
+      }
+      makeMeParentOfMyChildren();
+
+/* todo-00-last-last-last-last
     children != null ? this.children = children : this.children = [];
     for (var child in this.children!) {
+      child.parent = this;
+    }
+*/
+  }
+  void makeMeParentOfMyChildren() {
+    for (var child in children!) {
       child.parent = this;
     }
   }
@@ -89,14 +116,27 @@ mixin BoxContainerHierarchy {
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  List<BoxContainer> children = []; // will be initialized in concrete impls such as ColumnLayouter
+  List<BoxContainer> children = ChildrenNotSetSingleton(); // todo-00-last-last-last-last : Made children nullable : List<BoxContainer> children= []; // will be initialized in concrete impls such as ColumnLayouter
   bool get isRoot => parent == null;
 
   bool get isLeaf => children.isEmpty;
 
-  void addChild(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
+  @Deprecated('[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
+  void addChildToHierarchyDeprecated(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
     childOfThis.parent = thisBoxContainer;
     children.add(childOfThis);
+    // throw StateError('This is deprecated.');
+  }
+}
+
+class ChildrenNotSetSingleton extends custom_collection.CustomList<BoxContainer> {
+
+  ChildrenNotSetSingleton._privateNamedConstructor();
+
+  static final _instance = ChildrenNotSetSingleton._privateNamedConstructor();
+
+  factory ChildrenNotSetSingleton() {
+    return _instance;
   }
 }
 
@@ -167,9 +207,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
   void newCoreLayout() {
+    print('In newCoreLayout: this = $this. this.children = $children.');
+    print('In newCoreLayout: parent of $this = $parent.');
+/* todo-00-last-last-last-last : put back
     if (isLeaf) {
       return;
     }
+*/
     // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();

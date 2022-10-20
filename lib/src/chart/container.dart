@@ -17,7 +17,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer, RowLayouter, ChildrenNotSetSingleton;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -173,9 +173,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   we must 1) set parent, 2) set external constraints, 3) call [buildContainerOrSelf] and replace
     //   the legendContainer with the built version which may be wrap of original, 4) call [layout]
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
-    legendContainer.parent = null;
+    // legendContainer.parent = null;
+    // todo-00-last-last-last-last : called in constructor : legendContainer = legendContainer.buildContainerOrSelf();
+    // Before layout, must set constraints
     legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
-    legendContainer = legendContainer.buildContainerOrSelf();
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
 
@@ -1174,21 +1175,28 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
   @override
   void newCoreLayout() {
+    // _layoutLogicToSetMembers();
+    super.newCoreLayout();
+  }
+
+  void _layoutLogicToSetMemberMaxSizeForTextLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
 
     BoxContainerConstraints boxConstraints = layoutableBoxLayoutSandbox.constraints;
-
+    
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
+    // todo-00-last-last-last-last : important layoutableBoxLayoutSandbox.constraints initilized to negative. NOT set in new layout, in old layout passed down
+    //                                set labelMaxWidth to some large pixel
+    labelMaxWidth = 200.0;
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       parentOrderedToSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }
-    super.newCoreLayout();
   }
 
   // Important: When migrating from old layout to new layout,
@@ -1221,14 +1229,14 @@ class LegendItemContainerNewKeep extends BoxContainer {
     // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
     RowLayouter rowLayouter = RowLayouter(children: children);
 
-    addChild(this, rowLayouter);
+    addChildToHierarchyDeprecated(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
       child.buildContainerOrSelf();
     }
-    LegendItemContainerNewKeep thisItemLegendContainer = this;
+    LegendItemContainerNewKeep thisLegendItemContainer = this;
 
-    return thisItemLegendContainer;
+    return thisLegendItemContainer;
 
     /* todo-done-00 : Nothing layout specific, we do autolayout.
         Instead, do this:
@@ -1282,6 +1290,10 @@ class LegendItemContainerNewKeep extends BoxContainer {
   @override
   BoxContainer buildContainerOrSelf() {
 
+    // todo-00-last-last-last-last This is layout logic, but needed to calculate _labelMaxWidth,
+    //                             which is passed to LegendLabelContainerNewLegendSpecificKeep.
+    _layoutLogicToSetMemberMaxSizeForTextLayout();
+
     // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
     List<BoxContainer> children = [];
 
@@ -1292,29 +1304,34 @@ class LegendItemContainerNewKeep extends BoxContainer {
     );
     children.add(indRectContainer);
 
-    /* todo-00-last-last-last : KEEP THIS SECTION - PUT BACK THIS LABEL
-    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
+    /* todo-00-last-last-last : KEEP THIS SECTION - PUT BACK THIS LABEL */
+    LegendLabelContainerNewLegendSpecificKeep labelContainer = LegendLabelContainerNewLegendSpecificKeep(
       label: _label,
       labelMaxWidth: _labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
     children.add(labelContainer);
-    */
+    /* */
 
     // todo-00-last-important : vvvv We need to remove this repetition and make it part of framework
 
     // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
+    /* todo-00-last-last-last-last 
     RowLayouter rowLayouter = RowLayouter(children: children);
 
-    addChild(this, rowLayouter);
+    addChildToHierarchyDeprecated(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
       child.buildContainerOrSelf();
     }
-    LegendItemContainerNewKeep thisItemLegendContainer = this;
+    LegendItemContainerNewKeep thisLegendItemContainer = this;
 
-    return thisItemLegendContainer;
+    return thisLegendItemContainer;
+    */
+    /* todo-00-last-last-last-last */
+    return RowLayouter(children: children,);
+    /* */
   }
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
@@ -1411,13 +1428,16 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
+//  todo-00-last-last-last-last : Give 'fake' root of hierarchy it's special constructo which does not call super, but sets everything up
   LegendContainerNewKeep({
     required ChartRootContainer chartRootContainer,
     List<BoxContainer>? children,
   }) : super(
           chartRootContainer: chartRootContainer,
           children: children,
-        );
+        ) {
+    parent = null;
+  }
 
   /// Lays out the legend area.
   ///
@@ -1511,7 +1531,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
     RowLayouter rowLayouter = RowLayouter(children: children);
 
-    addChild(this, rowLayouter);
+    addChildToHierarchyDeprecated(this, rowLayouter);
 
     for (BoxContainer child in rowLayouter.children) {
       child.buildContainerOrSelf();
@@ -1577,13 +1597,12 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     //                               It is just that the Flutter style does not lend itself for mode complex or descriptive code,
     //                                because collections-for only must have expression (usually a new Container) after for loop!
     //
-    return LegendContainerNewKeep( // On 'fake' root, simply recreate the object and set required values
-      chartRootContainer: chartRootContainer,
-      children: [
+    return // todo-00-last-last-last-last : LegendContainerNewKeep( // On 'fake' root, simply recreate the object and set required values
+      // todo-00-last-last-last-last : chartRootContainer: chartRootContainer,
+      // todo-00-last-last-last-last : children: [
         RowLayouter(
           children: [
-            // this..children = [
-            // Using collections-for. But it is primitive, we cannot have a block
+            // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
             for (int index = 0; index < dataRowsLegends.length; index++)
               // ui.Paint indicatorPaint = ui.Paint();
               // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
@@ -1605,12 +1624,14 @@ class LegendContainerNewKeep extends ChartAreaContainer {
             ),
           ],
 */
-              ).buildContainerOrSelf(),
+              ), // todo-00-last-last-last-last-done : calling build in constructor.buildContainerOrSelf(),
           ],
-        ),
-      ],
-    )..layoutableBoxLayoutSandbox.constraints =
-        layoutableBoxLayoutSandbox.constraints; // On 'fake' root, set requested values
+        )
+// todo-00-last-last-last-last :       ,],
+// todo-00-last-last-last-last :     )..layoutableBoxLayoutSandbox.constraints =
+// todo-00-last-last-last-last :         layoutableBoxLayoutSandbox.constraints
+// todo-00-last-last-last-last :     ..parent = chartRootContainer; // On 'fake' root, set requested values
+  ;
   }
 
   @override

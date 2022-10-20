@@ -79,7 +79,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
         ),
       );
 
-      addChild(this, legendItemContainer);
+      addChildToHierarchyDeprecated(this, legendItemContainer);
     }
 
     layoutSize = ui.Size(
@@ -161,7 +161,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
-    addChild(this, indRectContainer);
+    addChildToHierarchyDeprecated(this, indRectContainer);
     indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
@@ -170,7 +170,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-    addChild(this, labelContainer);
+    addChildToHierarchyDeprecated(this, labelContainer);
     labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
 
     // Layout legend item elements (indicator, pad, label) flowing from left:
