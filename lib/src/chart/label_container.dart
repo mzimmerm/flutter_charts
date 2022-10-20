@@ -408,14 +408,9 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   // When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
   void newCoreLayout() {
-    // todo-00-last-last : What does this do??
-    //                    When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
     // todo-00-last-last-last-last : maybe as in Rect container on legend, provide only a getter and prevent setter. Or maybe this should be done in super???
     layoutSize = sizeAndOverflow.item1;
-
-    // todo-00-last-last-last-last : maybe not needed?
-    super.newCoreLayout();
   }
 
   // ##### Internal methods
