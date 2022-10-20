@@ -76,7 +76,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   }
 }
 
-// todo-00-last-last How and where should we use this?
+// todo-00-last : How and where should we use this?
 class BoxContainerNullParentOfRoot extends BoxContainer {
   final String _nullMessage = 'BoxContainerNullParentOfRoot: Method intentionally not implemented.';
 
@@ -118,13 +118,13 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 
 mixin BoxContainerHierarchy {
   late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
-  // todo-00-last-important:
+  // Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
   //          need to start with empty array, initialized in BoxContainer.
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  // todo-00-last-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
+  // todo-00-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
   List<BoxContainer> children = ChildrenNotSetSingleton();
   bool get isRoot => parent == null;
 
@@ -153,7 +153,7 @@ class ChildrenNotSetSingleton extends custom_collection.CustomList<BoxContainer>
 abstract class LayoutableBox {
   /// Size after the box has been layed out.
   ///
-  // todo-00-last-last : Should layoutSize be on the _BoxLayouterLayoutSandbox and only a getter on implementors ????!!!!!
+  // todo-00-last : Should layoutSize be on the _BoxLayouterLayoutSandbox and only a getter on implementors ????!!!!!
   //       There must be a layoutSize setter available on the sandbox (or here),  as the newCoreLayout must be able to set this [layoutSize]
   ///   on parent after all children were layoud out.
   ui.Size layoutSize = ui.Size.zero;
@@ -197,7 +197,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
     if (parentOrderedToSkip) return;
 
-    // todo-00-last-last : to check if applyParentOffset is invoked from parent : add caller argument, pass caller=this and check : assert(caller == BoxContainerHierarchy.parent);
+    // todo-00-last : to check if applyParentOffset is invoked from parent : add caller argument, pass caller=this and check : assert(caller == BoxContainerHierarchy.parent);
     //                same on all methods delegated to layoutableBoxParentSandbox
     layoutableBoxParentSandbox.applyParentOffset(offset);
 
@@ -223,7 +223,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       return;
     }
 
-    // todo-00-last-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
+    // todo-00-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       assert(layoutableBoxLayoutSandbox.constraints.size != const Size(-1.0, -1.0));
@@ -633,6 +633,8 @@ class _BoxLayouterLayoutSandbox {
   List<BoxLayouter> childrenInLayoutOrderGreedyLast = [];
   ui.Size addedSizeOfAllChildren =
       const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
+  // todo-00-last : constraints are always set by parent (constraints go down).
+  //  We should divide to getter/setter, and in setter, add 'invokingObject', here check if invokingObject = parent.
   BoxContainerConstraints constraints = BoxContainerConstraints.unused();
 }
 

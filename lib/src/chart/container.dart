@@ -1153,12 +1153,14 @@ class LegendItemContainerNewKeep extends BoxContainer {
   final String _label;
   late double _labelMaxWidth;
 
+  // todo-00-last-last-last-last : added as member
+  late final LegendLabelContainerNewLegendSpecificKeep _legendLabel;
+
   LegendItemContainerNewKeep({
     required String label,
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
     required ChartOptions options,
-    // todo-00-lost-last-last-last
     List<BoxContainer>? children,
   })  :
   // We want to only create as much as we can in layout for clarity,
@@ -1180,7 +1182,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     // todo-00-last-last-last-last : important layoutableBoxLayoutSandbox.constraints initialized to negative. NOT set in new layout, in old layout passed down
     //                                set labelMaxWidth to some large pixel
-    labelMaxWidth = 200.0;
+    // todo-00-last-last-last-last : removed this override : labelMaxWidth = 200.0;
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       parentOrderedToSkip = true;
@@ -1189,9 +1191,6 @@ class LegendItemContainerNewKeep extends BoxContainer {
     }
   }
 
-  // Important: When migrating from old layout to new layout,
-  //            move the code from layout() to buildContainerOrSelf().
-  //            layout() should not be called on new layout, except on 'fake' root.
   BoxContainer buildContainerOrSelfOLD() {
 
     // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
@@ -1204,7 +1203,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     );
     children.add(indRectContainer);
 
-    /* todo-00-last-last-last : KEEP THIS SECTION - PUT BACK THIS LABEL
+    /*
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
       label: _label,
       labelMaxWidth: _labelMaxWidth,
@@ -1213,8 +1212,6 @@ class LegendItemContainerNewKeep extends BoxContainer {
     );
     children.add(labelContainer);
     */
-
-    // todo-00-last-important : vvvv We need to remove this repetition and make it part of framework
 
     // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
     RowLayouter rowLayouter = RowLayouter(children: children);
@@ -1277,12 +1274,34 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
 
 
-  /// Important: Use wrapping as Flutter
+  /// Important: When migrating from old layout to new layout,
+  ///            - The child containers creation code: move from layout() to buildContainerOrSelf().
+  ///            -  if we move to autolayout:
+  ///              - The 'old layouting' code should not be used;
+  ///            - else, keeping the manual layout (see LegendLabelContainerNewLegendSpecificKeep)
+  ///                - the 'old layouting' code should go to newCoreLayout.
+  ///                - some layout values calculated from old layout that used to be passed as members to child containers creation:
+  ///                   - We need to, in the child class:
+  ///                     - make the members 'late' if final
+  ///                     - remove setting those members from child container constructors,
+  ///                     - replace with setters
+  ///                   - Then set those layout values calculated from old layout on member children in 'newCoreLayout' in the new setters
+  ///
+  ///
+  ///            - layout() should not be called on new layout, except on 'fake' root.
   @override
   BoxContainer buildContainerOrSelf() {
     // todo-00-last-last-last-last This is layout logic, but needed to calculate _labelMaxWidth,
     //                             which is passed to LegendLabelContainerNewLegendSpecificKeep.
-    _layoutLogicToSetMemberMaxSizeForTextLayout();
+    // todo-00-last-last-last-last  moved to newCoreLayout : _layoutLogicToSetMemberMaxSizeForTextLayout();
+
+    // Pull out the creation, remember on this object as member, set _labelMaxWidth in newCoreLayout.
+    _legendLabel = LegendLabelContainerNewLegendSpecificKeep(
+      label: _label,
+      // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : labelMaxWidth: _labelMaxWidth,
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelStyle: _labelStyle,
+    );
 
     return RowLayouter(
       children: [
@@ -1290,14 +1309,20 @@ class LegendItemContainerNewKeep extends BoxContainer {
           indicatorPaint: _indicatorPaint,
           options: _options,
         ),
-        LegendLabelContainerNewLegendSpecificKeep(
-          label: _label,
-          labelMaxWidth: _labelMaxWidth,
-          labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-          labelStyle: _labelStyle,
-        )
+        _legendLabel,
       ],
     );
+  }
+
+// todo-00-last-last-last-last : added newCoreLayout to be able to set the _labelMaxWidth member
+  @override
+  void newCoreLayout() {
+    // todo-00-last-last-last-last This is layout logic, but needed to calculate _labelMaxWidth,
+    //                             which is passed to LegendLabelContainerNewLegendSpecificKeep.
+    _layoutLogicToSetMemberMaxSizeForTextLayout();
+    _legendLabel.labelMaxWidth = _labelMaxWidth;
+
+    super.newCoreLayout();
   }
 }
 
@@ -1423,7 +1448,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     // First paint all legends, to figure out max height of legends to center all
     // legends label around common center.
 
-    /* todo-done-00 : Nothing layout specific, we do autolayout.
+    /* done-new-layout-commented : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
           - crate and return new RowLayouter with all the children in it
@@ -1445,7 +1470,6 @@ class LegendContainerNewKeep extends ChartAreaContainer {
       List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
-      // todo-00-last-last : watch here after starting to use LegendItemContainerNewKeep
       var legendItemContainer = LegendItemContainerNewKeep(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
@@ -1453,7 +1477,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
         options: options,
       );
 
-      /* todo-done-00 : Nothing layout specific, we do autolayout.
+      /* done-new-layout-commented : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
           - crate and return new RowLayouter with all the children in it
@@ -1478,7 +1502,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
       children.add(legendItemContainer);
     }
 
-    // todo-00-last-important : vvvv We need to remove this repetition and make it part of framework
+    // done-new-layout-added but this is NOT used like this anymore
 
     // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
     RowLayouter rowLayouter = RowLayouter(children: children);
@@ -1526,34 +1550,6 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     );
   }
 
-/* todo-00-last-last-last-last-last no longer needed, once we set member parentOrderedToSkip,
-  @override
-  void applyParentOffset(ui.Offset offset) {
-    // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
-    //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT SOME LEAFS (SUCH AS LABEL WHICH ROTATES)
-    // todo-00-last-last-last-last-last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
-    if (parentOrderedToSkip) {
-      return;
-    }
-    // super not really needed - only child containers are offset.
-    super.applyParentOffset(offset);
-  }
-*/
-
-/* todo-00-last-last-last-last-last no longer needed, once we set member parentOrderedToSkip,
-  @override
-  void paint(ui.Canvas canvas) {
-    // todo-00-last-last-last-last : Why not, upon encountering this condition somewhere first, just set parentOrderedToSkip?
-    //                                Then, applyParentOffset NEVER NEEDS OVERRIDE EXCEPT ALL LEAFS
-    // todo-00-last-last--last-last--last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
-    if (parentOrderedToSkip) {
-      return;
-    }
-    for (BoxContainer legendItemContainer in children) {
-      legendItemContainer.paint(canvas);
-    }
-  }
-*/
   // Important: Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
   @override
   bool get isRoot => true;

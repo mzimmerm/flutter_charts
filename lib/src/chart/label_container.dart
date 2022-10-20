@@ -257,7 +257,12 @@ class LabelContainerOriginalKeep extends BoxContainer {
 
 class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   /// Max width of label (outside constraint)
-  final double _labelMaxWidth;
+  // todo-00-last-last-last-last : added late : final double _labelMaxWidth;
+  late final double _labelMaxWidth;
+  // todo-00-last-last-last-last : also added public setter
+  set labelMaxWidth(double width) {
+    _labelMaxWidth = width;
+  }
 
   /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
@@ -306,10 +311,10 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   //                 to this LegendLabelContainerNewLegendSpecificKeep. Need to address if both copies are needed!
   LegendLabelContainerNewLegendSpecificKeep({
     required String label,
-    required double labelMaxWidth,
+    // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-  })  : _labelMaxWidth = labelMaxWidth,
+  })  : // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : _labelMaxWidth = labelMaxWidth,
         _labelTiltMatrix = labelTiltMatrix,
   // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(

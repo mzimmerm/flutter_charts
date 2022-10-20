@@ -62,7 +62,6 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
         width: legendItemWidth,
       );
 
-      // todo-00-last-last : watch here after starting to use LegendItemContainerNewKeep
       var legendItemContainer = LegendItemContainerOriginalKeep(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
