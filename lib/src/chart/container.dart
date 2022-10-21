@@ -443,10 +443,13 @@ class YContainer extends ChartAreaContainer {
       double yTickY = labelInfo.axisValue.toDouble();
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedLabel,
-        labelMaxWidth: double.infinity,
+        // todo-00-last-last-last-last-last-last : labelMaxWidth: double.infinity,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
+      // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor.
+      yLabelContainer.labelMaxWidth = double.infinity;
+
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
@@ -579,10 +582,12 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
       var xLabelContainer = AxisLabelContainer(
         label: xUserLabels[xIndex],
-        labelMaxWidth: double.infinity,
+        // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor. labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
+      // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor.
+      xLabelContainer.labelMaxWidth = double.infinity;
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
 
@@ -1154,7 +1159,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
   late double _labelMaxWidth;
 
   // todo-00-last-last-last-last : added as member
-  late final LegendLabelContainerNewLegendSpecificKeep _legendLabel;
+  late final LabelContainerNewKeep _legendLabel;
 
   LegendItemContainerNewKeep({
     required String label,
@@ -1296,7 +1301,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     // todo-00-last-last-last-last  moved to newCoreLayout : _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Pull out the creation, remember on this object as member, set _labelMaxWidth in newCoreLayout.
-    _legendLabel = LegendLabelContainerNewLegendSpecificKeep(
+    _legendLabel = LabelContainerNewKeep(
       label: _label,
       // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : labelMaxWidth: _labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer

@@ -255,7 +255,7 @@ class LabelContainerOriginalKeep extends BoxContainer {
 
 // todo-00-last : Added this class as a copy of LabelContainer to allow new layout experiment around Legend. Must be merged back at some point?
 
-class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
+class LabelContainerNewKeep extends BoxContainer {
   /// Max width of label (outside constraint)
   // todo-00-last-last-last-last : added late : final double _labelMaxWidth;
   late final double _labelMaxWidth;
@@ -309,7 +309,7 @@ class LegendLabelContainerNewLegendSpecificKeep extends BoxContainer {
   /// It is currently assumed clients will not call any methods using them.
   // Important: todo-00-last-last-last-last LabelContainerOriginalKeep was copied for the new layout experiments
   //                 to this LegendLabelContainerNewLegendSpecificKeep. Need to address if both copies are needed!
-  LegendLabelContainerNewLegendSpecificKeep({
+  LabelContainerNewKeep({
     required String label,
     // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
@@ -510,7 +510,7 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-class AxisLabelContainer extends LabelContainerOriginalKeep {
+class AxisLabelContainer extends LabelContainerNewKeep { // todo-00-last-last-last-last-last-last : switch to new version : LabelContainerOriginalKeep {
   /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
@@ -538,12 +538,12 @@ class AxisLabelContainer extends LabelContainerOriginalKeep {
 
   AxisLabelContainer({
     required String label,
-    required double labelMaxWidth,
+    // todo-00-last-last-last-last-last-last : required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
   }) : super(
           label: label,
-          labelMaxWidth: labelMaxWidth,
+    // todo-00-last-last-last-last-last-last : labelMaxWidth: labelMaxWidth,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
         );

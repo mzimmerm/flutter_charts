@@ -580,7 +580,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     if (this is LegendItemContainerNewKeep ||
         this is LegendIndicatorRectContainer ||
-        this is LegendLabelContainerNewLegendSpecificKeep ||
+        // this is LabelContainerNewKeep ||
         // Remove as new layout rendering starts with RowLayouter : this is RowLayouter ||
         this is ColumnLayouter) {
       throw StateError('Should not be called on $this');

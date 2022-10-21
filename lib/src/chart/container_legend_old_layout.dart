@@ -163,12 +163,15 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     addChildToHierarchyDeprecated(this, indRectContainer);
     indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
-    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
+    // todo-00-last-last-last-last-last-last : moved to new version : LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
+    LabelContainerNewKeep labelContainer = LabelContainerNewKeep(
       label: _label,
-      labelMaxWidth: labelMaxWidth,
+      // todo-00-last-last-last-last-last-last : set after creation : labelMaxWidth: labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
+    // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor.
+    labelContainer.labelMaxWidth = labelMaxWidth;
     addChildToHierarchyDeprecated(this, labelContainer);
     labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
 
