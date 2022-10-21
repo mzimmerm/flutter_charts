@@ -96,10 +96,10 @@ class LegendOptions {
   // is the square that shows the color of each dataRow (color of lines or bars)
   // together with data series name (legend name).
 
-  /// Margin on the left/right of the [LegendContainerOriginalKeep]
+  /// Margin on the left/right of the [LegendContainer]
   final double legendContainerMarginLR;
 
-  /// Margin on the top/bottom of the  [LegendContainerOriginalKeep]
+  /// Margin on the top/bottom of the  [LegendContainer]
   final double legendContainerMarginTB;
 
   /// Between each legend item pairs (indicator + label)

@@ -11,30 +11,48 @@ import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show 
 
 import '../util/collection.dart' as custom_collection show CustomList;
 
-/// [BoxContainerHierarchy] is repeated here and in [BoxLayouter]
+/// Mixin [BoxContainerHierarchy] is repeated here in [BoxContainer] and in [BoxLayouter]
 /// to make clear that both [BoxContainer] and [BoxLayouter]
-/// have the same  [BoxContainerHierarchy] trait (capability, role).
+/// have the same  [BoxContainerHierarchy] role (capability).
+///
+/// Important migration notes:
+/// When migrating from old layout to new layout,
+///   - The child containers creation code: move from layout() to buildContainerOrSelf().
+///   -  if we move to autolayout:
+///      - The 'old layouter' code should not be used;
+///   - else, keeping the manual layout (see LabelContainer)
+///       - the 'old layouter' code should go to newCoreLayout.
+///       - some layout values calculated from old layout that used to be passed as members to child containers creation:
+///          - We need to, in the child class:
+///            - make the members 'late' if final
+///            - remove setting those members from child container constructors,
+///            - replace with setters
+///          - Then set those layout values calculated from old layout on member children in 'newCoreLayout' in the new setters
+///
+///   - layout() should not be called on new layout, except on 'fake' root.
+///
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
-
-  /// Default empty generative constructor. Noop. todo-00-last : Should this do something more ?
+  /// Default empty generative constructor.
   BoxContainer({
     List<BoxContainer>? children,
   }) {
-    if (children != null) { //  && this.children != ChildrenNotSetSingleton()) {
+    if (children != null) {
+      //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children!;
     }
-      // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
-      if (children == null) { //  &&  this.children == ChildrenNotSetSingleton()) {
-        BoxContainer builtContainer = buildContainerOrSelf();
-        if (builtContainer != this) {
-          this.children = [builtContainer];
-        } else {
-          // This may require consideration .. maybe exception, because buildContainerOrSelf is never called, but
-          //  I guess still can be called manually.
-          this.children = [];
-        }
+    // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
+    if (children == null) {
+      //  &&  this.children == ChildrenNotSetSingleton()) {
+      BoxContainer builtContainer = buildContainerOrSelf();
+      if (builtContainer != this) {
+        this.children = [builtContainer];
+      } else {
+        // This may require consideration .. maybe exception, because buildContainerOrSelf is never called, but
+        //  I guess still can be called manually.
+        this.children = [];
       }
-      makeMeParentOfMyChildren();
+    }
+    makeMeParentOfMyChildren();
   }
 
   void makeMeParentOfMyChildren() {
@@ -43,7 +61,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     }
   }
 
-  // todo-00-last make abstract, each Container must implement. Layouter has this no-op.
+  // todo-01-last : after new layout is used everywhere : make abstract, each Container must implement. Layouter has this no-op.
   // Create children one after another, or do nothing if children were created in constructor.
   // Any child created here must be added to the list of children.
   //   - if (we do not want any children created here (may exist from constructor)) return
@@ -54,7 +72,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     return this;
   }
 
-  /// General rules for paint() on extensions
+  /// General rules for [paint] on extensions
   ///  1) In non-leafs: [paint] override not needed. Details:
   ///    -  This default implementation, parentOrderedToSkip stop painting the node
   ///          under first parent that orders children to skip
@@ -63,7 +81,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   ///      - `if (parentOrderedToSkip) return;` - this is required if the leaf's parent is the first up who ordered to skip
   ///      - perform any canvas drawing needed by calling [canvas.draw]
   ///      - if the container contains Flutter-level widgets that have the [paint] method, also call paint on them,
-  ///        for example, [_textPainter.paint]
+  ///        for example, [LabelContainer._textPainter.paint]
   ///      - no super call needed.
   ///
   void paint(ui.Canvas canvas) {
@@ -123,7 +141,7 @@ mixin BoxContainerHierarchy {
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  // todo-00-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
+  // todo-01-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
   List<BoxContainer> children = ChildrenNotSetSingleton();
   bool get isRoot => parent == null;
 
@@ -191,6 +209,22 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [ContainerNew].
+  ///
+  /// General rules for [applyParentOffset] on extensions
+  ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
+  ///     as this method is integral part of autolayout (as is [newCoreLayout]).
+  ///  2) Exception would be [BoxContainers] that want to use manual or semi-manual
+  ///     layout process. Those would generally (always?) be leafs, and they would do the following:
+  ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
+  ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
+  ///         and set [layoutSize] at the end, so parent can pick it up
+  ///       - Override [applyParentOffset] as follows:
+  ///          - likely call super [applyParentOffset] to set overall offset in parent.
+  ///          - potentially re-offset the position as a result of the manual layout
+  ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member.
+  ///        - Override [paint] by painting on the calculated (parent also applied) offset,
+  ///           (see [LabelContainer.paint].
+  ///
   @override
   void applyParentOffset(ui.Offset offset) {
 
@@ -212,6 +246,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
 
+  /// General rules for [newCoreLayout] on extensions
+  ///  1) Generally, neither leafs nor non-leafs need to override [newCoreLayout],
+  ///     as this method is integral part of autolayout (as is [applyParentOffset]).
+  ///  2) Exception would be [BoxContainer]s that want to use manual or semi-manual
+  ///     layout process.
+  ///       - On Leaf: override [newCoreLayout] (no super call), do manual layout calculations,
+  ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
+  ///         and set [layoutSize] at the end. This is already described in [BoxContainer.applyParentOffset]
+  ///       - Potentially - this would be a hack PARENT of the leaf also may need to override[newCoreLayout], where it :
+  ///         - Perform layout logic to set some size-related value on it's child. We do not have example,
+  ///           as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
+  ///           See around [_layoutLogicToSetMemberMaxSizeForTextLayout]
+  ///
   // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
   void newCoreLayout() {
@@ -346,7 +393,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
 
   /// Greedy is defined as asking for layoutSize infinity.
-  /// todo-00 : The greedy methods should check if called BEFORE
+  /// todo-00-last : The greedy methods should check if called BEFORE
   ///           [step302_PostDescend_IfLeafSetMySize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
   ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy {
@@ -577,9 +624,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // ##### Abstract methods to implement
 
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
-    if (this is LegendItemContainerNewKeep ||
+    if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
-        // this is LabelContainerNewKeep ||
+        // this is LabelContainer ||
         // Remove as new layout rendering starts with RowLayouter : this is RowLayouter ||
         this is ColumnLayouter) {
       throw StateError('Should not be called on $this');

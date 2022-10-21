@@ -4,9 +4,10 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextP
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
+import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 import 'container_layouter_base.dart' show BoxContainer;
+import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
 
@@ -33,7 +34,7 @@ import '../util/geometry.dart' as geometry;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
-class LabelContainerNewKeep extends BoxContainer {
+class LabelContainer extends BoxContainer {
   /// Max width of label (outside constraint).
   ///
   /// Late initialized in layout.
@@ -62,6 +63,8 @@ class LabelContainerNewKeep extends BoxContainer {
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
+  final ChartOptions _options; // todo-00-last-last added
+
   /// Position where paint starts painting the label, expressed
   /// in the coordinate system in which this [_tiltedLabelEnvelope.envelopeRect] topLeft 
   /// (NOT the _tiltedLabelEnvelope.topLeft) is at the origin. 
@@ -85,11 +88,13 @@ class LabelContainerNewKeep extends BoxContainer {
   ///
   /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
-  LabelContainerNewKeep({
+  LabelContainer({
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
+    required ChartOptions options, // todo-00-last-last added
   })  :
+      _options = options, // todo-00-last-last added
         _labelTiltMatrix = labelTiltMatrix,
   // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
@@ -188,10 +193,36 @@ class LabelContainerNewKeep extends BoxContainer {
   // When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
   @override
   void newCoreLayout() {
+    // todo-00-last-last : Moved to here to LabelContainer, from parent LegendItemContainer, as this is the manually layed out container!!!
+    _layoutLogicToSetMemberMaxSizeForTextLayout();
+    // todo-00-last-last : already inited above : labelMaxWidth = _labelMaxWidth;
+
+
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
     // Set the layout size for parent to know how big this manually layed out label is.
     layoutSize = sizeAndOverflow.item1;
+  }
+
+  // todo-00-last-last : Moved to here to LabelContainer, from parent LegendItemContainer, as this is the manually layed out container!!!
+  void _layoutLogicToSetMemberMaxSizeForTextLayout() {
+    double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
+    double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
+    double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
+
+    BoxContainerConstraints boxConstraints = layoutableBoxLayoutSandbox.constraints;
+
+    double labelMaxWidth =
+        boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
+    // todo-00-last-last : This infinity bypass is a terrible hack to recognize AxisLabels,
+    //                      to not set the wrong value from layoutableBoxLayoutSandbox.constraints,
+    //                      which are not using the new layout yet, so not set.
+    _labelMaxWidth = labelMaxWidth;
+    if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
+      parentOrderedToSkip = true;
+      layoutSize = ui.Size.zero;
+      return;
+    }
   }
 
   // ##### Internal methods
@@ -285,7 +316,7 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-class AxisLabelContainer extends LabelContainerNewKeep {
+class AxisLabelContainer extends LabelContainer {
   /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
@@ -315,9 +346,11 @@ class AxisLabelContainer extends LabelContainerNewKeep {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
+    required ChartOptions options, // todo-00-last-last added
   }) : super(
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
+           options: options, // todo-00-last-last added
         );
 }

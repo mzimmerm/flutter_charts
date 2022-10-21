@@ -160,7 +160,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     );
 
     // Build the (new layout) LegendContainer
-    legendContainer = LegendContainerNewKeep(
+    legendContainer = LegendContainer(
       chartRootContainer: this,
     );
 
@@ -365,7 +365,7 @@ class YContainer extends ChartAreaContainer {
   ///
   /// Out of calls to all container's [layout] by the parent
   /// [ChartRootContainer.layout], the call to this object's [layout] is second,
-  /// after [LegendContainerNewKeep.layout].
+  /// after [LegendContainer.layout].
   /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
@@ -445,9 +445,11 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
+        options: options, // todo-00-last-last
       );
       // set labelMaxWidth which has been taken out of constructor.
-      yLabelContainer.labelMaxWidth = double.infinity;
+      // todo-00-last-last yLabelContainer.labelMaxWidth = double.infinity;
+      yLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
@@ -583,9 +585,12 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         label: xUserLabels[xIndex],
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
+        options: options, // todo-00-last-last
       );
       // set labelMaxWidth which has been taken out of constructor.
-      xLabelContainer.labelMaxWidth = double.infinity;
+      // todo-00-last-last xLabelContainer.labelMaxWidth = double.infinity;
+      xLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
+
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
 
@@ -776,7 +781,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:
 /// - [ChartRootContainer] - the whole chart
-/// - [LegendContainerNewKeep] - manages the legend
+/// - [LegendContainer] - manages the legend
 /// - [YContainer] - manages the Y labels layout, which defines:
 ///   - Y axis label sizes
 ///   - Y positions of Y axis labels, defined as yTickY.
@@ -1143,7 +1148,7 @@ class GridLinesContainer extends BoxContainer {
 
 
 // todo-01-document
-class LegendItemContainerNewKeep extends BoxContainer {
+class LegendItemContainer extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
 
@@ -1159,9 +1164,9 @@ class LegendItemContainerNewKeep extends BoxContainer {
   // Member we need to hold on between [buildContainerOrSelf]
   //   and [newCoreLayout], where we need to set a constraint related value labelMaxWidth,
   //   which is only available in layout after parent sets this [LegendItemContainer] constraints.
-  late final LabelContainerNewKeep _legendLabel;
+  late final LabelContainer _legendLabel;
 
-  LegendItemContainerNewKeep({
+  LegendItemContainer({
     required String label,
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
@@ -1176,6 +1181,8 @@ class LegendItemContainerNewKeep extends BoxContainer {
         _options = options,
         super(children: children);
 
+  // todo-00-last-last : Moved to child LabelContainer, as that is the manually layed out container!!!
+/*
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
@@ -1192,6 +1199,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
       return;
     }
   }
+*/
 
   BoxContainer buildContainerOrSelfOLD() {
 
@@ -1223,7 +1231,7 @@ class LegendItemContainerNewKeep extends BoxContainer {
     for (BoxContainer child in rowLayouter.children) {
       child.buildContainerOrSelf();
     }
-    LegendItemContainerNewKeep thisLegendItemContainer = this;
+    LegendItemContainer thisLegendItemContainer = this;
 
     return thisLegendItemContainer;
 
@@ -1276,29 +1284,15 @@ class LegendItemContainerNewKeep extends BoxContainer {
 
 
 
-  /// Important: When migrating from old layout to new layout,
-  ///            - The child containers creation code: move from layout() to buildContainerOrSelf().
-  ///            -  if we move to autolayout:
-  ///              - The 'old layouting' code should not be used;
-  ///            - else, keeping the manual layout (see LegendLabelContainerNewLegendSpecificKeep)
-  ///                - the 'old layouting' code should go to newCoreLayout.
-  ///                - some layout values calculated from old layout that used to be passed as members to child containers creation:
-  ///                   - We need to, in the child class:
-  ///                     - make the members 'late' if final
-  ///                     - remove setting those members from child container constructors,
-  ///                     - replace with setters
-  ///                   - Then set those layout values calculated from old layout on member children in 'newCoreLayout' in the new setters
-  ///
-  ///
-  ///            - layout() should not be called on new layout, except on 'fake' root.
   @override
   BoxContainer buildContainerOrSelf() {
 
     // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
-    _legendLabel = LabelContainerNewKeep(
+    _legendLabel = LabelContainer(
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
+      options: _options, // todo-00-last-last
     );
 
     return RowLayouter(
@@ -1317,8 +1311,12 @@ class LegendItemContainerNewKeep extends BoxContainer {
   ///   parent would have pushed constraints. todo-00-last : I think that part is missing sitll
   @override
   void newCoreLayout() {
+// todo-00-last-last : Moved to child LabelContainer, as that is the manually layed out container!!!
+
+/*
     _layoutLogicToSetMemberMaxSizeForTextLayout();
     _legendLabel.labelMaxWidth = _labelMaxWidth;
+*/
 
     super.newCoreLayout();
   }
@@ -1375,7 +1373,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
 /// Lays out the legend area for the chart.
 ///
 /// The legend area contains individual legend items represented
-/// by [LegendItemContainerNewKeep]. Each legend item
+/// by [LegendItemContainer]. Each legend item
 /// has a color square and text, which describes one data row (that is,
 /// one data series).
 ///
@@ -1387,7 +1385,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-class LegendContainerNewKeep extends ChartAreaContainer {
+class LegendContainer extends ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and
@@ -1397,7 +1395,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   /// all available horizontal space, and only use necessary vertical space.
   //  Important: Give 'fake' root of hierarchy it's special constructor which sets parent = null,
   //             as that is not done anywhere - we only set parent on children of something.
-  LegendContainerNewKeep({
+  LegendContainer({
     required ChartRootContainer chartRootContainer,
     List<BoxContainer>? children,
   }) : super(
@@ -1467,7 +1465,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
       List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
-      var legendItemContainer = LegendItemContainerNewKeep(
+      var legendItemContainer = LegendItemContainer(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
         indicatorPaint: indicatorPaint,
@@ -1509,7 +1507,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     for (BoxContainer child in rowLayouter.children) {
       child.buildContainerOrSelf();
     }
-    LegendContainerNewKeep thisLegendContainer = this;
+    LegendContainer thisLegendContainer = this;
 
     return thisLegendContainer;
   }
@@ -1535,7 +1533,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
           // ui.Paint indicatorPaint = ui.Paint();
           // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
           // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
-          LegendItemContainerNewKeep(
+          LegendItemContainer(
             label: dataRowsLegends[index],
             labelStyle: labelStyle,
             indicatorPaint: (ui.Paint()
@@ -1547,7 +1545,7 @@ class LegendContainerNewKeep extends ChartAreaContainer {
     );
   }
 
-  // Important: Because LegendContainerNewKeep is a plugged in 'fake' root, overriding isRoot and returning true.
+  // Important: Because LegendContainer is a plugged in 'fake' root, overriding isRoot and returning true.
   @override
   bool get isRoot => true;
 }

@@ -8,6 +8,7 @@ import 'label_container.dart';
 import 'options.dart';
 
 import 'container_layouter_base.dart' show BoxContainer;
+import 'label_container_old_layout.dart' show LabelContainerOriginalKeep;
 
 class LegendContainerOriginalKeep extends ChartAreaContainer {
   // ### calculated values
@@ -55,7 +56,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
     //   - label painter
     for (int index = 0; index < dataRowsLegends.length; index++) {
       ui.Paint indicatorPaint = ui.Paint();
-      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemBoxConstraints = boxConstraints.cloneWith(
@@ -163,13 +164,12 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     addChildToHierarchyDeprecated(this, indRectContainer);
     indRectContainer.layout(BoxContainerConstraints.unused(), this);
 
-    LabelContainerNewKeep labelContainer = LabelContainerNewKeep(
+    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelMaxWidth: labelMaxWidth,
       labelStyle: _labelStyle,
     );
-    // set labelMaxWidth which has been taken out of constructor.
-    labelContainer.labelMaxWidth = labelMaxWidth;
     addChildToHierarchyDeprecated(this, labelContainer);
     labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
 

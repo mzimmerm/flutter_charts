@@ -39,6 +39,11 @@ class BoxContainerConstraints extends ContainerConstraints {
     -1.0,
     -1.0,
   ));
+  BoxContainerConstraints.infinity()
+      : this.exactBox(size: const Size(
+    double.infinity,
+    double.infinity,
+  ));
 
   Size get size {
     assert(isExact);
