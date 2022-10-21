@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'package:flutter/material.dart';
 import 'package:flutter_charts/flutter_charts.dart';

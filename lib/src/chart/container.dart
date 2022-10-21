@@ -443,11 +443,10 @@ class YContainer extends ChartAreaContainer {
       double yTickY = labelInfo.axisValue.toDouble();
       var yLabelContainer = AxisLabelContainer(
         label: labelInfo.formattedLabel,
-        // todo-00-last-last-last-last-last-last : labelMaxWidth: double.infinity,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
       );
-      // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor.
+      // set labelMaxWidth which has been taken out of constructor.
       yLabelContainer.labelMaxWidth = double.infinity;
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
@@ -582,11 +581,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
       var xLabelContainer = AxisLabelContainer(
         label: xUserLabels[xIndex],
-        // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor. labelMaxWidth: double.infinity,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
       );
-      // todo-00-last-last-last-last-last-last : set labelMaxWidth which has been taken out of constructor.
+      // set labelMaxWidth which has been taken out of constructor.
       xLabelContainer.labelMaxWidth = double.infinity;
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
@@ -1158,7 +1156,9 @@ class LegendItemContainerNewKeep extends BoxContainer {
   final String _label;
   late double _labelMaxWidth;
 
-  // todo-00-last-last-last-last : added as member
+  // Member we need to hold on between [buildContainerOrSelf]
+  //   and [newCoreLayout], where we need to set a constraint related value labelMaxWidth,
+  //   which is only available in layout after parent sets this [LegendItemContainer] constraints.
   late final LabelContainerNewKeep _legendLabel;
 
   LegendItemContainerNewKeep({
@@ -1185,9 +1185,6 @@ class LegendItemContainerNewKeep extends BoxContainer {
     
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    // todo-00-last-last-last-last : important layoutableBoxLayoutSandbox.constraints initialized to negative. NOT set in new layout, in old layout passed down
-    //                                set labelMaxWidth to some large pixel
-    // todo-00-last-last-last-last : removed this override : labelMaxWidth = 200.0;
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       parentOrderedToSkip = true;
@@ -1296,14 +1293,10 @@ class LegendItemContainerNewKeep extends BoxContainer {
   ///            - layout() should not be called on new layout, except on 'fake' root.
   @override
   BoxContainer buildContainerOrSelf() {
-    // todo-00-last-last-last-last This is layout logic, but needed to calculate _labelMaxWidth,
-    //                             which is passed to LegendLabelContainerNewLegendSpecificKeep.
-    // todo-00-last-last-last-last  moved to newCoreLayout : _layoutLogicToSetMemberMaxSizeForTextLayout();
 
-    // Pull out the creation, remember on this object as member, set _labelMaxWidth in newCoreLayout.
+    // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
     _legendLabel = LabelContainerNewKeep(
       label: _label,
-      // todo-00-last-last-last-last : replaced with setter and set in newCoreLayout : labelMaxWidth: _labelMaxWidth,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
@@ -1319,11 +1312,11 @@ class LegendItemContainerNewKeep extends BoxContainer {
     );
   }
 
-// todo-00-last-last-last-last : added newCoreLayout to be able to set the _labelMaxWidth member
+  /// Override sets the _labelMaxWidth member, which needs [constraints]
+  ///   set on this object by parent in layout (before this [newCoreLayout] is called,
+  ///   parent would have pushed constraints. todo-00-last : I think that part is missing sitll
   @override
   void newCoreLayout() {
-    // todo-00-last-last-last-last This is layout logic, but needed to calculate _labelMaxWidth,
-    //                             which is passed to LegendLabelContainerNewLegendSpecificKeep.
     _layoutLogicToSetMemberMaxSizeForTextLayout();
     _legendLabel.labelMaxWidth = _labelMaxWidth;
 
@@ -1426,7 +1419,6 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
-    // todo-00-last-last--last-last-last if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
     if (parentOrderedToSkip) {
       return;
     }
@@ -1559,7 +1551,6 @@ class LegendContainerNewKeep extends ChartAreaContainer {
   @override
   bool get isRoot => true;
 }
-
 
 // todo-01 Try to make members final and private and class immutable
 /// Represents one Y numeric value in the [ChartData.dataRows],
