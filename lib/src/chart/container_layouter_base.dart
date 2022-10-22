@@ -17,19 +17,19 @@ import '../util/collection.dart' as custom_collection show CustomList;
 ///
 /// Important migration notes:
 /// When migrating from old layout to new layout,
-///   - The child containers creation code: move from layout() to buildContainerOrSelf().
-///   -  if we move to autolayout:
+///   - The child containers creation code: move from [layout] to [buildContainerOrSelf].
+///   - if we move the container fully to autolayout:
 ///      - The 'old layouter' code should not be used;
-///   - else, keeping the manual layout (see LabelContainer)
-///       - the 'old layouter' code should go to newCoreLayout.
+///   - else if keeping the manual layout (see LabelContainer)
+///       - the 'old layouter' code should go to [newCoreLayout].
 ///       - some layout values calculated from old layout that used to be passed as members to child containers creation:
 ///          - We need to, in the child class:
 ///            - make the members 'late' if final
 ///            - remove setting those members from child container constructors,
 ///            - replace with setters
-///          - Then set those layout values calculated from old layout on member children in 'newCoreLayout' in the new setters
+///          - Then set those layout values calculated from old layout on member children in [newCoreLayout] in the new setters
 ///
-///   - layout() should not be called on new layout, except on 'fake' root.
+///   - [layout] should not be called on new layout, except on 'fake' root.
 ///
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   /// Default empty generative constructor.
@@ -94,7 +94,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   }
 }
 
-// todo-00-last : How and where should we use this? This should be similar to the other Singleton use
+// todo-01-last : How and where should we use this? This should be similar to the other Singleton use
 class BoxContainerNullParentOfRoot extends BoxContainer {
   final String _nullMessage = 'BoxContainerNullParentOfRoot: Method intentionally not implemented.';
 
@@ -208,16 +208,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   late final ui.Size layoutSize;
 
-  // todo-01-document
-  List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
-  ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
-
+  // orderedSkip ---
   bool _orderedSkip = false; // want to be late final but would have to always init.
+
   /// [orderedSkip] is set by parent; instructs this container that it should not be
   /// painted or layed out - as if it collapsed to zero size.
   ///
   /// When set to true, implementations must add appropriate support for collapse.
   bool get orderedSkip => _orderedSkip;
+
   /// Set private member [_orderedSkip] with assert that caller is parent
   @override
   void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
@@ -225,16 +224,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     _orderedSkip = orderedSkip;
   }
 
+  // constraints ---
   /// Constraints set by parent.
   late final BoxContainerConstraints _constraints;
   BoxContainerConstraints get constraints => _constraints;
+
   @override
   /// Set private member [_constraints] with assert that caller is parent
   void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
     _assertCallerIsParent(caller);
     _constraints = constraints;
   }
-  
+
+  // offset ---
   ui.Offset _offset = ui.Offset.zero;
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
@@ -281,6 +283,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
+  // todo-01-document
+  List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
+  ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
+
+
   void _assertCallerIsParent(BoxLayouter caller) {
     if (parent != null) {
       if (!identical(caller, parent)) {
@@ -314,23 +321,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///           as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
   ///           See around [_layoutLogicToSetMemberMaxSizeForTextLayout]
   ///
-  // todo-00-last : Why do I need greedy children last? So I can give them a Constraint which is a remainder of non-greedy children sizes!!
   @override
   void newCoreLayout() {
-    print('In newCoreLayout: this = $this. this.children = $children.');
-    print('In newCoreLayout: parent of $this = $parent.');
-
-    if (isLeaf) {
-      // todo-00-last : set layout size? Is this needed at all?
-      return;
-    }
+    // print('In newCoreLayout: this = $this. this.children = $children.');
+    // print('In newCoreLayout: parent of $this = $parent.');
 
     if (isRoot) {
-      _rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
+      _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       assert(constraints.size != const Size(-1.0, -1.0));
     }
     // A. node-pre-descend
-    _step301_PreDescend_DistributeMyConstraintToImmediateChildren();
+    _preDescend_DistributeMyConstraintToImmediateChildren();
     // B. node-descend
     for (var child in children) {
       // 1. child-pre-descend (empty)
@@ -340,31 +341,37 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
     // C. node-post-descend
     // todo-00-important layout specific
-    _step302_PostDescend_IfLeafSetMyLayoutSize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize();
+    _postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
   }
 
   // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
 
   // 2.1 Layout methods
-  void _rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
+
+  /// Iterates and looks for greedy children.
+  ///
+  /// On each [BoxLayouter] node, creates a list of greedy children, places it
+  /// on member [_childrenInLayoutOrderGreedyLast].
+  ///
+  /// When called, the [layoutSize]s of the [BoxLayouter] nodes is not known, so must not be accessed.
+  ///
+  /// Layouter needs greedy children last so that, during layout,
+  /// it can give them a Constraint which is a remainder of non-greedy children sizes!
+  void _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast() {
     // sets up childrenGreedyInMainLayoutAxis,  childrenGreedyInCrossLayoutAxis
     // if exactly 1 child greedy in MainLayoutAxis, put it last in childrenInLayoutOrder, otherwise childrenInLayoutOrder=children
     // this.constraints = passedConstraints
     int numGreedyAlongMainLayoutAxis = 0;
     BoxLayouter? greedyChild;
     for (var child in children) {
-      child._rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
-      // _lengthAlongLayoutAxis(LayoutAxis layoutAxis, ui.Size size)
+      child._ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       if (child.isGreedy) {
         numGreedyAlongMainLayoutAxis += 1;
         greedyChild = child;
       }
-      // todo-00-important : KEEP : not used, and not working - because layoutSize is late final, but also other code reasons
+      // todo-01-last : KEEP : not used, and not working - because layoutSize is late final, but also other code reasons
       // _addedSizesOfAllChildren = _addedSizesOfAllChildren +
       //    ui.Offset(child.layoutSize.width, child.layoutSize.height);
-
-      print(
-          'Added size of all children = $_addedSizesOfAllChildren for this=$this on child=$child');
     }
     if (numGreedyAlongMainLayoutAxis >= 2) {
       throw StateError('Max one child can ask for unlimited (greedy) size along main layout axis. Violated in $this');
@@ -377,28 +384,40 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // Layout specific. Only children should be changed by setting constraints,
-  //   created from this BoxLayouter constraints. Default sets same constraints.
-  void _step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
+  /// Default implementation distributes this layouter's constraints onto it's children.
+  ///
+  ///  Only immediate children should be set constraints.
+  ///
+  /// The semantics of 'distribute constraint to children' is layout specific:
+  ///   - This implementation and any common layout: pass it's constraints onto it's children unchanged.
+  ///     As a result, each child will be allowed to get up to it's parent constraints size.
+  ///     If all children were to use the constraint sizes fully, and set their sizes that large,
+  ///     the owner layouter would overflow, but the assumption is children only use a fraction of available constraints.
+  ///   - Specific implementation (e.g. [IndividualChildConstrainingRowLayouter])
+  ///     may 'divide' it's constraints evenly or unevenly to children, passing each
+  ///     a fraction of it's constraint.
+  ///
+  void _preDescend_DistributeMyConstraintToImmediateChildren() {
     for (var child in _childrenInLayoutOrderGreedyLast) {
-      // todo-00-important - how does this differ for Column, Row, etc?
       child.applyParentConstraints(this, constraints);
     }
   }
 
   // Layout specific. Offsets children hierarchically (layout children), which positions them in this [BoxLayouter].
   // Then, sets this object's size as the envelope of all layed out children.
-  void _step302_PostDescend_IfLeafSetMyLayoutSize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize() {
+  void _postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints() {
     if (isLeaf) {
-      _step302_IfLeaf_SetMyLayoutSize_FromInternals_ToFit_WithinConstraints();
+      ifLeaf_SetMyLayoutSize_FromInternals();
     } else {
-      _step302_IfNotLeaf_OffsetChildren_Then_SetMyLayoutSize_Then_Check_IfMySizeFit_WithinConstraints();
+      ifNotLeaf_OffsetChildren_Then_SetSizeFromChildren();
     }
+    _check_IfMySizeFit_WithinConstraints();
   }
 
-  // Layouter specific!
-  // Exception or visual indication if "my size" is NOT "within my constraints"
-  void _step302_IfNotLeaf_OffsetChildren_Then_SetMyLayoutSize_Then_Check_IfMySizeFit_WithinConstraints() {
+  /// Performs layouter specific processing of non-leaf nodes.
+  ///
+  /// Final side effect result must always be to set [layoutSize] on this node.
+  void ifNotLeaf_OffsetChildren_Then_SetSizeFromChildren() {
     if (hasGreedyChild) {
       List<BoxLayouter> notGreedyChildren = _childrenInLayoutOrderGreedyLast.toList();
       notGreedyChildren.removeLast();
@@ -423,26 +442,22 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     } else {
       // Layouter specific, calculate children offsets within self.
       _offsetChildrenAccordingToLayouter(children);
-      // Now when we placed all children at the right offsets within self,
-      // set the layoutSize on self, as envelope of all children offsets and sizes
-      _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren();
-
-      _check_IfMySizeFit_WithinConstraints();
     }
+    // Now when we placed all children at the right offsets within self,
+    // set the layoutSize on self, as envelope of all children offsets and sizes
+    _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren();
   }
 
   // todo-00-last-important : make abstract and move to Layouters?? What should this do anyway?
-  void _step302_IfLeaf_SetMyLayoutSize_FromInternals_ToFit_WithinConstraints() {}
+  void ifLeaf_SetMyLayoutSize_FromInternals() {}
+
+  // todo-00-last : implement
+  void _check_IfMySizeFit_WithinConstraints() {}
 
   void _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren() {
     ui.Rect childrenOuterRectangle = util_flutter
         .outerRectangle(children.map((BoxContainer child) => child._boundingRectangle()).toList(growable: false));
     layoutSize = childrenOuterRectangle.size;
-  }
-
-  // todo-00-last-important : implement. What to do if it does not fit?
-  void _check_IfMySizeFit_WithinConstraints() {
-
   }
 
   // 2.2
@@ -457,7 +472,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
   ///   when this is called in [newCoreLayout].
   /// todo-00-last : The greedy methods should check if called BEFORE
-  ///           [_step302_PostDescend_IfLeafSetMyLayoutSize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
+  ///           [_postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints].
   ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy {
     return false;
@@ -494,10 +509,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // Create a LengthsLayouter along each axis (main, cross), convert it to LayoutSegments,
     // then package into a wrapper class.
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
-    print(
-        'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
-    print(
-        'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
+    // print(
+    //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
+    // print(
+    //     'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
 
     // Convert the line segments to Offsets (in each axis), which are position where notGreedyChildren
     // will be layed out.
@@ -639,7 +654,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // 3. Fields managed by Sandboxes and methods delegated to Sandboxes -------------------------------------------------
 
-/*
+/* todo-00-last-last remove comment
   set orderedSkip(bool skip) {
     if (skip && !allowParentToSkipOnDistressedSize) {
       throw StateError('Parent did not allow to skip');

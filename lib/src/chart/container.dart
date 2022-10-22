@@ -1224,13 +1224,15 @@ class LegendItemContainer extends BoxContainer {
     );
   }
 
+/* todo-00-last-last removed
   /// Override sets the _labelMaxWidth member, which needs [constraints]
   ///   set on this object by parent in layout (before this [newCoreLayout] is called,
-  ///   parent would have pushed constraints. todo-00-last : I think that part is missing sitll
+  ///   parent would have apply constraints on children.
   @override
   void newCoreLayout() {
     super.newCoreLayout();
   }
+*/
 }
 
 /// Represents the series color indicator square in the legend.

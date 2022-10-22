@@ -199,8 +199,12 @@ class LabelContainer extends BoxContainer {
   /// Second, it calls [_textPainter.layout] in [_layoutLogicToSetMemberMaxSizeForTextLayout],
   ///   which obtains the size of [_textPainter]. The resulting [layoutSize] of this [LabelContainer]
   ///   is set from the bounding rectangle of potentially rotated [_textPainter].
+  ///   
+  /// Note: On this leaf, instead of overriding this internal, we could override [newCoreLayout] 
+  ///        witch exactly same code, and things would work, except missing check if 
+  ///        layout size is within constraints.
   @override
-  void newCoreLayout() {
+  ifLeaf_SetMyLayoutSize_FromInternals() {
     _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
