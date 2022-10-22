@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
+import 'package:flutter/widgets.dart' as widgets show TextSpan, TextPainter;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
+import 'dart:ui' as ui show Canvas, Offset;
 
 import 'container_layouter_base.dart' show BoxContainer;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;

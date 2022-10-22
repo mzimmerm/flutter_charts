@@ -17,7 +17,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, RowLayouter, ChildrenNotSetSingleton;
+import 'container_layouter_base.dart' show BoxContainer, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -445,10 +445,9 @@ class YContainer extends ChartAreaContainer {
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
-        options: options, // todo-00-last-last
+        options: options,
       );
-      // set labelMaxWidth which has been taken out of constructor.
-      // todo-00-last-last yLabelContainer.labelMaxWidth = double.infinity;
+      // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
       yLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
@@ -585,10 +584,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         label: xUserLabels[xIndex],
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
-        options: options, // todo-00-last-last
+        options: options,
       );
-      // set labelMaxWidth which has been taken out of constructor.
-      // todo-00-last-last xLabelContainer.labelMaxWidth = double.infinity;
+      // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
       xLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
 
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
@@ -1159,12 +1157,6 @@ class LegendItemContainer extends BoxContainer {
 
   final LabelStyle _labelStyle;
   final String _label;
-  late double _labelMaxWidth;
-
-  // Member we need to hold on between [buildContainerOrSelf]
-  //   and [newCoreLayout], where we need to set a constraint related value labelMaxWidth,
-  //   which is only available in layout after parent sets this [LegendItemContainer] constraints.
-  late final LabelContainer _legendLabel;
 
   LegendItemContainer({
     required String label,
@@ -1180,26 +1172,6 @@ class LegendItemContainer extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super(children: children);
-
-  // todo-00-last-last : Moved to child LabelContainer, as that is the manually layed out container!!!
-/*
-  void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
-    double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
-    double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
-
-    BoxContainerConstraints boxConstraints = layoutableBoxLayoutSandbox.constraints;
-    
-    double labelMaxWidth =
-        boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    _labelMaxWidth = labelMaxWidth;
-    if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      parentOrderedToSkip = true;
-      layoutSize = ui.Size.zero;
-      return;
-    }
-  }
-*/
 
   BoxContainer buildContainerOrSelfOLD() {
 
@@ -1283,25 +1255,21 @@ class LegendItemContainer extends BoxContainer {
   }
 
 
-
   @override
   BoxContainer buildContainerOrSelf() {
-
     // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
-    _legendLabel = LabelContainer(
-      label: _label,
-      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-      labelStyle: _labelStyle,
-      options: _options, // todo-00-last-last
-    );
-
     return RowLayouter(
       children: [
         LegendIndicatorRectContainer(
           indicatorPaint: _indicatorPaint,
           options: _options,
         ),
-        _legendLabel,
+        LabelContainer(
+          label: _label,
+          labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+          labelStyle: _labelStyle,
+          options: _options,
+        ),
       ],
     );
   }
@@ -1311,13 +1279,6 @@ class LegendItemContainer extends BoxContainer {
   ///   parent would have pushed constraints. todo-00-last : I think that part is missing sitll
   @override
   void newCoreLayout() {
-// todo-00-last-last : Moved to child LabelContainer, as that is the manually layed out container!!!
-
-/*
-    _layoutLogicToSetMemberMaxSizeForTextLayout();
-    _legendLabel.labelMaxWidth = _labelMaxWidth;
-*/
-
     super.newCoreLayout();
   }
 }

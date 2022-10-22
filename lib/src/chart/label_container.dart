@@ -63,7 +63,7 @@ class LabelContainer extends BoxContainer {
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
 
-  final ChartOptions _options; // todo-00-last-last added
+  final ChartOptions _options;
 
   /// Position where paint starts painting the label, expressed
   /// in the coordinate system in which this [_tiltedLabelEnvelope.envelopeRect] topLeft 
@@ -92,9 +92,9 @@ class LabelContainer extends BoxContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    required ChartOptions options, // todo-00-last-last added
+    required ChartOptions options,
   })  :
-      _options = options, // todo-00-last-last added
+      _options = options,
         _labelTiltMatrix = labelTiltMatrix,
   // _labelStyle = labelStyle,
         _textPainter = widgets.TextPainter(
@@ -190,13 +190,18 @@ class LabelContainer extends BoxContainer {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  // When using label on legend, make changes similar to the other leaf legend container: LegendIndicatorRectContainer
+  /// This override is essentially semi-manual layout for it's class [LabelContainer],
+  ///   which allows to calculate several layout related values.
+  ///
+  /// First, it calculates and sets the [_labelMaxWidth] member,
+  ///   in [_layoutLogicToSetMemberMaxSizeForTextLayout]. See [_layoutLogicToSetMemberMaxSizeForTextLayout] for details.
+  ///
+  /// Second, it calls [_textPainter.layout] in [_layoutLogicToSetMemberMaxSizeForTextLayout],
+  ///   which obtains the size of [_textPainter]. The resulting [layoutSize] of this [LabelContainer]
+  ///   is set from the bounding rectangle of potentially rotated [_textPainter].
   @override
   void newCoreLayout() {
-    // todo-00-last-last : Moved to here to LabelContainer, from parent LegendItemContainer, as this is the manually layed out container!!!
     _layoutLogicToSetMemberMaxSizeForTextLayout();
-    // todo-00-last-last : already inited above : labelMaxWidth = _labelMaxWidth;
-
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
@@ -204,7 +209,11 @@ class LabelContainer extends BoxContainer {
     layoutSize = sizeAndOverflow.item1;
   }
 
-  // todo-00-last-last : Moved to here to LabelContainer, from parent LegendItemContainer, as this is the manually layed out container!!!
+  ///  Calculated and sets [_labelMaxWidth] used to layout [_textPainter.layout].
+  ///
+  ///   [layoutableBoxLayoutSandbox.constraints] is needed to have been
+  ///   set on this object by parent in layout (before this [newCoreLayout] is called,
+  ///   parent would have pushed constraints. todo-00-last : I think that part is missing
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
@@ -214,9 +223,6 @@ class LabelContainer extends BoxContainer {
 
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    // todo-00-last-last : This infinity bypass is a terrible hack to recognize AxisLabels,
-    //                      to not set the wrong value from layoutableBoxLayoutSandbox.constraints,
-    //                      which are not using the new layout yet, so not set.
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       parentOrderedToSkip = true;
@@ -346,11 +352,11 @@ class AxisLabelContainer extends LabelContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    required ChartOptions options, // todo-00-last-last added
+    required ChartOptions options,
   }) : super(
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
-           options: options, // todo-00-last-last added
+           options: options,
         );
 }

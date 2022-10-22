@@ -33,12 +33,13 @@ import '../util/collection.dart' as custom_collection show CustomList;
 ///
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   /// Default empty generative constructor.
+  // todo-00-last-last-last : add options as member and constructor parameter
   BoxContainer({
     List<BoxContainer>? children,
   }) {
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
-      this.children = children!;
+      this.children = children;
     }
     // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
     if (children == null) {
@@ -56,7 +57,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   }
 
   void makeMeParentOfMyChildren() {
-    for (var child in children!) {
+    for (var child in children) {
       child.parent = this;
     }
   }
