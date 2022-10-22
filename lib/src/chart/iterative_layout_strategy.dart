@@ -1,10 +1,12 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
+import 'dart:ui' as ui show Size;
 
 import 'container.dart' show AdjustableLabelsChartAreaContainer;
 import 'container_layouter_base.dart' show BoxContainer;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart';
+
 
 enum LabelFitMethod {
   rotateLabels,

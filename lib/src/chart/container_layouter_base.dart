@@ -33,7 +33,7 @@ import '../util/collection.dart' as custom_collection show CustomList;
 ///
 abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
   /// Default empty generative constructor.
-  // todo-00-last-last : add options as member and constructor parameter
+  // todo-01-last : Make ChartOptions a Singleton, so we do not have to add it here as member and constructor parameter
   BoxContainer({
     List<BoxContainer>? children,
   }) {
@@ -184,8 +184,6 @@ abstract class LayoutableBox {
   void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip);
   void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints);
 
-  // todo-00-last-last _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
-
   void newCoreLayout();
 }
 
@@ -207,10 +205,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// 
   /// Extensions of [BoxLayouter] should implement the setter only if 
   @override
-  ui.Size layoutSize = ui.Size.zero;
-
-  //  We should divide to getter/setter, and in setter, add 'invokingObject', here check if invokingObject = parent.
-  // todo-00-last-last BoxContainerConstraints constraints = BoxContainerConstraints.unused();
+  // todo-00-last-last : ui.Size layoutSize = ui.Size.zero;
+  late final ui.Size layoutSize;
 
   // todo-01-document
   List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
@@ -227,6 +223,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
     _assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
+    // Also, set layoutSize to 0, as no layout will run, so there is nothing to initialize it
+    // layoutSize = const Size(0.0, 0.0); // todo-00-last-last added then removed
   }
 
   /// Constraints set by parent.
@@ -293,12 +291,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-/* todo-00-last-last
-  /// Member used during the [layout] processing.
-  @override
-  _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
-*/
-
   /// Old layout forwards to [newCoreLayout].
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     if (this is LegendItemContainer ||
@@ -331,6 +323,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     print('In newCoreLayout: parent of $this = $parent.');
 
     if (isLeaf) {
+      // todo-00-last-last: set layout size
       return;
     }
 
@@ -368,9 +361,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         numGreedyAlongMainLayoutAxis += 1;
         greedyChild = child;
       }
-      // todo-00-important : not used, and not working
-      _addedSizesOfAllChildren = _addedSizesOfAllChildren +
-          ui.Offset(child.layoutSize.width, child.layoutSize.height);
+      // todo-00-important : KEEP : not used, and not working - because layoutSize is late final, but also other code reasons
+      // _addedSizesOfAllChildren = _addedSizesOfAllChildren +
+      //    ui.Offset(child.layoutSize.width, child.layoutSize.height);
 
       print(
           'Added size of all children = $_addedSizesOfAllChildren for this=$this on child=$child');
@@ -391,7 +384,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void _step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
     for (var child in _childrenInLayoutOrderGreedyLast) {
       // todo-00-important - how does this differ for Column, Row, etc?
-      // todo-00-last-last child.constraints = constraints;
       child.applyParentConstraints(this, constraints);
     }
   }
@@ -421,10 +413,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       Size layoutSizeLeftForGreedyChild =
           constraints.sizeLeftAfter(notGreedyChildrenSizeAccordingToLayouter, mainLayoutAxis);
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
-/* todo-00-last-last
-      firstGreedyChild.constraints =
-          BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
-*/
       firstGreedyChild.applyParentConstraints(
         this,
         BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild),
@@ -471,9 +459,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///           [_step302_PostDescend_IfLeafSetMyLayoutSize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
   ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy {
-    // if (mainLayoutAxis == LayoutAxis.defaultHorizontal) return false;
-
-    return _lengthAlong(mainLayoutAxis, layoutSize) == double.infinity;
+    // todo-00-last-last return _lengthAlong(mainLayoutAxis, layoutSize) == double.infinity;
+    // todo-01-last : If we want a greedy child, override this do NOT set to double.infinity;
+    //                we need to reserve the setter for first use after actual layout of the greedy child.
+    return false;
   }
 
   bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
@@ -718,48 +707,6 @@ class _MainAndCrossLayedOutSegments {
 
   LayedOutLineSegments mainAxisLayedOutSegments;
   LayedOutLineSegments crossAxisLayedOutSegments;
-}
-
-// todo-01-document
-
-/// Sandbox mutable object intended as member on [LayoutableBox], for any parent in the [BoxContainerHierarchy] to
-/// maintain per-child state, but also per-parent state on its children.
-///
-/// Implementations [BoxLayouter] and [BoxContainer] can use this through their [LayoutableBox] mixin.
-///
-/// This object instance should be a member publicly available in [LayoutableBox],
-/// for the purpose of making the rest of members of [BoxLayouter] and [BoxContainer] private, or getters.
-
-class _BoxLayouterParentSandbox {
-  /// Current absolute offset, set by parent (and it's parent etc, to root).
-  ///
-  /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top BoxContainer, passed to all children in the
-  /// [paint] method.
-  ///
-  /// It is a sum of all offsets passed in subsequent calls
-  /// to [applyParentOffset] during object lifetime.
-  // ui.Offset _offset = ui.Offset.zero;
-
-  /// Allow a parent [BoxContainer] to move this BoxContainer
-  /// after [layout].
-  ///
-  /// Override if parent move needs to propagate to internals of
-  /// this [BoxContainer].
-/*
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
-    _offset += offset;
-  }
-*/
-
-//  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
-
-  /// [orderedSkip] instructs the parent [BoxContainer] that this [BoxContainer] should not be
-  /// painted or layed out - as if it collapsed to zero size.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  // bool orderedSkip = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

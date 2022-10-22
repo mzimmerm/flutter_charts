@@ -1547,14 +1547,59 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
   }
 #+end_src
 
-** IN-PROGRESS-NOW 5.1 Refactor using of parent sandbox on BoxLayouter
+#+name: BoxLayouterParentSandbox
+#+begin_src dart
+/// Sandbox mutable object intended as member on [LayoutableBox], for any parent in the [BoxContainerHierarchy] to
+/// maintain per-child state, but also per-parent state on its children.
+///
+/// Implementations [BoxLayouter] and [BoxContainer] can use this through their [LayoutableBox] mixin.
+///
+/// This object instance should be a member publicly available in [LayoutableBox],
+/// for the purpose of making the rest of members of [BoxLayouter] and [BoxContainer] private, or getters.
 
-*** Members which should always be set by parent, use name 'applyParent', and add explicit caller test
+class _BoxLayouterParentSandbox {
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top BoxContainer, passed to all children in the
+  /// [paint] method.
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
+  /// to [applyParentOffset] during object lifetime.
+  // ui.Offset _offset = ui.Offset.zero;
 
-  First removed parent sandbox
-  
-- [ ] childrenInLayoutOrderGreedyLast is used purely in layout. Move as private in BoxLayouter
-- [ ] same for addedSizeOfAllChildren
+  /// Allow a parent [BoxContainer] to move this BoxContainer
+  /// after [layout].
+  ///
+  /// Override if parent move needs to propagate to internals of
+  /// this [BoxContainer].
+/*
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+    _offset += offset;
+  }
+*/
+
+//  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
+
+  /// [orderedSkip] instructs the parent [BoxContainer] that this [BoxContainer] should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  // bool orderedSkip = false;
+}
+
+#+end_src
+** DONE 5.1 Members which should always be set by parent, use name 'applyParent', and add explicit caller test
+
+- [X] First remove parent sandbox
+
+Nutshell what we need:
+
+*Add checks for parent on applyParentOffset. Same thing should be on constraints (apply+getter), orderedSkip(apply + getter),  layoutSize (getter only, set once thru late final).*
+
+- [X] childrenInLayoutOrderGreedyLast is used purely in layout. Move as private in BoxLayouter
+- [X] same for addedSizeOfAllChildren
 
 On BoxLayouter:
 
@@ -1569,12 +1614,8 @@ What are those?
 - [X] offset - does not even need a getter ??? . 
 - [X] orderedSkip - rename orderedSkip
 - [X] constraints
-- [ ] layoutSize - this does NOT need apply - just late final layoutSize - should be set only once, and then get only.
+- [X] layoutSize - this does NOT need apply - just late final layoutSize - should be set only once, and then get only.
 
-Nutshell what we need:
-
-Added checks for parent on applyParentOffset. Same thing should be on 
-constraints (apply+getter), orderedSkip(apply + getter),  layoutSize (getter only, set once thru late final).
 
 *** NO : Can we make layoutSize result of layout and not store on newCoreLayout?
 
@@ -1583,7 +1624,10 @@ constraints (apply+getter), orderedSkip(apply + getter),  layoutSize (getter onl
   
 
   
- 
+
+** IN-PROGRESS-NOW 5.2 Resolve todo-00-last
+
+Start with 
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.

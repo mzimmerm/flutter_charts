@@ -172,7 +172,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   4) call [layout] -  done here after constraints
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
     // Before layout, must set constraints
-    // todo-00-last-last legendContainer.constraints = legendBoxConstraints;
     legendContainer.applyParentConstraints(this, legendBoxConstraints);
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
@@ -214,6 +213,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     );
 
     xContainer.layout(xContainerBoxConstraints, xContainer);
+
+    // todo-00-last-last : When we got here, layout is done, so set the late final layoutSize
+    xContainer.layoutSize = xContainer.lateReLayoutSize;
 
     ui.Size xContainerSize = xContainer.layoutSize;
     ui.Offset xContainerOffset = ui.Offset(yContainerSize.width, chartArea.height - xContainerSize.height);
@@ -319,6 +321,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
+  /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
+  ///  layout and painting of the DataContainer in ChartContainer.
+  ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get xTickXs =>
       xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
@@ -396,6 +401,9 @@ class YContainer extends ChartAreaContainer {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
       chartRootContainer.yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
+      // todo-00-last-last : added
+      // Must set layoutSize before returning from layout
+      layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
 
@@ -451,7 +459,6 @@ class YContainer extends ChartAreaContainer {
         parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      // todo-00-last-last yLabelContainer.constraints = BoxContainerConstraints.infinity();
       yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
@@ -538,6 +545,13 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// Size allocated for each shown label (>= [_xGridStep]
   double _shownLabelsStepWidth = 0.0;
 
+  // todo-00-last-last
+  /// Member to manage temporary layout size during relayout.
+  ///
+  /// Because [layoutSize] is late final, we cannot keep setting it during relayout.
+  /// Instead, we set this member, and when relayouting is done, we use it to late-set [layoutSize] once.
+  ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
+
   /// Constructs the container that holds X labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
@@ -594,7 +608,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      // todo-00-last-last xLabelContainer.constraints = BoxContainerConstraints.infinity();
+      // Set constraints before layout.
       xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       // We only know if parent ordered skip after layout (because some size is too large)
@@ -623,19 +637,24 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       _xLabelContainers.add(xLabelContainer);
     }
 
-    // Set the layout size calculated by this layout
-    layoutSize = ui.Size(
+    // Set the layout size calculated by this layout. This may be called multiple times during relayout.
+    lateReLayoutSize = ui.Size(
       boxConstraints.size.width,
       xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
     );
 
     if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
-      // Before re-layout, return and make the layout height (vertical-Y size) 0.
-      // We cannot skip the code above entirely, as the xTickX are calculated from labesl, and used late in the
+      // If not shown, there is no relayout.
+      // todo-00-last-last : this comment is wrong
+      // Return and make the layout height (vertical-Y size) 0.
+      // We cannot skip the code above entirely, as the xTickX are calculated from labels, and used late in the
       // layout and painting of the DataContainer in ChartContainer - see xTickXs
-      layoutSize = ui.Size(layoutSize.width, 0.0);
+      // todo-00-last-last : removed, probably breaking re-layout : layoutSize = ui.Size(layoutSize.width, 0.0);
+      lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
     }
+
+    // todo-00-last-last layoutSize = lateReLayoutSize;
 
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
@@ -1308,7 +1327,6 @@ class LegendContainer extends ChartAreaContainer {
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
-      // todo-00-last-last : changed orderedSkip = true;
       applyParentOrderedSkip(chartRootContainer, true);
     }
   }
@@ -1320,6 +1338,7 @@ class LegendContainer extends ChartAreaContainer {
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
     if (orderedSkip) {
+      layoutSize = const ui.Size(0.0, 0.0); // todo-00-last-last
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
