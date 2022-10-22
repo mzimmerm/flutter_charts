@@ -1198,7 +1198,7 @@ See also: ~childSize = layoutChild(child, childConstraints);~
 #+end_src
 
 
-*** DONE ~USING: Layouter algorith #2~
+*** DONE-THIS-ITERATION ~USING: Layouter algorith #2~
 
 Core ideas
 
@@ -1299,9 +1299,7 @@ Only needed later
 
 
 
-** IN-PROGRESS 4. 2022-10-10 Review
-
-*** Classes
+** DONE 4. 2022-10-10 Classes Review
 
 *Legend classes for new layout*
 
@@ -1328,9 +1326,9 @@ Created in the above LegendItemContainer.build
   - implementations:
     - mixin ~BoxLayouter~ on ~BoxContainerHierarchy~ implements ~LayoutableBox~
     - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
+      
 
-
-*** Sequence of calls to start layout
+** IN-PROGRESS Sequence of calls of old and new layout
 
 - ~FlutterChartPainter.paint~ calls
 - ~ChartRootContainer.paint~ calls
@@ -1338,21 +1336,16 @@ Created in the above LegendItemContainer.build
 - The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
   - After each container is created, it's ~layout~ is immediately called.
 
-    
-IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
+IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
 
-- [ ] Study LegendItemContainer Originalkeep and NewKeep
-- [ ] last, there was an intent to experiment with some LegendItemContainer changes. Study differences between New and Original.
-
-
-*** Questions to investigate
+** IN-PROGRESS Questions to investigate
  
-- [ ] On which interface is layout()?
+- [ ] On which interface is layout()? -
 - [ ] On which interface is newCoreLayout()?
 - [ ] why do we have layout() and newCoreLayout()? - We want to use them simultaneously for some time
-- [ ] BoxLayouter vs LayoutableBox:
+- [X] BoxLayouter vs LayoutableBox:
   - ~LayoutableBox~:
-    - abstract class which interface is implemented by *both* ~BoxLayouter~ and ~BoxContainer~
+    - abstract class with empty implementations of all methods. It's interface is implemented(so overriden) by *both* ~BoxLayouter~ and ~BoxContainer~
     #+begin_src dart
       abstract class LayoutableBox {
         ui.Size layoutSize = ui.Size.zero;
@@ -1360,43 +1353,217 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
         _BoxLayouterLayoutSandbox layoutableBoxLayoutSandbox = _BoxLayouterLayoutSandbox();
         void newCoreLayout(BoxContainer parentBoxContainer);
     #+end_src 
-    - [X] NOT a problem: ~ui.Size layoutSize~ is defined in both ~LayoutableBox~ and ~BoxLayouter~: NOT A PROBLEM, AS  ~BoxLayouter~ IMPLEMENTS  ~LayoutableBox~. IMPLEMENTS in Dart requires to re-implement all methods of the implemented class!!!
-- [ ] 
-- [ ] 
-- [ ] 
-
-
 - [ ] Study alignment and packing
 
 
 
-** IN-PROGRESS 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (*which??*) use original code.
+** DONE 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (ChartRootContainer, X/YContainer, DataContainer) use original code.
 
-*** IN-PROGRESS ~Use the new Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer~
+*** DONE Use the new Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer
 
-**** TODO Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
+**** DONE Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
 
-**** IN-PROGRESS-NOW Continue new Layout on LEGEND
+**** DONE Continue new Layout on LEGEND
 
-- [ ] *in build, try to nest like in Flutter*
-  - [ ] *FOR THAT, WE NEED TO*
-    - [ ] ENFORCE ALL BoxContainer CONSTRUCTORS TO ACCEPT REQUIRED 'CHILDREN'*
-    - [ ] Give BoxContainer a factory constructor, and move code from buildContainerOrSelf to the factory constructor
-      - [ ] To do this:
-        - [ ] remove argument parentBoxContainer from ~buildContainerOrSelf(BoxContainer parentBoxContainer)~. It can be accessed via parent anyway!
-        - [ ] Rename  ~buildContainerOrSelf()~ to factory ~buildContainerOrSelf()~
-- [ ] 
-- [ ]
+- [X] *in build, try to nest like in Flutter*
+  - [X] *FOR THAT, WE NEED TO*
+    - [X] *ENFORCE ALL BoxContainer CONSTRUCTORS TO ACCEPT REQUIRED 'CHILDREN', but if not set, call buildContainerOrSelf in constructor, and attach as children*
+ 
 
+*** DONE Copied snippets of original buildContainerOrSelf, which have value to see how original layout code was migrated, for migration of other Container classes like XContainer
 
-  Map map = Map() ..
-['a'] = 'a'..
-['b'] = 2..
-['c'] = true;
+#+name: LegendItemContainer
+#+begin_src dart
+  BoxContainer buildContainerOrSelfOLD() {
+
+    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    List<BoxContainer> children = [];
+
+    // Create member containers, add as children, and lay them out
+    LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
+      indicatorPaint: _indicatorPaint,
+      options: _options,
+    );
+    children.add(indRectContainer);
+
+    /*
+    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
+      label: _label,
+      labelMaxWidth: _labelMaxWidth,
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelStyle: _labelStyle,
+    );
+    children.add(labelContainer);
+    */
+
+    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
+    RowLayouter rowLayouter = RowLayouter(children: children);
+
+    addChildToHierarchyDeprecated(this, rowLayouter);
+
+    for (BoxContainer child in rowLayouter.children) {
+      child.buildContainerOrSelf();
+    }
+    LegendItemContainer thisLegendItemContainer = this;
+
+    return thisLegendItemContainer;
+
+    /* todo-done-00 : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
+    // Layout legend item elements (indicator, pad, label) flowing from left:
+
+    // 2. Y Center the indicator and label on same horizontal Y level
+    //   ind stands for "indicator" - the series color indicator square
+    double indAndLabelCenterY = math.max(
+      labelContainer.layoutSize.height,
+      indRectContainer.layoutSize.height,
+    ) /
+        2.0;
+    double indOffsetY = indAndLabelCenterY - indRectContainer.layoutSize.height / 2.0;
+    double labelOffsetY = indAndLabelCenterY - labelContainer.layoutSize.height / 2.0;
+
+    // 3. Calc the X offset to both indicator and label, so indicator is left,
+    //    then padding, then the label
+    double indOffsetX = 0.0; // indicator starts on the left
+    double labelOffsetX = indOffsetX + indRectContainer.layoutSize.width + indicatorToLabelPad;
+
+    // 4. Position the child rectangle and label within this container
+    indRectContainer.applyParentOffset(ui.Offset(
+      indOffsetX,
+      indOffsetY,
+    ));
+
+    labelContainer.applyParentOffset(ui.Offset(
+      labelOffsetX,
+      labelOffsetY,
+    ));
+
+    // 6. And store the layout size on member of self
+    layoutSize = ui.Size(
+      indRectContainer.layoutSize.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
+      math.max(
+        labelContainer.layoutSize.height,
+        indRectContainer.layoutSize.height,
+      ),
+    );
+
+    // Make sure we fit all available width
+    assert(boxConstraints.size.width + 1.0 >= layoutSize.width); // todo-2 within epsilon
+    */
+  }
+#+end_src
+
+#+name: LegendContainer
+#+begin_src dart
+  BoxContainer buildContainerOrSelfOLD() {
+
+    ChartOptions options = chartRootContainer.data.chartOptions;
+    double containerMarginTB = options.legendOptions.legendContainerMarginTB;
+    double containerMarginLR = options.legendOptions.legendContainerMarginLR;
+
+    List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+    // First paint all legends, to figure out max height of legends to center all
+    // legends label around common center.
+
+    /* done-new-layout-commented : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
+
+    // Create variable boxConstraints to replace the one originally passed in
+    BoxContainerConstraints boxConstraints = layoutableBoxParentSandbox.constraints!;
+    double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
+    */
+
+    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    List<BoxContainer> children = [];
+
+    // Layout legend core: for each row, create and position
+    //   - an indicator rectangle and it's paint
+    //   - label painter
+    for (int index = 0; index < dataRowsLegends.length; index++) {
+      ui.Paint indicatorPaint = ui.Paint();
+      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+      indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
+
+      var legendItemContainer = LegendItemContainer(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+      );
+
+      /* done-new-layout-commented : Nothing layout specific, we do autolayout.
+        Instead, do this:
+          - create children array and add all created child containers to it
+          - crate and return new RowLayouter with all the children in it
+          - return the new RowLayouter
+      var legendItemContainer = LegendItemContainerOriginalKeep(
+        label: dataRowsLegends[index],
+        labelStyle: labelStyle,
+        indicatorPaint: indicatorPaint,
+        options: options,
+      );
+
+      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
+
+      legendItemContainer.applyParentOffset(
+        ui.Offset(
+          containerMarginLR + index * legendItemWidth,
+          containerMarginTB,
+        ),
+      );
+      addChild(legendItemContainer);
+      */
+      children.add(legendItemContainer);
+    }
+
+    // done-new-layout-added but this is NOT used like this anymore
+
+    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
+    RowLayouter rowLayouter = RowLayouter(children: children);
+
+    addChildToHierarchyDeprecated(this, rowLayouter);
+
+    for (BoxContainer child in rowLayouter.children) {
+      child.buildContainerOrSelf();
+    }
+    LegendContainer thisLegendContainer = this;
+
+    return thisLegendContainer;
+  }
+#+end_src
+
+** IN-PROGRESS-NOW 5.1 Refactor using of parent sandbox
+
+We get rid of the parent sandbox
+
+On BoxContainer:
+
+- all values that must be set by parent, should have
+  - 'apply' methods on BoxContainer, which act as setters (e.g. applyParentOffset) and pass 2 values:
+    - (Object caller, value)
+    - these will generally check that parent == caller
+  - private late final (for now) elements (e.g. _offset)
+  - getter which returns the private (e.g. _offset)
+
+What are those?
+- offset
+- 
   
-*** NOTE Old Layout on REST of Containers - for now
-
-
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.

@@ -211,7 +211,7 @@ class LabelContainer extends BoxContainer {
 
   ///  Calculated and sets [_labelMaxWidth] used to layout [_textPainter.layout].
   ///
-  ///   [layoutableBoxLayoutSandbox.constraints] is needed to have been
+  ///   [layoutableBoxParentSandbox.constraints] is needed to have been
   ///   set on this object by parent in layout (before this [newCoreLayout] is called,
   ///   parent would have pushed constraints. todo-00-last : I think that part is missing
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
@@ -219,7 +219,7 @@ class LabelContainer extends BoxContainer {
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
 
-    BoxContainerConstraints boxConstraints = layoutableBoxLayoutSandbox.constraints;
+    BoxContainerConstraints boxConstraints = layoutableBoxParentSandbox.constraints;
 
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);

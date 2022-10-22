@@ -172,7 +172,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   4) call [layout] -  done here after constraints
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
     // Before layout, must set constraints
-    legendContainer.layoutableBoxLayoutSandbox.constraints = legendBoxConstraints;
+    legendContainer.layoutableBoxParentSandbox.constraints = legendBoxConstraints;
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
 
@@ -448,7 +448,7 @@ class YContainer extends ChartAreaContainer {
         options: options,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      yLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
+      yLabelContainer.layoutableBoxParentSandbox.constraints = BoxContainerConstraints.infinity();
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
@@ -587,7 +587,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         options: options,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      xLabelContainer.layoutableBoxLayoutSandbox.constraints = BoxContainerConstraints.infinity();
+      xLabelContainer.layoutableBoxParentSandbox.constraints = BoxContainerConstraints.infinity();
 
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
@@ -1172,89 +1172,6 @@ class LegendItemContainer extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super(children: children);
-
-  BoxContainer buildContainerOrSelfOLD() {
-
-    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
-    List<BoxContainer> children = [];
-
-    // Create member containers, add as children, and lay them out
-    LegendIndicatorRectContainer indRectContainer = LegendIndicatorRectContainer(
-      indicatorPaint: _indicatorPaint,
-      options: _options,
-    );
-    children.add(indRectContainer);
-
-    /*
-    LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
-      label: _label,
-      labelMaxWidth: _labelMaxWidth,
-      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-      labelStyle: _labelStyle,
-    );
-    children.add(labelContainer);
-    */
-
-    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
-    RowLayouter rowLayouter = RowLayouter(children: children);
-
-    addChildToHierarchyDeprecated(this, rowLayouter);
-
-    for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf();
-    }
-    LegendItemContainer thisLegendItemContainer = this;
-
-    return thisLegendItemContainer;
-
-    /* todo-done-00 : Nothing layout specific, we do autolayout.
-        Instead, do this:
-          - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
-    // Layout legend item elements (indicator, pad, label) flowing from left:
-
-    // 2. Y Center the indicator and label on same horizontal Y level
-    //   ind stands for "indicator" - the series color indicator square
-    double indAndLabelCenterY = math.max(
-      labelContainer.layoutSize.height,
-      indRectContainer.layoutSize.height,
-    ) /
-        2.0;
-    double indOffsetY = indAndLabelCenterY - indRectContainer.layoutSize.height / 2.0;
-    double labelOffsetY = indAndLabelCenterY - labelContainer.layoutSize.height / 2.0;
-
-    // 3. Calc the X offset to both indicator and label, so indicator is left,
-    //    then padding, then the label
-    double indOffsetX = 0.0; // indicator starts on the left
-    double labelOffsetX = indOffsetX + indRectContainer.layoutSize.width + indicatorToLabelPad;
-
-    // 4. Position the child rectangle and label within this container
-    indRectContainer.applyParentOffset(ui.Offset(
-      indOffsetX,
-      indOffsetY,
-    ));
-
-    labelContainer.applyParentOffset(ui.Offset(
-      labelOffsetX,
-      labelOffsetY,
-    ));
-
-    // 6. And store the layout size on member of self
-    layoutSize = ui.Size(
-      indRectContainer.layoutSize.width + indicatorToLabelPad + labelContainer.layoutSize.width + betweenLegendItemsPadding,
-      math.max(
-        labelContainer.layoutSize.height,
-        indRectContainer.layoutSize.height,
-      ),
-    );
-
-    // Make sure we fit all available width
-    assert(boxConstraints.size.width + 1.0 >= layoutSize.width); // todo-2 within epsilon
-    */
-  }
-
-
   @override
   BoxContainer buildContainerOrSelf() {
     // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
@@ -1383,94 +1300,6 @@ class LegendContainer extends ChartAreaContainer {
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
     newCoreLayout();
-  }
-
-  BoxContainer buildContainerOrSelfOLD() {
-
-    ChartOptions options = chartRootContainer.data.chartOptions;
-    double containerMarginTB = options.legendOptions.legendContainerMarginTB;
-    double containerMarginLR = options.legendOptions.legendContainerMarginLR;
-
-    List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
-
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelCommonOptions.labelTextStyle,
-      textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
-      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-    );
-
-    // First paint all legends, to figure out max height of legends to center all
-    // legends label around common center.
-
-    /* done-new-layout-commented : Nothing layout specific, we do autolayout.
-        Instead, do this:
-          - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
-
-    // Create variable boxConstraints to replace the one originally passed in
-    BoxContainerConstraints boxConstraints = layoutableBoxLayoutSandbox.constraints!;
-    double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
-    */
-
-    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
-    List<BoxContainer> children = [];
-
-    // Layout legend core: for each row, create and position
-    //   - an indicator rectangle and it's paint
-    //   - label painter
-    for (int index = 0; index < dataRowsLegends.length; index++) {
-      ui.Paint indicatorPaint = ui.Paint();
-      List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
-      indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
-
-      var legendItemContainer = LegendItemContainer(
-        label: dataRowsLegends[index],
-        labelStyle: labelStyle,
-        indicatorPaint: indicatorPaint,
-        options: options,
-      );
-
-      /* done-new-layout-commented : Nothing layout specific, we do autolayout.
-        Instead, do this:
-          - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
-      var legendItemContainer = LegendItemContainerOriginalKeep(
-        label: dataRowsLegends[index],
-        labelStyle: labelStyle,
-        indicatorPaint: indicatorPaint,
-        options: options,
-      );
-
-      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
-
-      legendItemContainer.applyParentOffset(
-        ui.Offset(
-          containerMarginLR + index * legendItemWidth,
-          containerMarginTB,
-        ),
-      );
-      addChild(legendItemContainer);
-      */
-      children.add(legendItemContainer);
-    }
-
-    // done-new-layout-added but this is NOT used like this anymore
-
-    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
-    RowLayouter rowLayouter = RowLayouter(children: children);
-
-    addChildToHierarchyDeprecated(this, rowLayouter);
-
-    for (BoxContainer child in rowLayouter.children) {
-      child.buildContainerOrSelf();
-    }
-    LegendContainer thisLegendContainer = this;
-
-    return thisLegendContainer;
   }
 
   @override
