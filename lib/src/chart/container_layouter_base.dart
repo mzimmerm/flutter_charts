@@ -202,10 +202,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // 1. Overrides implementing all methods from implemented interface [LayoutableBox] ---------------------------------
 
   /// Manages the layout size, the result of [newCoreLayout].
-  /// 
-  /// Extensions of [BoxLayouter] should implement the setter only if 
+  ///
+  /// Set late in [newCoreLayout], once the layout size is known after all children were layoed out.
+  /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   @override
-  // todo-00-last-last : ui.Size layoutSize = ui.Size.zero;
   late final ui.Size layoutSize;
 
   // todo-01-document
@@ -223,8 +223,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
     _assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
-    // Also, set layoutSize to 0, as no layout will run, so there is nothing to initialize it
-    // layoutSize = const Size(0.0, 0.0); // todo-00-last-last added then removed
   }
 
   /// Constraints set by parent.
@@ -323,7 +321,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     print('In newCoreLayout: parent of $this = $parent.');
 
     if (isLeaf) {
-      // todo-00-last-last: set layout size
+      // todo-00-last : set layout size? Is this needed at all?
       return;
     }
 
@@ -454,14 +452,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
   OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left);
 
-  /// Greedy is defined as asking for layoutSize infinity.
+  /// Return true if container would like to expand as much as possible, within it's constraints.
+  ///
+  /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
+  ///   when this is called in [newCoreLayout].
   /// todo-00-last : The greedy methods should check if called BEFORE
   ///           [_step302_PostDescend_IfLeafSetMyLayoutSize_Otherwise_OffsetImmediateChildrenInMe_ThenSetMySize].
   ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy {
-    // todo-00-last-last return _lengthAlong(mainLayoutAxis, layoutSize) == double.infinity;
-    // todo-01-last : If we want a greedy child, override this do NOT set to double.infinity;
-    //                we need to reserve the setter for first use after actual layout of the greedy child.
     return false;
   }
 

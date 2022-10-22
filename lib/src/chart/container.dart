@@ -214,7 +214,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     xContainer.layout(xContainerBoxConstraints, xContainer);
 
-    // todo-00-last-last : When we got here, layout is done, so set the late final layoutSize
+    // When we got here, layout is done, so set the late final layoutSize
     xContainer.layoutSize = xContainer.lateReLayoutSize;
 
     ui.Size xContainerSize = xContainer.layoutSize;
@@ -401,8 +401,7 @@ class YContainer extends ChartAreaContainer {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
       chartRootContainer.yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
-      // todo-00-last-last : added
-      // Must set layoutSize before returning from layout
+      // Set layoutSize before returning from layout
       layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
@@ -545,7 +544,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// Size allocated for each shown label (>= [_xGridStep]
   double _shownLabelsStepWidth = 0.0;
 
-  // todo-00-last-last
   /// Member to manage temporary layout size during relayout.
   ///
   /// Because [layoutSize] is late final, we cannot keep setting it during relayout.
@@ -644,17 +642,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     );
 
     if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
-      // If not shown, there is no relayout.
-      // todo-00-last-last : this comment is wrong
-      // Return and make the layout height (vertical-Y size) 0.
-      // We cannot skip the code above entirely, as the xTickX are calculated from labels, and used late in the
-      // layout and painting of the DataContainer in ChartContainer - see xTickXs
-      // todo-00-last-last : removed, probably breaking re-layout : layoutSize = ui.Size(layoutSize.width, 0.0);
+      // If not showing this container, no layout needed, just set size to 0.
       lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
     }
-
-    // todo-00-last-last layoutSize = lateReLayoutSize;
 
     // This achieves auto-layout of labels to fit along X axis.
     // Iterative call to this layout method, until fit or max depth is reached,
@@ -1338,7 +1329,7 @@ class LegendContainer extends ChartAreaContainer {
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
     if (orderedSkip) {
-      layoutSize = const ui.Size(0.0, 0.0); // todo-00-last-last
+      layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
