@@ -217,8 +217,27 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
 
 
-  /// todo-01-document Document the delegation to layoutableBoxParentSandbox
-  /// Allow a parent containerNew to move this ContainerNew
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top ContainerNew, passed to all children in the
+  /// [paint] method.
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
+  /// to [applyParentOffset] during object lifetime.
+  ui.Offset _offset = ui.Offset.zero;
+
+  /// Current absolute offset, set by parent (and it's parent etc, to root).
+  ///
+  /// That means, it is the offset from (0,0) of the canvas. There is only one
+  /// canvas, managed by the top ContainerNew, passed to all children in the
+  /// [paint] (canvas).
+  ///
+  /// It is a sum of all offsets passed in subsequent calls
+  /// to [applyParentOffset] during object lifetime.
+  ui.Offset get offset => _offset;
+
+  /// Allows a parent containerNew to move this ContainerNew
   /// after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
@@ -244,14 +263,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
     if (parentOrderedToSkip) return;
 
-    // todo-00-last : to check if applyParentOffset is invoked from parent : add caller argument, pass caller=this and check : assert(caller == BoxContainerHierarchy.parent);
-    //                same on all methods delegated to layoutableBoxParentSandbox
-    layoutableBoxParentSandbox.applyParentOffset(offset);
+    _offset += offset;
 
     for (var child in children) {
       child.applyParentOffset(offset);
     }
   }
+
 
   /// Member used during the [layout] processing.
   @override
@@ -610,18 +628,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   // 3. Fields managed by Sandboxes and methods delegated to Sandboxes -------------------------------------------------
-
-  /// Current absolute offset, set by parent (and it's parent etc, to root).
-  ///
-  /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top ContainerNew, passed to all children in the
-  /// [paint(Canvas, Size)].
-  ///
-  ///
-  ///
-  /// It is a sum of all offsets passed in subsequent calls
-  /// to [applyParentOffset] during object lifetime.
-  ui.Offset get offset => layoutableBoxParentSandbox._offset;
 
   set parentOrderedToSkip(bool skip) {
     if (skip && !allowParentToSkipOnDistressedSize) {

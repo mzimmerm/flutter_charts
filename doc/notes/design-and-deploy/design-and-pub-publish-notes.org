@@ -1568,14 +1568,14 @@ What are those?
 - [ ] offset - does not even need a getter. 
 - [ ] parentOrderedToSkip - rename orderedSkip
 - [ ] constraints
-- [ ] layoutSize - this does NOT have apply - just late final
+- [ ] layoutSize - this does NOT have apply - just late final layoutSize
 
 
 
-*** Can we make layoutSize result of layout and not store on newCoreLayout?
+*** NO : Can we make layoutSize result of layout and not store on newCoreLayout?
 
-- [ ] layoutSize member: Make still available as late final on BoxLayouter, set it after return in case it is needed later. Always set just after return from newCoreLayout.
-- [P] constraints member: Remove  
+- NO: layoutSize member: Make still available as late final on BoxLayouter, set it after return in case it is needed later. Always set just after return from newCoreLayout.
+- NO: constraints member: Remove  
   
 
   
