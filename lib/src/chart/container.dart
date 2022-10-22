@@ -17,7 +17,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -178,7 +178,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
-    legendContainer.applyParentOffset(legendContainerOffset);
+    legendContainer.applyParentOffset(this, legendContainerOffset);
 
     // ### 3. Ask [YContainer] to provide Y label container width.
     //        This provides the remaining width left for the [XContainer]
@@ -216,7 +216,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     ui.Size xContainerSize = xContainer.layoutSize;
     ui.Offset xContainerOffset = ui.Offset(yContainerSize.width, chartArea.height - xContainerSize.height);
-    xContainer.applyParentOffset(xContainerOffset);
+    xContainer.applyParentOffset(this, xContainerOffset);
 
     // ### 5. Second call to YContainer is needed, as available height for Y
     //        is only known after XContainer provided required height of xUserLabels
@@ -239,7 +239,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     yContainerSize = yContainer.layoutSize;
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
-    yContainer.applyParentOffset(yContainerOffset);
+    yContainer.applyParentOffset(this, yContainerOffset);
 
     ui.Offset dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
 
@@ -257,7 +257,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // todo-01-morph-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
     dataContainer.layout(dataContainerBoxConstraints, dataContainer);
-    dataContainer.applyParentOffset(dataContainerOffset);
+    dataContainer.applyParentOffset(this, dataContainerOffset);
   }
 
   /// Implements abstract [paint] for the whole chart.
@@ -310,6 +310,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartRootContainer: this,
       presenterCreator: presenterCreator,
       isStacked: isStacked,
+      caller: this,
     );
   }
 
@@ -446,6 +447,7 @@ class YContainer extends ChartAreaContainer {
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
         options: options,
+        parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
       yLabelContainer.constraints = BoxContainerConstraints.infinity();
@@ -457,7 +459,7 @@ class YContainer extends ChartAreaContainer {
       yLabelContainer.parentOffsetTick = yTickY;
 
       // Move the contained LabelContainer to correct position
-      yLabelContainer.applyParentOffset(
+      yLabelContainer.applyParentOffset(this, 
         ui.Offset(chartRootContainer.data.chartOptions.yContainerOptions.yLabelsPadLR, labelTopY),
       );
 
@@ -484,15 +486,15 @@ class YContainer extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(offset);
+    super.applyParentOffset(caller, offset);
 
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
-      yLabelContainer.applyParentOffset(offset);
+      yLabelContainer.applyParentOffset(this, offset);
     }
   }
 
@@ -544,7 +546,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }) : super(
           chartRootContainer: chartRootContainer,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
+        ) {
+    // parent = chartRootContainer;
+  }
 
   /// Lays out the chart in horizontal (x) direction.
   ///
@@ -585,6 +589,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
+        parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
       xLabelContainer.constraints = BoxContainerConstraints.infinity();
@@ -610,7 +615,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       );
 
       // labelLeftTop + offset for envelope
-      xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
+      xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
 
       _xLabelContainers.add(xLabelContainer);
     }
@@ -661,15 +666,15 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(offset);
+    super.applyParentOffset(caller, offset);
 
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-      xLabelContainer.applyParentOffset(offset);
+      xLabelContainer.applyParentOffset(this, offset);
     }
   }
 
@@ -772,6 +777,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
           chartRootContainer: chartRootContainer,
         ) {
     // Must initialize in body, as access to 'this' not available in initializer.
+    // parent = chartRootContainer;
     _labelLayoutStrategy.onContainer(this);
   }
 }
@@ -806,7 +812,9 @@ abstract class ChartAreaContainer extends BoxContainer {
   ChartAreaContainer({
     required this.chartRootContainer,
     List<BoxContainer>? children,
-  }) : super(children: children);
+  }) : super(children: children) {
+    parent = chartRootContainer;
+  }
 }
 
 /// Manages the core chart area which displays and paints (in this order):
@@ -829,7 +837,9 @@ abstract class DataContainer extends ChartAreaContainer {
     required ChartRootContainer chartRootContainer,
   }) : super(
           chartRootContainer: chartRootContainer,
-        );
+        )  {
+    // parent = chartRootContainer;
+  }
 
   /// Implements [BoxContainer.layout] for data area.
   ///
@@ -862,7 +872,7 @@ abstract class DataContainer extends ChartAreaContainer {
     // For each already layed out X labels in [xLabelContainers],
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    _yGridLinesContainer = GridLinesContainer();
+    _yGridLinesContainer = GridLinesContainer(parent: this);
 
     for (double xTickX in xTickXs) {
       // Add vertical yGrid line in the middle or on the left
@@ -872,6 +882,7 @@ abstract class DataContainer extends ChartAreaContainer {
         lineFrom: ui.Offset(lineX, 0.0),
         lineTo: ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
+        parent: _yGridLinesContainer,
       );
 
       // Add a new vertical grid line - yGrid line.
@@ -885,6 +896,7 @@ abstract class DataContainer extends ChartAreaContainer {
         lineFrom: ui.Offset(x, 0.0),
         lineTo: ui.Offset(x, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
+        parent: _yGridLinesContainer,
       );
       _yGridLinesContainer.addLine(yLineContainer);
     }
@@ -893,14 +905,16 @@ abstract class DataContainer extends ChartAreaContainer {
 
     // Iterate yUserLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    _xGridLinesContainer = GridLinesContainer();
+    _xGridLinesContainer = GridLinesContainer(parent: this);
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
     for (double yTickY in yTickYs) {
       LineContainer xLineContainer = LineContainer(
           lineFrom: ui.Offset(0.0, yTickY),
           lineTo: ui.Offset(layoutSize.width, yTickY),
-          linePaint: gridLinesPaint(chartOptions));
+          linePaint: gridLinesPaint(chartOptions),
+          parent: _xGridLinesContainer,
+      );
 
       // Add a new horizontal grid line - xGrid line.
       _xGridLinesContainer._lineContainers.add(xLineContainer);
@@ -908,17 +922,17 @@ abstract class DataContainer extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(ui.Offset offset) {
-    super.applyParentOffset(offset);
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+    super.applyParentOffset(caller, offset);
 
     // Move all container atomic elements - lines, labels, circles etc
-    _xGridLinesContainer.applyParentOffset(offset);
+    _xGridLinesContainer.applyParentOffset(this, offset);
 
     // draw vertical grid
-    _yGridLinesContainer.applyParentOffset(offset);
+    _yGridLinesContainer.applyParentOffset(this, offset);
 
     // Apply offset to lines and bars.
-    chartRootContainer.pointsColumns.applyParentOffset(offset);
+    chartRootContainer.pointsColumns.applyParentOffset(this, offset);
 
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
@@ -1002,7 +1016,9 @@ class VerticalBarChartDataContainer extends DataContainer {
     required ChartRootContainer chartRootContainer,
   }) : super(
           chartRootContainer: chartRootContainer,
-        );
+        )  {
+    // parent = chartRootContainer;
+  }
 
   @override
   void paint(ui.Canvas canvas) {
@@ -1052,7 +1068,9 @@ class LineChartDataContainer extends DataContainer {
     required ChartRootContainer chartRootContainer,
   }) : super(
           chartRootContainer: chartRootContainer,
-        );
+        )  {
+    // parent = chartRootContainer;
+  }
 
   @override
   void paint(ui.Canvas canvas) {
@@ -1097,7 +1115,9 @@ class LineChartDataContainer extends DataContainer {
 class GridLinesContainer extends BoxContainer {
   final List<LineContainer> _lineContainers = List.empty(growable: true);
 
-  GridLinesContainer() : super();
+  GridLinesContainer({BoxContainer? parent}) : super() {
+   this.parent = parent;
+  }
 
   void addLine(LineContainer lineContainer) {
     _lineContainers.add(lineContainer);
@@ -1113,9 +1133,9 @@ class GridLinesContainer extends BoxContainer {
 
   /// Overridden from super. Applies offset on all members.
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     for (LineContainer lineContainer in _lineContainers) {
-      lineContainer.applyParentOffset(offset);
+      lineContainer.applyParentOffset(this, offset);
     }
   }
 
@@ -1280,7 +1300,7 @@ class LegendContainer extends ChartAreaContainer {
           chartRootContainer: chartRootContainer,
           children: children,
         ) {
-    parent = null;
+    // parent = null; We set isRoot to true, so this is not needed.
     // If option set to hide (not shown), set the member [parentOrderedToSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
@@ -1503,7 +1523,7 @@ class StackableValuePoint {
     return this;
   }
 
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
     // not needed to offset : StackableValuePoint predecessorPoint;
@@ -1646,13 +1666,18 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// True if chart type presents values stacked.
   final bool _isStacked;
 
+  final BoxLayouter _caller;
+
   /// Constructor creates a [PointsColumns] instance from [ChartData.dataRows] values in
   /// the passed [ChartRootContainer.data].
   PointsColumns({
     required this.chartRootContainer,
     required PresenterCreator presenterCreator,
     required bool isStacked,
-  }) : _isStacked = isStacked {
+    required BoxLayouter caller,
+  }) : _isStacked = isStacked,
+  _caller = caller
+  {
     ChartData chartData = chartRootContainer.data;
 
     _createStackableValuePointsFromChartData(chartData);
@@ -1740,10 +1765,10 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
   }
 
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
-        point.applyParentOffset(offset);
+        point.applyParentOffset(_caller, offset);
       });
     }
   }

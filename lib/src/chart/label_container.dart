@@ -6,7 +6,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
-import 'container_layouter_base.dart' show BoxContainer;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
@@ -152,23 +152,23 @@ class LabelContainer extends BoxContainer {
   /// 
   // todo-01-morph : this implementation only works for tilting in [XContainer] because first call to it is 
   //                 made in [XContainer.layout], after label container is created, as 
-  //                    `xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
+  //                    `xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
   //                    value, which is OVERWRITTEN by the last call described below; 
   //                    also, the accumulated non-rotated this.offset is kept on super slot
   //                    This is what we want - we want to keep the non-rotated this.offset on super slot,
   //                    and only do the rotation on the last call (last before paint)
   //                 The last call is made in [ChartRootContainer.layout] inside
-  //                     `xContainer.applyParentOffset(xContainerOffset)` as
+  //                     `xContainer.applyParentOffset(this, xContainerOffset)` as
   //                 as
   //                    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-  //                      xLabelContainer.applyParentOffset(offset);
+  //                      xLabelContainer.applyParentOffset(this, offset);
   //                    }
   //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset 
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint. 
   @override
-  void applyParentOffset(ui.Offset offset) {
-    super.applyParentOffset(offset);
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+    super.applyParentOffset(caller, offset);
 
     // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
@@ -353,10 +353,13 @@ class AxisLabelContainer extends LabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
+    required BoxContainer parent,
   }) : super(
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
            options: options,
-        );
+        ) {
+    this.parent = parent;
+  }
 }

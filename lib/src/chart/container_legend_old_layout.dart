@@ -7,7 +7,7 @@ import 'container.dart';
 import 'label_container.dart';
 import 'options.dart';
 
-import 'container_layouter_base.dart' show BoxContainer;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
 import 'label_container_old_layout.dart' show LabelContainerOriginalKeep;
 
 class LegendContainerOriginalKeep extends ChartAreaContainer {
@@ -72,7 +72,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
 
       legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
 
-      legendItemContainer.applyParentOffset(
+      legendItemContainer.applyParentOffset(this, 
         ui.Offset(
           containerMarginLR + index * legendItemWidth,
           containerMarginTB,
@@ -90,15 +90,15 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(offset);
+    super.applyParentOffset(caller, offset);
 
     for (BoxContainer legendItemContainer in children) {
-      legendItemContainer.applyParentOffset(offset);
+      legendItemContainer.applyParentOffset(this, offset);
     }
   }
 
@@ -191,12 +191,12 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     double labelOffsetX = indOffsetX + indRectContainer.layoutSize.width + indicatorToLabelPad;
 
     // 4. Position the child rectangle and label within this container
-    indRectContainer.applyParentOffset(ui.Offset(
+    indRectContainer.applyParentOffset(this, ui.Offset(
       indOffsetX,
       indOffsetY,
     ));
 
-    labelContainer.applyParentOffset(ui.Offset(
+    labelContainer.applyParentOffset(this, ui.Offset(
       labelOffsetX,
       labelOffsetY,
     ));
@@ -225,12 +225,12 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   }
 
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     if (parentOrderedToSkip) return;
 
-    super.applyParentOffset(offset);
+    super.applyParentOffset(caller, offset);
     for (var rectThenLabelContainer in children) {
-      rectThenLabelContainer.applyParentOffset(offset);
+      rectThenLabelContainer.applyParentOffset(this, offset);
     }
   }
 }

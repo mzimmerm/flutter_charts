@@ -180,7 +180,7 @@ abstract class LayoutableBox {
   //       There must be a layoutSize setter available on the sandbox (or here),  as
   ui.Size layoutSize = ui.Size.zero;
 
-  void applyParentOffset(ui.Offset offset);
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset);
 
   // todo-00-last : consider merging layoutableBoxParentSandbox and layoutableBoxParentSandbox
   _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
@@ -259,14 +259,20 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///           (see [LabelContainer.paint].
   ///
   @override
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+
+    if (parent != null) {
+      if (!identical(caller, parent)) {
+        throw StateError('on this $this, parent $parent should be == to caller $caller');
+      }
+    }
 
     if (parentOrderedToSkip) return;
 
     _offset += offset;
 
     for (var child in children) {
-      child.applyParentOffset(offset);
+      child.applyParentOffset(this, offset);
     }
   }
 
@@ -499,7 +505,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren) {
     assert(layedOutOffsets.length == notGreedyChildren.length);
     for (int i = 0; i < layedOutOffsets.length; i++) {
-      notGreedyChildren[i].applyParentOffset(layedOutOffsets[i]);
+      notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);
     }
   }
 
@@ -721,7 +727,7 @@ class _BoxLayouterParentSandbox {
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [ContainerNew].
-  void applyParentOffset(ui.Offset offset) {
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     _offset += offset;
   }
 

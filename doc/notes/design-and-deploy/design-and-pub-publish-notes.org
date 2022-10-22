@@ -1561,7 +1561,7 @@ On BoxLayouter:
   - [ ] 'apply' methods on BoxLayouter, which act as setters (e.g. applyParentOffset) and pass 2 values:
     - [ ] (Object caller, value)
     - [ ] these will generally check that parent == caller
-  - [ ] private late final (for now) elements (e.g. _offset)
+  - [ ] supporting elements (e.g. _offset) - this SHOULD be final on parentOrderedToSkip, constraints, layoutSize but NOT _offset which needs to keep changing.
   - [ ] getter which returns the private (e.g. _offset)
 
 What are those?

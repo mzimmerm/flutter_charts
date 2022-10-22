@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
-import 'container_layouter_base.dart' show BoxContainer;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
@@ -12,9 +12,11 @@ class LineContainer extends BoxContainer {
     required this.lineFrom,
     required this.lineTo,
     required this.linePaint,
+    BoxContainer? parent,
   }) {
     // todo-01-morph-layout-size - should this be set?
     // layoutSize = _lineContainerLayoutSize;
+    this.parent = parent;
   }
 
   // #####  Implementors of method in superclass [Container].
@@ -32,8 +34,8 @@ class LineContainer extends BoxContainer {
 
   /// Override method in superclass [Container].
   @override
-  void applyParentOffset(ui.Offset offset) {
-    super.applyParentOffset(offset);
+  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+    super.applyParentOffset(caller, offset);
     lineFrom += offset;
     lineTo += offset;
     // todo-01-morph-layout-size-add : layoutSize = _lineContainerLayoutSize
