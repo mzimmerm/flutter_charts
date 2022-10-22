@@ -225,7 +225,7 @@ class LabelContainer extends BoxContainer {
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      parentOrderedToSkip = true;
+      applyParentOrderedSkip(this, true);
       layoutSize = ui.Size.zero;
       return;
     }

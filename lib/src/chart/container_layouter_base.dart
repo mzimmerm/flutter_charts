@@ -75,18 +75,18 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
 
   /// General rules for [paint] on extensions
   ///  1) In non-leafs: [paint] override not needed. Details:
-  ///    -  This default implementation, parentOrderedToSkip stop painting the node
+  ///    -  This default implementation, orderedSkip stop painting the node
   ///          under first parent that orders children to skip
   ///  2) In leafs: [paint] override always(?) needed.
   ///    - Override should do:
-  ///      - `if (parentOrderedToSkip) return;` - this is required if the leaf's parent is the first up who ordered to skip
+  ///      - `if (orderedSkip) return;` - this is required if the leaf's parent is the first up who ordered to skip
   ///      - perform any canvas drawing needed by calling [canvas.draw]
   ///      - if the container contains Flutter-level widgets that have the [paint] method, also call paint on them,
   ///        for example, [LabelContainer._textPainter.paint]
   ///      - no super call needed.
   ///
   void paint(ui.Canvas canvas) {
-    if (parentOrderedToSkip) return;
+    if (orderedSkip) return;
 
     for (var child in children) {
       child.paint(canvas);
@@ -181,9 +181,10 @@ abstract class LayoutableBox {
   ui.Size layoutSize = ui.Size.zero;
 
   void applyParentOffset(BoxLayouter caller, ui.Offset offset);
+  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip);
+  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints);
 
-  // todo-00-last : consider merging layoutableBoxParentSandbox and layoutableBoxParentSandbox
-  _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
+  // todo-00-last-last _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
 
   void newCoreLayout();
 }
@@ -208,40 +209,52 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   ui.Size layoutSize = ui.Size.zero;
 
-  // todo-00-last : constraints are always set by parent (constraints go down).
   //  We should divide to getter/setter, and in setter, add 'invokingObject', here check if invokingObject = parent.
-  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
+  // todo-00-last-last BoxContainerConstraints constraints = BoxContainerConstraints.unused();
 
   // todo-01-document
   List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
   ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
 
+  bool _orderedSkip = false; // want to be late final but would have to always init.
+  /// [orderedSkip] is set by parent; instructs this container that it should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// When set to true, implementations must add appropriate support for collapse.
+  bool get orderedSkip => _orderedSkip;
+  /// Set private member [_orderedSkip] with assert that caller is parent
+  @override
+  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
+    _assertCallerIsParent(caller);
+    _orderedSkip = orderedSkip;
+  }
 
-  /// Current absolute offset, set by parent (and it's parent etc, to root).
-  ///
-  /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top ContainerNew, passed to all children in the
-  /// [paint] method.
-  ///
-  /// It is a sum of all offsets passed in subsequent calls
-  /// to [applyParentOffset] during object lifetime.
+  /// Constraints set by parent.
+  late final BoxContainerConstraints _constraints;
+  BoxContainerConstraints get constraints => _constraints;
+  @override
+  /// Set private member [_constraints] with assert that caller is parent
+  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
+    _assertCallerIsParent(caller);
+    _constraints = constraints;
+  }
+  
   ui.Offset _offset = ui.Offset.zero;
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
   /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top ContainerNew, passed to all children in the
+  /// canvas, managed by the top BoxContainer, passed to all children in the
   /// [paint] (canvas).
   ///
   /// It is a sum of all offsets passed in subsequent calls
   /// to [applyParentOffset] during object lifetime.
   ui.Offset get offset => _offset;
 
-  /// Allows a parent containerNew to move this ContainerNew
-  /// after [layout].
+  /// Allows a parent container to move this container after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
-  /// this [ContainerNew].
+  /// this [BoxContainer].
   ///
   /// General rules for [applyParentOffset] on extensions
   ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
@@ -261,13 +274,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
 
-    if (parent != null) {
-      if (!identical(caller, parent)) {
-        throw StateError('on this $this, parent $parent should be == to caller $caller');
-      }
-    }
+    _assertCallerIsParent(caller);
 
-    if (parentOrderedToSkip) return;
+    if (orderedSkip) return;
 
     _offset += offset;
 
@@ -276,10 +285,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
+  void _assertCallerIsParent(BoxLayouter caller) {
+    if (parent != null) {
+      if (!identical(caller, parent)) {
+        throw StateError('on this $this, parent $parent should be == to caller $caller');
+      }
+    }
+  }
 
+/* todo-00-last-last
   /// Member used during the [layout] processing.
   @override
   _BoxLayouterParentSandbox layoutableBoxParentSandbox = _BoxLayouterParentSandbox();
+*/
 
   /// Old layout forwards to [newCoreLayout].
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
@@ -316,7 +334,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       return;
     }
 
-    // todo-00-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       _rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       assert(constraints.size != const Size(-1.0, -1.0));
@@ -374,7 +391,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void _step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
     for (var child in _childrenInLayoutOrderGreedyLast) {
       // todo-00-important - how does this differ for Column, Row, etc?
-      child.constraints = constraints;
+      // todo-00-last-last child.constraints = constraints;
+      child.applyParentConstraints(this, constraints);
     }
   }
 
@@ -403,8 +421,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       Size layoutSizeLeftForGreedyChild =
           constraints.sizeLeftAfter(notGreedyChildrenSizeAccordingToLayouter, mainLayoutAxis);
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
+/* todo-00-last-last
       firstGreedyChild.constraints =
           BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
+*/
+      firstGreedyChild.applyParentConstraints(
+        this,
+        BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild),
+      );
       // Having set a finite constraint on Greedy child, re-layout the Greedy child again.
       // (firstGreedyChild as BoxContainer).layoutableBoxParentSandbox.constraints
       firstGreedyChild.newCoreLayout();
@@ -509,7 +533,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   _MainAndCrossLayedOutSegments _findLayedOutSegmentsForChildren(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross).
     LengthsLayouter mainAxisLengthsLayouter =
@@ -528,7 +551,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return mainAndCrossLayedOutSegments;
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   List<ui.Offset> _convertLayedOutSegmentsToOffsets(
     LayoutAxis mainLayoutAxis,
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments,
@@ -551,7 +573,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return layedOutOffsets;
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   /// Converts two [util_dart.LineSegment] to [Offset] according to [mainLayoutAxis].
   ui.Offset _convertSegmentsToOffset(
       LayoutAxis mainLayoutAxis, util_dart.LineSegment mainSegment, util_dart.LineSegment crossSegment) {
@@ -566,7 +587,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   /// Converts two [util_dart.LineSegment] to [Offset] according to the passed [LayoutAxis], [mainLayoutAxis].
   ui.Size _convertLengthsToSize(
     LayoutAxis mainLayoutAxis,
@@ -582,7 +602,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
   double _lengthAlong(
     LayoutAxis layoutAxis,
@@ -597,7 +616,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
   ///
   /// The passed objects must both correspond to either main axis or the cross axis.
@@ -614,18 +632,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return lengthsLayouterAlongLayoutAxis;
   }
 
-  // todo-00-last : Move to layout_util.dart and make public
   /// Creates and returns a list of lengths of the [LayoutableBox]es [notGreedyChildren]
   /// measured along the passed [layoutAxis].
   List<double> _lengthsOfChildrenAlong(
     LayoutAxis layoutAxis,
     List<LayoutableBox> notGreedyChildren,
   ) =>
-      // todo-00-last-important : This gets the layoutableBox.layoutSize
-      //     but when those lengths are calculated, we have to set the layoutSize on parent, as envelope of all children offsets and sizes!
+      // This gets the layoutableBox.layoutSize
+      //     but when those lengths are calculated, we have to set the layoutSize on parent,
+      //     as envelope of all children offsets and sizes!
       notGreedyChildren.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
 
-  // todo-00-last : Move to layout_util.dart and make public but pass 2 args.
   /// Bounding rectangle of this [BoxLayouter].
   ///
   /// It should only be called after [newCoreLayout] has been performed on this object.
@@ -635,33 +652,35 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // 3. Fields managed by Sandboxes and methods delegated to Sandboxes -------------------------------------------------
 
-  set parentOrderedToSkip(bool skip) {
+/*
+  set orderedSkip(bool skip) {
     if (skip && !allowParentToSkipOnDistressedSize) {
       throw StateError('Parent did not allow to skip');
     }
-    layoutableBoxParentSandbox.parentOrderedToSkip = skip;
+    layoutableBoxParentSandbox.orderedSkip = skip;
   }
 
-  bool get parentOrderedToSkip => layoutableBoxParentSandbox.parentOrderedToSkip;
+  bool get orderedSkip => layoutableBoxParentSandbox.orderedSkip;
+*/
 
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this containerNew not possible.
+  /// making painting of this [BoxContainer] not possible.
   ///
   /// Setting the [allowParentToSkipOnDistressedSize] `true` helps to solve such situation.
-  /// It causes the containerNew not be painted
+  /// It causes the [BoxContainer] not be painted
   /// (skipped during layout) when space is constrained too much
-  /// (not enough space to reasonably paint the containerNew contents).
+  /// (not enough space to reasonably paint the [BoxContainer] contents).
   /// Note that setting this to `true` may result
   /// in surprizing behavior, instead of exceptions.
   ///
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
   ///
-  /// Unlike [parentOrderedToSkip], which directs the parent to ignore this containerNew,
+  /// Unlike [orderedSkip], which directs the parent to ignore this [BoxContainer],
   /// [allowParentToSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
-  /// the containerNew.
+  /// the [BoxContainer].
   bool allowParentToSkipOnDistressedSize = true;
 
 }
@@ -715,30 +734,32 @@ class _BoxLayouterParentSandbox {
   /// Current absolute offset, set by parent (and it's parent etc, to root).
   ///
   /// That means, it is the offset from (0,0) of the canvas. There is only one
-  /// canvas, managed by the top ContainerNew, passed to all children in the
+  /// canvas, managed by the top BoxContainer, passed to all children in the
   /// [paint] method.
   ///
   /// It is a sum of all offsets passed in subsequent calls
   /// to [applyParentOffset] during object lifetime.
-  ui.Offset _offset = ui.Offset.zero;
+  // ui.Offset _offset = ui.Offset.zero;
 
-  /// Allow a parent containerNew to move this ContainerNew
+  /// Allow a parent [BoxContainer] to move this BoxContainer
   /// after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
-  /// this [ContainerNew].
+  /// this [BoxContainer].
+/*
   void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
     _offset += offset;
   }
+*/
 
 //  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
 
-  /// [parentOrderedToSkip] instructs the parent containerNew that this containerNew should not be
+  /// [orderedSkip] instructs the parent [BoxContainer] that this [BoxContainer] should not be
   /// painted or layed out - as if it collapsed to zero size.
   ///
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
-  bool parentOrderedToSkip = false;
+  // bool orderedSkip = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -753,7 +774,7 @@ class _BoxLayouterParentSandbox {
   /// Provides access to tiltMatrix for extension's [paint] methods.
   vector_math.Matrix2 get transformMatrix => _transformMatrix;
 
-  /// Tilt may apply to the whole containerNew.
+  /// Tilt may apply to the whole [BoxContainer].
   /// todo-2 unused? move to base class? similar to offset?
   void applyParentTransformMatrix(vector_math.Matrix2 transformMatrix) {
     if (transformMatrix == vector_math.Matrix2.identity()) return;

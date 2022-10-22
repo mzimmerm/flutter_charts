@@ -151,7 +151,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      parentOrderedToSkip = true;
+      orderedSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }
@@ -217,7 +217,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
   void paint(ui.Canvas canvas) {
-    if (parentOrderedToSkip) return;
+    if (orderedSkip) return;
 
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.paint(canvas);
@@ -226,7 +226,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
 
   @override
   void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
-    if (parentOrderedToSkip) return;
+    if (orderedSkip) return;
 
     super.applyParentOffset(caller, offset);
     for (var rectThenLabelContainer in children) {

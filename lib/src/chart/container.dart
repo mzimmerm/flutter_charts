@@ -172,7 +172,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   4) call [layout] -  done here after constraints
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
     // Before layout, must set constraints
-    legendContainer.constraints = legendBoxConstraints;
+    // todo-00-last-last legendContainer.constraints = legendBoxConstraints;
+    legendContainer.applyParentConstraints(this, legendBoxConstraints);
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
 
@@ -450,7 +451,8 @@ class YContainer extends ChartAreaContainer {
         parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      yLabelContainer.constraints = BoxContainerConstraints.infinity();
+      // todo-00-last-last yLabelContainer.constraints = BoxContainerConstraints.infinity();
+      yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
@@ -592,10 +594,11 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         parent: this,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      xLabelContainer.constraints = BoxContainerConstraints.infinity();
-
+      // todo-00-last-last xLabelContainer.constraints = BoxContainerConstraints.infinity();
+      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
-      xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);
+      // We only know if parent ordered skip after layout (because some size is too large)
+      xLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
 
       // Core of X layout calcs - lay out label to find the size that is takes,
       //   then find X middle of the bounding rectangle
@@ -714,7 +717,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
   void _paintLabelContainers(canvas) {
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-      if (!xLabelContainer.parentOrderedToSkip) xLabelContainer.paint(canvas);
+      if (!xLabelContainer.orderedSkip) xLabelContainer.paint(canvas);
     }
   }
 
@@ -741,7 +744,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   @override
   bool labelsOverlap() {
     if (_xLabelContainers.any((axisLabelContainer) =>
-        !axisLabelContainer.parentOrderedToSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
+        !axisLabelContainer.orderedSkip && axisLabelContainer.layoutSize.width > _shownLabelsStepWidth)) {
       return true;
     }
 
@@ -1301,11 +1304,12 @@ class LegendContainer extends ChartAreaContainer {
           children: children,
         ) {
     // parent = null; We set isRoot to true, so this is not needed.
-    // If option set to hide (not shown), set the member [parentOrderedToSkip = true],
+    // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
-      parentOrderedToSkip = true;
+      // todo-00-last-last : changed orderedSkip = true;
+      applyParentOrderedSkip(chartRootContainer, true);
     }
   }
 
@@ -1315,7 +1319,7 @@ class LegendContainer extends ChartAreaContainer {
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
-    if (parentOrderedToSkip) {
+    if (orderedSkip) {
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children

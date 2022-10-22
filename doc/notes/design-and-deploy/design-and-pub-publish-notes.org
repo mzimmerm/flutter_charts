@@ -1549,28 +1549,32 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 ** IN-PROGRESS-NOW 5.1 Refactor using of parent sandbox on BoxLayouter
 
-*** We get rid of the parent sandbox
+*** Members which should always be set by parent, use name 'applyParent', and add explicit caller test
 
+  First removed parent sandbox
   
 - [ ] childrenInLayoutOrderGreedyLast is used purely in layout. Move as private in BoxLayouter
 - [ ] same for addedSizeOfAllChildren
 
 On BoxLayouter:
 
-- [ ] all values that must be set by parent, should have
-  - [ ] 'apply' methods on BoxLayouter, which act as setters (e.g. applyParentOffset) and pass 2 values:
-    - [ ] (Object caller, value)
-    - [ ] these will generally check that parent == caller
-  - [ ] supporting elements (e.g. _offset) - this SHOULD be final on parentOrderedToSkip, constraints, layoutSize but NOT _offset which needs to keep changing.
-  - [ ] getter which returns the private (e.g. _offset)
+- [X] all values that must be set by parent, should have
+  - [X] 'applyParent' methods on BoxLayouter, which act as setters (e.g. applyParentOffset) and pass 2 values:
+    - [X] (Object caller, value)
+    - [X] these will generally check that parent === caller
+  - [X] supporting elements (e.g. _offset) - this SHOULD be final on orderedSkip, constraints, layoutSize but NOT _offset which needs to keep changing. (but CANNOT be final, as we are setting it in 'apply')
+  - [X] getter which returns the private (e.g. _offset)
 
 What are those?
-- [ ] offset - does not even need a getter. 
-- [ ] parentOrderedToSkip - rename orderedSkip
-- [ ] constraints
-- [ ] layoutSize - this does NOT have apply - just late final layoutSize
+- [X] offset - does not even need a getter ??? . 
+- [X] orderedSkip - rename orderedSkip
+- [X] constraints
+- [ ] layoutSize - this does NOT need apply - just late final layoutSize - should be set only once, and then get only.
 
+Nutshell what we need:
 
+Added checks for parent on applyParentOffset. Same thing should be on 
+constraints (apply+getter), orderedSkip(apply + getter),  layoutSize (getter only, set once thru late final).
 
 *** NO : Can we make layoutSize result of layout and not store on newCoreLayout?
 
