@@ -172,7 +172,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //   4) call [layout] -  done here after constraints
     //   5) applyParentOffset (which is zero but for the sake of making explicit)
     // Before layout, must set constraints
-    legendContainer.layoutableBoxParentSandbox.constraints = legendBoxConstraints;
+    legendContainer.constraints = legendBoxConstraints;
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
     legendContainer.layout(legendBoxConstraints, legendContainer);
 
@@ -448,7 +448,7 @@ class YContainer extends ChartAreaContainer {
         options: options,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      yLabelContainer.layoutableBoxParentSandbox.constraints = BoxContainerConstraints.infinity();
+      yLabelContainer.constraints = BoxContainerConstraints.infinity();
 
       yLabelContainer.layout(BoxContainerConstraints.unused(), yLabelContainer);
 
@@ -587,7 +587,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
         options: options,
       );
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
-      xLabelContainer.layoutableBoxParentSandbox.constraints = BoxContainerConstraints.infinity();
+      xLabelContainer.constraints = BoxContainerConstraints.infinity();
 
       xLabelContainer.layout(BoxContainerConstraints.unused(), xLabelContainer);
       xLabelContainer.parentOrderedToSkip = !_isLabelOnIndexShown(xIndex);

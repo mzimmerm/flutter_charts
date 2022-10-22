@@ -219,7 +219,7 @@ class LabelContainer extends BoxContainer {
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
 
-    BoxContainerConstraints boxConstraints = layoutableBoxParentSandbox.constraints;
+    BoxContainerConstraints boxConstraints = constraints;
 
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);

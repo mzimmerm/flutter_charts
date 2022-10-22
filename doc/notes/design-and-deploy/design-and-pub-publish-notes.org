@@ -1547,23 +1547,39 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
   }
 #+end_src
 
-** IN-PROGRESS-NOW 5.1 Refactor using of parent sandbox
+** IN-PROGRESS-NOW 5.1 Refactor using of parent sandbox on BoxLayouter
 
-We get rid of the parent sandbox
+*** We get rid of the parent sandbox
 
-On BoxContainer:
+  
+- [ ] childrenInLayoutOrderGreedyLast is used purely in layout. Move as private in BoxLayouter
+- [ ] same for addedSizeOfAllChildren
 
-- all values that must be set by parent, should have
-  - 'apply' methods on BoxContainer, which act as setters (e.g. applyParentOffset) and pass 2 values:
-    - (Object caller, value)
-    - these will generally check that parent == caller
-  - private late final (for now) elements (e.g. _offset)
-  - getter which returns the private (e.g. _offset)
+On BoxLayouter:
+
+- [ ] all values that must be set by parent, should have
+  - [ ] 'apply' methods on BoxLayouter, which act as setters (e.g. applyParentOffset) and pass 2 values:
+    - [ ] (Object caller, value)
+    - [ ] these will generally check that parent == caller
+  - [ ] private late final (for now) elements (e.g. _offset)
+  - [ ] getter which returns the private (e.g. _offset)
 
 What are those?
-- offset
-- 
+- [ ] offset - does not even need a getter. 
+- [ ] parentOrderedToSkip - rename orderedSkip
+- [ ] constraints
+- [ ] layoutSize - this does NOT have apply - just late final
+
+
+
+*** Can we make layoutSize result of layout and not store on newCoreLayout?
+
+- [ ] layoutSize member: Make still available as late final on BoxLayouter, set it after return in case it is needed later. Always set just after return from newCoreLayout.
+- [P] constraints member: Remove  
   
+
+  
+ 
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.

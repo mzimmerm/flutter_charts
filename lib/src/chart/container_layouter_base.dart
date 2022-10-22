@@ -208,6 +208,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   ui.Size layoutSize = ui.Size.zero;
 
+  // todo-00-last : constraints are always set by parent (constraints go down).
+  //  We should divide to getter/setter, and in setter, add 'invokingObject', here check if invokingObject = parent.
+  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
+
+  // todo-01-document
+  List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
+  ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
+
+
   /// todo-01-document Document the delegation to layoutableBoxParentSandbox
   /// Allow a parent containerNew to move this ContainerNew
   /// after [layout].
@@ -286,7 +295,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // todo-00-last : this needs to be fixed. Maybe use BoxContainerNull : assert(isRoot == (parentBoxContainer == null));
     if (isRoot) {
       _rootStep3_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
-      assert(layoutableBoxParentSandbox.constraints.size != const Size(-1.0, -1.0));
+      assert(constraints.size != const Size(-1.0, -1.0));
     }
     // A. node-pre-descend
     _step301_PreDescend_DistributeMyConstraintToImmediateChildren();
@@ -319,18 +328,18 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         greedyChild = child;
       }
       // todo-00-important : not used, and not working
-      layoutableBoxParentSandbox.addedSizeOfAllChildren = layoutableBoxParentSandbox.addedSizeOfAllChildren +
+      _addedSizesOfAllChildren = _addedSizesOfAllChildren +
           ui.Offset(child.layoutSize.width, child.layoutSize.height);
 
       print(
-          'Added size of all children = ${layoutableBoxParentSandbox.addedSizeOfAllChildren} for this=$this on child=$child');
+          'Added size of all children = $_addedSizesOfAllChildren for this=$this on child=$child');
     }
     if (numGreedyAlongMainLayoutAxis >= 2) {
       throw StateError('Max one child can ask for unlimited (greedy) size along main layout axis. Violated in $this');
     }
-    layoutableBoxParentSandbox.childrenInLayoutOrderGreedyLast = List.from(children);
+    _childrenInLayoutOrderGreedyLast = List.from(children);
     if (greedyChild != null) {
-      layoutableBoxParentSandbox.childrenInLayoutOrderGreedyLast
+      _childrenInLayoutOrderGreedyLast
         ..remove(greedyChild)
         ..add(greedyChild);
     }
@@ -339,9 +348,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // Layout specific. Only children should be changed by setting constraints,
   //   created from this BoxLayouter constraints. Default sets same constraints.
   void _step301_PreDescend_DistributeMyConstraintToImmediateChildren() {
-    for (var child in layoutableBoxParentSandbox.childrenInLayoutOrderGreedyLast) {
+    for (var child in _childrenInLayoutOrderGreedyLast) {
       // todo-00-important - how does this differ for Column, Row, etc?
-      child.layoutableBoxParentSandbox.constraints = layoutableBoxParentSandbox.constraints;
+      child.constraints = constraints;
     }
   }
 
@@ -359,18 +368,18 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // Exception or visual indication if "my size" is NOT "within my constraints"
   void _step302_IfNotLeaf_OffsetChildren_Then_SetMyLayoutSize_Then_Check_IfMySizeFit_WithinConstraints() {
     if (hasGreedyChild) {
-      List<LayoutableBox> notGreedyChildren = layoutableBoxParentSandbox.childrenInLayoutOrderGreedyLast.toList();
+      List<BoxLayouter> notGreedyChildren = _childrenInLayoutOrderGreedyLast.toList();
       notGreedyChildren.removeLast();
       _offsetChildrenAccordingToLayouter(notGreedyChildren);
       // Calculate the size of envelop of all non-greedy children, layed out using this layouter.
       Size notGreedyChildrenSizeAccordingToLayouter = _childrenLayoutSizeAccordingToLayouter(notGreedyChildren);
       // Re-calculate Size left for the Greedy child,
       // and set the greedy child's constraint and layoutSize to the re-calculated size left.
-      BoxContainerConstraints constraints = firstGreedyChild.layoutableBoxParentSandbox.constraints;
+      BoxContainerConstraints constraints = firstGreedyChild.constraints;
       Size layoutSizeLeftForGreedyChild =
           constraints.sizeLeftAfter(notGreedyChildrenSizeAccordingToLayouter, mainLayoutAxis);
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
-      firstGreedyChild.layoutableBoxParentSandbox.constraints =
+      firstGreedyChild.constraints =
           BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild);
       // Having set a finite constraint on Greedy child, re-layout the Greedy child again.
       // (firstGreedyChild as BoxContainer).layoutableBoxParentSandbox.constraints
@@ -421,7 +430,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
 
-  LayoutableBox get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
+  BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
 
   ui.Size _childrenLayoutSizeAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _findLayedOutSegmentsForChildren(notGreedyChildren);
@@ -710,13 +719,7 @@ class _BoxLayouterParentSandbox {
     _offset += offset;
   }
 
-  List<BoxLayouter> childrenInLayoutOrderGreedyLast = [];
-
-  ui.Size addedSizeOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
-
-  // todo-00-last : constraints are always set by parent (constraints go down).
-  //  We should divide to getter/setter, and in setter, add 'invokingObject', here check if invokingObject = parent.
-  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
+//  BoxContainerConstraints constraints = BoxContainerConstraints.unused();
 
   /// [parentOrderedToSkip] instructs the parent containerNew that this containerNew should not be
   /// painted or layed out - as if it collapsed to zero size.
