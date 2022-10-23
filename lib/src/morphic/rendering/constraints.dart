@@ -62,12 +62,12 @@ class BoxContainerConstraints extends ContainerConstraints {
         && size.width >= minSize.width && size.height >= minSize.height;
   }
 
-  Size sizeLeftAfter(Size takenSize, LayoutAxis mainLayoutAxis) {
+  Size maxSizeLeftAfterTakenFromAxisDirection(Size takenSize, LayoutAxis layoutAxis) {
     if (!containsFully(takenSize)) {
       throw StateError('This constraints $toString() does not fully contain takenSize=$takenSize');
     }
     Size size;
-    switch (mainLayoutAxis) {
+    switch (layoutAxis) {
       case LayoutAxis.horizontal:
         // Make place right from takenSize. This should be layout specific, maybe
         size = Size(maxSize.width - takenSize.width, maxSize.height);
@@ -81,7 +81,17 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
     return size;
   }
-  
+
+  double maxLengthAlongAxis(LayoutAxis layoutAxis) {
+    switch (layoutAxis) {
+      case LayoutAxis.horizontal:
+        return maxSize.width;
+      case LayoutAxis.vertical:
+        return maxSize.height;
+    }
+  }
+
+
   /// Clone of this object with different size.
   BoxContainerConstraints cloneWith({
     double? width,

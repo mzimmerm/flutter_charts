@@ -1625,7 +1625,37 @@ What are those?
 
   
 
-** IN-PROGRESS-NOW 5.2 Resolve todo-00-last
+** IN-PROGRESS-NOW 5.2 Layouter improvements : Debugging, RowLayouter Packing, Lineup, and other settings
+
+Debugging notes and suggestions:
+
+- In _layoutChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
+- after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
+- *these right-aligned large offsets are then applied on the square and label children* in ~notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);~
+- Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the RowLayouter to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN RowLayouter. So I think the core solution is not do that, and divide the constraints*
+- ~Solution already suggested below~ - We should have RowLayouterExpand = true/false, false default, if false, the layedOutOffsets, result of _convertLayedOutSegmentsToOffsets should be moved to start with it's first child. So layedOutOffsets would be set to 0, 20.
+- The RowLayouter layoutSize should be size of rect (20) + size of label (64)
+- also expand=false is NOT compatible with packing = flow
+
+
+ I *think the above proves the approach below. We need to introduce the even distribution of constraints to children, in addition to have the expandToConstraintMax false as default.*
+
+- [ ] Debug layouting:
+  - [ ] Place some packing or lineup so that legend is off the chart
+  - [ ] Debug behavior, make sure it throws exception wher beyound painted rectangle somewhere
+- [ ] BoxContainer
+  - [ ] Add member key on constructor (nullable) and add to constructors at least those used in Legend
+  - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
+- [ ] Add enum ConstraintDivisionToChildren : even, ratios, passFull,
+- [ ] Constraint : add method List<Constraints> divideUsingStrategy(ConstraintDivisionToChildren) only implement even If ratios, param must be set, if passFull, return same - plyg that in code first.
+- [ ] also expandToConstraintMax=false is NOT compatible with packing = flow
+- [ ] Layouter general : Add to OneDimLayoutProperties expandToConstraintMax: true and false, default true. Tests should work
+  - [ ] If true, use available constraint (totalSize). BUT always try false in code.
+- [ ] Layouter general : Add to OneDimLayoutProperties constraintDivisionToChildren: default 
+- [ ] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter.
+
+
+- Add 
 
 - [ ] Resolve why RowLayouter Packing.loose behaves same as Packing.snap !! 
 - [ ] MILESTONE !!!!!! vvvvvvv 

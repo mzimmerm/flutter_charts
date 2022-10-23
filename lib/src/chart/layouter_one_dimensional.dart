@@ -105,6 +105,7 @@ class LengthsLayouter {
     }
   }
 
+  // LengthsLayouter members
   final List<double> lengths;
   OneDimLayoutProperties oneDimLayoutProperties;
   late final double _freePadding;
@@ -274,8 +275,8 @@ class LengthsLayouter {
 class LayedOutLineSegments {
   LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLength});
 
-  final List<util_dart.LineSegment> lineSegments;
-  final double totalLayedOutLength;
+  List<util_dart.LineSegment> lineSegments; // todo-00-done removed final, maybe add clone or copy method
+  double totalLayedOutLength; // todo-00-done removed final
 
   /// Calculates length of all layed out [lineSegments].
   ///

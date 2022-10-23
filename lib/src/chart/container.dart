@@ -1261,7 +1261,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
   ///       );
   ///    ```
   @override
-  void ifLeaf_SetMyLayoutSize_FromInternals() {
+  void ifLeaf_SetSizeFromInternals() {
     layoutSize = ui.Size(
       _indicatorSize.width,
       _indicatorSize.height,
