@@ -32,7 +32,7 @@ class BoxContainerConstraints extends ContainerConstraints {
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
 
-  // todo-00-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
+  // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused()
       : this.exactBox(size: const Size(
@@ -40,19 +40,24 @@ class BoxContainerConstraints extends ContainerConstraints {
     -1.0,
   ));
   BoxContainerConstraints.infinity()
-      : this.exactBox(size: const Size(
+      : this.insideBox(size: const Size( // todo-00-last-last : changed exactBox to insideBox
     double.infinity,
     double.infinity,
   ));
 
   Size get size {
-    assert(isExact);
-    return minSize;
+    if (isInside) {
+      return maxSize;
+    } else {
+      throw StateError('not implemented other boxes, minSize = $minSize, maxSize = $maxSize');
+      }
   }
   
   bool get isExact => minSize == maxSize;
 
-  bool containsFully(Size size) { 
+  bool get isInside => minSize.width < maxSize.width && minSize.height < maxSize.height;
+
+  bool containsFully(Size size) {
     return size.width <= maxSize.width && size.height <= maxSize.height
         && size.width >= minSize.width && size.height >= minSize.height;
   }
@@ -85,10 +90,10 @@ class BoxContainerConstraints extends ContainerConstraints {
     double? width,
     double? height,
   }) {
-    assert(isExact);
-    height ??= minSize.height;
-    width ??= minSize.width;
-    return BoxContainerConstraints.exactBox(size: Size(width, height));
+    assert(isInside);        // todo-00-last-last: changed exactBox to insideBox
+    height ??= maxSize.height; // todo-00-last-last: changed minSize to maxSize
+    width ??= maxSize.width;  // todo-00-last-last: changed minSize to maxSize
+    return BoxContainerConstraints.insideBox(size: Size(width, height));        // todo-00-last-last: changed exactBox to insideBox
   }
 
   @override

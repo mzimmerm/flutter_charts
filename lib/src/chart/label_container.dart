@@ -200,7 +200,7 @@ class LabelContainer extends BoxContainer {
   ///   which obtains the size of [_textPainter]. The resulting [layoutSize] of this [LabelContainer]
   ///   is set from the bounding rectangle of potentially rotated [_textPainter].
   ///   
-  /// Note: On this leaf, instead of overriding this internal, we could override [newCoreLayout] 
+  /// Note: On this leaf, instead of overriding this internal method, we could override [newCoreLayout]
   ///        witch exactly same code, and things would work, except missing check if 
   ///        layout size is within constraints.
   @override
@@ -226,7 +226,7 @@ class LabelContainer extends BoxContainer {
     BoxContainerConstraints boxConstraints = constraints;
 
     double labelMaxWidth =
-        boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
+        boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding); // todo-00-last-last : replaced size with maxSize
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       applyParentOrderedSkip(this, true);

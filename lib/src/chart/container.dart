@@ -154,7 +154,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     setupPointsColumns();
 
     // ### 2. Layout the legends on top
-    var legendBoxConstraints = BoxContainerConstraints.exactBox(size: ui.Size(
+    var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(         // todo-00-last-last: changed exactBox to insideBox
       chartArea.width,
       chartArea.height,)
     );
@@ -186,7 +186,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        is not relevant in this first call.
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
-    var yContainerBoxConstraints =  BoxContainerConstraints.exactBox(size: ui.Size(
+    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(          // todo-00-last-last: changed exactBox to insideBox
        chartArea.width,
        yContainerHeight,
     ));
@@ -203,7 +203,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
 
-    var xContainerBoxConstraints =  BoxContainerConstraints.exactBox(size: ui.Size(
+    var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(           // todo-00-last-last: changed exactBox to insideBox
       chartArea.width - yContainerSize.width,
       chartArea.height - legendContainerSize.height,
     ));
@@ -229,7 +229,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
-    yContainerBoxConstraints =  BoxContainerConstraints.exactBox(size: ui.Size(
+    yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(         // todo-00-last-last: changed exactBox to insideBox
        chartArea.width,
        yContainerHeight - xContainerSize.height,
     ));
@@ -249,7 +249,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-    var dataContainerBoxConstraints =  BoxContainerConstraints.exactBox(size: ui.Size(
+    var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(           // todo-00-last-last: changed exactBox to insideBox
       chartArea.width - yContainerSize.width,
       chartArea.height - (legendContainerSize.height + xContainerSize.height),
     ));
@@ -285,7 +285,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    layout( BoxContainerConstraints.exactBox(size: ui.Size(chartArea.width, chartArea.height)), this);
+    layout( BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)), this);           // todo-00-last-last: changed exactBox to insideBox
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);
@@ -1223,16 +1223,6 @@ class LegendItemContainer extends BoxContainer {
       ],
     );
   }
-
-/* todo-00-last-last removed
-  /// Override sets the _labelMaxWidth member, which needs [constraints]
-  ///   set on this object by parent in layout (before this [newCoreLayout] is called,
-  ///   parent would have apply constraints on children.
-  @override
-  void newCoreLayout() {
-    super.newCoreLayout();
-  }
-*/
 }
 
 /// Represents the series color indicator square in the legend.
@@ -1260,17 +1250,31 @@ class LegendIndicatorRectContainer extends BoxContainer {
         ),
         super(); // {} or colon
 
-  // Important : On leaf container, must define the getter for layoutSize and return concrete layoutSize from internals!
+  // todo-00-done
+  /// Overriden to set the concrete layout size on this leaf.
+  ///
+  /// Note: Alternatively, the same result would be achieved by overriding a getter, like so:
+  ///    ``` daer
+  ///       @override
+  ///       ui.Size get layoutSize => ui.Size(
+  ///         _indicatorSize.width,
+  ///         _indicatorSize.height,
+  ///       );
+  ///    ```
   @override
-  ui.Size get layoutSize => ui.Size(
-  _indicatorSize.width,
-  _indicatorSize.height,
-  );
+  void ifLeaf_SetMyLayoutSize_FromInternals() {
+    layoutSize = ui.Size(
+      _indicatorSize.width,
+      _indicatorSize.height,
+    );
+  }
 
+/* todo-00-last-last remove this.
   @override
   set layoutSize(ui.Size size) {
     throw StateError('Should not be invoked');
   }
+*/
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override

@@ -1627,7 +1627,36 @@ What are those?
 
 ** IN-PROGRESS-NOW 5.2 Resolve todo-00-last
 
-Start with 
+- [ ] start resolving todo-00-last
+  - [ ] D mostly around the sandboxes first. What do we need in sandbox?  
+
+  - [ ] D Add the parent parameter and ensure things in parent sandbox invoked from parent context.
+  - [ ] D Make sure all methods of newCoreLayout are implemented
+  - [ ] D Resolve all other todo-00-last
+  - [ ] 
+- [ ] MILESTONE !!!!!! vvvvvvv 
+- [ ] Read https://blog.logrocket.com/flutter-layouts-guide-margins-padding/
+- [ ] Create proper RowLayouter, add comments
+  - [ ] Basically, need to make sure I can pass constructor arguments to set pack/loose/align - see what they are
+- [ ] Make sure default row layouter on container is Row, which aligns left and top (basicall, sets parent offset = 0!!
+- [ ] Create proper ColumnLayouter, add comments
+- [ ] Create PaddingLayouter and use around legend internals and around legends
+- [ ] Apply RowLayouter on chart LEGEND:
+  - [ ] using a 'flow' type row layout so it fills the whole available width
+  - [ ] ALSO add 4px space around rectangle using Padding 
+  - [ ] also add 4px padding around the whole LEGEND, so it is separated from the chart
+- [ ] This will test the non-greedy portion of layout some more
+
+- [ ] --- MILESTONE
+- [ ] make ChartOptions a Singleton!!! OR add ChartOptions as parameter on BoxContainer. ****Singleton is much prefered*
+- [ ] !!!! Start converting all containers to BoxContainers and newCoreLayout, BUT KEEP MANUAL LAYOUT ON ALL CONTAINERS EXCEPT LEGEND
+- [ ] Address some relevant todo-01-last
+- [ ] Address and test greedy children layout by creating some examples of variously positioned Legend : Top, Right. and show landscape mode.
+
+- [ ] when done:
+  - [ ] start doing Morph stuff: start with everything is a transform!
+ 
+
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.
@@ -1645,15 +1674,15 @@ the manually divided and allocated space for the child
    - 2.1 create new ~child~
    - 2.2 call ~child.layout(childBoxConstraints, this);~
    - 2.3 call ~child.applyParentOffset(offsetOfChild)~
-   - 2.4 call ~addChildToHierarchyDeprecated(child)~
+   - 2.4 call NOOO ~addChildToHierarchyDeprecated(child)~ *MAYBE WE WILL HAVE TO UNDEPRECATE, OR JUST USE*
 3. set ~layoutSize~ = sum of sizes of all children in the layout direction, max child size in the cross-layout direction.
 
 To migrate the code in the old MANUAL layout, do this:
 
 1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~
    - Notes:
-     - The ~boxConstraints~ from the old layout code is replaced with ~parentBoxContainer.constraints~
-     - In of ~2.4~ (addChildToHierarchyDeprecated), we have a new argument 'this', so we call ~addChildToHierarchyDeprecated(this, child)~
+     - The ~boxConstraints~ from the old layout code is replaced with ~applyParentConstraints(parent, constraints)~
+     - NOOO In ~2.4~ (addChildToHierarchyDeprecated), we have a new argument 'this', so we call ~addChildToHierarchyDeprecated(this, child)~
 2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout(parentBoxContainer)~
    - Notes:
      - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.

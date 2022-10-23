@@ -143,7 +143,7 @@ mixin BoxContainerHierarchy {
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   // todo-01-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
-  List<BoxContainer> children = ChildrenNotSetSingleton();
+  List<BoxContainer> children = NullLikeListSingleton();
   bool get isRoot => parent == null;
 
   bool get isLeaf => children.isEmpty;
@@ -156,13 +156,13 @@ mixin BoxContainerHierarchy {
   }
 }
 
-class ChildrenNotSetSingleton extends custom_collection.CustomList<BoxContainer> {
+class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
 
-  ChildrenNotSetSingleton._privateNamedConstructor();
+  NullLikeListSingleton._privateNamedConstructor();
 
-  static final _instance = ChildrenNotSetSingleton._privateNamedConstructor();
+  static final _instance = NullLikeListSingleton._privateNamedConstructor();
 
-  factory ChildrenNotSetSingleton() {
+  factory NullLikeListSingleton() {
     return _instance;
   }
 }
@@ -283,10 +283,29 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // todo-01-document
-  List<BoxLayouter> _childrenInLayoutOrderGreedyLast = [];
-  ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0); // todo-00-last : this does not seem used in any meaningful way
+  /// If size constraints imposed by parent are too tight,
+  /// some internal calculations of sizes may lead to negative values,
+  /// making painting of this [BoxContainer] not possible.
+  ///
+  /// Setting the [allowParentToSkipOnDistressedSize] `true` helps to solve such situation.
+  /// It causes the [BoxContainer] not be painted
+  /// (skipped during layout) when space is constrained too much
+  /// (not enough space to reasonably paint the [BoxContainer] contents).
+  /// Note that setting this to `true` may result
+  /// in surprizing behavior, instead of exceptions.
+  ///
+  /// Note that concrete implementations must add
+  /// appropriate support for collapse to work.
+  ///
+  /// Unlike [orderedSkip], which directs the parent to ignore this [BoxContainer],
+  /// [allowParentToSkipOnDistressedSize] is intended to be checked in code
+  /// for some invalid conditions, and if they are reached, bypass painting
+  /// the [BoxContainer].
+  bool allowParentToSkipOnDistressedSize = true; // always true atm
 
+  // todo-01-document
+  List<BoxLayouter> _childrenInLayoutOrderGreedyLast = NullLikeListSingleton();
+  ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0);
 
   void _assertCallerIsParent(BoxLayouter caller) {
     if (parent != null) {
@@ -330,6 +349,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
       assert(constraints.size != const Size(-1.0, -1.0));
     }
+
     // A. node-pre-descend
     _preDescend_DistributeMyConstraintToImmediateChildren();
     // B. node-descend
@@ -341,7 +361,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
     // C. node-post-descend
     // todo-00-important layout specific
-    _postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+    _postDescend_IfLeafSetMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
   }
 
   // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
@@ -370,6 +390,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         greedyChild = child;
       }
       // todo-01-last : KEEP : not used, and not working - because layoutSize is late final, but also other code reasons
+      //                not sure this will be needed at all in greedy processing
       // _addedSizesOfAllChildren = _addedSizesOfAllChildren +
       //    ui.Offset(child.layoutSize.width, child.layoutSize.height);
     }
@@ -405,7 +426,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   // Layout specific. Offsets children hierarchically (layout children), which positions them in this [BoxLayouter].
   // Then, sets this object's size as the envelope of all layed out children.
-  void _postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints() {
+  void _postDescend_IfLeafSetMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints() {
     if (isLeaf) {
       ifLeaf_SetMyLayoutSize_FromInternals();
     } else {
@@ -432,7 +453,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       firstGreedyChild.layoutSize = layoutSizeLeftForGreedyChild;
       firstGreedyChild.applyParentConstraints(
         this,
-        BoxContainerConstraints.exactBox(size: layoutSizeLeftForGreedyChild),
+        BoxContainerConstraints.insideBox(size: layoutSizeLeftForGreedyChild),        // todo-00-last-last: changed exactBox to insideBox
       );
       // Having set a finite constraint on Greedy child, re-layout the Greedy child again.
       // (firstGreedyChild as BoxContainer).layoutableBoxParentSandbox.constraints
@@ -448,11 +469,20 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren();
   }
 
-  // todo-00-last-important : make abstract and move to Layouters?? What should this do anyway?
-  void ifLeaf_SetMyLayoutSize_FromInternals() {}
+  /// Leaf [BoxLayouter] extensions should override and set [layoutSize].
+  void ifLeaf_SetMyLayoutSize_FromInternals() {
+    throw UnimplementedError('Method must be overriden by leaf BoxLayouters');
+  }
 
-  // todo-00-last : implement
-  void _check_IfMySizeFit_WithinConstraints() {}
+  /// Checks if [layoutSize] box is within the [constraints] box.
+  ///
+  /// Throws error otherwise.
+  void _check_IfMySizeFit_WithinConstraints() {
+    if (!constraints.containsFully(layoutSize)) {
+      throw StateError('Layout size of this layouter $this is $layoutSize,'
+          ' which does not fit inside it\'s constraints $constraints');
+    }
+  }
 
   void _setMyLayoutSize_As_OuterBoundOf_OffsettedChildren() {
     ui.Rect childrenOuterRectangle = util_flutter
@@ -471,9 +501,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
   ///   when this is called in [newCoreLayout].
-  /// todo-00-last : The greedy methods should check if called BEFORE
-  ///           [_postDescend_IfLeafMySetSize_Else_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints].
-  ///           Maybe there should be a way to express greediness permanently.
   bool get isGreedy {
     return false;
   }
@@ -651,39 +678,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ui.Rect _boundingRectangle() {
     return offset & layoutSize;
   }
-
-  // 3. Fields managed by Sandboxes and methods delegated to Sandboxes -------------------------------------------------
-
-/* todo-00-last-last remove comment
-  set orderedSkip(bool skip) {
-    if (skip && !allowParentToSkipOnDistressedSize) {
-      throw StateError('Parent did not allow to skip');
-    }
-    layoutableBoxParentSandbox.orderedSkip = skip;
-  }
-
-  bool get orderedSkip => layoutableBoxParentSandbox.orderedSkip;
-*/
-
-  /// If size constraints imposed by parent are too tight,
-  /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this [BoxContainer] not possible.
-  ///
-  /// Setting the [allowParentToSkipOnDistressedSize] `true` helps to solve such situation.
-  /// It causes the [BoxContainer] not be painted
-  /// (skipped during layout) when space is constrained too much
-  /// (not enough space to reasonably paint the [BoxContainer] contents).
-  /// Note that setting this to `true` may result
-  /// in surprizing behavior, instead of exceptions.
-  ///
-  /// Note that concrete implementations must add
-  /// appropriate support for collapse to work.
-  ///
-  /// Unlike [orderedSkip], which directs the parent to ignore this [BoxContainer],
-  /// [allowParentToSkipOnDistressedSize] is intended to be checked in code
-  /// for some invalid conditions, and if they are reached, bypass painting
-  /// the [BoxContainer].
-  bool allowParentToSkipOnDistressedSize = true;
 
 }
 
