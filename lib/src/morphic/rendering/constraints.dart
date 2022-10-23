@@ -40,7 +40,7 @@ class BoxContainerConstraints extends ContainerConstraints {
     -1.0,
   ));
   BoxContainerConstraints.infinity()
-      : this.insideBox(size: const Size( // todo-00-last-last : changed exactBox to insideBox
+      : this.insideBox(size: const Size(
     double.infinity,
     double.infinity,
   ));
@@ -68,11 +68,8 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
     Size size;
     switch (mainLayoutAxis) {
-      // Treat defaultHorizontal as horizontal, although that is a question, why we need defaultHorizontal at all,
-      //  perhaps just to mean it is used in Containers, while Layouter needs either horizontal or vertical.
-      case LayoutAxis.defaultHorizontal:
       case LayoutAxis.horizontal:
-      // Make place right from takenSize. This should be layout specific, maybe
+        // Make place right from takenSize. This should be layout specific, maybe
         size = Size(maxSize.width - takenSize.width, maxSize.height);
         assert(containsFully(size));
         break;
@@ -90,10 +87,10 @@ class BoxContainerConstraints extends ContainerConstraints {
     double? width,
     double? height,
   }) {
-    assert(isInside);        // todo-00-last-last: changed exactBox to insideBox
-    height ??= maxSize.height; // todo-00-last-last: changed minSize to maxSize
-    width ??= maxSize.width;  // todo-00-last-last: changed minSize to maxSize
-    return BoxContainerConstraints.insideBox(size: Size(width, height));        // todo-00-last-last: changed exactBox to insideBox
+    assert(isInside);
+    height ??= maxSize.height;
+    width ??= maxSize.width;
+    return BoxContainerConstraints.insideBox(size: Size(width, height));
   }
 
   @override

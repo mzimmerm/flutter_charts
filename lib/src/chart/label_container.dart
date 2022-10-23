@@ -217,7 +217,7 @@ class LabelContainer extends BoxContainer {
   ///
   ///   [layoutableBoxParentSandbox.constraints] is needed to have been
   ///   set on this object by parent in layout (before this [newCoreLayout] is called,
-  ///   parent would have pushed constraints. todo-00-last : I think that part is missing
+  ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
@@ -226,7 +226,7 @@ class LabelContainer extends BoxContainer {
     BoxContainerConstraints boxConstraints = constraints;
 
     double labelMaxWidth =
-        boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding); // todo-00-last-last : replaced size with maxSize
+        boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       applyParentOrderedSkip(this, true);

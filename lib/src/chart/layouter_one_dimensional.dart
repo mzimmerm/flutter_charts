@@ -110,7 +110,8 @@ class LengthsLayouter {
   late final double _freePadding;
   double totalLayedOutLength = 0.0; // can change multiple times, set after each child length in lengths
 
-  LayedOutLineSegments layoutLengths() { // todo-00-important : should the name be layoutLineSegments ??
+  /// Lays out a list of imaginary sticks, each having a length, position does not matter.
+  LayedOutLineSegments layoutLengths() {
     LayedOutLineSegments layedOutLineSegments;
     switch (oneDimLayoutProperties.packing) {
       case Packing.matrjoska:

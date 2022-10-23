@@ -154,7 +154,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     setupPointsColumns();
 
     // ### 2. Layout the legends on top
-    var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(         // todo-00-last-last: changed exactBox to insideBox
+    var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width,
       chartArea.height,)
     );
@@ -186,7 +186,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        is not relevant in this first call.
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
-    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(          // todo-00-last-last: changed exactBox to insideBox
+    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
        yContainerHeight,
     ));
@@ -203,7 +203,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
 
-    var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(           // todo-00-last-last: changed exactBox to insideBox
+    var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width - yContainerSize.width,
       chartArea.height - legendContainerSize.height,
     ));
@@ -229,7 +229,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
-    yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(         // todo-00-last-last: changed exactBox to insideBox
+    yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
        yContainerHeight - xContainerSize.height,
     ));
@@ -249,7 +249,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-    var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(           // todo-00-last-last: changed exactBox to insideBox
+    var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width - yContainerSize.width,
       chartArea.height - (legendContainerSize.height + xContainerSize.height),
     ));
@@ -285,7 +285,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    layout( BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)), this);           // todo-00-last-last: changed exactBox to insideBox
+    layout( BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)), this);
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);
@@ -1250,11 +1250,10 @@ class LegendIndicatorRectContainer extends BoxContainer {
         ),
         super(); // {} or colon
 
-  // todo-00-done
   /// Overriden to set the concrete layout size on this leaf.
   ///
   /// Note: Alternatively, the same result would be achieved by overriding a getter, like so:
-  ///    ``` daer
+  ///    ``` dart
   ///       @override
   ///       ui.Size get layoutSize => ui.Size(
   ///         _indicatorSize.width,
@@ -1268,13 +1267,6 @@ class LegendIndicatorRectContainer extends BoxContainer {
       _indicatorSize.height,
     );
   }
-
-/* todo-00-last-last remove this.
-  @override
-  set layoutSize(ui.Size size) {
-    throw StateError('Should not be invoked');
-  }
-*/
 
   /// Overridden super's [paint] to also paint the rectangle indicator square.
   @override
