@@ -60,7 +60,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
       var legendItemBoxConstraints = boxConstraints.cloneWith(
-        width: legendItemWidth,
+        maxWidth: legendItemWidth,
       );
 
       var legendItemContainer = LegendItemContainerOriginalKeep(

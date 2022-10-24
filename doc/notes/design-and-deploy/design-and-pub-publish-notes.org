@@ -1640,19 +1640,19 @@ Debugging notes and suggestions:
 
  I *think the above proves the approach below. We need to introduce the even distribution of constraints to children, in addition to have the expandToConstraintMax false as default.*
 
-- [ ] Debug layouting:
-  - [ ] Place some packing or lineup so that legend is off the chart
-  - [ ] Debug behavior, make sure it throws exception wher beyound painted rectangle somewhere
-- [ ] BoxContainer
-  - [ ] Add member key on constructor (nullable) and add to constructors at least those used in Legend
-  - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
-- [ ] Add enum ConstraintDivisionToChildren : even, ratios, passFull,
-- [ ] Constraint : add method List<Constraints> divideUsingStrategy(ConstraintDivisionToChildren) only implement even If ratios, param must be set, if passFull, return same - plyg that in code first.
+- [-] Debug layouting:
+  - [X] Place some packing or lineup so that legend is off the chart
+  - [ ] Debug behavior, make sure it throws exception wher beyound painted rectangle somewhere - *this is hard to do right but possible, leaving for later*
+- [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide,
+- [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
 - [ ] also expandToConstraintMax=false is NOT compatible with packing = flow
 - [ ] Layouter general : Add to OneDimLayoutProperties expandToConstraintMax: true and false, default true. Tests should work
   - [ ] If true, use available constraint (totalSize). BUT always try false in code.
 - [ ] Layouter general : Add to OneDimLayoutProperties constraintDivisionToChildren: default 
 - [ ] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter.
+- [ ] BoxContainer debugability
+  - [ ] Add member key on constructor (nullable) and add to constructors at least those used in Legend
+  - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
 
 
 - Add 

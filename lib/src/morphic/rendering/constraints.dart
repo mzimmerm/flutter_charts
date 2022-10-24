@@ -2,6 +2,8 @@ import 'dart:ui' show Size;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 
+import '../../chart/layouter_one_dimensional.dart';
+
 class ContainerConstraints {
 }
 
@@ -23,8 +25,8 @@ class ContainerConstraints {
 ///   todo-01-document
 
 class BoxContainerConstraints extends ContainerConstraints {
-  Size minSize;
-  Size maxSize;
+  final Size minSize;
+  final Size maxSize;
 
   // Named constructors
   BoxContainerConstraints({required this.minSize, required this.maxSize,});
@@ -91,16 +93,115 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
   }
 
+  // todo-00-done
+  /// Divide this constraint into 'smaller' constraints depending on strategy.
+  ///
+  /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
+  /// cross-sizes remain the same as this constraint.
+  ///
+  /// Used to pass smaller constraints to children.
+  List<BoxContainerConstraints> divideUsingStrategy({
+    required int divideIntoCount,
+    required DivideConstraintsToChildren divideStrategy,
+    required LayoutAxis layoutAxis,
+    List<double>? ratios,
+  }) {
+    double minWidth, minHeight, maxWidth, maxHeight;
+
+    if (divideStrategy == DivideConstraintsToChildren.ratios && ratios == null) {
+      throw StateError('ratios only applicable for DivideConstraintsToChildren.ratio');
+    }
+
+    if ((divideStrategy == DivideConstraintsToChildren.evenly ||
+            divideStrategy == DivideConstraintsToChildren.evenly) &&
+        ratios != null) {
+      throw StateError('ratios not applicable for DivideConstraintsToChildren.evenly or noDivide');
+    }
+
+    if (ratios != null) {
+      assert(ratios!.length == divideIntoCount);
+      double sumRatios = ratios!.fold<double>(0.0, (previousValue, element) => previousValue + element);
+      assert(0.99 <= sumRatios && sumRatios <= 1.01);
+    }
+
+    switch (divideStrategy) {
+      case DivideConstraintsToChildren.evenly:
+        switch (layoutAxis) {
+          case LayoutAxis.horizontal:
+            minWidth = minSize.width / divideIntoCount;
+            minHeight = minSize.height;
+            maxWidth = maxSize.width / divideIntoCount;
+            maxHeight = maxSize.height;
+            break;
+          case LayoutAxis.vertical:
+            minWidth = minSize.width;
+            minHeight = minSize.height / divideIntoCount;
+            maxWidth = maxSize.width;
+            maxHeight = maxSize.height / divideIntoCount;
+            break;
+        }
+        List<BoxContainerConstraints> fractions = [];
+        for (int i = 0; i < divideIntoCount; i++) {
+          var fraction = cloneWith(
+            minWidth: minWidth,
+            minHeight: minHeight,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+          );
+          fractions.add(fraction);
+        }
+        return fractions;
+      case DivideConstraintsToChildren.ratios:
+        List<BoxContainerConstraints> fractions = [];
+        for (double ratio in ratios!) {
+          switch (layoutAxis) {
+            case LayoutAxis.horizontal:
+              minWidth = minSize.width * ratio;
+              minHeight = minSize.height;
+              maxWidth = maxSize.width * ratio;
+              maxHeight = maxSize.height;
+              break;
+            case LayoutAxis.vertical:
+              minWidth = minSize.width;
+              minHeight = minSize.height * ratio;
+              maxWidth = maxSize.width;
+              maxHeight = maxSize.height * ratio;
+              break;
+          }
+          var fraction = cloneWith(
+            minWidth: minWidth,
+            minHeight: minHeight,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+          );
+          fractions.add(fraction);
+        }
+        return fractions;
+      case DivideConstraintsToChildren.noDivide:
+        return [clone()];
+    }
+  }
 
   /// Clone of this object with different size.
   BoxContainerConstraints cloneWith({
-    double? width,
-    double? height,
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
   }) {
-    assert(isInside);
-    height ??= maxSize.height;
-    width ??= maxSize.width;
-    return BoxContainerConstraints.insideBox(size: Size(width, height));
+    minWidth ??= minSize.width;
+    minHeight ??= minSize.height;
+    maxWidth ??= maxSize.width;
+    maxHeight ??= maxSize.height;
+
+    return BoxContainerConstraints(
+      minSize: Size(minWidth, minHeight),
+      maxSize: Size(maxWidth, maxHeight),
+    );
+  }
+
+  BoxContainerConstraints clone() {
+    return cloneWith();
   }
 
   @override
