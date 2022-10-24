@@ -26,10 +26,10 @@
       <excludeFolder url="file://$MODULE_DIR$/integration_test/build" />
       <excludeFolder url="file://$MODULE_DIR$/android/.gradle" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 33, extension level 3 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Dart SDK" level="project" />
-    <orderEntry type="library" name="Flutter Plugins" level="project" />
-    <orderEntry type="library" name="Dart Packages" level="project" />
+    <orderEntry type="library" exported="" name="Dart SDK" level="project" />
+    <orderEntry type="library" exported="" name="Flutter Plugins" level="project" />
+    <orderEntry type="library" exported="" name="Dart Packages" level="project" />
   </component>
 </module>
