@@ -259,30 +259,6 @@ bool bothHaveValue({
   return math.min(one, two) == value && value == math.max(one, two) && math.min(one, two) == value;
 }
 
-/* todo-02-make-transpose-generics : original version before nullability
-List<List<T>> transpose<T>(List<List<T>> colsInRows) {
-  int nRows = colsInRows.length;
-  if (colsInRows.length == 0) return colsInRows;
-
-  int nCols = colsInRows[0].length;
-  if (nCols == 0) throw new StateError("Degenerate matrix");
-
-  // Init the transpose to make sure the size is right
-  List<List<T>> rowsInCols = new List(nCols);
-  for (int col = 0; col < nCols; col++) {
-    rowsInCols[col] = new List(nRows);
-  }
-
-  // Transpose
-  for (int row = 0; row < nRows; row++) {
-    for (int col = 0; col < nCols; col++) {
-      rowsInCols[col][row] = colsInRows[row][col];
-    }
-  }
-  return rowsInCols;
-}
-*/
-
 double get epsilon => 0.000001;
 
 String enumName(Enum e) {

@@ -1823,7 +1823,31 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 }
 
 // todo-01: In null safety, I had to replace T with a concrete StackableValuePoint.
-//               can this be improved? This need may be a typing bug in Dart
+/* todo-02-make-transpose-generics : original version before nullability
+List<List<T>> transpose<T>(List<List<T>> colsInRows) {
+  int nRows = colsInRows.length;
+  if (colsInRows.length == 0) return colsInRows;
+
+  int nCols = colsInRows[0].length;
+  if (nCols == 0) throw new StateError("Degenerate matrix");
+
+  // Init the transpose to make sure the size is right
+  List<List<T>> rowsInCols = new List(nCols);
+  for (int col = 0; col < nCols; col++) {
+    rowsInCols[col] = new List(nRows);
+  }
+
+  // Transpose
+  for (int row = 0; row < nRows; row++) {
+    for (int col = 0; col < nCols; col++) {
+      rowsInCols[col][row] = colsInRows[row][col];
+    }
+  }
+  return rowsInCols;
+}
+*/
+
+//               can this be improved? This need may be a typing bug in Dart - See above.
 /// Assuming even length 2D matrix [colsRows], return it's transpose copy.
 List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsInRows) {
   int nRows = colsInRows.length;
