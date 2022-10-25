@@ -14,16 +14,16 @@ main() {
   group('LengthsLayouter.layout() Matrjoska Left,', () {
     var matrjoskaLeftNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
     );
     // Testing exception so create in test : var matrjoskaLeftTotalLength10Exception
     var matrjoskaLeftTotalLength15 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 15.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 15.0),
     );
     var matrjoskaLeftTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 27.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 27.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Left, no total length enforced', () {
@@ -52,7 +52,7 @@ main() {
           () => LengthsLayouter(
                 lengths: lengths,
                 oneDimLayoutProperties:
-                    OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.left, totalLength: 10.0),
+                    OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -107,11 +107,11 @@ main() {
   group('LengthsLayouter.layout() Matrjoska Right,', () {
     var matrjoskaRightNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.right),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.end),
     );
     var matrjoskaRightTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.right, totalLength: 27.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.end, totalLength: 27.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Right, no total length enforced', () {
@@ -143,16 +143,16 @@ main() {
   group('LengthsLayouter.layout() Snap Left,', () {
     var snapLeftNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
     );
     // Testing exception so create in test : var snapLeftTotalLength10Exception
     var snapLeftTotalLength30 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 30.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start, totalLength: 30.0),
     );
     var snapLeftTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Snap Left, no total length enforced', () {
@@ -180,7 +180,7 @@ main() {
       expect(
           () => LengthsLayouter(
                 lengths: lengths,
-                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.left, totalLength: 10.0),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -235,11 +235,11 @@ main() {
   group('LengthsLayouter.layout() Snap Right,', () {
     var snapRightNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.right),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end),
     );
     var snapRightTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.right, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Snap Right, no total length enforced', () {
@@ -271,16 +271,16 @@ main() {
   group('LengthsLayouter.layout() Loose Left,', () {
     var looseLeftNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
     );
     // Testing exception so create in test : var looseLeftTotalLength10Exception
     var looseLeftTotalLength30 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 30.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start, totalLength: 30.0),
     );
     var looseLeftTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Loose Left, no total length enforced', () {
@@ -308,7 +308,7 @@ main() {
       expect(
           () => LengthsLayouter(
                 lengths: lengths,
-                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.left, totalLength: 10.0),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
@@ -367,11 +367,11 @@ main() {
   group('LengthsLayouter.layout() Loose Right,', () {
     var looseRightNoTotalLength = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.right),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.end),
     );
     var looseRightTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.right, totalLength: 42.0),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.end, totalLength: 42.0),
     );
 
     test('LengthsLayouter.layout() Loose Right, no total length enforced', () {

@@ -25,10 +25,10 @@ enum Packing {
   ///
   /// If the available [LengthsLayouter._freePadding] is non zero:
   ///
-  /// - For [Lineup.left] or [Lineup.right] : Also aligns the group to min or max boundary.
-  ///   For [Lineup.left], there is no padding between min and first element of the group,
+  /// - For [Lineup.start] or [Lineup.end] : Also aligns the group to min or max boundary.
+  ///   For [Lineup.start], there is no padding between min and first element of the group,
   ///   all the padding [LengthsLayouter._freePadding] is after the end of the group;
-  ///   similarly for [Lineup.right], for which the group end is aligned with the end,
+  ///   similarly for [Lineup.end], for which the group end is aligned with the end,
   ///   and all the padding [LengthsLayouter._freePadding] is before the group.
   /// - For [Lineup.center] : The elements are packed into a group and the group centered.
   ///   That means, when [LengthsLayouter._freePadding] is available, half of the free length pads
@@ -47,11 +47,11 @@ enum Packing {
   ///
   /// If the available [LengthsLayouter._freePadding] is non zero:
   ///
-  /// - For [Lineup.left] or [Lineup.right] : Aligns the first element start to the min,
+  /// - For [Lineup.start] or [Lineup.end] : Aligns the first element start to the min,
   ///   or the last element end to the max, respectively.
-  ///   For [Lineup.left], the available [LengthsLayouter._freePadding] is distributed evenly
+  ///   For [Lineup.start], the available [LengthsLayouter._freePadding] is distributed evenly
   ///   as padding between elements and at the end. First element start is at the boundary.
-  ///   For [Lineup.right], the available [LengthsLayouter._freePadding] is distributed evenly
+  ///   For [Lineup.end], the available [LengthsLayouter._freePadding] is distributed evenly
   ///   as padding at the beginning, and between elements. Last element end is at the boundary.
   /// - For [Lineup.center] : Same proportions of [LengthsLayouter._freePadding]
   ///   are distributed as padding at the beginning, between elements, and at the end.
@@ -62,9 +62,9 @@ enum Packing {
 /// todo-01-document
 /// This is alignment.
 enum Lineup {
-  left,
+  start,
   center,
-  right,
+  end,
 }
 
 enum DivideConstraintsToChildren {
@@ -157,7 +157,7 @@ class LengthsLayouter {
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
     double start, end, freePadding;
     switch (oneDimLayoutProperties.lineup) {
-      case Lineup.left:
+      case Lineup.start:
         freePadding = _freePadding;
         start = 0.0;
         end = length;
@@ -168,7 +168,7 @@ class LengthsLayouter {
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
         break;
-      case Lineup.right:
+      case Lineup.end:
         freePadding = _freePadding;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
@@ -233,7 +233,7 @@ class LengthsLayouter {
   Tuple2<double, double> _snapStartOffset(bool isFirstLength) {
     double freePadding, startOffset, freePaddingRight;
     switch (oneDimLayoutProperties.lineup) {
-      case Lineup.left:
+      case Lineup.start:
         freePadding = 0.0;
         freePaddingRight = _freePadding;
         startOffset = freePadding;
@@ -243,7 +243,7 @@ class LengthsLayouter {
         freePaddingRight = freePadding;
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
-      case Lineup.right:
+      case Lineup.end:
         freePadding = _freePadding; // for max, all freeLength to the left
         freePaddingRight = 0.0;
         startOffset = isFirstLength ? freePadding : 0.0;
@@ -258,7 +258,7 @@ class LengthsLayouter {
     int lengthsCount = lengths.length;
     double freePadding, startOffset, freePaddingRight;
     switch (oneDimLayoutProperties.lineup) {
-      case Lineup.left:
+      case Lineup.start:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = freePadding;
         startOffset = isFirstLength ? 0.0 : freePadding;
@@ -268,7 +268,7 @@ class LengthsLayouter {
         freePaddingRight = freePadding;
         startOffset = freePadding;
         break;
-      case Lineup.right:
+      case Lineup.end:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = 0.0;
         startOffset = freePadding;
