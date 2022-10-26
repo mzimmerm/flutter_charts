@@ -4,64 +4,99 @@ import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 
 import '../../chart/layouter_one_dimensional.dart';
 
-class ContainerConstraints {
-}
+class ContainerConstraints {}
 
-/// Defines how a container [layout] should expand the container in a direction.
+/// Represents two boxes in terms of their sizes.
 ///
-/// Direction can be "width" or "height".
-/// Generally,
-/// - If direction style is [TryFill], the container should use all
-///   available length in the direction (that is, [width] or [height].
-///   This is intended to fill a predefined
-///   available length, such as when showing X axis labels
-/// - If direction style is [GrowDoNotFill], container should use as much space
-///   as needed in the direction, but stop "well before" the available length.
-///   The "well before" is not really defined here.
-///   This is intended to for example layout Y axis in X direction,
-///   where we want to put the data container to the right of the Y labels.
-/// - If direction style is [Unused], the [layout] should fail on attempted
-///   looking at such
-///   todo-01-document
+/// Objects of this class's extensions allow two core roles:
+///   - Role of a constraint a parent in a layout hierarchy requires of it's children.
+///     This is used in the current one-pass layout.
+///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
+///     This could be used it a future two pass layout.
+abstract class BoundingBoxesBase {
+  late final Size minSize;
+  late final Size maxSize;
 
-class BoxContainerConstraints extends ContainerConstraints {
-  final Size minSize;
-  final Size maxSize;
+  // The SINGLE UNNAMED generative constructor
+  BoundingBoxesBase({
+    required this.minSize,
+    required this.maxSize,
+  });
 
-  // Named constructors
-  BoxContainerConstraints({required this.minSize, required this.maxSize,});
-  BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size,);
-  BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size,);
-  BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite,);
-
+  // Named constructors, forwarded to the generative constructor
+  BoundingBoxesBase.exactBox({required Size size}) : this(minSize: size, maxSize: size);
+  BoundingBoxesBase.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
+  BoundingBoxesBase.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
   // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
-  BoxContainerConstraints.unused()
-      : this.exactBox(size: const Size(
-    -1.0,
-    -1.0,
-  ));
-  BoxContainerConstraints.infinity()
-      : this.insideBox(size: const Size(
-    double.infinity,
-    double.infinity,
-  ));
+  BoundingBoxesBase.unused() : this.exactBox(size: const Size(-1.0, -1.0));
+  BoundingBoxesBase.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
+
+  // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
+
+  /// Generative named constructor from source, for cloning
+  BoundingBoxesBase.cloneOther({required BoundingBoxesBase source}) {
+    // set members of the newly created instance from source
+    minSize = source.minSize;
+    maxSize = source.maxSize;
+  }
+
+  /// Abstract method for cloning, using the prototype pattern to share
+  /// cloning implementation with superclasses.
+  ///
+  /// Used along with the generative named constructor [BoundingBoxesBase.cloneOther].
+  /// In the extensions [clone] returns newly constructed BoundingBoxesBase extensions
+  /// using the concrete [cloneOther] named constructor
+  /// and passing `this` to it.
+  BoundingBoxesBase clone();
+
+  // The cloneOtherWith family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
+  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
+
+  /// Generative named constructor from changed values and source, for cloning
+  BoundingBoxesBase.cloneOtherWith({
+    required BoundingBoxesBase source,
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+  }) {
+    // set members of the newly created instance from parameters, if null, from source
+    minWidth ??= source.minSize.width;
+    minHeight ??= source.minSize.height;
+    maxWidth ??= source.maxSize.width;
+    maxHeight ??= source.maxSize.height;
+
+    minSize = Size(minWidth, minHeight);
+    maxSize = Size(maxWidth, maxHeight);
+  }
+
+  /// [cloneWith] method implementation.
+  /// Returns instance created by the [BoxContainerConstraints.cloneOtherWith] constructor
+  BoundingBoxesBase cloneWith({
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+  });
 
   Size get size {
     if (isInside) {
       return maxSize;
     } else {
       throw StateError('not implemented other boxes, minSize = $minSize, maxSize = $maxSize');
-      }
+    }
   }
-  
+
   bool get isExact => minSize == maxSize;
 
   bool get isInside => minSize.width < maxSize.width && minSize.height < maxSize.height;
 
   bool containsFully(Size size) {
-    return size.width <= maxSize.width && size.height <= maxSize.height
-        && size.width >= minSize.width && size.height >= minSize.height;
+    return size.width <= maxSize.width &&
+        size.height <= maxSize.height &&
+        size.width >= minSize.width &&
+        size.height >= minSize.height;
   }
 
   Size maxSizeLeftAfterTakenFromAxisDirection(Size takenSize, LayoutAxis layoutAxis) {
@@ -76,7 +111,7 @@ class BoxContainerConstraints extends ContainerConstraints {
         assert(containsFully(size));
         break;
       case LayoutAxis.vertical:
-      // Make place below from takenSize. This should be layout specific, maybe
+        // Make place below from takenSize. This should be layout specific, maybe
         size = Size(maxSize.width, maxSize.height - takenSize.height);
         assert(containsFully(size));
         break;
@@ -93,14 +128,13 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
   }
 
-  // todo-00-done
   /// Divide this constraint into 'smaller' constraints depending on strategy.
   ///
   /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
   /// cross-sizes remain the same as this constraint.
   ///
   /// Used to pass smaller constraints to children.
-  List<BoxContainerConstraints> divideUsingStrategy({
+  List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
     required DivideConstraintsToChildren divideStrategy,
     required LayoutAxis layoutAxis,
@@ -140,7 +174,7 @@ class BoxContainerConstraints extends ContainerConstraints {
             maxHeight = maxSize.height / divideIntoCount;
             break;
         }
-        List<BoxContainerConstraints> fractions = [];
+        List<BoundingBoxesBase> fractions = [];
         for (int i = 0; i < divideIntoCount; i++) {
           var fraction = cloneWith(
             minWidth: minWidth,
@@ -152,7 +186,7 @@ class BoxContainerConstraints extends ContainerConstraints {
         }
         return fractions;
       case DivideConstraintsToChildren.ratios:
-        List<BoxContainerConstraints> fractions = [];
+        List<BoundingBoxesBase> fractions = [];
         for (double ratio in ratios!) {
           switch (layoutAxis) {
             case LayoutAxis.horizontal:
@@ -182,30 +216,163 @@ class BoxContainerConstraints extends ContainerConstraints {
     }
   }
 
-  /// Clone of this object with different size.
+  @override
+  String toString() {
+    return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
+  }
+}
+
+/// Defines how a container [layout] should expand the container in a direction.
+///
+/// Direction can be "width" or "height".
+/// Generally,
+/// - If direction style is [TryFill], the container should use all
+///   available length in the direction (that is, [width] or [height].
+///   This is intended to fill a predefined
+///   available length, such as when showing X axis labels
+/// - If direction style is [GrowDoNotFill], container should use as much space
+///   as needed in the direction, but stop "well before" the available length.
+///   The "well before" is not really defined here.
+///   This is intended to for example layout Y axis in X direction,
+///   where we want to put the data container to the right of the Y labels.
+/// - If direction style is [Unused], the [layout] should fail on attempted
+///   looking at such
+///   todo-01-document
+
+class BoxContainerConstraints extends BoundingBoxesBase {
+
+  /// Expresses if it was created for the very top [RowLayouter] or [ColumnLayoter].
+  ///
+  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Lineup] (alignment) other
+  /// then [Lineup.start]
+  bool isOnTop = false;
+
+  /// The SINGLE UNNAMED generative constructor.
+  /// must call super, super initializes fields in BoundingBoxesBase
+  BoxContainerConstraints({
+    required minSize,
+    required maxSize,
+  }) : super(minSize: minSize, maxSize: maxSize);
+
+  // Named constructors, forwarded to the generative constructor
+  BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
+  BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
+  BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
+  // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
+  /// Named constructor for unused expansion
+  BoxContainerConstraints.unused() : this.exactBox(size: const Size(-1.0, -1.0));
+  BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
+
+  // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
+
+  /// Generative named constructor, from source.
+  /// Call super to initialize common fields, then initialize the added field
+  BoxContainerConstraints.cloneOther(BoxContainerConstraints source)
+      : isOnTop = source.isOnTop, super.cloneOther(source: source);
+
+  /// [clone] method implementation.
+  /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor
+  @override
+  BoxContainerConstraints clone() {
+    return BoxContainerConstraints.cloneOther(this);
+  }
+
+  // The [cloneOtherWith] family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
+  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
+
+  /// Generative named constructor, from source.
+  /// Call super to initialize common fields, then initialize the added field
+  BoxContainerConstraints.cloneOtherWith({
+    required BoxContainerConstraints source,
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+    bool? isOnTop,
+  }) : super.cloneOtherWith(
+          source: source,
+          minWidth: minWidth,
+          minHeight: minHeight,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+        ) {
+    isOnTop ??= source.isOnTop;
+  }
+
+  /// [cloneWith] method implementation.
+  /// Returns instance created by the [BoxContainerConstraints.cloneOtherWith] constructor
+  @override
   BoxContainerConstraints cloneWith({
     double? minWidth,
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
   }) {
-    minWidth ??= minSize.width;
-    minHeight ??= minSize.height;
-    maxWidth ??= maxSize.width;
-    maxHeight ??= maxSize.height;
-
-    return BoxContainerConstraints(
-      minSize: Size(minWidth, minHeight),
-      maxSize: Size(maxWidth, maxHeight),
+    return BoxContainerConstraints.cloneOtherWith(
+      source: this,
+      minWidth: minWidth,
+      minHeight: minHeight,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
     );
   }
+}
 
-  BoxContainerConstraints clone() {
-    return cloneWith();
+class BoundingBoxes extends BoundingBoxesBase {
+  /// The SINGLE UNNAMED generative constructor.
+  /// must call super, super initializes fields in BoundingBoxesBase
+  BoundingBoxes({required minSize, required maxSize})
+      : super(minSize: minSize, maxSize: maxSize);
+
+  // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
+
+  /// Generative named constructor, from source.
+  /// Call super to initialize common fields, then initialize the added field
+  BoundingBoxes.cloneOther(BoundingBoxes source) : super.cloneOther(source: source) {
+    // no new fields compared to BoundingBoxesBase
   }
 
+  /// [clone] method implementation.
+  /// Returns instance created by the [BoundingBoxes.cloneOther] constructor
   @override
-  String toString() {
-    return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
-  } 
+  BoundingBoxes clone() {
+    return BoundingBoxes.cloneOther(this);
+  }
+
+  // The [cloneOtherWith] family is omitted here for now.implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
+  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
+
+  /// Generative named constructor, from source.
+  /// Call super to initialize common fields, then initialize the added field
+  BoundingBoxes.cloneOtherWith({
+    required BoundingBoxes source,
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+  }) : super.cloneOtherWith(
+          source: source,
+          minWidth: minWidth,
+          minHeight: minHeight,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+        );
+
+  /// [cloneWith] method implementation.
+  /// Returns instance created by the [BoundingBoxes.cloneOtherWith] constructor
+  @override
+  BoundingBoxes cloneWith({
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+  }) {
+    return BoundingBoxes.cloneOtherWith(
+      source: this,
+      minWidth: minWidth,
+      minHeight: minHeight,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+    );
+  }
 }

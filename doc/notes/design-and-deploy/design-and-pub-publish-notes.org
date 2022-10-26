@@ -1248,34 +1248,20 @@ Core ideas
 
 These are the rules we implement
 
-1. [ ] ~newCoreLayout~ implementation must ensure resulting ~layoutSize~ is within the passed constraint; ~paint()~ must ensure all painting is within ~layoutSize & offset~ (layout size offset by offset) from layout.
-2. [ ] Each BoxContainer must build itself and immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChildToHierarchyDeprecated~, then, for all children calling ~child.buildContainerOrSelf(this)~
+1. [ ] ~newCoreLayout~ implementation must ensure:
+   - [ ]resulting ~layoutSize~ is within the passed constraint;
+   - [ ]~paint()~ must ensure all painting is within ~layoutSize & offset~ (layout size offset by offset) from layout.
+2. [ ] Each BoxContainer must build immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChildToHierarchyDeprecated~, then, for all children calling ~child.buildContainerOrSelf(this)~
 3. [ ] ~layout()~  should never be called, except on top
 4. [ ] ~newCoreLayout~ on self or children should NEVER be called in ~buildContainerOrSelf~
-5. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
-6. [ ] *Important: actual children of container : Ensure (manually for now), that each ~BoxContainer~*:
-   - EITHER wraps it's actual children in auto-layouter (~RowLayouter or ColumnLayouter~), and uses non-overriden default ~newCoreLayout~. This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~), the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
-   - OR     adds its' actual children directly, and uses overriden ~newCoreLayout~ which lays out children manually in code, similar to what we do in old ~layout~
-7. [ ] Leaf ~BoxContainer~ does not need to implement neither ~buildContainerOrSelf~ (super returns this) nor  ~newCoreLayout~ (super returns when isLeaf). So leaf only needs to implement ~paint~ and ~get layoutSize~
-8. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
-9. [ ] OLD
-#+BEGIN_SRC dart
-  /// Create and add children of this container.
-  // todo-done-01 : Removed. Each BoxContainer must build itself using buildContainerOrSelf
-  /*
-  void rootStep2_Recurse_buildContainerHierarchy(BoxContainer parentBoxContainer) {
-    late BoxContainer selfOrReplacedWithContainer;
-    if (isRoot) {
-      // todo-00-last-last-last : think about this. This code requires that the root container builds the whole
-      //  hierarchy when its buildContainerOrSelf is called. Is that guaranteed?
-      selfOrReplacedWithContainer = buildContainerOrSelf(parentBoxContainer);
-    }
-    for (var child in selfOrReplacedWithContainer.children) {
-      child.rootStep2_Recurse_buildContainerHierarchy(parentBoxContainer);
-    }
-  }
-  */
-#+END_SRC
+5. [ ] ~BoxContainerConstraints~ are never divided - in any Layouter, including ~RowLayouter~
+6. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
+7. [ ] *Important: actual children of container : Ensure (manually for now), that each ~BoxContainer~*:
+   - EITHER uses non-overriden default ~newCoreLayout~ - Then it MUST wrap it's actual children in auto-layouter (~RowLayouter or ColumnLayouter~).
+     - This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~); the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
+   - OR     uses overriden ~newCoreLayout~  - THEN it adds its' actual children to itself directly, and lays out children manually in code, similar to what we do in old ~layout~
+8. [ ] Leaf ~BoxContainer~ does not need to implement neither ~buildContainerOrSelf~ (super returns this) nor  ~newCoreLayout~ (super returns when isLeaf). So leaf only needs to implement ~paint~ and ~get layoutSize~
+9. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
 
 
 ** HOLD 3. Implement new Box/Column layouters
@@ -1627,7 +1613,7 @@ What are those?
 
 ** IN-PROGRESS-NOW 5.2 Layouter improvements : Debugging, RowLayouter Packing, Lineup, and other settings
 
-Debugging notes and suggestions:
+Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
 
 - In _layoutChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
 - after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
@@ -1649,7 +1635,7 @@ Debugging notes and suggestions:
 - [ ] Layouter general : Add to OneDimLayoutProperties expandToConstraintMax: true and false, default true. Tests should work
   - [ ] If true, use available constraint (totalSize). BUT always try false in code.
 - [ ] Layouter general : Add to OneDimLayoutProperties constraintDivisionToChildren: default 
-- [ ] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter.
+- [ ] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
 - [ ] BoxContainer debugability
   - [ ] Add member key on constructor (nullable) and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
