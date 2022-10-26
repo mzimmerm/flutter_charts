@@ -6,6 +6,28 @@ buildscript {
     }
 
     dependencies {
+        // This classpath dependencies statement:
+        //      - classpath 'com.android.tools.build:gradle:7.1.2'
+        //   convert to a Maven POM file definition (not sure why not gradle)
+        //   It gets the pom from the link below,
+        //   then uses it to download gradle-wrapper.jar into the android/gradle/wrapper directory.
+
+        // mz - important: This must remain as 7.1.2, when set, build is looking for
+        //        - https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/7.1.2/gradle-7.1.2.pom
+        //      check what exists there, and only use version for which the pom exists.
+        //      For example, there is no pom on that site for gradle-7.4.zip.
+        //      I am not sure how to find pom files on the web ...
+        //
+        //      Also look at android/gradle/wrapper/gradle-wrapper.properties, which uses
+        //        distributionUrl=https\://services.gradle.org/distributions/gradle-7.4-all.zip
+        //      This combo gradle:7.1.2 and gradle-wrapper:7.4 seems to work.
+        //      Note that there is NO gradle-7.1.2-all.zip on that site. However, the following site seems to
+        //      contain all new versions of gradle zips, for example, the latest is on
+        //         - https://gradle.org/next-steps/?version=7.5.1&format=bin
+        //      Maybe that should be tried in gradle-wrapper.properties
+        //
+        //      CTRL-9 BUILD NOW WORKS
+        //      FOR THE CTRL-9 BUILD TO WORK, IT IS REQUIRED TO INSTALL ANDROID NDK FROM ANDROID STUDIO..
         classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
