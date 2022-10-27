@@ -196,7 +196,7 @@ abstract class LayoutableBox {
 /// along each of those axis, [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
 ///
 /// The core function of this class is to layout (offset) the member [children]
-/// by the side effects of the method [_offsetChildrenAccordingToLayouter].
+/// by the side effects of the method [_layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter].
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   late final Lineup mainAxisLineup;
@@ -449,7 +449,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     a fraction of it's constraint.
   ///
   void _preDescend_DistributeMyConstraintToImmediateChildren_And_SetTotalLengthOnMyAxisLayoutProperties() {
-   // todo-00-last-last commented out as test PUT BACK : mainAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(mainLayoutAxis);
+    // todo-00-last-last : move this away from mainAxisLayoutProperties : Used for 'Packing.loose' and 'Lineup.end' to give free Padding.
+    // todo-00-last-last  moved away : mainAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(mainLayoutAxis);
     // todo-00-last : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
 
     for (var child in _childrenInLayoutOrderGreedyLast) {
@@ -491,7 +492,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (hasGreedyChild) {
       List<BoxLayouter> notGreedyChildren = _childrenInLayoutOrderGreedyLast.toList();
       notGreedyChildren.removeLast();
-      _offsetChildrenAccordingToLayouter(notGreedyChildren);
+      _layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter(notGreedyChildren);
       // Calculate the size of envelop of all non-greedy children, layed out using this layouter.
       Size notGreedyChildrenSizeAccordingToLayouter = _notLeaf_calcChildrenLayoutSizeAccordingToLayouter(notGreedyChildren);
       // Re-calculate Size left for the Greedy child,
@@ -513,7 +514,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // First, calculate children offsets within self.
     // Note: When the greedy child is re-layed out, it has a final size (remainder after non greedy sizes added up),
     //       we can deal with the greedy child as if non greedy child.
-    _offsetChildrenAccordingToLayouter(children);
+    _layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter(children);
     // Now when we placed all children at the right offsets within self,
     // set the layoutSize on self, as envelope of all children offsets and sizes.
     _setSize_As_OuterBoundOf_OffsettedChildren();
@@ -551,8 +552,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     assert(!isLeaf);
     _MainAndCrossLayedOutSegments mainAndCrossLayedOutSegments = _layoutChildrenUsingOneDimAxisLayouter_As_LayedOutLineSegments(notGreedyChildren);
 
-    double mainLayedOutLength = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.totalLayedOutLength;
-    double crossLayedOutLength = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.totalLayedOutLength;
+    double mainLayedOutLength = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.totalLayedOutLengthIncludesPadding;
+    double crossLayedOutLength = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.totalLayedOutLengthIncludesPadding;
 
     return _convertLengthsToSize(mainLayoutAxis, mainLayedOutLength, crossLayedOutLength);
   }
@@ -572,7 +573,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// There are two instances of the [LengthsLayouter] created, one
   /// for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
   /// another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
-  void _offsetChildrenAccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
+  void _layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter(List<LayoutableBox> notGreedyChildren) {
     assert(!isLeaf);
     // Create a LengthsLayouter along each axis (main, cross), convert it to LayoutSegments,
     // then package into a wrapper class.
@@ -606,14 +607,23 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   _MainAndCrossLayedOutSegments _layoutChildrenUsingOneDimAxisLayouter_As_LayedOutLineSegments(List<LayoutableBox> notGreedyChildren) {
     // Create a LengthsLayouter along each axis (main, cross).
+    var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
     LengthsLayouter mainAxisLengthsLayouter =
-        _lengthsLayouterAlong(mainLayoutAxis, mainAxisLayoutProperties, notGreedyChildren);
+    _lengthsLayouterAlong(
+        layoutAxis: mainLayoutAxis,
+        axisLayoutProperties: mainAxisLayoutProperties,
+        lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(mainLayoutAxis),
+        notGreedyChildren: notGreedyChildren,);
     LengthsLayouter crossAxisLengthsLayouter =
-        _lengthsLayouterAlong(axisPerpendicularTo(mainLayoutAxis), crossAxisLayoutProperties, notGreedyChildren);
+        _lengthsLayouterAlong(
+          layoutAxis: crossLayoutAxis,
+          axisLayoutProperties: crossAxisLayoutProperties,
+          lengthsConstraintAlongLayoutAxis: 0.0, // todo-00-last : why cannot we pass constraint along cross axis?
+          notGreedyChildren: notGreedyChildren,);
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout lengths' according it's rules.
-    // The [layoutLengths] method actually includes offsetting the lengths, and also calculating the totalLayedOutLength,
+    // The [layoutLengths] method actually includes offsetting the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
     //   which is the total length of children.
     LayedOutLineSegments mainAxisLayedOutSegments = mainAxisLengthsLayouter.layoutLengths();
     LayedOutLineSegments crossAxisLayedOutSegments = crossAxisLengthsLayouter.layoutLengths();
@@ -646,7 +656,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       ));
     }
     mainAxisLayedOutSegments.lineSegments = movedLineSegments;
-    mainAxisLayedOutSegments.totalLayedOutLength -= firstLineSegment.min;
+    mainAxisLayedOutSegments.totalLayedOutLengthIncludesPadding -= firstLineSegment.min;
     // todo-00-last testing this ^^^^^^
 */
 
@@ -704,18 +714,24 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  /// Creates a [LengthsLayouter] along the passed [layoutAxis], with the passed [axisLayoutProperties].
+  /// Creates a [LengthsLayouter] for the passed [notGreedyChildren].
+  ///
+  /// This layouter can layout children in one dimension along the passed [layoutAxis],
+  /// according the passed [axisLayoutProperties].
   ///
   /// The passed objects must both correspond to either main axis or the cross axis.
-  LengthsLayouter _lengthsLayouterAlong(
-    LayoutAxis layoutAxis,
-    OneDimLayoutProperties axisLayoutProperties,
-    List<LayoutableBox> notGreedyChildren,
-  ) {
+  LengthsLayouter _lengthsLayouterAlong({
+    required LayoutAxis layoutAxis,
+    required OneDimLayoutProperties axisLayoutProperties,
+    required double lengthsConstraintAlongLayoutAxis, // todo-00-last-last
+    required List<LayoutableBox> notGreedyChildren,
+  }) {
     List<double> lengthsAlongLayoutAxis = _lengthsOfChildrenAlong(layoutAxis, notGreedyChildren);
     LengthsLayouter lengthsLayouterAlongLayoutAxis = LengthsLayouter(
       lengths: lengthsAlongLayoutAxis,
       oneDimLayoutProperties: axisLayoutProperties,
+      lengthsConstraint: lengthsConstraintAlongLayoutAxis, // todo-00-last-last
+
     );
     return lengthsLayouterAlongLayoutAxis;
   }

@@ -1362,7 +1362,7 @@ class LegendContainer extends ChartAreaContainer {
 /* todo-00-last-keep */
       RowLayouter(
       mainAxisLineup: Lineup.start,
-      mainAxisPacking: Packing.snap, // Packing.loose,
+      mainAxisPacking: Packing.snap, // Packing.loose,  Packing.snap (original for tests OK)
 /* */
       children: [
         // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
