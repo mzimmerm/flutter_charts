@@ -59,11 +59,6 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
       List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors;
       indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
 
-/* todo-00-last-last
-      var legendItemBoxConstraints = boxConstraints.cloneWith(
-        maxWidth: legendItemWidth,
-      );
-*/
       var legendItemBoxConstraints = BoxContainerConstraints(
           minSize: boxConstraints.minSize,
           maxSize: ui.Size(legendItemWidth, boxConstraints.maxSize.height,),

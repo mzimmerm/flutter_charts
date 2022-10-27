@@ -1640,18 +1640,25 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 Important current
 
-- [ ] Put stuff back so tests work without changes
-- [ ] Add check to newCoreLayout, if RowLayouter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the RowLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
-- [ ] Remove asserts around free space - there is TODO.
+- [X] Put stuff back so tests work without changes
+- [X] Remove asserts around free space - there is TODO.
+- [ ] Add check to newCoreLayout, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
+  - [ ] Test it on some combinations in legend layout
+    - [ ] nested Lineup.end on Row
+    - [ ] we do not have Column example to test
 - [ ] Tests work
 - [ ] Support to show yellow and black rectangle on overflow:
   - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
   - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
   - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
   - [ ] Add top paint method as super to all paint methods.
+  - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
+- [ ] Add container Greedy, equivalent of Expanded with ratio
+  - [ ] Change layout algorithm to process non-expanded first, GIVE EXPANDED RATIO OF CONSTRAINT - THIS REQUIRES A NEW STEP
+  - [ ] Tests work!!!
+  - [ ] CANNOT TEST YET, UNTIL WE CONVERT THE WHOLE CHART TO NEW LAYOUT. 
 - [ ] Add Padding BoxContainer that can be used around boxes to pad with space, no painting needed?
 - [ ] Add Layout which wraps! (maybe that is called FlowLayout?). This is important for long legends.
-
 
 
 Older plan, still valid:

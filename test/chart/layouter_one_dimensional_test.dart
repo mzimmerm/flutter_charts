@@ -3,7 +3,7 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
-import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
+// import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
 import 'package:test/test.dart';
 
 main() {
@@ -24,6 +24,11 @@ main() {
     var matrjoskaLeftTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 27.0),
+    );
+    var matrjoskaLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0 = LengthsLayouter(
+      lengths: lengths,
+      oneDimLayoutProperties: OneDimLayoutProperties(
+          packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 10.0),
     );
 
     test('LengthsLayouter.layout() Matrjoska Left, no total length enforced', () {
@@ -47,6 +52,9 @@ main() {
       expect(segments.totalLayedOutLength, 15.0);
     });
 
+
+    /* Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
+                      and if layoutSize exceeds Constraints, deal with it there
     test('LengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
       expect(
           () => LengthsLayouter(
@@ -55,6 +63,17 @@ main() {
                     OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
+    });
+    */
+    test('LengthsLayouter.layout() Matrjoska Left, total length less than needed, uses 0 for free space', () {
+      LayedOutLineSegments segments = matrjoskaLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0.layoutLengths();
+
+      expect(segments.lineSegments.length, 3);
+      // Result should be same as with no total length enforced
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
+      expect(segments.totalLayedOutLength, 15.0);
     });
 
     test('LengthsLayouter.layout() Matrjoska Left, total length more than required', () {
@@ -92,14 +111,14 @@ main() {
 
     test('LengthsLayouter.layout() Matrjoska Center, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaCenterTotalLength27Added12.layoutLengths();
-      double halfOfFreePadding = 6.0;
+      const double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
       // Compared to no total length enforced, move everything by halfOfFreePadding to the right.
       // The padding of 12 is half on the left (6) and half on the right (6)
-      expect(segments.lineSegments[0], LineSegment(5.0 + halfOfFreePadding, 10.0 + halfOfFreePadding));
-      expect(segments.lineSegments[1], LineSegment(2.5 + halfOfFreePadding, 12.5 + halfOfFreePadding));
-      expect(segments.lineSegments[2], LineSegment(0.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
+      expect(segments.lineSegments[0], const LineSegment(5.0 + halfOfFreePadding, 10.0 + halfOfFreePadding));
+      expect(segments.lineSegments[1], const LineSegment(2.5 + halfOfFreePadding, 12.5 + halfOfFreePadding));
+      expect(segments.lineSegments[2], const LineSegment(0.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
       expect(segments.totalLayedOutLength, 27.0);
     });
   });
@@ -126,14 +145,14 @@ main() {
 
     test('LengthsLayouter.layout() Matrjoska Right, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaRightTotalLength27Added12.layoutLengths();
-      double fullFreePadding = 12.0;
+      const double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
       // Compared to no total length enforced, move everything by fullFreePadding to the right.
       // The whole padding of 12 is on the left.
-      expect(segments.lineSegments[0], LineSegment(10.0 + fullFreePadding, 15.0 + fullFreePadding));
-      expect(segments.lineSegments[1], LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
-      expect(segments.lineSegments[2], LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
+      expect(segments.lineSegments[0], const LineSegment(10.0 + fullFreePadding, 15.0 + fullFreePadding));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
+      expect(segments.lineSegments[2], const LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.totalLayedOutLength, 27.0);
     });
   });
@@ -153,6 +172,11 @@ main() {
     var snapLeftTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start, totalLength: 42.0),
+    );
+    var snapLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0 = LengthsLayouter(
+      lengths: lengths,
+      oneDimLayoutProperties: OneDimLayoutProperties(
+          packing: Packing.snap, lineup: Lineup.start, totalLength: 10.0),
     );
 
     test('LengthsLayouter.layout() Snap Left, no total length enforced', () {
@@ -176,14 +200,27 @@ main() {
       expect(segments.totalLayedOutLength, 30.0);
     });
 
-    test('LengthsLayouter.layout() Snap Left, total length less than needed, should Exception', () {
-      expect(
+    test('LengthsLayouter.layout() Snap Left, total length less than needed, uses 0 for free space', () {
+       LayedOutLineSegments segments = snapLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0.layoutLengths();
+       expect(segments.lineSegments.length, 3);
+       // Result should be same as with no total length enforced
+       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
+       expect(segments.totalLayedOutLength, 30.0);
+    });
+
+    /* Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
+                      and if layoutSize exceeds Constraints, deal with it there
+    test('LengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
+       expect(
           () => LengthsLayouter(
                 lengths: lengths,
                 oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start, totalLength: 10.0),
               ),
           flutter_test.throwsAssertionError);
     });
+    */
 
     test('LengthsLayouter.layout() Snap Left, total length more than required', () {
       LayedOutLineSegments segments = snapLeftTotalLength42Added12.layoutLengths();
@@ -220,14 +257,14 @@ main() {
 
     test('LengthsLayouter.layout() Snap Center, total length more than required', () {
       LayedOutLineSegments segments = snapCenterTotalLength42Added12.layoutLengths();
-      double halfOfFreePadding = 6.0;
+      const double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
       // Compared to no total length enforced, move everything by halfOfFreePadding to the right,
       // to center the whole group (which is snapped together)
-      expect(segments.lineSegments[0], LineSegment(0.0 + halfOfFreePadding, 5.0 + halfOfFreePadding));
-      expect(segments.lineSegments[1], LineSegment(5.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
-      expect(segments.lineSegments[2], LineSegment(15.0 + halfOfFreePadding, 30.0 + halfOfFreePadding));
+      expect(segments.lineSegments[0], const LineSegment(0.0 + halfOfFreePadding, 5.0 + halfOfFreePadding));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
+      expect(segments.lineSegments[2], const LineSegment(15.0 + halfOfFreePadding, 30.0 + halfOfFreePadding));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });
@@ -255,13 +292,13 @@ main() {
 
     test('LengthsLayouter.layout() Snap Right, total length more than required', () {
       LayedOutLineSegments segments = snapRightTotalLength42Added12.layoutLengths();
-      double fullFreePadding = 12.0;
+      const double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
       // Compared to no total length enforced, move everything by fullFreePadding to the right
-      expect(segments.lineSegments[0], LineSegment(0.0 + fullFreePadding, 5.0 + fullFreePadding));
-      expect(segments.lineSegments[1], LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
-      expect(segments.lineSegments[2], LineSegment(15.0 + fullFreePadding, 30.0 + fullFreePadding));
+      expect(segments.lineSegments[0], const LineSegment(0.0 + fullFreePadding, 5.0 + fullFreePadding));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
+      expect(segments.lineSegments[2], const LineSegment(15.0 + fullFreePadding, 30.0 + fullFreePadding));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });
@@ -281,6 +318,10 @@ main() {
     var looseLeftTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start, totalLength: 42.0),
+    );
+    var looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0 = LengthsLayouter(
+      lengths: lengths,
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start, totalLength: 30.0),
     );
 
     test('LengthsLayouter.layout() Loose Left, no total length enforced', () {
@@ -304,6 +345,8 @@ main() {
       expect(segments.totalLayedOutLength, 30.0);
     });
 
+    /*  Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
+                      and if layoutSize exceeds Constraints, deal with it there
     test('LengthsLayouter.layout() Loose Left, total length less than needed, should Exception', () {
       expect(
           () => LengthsLayouter(
@@ -312,18 +355,29 @@ main() {
               ),
           flutter_test.throwsAssertionError);
     });
+    */
+
+    test('LengthsLayouter.layout() Loose Left, total length less than needed, uses 0 for free space', () {
+      LayedOutLineSegments segments = looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0.layoutLengths();
+      expect(segments.lineSegments.length, 3);
+      // Result should be same as with no total length enforced
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
+      expect(segments.totalLayedOutLength, 30.0);
+    });
 
     test('LengthsLayouter.layout() Loose Left, total length more than required', () {
       LayedOutLineSegments segments = looseLeftTotalLength42Added12.layoutLengths();
-      int lengthsCount = 3;
-      double freePadding = 12.0 / lengthsCount;
+      const int lengthsCount = 3;
+      const double freePadding = 12.0 / lengthsCount;
 
       expect(segments.lineSegments.length, 3);
       // Aligns first element to min, then adds left padding freePadding long after every element,
       // so the rightmost element has a padding freePadding long.
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 1, 15.0 + freePadding * 1));
-      expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 2, 30.0 + freePadding * 2));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 1, 15.0 + freePadding * 1));
+      expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 2, 30.0 + freePadding * 2));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });
@@ -351,15 +405,15 @@ main() {
 
     test('LengthsLayouter.layout() Loose Center, total length more than required', () {
       LayedOutLineSegments segments = looseCenterTotalLength42Added12.layoutLengths();
-      int lengthsCount = 3;
-      double freePadding = 12.0 / (lengthsCount + 1); // 3.0
+      const int lengthsCount = 3;
+      const double freePadding = 12.0 / (lengthsCount + 1); // 3.0
 
       expect(segments.lineSegments.length, 3);
       // Aligns last element end to max, then adds left padding freePadding long after every element,
       // and the first element has a padding freePadding long.
-      expect(segments.lineSegments[0], LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
-      expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
-      expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
+      expect(segments.lineSegments[0], const LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
+      expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });
@@ -388,15 +442,15 @@ main() {
 
     test('LengthsLayouter.layout() Loose Right, total length more than required', () {
       LayedOutLineSegments segments = looseRightTotalLength42Added12.layoutLengths();
-      int lengthsCount = 3;
-      double freePadding = 12.0 / lengthsCount; // 4.0
+      const int lengthsCount = 3;
+      const double freePadding = 12.0 / lengthsCount; // 4.0
 
       expect(segments.lineSegments.length, 3);
       // Aligns last element end to max, then adds left padding freePadding long after every element,
       // and the first element has a padding freePadding long.
-      expect(segments.lineSegments[0], LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
-      expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
-      expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
+      expect(segments.lineSegments[0], const LineSegment(0.0 + freePadding * 1, 5.0 + freePadding * 1));
+      expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
+      expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });

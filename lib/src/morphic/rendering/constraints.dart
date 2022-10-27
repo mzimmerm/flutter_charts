@@ -153,8 +153,8 @@ abstract class BoundingBoxesBase {
     }
 
     if (ratios != null) {
-      assert(ratios!.length == divideIntoCount);
-      double sumRatios = ratios!.fold<double>(0.0, (previousValue, element) => previousValue + element);
+      assert(ratios.length == divideIntoCount);
+      double sumRatios = ratios.fold<double>(0.0, (previousValue, element) => previousValue + element);
       assert(0.99 <= sumRatios && sumRatios <= 1.01);
     }
 

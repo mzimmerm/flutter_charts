@@ -297,7 +297,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// (skipped during layout) when space is constrained too much
   /// (not enough space to reasonably paint the [BoxContainer] contents).
   /// Note that setting this to `true` may result
-  /// in surprizing behavior, instead of exceptions.
+  /// in surprising behavior, instead of exceptions.
   ///
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
@@ -449,7 +449,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     a fraction of it's constraint.
   ///
   void _preDescend_DistributeMyConstraintToImmediateChildren_And_SetTotalLengthOnMyAxisLayoutProperties() {
-    mainAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(mainLayoutAxis);
+   // todo-00-last-last commented out as test PUT BACK : mainAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(mainLayoutAxis);
     // todo-00-last : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
 
     for (var child in _childrenInLayoutOrderGreedyLast) {
@@ -634,7 +634,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     LayedOutLineSegments crossAxisLayedOutSegments = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments;
 
 /*
-    // todo-00-last-last-last testing this vvvvvv added and removed
+    // todo-00-last testing this vvvvvv added and removed - maybe remove completely
     // This can be used if expandToConstraintMax = false (default)
     // mainAxisLayedOutSegments, move them to start with 0
     List<LineSegment> movedLineSegments = [];
@@ -647,7 +647,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
     mainAxisLayedOutSegments.lineSegments = movedLineSegments;
     mainAxisLayedOutSegments.totalLayedOutLength -= firstLineSegment.min;
-    // todo-00-last-last-last testing this ^^^^^^
+    // todo-00-last testing this ^^^^^^
 */
 
     if (mainAxisLayedOutSegments.lineSegments.length != crossAxisLayedOutSegments.lineSegments.length) {
