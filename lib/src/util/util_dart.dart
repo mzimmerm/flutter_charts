@@ -107,7 +107,7 @@ class Poly {
 // todo-2: replaced num with double,  parametrize with T instead so it works for both
 
 class Interval {
-  Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
+  const Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
 
   final double min;
   final double max;
@@ -164,8 +164,12 @@ class Interval {
 }
 
 class LineSegment extends Interval {
-  LineSegment(double min, double max)
+  const LineSegment(double min, double max)
       : super(min, max, true, false);
+
+  LineSegment clone() {
+    return LineSegment(min, max);
+  }
 }
 
 // todo-02 Refactor scaling

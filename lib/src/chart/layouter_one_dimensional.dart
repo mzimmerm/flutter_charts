@@ -105,6 +105,9 @@ class LengthsLayouter {
       case Packing.snap:
       case Packing.loose:
         oneDimLayoutProperties.totalLength ??= _sumLengths;
+        // todo-00-last-last-last : review those asserts. They mean that actual layout sizes overgrew the constraint.
+        //  But that may be allowed here, and caught later either as warning or error
+        //  Probably instead, set _free_padding to 0.0, and let overflow on constraint check.
         assert(oneDimLayoutProperties.totalLength! >= _sumLengths);
         _freePadding = oneDimLayoutProperties.totalLength! - _sumLengths;
         break;
@@ -217,7 +220,7 @@ class LengthsLayouter {
     bool isFirstLength = false;
     if (previousSegment == null) {
       isFirstLength = true;
-      previousSegment = util_dart.LineSegment(0.0, 0.0);
+      previousSegment = const util_dart.LineSegment(0.0, 0.0);
     }
     Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
     double startOffset = startOffsetAndRightPad.item1;
@@ -281,12 +284,12 @@ class LengthsLayouter {
 /// todo-01-document
 /// Represents [LineSegment]s corresponding to children future positions.
 ///
-/// Should be passed already layoued out segments.
+/// Should be passed already layed out segments.
 class LayedOutLineSegments {
-  LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLength});
+  const LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLength});
 
-  List<util_dart.LineSegment> lineSegments; // todo-00-done removed final, maybe add clone or copy method
-  double totalLayedOutLength; // todo-00-done removed final
+  final List<util_dart.LineSegment> lineSegments;
+  final double totalLayedOutLength;
 
   /// Calculates length of all layed out [lineSegments].
   ///

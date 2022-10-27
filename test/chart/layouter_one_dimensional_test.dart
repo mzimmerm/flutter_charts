@@ -30,9 +30,9 @@ main() {
       LayedOutLineSegments segments = matrjoskaLeftNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
-      expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLength, 15.0);
     });
 
@@ -41,9 +41,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
-      expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLength, 15.0);
     });
 
@@ -63,9 +63,9 @@ main() {
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced. 
       // The whole padding of 12 is on the right.
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(0.0, 10.0));
-      expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLength, 27.0);
     });
   });
@@ -84,9 +84,9 @@ main() {
       LayedOutLineSegments segments = matrjoskaCenterNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      expect(segments.lineSegments[0], LineSegment(5.0, 10.0));
-      expect(segments.lineSegments[1], LineSegment(2.5, 12.5));
-      expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.lineSegments[0], const LineSegment(5.0, 10.0));
+      expect(segments.lineSegments[1], const LineSegment(2.5, 12.5));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLength, 15.0);
     });
 
@@ -118,9 +118,9 @@ main() {
       LayedOutLineSegments segments = matrjoskaRightNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      expect(segments.lineSegments[0], LineSegment(10.0, 15.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(0.0, 15.0));
+      expect(segments.lineSegments[0], const LineSegment(10.0, 15.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLength, 15.0);
     });
 
@@ -159,9 +159,9 @@ main() {
       LayedOutLineSegments segments = snapLeftNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -170,9 +170,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -190,9 +190,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 42.0);
     });
   });
@@ -212,9 +212,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // As in Snap Left
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -247,9 +247,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // As in Snap Left, and as in SnapCenter
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -287,9 +287,9 @@ main() {
       LayedOutLineSegments segments = looseLeftNoTotalLength.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -298,9 +298,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -321,7 +321,7 @@ main() {
       expect(segments.lineSegments.length, 3);
       // Aligns first element to min, then adds left padding freePadding long after every element,
       // so the rightmost element has a padding freePadding long.
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], LineSegment(5.0 + freePadding * 1, 15.0 + freePadding * 1));
       expect(segments.lineSegments[2], LineSegment(15.0 + freePadding * 2, 30.0 + freePadding * 2));
       expect(segments.totalLayedOutLength, 42.0);
@@ -343,9 +343,9 @@ main() {
 
       expect(segments.lineSegments.length, 3);
       // As in Loose Left
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 
@@ -380,9 +380,9 @@ main() {
       expect(segments.lineSegments.length, 3);
       // Aligns first element to max, then adds left padding freePadding long after every element,
       // so the rightmost element has a padding freePadding long.
-      expect(segments.lineSegments[0], LineSegment(0.0, 5.0));
-      expect(segments.lineSegments[1], LineSegment(5.0, 15.0));
-      expect(segments.lineSegments[2], LineSegment(15.0, 30.0));
+      expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
+      expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
+      expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLength, 30.0);
     });
 

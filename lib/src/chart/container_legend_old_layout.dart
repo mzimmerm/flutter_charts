@@ -157,7 +157,8 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
     double labelMaxWidth =
         boxConstraints.size.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      orderedSkip = true;
+      applyParentOrderedSkip(this, true);
+      // orderedSkip = true;
       layoutSize = ui.Size.zero;
       return;
     }

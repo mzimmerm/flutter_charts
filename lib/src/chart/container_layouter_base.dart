@@ -198,6 +198,12 @@ abstract class LayoutableBox {
 /// The core function of this class is to layout (offset) the member [children]
 /// by the side effects of the method [_offsetChildrenAccordingToLayouter].
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
+
+  late final Lineup mainAxisLineup;
+  late final Packing mainAxisPacking;
+  late final Lineup crossAxisLineup;
+  late final Packing crossAxisPacking;
+
   // 1. Overrides implementing all methods from implemented interface [LayoutableBox] ---------------------------------
 
   /// Manages the layout size, the result of [newCoreLayout].
@@ -627,7 +633,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     LayedOutLineSegments mainAxisLayedOutSegments = mainAndCrossLayedOutSegments.mainAxisLayedOutSegments;
     LayedOutLineSegments crossAxisLayedOutSegments = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments;
 
-    // todo-00-last-last-last testing this vvvvvv
+/*
+    // todo-00-last-last-last testing this vvvvvv added and removed
     // This can be used if expandToConstraintMax = false (default)
     // mainAxisLayedOutSegments, move them to start with 0
     List<LineSegment> movedLineSegments = [];
@@ -641,6 +648,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     mainAxisLayedOutSegments.lineSegments = movedLineSegments;
     mainAxisLayedOutSegments.totalLayedOutLength -= firstLineSegment.min;
     // todo-00-last-last-last testing this ^^^^^^
+*/
 
     if (mainAxisLayedOutSegments.lineSegments.length != crossAxisLayedOutSegments.lineSegments.length) {
       throw StateError('Segments differ in lengths: main=$mainAxisLayedOutSegments, cross=$crossAxisLayedOutSegments');
@@ -733,16 +741,21 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 }
 
 class RowLayouter extends BoxContainer {
+
   RowLayouter({
     required List<BoxContainer> children,
-  }) : super (children: children) {
+    Lineup mainAxisLineup = Lineup.start,
+    Packing mainAxisPacking = Packing.snap,
+    Lineup crossAxisLineup = Lineup.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+  }) : super(children: children) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
     mainLayoutAxis = LayoutAxis.horizontal;
-    mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end);
-    crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center);
+    mainAxisLayoutProperties = OneDimLayoutProperties(lineup: mainAxisLineup, packing: mainAxisPacking);
+    crossAxisLayoutProperties = OneDimLayoutProperties(lineup: crossAxisLineup, packing: crossAxisPacking);
   }
 }
 
@@ -750,8 +763,18 @@ class RowLayouter extends BoxContainer {
 class ColumnLayouter extends BoxContainer {
   ColumnLayouter({
     required List<BoxContainer> children,
-  }) {
-    throw UnimplementedError('needs to be implemented');
+    Lineup mainAxisLineup = Lineup.start,
+    Packing mainAxisPacking = Packing.snap,
+    Lineup crossAxisLineup = Lineup.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+  }) : super(children: children) {
+    // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
+    //   but in constructor here.
+    // Important: As a result, mixin fields can still be final, bust must be late, as they are
+    //   always initialized in concrete implementations.
+    mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = OneDimLayoutProperties(lineup: mainAxisLineup, packing: mainAxisPacking);
+    crossAxisLayoutProperties = OneDimLayoutProperties(lineup: crossAxisLineup, packing: crossAxisPacking);
   }
 }
 

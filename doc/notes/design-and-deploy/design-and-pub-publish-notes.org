@@ -1626,31 +1626,43 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
  I *think the above proves the approach below. We need to introduce the even distribution of constraints to children, in addition to have the expandToConstraintMax false as default.*
 
-- [-] Debug layouting:
-  - [X] Place some packing or lineup so that legend is off the chart
-  - [ ] Debug behavior, make sure it throws exception wher beyound painted rectangle somewhere - *this is hard to do right but possible, leaving for later*
-- [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide,
+- [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
+  - [X] Done but not used
 - [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
-- [ ] also expandToConstraintMax=false is NOT compatible with packing = flow
+- [!] also expandToConstraintMax=false is NOT compatible with packing = flow - add that note somewhere
 - [ ] Layouter general : Add to OneDimLayoutProperties expandToConstraintMax: true and false, default true. Tests should work
   - [ ] If true, use available constraint (totalSize). BUT always try false in code.
 - [ ] Layouter general : Add to OneDimLayoutProperties constraintDivisionToChildren: default 
-- [ ] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
+- [X] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
 - [ ] BoxContainer debugability
-  - [ ] Add member key on constructor (nullable) and add to constructors at least those used in Legend
+  - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
 
+Important current
 
-- Add 
+- [ ] Put stuff back so tests work without changes
+- [ ] Add check to newCoreLayout, if RowLayouter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the RowLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
+- [ ] Remove asserts around free space - there is TODO.
+- [ ] Tests work
+- [ ] Support to show yellow and black rectangle on overflow:
+  - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
+  - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
+  - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
+  - [ ] Add top paint method as super to all paint methods.
+- [ ] Add Padding BoxContainer that can be used around boxes to pad with space, no painting needed?
+- [ ] Add Layout which wraps! (maybe that is called FlowLayout?). This is important for long legends.
 
-- [ ] Resolve why RowLayouter Packing.loose behaves same as Packing.snap !! 
+
+
+Older plan, still valid:
+
+- [X] Resolve why RowLayouter Packing.loose behaves same as Packing.snap !! Reason: Simplicity of single-pass layout. Cannot have Row in Row with nested Row being 'end aligned'.
 - [ ] MILESTONE !!!!!! vvvvvvv 
 - [ ] Read https://blog.logrocket.com/flutter-layouts-guide-margins-padding/
-- [ ] Create proper RowLayouter, add comments
-  - [ ] Basically, need to make sure I can pass constructor arguments to set pack/loose/align - see what they are
-- [ ] Make sure default row layouter on container is Row, which aligns left and top (basicall, sets parent offset = 0!!
-- [ ] Create proper ColumnLayouter, add comments
-- [ ] Create PaddingLayouter and use around legend internals and around legends
+- [X] Create proper RowLayouter, add comments
+  - [X] Basically, need to make sure I can pass constructor arguments to set pack/loose/align - see what they are
+- [X] Make sure default row layouter on container is Row, which aligns left and top (basicall, sets parent offset = 0!!
+- [X] Create proper ColumnLayouter, add comments
 - [ ] Apply RowLayouter on chart LEGEND:
   - [ ] using a 'flow' type row layout so it fills the whole available width
   - [ ] ALSO add 4px space around rectangle using Padding 

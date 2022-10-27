@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas, Color;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 import 'dart:math' as math show max;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
@@ -8,6 +8,7 @@ import '../util/collection.dart' as custom_collection show CustomList;
 import '../util/y_labels.dart';
 import '../util/geometry.dart' as geometry;
 import '../util/util_dart.dart';
+import '../chart/layouter_one_dimensional.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
 import 'data.dart';
 import 'iterative_layout_strategy.dart' as strategy;
@@ -17,7 +18,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, RowLayouter, ColumnLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -1209,6 +1210,7 @@ class LegendItemContainer extends BoxContainer {
   BoxContainer buildContainerOrSelf() {
     // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
     return RowLayouter(
+      // mainAxisPacking: Packing.loose,
       children: [
         LegendIndicatorRectContainer(
           indicatorPaint: _indicatorPaint,
@@ -1348,7 +1350,20 @@ class LegendContainer extends ChartAreaContainer {
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    return RowLayouter(
+    return
+      /* todo-00-last-last
+      ColumnLayouter(
+       mainAxisLineup: Lineup.start,
+        mainAxisPacking: Packing.snap,
+        crossAxisLineup: Lineup.start,
+        crossAxisPacking: Packing.matrjoska,
+
+     */
+/* todo-00-last-last */
+      RowLayouter(
+      mainAxisLineup: Lineup.start,
+      mainAxisPacking: Packing.snap, // Packing.loose,
+/* */
       children: [
         // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
         for (int index = 0; index < dataRowsLegends.length; index++)
