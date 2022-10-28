@@ -1629,20 +1629,24 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
   - [X] Done but not used
 - [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
-- [!] also expandToConstraintMax=false is NOT compatible with packing = flow - add that note somewhere
-- [ ] Layouter general : Add to OneDimLayoutProperties expandToConstraintMax: true and false, default true. Tests should work
-  - [ ] If true, use available constraint (totalSize). BUT always try false in code.
-- [ ] Layouter general : Add to OneDimLayoutProperties constraintDivisionToChildren: default 
+- [ ] also note and add to code : expandToConstraintMax=false is NOT compatible with packing = loose - add that note somewhere
+- [ ] LATER :Add to OneDimLayoutProperties
+  - [ ] doExpandToConstraintMax: true and false, default true *I think this is for later or never*
+    - [ ] If true, use all available constraint (former totalSize) - this adds padding - this is how it works now!
+    - [ ] If false, do not add any padding
+  - [ ] isConstraintDividedToChildren: default false
+    - [ ] If true, divide and pass constraints to children using some ratio.
+    - [ ] If false, current behavior. We still need to pass constraints to children in newCoreLayout, that is missing.
 - [X] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
-- [ ] BoxContainer debugability
+- [ ] LATER BoxContainer debuggability
   - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
 
-Important current
+*Important current*
 
 - [X] Put stuff back so tests work without changes
 - [X] Remove asserts around free space - there is TODO.
-- [X] Add check to newCoreLayout, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
+- [X] Add check to newCoreLayout, root section, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'.
   - [X] Test it on some combinations in legend layout
     - [X] nested Lineup.end on Row
     - [X] we also have Column example to test
@@ -1650,8 +1654,8 @@ Important current
   - [X] Find problem or comment
   - [X] Make sure Tests work
   - [X] Commit and push
-- [-] Add ability in Main and in LegendContainer to create example which overrides creation of ~LegendContainer~
-  - [-] We need the ability to define different LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
+- [X] Add ability in LegendContainer to create example with specific layouts of ~LegendContainer~
+  - [X] We need the ability to define different LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
     - [X] Pushing: via ChartOptions.legendOptions
       - [X] New enum LegendAndItemLayoutEnum
         - [X] legendIsRowStartSnapItemIsRowStartSnap
@@ -1666,100 +1670,19 @@ Important current
           - [X] ex71AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose
           - [X] ex72AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap
           - [X] ex73AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose
-    - [ ] Implementing: in LegendContainer and LegendItemContainer 
-      - [ ] LegendContainer.buildContainerOrSelf, change to
-        #+begin_src dart
-          // Pulled from inline to allow different Wrapper
-          BoxContainer _legendItems(some params needed) {
-            return  [
-                // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
-                for (int index = 0; index < dataRowsLegends.length; index++)
-                  // ui.Paint indicatorPaint = ui.Paint();
-                  // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
-                  // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
-                  LegendItemContainer(
-                    label: dataRowsLegends[index],
-                    labelStyle: labelStyle,
-                    indicatorPaint: (ui.Paint()
-                      ..color = chartRootContainer.data.dataRowsColors
-                          .elementAt(index % chartRootContainer.data.dataRowsColors.length)), //
-                    options: options,
-                  ),
-              ];
-              }
-
-          BoxContainer buildContainerOrSelf() {
-            ChartOptions options = chartRootContainer.data.chartOptions;
-
-            List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
-
-            // Initially all [LabelContainer]s share same text style object from options.
-            LabelStyle labelStyle = LabelStyle(
-              textStyle: options.labelCommonOptions.labelTextStyle,
-              textDirection: options.labelCommonOptions.labelTextDirection,
-              textAlign: options.legendOptions.legendTextAlign, // keep left, close to indicator
-              textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-            );
-            switch(options.legendOptions.legendAndItemLayoutEnum.legendAndItemLayoutEnum) {
-              case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsEndLoose:
-                return
-                  RowLayouter(
-                    mainAxisLineup: Lineup.start, // Lineup.start (for tests)
-                    mainAxisPacking: Packing.snap, // Packing.snap (for tests)
-                    children: _legendItems(some params here),
-                  );
-                etc case
-           }
-          }
-        #+end_src 
-      - [ ] LegendItemContainer.buildContainerOrSelf - similar changes
-  - [ ] In this code, using the previously switch-set chartData and xContainerLabelLayoutStrategy we create the Widget for the chart enum
-    #+begin_src dart main-createRequestedChart-end
-    Widget chartToRun;
-
-    switch (chartTypeToShow) {
-      case ExamplesChartTypeEnum.lineChart:
-        LineChartRootContainer lineChartContainer = LineChartRootContainer(
-          chartData: chartData,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
-
-        LineChart lineChart = LineChart(
-          painter: LineChartPainter(
-            lineChartContainer: lineChartContainer,
-          ),
-        );
-        chartToRun = lineChart;
-        break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartRootContainer verticalBarChartContainer = VerticalBarChartRootContainer(
-          chartData: chartData,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
-
-        VerticalBarChart verticalBarChart = VerticalBarChart(
-          painter: VerticalBarChartPainter(
-            verticalBarChartContainer: verticalBarChartContainer,
-          ),
-        );
-
-        chartToRun = verticalBarChart;
-        break;
-    }
-    // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
-    //   depending on the chart type requested by [requestedExampleToRun]
-    return chartToRun;
-    #+end_src
-  - [ ] Make sure existing tests work !!! - using the default legend enum legendIsRowStartSnapItemIsRowStartSnap
-- [ ] Add 3 examples (only use LineChart) which overrides creation of ~LegendContainer~
-  - [ ] LegendContainer starts with RowLayouter    'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (default desired and tested)
-  - [ ] LegendContainer starts with RowLayouter    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'snap' , so noop)
-  - [ ] LegendContainer starts with ColumnLayouter 'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (is top, so is NOT overriden, so must be as intended!)
-  - [ ] LegendContainer starts with ColumnLayouter 'start',  'loose', LegendItemContainer is Row 'start', 'snap' (as above)
-  - [ ] Create new test images, check them
-  - [ ] Add the above to representative tests in ~ExamplesDescriptor~ (line charts only)
-  - [ ] Run all tests
-  - [ ] commit and push
+    - [X] Implementing: in LegendContainer and LegendItemContainer 
+      - [X] LegendContainer.buildContainerOrSelf, change to pull out children creation, and return from a switch
+      - [X] LegendItemContainer.buildContainerOrSelf - similar changes
+  - [X] Make sure existing tests work !!! - using the default legend enum legendIsRowStartSnapItemIsRowStartSnap
+  - [X] Add 3 examples (only use LineChart) which overrides creation of ~LegendContainer~
+    - [X] LegendContainer starts with RowLayouter    'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (default desired and tested)
+    - [X] LegendContainer starts with RowLayouter    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'snap' , so noop)
+    - [X] LegendContainer starts with ColumnLayouter 'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (is top, so is NOT overriden, so must be as intended!)
+    - [X] LegendContainer starts with ColumnLayouter 'start',  'loose', LegendItemContainer is Row 'start', 'snap' (as above)
+    - [X] Create new test images, check them
+    - [X] Add the above to representative tests in ~ExamplesDescriptor~ (line charts only)
+    - [X] Run all tests
+    - [X] commit and push
 - [ ] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties~ in BoxLaouter or BoxContainer*
   - [ ] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
     - [ ] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties~

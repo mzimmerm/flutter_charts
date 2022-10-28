@@ -1208,18 +1208,9 @@ class LegendItemContainer extends BoxContainer {
         super(children: children);
   @override
   BoxContainer buildContainerOrSelf() {
-/*
-    // Pull out the creation, remember on this object as member _legendLabel,
+
+    // Pull out the creation, remember on this object as member _label,
     // set _labelMaxWidth on it in newCoreLayout.
-    return RowLayouter(
-      // **IFF* this is the topmost RowLayouter (Legend starts with Column),
-      //        the passed Packing and Lineup values are used.
-      // **ELSE* the values are irrelevant, will be replaced with Lineup.start, Packing.snap.
-      mainAxisLineup: Lineup.start,
-      mainAxisPacking: Packing.snap, // loose works with top column but unclear
-      children: _itemIndicatorAndLabel(),
-    );
-*/
 
     var children = _itemIndAndLabel();
     switch (_options.legendOptions.legendAndItemLayoutEnum) {
@@ -1249,9 +1240,10 @@ class LegendItemContainer extends BoxContainer {
             mainAxisPacking: Packing.snap,
             children: children);
     }
-
   }
 
+  /// Constructs the list with the legend indicator and legend label, which caller wraps
+  /// in [RowLayout].
   List<BoxContainer> _itemIndAndLabel() {
     return [
       LegendIndicatorRectContainer(
@@ -1329,8 +1321,8 @@ class LegendIndicatorRectContainer extends BoxContainer {
 /// has a color square and text, which describes one data row (that is,
 /// one data series).
 ///
-/// Currently, each individual legend item is given the same size, so legends
-/// texts should be short.
+/// The legends label texts should be short as we use [RowLayouter] for the layout, which
+/// may overflow to the right.
 ///
 /// This extension of [ChartAreaContainer] operates as follows:
 /// - Horizontally available space is all used (filled).
@@ -1343,10 +1335,12 @@ class LegendContainer extends ChartAreaContainer {
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   ///
-  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
-  //  Important: Give 'fake' root of hierarchy it's special constructor which sets parent = null,
-  //             as that is not done anywhere - we only set parent on children of something.
+  /// The passed [chartRootContainer] can be used to get both [ChartData] [data]
+  /// and [ChartOptions] [options].
+  ///
+  ///  Important: This object is the 'fake' root of hierarchy for the new layout.
+  ///             Override [isRoot] to true; [parent] can still be set even though
+  ///             traversing up would fail, so use [isRoot] not [parent] for that.
   LegendContainer({
     required ChartRootContainer chartRootContainer,
     List<BoxContainer>? children,
@@ -1377,9 +1371,10 @@ class LegendContainer extends ChartAreaContainer {
     newCoreLayout();
   }
 
+  /// Builds the container below self starting with [RowLayouter] or [ColumnLayouter],
+  /// and passing it [children] build separately in [_legendItems].
   @override
   BoxContainer buildContainerOrSelf() {
-    // todo-00-last-last : should we use member _options? Is there such member?
     ChartOptions options = chartRootContainer.data.chartOptions;
 
     List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
@@ -1417,28 +1412,6 @@ class LegendContainer extends ChartAreaContainer {
             mainAxisPacking: Packing.snap,
             children: children);
     }
-    
-/*
-    return
-*/
-        /* todo-00-keep
-      ColumnLayouter(
-        mainAxisLineup: Lineup.start,
-        mainAxisPacking: Packing.snap, // loose works but spreads too much vertically
-        crossAxisLineup: Lineup.start,
-        crossAxisPacking: Packing.matrjoska, // snap or loose does not fit
-     */
-
-        /* todo-00-keep
-      RowLayouter(
-        mainAxisLineup: Lineup.start, // Lineup.start (for tests)
-        mainAxisPacking: Packing.snap, // Packing.snap (for tests)
-      */
-/*
-
-      children: _legendItems(dataRowsLegends, labelStyle, options),
-    );
-*/
   }
 
   List<BoxContainer> _legendItems(List<String> dataRowsLegends, LabelStyle labelStyle, ChartOptions options) {

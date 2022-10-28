@@ -205,7 +205,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
   // todo-00-last : these should be private so noone overrides their 'packing: Packing.snap, lineup: Lineup.start'
-  //                 also move to immediate class below Row and Column
+  //                 ALSO NEED TO MOVE to immediate class below Row and Column
   OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
   OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
 
@@ -520,7 +520,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     a fraction of it's constraint.
   ///
   void _preDescend_DistributeMyConstraintToImmediateChildren_And_SetTotalLengthOnMyAxisLayoutProperties() {
-    // todo-00-last : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
+    // todo-00-later : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
 
     for (var child in _childrenInLayoutOrderGreedyLast) {
       child.applyParentConstraints(this, constraints);
@@ -608,7 +608,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     assert(!isLeaf);
     ui.Rect childrenOuterRectangle = util_flutter
         .outerRectangle(children.map((BoxContainer child) => child._boundingRectangle()).toList(growable: false));
-    // todo-00-last-note-only : here, childrenOuterRectangle can be way to the right, out of screen (L=300, R=374)
+    // todo-00-note-only : here, childrenOuterRectangle can be way to the right, out of screen (L=300, R=374)
     //                          we need to check against constraints on root which should be available size for app.
     //                          _check_IfMySizeFit_WithinConstraints does not help, as size is OK!
     layoutSize = childrenOuterRectangle.size;
@@ -687,7 +687,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         _lengthsLayouterAlong(
           layoutAxis: crossLayoutAxis,
           axisLayoutProperties: crossAxisLayoutProperties,
-          // todo-00-later : If we use the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
+          // todo-00-later : If we use, instead of 0.0,
+          // todo-00-later   the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
           //                   if legend starts with column, the legend column is on the left of the chart
           //                   if legend starts with row   , the legend row    is on the bottom of the chart
           //                 Probably need to address when the whole chart is layed out using the new layouter.
