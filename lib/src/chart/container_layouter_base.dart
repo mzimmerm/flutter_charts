@@ -200,16 +200,6 @@ abstract class LayoutableBox {
 /// by the side effects of the method [_layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter].
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
-  /// Fields that control layout of RowLayouter and ColumnLayouter.
-  /// todo-00-last : BoxLayouter is NOT necessarily layoud out with Row or Column.
-  /// yet, these fields assume BoxLayouter IS Row or Column,
-  /// becoase the lineups and packings assume one of them.
- /* todo-00-last-last this is unused, but maybe we should use it to rebuild the mainAxisLayoutProperties when set
-  late final Lineup mainAxisLineup;
-  late final Packing mainAxisPacking;
-  late final Lineup crossAxisLineup;
-  late final Packing crossAxisPacking;
-*/
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
   // isLayout should be implemented differently on layouter and container. But it's not really needed
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
@@ -407,10 +397,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       //                also add to layouter a way to iterate non-greedy children, and greedy children separately
       _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
 
-      // todo-00-last-last Add check to newCoreLayout, if RowLayouter OR ColumnLayouter is deeper,
-      //  and Lineup set to anything but 'start' and Packing 'snap',
-      //  replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'.
-      //  Probably at the beginning of newCoreLayout on root?
+      // Force on deeper level RowLayouter OR ColumnLayouter
+      // a changed layout properties that are non-offsetting.
       _ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(
         foundFirstRowLayouterFromTop: false,
         foundFirstColumnLayouterFromTop: false,
@@ -507,7 +495,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       if (child is ColumnLayouter && foundFirstColumnLayouterFromTop) {
         child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.matrjoska);
       }
-
 
       // in-child continue to child's children with the potentially updated values 'foundFirst'
       child._ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(

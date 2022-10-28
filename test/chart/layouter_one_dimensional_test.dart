@@ -12,10 +12,10 @@ main() {
   // ### Packing.matrjoska
 
   group('LengthsLayouter.layout() Matrjoska Left,', () {
-    var matrjoskaLeftNoTotalLength = LengthsLayouter(
+    var matrjoskaLeftLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
-      lengthsConstraint: 15.0, // todo-00-last-last : test < 15
+      lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var matrjoskaLeftTotalLength10Exception
     var matrjoskaLeftTotalLength15 = LengthsLayouter(
@@ -28,20 +28,22 @@ main() {
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
       lengthsConstraint: 27.0,
     );
-    var matrjoskaLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0 = LengthsLayouter(
+    var matrjoskaLeftLengthConstraints10LessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
       lengthsConstraint: 10.0,
     );
 
     test('LengthsLayouter.layout() Matrjoska Left, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaLeftNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = matrjoskaLeftLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 15.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Matrjoska Left, total length same as required', () {
@@ -53,6 +55,7 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 15.0);
+      expect(segments.isOverflown, false);
     });
 
 
@@ -70,7 +73,7 @@ main() {
     });
     */
     test('LengthsLayouter.layout() Matrjoska Left, total length less than needed, uses 0 for free space', () {
-      LayedOutLineSegments segments = matrjoskaLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0.layoutLengths();
+      LayedOutLineSegments segments = matrjoskaLeftLengthConstraints10LessThanSizes.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -78,6 +81,7 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 15.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Matrjoska Left, total length more than required', () {
@@ -90,14 +94,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 27.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Matrjoska Center,', () {
-    var matrjoskaCenterNoTotalLength = LengthsLayouter(
+    var matrjoskaCenterLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center),
-      lengthsConstraint: 15.0,
+      lengthsConstraint: 0.0,
     );
     var matrjoskaCenterTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
@@ -106,13 +111,15 @@ main() {
     );
 
     test('LengthsLayouter.layout() Matrjoska Center, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaCenterNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = matrjoskaCenterLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], const LineSegment(5.0, 10.0));
       expect(segments.lineSegments[1], const LineSegment(2.5, 12.5));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 15.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Matrjoska Center, total length more than required', () {
@@ -126,14 +133,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(2.5 + halfOfFreePadding, 12.5 + halfOfFreePadding));
       expect(segments.lineSegments[2], const LineSegment(0.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
       expect(segments.totalLayedOutLengthIncludesPadding, 27.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Matrjoska Right,', () {
-    var matrjoskaRightNoTotalLength = LengthsLayouter(
+    var matrjoskaRightLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.end),
-      lengthsConstraint : 15.0,
+      lengthsConstraint : 0.0,
     );
     var matrjoskaRightTotalLength27Added12 = LengthsLayouter(
       lengths: lengths,
@@ -142,14 +150,16 @@ main() {
     );
 
     test('LengthsLayouter.layout() Matrjoska Right, no total length enforced', () {
-      LayedOutLineSegments segments = matrjoskaRightNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = matrjoskaRightLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], const LineSegment(10.0, 15.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 15.0);
-    });
+      expect(segments.isOverflown, true);
+   });
 
     test('LengthsLayouter.layout() Matrjoska Right, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaRightTotalLength27Added12.layoutLengths();
@@ -162,16 +172,17 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], const LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.totalLayedOutLengthIncludesPadding, 27.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   // ### Packing.snap
 
   group('LengthsLayouter.layout() Snap Left,', () {
-    var snapLeftNoTotalLength = LengthsLayouter(
+    var snapLeftLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
-      lengthsConstraint: 30.0,
+      lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var snapLeftTotalLength10Exception
     var snapLeftTotalLength30 = LengthsLayouter(
@@ -184,20 +195,22 @@ main() {
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
       lengthsConstraint: 42.0,
     );
-    var snapLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0 = LengthsLayouter(
+    var snapLeftTotalLengthsConstraint10LessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
       lengthsConstraint: 10.0,
     );
 
     test('LengthsLayouter.layout() Snap Left, no total length enforced', () {
-      LayedOutLineSegments segments = snapLeftNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = snapLeftLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Snap Left, total length same as required', () {
@@ -209,16 +222,18 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, false);
     });
 
     test('LengthsLayouter.layout() Snap Left, total length less than needed, uses 0 for free space', () {
-       LayedOutLineSegments segments = snapLeftTotalLength10MakesFreeSpaceNegativeForcingFreeSpace0.layoutLengths();
+       LayedOutLineSegments segments = snapLeftTotalLengthsConstraint10LessThanSizes.layoutLengths();
        expect(segments.lineSegments.length, 3);
        // Result should be same as with no total length enforced
        expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
        expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
        expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
        expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+       expect(segments.isOverflown, true);
     });
 
     /* Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
@@ -243,14 +258,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Snap Center,', () {
-    var snapCenterNoTotalLength = LengthsLayouter(
+    var snapCenterLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.center),
-      lengthsConstraint: 30.0,
+      lengthsConstraint: 0.0,
     );
     var snapCenterTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
@@ -259,14 +275,16 @@ main() {
     );
 
     test('LengthsLayouter.layout() Snap Center, no total length enforced', () {
-      LayedOutLineSegments segments = snapCenterNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = snapCenterLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       // As in Snap Left
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Snap Center, total length more than required', () {
@@ -280,14 +298,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
       expect(segments.lineSegments[2], const LineSegment(15.0 + halfOfFreePadding, 30.0 + halfOfFreePadding));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Snap Right,', () {
-    var snapRightNoTotalLength = LengthsLayouter(
+    var snapRightLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end),
-        lengthsConstraint: 30.0
+        lengthsConstraint: 0.0
     );
     var snapRightTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
@@ -296,14 +315,16 @@ main() {
     );
 
     test('LengthsLayouter.layout() Snap Right, no total length enforced', () {
-      LayedOutLineSegments segments = snapRightNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = snapRightLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       // As in Snap Left, and as in SnapCenter
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Snap Right, total length more than required', () {
@@ -316,16 +337,17 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], const LineSegment(15.0 + fullFreePadding, 30.0 + fullFreePadding));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   // ### Packing.loose
 
   group('LengthsLayouter.layout() Loose Left,', () {
-    var looseLeftNoTotalLength = LengthsLayouter(
+    var looseLeftLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
-      lengthsConstraint: 30.0
+      lengthsConstraint: 0.0
     );
     // Testing exception so create in test : var looseLeftTotalLength10Exception
     var looseLeftTotalLength30 = LengthsLayouter(
@@ -345,13 +367,15 @@ main() {
     );
 
     test('LengthsLayouter.layout() Loose Left, no total length enforced', () {
-      LayedOutLineSegments segments = looseLeftNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = looseLeftLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Loose Left, total length same as required', () {
@@ -363,6 +387,7 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, false);
     });
 
     /*  Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
@@ -386,6 +411,7 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, false);
     });
 
     test('LengthsLayouter.layout() Loose Left, total length more than required', () {
@@ -400,14 +426,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 1, 15.0 + freePadding * 1));
       expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 2, 30.0 + freePadding * 2));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Loose Center,', () {
-    var looseCenterNoTotalLength = LengthsLayouter(
+    var looseCenterLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center),
-        lengthsConstraint: 30.0
+        lengthsConstraint: 0.0
     );
     var looseCenterTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
@@ -416,14 +443,16 @@ main() {
     );
 
     test('LengthsLayouter.layout() Loose Center, no total length enforced', () {
-      LayedOutLineSegments segments = looseCenterNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = looseCenterLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
       // As in Loose Left
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Loose Center, total length more than required', () {
@@ -438,14 +467,15 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
       expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 
   group('LengthsLayouter.layout() Loose Right,', () {
-    var looseRightNoTotalLength = LengthsLayouter(
+    var looseRightLengthsConstraintLessThanSizes = LengthsLayouter(
       lengths: lengths,
       oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.end),
-      lengthsConstraint: 30.0,
+      lengthsConstraint: 0.0,
     );
     var looseRightTotalLength42Added12 = LengthsLayouter(
       lengths: lengths,
@@ -454,15 +484,15 @@ main() {
     );
 
     test('LengthsLayouter.layout() Loose Right, no total length enforced', () {
-      LayedOutLineSegments segments = looseRightNoTotalLength.layoutLengths();
+      LayedOutLineSegments segments = looseRightLengthsConstraintLessThanSizes.layoutLengths();
 
+      // no padding added
       expect(segments.lineSegments.length, 3);
-      // Aligns first element to max, then adds left padding freePadding long after every element,
-      // so the rightmost element has a padding freePadding long.
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(5.0, 15.0));
       expect(segments.lineSegments[2], const LineSegment(15.0, 30.0));
       expect(segments.totalLayedOutLengthIncludesPadding, 30.0);
+      expect(segments.isOverflown, true);
     });
 
     test('LengthsLayouter.layout() Loose Right, total length more than required', () {
@@ -477,6 +507,7 @@ main() {
       expect(segments.lineSegments[1], const LineSegment(5.0 + freePadding * 2, 15.0 + freePadding * 2));
       expect(segments.lineSegments[2], const LineSegment(15.0 + freePadding * 3, 30.0 + freePadding * 3));
       expect(segments.totalLayedOutLengthIncludesPadding, 42.0);
+      expect(segments.isOverflown, false);
     });
   });
 }

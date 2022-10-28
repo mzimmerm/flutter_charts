@@ -56,7 +56,6 @@ List<String> randomDataRowsLegends(int dataRowsCount) {
 
   if (dataRowsCount >= 1) {
     _defaultLegends.add('YELLOW1 aa bbb ' /*' with really long description'*/);
-    // todo-00-last-last : _defaultLegends.add('YELLOW');
   }
   if (dataRowsCount >= 2) {
     _defaultLegends.add('GREEN');
