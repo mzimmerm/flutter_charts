@@ -1211,10 +1211,11 @@ class LegendItemContainer extends BoxContainer {
     // Pull out the creation, remember on this object as member _legendLabel,
     // set _labelMaxWidth on it in newCoreLayout.
     return RowLayouter(
-      // **IFF* this is the topmost RowLayouter, the passed Packing and Lineup values are used.
-      // **ELSE* the values are irrelevant, will be replaced with start, snap.
-      mainAxisPacking: Packing.loose,
+      // **IFF* this is the topmost RowLayouter (Legend starts with Column),
+      //        the passed Packing and Lineup values are used.
+      // **ELSE* the values are irrelevant, will be replaced with Lineup.start, Packing.snap.
       mainAxisLineup: Lineup.start,
+      mainAxisPacking: Packing.loose,
       children: [
         LegendIndicatorRectContainer(
           indicatorPaint: _indicatorPaint,
@@ -1355,15 +1356,15 @@ class LegendContainer extends ChartAreaContainer {
     );
 
     return
-        /* todo-00-last-keep
+        /* todo-00-keep
       ColumnLayouter(
         mainAxisLineup: Lineup.start,
         mainAxisPacking: Packing.snap,
         crossAxisLineup: Lineup.start,
-        crossAxisPacking: Packing.matrjoska,
+        crossAxisPacking: Packing.matrjoska, // snap or loose does not fit
       */
 
-        /* todo-00-last-keep */
+        /* todo-00-keep */
       RowLayouter(
         mainAxisLineup: Lineup.start, // Lineup.start (for tests)
         mainAxisPacking: Packing.snap, // Packing.snap (for tests)

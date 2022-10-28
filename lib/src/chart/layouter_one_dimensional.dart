@@ -74,7 +74,6 @@ enum DivideConstraintsToChildren {
   noDivide,
 }
 
-// todo-00-last : document this
 /// Properties of [BoxLayouter] describe [packing] and [alignment] of the layed out elements along
 /// either a main axis or cross axis.
 ///
@@ -259,7 +258,6 @@ class LengthsLayouter {
     }
     totalLayedOutLengthIncludesPadding = _maxLength + _freePadding;
 
-    // todo-00-last : We should add [freePaddingLeft, freePaddingRight] and set them to LineSegment as that can be used if we want to create a boundRectangle that goes around the padding, not just tightly around the rectangles.
     return util_dart.LineSegment(start, end);
   }
 

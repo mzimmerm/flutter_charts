@@ -52,16 +52,27 @@ enum ExamplesEnum {
   ex900ErrorFixUserDataAllZero,
 }
 
-/// Describes chart types shown in examples or integration tests..
+/// Describes chart types shown in examples or integration tests.
 enum ExamplesChartTypeEnum {
   lineChart,
   verticalBarChart,
 }
 
-/// Represents examples and tests to be run.
+/// Defines the names (enums from [ExamplesEnum] such as [ExamplesEnum.ex10RandomData])
+/// and types ([ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart]) of the examples
+/// available to be tested or run interactively in scripts.
 ///
+/// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running in [run_all_examples.sh].
+///
+/// The [_allowed] member is the list of allowed combinations of [ExamplesEnum] and [ExamplesChartTypeEnum].
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example/lib/main.dart].
+///
+/// Method [asCommandLine] generates a shell snippet for an [_allowed] and requested example. The snippet may look like
+///    ```shell
+///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart $2
+///    ```
+/// and is used in the generated tmp file such as `examples_descriptor_generated_program_354.sh`.
 ///
 /// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartTypeToShow'.
 /// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
@@ -120,6 +131,7 @@ class ExamplesDescriptor {
   }
 
   /// Present this descriptor is a format suitable to run as a test from command line.
+  ///
   void asCommandLine() {
     List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun =
         exampleRequested == null ? _allowed : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();

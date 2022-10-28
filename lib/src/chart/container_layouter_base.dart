@@ -205,6 +205,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
   // todo-00-last : these should be private so noone overrides their 'packing: Packing.snap, lineup: Lineup.start'
+  //                 also move to immediate class below Row and Column
   OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
   OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
 
@@ -393,8 +394,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // print('In newCoreLayout: parent of $this = $parent.');
 
     if (isRoot) {
-      // todo-00-last : just mark children as greedy, but wait when we have greedy layouter.
-      //                also add to layouter a way to iterate non-greedy children, and greedy children separately
+      // todo-00-last :   also add to layouter a way to iterate non-greedy children, and greedy children separately
+      //                  maybe not needed, if anything, mark children as greedy, but wait when we have greedy layouter.
       _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
 
       // Force on deeper level RowLayouter OR ColumnLayouter
@@ -686,7 +687,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
         _lengthsLayouterAlong(
           layoutAxis: crossLayoutAxis,
           axisLayoutProperties: crossAxisLayoutProperties,
-          lengthsConstraintAlongLayoutAxis: 0.0, // todo-00-last : why cannot we pass constraint along cross axis?
+          // todo-00-later : If we use the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
+          //                   if legend starts with column, the legend column is on the left of the chart
+          //                   if legend starts with row   , the legend row    is on the bottom of the chart
+          //                 Probably need to address when the whole chart is layed out using the new layouter.
+          lengthsConstraintAlongLayoutAxis: 0.0,
           notGreedyChildren: notGreedyChildren,);
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
@@ -712,7 +717,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     LayedOutLineSegments crossAxisLayedOutSegments = mainAndCrossLayedOutSegments.crossAxisLayedOutSegments;
 
 /*
-    // todo-00-last testing this vvvvvv added and removed - maybe remove completely
+    // vvvvvv added and removed - maybe remove completely
     // This can be used if expandToConstraintMax = false (default)
     // mainAxisLayedOutSegments, move them to start with 0
     List<LineSegment> movedLineSegments = [];
@@ -725,7 +730,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
     mainAxisLayedOutSegments.lineSegments = movedLineSegments;
     mainAxisLayedOutSegments.totalLayedOutLengthIncludesPadding -= firstLineSegment.min;
-    // todo-00-last testing this ^^^^^^
+    //  ^^^^^^
 */
 
     if (mainAxisLayedOutSegments.lineSegments.length != crossAxisLayedOutSegments.lineSegments.length) {

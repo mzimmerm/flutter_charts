@@ -85,6 +85,11 @@ void main() {
   runApp(const MyApp());
 }
 
+/// From environment variables, returns the enum of the example to run
+/// *in the tests, integration tests, or main.dart*.
+///
+/// Used *in the tests, integration tests, or main.dart*.
+///
 /// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']
 ///   passed to the program by `--dart-define` options.
 ///
@@ -238,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
+    _ExampleWidgetCreator definer = _ExampleWidgetCreator(descriptorOfExampleToRun);
     Widget chartToRun = definer.createRequestedChart();
     _ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
@@ -395,7 +400,7 @@ class MyLabelCommonOptions extends LabelCommonOptions {
   */
 }
 
-/// The enabler of widget changes in the main test app by the code in [_ExampleDefiner].
+/// The enabler of widget changes in the main test app by the code in [_ExampleWidgetCreator].
 /// 
 /// This enables support for each example ability to manipulate it's environment
 /// (by environment we mean the widgets in main.dart outside the chart).
@@ -404,21 +409,24 @@ class MyLabelCommonOptions extends LabelCommonOptions {
 /// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
 /// to test label changes with available space.
 /// 
-/// This class allows to carry such changes from the [_ExampleDefiner] to the widgets in the main app.
+/// This class allows to carry such changes from the [_ExampleWidgetCreator] to the widgets in the main app.
 /// 
 class _ExampleSideEffects {
   String leftSqueezeText = '>>>';
   String rightSqueezeText = '<<';
 }
 
-/// Defines the examples to run.
+/// Creates the chart [Widget] for the examples which will be tested and run in scripts.
+///
+/// The core method [createRequestedChart] creates the chart [Widget] for the examples which are tested
+/// in [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running in [run_all_examples.sh].
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
-class _ExampleDefiner {
+class _ExampleWidgetCreator {
 
   /// Construct the definer object for the example.
-  _ExampleDefiner(this.descriptorOfExampleToRun);
+  _ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
