@@ -1,5 +1,6 @@
 import 'dart:math' as math show max;
 import 'package:tuple/tuple.dart';
+import 'dart:ui' as ui;
 
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 
@@ -82,28 +83,25 @@ enum DivideConstraintsToChildren {
 class OneDimLayoutProperties {
   final Packing packing;
   final Lineup lineup;
-  // todo-00-last-last : changed from : double? totalLength : to : late final double totalLength
-  // todo-00-last-last :double? totalLength;
 
   OneDimLayoutProperties({
     required this.packing,
     required this.lineup,
-    // todo-00-last-last : added and removed required
-    // todo-00-last-last :this.totalLength,
   });
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
 ///
-/// The core algorithm in [layoutLengths] lays out the [lengths] according to the
-/// properties specified in member [oneDimLayoutProperties], and creates list
-/// of layed out segments from the [lengths].
-///
-/// [oneDimLayoutProperties] specifies [Packing] and [Lineup] properties.
+/// The [oneDimLayoutProperties] specifies [Packing] and [Lineup] properties.
 /// They control the layout result, along with [lengthsConstraint],
 /// which is the constraint for the layed out segments.
 ///
-/// The total length of [lengths] depends on Packing - it is
+/// The core algorithm in [layoutLengths] lays out the [lengths] according to the
+/// properties specified in member [oneDimLayoutProperties], and creates list
+/// of layed out segments from the [lengths]; the layed out segments may be padded
+/// if there is length available towards the [lengthsConstraint].
+///
+/// Note: The total length of [lengths] depends on Packing - it is
 ///   - sum lengths for snap or loose
 ///   - max length for matrjoska
 ///
@@ -118,38 +116,20 @@ class LengthsLayouter {
   LengthsLayouter({
     required this.lengths,
     required this.oneDimLayoutProperties,
-    required this.lengthsConstraint, // todo-00-last-last
+    required this.lengthsConstraint,
   }) {
     assert(lengthsConstraint != double.infinity);
     switch (oneDimLayoutProperties.packing) {
       case Packing.matrjoska:
-        // todo-00-last-last : oneDimLayoutProperties.totalLength ??= _maxLength;
-        // todo-00-last-last  lengthsConstraint ??= _maxLength;
-        // Replacing asserts with setting _freePadding to 0 if negative.
-        // Caller should allow this, and if layoutSize exceeds Constraints, deal with it in caller
-        // assert(oneDimLayoutProperties.totalLength! >= _maxLength);
-        // _freePadding = oneDimLayoutProperties.totalLength! - _maxLength;
-        // todo-00-last-last :  double freePadding = oneDimLayoutProperties.totalLength! - _maxLength;
+        // Caller should allow for lengthsConstraint to be exceeded by _maxLength, set isOverflown, deal with it in caller
         isOverflown = (_maxLength > lengthsConstraint);
         _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _maxLength;
-
-/* todo-00-last-last
-        double freePadding = lengthsConstraint - _maxLength;
-        _freePadding = freePadding >= 0.0 ? freePadding : 0.0;
-*/
         break;
       case Packing.snap:
       case Packing.loose:
-        // todo-00-last-last :  oneDimLayoutProperties.totalLength ??= _sumLengths;
-        // todo-00-last-last lengthsConstraint ??= _sumLengths;
-        // Replacing asserts with setting _freePadding to 0 if negative.
-        // Caller should allow this, and if layoutSize exceeds Constraints, deal with it in caller
-        // assert(oneDimLayoutProperties.totalLength! >= _sumLengths);
-        // _freePadding = oneDimLayoutProperties.totalLength! - _sumLengths;
-        // todo-00-last-last :  double freePadding = oneDimLayoutProperties.totalLength! - _sumLengths;
+        // Caller should allow for lengthsConstraint to be exceeded by _sumLengths, set isOverflown, deal with it in caller
         isOverflown = (_sumLengths > lengthsConstraint);
-         // todo-00-last-last double freePadding = lengthsConstraint - _sumLengths;
-        _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths; // todo-00-last-last  freePadding >= 0.0 ? freePadding : 0.0;
+        _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths;
         break;
     }
   }
@@ -158,13 +138,16 @@ class LengthsLayouter {
   final List<double> lengths;
   final OneDimLayoutProperties oneDimLayoutProperties;
   late final double _freePadding;
-  late final double lengthsConstraint; // todo-00-last-last
-  late final bool isOverflown;
+  late final double lengthsConstraint;
+  late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
 
   double totalLayedOutLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
   /// defined in member [oneDimLayoutProperties].
+  ///
+  /// From the [lengths], it creates a list of layed out segments ; the layed out segments may be padded
+  /// if there is length available towards the [lengthsConstraint].
   ///
   /// The input are members
   ///   - [lengths] which holds the lengths to lay out, and
@@ -174,8 +157,8 @@ class LengthsLayouter {
   ///     - [lengthsConstraint] which is effectively the 1-dimensional constraint for the
   ///       min and max values of the layed out segments.
   ///
-  /// The result of this method is a [LayedOutLineSegments] object, where this method wraps
-  ///   - The layed out imaginary sticks of [lengths],is  placed in [LayedOutLineSegments.lineSegments]
+  /// The result of this method is a [LayedOutLineSegments] object. In this object, this method wraps
+  ///   - The layed out imaginary sticks of [lengths], are placed in [LayedOutLineSegments.lineSegments]
   ///   - The total layed out length of the layed out [LayedOutLineSegments.lineSegments], INCLUDING PADDING,
   ///     is placed in [LayedOutLineSegments.totalLayedOutLengthIncludesPadding].
   ///
@@ -185,12 +168,26 @@ class LengthsLayouter {
   /// The algorithm keeps track of, and results in, the [totalLayedOutLengthIncludesPadding]
   /// which is effectively the layout size of all the layed out imaginary sticks [LayedOutLineSegments.lineSegments].
   ///
-  /// OVERFLOW NOTE: This algorithm allows (as a valid but suspect result) each of two 'overflow conditions'
-  ///    1. The last endpoint of [LayedOutLineSegments.lineSegments] > [lengthsConstraint]
-  ///    2. [lengthsConstraint] < [LayedOutLineSegments.totalLayedOutLengthIncludesPadding]
+  /// Note: The total length of [lengths] depends on Packing - it is
+  ///   - sum lengths for snap or loose
+  ///   - max length for matrjoska
+  ///
+  /// If the total length of [lengths] is below [lengthsConstraint],
+  /// and the combination of Packing and Lineup allows free spacing, the remaining
+  /// [lengthsConstraint] are used to add spaces between, around, or to the left of the
+  /// resulting segments.
+  ///
+  /// OVERFLOW NOTES: This algorithm allows (as a valid but suspect result) an 'overflow condition', in which
+  ///
+  ///    -  The last endpoint of [LayedOutLineSegments.lineSegments] > [lengthsConstraint],
+  ///       see [isOverflown].
+  ///    - In [isOverflown] condition, no padding is used. Also, several things are true
+  ///      -
+  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] = the sum or max of [lengths] depending on Packing.
+  ///      - [LayedOutLineSegments.totalLayedOutLengthIncludesPadding] > [lengthsConstraint]
   ///
   ///
-  /// For example:
+  /// Example:
   ///   - Laying out using the [Packing.snap] and [Lineup.start], in [OneDimLayoutProperties] :
   ///     - The first length in [lengths] creates the first [LineSegment] in [layedOutLineSegments]; this first [LineSegment] has
   ///       - min = 0.0
@@ -208,18 +205,21 @@ class LengthsLayouter {
         layedOutLineSegments = LayedOutLineSegments(
           lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
           totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          isOverflown: isOverflown,
         );
         break;
       case Packing.snap:
         layedOutLineSegments = LayedOutLineSegments(
           lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor),
           totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          isOverflown: isOverflown,
         );
         break;
       case Packing.loose:
         layedOutLineSegments = LayedOutLineSegments(
           lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor),
           totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          isOverflown: isOverflown,
         );
         break;
     }
@@ -367,6 +367,8 @@ class LengthsLayouter {
 /// the [LengthsLayouter] positioned them, the min and max values are
 /// starting at 0.0 and ending at the [LengthsLayouter.lengthsConstraint].
 ///
+/// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
+///
 /// The clients of this object usually use it to convert the member [lineSegments]
 /// to one side of a rectangle along the axis corresponding to children (future) positions.
 ///
@@ -374,10 +376,24 @@ class LengthsLayouter {
 ///       layed out to their positions with [LengthsLayouter]
 ///       and [totalLayedOutLengthIncludesPadding] calculated by [LengthsLayouter.totalLayedOutLengthIncludesPadding].
 class LayedOutLineSegments {
-  const LayedOutLineSegments({required this.lineSegments, required this.totalLayedOutLengthIncludesPadding});
+  const LayedOutLineSegments({
+    required this.lineSegments,
+    required this.totalLayedOutLengthIncludesPadding,
+    required this.isOverflown,
+  });
 
   final List<util_dart.LineSegment> lineSegments;
+  /// Total length after layout that includes padding.
+  ///
+  /// If there is padding, this may be BEYOND max on last lineSegments
   final double totalLayedOutLengthIncludesPadding;
+  /// [isOverflown] is a marker that the process that lead to layout overflew it's original constraints in
+  /// [LengthsLayouter.lengthsConstraint].
+  ///
+  /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
+  final bool isOverflown;
+
+  ui.Size get envelope => ui.Size(0.0, totalLayedOutLengthIncludesPadding);
 
   /// Calculates length of all layed out [lineSegments].
   ///
@@ -385,8 +401,6 @@ class LayedOutLineSegments {
   /// in [LayedOutLineSegments.layoutLengths] and start at offset 0.0 first to last,
   /// the total length is between 0.0 and the end of the last [util_dart.LineSegment] element in [lineSegments].
   /// As the [lineSegments] are all in 0.0 based coordinates, the last element end is the length of all [lineSegments].
-  ///
-  // todo-00-last-last : no longer used?? : double get totalLength => lineSegments.isNotEmpty ? lineSegments.last.max : 0.0;
 
   @override
   bool operator ==(Object other) {

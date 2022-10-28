@@ -449,8 +449,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     a fraction of it's constraint.
   ///
   void _preDescend_DistributeMyConstraintToImmediateChildren_And_SetTotalLengthOnMyAxisLayoutProperties() {
-    // todo-00-last-last : move this away from mainAxisLayoutProperties : Used for 'Packing.loose' and 'Lineup.end' to give free Padding.
-    // todo-00-last-last  moved away : mainAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(mainLayoutAxis);
     // todo-00-last : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
 
     for (var child in _childrenInLayoutOrderGreedyLast) {
@@ -716,21 +714,25 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Creates a [LengthsLayouter] for the passed [notGreedyChildren].
   ///
-  /// This layouter can layout children in one dimension along the passed [layoutAxis],
-  /// according the passed [axisLayoutProperties].
+  /// This layouter can layout children in the dimension along the passed [layoutAxis],
+  /// according the passed [axisLayoutProperties]. The passed [lengthsConstraintAlongLayoutAxis]
+  /// serves as a constraint along the layout axis.
+  ///
+  /// See [LengthsLayouter] for details of how the returned layouter lays out the children's
+  /// sides along the [layoutAxis].
   ///
   /// The passed objects must both correspond to either main axis or the cross axis.
   LengthsLayouter _lengthsLayouterAlong({
     required LayoutAxis layoutAxis,
     required OneDimLayoutProperties axisLayoutProperties,
-    required double lengthsConstraintAlongLayoutAxis, // todo-00-last-last
+    required double lengthsConstraintAlongLayoutAxis,
     required List<LayoutableBox> notGreedyChildren,
   }) {
     List<double> lengthsAlongLayoutAxis = _lengthsOfChildrenAlong(layoutAxis, notGreedyChildren);
     LengthsLayouter lengthsLayouterAlongLayoutAxis = LengthsLayouter(
       lengths: lengthsAlongLayoutAxis,
       oneDimLayoutProperties: axisLayoutProperties,
-      lengthsConstraint: lengthsConstraintAlongLayoutAxis, // todo-00-last-last
+      lengthsConstraint: lengthsConstraintAlongLayoutAxis,
 
     );
     return lengthsLayouterAlongLayoutAxis;
