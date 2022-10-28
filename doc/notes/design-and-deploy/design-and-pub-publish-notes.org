@@ -1646,85 +1646,26 @@ Important current
   - [X] Test it on some combinations in legend layout
     - [X] nested Lineup.end on Row
     - [X] we also have Column example to test
-- [-] One remaining todo-00-last-last
+- [X] One remaining todo-00-last-last
   - [X] Find problem or comment
-  - [ ] Make sure Tests work
-  - [ ] Commit and push
-- [ ] Add ability in Main and in LegendContainer to create example which overrides creation of ~LegendContainer~
-  - [ ] In this code, using the previously switch-set chartData and xContainerLabelLayoutStrategy we create the Widget for the chart enum
-    #+begin_src dart main-createRequestedChart-end
-    Widget chartToRun;
-
-    switch (chartTypeToShow) {
-      case ExamplesChartTypeEnum.lineChart:
-        LineChartRootContainer lineChartContainer = LineChartRootContainer(
-          chartData: chartData,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
-
-        LineChart lineChart = LineChart(
-          painter: LineChartPainter(
-            lineChartContainer: lineChartContainer,
-          ),
-        );
-        chartToRun = lineChart;
-        break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartRootContainer verticalBarChartContainer = VerticalBarChartRootContainer(
-          chartData: chartData,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
-
-        VerticalBarChart verticalBarChart = VerticalBarChart(
-          painter: VerticalBarChartPainter(
-            verticalBarChartContainer: verticalBarChartContainer,
-          ),
-        );
-
-        chartToRun = verticalBarChart;
-        break;
-    }
-    // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
-    //   depending on the chart type requested by [requestedExampleToRun]
-    return chartToRun;
-    #+end_src
-  - [ ] We need the ability to define different LegendContainer and LegendItemContainer and a way to push from this code which one we want.
-    - [ ] Pushing: via ChartOptions.legendOptions
-      - [ ] New enum LegendAndItemLayoutEnum
-        - [ ] legendIsRowStartSnapItemIsRowStartSnap
-        - [ ] legendIsRowStartSnapItemIsRowEndLoose
-        - [ ] etc
-      - [ ] ChartOptions.LegendOptions
-        - [ ] add member LegendAndItemLayoutEnum legendAndItemLayoutEnum
-        - [ ] set some default
-      - [ ] In main enum switch
-        - [ ] Add 4 examples enum
-        - [ ] set the new enum LegendAndItemLayoutEnum on chartOptions in main around
-          #+begin_src dart
-          case ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0:
-          // Example shows how to create ChartOptions instance 
-          //   which will request to start Y axis at data minimum.
-          // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
-          //   as it does not make sense there.
-          chartOptions = const ChartOptions(
-            dataContainerOptions: DataContainerOptions(
-              startYAxisAtDataMinRequested: true,
-            ),
-          );
-          chartData = ChartData(
-            dataRows: const [
-              [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
-              [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
-            ],
-            xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            dataRowsLegends: const [
-              'Off zero 1',
-              'Off zero 2',
-            ],
-            chartOptions: chartOptions,
-          );
-          break;
-          #+end_src
+  - [X] Make sure Tests work
+  - [X] Commit and push
+- [-] Add ability in Main and in LegendContainer to create example which overrides creation of ~LegendContainer~
+  - [-] We need the ability to define different LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
+    - [X] Pushing: via ChartOptions.legendOptions
+      - [X] New enum LegendAndItemLayoutEnum
+        - [X] legendIsRowStartSnapItemIsRowStartSnap
+        - [X] legendIsRowStartSnapItemIsRowEndLoose
+        - [X] etc
+      - [X] ChartOptions.LegendOptions
+        - [X] add member LegendAndItemLayoutEnum legendAndItemLayoutEnum
+        - [X] set some default
+      - [X] In main enum switch
+        - [X] Add 4 examples enum case: , setting the added LegendOptions
+          - [X] ex70AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap
+          - [X] ex71AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose
+          - [X] ex72AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap
+          - [X] ex73AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose
     - [ ] Implementing: in LegendContainer and LegendItemContainer 
       - [ ] LegendContainer.buildContainerOrSelf, change to
         #+begin_src dart
@@ -1772,6 +1713,43 @@ Important current
           }
         #+end_src 
       - [ ] LegendItemContainer.buildContainerOrSelf - similar changes
+  - [ ] In this code, using the previously switch-set chartData and xContainerLabelLayoutStrategy we create the Widget for the chart enum
+    #+begin_src dart main-createRequestedChart-end
+    Widget chartToRun;
+
+    switch (chartTypeToShow) {
+      case ExamplesChartTypeEnum.lineChart:
+        LineChartRootContainer lineChartContainer = LineChartRootContainer(
+          chartData: chartData,
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        );
+
+        LineChart lineChart = LineChart(
+          painter: LineChartPainter(
+            lineChartContainer: lineChartContainer,
+          ),
+        );
+        chartToRun = lineChart;
+        break;
+      case ExamplesChartTypeEnum.verticalBarChart:
+        VerticalBarChartRootContainer verticalBarChartContainer = VerticalBarChartRootContainer(
+          chartData: chartData,
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        );
+
+        VerticalBarChart verticalBarChart = VerticalBarChart(
+          painter: VerticalBarChartPainter(
+            verticalBarChartContainer: verticalBarChartContainer,
+          ),
+        );
+
+        chartToRun = verticalBarChart;
+        break;
+    }
+    // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
+    //   depending on the chart type requested by [requestedExampleToRun]
+    return chartToRun;
+    #+end_src
   - [ ] Make sure existing tests work !!! - using the default legend enum legendIsRowStartSnapItemIsRowStartSnap
 - [ ] Add 3 examples (only use LineChart) which overrides creation of ~LegendContainer~
   - [ ] LegendContainer starts with RowLayouter    'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (default desired and tested)

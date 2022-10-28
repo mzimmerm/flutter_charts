@@ -1208,6 +1208,7 @@ class LegendItemContainer extends BoxContainer {
         super(children: children);
   @override
   BoxContainer buildContainerOrSelf() {
+/*
     // Pull out the creation, remember on this object as member _legendLabel,
     // set _labelMaxWidth on it in newCoreLayout.
     return RowLayouter(
@@ -1215,20 +1216,55 @@ class LegendItemContainer extends BoxContainer {
       //        the passed Packing and Lineup values are used.
       // **ELSE* the values are irrelevant, will be replaced with Lineup.start, Packing.snap.
       mainAxisLineup: Lineup.start,
-      mainAxisPacking: Packing.loose,
-      children: [
-        LegendIndicatorRectContainer(
-          indicatorPaint: _indicatorPaint,
-          options: _options,
-        ),
-        LabelContainer(
-          label: _label,
-          labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-          labelStyle: _labelStyle,
-          options: _options,
-        ),
-      ],
+      mainAxisPacking: Packing.snap, // loose works with top column but unclear
+      children: _itemIndicatorAndLabel(),
     );
+*/
+
+    var children = _itemIndAndLabel();
+    switch (_options.legendOptions.legendAndItemLayoutEnum) {
+      // **IFF* the returned layout is the topmost RowLayouter (Legend starts with Column),
+      //        the passed Packing and Lineup values are used.
+      // **ELSE* the values are irrelevant, will be replaced with Lineup.start, Packing.snap.
+      case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
+        return RowLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.loose,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
+        // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
+        return RowLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.snap,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
+        return RowLayouter(
+            mainAxisLineup: Lineup.end,
+            mainAxisPacking: Packing.loose,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
+        // default for legend row : desired and tested
+        return RowLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.snap,
+            children: children);
+    }
+
+  }
+
+  List<BoxContainer> _itemIndAndLabel() {
+    return [
+      LegendIndicatorRectContainer(
+        indicatorPaint: _indicatorPaint,
+        options: _options,
+      ),
+      LabelContainer(
+        label: _label,
+        labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+        labelStyle: _labelStyle,
+        options: _options,
+      ),
+    ];
   }
 }
 
@@ -1343,6 +1379,7 @@ class LegendContainer extends ChartAreaContainer {
 
   @override
   BoxContainer buildContainerOrSelf() {
+    // todo-00-last-last : should we use member _options? Is there such member?
     ChartOptions options = chartRootContainer.data.chartOptions;
 
     List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
@@ -1355,36 +1392,71 @@ class LegendContainer extends ChartAreaContainer {
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
+    var children = _legendItems(dataRowsLegends, labelStyle, options);
+    switch (options.legendOptions.legendAndItemLayoutEnum) {
+      case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
+        return ColumnLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.loose,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
+        // default for legend column
+        return ColumnLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.snap,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
+        return RowLayouter(
+            mainAxisLineup: Lineup.center,
+            mainAxisPacking: Packing.loose,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
+        // default for legend row : desired and tested
+        return RowLayouter(
+            mainAxisLineup: Lineup.start,
+            mainAxisPacking: Packing.snap,
+            children: children);
+    }
+    
+/*
     return
+*/
         /* todo-00-keep
       ColumnLayouter(
         mainAxisLineup: Lineup.start,
-        mainAxisPacking: Packing.snap,
+        mainAxisPacking: Packing.snap, // loose works but spreads too much vertically
         crossAxisLineup: Lineup.start,
         crossAxisPacking: Packing.matrjoska, // snap or loose does not fit
-      */
+     */
 
-        /* todo-00-keep */
+        /* todo-00-keep
       RowLayouter(
         mainAxisLineup: Lineup.start, // Lineup.start (for tests)
         mainAxisPacking: Packing.snap, // Packing.snap (for tests)
-      /*  */
-      children: [
-        // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
-        for (int index = 0; index < dataRowsLegends.length; index++)
-          // ui.Paint indicatorPaint = ui.Paint();
-          // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
-          // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
-          LegendItemContainer(
-            label: dataRowsLegends[index],
-            labelStyle: labelStyle,
-            indicatorPaint: (ui.Paint()
-              ..color = chartRootContainer.data.dataRowsColors
-                  .elementAt(index % chartRootContainer.data.dataRowsColors.length)), //
-            options: options,
-          ),
-      ],
+      */
+/*
+
+      children: _legendItems(dataRowsLegends, labelStyle, options),
     );
+*/
+  }
+
+  List<BoxContainer> _legendItems(List<String> dataRowsLegends, LabelStyle labelStyle, ChartOptions options) {
+    return [
+      // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
+      for (int index = 0; index < dataRowsLegends.length; index++)
+        // ui.Paint indicatorPaint = ui.Paint();
+        // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+        // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
+        LegendItemContainer(
+          label: dataRowsLegends[index],
+          labelStyle: labelStyle,
+          indicatorPaint: (ui.Paint()
+            ..color = chartRootContainer.data.dataRowsColors
+                .elementAt(index % chartRootContainer.data.dataRowsColors.length)), //
+          options: options,
+        ),
+    ];
   }
 
   // Important: Because LegendContainer is a plugged in 'fake' root, overriding isRoot and returning true.

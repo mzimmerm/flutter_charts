@@ -113,6 +113,10 @@ class LegendOptions {
 
   final ui.TextAlign legendTextAlign;
 
+  /// Controls (four) build-in layouts for legends that client can choose
+  /// without requiring code extensions.
+  final LegendAndItemLayoutEnum legendAndItemLayoutEnum;
+
   const LegendOptions({
     this.isLegendContainerShown = true,
     this.legendContainerMarginLR = 8.0,
@@ -121,6 +125,7 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
+    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap,
   });
 }
 
@@ -320,4 +325,11 @@ class LabelCommonOptions {
 enum DataRowsPaintingOrder {
   firstToLast,
   lastToFirst,
+}
+
+enum LegendAndItemLayoutEnum {
+  legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartSnapItemIsRowStartSnap
+  legendIsColumnStartSnapItemIsRowStartSnap, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
+  legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'snap' , so noop
+  legendIsRowStartSnapItemIsRowStartSnap, // default for legend row : desired and tested
 }

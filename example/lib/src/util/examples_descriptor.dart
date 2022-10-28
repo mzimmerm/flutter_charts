@@ -48,6 +48,11 @@ enum ExamplesEnum {
   ex60LabelsIteration2,
   ex60LabelsIteration3,
   ex60LabelsIteration4,
+  ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
+  ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap,
+  ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
+  ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap,
+
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
 }
@@ -117,6 +122,18 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex60LabelsIteration3, ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex60LabelsIteration4, ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
+        ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap,
+        ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
+        ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap,
+        ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];

@@ -809,6 +809,62 @@ class _ExampleWidgetCreator {
         exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
         break;
 
+      case ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
@@ -869,4 +925,18 @@ class _ExampleWidgetCreator {
     //   depending on the chart type requested by [requestedExampleToRun]
     return chartToRun;
   }
+
+  var animalsDefaultData = const [
+    [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+    [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+    [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+    [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+  ];
+  var animalsXUserLabels = const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+  var animalsDataRowsLegends = const [
+    'Spring',
+    'Summer',
+    'Fall',
+    'Winter',
+  ];
 }
