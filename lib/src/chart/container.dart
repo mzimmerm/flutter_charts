@@ -1208,9 +1208,13 @@ class LegendItemContainer extends BoxContainer {
         super(children: children);
   @override
   BoxContainer buildContainerOrSelf() {
-    // Pull out the creation, remember on this object as member _legendLabel, set _labelMaxWidth on it in newCoreLayout.
+    // Pull out the creation, remember on this object as member _legendLabel,
+    // set _labelMaxWidth on it in newCoreLayout.
     return RowLayouter(
-      // mainAxisPacking: Packing.loose,
+      // **IFF* this is the topmost RowLayouter, the passed Packing and Lineup values are used.
+      // **ELSE* the values are irrelevant, will be replaced with start, snap.
+      mainAxisPacking: Packing.loose,
+      mainAxisLineup: Lineup.start,
       children: [
         LegendIndicatorRectContainer(
           indicatorPaint: _indicatorPaint,
@@ -1351,19 +1355,19 @@ class LegendContainer extends ChartAreaContainer {
     );
 
     return
-      /* todo-00-last-keep
+        /* todo-00-last-keep
       ColumnLayouter(
-       mainAxisLineup: Lineup.start,
+        mainAxisLineup: Lineup.start,
         mainAxisPacking: Packing.snap,
         crossAxisLineup: Lineup.start,
         crossAxisPacking: Packing.matrjoska,
+      */
 
-     */
-/* todo-00-last-keep */
+        /* todo-00-last-keep */
       RowLayouter(
-      mainAxisLineup: Lineup.start,
-      mainAxisPacking: Packing.snap, // Packing.loose,  Packing.snap (original for tests OK)
-/* */
+        mainAxisLineup: Lineup.start, // Lineup.start (for tests)
+        mainAxisPacking: Packing.snap, // Packing.snap (for tests)
+      /*  */
       children: [
         // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
         for (int index = 0; index < dataRowsLegends.length; index++)

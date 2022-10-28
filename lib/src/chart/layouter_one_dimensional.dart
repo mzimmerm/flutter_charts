@@ -387,12 +387,15 @@ class LayedOutLineSegments {
   ///
   /// If there is padding, this may be BEYOND max on last lineSegments
   final double totalLayedOutLengthIncludesPadding;
-  /// [isOverflown] is a marker that the process that lead to layout overflew it's original constraints in
+  /// A marker that the process that lead to layout overflew it's original constraints given in
   /// [LengthsLayouter.lengthsConstraint].
   ///
   /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
   final bool isOverflown;
 
+  /// Envelope of the layed out [lineSegments].
+  ///
+  /// This will become the [BoxContainer.layoutSize] along the layout axis.
   ui.Size get envelope => ui.Size(0.0, totalLayedOutLengthIncludesPadding);
 
   /// Calculates length of all layed out [lineSegments].

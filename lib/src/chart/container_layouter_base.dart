@@ -5,7 +5,8 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show Lineup, Packing, OneDimLayoutProperties, LengthsLayouter, LayedOutLineSegments;
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import 'package:flutter_charts/src/morphic/rendering/constraints.dart'
+    show BoundingBoxesBase, BoxContainerConstraints;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show outerRectangle;
 
@@ -199,10 +200,37 @@ abstract class LayoutableBox {
 /// by the side effects of the method [_layoutInMe_Then_OffsetChildrenInMe_AccordingToLayouter].
 mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
+  /// Fields that control layout of RowLayouter and ColumnLayouter.
+  /// todo-00-last : BoxLayouter is NOT necessarily layoud out with Row or Column.
+  /// yet, these fields assume BoxLayouter IS Row or Column,
+  /// becoase the lineups and packings assume one of them.
+ /* todo-00-last-last this is unused, but maybe we should use it to rebuild the mainAxisLayoutProperties when set
   late final Lineup mainAxisLineup;
   late final Packing mainAxisPacking;
   late final Lineup crossAxisLineup;
   late final Packing crossAxisPacking;
+*/
+  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
+  // isLayout should be implemented differently on layouter and container. But it's not really needed
+  // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
+
+  // todo-00-last : these should be private so noone overrides their 'packing: Packing.snap, lineup: Lineup.start'
+  OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
+  OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
+
+  // todo-00-last : this should be on a inherited in between this and Row/ColumnLayuters
+  void _rebuildMainAxisLayoutPropertiesAs({
+    required Packing packing,
+    required Lineup lineup,
+  }) {
+    mainAxisLayoutProperties = OneDimLayoutProperties(packing: packing, lineup: lineup);
+  }
+  void _rebuildCrossAxisLayoutPropertiesAs({
+    required Packing packing,
+    required Lineup lineup,
+  }) {
+    crossAxisLayoutProperties = OneDimLayoutProperties(packing: packing, lineup: lineup);
+  }
 
   // 1. Overrides implementing all methods from implemented interface [LayoutableBox] ---------------------------------
 
@@ -312,13 +340,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   List<BoxLayouter> _childrenInLayoutOrderGreedyLast = NullLikeListSingleton();
   ui.Size _addedSizesOfAllChildren = const ui.Size(0.0, 0.0);
 
-  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
-  // isLayout should be implemented differently on layouter and container. But it's not really needed
-  // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
-
-  OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
-  OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start);
-
   /// Return true if container would like to expand as much as possible, within it's constraints.
   ///
   /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
@@ -328,6 +349,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
 
   BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
+
+  // ------------------------------------------------------------------------------------------------------------------------
+
+  /// Sandbox-type helper field : none so far
+
 
   // ------------------------------------------------------------------------------------------------------------------------
   void _assertCallerIsParent(BoxLayouter caller) {
@@ -377,8 +403,20 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // print('In newCoreLayout: parent of $this = $parent.');
 
     if (isRoot) {
+      // todo-00-last : just mark children as greedy, but wait when we have greedy layouter.
+      //                also add to layouter a way to iterate non-greedy children, and greedy children separately
       _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
-      assert(constraints.size != const Size(-1.0, -1.0));
+
+      // todo-00-last-last Add check to newCoreLayout, if RowLayouter OR ColumnLayouter is deeper,
+      //  and Lineup set to anything but 'start' and Packing 'snap',
+      //  replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'.
+      //  Probably at the beginning of newCoreLayout on root?
+      _ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(
+        foundFirstRowLayouterFromTop: false,
+        foundFirstColumnLayouterFromTop: false,
+      );
+
+    assert(constraints.size != const Size(-1.0, -1.0));
     }
 
     // A. node-pre-descend. Constraint on root must be set
@@ -432,6 +470,51 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       _childrenInLayoutOrderGreedyLast
         ..remove(greedyChild)
         ..add(greedyChild);
+    }
+  }
+
+  /// Forces default non-offsetting axis layout properties [OneDimLayoutProperties]
+  /// on the deeper lever layouter hierarchy for [RowLayouter] and [ColumnLayouter] nodes.
+  ///
+  /// Motivation: The one-pass layout we use allows only the topmost [RowLayouter] or [ColumnLayouter]
+  ///              to specify values that cause non-zero offset.
+  ///
+  ///              Only [Packing.snap] and [Lineup.start] do not cause offset and a
+  ///              re allowed on deeper level [RowLayouter] or [ColumnLayouter].
+  ///
+  ///              But such behavior is contra intuitive for users to set.
+  ///
+  /// This method forces the deeper level values to the non-offseting.
+  _ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting({
+    required bool foundFirstRowLayouterFromTop,
+    required bool foundFirstColumnLayouterFromTop,
+  }) {
+
+    if (this is RowLayouter && !foundFirstRowLayouterFromTop) {
+      foundFirstRowLayouterFromTop = true;
+    }
+
+    if (this is ColumnLayouter && !foundFirstColumnLayouterFromTop) {
+      foundFirstColumnLayouterFromTop = true;
+    }
+
+    for (var child in children) {
+      // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
+      // so that only the top layouter can have non-start and non-snap/matrjoska
+      if (child is RowLayouter && foundFirstRowLayouterFromTop) {
+        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.snap);
+      }
+      if (child is ColumnLayouter && foundFirstColumnLayouterFromTop) {
+        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.matrjoska);
+      }
+
+
+      // in-child continue to child's children with the potentially updated values 'foundFirst'
+      child._ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(
+        foundFirstRowLayouterFromTop: foundFirstRowLayouterFromTop,
+        foundFirstColumnLayouterFromTop: foundFirstColumnLayouterFromTop,
+      );
+
     }
   }
 
@@ -754,6 +837,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// It should only be called after [newCoreLayout] has been performed on this layouter.
   ui.Rect _boundingRectangle() {
     return offset & layoutSize;
+  }
+
+  /// This top level function constructs a [BoundingBoxesBase] which this [BoxLayouter] would consider a
+  /// minimum and maximum size of layed out passed [childrenBoxes].
+  ///
+  /// Effectively, the return value is the envelope of the layed out [childrenBoxes].
+  /// This would be used in a two pass layout.
+  BoundingBoxesBase envelopeOfChildrenAfterLayout({
+    required covariant List<BoundingBoxesBase> childrenBoxes,
+  }) {
+    throw UnimplementedError('Implement in extensions');
   }
 
 }

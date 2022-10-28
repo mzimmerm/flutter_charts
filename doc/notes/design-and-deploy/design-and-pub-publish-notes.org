@@ -1642,23 +1642,27 @@ Important current
 
 - [X] Put stuff back so tests work without changes
 - [X] Remove asserts around free space - there is TODO.
-- [ ] Add check to newCoreLayout, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
-  - [ ] Test it on some combinations in legend layout
-    - [ ] nested Lineup.end on Row
-    - [ ] we do not have Column example to test
-- [ ] Tests work
+- [X] Add check to newCoreLayout, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'. Probably at the beginning of newCoreLayout on root?
+  - [X] Test it on some combinations in legend layout
+    - [X] nested Lineup.end on Row
+    - [X] we also have Column example to test
+- [ ] Make sure Tests work
+- [ ] Rename Lineup to Align
+- [ ] Rename Packing.snap to Packing.tight
+- [ ] Add a mid-class between BoxContainer and RowLayouter/ColumnLayouter, and move things from BoxLayouter 
+- [ ] Add container Greedy, equivalent of Expanded with ratio
+  - [ ] Change layout algorithm to process non-expanded first, GIVE EXPANDED RATIO OF remaining CONSTRAINT - THIS REQUIRES A NEW STEP
+  - [ ] Test on LegendContainer, by wrapping one or two short text LegendItemContainers into Greedy, they should eat up space despite being small.
+- [ ] Make sure Tests work
 - [ ] Support to show yellow and black rectangle on overflow:
   - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
   - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
   - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
   - [ ] Add top paint method as super to all paint methods.
   - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
-- [ ] Add container Greedy, equivalent of Expanded with ratio
-  - [ ] Change layout algorithm to process non-expanded first, GIVE EXPANDED RATIO OF CONSTRAINT - THIS REQUIRES A NEW STEP
-  - [ ] Tests work!!!
-  - [ ] CANNOT TEST YET, UNTIL WE CONVERT THE WHOLE CHART TO NEW LAYOUT. 
-- [ ] Add Padding BoxContainer that can be used around boxes to pad with space, no painting needed?
-- [ ] Add Layout which wraps! (maybe that is called FlowLayout?). This is important for long legends.
+- [ ] Make sure Tests work
+- [ ] Add PaddingLayouter that can be used around boxes to pad with space - no painting needed?
+- [ ] LATER: Add Layout which wraps! (call it WrapLayouter). This is important for long legends.
 
 
 Older plan, still valid:

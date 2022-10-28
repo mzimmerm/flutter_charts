@@ -1,4 +1,5 @@
 import 'dart:ui' show Size;
+import 'dart:math' show Rectangle;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 
@@ -6,10 +7,11 @@ import '../../chart/layouter_one_dimensional.dart';
 
 class ContainerConstraints {}
 
-/// Represents two boxes in terms of their sizes.
+/// Represents sizes of two centered boxes.
 ///
+/// 
 /// Objects of this class's extensions allow two core roles:
-///   - Role of a constraint a parent in a layout hierarchy requires of it's children.
+///   - Role of a constraint that a parent in a layout hierarchy requires of it's children.
 ///     This is used in the current one-pass layout.
 ///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
 ///     This could be used it a future two pass layout.
@@ -34,11 +36,12 @@ abstract class BoundingBoxesBase {
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
-  /// Generative named constructor from source, for cloning
-  BoundingBoxesBase.cloneOther({required BoundingBoxesBase source}) {
-    // set members of the newly created instance from source
-    minSize = source.minSize;
-    maxSize = source.maxSize;
+  /// Generative named constructor from the passed other [BoundingBoxesBase], for cloning
+  /// using the Prototype pattern.
+  BoundingBoxesBase.cloneOther({required BoundingBoxesBase other}) {
+    // set members of the newly created instance from the passed other BoundingBoxesBase
+    minSize = other.minSize;
+    maxSize = other.maxSize;
   }
 
   /// Abstract method for cloning, using the prototype pattern to share
@@ -53,19 +56,21 @@ abstract class BoundingBoxesBase {
   // The cloneOtherWith family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
   // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
 
-  /// Generative named constructor from changed values and source, for cloning
+  /// Generative named constructor from other [BoundingBoxesBase] and values to change
+  /// on the clone.
   BoundingBoxesBase.cloneOtherWith({
-    required BoundingBoxesBase source,
+    required BoundingBoxesBase other,
     double? minWidth,
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
   }) {
-    // set members of the newly created instance from parameters, if null, from source
-    minWidth ??= source.minSize.width;
-    minHeight ??= source.minSize.height;
-    maxWidth ??= source.maxSize.width;
-    maxHeight ??= source.maxSize.height;
+    // set members of the newly created instance from parameters, if null,
+    // from the passed [other] box
+    minWidth ??= other.minSize.width;
+    minHeight ??= other.minSize.height;
+    maxWidth ??= other.maxSize.width;
+    maxHeight ??= other.maxSize.height;
 
     minSize = Size(minWidth, minHeight);
     maxSize = Size(maxWidth, maxHeight);
@@ -128,12 +133,14 @@ abstract class BoundingBoxesBase {
     }
   }
 
-  /// Divide this constraint into 'smaller' constraints depending on strategy.
+  /// Divide this [BoundingBoxesBase] into a list of 'smaller' [BoundingBoxesBase]s objects,
+  /// depending on the dividing strategy [DivideConstraintsToChildren].
   ///
   /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
   /// cross-sizes remain the same as this constraint.
   ///
-  /// Used to pass smaller constraints to children.
+  /// Extensions use this method to pass smaller constraints to children; use for layout sizes
+  /// is unclear atm.
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
     required DivideConstraintsToChildren divideStrategy,
@@ -265,13 +272,15 @@ class BoxContainerConstraints extends BoundingBoxesBase {
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
-  /// Generative named constructor, from source.
-  /// Call super to initialize common fields, then initialize the added field
-  BoxContainerConstraints.cloneOther(BoxContainerConstraints source)
-      : isOnTop = source.isOnTop, super.cloneOther(source: source);
+  /// Generative named constructor, from other constraint.
+  ///
+  /// The initializer list initializes the added field [isOnTop],
+  ///   followed by a call to super which initializes the common fields,
+  BoxContainerConstraints.cloneOther(BoxContainerConstraints other)
+      : isOnTop = other.isOnTop, super.cloneOther(other: other);
 
   /// [clone] method implementation.
-  /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor
+  /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor.
   @override
   BoxContainerConstraints clone() {
     return BoxContainerConstraints.cloneOther(this);
@@ -280,23 +289,23 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   // The [cloneOtherWith] family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
   // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
 
-  /// Generative named constructor, from source.
+  /// Generative named constructor, from the passed [BoxContainerConstraints] [other].
   /// Call super to initialize common fields, then initialize the added field
   BoxContainerConstraints.cloneOtherWith({
-    required BoxContainerConstraints source,
+    required BoxContainerConstraints other,
     double? minWidth,
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
     bool? isOnTop,
   }) : super.cloneOtherWith(
-          source: source,
+          other: other,
           minWidth: minWidth,
           minHeight: minHeight,
           maxWidth: maxWidth,
           maxHeight: maxHeight,
         ) {
-    isOnTop ??= source.isOnTop;
+    isOnTop ??= other.isOnTop;
   }
 
   /// [cloneWith] method implementation.
@@ -309,7 +318,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
     double? maxHeight,
   }) {
     return BoxContainerConstraints.cloneOtherWith(
-      source: this,
+      other: this,
       minWidth: minWidth,
       minHeight: minHeight,
       maxWidth: maxWidth,
@@ -326,9 +335,9 @@ class BoundingBoxes extends BoundingBoxesBase {
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
-  /// Generative named constructor, from source.
+  /// Generative named constructor, from the passed [BoundingBoxes] object [other].
   /// Call super to initialize common fields, then initialize the added field
-  BoundingBoxes.cloneOther(BoundingBoxes source) : super.cloneOther(source: source) {
+  BoundingBoxes.cloneOther(BoundingBoxes other) : super.cloneOther(other: other) {
     // no new fields compared to BoundingBoxesBase
   }
 
@@ -339,19 +348,17 @@ class BoundingBoxes extends BoundingBoxesBase {
     return BoundingBoxes.cloneOther(this);
   }
 
-  // The [cloneOtherWith] family is omitted here for now.implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
-  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
 
-  /// Generative named constructor, from source.
+  /// Generative named constructor, from the passed other [BoundingBoxes] object.
   /// Call super to initialize common fields, then initialize the added field
   BoundingBoxes.cloneOtherWith({
-    required BoundingBoxes source,
+    required BoundingBoxes other,
     double? minWidth,
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
   }) : super.cloneOtherWith(
-          source: source,
+          other: other,
           minWidth: minWidth,
           minHeight: minHeight,
           maxWidth: maxWidth,
@@ -368,7 +375,7 @@ class BoundingBoxes extends BoundingBoxesBase {
     double? maxHeight,
   }) {
     return BoundingBoxes.cloneOtherWith(
-      source: this,
+      other: this,
       minWidth: minWidth,
       minHeight: minHeight,
       maxWidth: maxWidth,
