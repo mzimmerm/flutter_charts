@@ -104,6 +104,8 @@ abstract class BoundingBoxesBase {
         size.height >= minSize.height;
   }
 
+  /* todo-00-last-last : I am making assumption the greedy processing needs to be replaced,
+                             so ignore what is called here. Does that simplify move to non-offsetting?
   Size maxSizeLeftAfterTakenFromAxisDirection(Size takenSize, LayoutAxis layoutAxis) {
     if (!containsFully(takenSize)) {
       throw StateError('This constraints $toString() does not fully contain takenSize=$takenSize');
@@ -123,6 +125,7 @@ abstract class BoundingBoxesBase {
     }
     return size;
   }
+  */
 
   double maxLengthAlongAxis(LayoutAxis layoutAxis) {
     switch (layoutAxis) {

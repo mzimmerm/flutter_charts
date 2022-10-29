@@ -18,7 +18,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, RowLayouter, ColumnLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
