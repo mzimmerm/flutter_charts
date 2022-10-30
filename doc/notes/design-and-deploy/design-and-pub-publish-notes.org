@@ -1686,10 +1686,10 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
     - [X] Add the above to representative tests in ~ExamplesDescriptor~ (line charts only)
     - [X] Run all tests
     - [X] commit and push
-- [-] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties~ in BoxLaouter or BoxContainer*
-  - [-] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
-    - [ ] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~
-      - [ ] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~:
+- [-] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~ in BoxLayouter or BoxContainer*
+  - [X] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
+    - [X] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~
+      - [X] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~:
         1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting~ called in ~newCoreLayout isRoot~ condition - MOVE THIS
         2. ~mainAxisLayoutProperties~ MEMBER - MOVE THIS
         3. ~_rebuildMainAxisLayoutPropertiesAs~ - MOVE THIS
@@ -1699,7 +1699,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
            - ~_ifNotLeaf_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~
         6. ~_ifNotLeaf_OffsetChildren_Then_SetSizeFromChildren~- ONLY CALLS OTHTER METHODS
         7. ~_ifNotLeaf_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~ -  MOVE THIS
-      - [ ] Call hierarchy of the methods YYY
+      - [X] Call hierarchy of the methods YYY
         1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting~ IN
            - ~newCoreLayout~ 
         2. ~mainAxisLayoutProperties~ MEMBER
@@ -1730,13 +1730,11 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
       - [X] It must do perhaps nothing? or just applyParentOffset to 0.0? or just call super.applyParentOffset?
   - [X] Add abstract ~OffsettingBoxLayouter~ extends ~BoxContainer~ - empty impl
   - [X] Add abstract ~RollingOffsettingBoxLayouter~ (this is like Flex) extends ~OffsettingBoxLayouter~
-  - [-] Make ~Row and ColumnLayouter~ extend ~RollingOffsettingBoxLayouter~
+  - [X] Make ~Row and ColumnLayouter~ extend ~RollingOffsettingBoxLayouter~
     - [X] Move ~YYY~ from BoxLayouter to ~RollingOffsettingBoxLayouter~
-    - [ ] Move ~mainAxisLayoutProperties and many friends (which? list here first)~ from BoxLayouter to ~RollingOffsetBoxLayouter~
-      - [ ] TODO friend 1 ??? 
-      - [ ] friend 2
-  - [ ] REVIEW CHANGES AND TODOS - RESOVE ABSTRACT OR NO-OP METHODS WHICH 'KNOW' ABOUT ROW_LAYOUTER OR OTHER THINGS known to extensions like RollingOffsettingBoxContainer.
-  - [ ] *In the end, there should be nothing related to ~main/crossAxisLayoutProperties, Row, Column~ in BoxLayouter or BoxContainer*
+    - [X] Move ~mainAxisLayoutProperties and many friends (which? Column and Row, Packing, Lineup)~ from BoxLayouter to ~RollingOffsetBoxLayouter~
+  - [X] REVIEW CHANGES AND TODOS - RESOVE ABSTRACT OR NO-OP METHODS WHICH 'KNOW' ABOUT ROW_LAYOUTER OR OTHER THINGS known to extensions like RollingOffsettingBoxContainer.
+  - [X] *In the end, there should be nothing related to ~main/crossAxisLayoutProperties, Row, Column~ in BoxLayouter or BoxContainer*
   - [ ] Make sure Tests work
   - [ ] commit and push
 - [ ] Rename Lineup to Align
@@ -1785,115 +1783,37 @@ Older plan, still valid:
  
 
 ** IN-PROGRESS-NOW ERROR investigate
+/*
+  void _ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting({
+    required bool foundFirstRowLayouterFromTop,
+    required bool foundFirstColumnLayouterFromTop,
+  }) {
+    if (this is RowLayouter && !foundFirstRowLayouterFromTop) {
+      foundFirstRowLayouterFromTop = true;
+    }
 
-MServiceFlutterDriver: Connected to Flutter application.
-W/Parcel  ( 7311): Expecting binder but got null!
-I/flutter ( 7311): ══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY
-╞═════════════════════════════════════════════════════════
-I/flutter ( 7311): The following StateError was thrown during paint():
-I/flutter ( 7311): Bad state: Layout size of this layouter Instance of 'RowLayouter' is Size(866.9,
-20.0), which does
-I/flutter ( 7311): not fit inside it's constraints BoxContainerConstraints: minSize=Size(0.0, 0.0),
-maxSize=Size(374.4,
-I/flutter ( 7311): 499.4)
-I/flutter ( 7311): 
-I/flutter ( 7311): The relevant error-causing widget was:
-I/flutter ( 7311):   VerticalBarChart
-I/flutter ( 7311):
-VerticalBarChart:file:///home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/exa
-mple/lib/main.dart:915:45
-I/flutter ( 7311): 
-I/flutter ( 7311): When the exception was thrown, this was the stack:
-I/flutter ( 7311): #0      BoxLayouter._check_IfMySizeFit_WithinConstraints
-(package:flutter_charts/src/chart/container_layouter_base.dart:747:7)
-I/flutter ( 7311): #1
-BoxLayouter._postDescend_IfLeaf_SetMySize_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_Che
-ckIfMySizeWithinConstraints (package:flutter_charts/src/chart/container_layouter_base.dart:672:5)
-I/flutter ( 7311): #2      BoxLayouter.newCoreLayout
-(package:flutter_charts/src/chart/container_layouter_base.dart:582:5)
-I/flutter ( 7311): #3      BoxLayouter.newCoreLayout
-(package:flutter_charts/src/chart/container_layouter_base.dart:578:13)
-I/flutter ( 7311): #4      LegendContainer.layout
-(package:flutter_charts/src/chart/container.dart:1371:5)
-I/flutter ( 7311): #5      ChartRootContainer.layout
-(package:flutter_charts/src/chart/container.dart:178:21)
-I/flutter ( 7311): #6      ChartRootContainer.paint
-(package:flutter_charts/src/chart/container.dart:289:5)
-I/flutter ( 7311): #7      FlutterChartPainter.paint
-(package:flutter_charts/src/chart/painter.dart:68:24)
-I/flutter ( 7311): #8      RenderCustomPaint._paintWithPainter
-(package:flutter/src/rendering/custom_paint.dart:571:13)
-I/flutter ( 7311): #9      RenderCustomPaint.paint
-(package:flutter/src/rendering/custom_paint.dart:613:7)
-I/flutter ( 7311): #10     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #11     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #12     RenderBoxContainerDefaultsMixin.defaultPaint
-(package:flutter/src/rendering/box.dart:2900:15)
-I/flutter ( 7311): #13     RenderFlex.paint (package:flutter/src/rendering/flex.dart:1088:7)
-I/flutter ( 7311): #14     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #15     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #16     RenderBoxContainerDefaultsMixin.defaultPaint
-(package:flutter/src/rendering/box.dart:2900:15)
-I/flutter ( 7311): #17     RenderFlex.paint (package:flutter/src/rendering/flex.dart:1088:7)
-I/flutter ( 7311): #18     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #19     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #20     RenderShiftedBox.paint
-(package:flutter/src/rendering/shifted_box.dart:84:15)
-I/flutter ( 7311): #21     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #22     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #23     RenderBoxContainerDefaultsMixin.defaultPaint
-(package:flutter/src/rendering/box.dart:2900:15)
-I/flutter ( 7311): #24     RenderCustomMultiChildLayoutBox.paint
-(package:flutter/src/rendering/custom_layout.dart:415:5)
-I/flutter ( 7311): #25     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #26     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #27     RenderProxyBoxMixin.paint
-(package:flutter/src/rendering/proxy_box.dart:144:15)
-I/flutter ( 7311): #28     _RenderInkFeatures.paint (package:flutter/src/material/material.dart:609:11)
-I/flutter ( 7311): #29     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #30     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #31     RenderProxyBoxMixin.paint
-(package:flutter/src/rendering/proxy_box.dart:144:15)
-I/flutter ( 7311): #32     RenderPhysicalModel.paint.<anonymous closure>
-(package:flutter/src/rendering/proxy_box.dart:2098:15)
-I/flutter ( 7311): #33     PaintingContext.pushClipRRect
-(package:flutter/src/rendering/object.dart:550:14)
-I/flutter ( 7311): #34     RenderPhysicalModel.paint
-(package:flutter/src/rendering/proxy_box.dart:2085:21)
-I/flutter ( 7311): #35     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #36     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #37     RenderProxyBoxMixin.paint
-(package:flutter/src/rendering/proxy_box.dart:144:15)
-I/flutter ( 7311): #38     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #39     PaintingContext.paintChild
-(package:flutter/src/rendering/object.dart:239:13)
-I/flutter ( 7311): #40     RenderProxyBoxMixin.paint
-(package:flutter/src/rendering/proxy_box.dart:144:15)
-I/flutter ( 7311): #41     RenderObject._paintWithContext
-(package:flutter/src/rendering/object.dart:2796:7)
-I/flutter ( 7311): #42     PaintingContext._repaintCompositedChild
-(package:flutter/src/rendering/object.dart:155:11)
-I/flutter ( 7311): #43     PaintingContext.repaintCompositedChild
-(package:flutter/src/rendering/object.dart:98:5)
-I/flutter ( 7311): #44     PaintingContext._compositeChild
-(package:flutter/src/rendering/object.dart:250:7)
-I/flutter ( 7311): #45     PaintingContext.paintChild (package:flutter/src/rendering/object.dart:231:7)
-I/
+    if (this is ColumnLayouter && !foundFirstColumnLayouterFromTop) {
+      foundFirstColumnLayouterFromTop = true;
+    }
+
+    for (var child in children) {
+      // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
+      // so that only the top layouter can have non-start and non-snap/matrjoska
+      if (child is RowLayouter && foundFirstRowLayouterFromTop) {
+        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.snap);
+      }
+      if (child is ColumnLayouter && foundFirstColumnLayouterFromTop) {
+        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.matrjoska);
+      }
+
+      // in-child continue to child's children with the potentially updated values 'foundFirst'
+      child._ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(
+        foundFirstRowLayouterFromTop: foundFirstRowLayouterFromTop,
+        foundFirstColumnLayouterFromTop: foundFirstColumnLayouterFromTop,
+      );
+    }
+  }
+*/
 
 
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~

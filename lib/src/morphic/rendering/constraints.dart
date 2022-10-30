@@ -104,7 +104,7 @@ abstract class BoundingBoxesBase {
         size.height >= minSize.height;
   }
 
-  /* todo-00-last-last : I am making assumption the greedy processing needs to be replaced,
+  /* todo-00-last : I am making assumption the greedy processing needs to be replaced,
                              so ignore what is called here. Does that simplify move to non-offsetting?
   Size maxSizeLeftAfterTakenFromAxisDirection(Size takenSize, LayoutAxis layoutAxis) {
     if (!containsFully(takenSize)) {

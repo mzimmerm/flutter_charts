@@ -21,40 +21,40 @@ enum Packing {
 
   /// [Packing.snap] should layout elements in a way they snap together into a group with no padding between elements.
   ///
-  /// If the available [LengthsLayouter._freePadding] is zero,
+  /// If the available [LayoutLengthsLayouter._freePadding] is zero,
   /// the result is the same for any [Lineup] value.
   ///
-  /// If the available [LengthsLayouter._freePadding] is non zero:
+  /// If the available [LayoutLengthsLayouter._freePadding] is non zero:
   ///
   /// - For [Lineup.start] or [Lineup.end] : Also aligns the group to min or max boundary.
   ///   For [Lineup.start], there is no padding between min and first element of the group,
-  ///   all the padding [LengthsLayouter._freePadding] is after the end of the group;
+  ///   all the padding [LayoutLengthsLayouter._freePadding] is after the end of the group;
   ///   similarly for [Lineup.end], for which the group end is aligned with the end,
-  ///   and all the padding [LengthsLayouter._freePadding] is before the group.
+  ///   and all the padding [LayoutLengthsLayouter._freePadding] is before the group.
   /// - For [Lineup.center] : The elements are packed into a group and the group centered.
-  ///   That means, when [LengthsLayouter._freePadding] is available, half of the free length pads
+  ///   That means, when [LayoutLengthsLayouter._freePadding] is available, half of the free length pads
   ///   the group on the boundaries
   ///
   snap,
 
   /// [Packing.loose] should layout elements so that they are separated with even amount of padding,
-  /// if the available padding defined by [LengthsLayouter._freePadding] is not zero.
+  /// if the available padding defined by [LayoutLengthsLayouter._freePadding] is not zero.
   /// If the available padding is zero, layout is the same as [Packing.snap] with no padding.
   ///
-  /// If the available [LengthsLayouter._freePadding] is zero,
+  /// If the available [LayoutLengthsLayouter._freePadding] is zero,
   /// the result is the same for any [Lineup] value,
   /// and also the same as the result of [Packing.snap] for any [Lineup] value:
   /// All elements are packed together.
   ///
-  /// If the available [LengthsLayouter._freePadding] is non zero:
+  /// If the available [LayoutLengthsLayouter._freePadding] is non zero:
   ///
   /// - For [Lineup.start] or [Lineup.end] : Aligns the first element start to the min,
   ///   or the last element end to the max, respectively.
-  ///   For [Lineup.start], the available [LengthsLayouter._freePadding] is distributed evenly
+  ///   For [Lineup.start], the available [LayoutLengthsLayouter._freePadding] is distributed evenly
   ///   as padding between elements and at the end. First element start is at the boundary.
-  ///   For [Lineup.end], the available [LengthsLayouter._freePadding] is distributed evenly
+  ///   For [Lineup.end], the available [LayoutLengthsLayouter._freePadding] is distributed evenly
   ///   as padding at the beginning, and between elements. Last element end is at the boundary.
-  /// - For [Lineup.center] : Same proportions of [LengthsLayouter._freePadding]
+  /// - For [Lineup.center] : Same proportions of [LayoutLengthsLayouter._freePadding]
   ///   are distributed as padding at the beginning, between elements, and at the end.
   ///
   loose,
@@ -78,7 +78,7 @@ enum DivideConstraintsToChildren {
 /// either a main axis or cross axis.
 ///
 /// This class is also used to describe packing and alignment of the layed out elements
-/// for the 1-dimensional [LengthsLayouter], where it serves to describe the 1-dimensional packing and alignment.
+/// for the 1-dimensional [LayoutLengthsLayouter], where it serves to describe the 1-dimensional packing and alignment.
 class OneDimLayoutProperties {
   final Packing packing;
   final Lineup lineup;
@@ -90,6 +90,9 @@ class OneDimLayoutProperties {
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
+///
+/// The [lengths] typically originate from [BoxLayouter.layoutSize]s of children of
+/// a parent [BoxLayouter] which creates this object.
 ///
 /// The [oneDimLayoutProperties] specifies [Packing] and [Lineup] properties.
 /// They control the layout result, along with [lengthsConstraint],
@@ -111,8 +114,8 @@ class OneDimLayoutProperties {
 ///
 /// See [layoutLengths] for more details of this class' objects behavior.
 ///
-class LengthsLayouter {
-  LengthsLayouter({
+class LayoutLengthsLayouter {
+  LayoutLengthsLayouter({
     required this.lengths,
     required this.oneDimLayoutProperties,
     required this.lengthsConstraint,
@@ -133,7 +136,7 @@ class LengthsLayouter {
     }
   }
 
-  // LengthsLayouter members
+  // LayoutLengthsLayouter members
   final List<double> lengths;
   final OneDimLayoutProperties oneDimLayoutProperties;
   late final double _freePadding;
@@ -359,11 +362,11 @@ class LengthsLayouter {
   }
 }
 
-/// Holds a list of 1-dimensional [LineSegment]s layed out generally by [LengthsLayouter] from a list of lengths.
+/// Holds a list of 1-dimensional [LineSegment]s layed out generally by [LayoutLengthsLayouter] from a list of lengths.
 ///
 /// Each line segment in [lineSegments] has a min and max (start and end), where
-/// the [LengthsLayouter] positioned them, the min and max values are
-/// starting at 0.0 and ending at the [LengthsLayouter.lengthsConstraint].
+/// the [LayoutLengthsLayouter] positioned them, the min and max values are
+/// starting at 0.0 and ending at the [LayoutLengthsLayouter.lengthsConstraint].
 ///
 /// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
 ///
@@ -371,8 +374,8 @@ class LengthsLayouter {
 /// to one side of a rectangle along the axis corresponding to children (future) positions.
 ///
 /// Note: on creation, it should be passed segments [lineSegments] already
-///       layed out to their positions with [LengthsLayouter]
-///       and [totalLayedOutLengthIncludesPadding] calculated by [LengthsLayouter.totalLayedOutLengthIncludesPadding].
+///       layed out to their positions with [LayoutLengthsLayouter]
+///       and [totalLayedOutLengthIncludesPadding] calculated by [LayoutLengthsLayouter.totalLayedOutLengthIncludesPadding].
 class LayedOutLineSegments {
   const LayedOutLineSegments({
     required this.lineSegments,
@@ -386,7 +389,7 @@ class LayedOutLineSegments {
   /// If there is padding, this may be BEYOND max on last lineSegments
   final double totalLayedOutLengthIncludesPadding;
   /// A marker that the process that lead to layout overflew it's original constraints given in
-  /// [LengthsLayouter.lengthsConstraint].
+  /// [LayoutLengthsLayouter.lengthsConstraint].
   ///
   /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
   final bool isOverflown;
