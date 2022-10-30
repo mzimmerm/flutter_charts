@@ -330,6 +330,6 @@ enum DataRowsPaintingOrder {
 enum LegendAndItemLayoutEnum {
   legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartSnapItemIsRowStartSnap
   legendIsColumnStartSnapItemIsRowStartSnap, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
-  legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'snap' , so noop
+  legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'tight' , so noop
   legendIsRowStartSnapItemIsRowStartSnap, // default for legend row : desired and tested
 }

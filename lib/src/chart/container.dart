@@ -1215,29 +1215,29 @@ class LegendItemContainer extends BoxContainer {
     var children = _itemIndAndLabel();
     switch (_options.legendOptions.legendAndItemLayoutEnum) {
       // **IFF* the returned layout is the topmost RowLayouter (Legend starts with Column),
-      //        the passed Packing and Lineup values are used.
-      // **ELSE* the values are irrelevant, will be replaced with Lineup.start, Packing.snap.
+      //        the passed Packing and Align values are used.
+      // **ELSE* the values are irrelevant, will be replaced with Align.start, Packing.tight.
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         return RowLayouter(
-            mainAxisLineup: Lineup.start,
+            mainAxisLineup: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
         // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
         return RowLayouter(
-            mainAxisLineup: Lineup.start,
-            mainAxisPacking: Packing.snap,
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         return RowLayouter(
-            mainAxisLineup: Lineup.end,
+            mainAxisLineup: Align.end,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
         // default for legend row : desired and tested
         return RowLayouter(
-            mainAxisLineup: Lineup.start,
-            mainAxisPacking: Packing.snap,
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
             children: children);
     }
   }
@@ -1296,7 +1296,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
   ///       );
   ///    ```
   @override
-  void ifLeaf_SetSizeFromInternals() {
+  void post_IfLeaf_SetSizeFromInternals() {
     layoutSize = ui.Size(
       _indicatorSize.width,
       _indicatorSize.height,
@@ -1391,25 +1391,25 @@ class LegendContainer extends ChartAreaContainer {
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         return ColumnLayouter(
-            mainAxisLineup: Lineup.start,
+            mainAxisLineup: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
         // default for legend column
         return ColumnLayouter(
-            mainAxisLineup: Lineup.start,
-            mainAxisPacking: Packing.snap,
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         return RowLayouter(
-            mainAxisLineup: Lineup.center,
+            mainAxisLineup: Align.center,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
         // default for legend row : desired and tested
         return RowLayouter(
-            mainAxisLineup: Lineup.start,
-            mainAxisPacking: Packing.snap,
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
             children: children);
     }
   }

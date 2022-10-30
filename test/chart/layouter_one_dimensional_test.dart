@@ -1,5 +1,5 @@
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
-    show Packing, Lineup, LayoutLengthsLayouter, LayedOutLineSegments, OneDimLayoutProperties;
+    show Packing, Align, LayedoutLengthsLayouter, LayedOutLineSegments, OneDimLayoutProperties;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
@@ -11,30 +11,30 @@ main() {
 
   // ### Packing.matrjoska
 
-  group('LayoutLengthsLayouter.layout() Matrjoska Left,', () {
-    var matrjoskaLeftLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Matrjoska Left,', () {
+    var matrjoskaLeftLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var matrjoskaLeftTotalLength10Exception
-    var matrjoskaLeftTotalLength15 = LayoutLengthsLayouter(
+    var matrjoskaLeftTotalLength15 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 15.0,
     );
-    var matrjoskaLeftTotalLength27Added12 = LayoutLengthsLayouter(
+    var matrjoskaLeftTotalLength27Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 27.0,
     );
-    var matrjoskaLeftLengthConstraints10LessThanSizes = LayoutLengthsLayouter(
+    var matrjoskaLeftLengthConstraints10LessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 10.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, no total length enforced', () {
       LayedOutLineSegments segments = matrjoskaLeftLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -46,7 +46,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, total length same as required', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, total length same as required', () {
       LayedOutLineSegments segments = matrjoskaLeftTotalLength15.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -61,18 +61,18 @@ main() {
 
     /* Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
                       and if layoutSize exceeds Constraints, deal with it there
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
       expect(
-          () => LayoutLengthsLayouter(
+          () => LayedoutLengthsLayouter(
                 lengths: lengths,
                 oneDimLayoutProperties:
-                    OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.start)
+                    OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.start)
                     lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
     });
     */
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, uses 0 for free space', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, uses 0 for free space', () {
       LayedOutLineSegments segments = matrjoskaLeftLengthConstraints10LessThanSizes.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -84,7 +84,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaLeftTotalLength27Added12.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -98,19 +98,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Matrjoska Center,', () {
-    var matrjoskaCenterLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Matrjoska Center,', () {
+    var matrjoskaCenterLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.center),
       lengthsConstraint: 0.0,
     );
-    var matrjoskaCenterTotalLength27Added12 = LayoutLengthsLayouter(
+    var matrjoskaCenterTotalLength27Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.center),
       lengthsConstraint: 27.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Center, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Center, no total length enforced', () {
       LayedOutLineSegments segments = matrjoskaCenterLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -122,7 +122,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Center, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Center, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaCenterTotalLength27Added12.layoutLengths();
       const double halfOfFreePadding = 6.0;
 
@@ -137,19 +137,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Matrjoska Right,', () {
-    var matrjoskaRightLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Matrjoska Right,', () {
+    var matrjoskaRightLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.end),
       lengthsConstraint : 0.0,
     );
-    var matrjoskaRightTotalLength27Added12 = LayoutLengthsLayouter(
+    var matrjoskaRightTotalLength27Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.matrjoska, align: Align.end),
       lengthsConstraint : 27.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Right, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Right, no total length enforced', () {
       LayedOutLineSegments segments = matrjoskaRightLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -161,7 +161,7 @@ main() {
       expect(segments.isOverflown, true);
    });
 
-    test('LayoutLengthsLayouter.layout() Matrjoska Right, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Right, total length more than required', () {
       LayedOutLineSegments segments = matrjoskaRightTotalLength27Added12.layoutLengths();
       const double fullFreePadding = 12.0;
 
@@ -176,32 +176,32 @@ main() {
     });
   });
 
-  // ### Packing.snap
+  // ### Packing.tight
 
-  group('LayoutLengthsLayouter.layout() Snap Left,', () {
-    var snapLeftLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Snap Left,', () {
+    var snapLeftLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var snapLeftTotalLength10Exception
-    var snapLeftTotalLength30 = LayoutLengthsLayouter(
+    var snapLeftTotalLength30 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 30.0,
     );
-    var snapLeftTotalLength42Added12 = LayoutLengthsLayouter(
+    var snapLeftTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 42.0,
     );
-    var snapLeftTotalLengthsConstraint10LessThanSizes = LayoutLengthsLayouter(
+    var snapLeftTotalLengthsConstraint10LessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 10.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Snap Left, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Snap Left, no total length enforced', () {
       LayedOutLineSegments segments = snapLeftLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -213,7 +213,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Snap Left, total length same as required', () {
+    test('LayedoutLengthsLayouter.layout() Snap Left, total length same as required', () {
       LayedOutLineSegments segments = snapLeftTotalLength30.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -225,7 +225,7 @@ main() {
       expect(segments.isOverflown, false);
     });
 
-    test('LayoutLengthsLayouter.layout() Snap Left, total length less than needed, uses 0 for free space', () {
+    test('LayedoutLengthsLayouter.layout() Snap Left, total length less than needed, uses 0 for free space', () {
        LayedOutLineSegments segments = snapLeftTotalLengthsConstraint10LessThanSizes.layoutLengths();
        expect(segments.lineSegments.length, 3);
        // Result should be same as with no total length enforced
@@ -238,18 +238,18 @@ main() {
 
     /* Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
                       and if layoutSize exceeds Constraints, deal with it there
-    test('LayoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
+    test('LayedoutLengthsLayouter.layout() Matrjoska Left, total length less than needed, should Exception', () {
        expect(
-          () => LayoutLengthsLayouter(
+          () => LayedoutLengthsLayouter(
                 lengths: lengths,
-                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.start),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.start),
                 lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
     });
     */
 
-    test('LayoutLengthsLayouter.layout() Snap Left, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Snap Left, total length more than required', () {
       LayedOutLineSegments segments = snapLeftTotalLength42Added12.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -262,19 +262,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Snap Center,', () {
-    var snapCenterLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Snap Center,', () {
+    var snapCenterLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.center),
       lengthsConstraint: 0.0,
     );
-    var snapCenterTotalLength42Added12 = LayoutLengthsLayouter(
+    var snapCenterTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.center),
       lengthsConstraint: 42.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Snap Center, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Snap Center, no total length enforced', () {
       LayedOutLineSegments segments = snapCenterLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -287,7 +287,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Snap Center, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Snap Center, total length more than required', () {
       LayedOutLineSegments segments = snapCenterTotalLength42Added12.layoutLengths();
       const double halfOfFreePadding = 6.0;
 
@@ -302,19 +302,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Snap Right,', () {
-    var snapRightLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Snap Right,', () {
+    var snapRightLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.end),
         lengthsConstraint: 0.0
     );
-    var snapRightTotalLength42Added12 = LayoutLengthsLayouter(
+    var snapRightTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.snap, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.tight, align: Align.end),
       lengthsConstraint: 42.0
     );
 
-    test('LayoutLengthsLayouter.layout() Snap Right, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Snap Right, no total length enforced', () {
       LayedOutLineSegments segments = snapRightLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -327,7 +327,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Snap Right, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Snap Right, total length more than required', () {
       LayedOutLineSegments segments = snapRightTotalLength42Added12.layoutLengths();
       const double fullFreePadding = 12.0;
 
@@ -343,30 +343,30 @@ main() {
 
   // ### Packing.loose
 
-  group('LayoutLengthsLayouter.layout() Loose Left,', () {
-    var looseLeftLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Loose Left,', () {
+    var looseLeftLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 0.0
     );
     // Testing exception so create in test : var looseLeftTotalLength10Exception
-    var looseLeftTotalLength30 = LayoutLengthsLayouter(
+    var looseLeftTotalLength30 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 30.0
     );
-    var looseLeftTotalLength42Added12 = LayoutLengthsLayouter(
+    var looseLeftTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 42.0,
     );
-    var looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0 = LayoutLengthsLayouter(
+    var looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 30.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Loose Left, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Loose Left, no total length enforced', () {
       LayedOutLineSegments segments = looseLeftLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -378,7 +378,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Loose Left, total length same as required', () {
+    test('LayedoutLengthsLayouter.layout() Loose Left, total length same as required', () {
       LayedOutLineSegments segments = looseLeftTotalLength30.layoutLengths();
 
       expect(segments.lineSegments.length, 3);
@@ -392,18 +392,18 @@ main() {
 
     /*  Replacing asserts with setting _freePadding to 0 if negative. Caller should allow this,
                       and if layoutSize exceeds Constraints, deal with it there
-    test('LayoutLengthsLayouter.layout() Loose Left, total length less than needed, should Exception', () {
+    test('LayedoutLengthsLayouter.layout() Loose Left, total length less than needed, should Exception', () {
       expect(
-          () => LayoutLengthsLayouter(
+          () => LayedoutLengthsLayouter(
                 lengths: lengths,
-                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.start),
+                oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.start),
                 lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
     });
     */
 
-    test('LayoutLengthsLayouter.layout() Loose Left, total length less than needed, uses 0 for free space', () {
+    test('LayedoutLengthsLayouter.layout() Loose Left, total length less than needed, uses 0 for free space', () {
       LayedOutLineSegments segments = looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0.layoutLengths();
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -414,7 +414,7 @@ main() {
       expect(segments.isOverflown, false);
     });
 
-    test('LayoutLengthsLayouter.layout() Loose Left, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Loose Left, total length more than required', () {
       LayedOutLineSegments segments = looseLeftTotalLength42Added12.layoutLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / lengthsCount;
@@ -430,19 +430,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Loose Center,', () {
-    var looseCenterLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Loose Center,', () {
+    var looseCenterLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.center),
         lengthsConstraint: 0.0
     );
-    var looseCenterTotalLength42Added12 = LayoutLengthsLayouter(
+    var looseCenterTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.center),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.center),
       lengthsConstraint: 42.0
     );
 
-    test('LayoutLengthsLayouter.layout() Loose Center, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Loose Center, no total length enforced', () {
       LayedOutLineSegments segments = looseCenterLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -455,7 +455,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Loose Center, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Loose Center, total length more than required', () {
       LayedOutLineSegments segments = looseCenterTotalLength42Added12.layoutLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / (lengthsCount + 1); // 3.0
@@ -471,19 +471,19 @@ main() {
     });
   });
 
-  group('LayoutLengthsLayouter.layout() Loose Right,', () {
-    var looseRightLengthsConstraintLessThanSizes = LayoutLengthsLayouter(
+  group('LayedoutLengthsLayouter.layout() Loose Right,', () {
+    var looseRightLengthsConstraintLessThanSizes = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.end),
       lengthsConstraint: 0.0,
     );
-    var looseRightTotalLength42Added12 = LayoutLengthsLayouter(
+    var looseRightTotalLength42Added12 = LayedoutLengthsLayouter(
       lengths: lengths,
-      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, lineup: Lineup.end),
+      oneDimLayoutProperties: OneDimLayoutProperties(packing: Packing.loose, align: Align.end),
       lengthsConstraint: 42.0,
     );
 
-    test('LayoutLengthsLayouter.layout() Loose Right, no total length enforced', () {
+    test('LayedoutLengthsLayouter.layout() Loose Right, no total length enforced', () {
       LayedOutLineSegments segments = looseRightLengthsConstraintLessThanSizes.layoutLengths();
 
       // no padding added
@@ -495,7 +495,7 @@ main() {
       expect(segments.isOverflown, true);
     });
 
-    test('LayoutLengthsLayouter.layout() Loose Right, total length more than required', () {
+    test('LayedoutLengthsLayouter.layout() Loose Right, total length more than required', () {
       LayedOutLineSegments segments = looseRightTotalLength42Added12.layoutLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / lengthsCount; // 4.0

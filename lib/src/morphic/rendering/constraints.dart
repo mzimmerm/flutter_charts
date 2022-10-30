@@ -1,5 +1,4 @@
 import 'dart:ui' show Size;
-import 'dart:math' show Rectangle;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 
@@ -253,8 +252,8 @@ class BoxContainerConstraints extends BoundingBoxesBase {
 
   /// Expresses if it was created for the very top [RowLayouter] or [ColumnLayoter].
   ///
-  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Lineup] (alignment) other
-  /// then [Lineup.start]
+  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Align] (alignment) other
+  /// then [Align.start]
   bool isOnTop = false;
 
   /// The SINGLE UNNAMED generative constructor.

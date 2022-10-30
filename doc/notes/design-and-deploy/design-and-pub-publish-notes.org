@@ -1611,7 +1611,7 @@ What are those?
 
   
 
-** IN-PROGRESS-NOW 5.2 Layouter improvements : Debugging, RowLayouter Packing, Lineup, and other settings
+** IN-PROGRESS-NOW 5.2 Layouter improvements : Debugging, RowLayouter Packing, Align, and other settings
 
 Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
 
@@ -1637,7 +1637,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
   - [ ] isConstraintDividedToChildren: default false
     - [ ] If true, divide and pass constraints to children using some ratio.
     - [ ] If false, current behavior. We still need to pass constraints to children in newCoreLayout, that is missing.
-- [X] Add ability to set packing, snap, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
+- [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
 - [ ] LATER BoxContainer debuggability
   - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
@@ -1649,16 +1649,16 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 - [X] Put stuff back so tests work without changes
 - [X] Remove asserts around free space - there is TODO.
-- [X] Add check to newCoreLayout, root section, if RowLayouter OR ColumnLaoter is deeper, and Lineup set to anything but 'start' and Packing 'snap', replace the Row/ColumnLayouter with a new copy with 'start' and 'snap'.
+- [X] Add check to newCoreLayout, root section, if RowLayouter OR ColumnLaoter is deeper, and Align set to anything but 'start' and Packing 'tight', replace the Row/ColumnLayouter with a new copy with 'start' and 'tight'.
   - [X] Test it on some combinations in legend layout
-    - [X] nested Lineup.end on Row
+    - [X] nested Align.end on Row
     - [X] we also have Column example to test
 - [X] One remaining todo-00-last-last
   - [X] Find problem or comment
   - [X] Make sure Tests work
   - [X] Commit and push
-- [X] Add ability in LegendContainer to create example with specific layouts of ~LegendContainer~
-  - [X] We need the ability to define different LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
+- [X] Add ability in LegendContainer to create example with several different layouts of ~LegendContainer~
+  - [X] We need the ability to define different layout examples for LegendContainer and LegendItemContainer example variations, and a way to push from this code which example we want, and in the code, implement the example variations.
     - [X] Pushing: via ChartOptions.legendOptions
       - [X] New enum LegendAndItemLayoutEnum
         - [X] legendIsRowStartSnapItemIsRowStartSnap
@@ -1678,15 +1678,15 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
       - [X] LegendItemContainer.buildContainerOrSelf - similar changes
   - [X] Make sure existing tests work !!! - using the default legend enum legendIsRowStartSnapItemIsRowStartSnap
   - [X] Add 3 examples (only use LineChart) which overrides creation of ~LegendContainer~
-    - [X] LegendContainer starts with RowLayouter    'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (default desired and tested)
-    - [X] LegendContainer starts with RowLayouter    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'snap' , so noop)
-    - [X] LegendContainer starts with ColumnLayouter 'start',  'snap',  LegendItemContainer is Row 'start', 'snap' (is top, so is NOT overriden, so must be as intended!)
-    - [X] LegendContainer starts with ColumnLayouter 'start',  'loose', LegendItemContainer is Row 'start', 'snap' (as above)
+    - [X] LegendContainer starts with RowLayouter    'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (default desired and tested)
+    - [X] LegendContainer starts with RowLayouter    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'tight' , so noop)
+    - [X] LegendContainer starts with ColumnLayouter 'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (is top, so is NOT overriden, so must be as intended!)
+    - [X] LegendContainer starts with ColumnLayouter 'start',  'loose', LegendItemContainer is Row 'start', 'tight' (as above)
     - [X] Create new test images, check them
     - [X] Add the above to representative tests in ~ExamplesDescriptor~ (line charts only)
     - [X] Run all tests
     - [X] commit and push
-- [-] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~ in BoxLayouter or BoxContainer*
+- [X] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~ in BoxLayouter or BoxContainer*
   - [X] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
     - [X] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~
       - [X] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~:
@@ -1725,23 +1725,88 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
         - ~ifNotLeaf_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~ (USES _MainAndCrossLayedOutSegments)
         - ~_offsetChildren~ MOVE THIS (CALLED FROM THE ABOVE)
         - 
-      
     - [X] override the methods ~YYY~ from BoxLayouter in ~BoxContainer~
       - [X] It must do perhaps nothing? or just applyParentOffset to 0.0? or just call super.applyParentOffset?
   - [X] Add abstract ~OffsettingBoxLayouter~ extends ~BoxContainer~ - empty impl
   - [X] Add abstract ~RollingOffsettingBoxLayouter~ (this is like Flex) extends ~OffsettingBoxLayouter~
   - [X] Make ~Row and ColumnLayouter~ extend ~RollingOffsettingBoxLayouter~
     - [X] Move ~YYY~ from BoxLayouter to ~RollingOffsettingBoxLayouter~
-    - [X] Move ~mainAxisLayoutProperties and many friends (which? Column and Row, Packing, Lineup)~ from BoxLayouter to ~RollingOffsetBoxLayouter~
+    - [X] Move ~mainAxisLayoutProperties and many friends (which? Column and Row, Packing, Align)~ from BoxLayouter to ~RollingOffsetBoxLayouter~
   - [X] REVIEW CHANGES AND TODOS - RESOVE ABSTRACT OR NO-OP METHODS WHICH 'KNOW' ABOUT ROW_LAYOUTER OR OTHER THINGS known to extensions like RollingOffsettingBoxContainer.
   - [X] *In the end, there should be nothing related to ~main/crossAxisLayoutProperties, Row, Column~ in BoxLayouter or BoxContainer*
-  - [ ] Make sure Tests work
-  - [ ] commit and push
-- [ ] Rename Lineup to Align
-- [ ] Rename Packing.snap to Packing.tight
-- [ ] Add a mid-class between BoxContainer and RowLayouter/ColumnLayouter, and move things from BoxLayouter 
+  - [X] Make sure Tests work
+  - [X] commit and push
+- [X] Rename Lineup to Align
+- [X] Rename Packing.snap to Packing.tight
+- [ ] Make sure Tests work
+- [ ] Containers should have either single child or multiple children
+  - [ ] Add some way to throw exception if Container does not have intended amount
+  - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
+  - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
 - [ ] Add container Greedy, equivalent of Expanded with ratio
+  - [ ] Greedy:
+    - [ ] is offsetting
+    - [ ] has a single child
+    - [ ] parent must be Row or Column
+    - [ ] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
+    - [ ] has member int greed - direction is implied by parent : if parent is Row, horizontal, Column vertical
+    - [ ] it's parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???:
+      - [ ] Row or Column need to override newCoreLayout completely ???? Their normal loop
+        #+begin_src dart
+          _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
+          // B. node-descend
+          for (var child in children) {
+            // 1. child-pre-descend (empty)
+            // 2. child-descend
+            child.newCoreLayout();
+            // 3. child-post-descend (empty
+          }
+          // C. node-post-descend. Here, children have layoutSize and offset (??) in me
+          _postDescend_IfLeaf_SetMySize_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+        #+end_src
+      - [ ] Should separately process non-greedy first, greedy next
+        #+begin_src dart
+          _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
+          // B. node-descend
+          for (var child in nonGreedyChildren) {
+            // 1. child-pre-descend (empty)
+            // 2. child-descend
+            child.newCoreLayout();
+            // 3. child-post-descend (empty)
+          }
+          // C. node-post-descend. Here, non greedy children have layoutSize
+          if (hasNonGreedy) _postDescend_NonGreedy_IfLeaf_Exception_NotLeaf_DoStuffIn_C(); // same as current on Row and Column
+
+          // D. node-descend
+          for (var child in greedyChildren) {
+            // 1. child-pre-descend (empty)
+            // 2. child-descend
+            child.newCoreLayout();
+            // 3. child-post-descend (empty)
+          }
+          // E. node-post-descend. Here, greedy children have layoutSize
+          if (hasGreedy) _postDescend_Greedy_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+
+          // F. node-post-descend-all
+          _postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+
+        #+end_src
+      - [ ] children already have layoutSize, including Greedy child ?????
+      - [ ] C: ask NonGreedy children layoutSizes first
+      - [ ] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
+      - [ ] C: creates new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
+      - [ ] C: Divides ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
+      - [ ] C: applies each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
+      - [ ] ~!!!!!!!Note: The single container wrapped in Greedy, when asked for layoutSize, returns it's layoutSize = constraint~ (the one acquired from ~greedyChildrenConstaints~ ??? *how do we do that* ???
+      - [ ] descend greedy - this should give greedy their layoutSize - *how????? we are not using constraints in any way!!! just return fixed on leaf, or calculated on Row and Column, and that does not use layout size!!!! WELL MAYBE THIS CAN WORK: WHEN ASKING GREEDY FOR LAYOUT SIZE, WE SIMPLY ANSWER IT'S NEWLY PROPORTIONALLY CREATED CONSTRAINT SIZE!!!*
+      - [ ] POST DESCEND GREEDY - EMPTY:
+      - [ ] POST DESCEND ALL
+        - [ ] Do what we normally do: ~_postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();~. As we are in Row or Column, this will:
+          - [ ] use this row/column layouter to run the one-dim layout of children (greedy and non-greedy, they all have sizes already), use the one-dim layout converted to sizes to apply offsets as normally.
+          - [ ] so now all children are offset
+          - [ ] *set my size as envelope of children ??? how is that currently done???*
+          - [ ] check if my size is within constraints
   - [ ] Change layout algorithm to process non-expanded first, GIVE EXPANDED RATIO OF remaining CONSTRAINT - THIS REQUIRES A NEW STEP
   - [ ] Test on LegendContainer, by wrapping one or two short text LegendItemContainers into Greedy, they should eat up space despite being small.
 - [ ] Make sure Tests work
@@ -1759,7 +1824,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 Older plan, still valid:
 
-- [X] Resolve why RowLayouter Packing.loose behaves same as Packing.snap !! Reason: Simplicity of single-pass layout. Cannot have Row in Row with nested Row being 'end aligned'.
+- [X] Resolve why RowLayouter Packing.loose behaves same as Packing.tight !! Reason: Simplicity of single-pass layout. Cannot have Row in Row with nested Row being 'end aligned'.
 - [ ] MILESTONE !!!!!! vvvvvvv 
 - [ ] Read https://blog.logrocket.com/flutter-layouts-guide-margins-padding/
 - [X] Create proper RowLayouter, add comments
@@ -1781,40 +1846,6 @@ Older plan, still valid:
 - [ ] when done:
   - [ ] start doing Morph stuff: start with everything is a transform!
  
-
-** IN-PROGRESS-NOW ERROR investigate
-/*
-  void _ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting({
-    required bool foundFirstRowLayouterFromTop,
-    required bool foundFirstColumnLayouterFromTop,
-  }) {
-    if (this is RowLayouter && !foundFirstRowLayouterFromTop) {
-      foundFirstRowLayouterFromTop = true;
-    }
-
-    if (this is ColumnLayouter && !foundFirstColumnLayouterFromTop) {
-      foundFirstColumnLayouterFromTop = true;
-    }
-
-    for (var child in children) {
-      // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
-      // so that only the top layouter can have non-start and non-snap/matrjoska
-      if (child is RowLayouter && foundFirstRowLayouterFromTop) {
-        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.snap);
-      }
-      if (child is ColumnLayouter && foundFirstColumnLayouterFromTop) {
-        child._rebuildMainAxisLayoutPropertiesAs(lineup: Lineup.start, packing: Packing.matrjoska);
-      }
-
-      // in-child continue to child's children with the potentially updated values 'foundFirst'
-      child._ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting(
-        foundFirstRowLayouterFromTop: foundFirstRowLayouterFromTop,
-        foundFirstColumnLayouterFromTop: foundFirstColumnLayouterFromTop,
-      );
-    }
-  }
-*/
-
 
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
 

@@ -1,4 +1,5 @@
 import 'dart:math' as math show max;
+import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:tuple/tuple.dart';
 import 'dart:ui' as ui;
 
@@ -11,7 +12,7 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSe
 /// - Matrjoska packing places each smaller segment fully into the next larger one (next means next by size).
 ///   Order does not matter.
 /// - Snap packing places each next segment's begin point just right of it's predecessor's end point.
-/// - Loose packing is like snap packing, but, in addition, there can be a space between neighbour segments.
+/// - Loose packing is like tight packing, but, in addition, there can be a space between neighbour segments.
 ///
 /// The only layout not described (and not allowed) is a partial overlap of any two lengths.
 enum Packing {
@@ -19,42 +20,42 @@ enum Packing {
   /// inside the next larger element, and so on. The largest element contains all smaller elements.
   matrjoska,
 
-  /// [Packing.snap] should layout elements in a way they snap together into a group with no padding between elements.
+  /// [Packing.tight] should layout elements in a way they tight together into a group with no padding between elements.
   ///
-  /// If the available [LayoutLengthsLayouter._freePadding] is zero,
-  /// the result is the same for any [Lineup] value.
+  /// If the available [LayedoutLengthsLayouter._freePadding] is zero,
+  /// the result is the same for any [Align] value.
   ///
-  /// If the available [LayoutLengthsLayouter._freePadding] is non zero:
+  /// If the available [LayedoutLengthsLayouter._freePadding] is non zero:
   ///
-  /// - For [Lineup.start] or [Lineup.end] : Also aligns the group to min or max boundary.
-  ///   For [Lineup.start], there is no padding between min and first element of the group,
-  ///   all the padding [LayoutLengthsLayouter._freePadding] is after the end of the group;
-  ///   similarly for [Lineup.end], for which the group end is aligned with the end,
-  ///   and all the padding [LayoutLengthsLayouter._freePadding] is before the group.
-  /// - For [Lineup.center] : The elements are packed into a group and the group centered.
-  ///   That means, when [LayoutLengthsLayouter._freePadding] is available, half of the free length pads
+  /// - For [Align.start] or [Align.end] : Also aligns the group to min or max boundary.
+  ///   For [Align.start], there is no padding between min and first element of the group,
+  ///   all the padding [LayedoutLengthsLayouter._freePadding] is after the end of the group;
+  ///   similarly for [Align.end], for which the group end is aligned with the end,
+  ///   and all the padding [LayedoutLengthsLayouter._freePadding] is before the group.
+  /// - For [Align.center] : The elements are packed into a group and the group centered.
+  ///   That means, when [LayedoutLengthsLayouter._freePadding] is available, half of the free length pads
   ///   the group on the boundaries
   ///
-  snap,
+  tight,
 
   /// [Packing.loose] should layout elements so that they are separated with even amount of padding,
-  /// if the available padding defined by [LayoutLengthsLayouter._freePadding] is not zero.
-  /// If the available padding is zero, layout is the same as [Packing.snap] with no padding.
+  /// if the available padding defined by [LayedoutLengthsLayouter._freePadding] is not zero.
+  /// If the available padding is zero, layout is the same as [Packing.tight] with no padding.
   ///
-  /// If the available [LayoutLengthsLayouter._freePadding] is zero,
-  /// the result is the same for any [Lineup] value,
-  /// and also the same as the result of [Packing.snap] for any [Lineup] value:
+  /// If the available [LayedoutLengthsLayouter._freePadding] is zero,
+  /// the result is the same for any [Align] value,
+  /// and also the same as the result of [Packing.tight] for any [Align] value:
   /// All elements are packed together.
   ///
-  /// If the available [LayoutLengthsLayouter._freePadding] is non zero:
+  /// If the available [LayedoutLengthsLayouter._freePadding] is non zero:
   ///
-  /// - For [Lineup.start] or [Lineup.end] : Aligns the first element start to the min,
+  /// - For [Align.start] or [Align.end] : Aligns the first element start to the min,
   ///   or the last element end to the max, respectively.
-  ///   For [Lineup.start], the available [LayoutLengthsLayouter._freePadding] is distributed evenly
+  ///   For [Align.start], the available [LayedoutLengthsLayouter._freePadding] is distributed evenly
   ///   as padding between elements and at the end. First element start is at the boundary.
-  ///   For [Lineup.end], the available [LayoutLengthsLayouter._freePadding] is distributed evenly
+  ///   For [Align.end], the available [LayedoutLengthsLayouter._freePadding] is distributed evenly
   ///   as padding at the beginning, and between elements. Last element end is at the boundary.
-  /// - For [Lineup.center] : Same proportions of [LayoutLengthsLayouter._freePadding]
+  /// - For [Align.center] : Same proportions of [LayedoutLengthsLayouter._freePadding]
   ///   are distributed as padding at the beginning, between elements, and at the end.
   ///
   loose,
@@ -62,7 +63,7 @@ enum Packing {
 
 /// todo-01-document
 /// This is alignment.
-enum Lineup {
+enum Align {
   start,
   center,
   end,
@@ -78,23 +79,24 @@ enum DivideConstraintsToChildren {
 /// either a main axis or cross axis.
 ///
 /// This class is also used to describe packing and alignment of the layed out elements
-/// for the 1-dimensional [LayoutLengthsLayouter], where it serves to describe the 1-dimensional packing and alignment.
+/// for the 1-dimensional [LayedoutLengthsLayouter], where it serves to describe the 1-dimensional packing and alignment.
 class OneDimLayoutProperties {
   final Packing packing;
-  final Lineup lineup;
+  final Align align;
 
   OneDimLayoutProperties({
     required this.packing,
-    required this.lineup,
+    required this.align,
   });
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
 ///
 /// The [lengths] typically originate from [BoxLayouter.layoutSize]s of children of
-/// a parent [BoxLayouter] which creates this object.
+/// a parent [BoxLayouter] which creates this object - hence the first 'Layout'
+/// in the name [LayedoutLengthsLayouter].
 ///
-/// The [oneDimLayoutProperties] specifies [Packing] and [Lineup] properties.
+/// The [oneDimLayoutProperties] specifies [Packing] and [Align] properties.
 /// They control the layout result, along with [lengthsConstraint],
 /// which is the constraint for the layed out segments.
 ///
@@ -104,18 +106,18 @@ class OneDimLayoutProperties {
 /// if there is length available towards the [lengthsConstraint].
 ///
 /// Note: The total length of [lengths] depends on Packing - it is
-///   - sum lengths for snap or loose
+///   - sum lengths for tight or loose
 ///   - max length for matrjoska
 ///
 /// If the total length of [lengths] is below [lengthsConstraint],
-/// and the combination of Packing and Lineup allows free spacing, the remaining
+/// and the combination of Packing and Align allows free spacing, the remaining
 /// [lengthsConstraint] are used to add spaces between, around, or to the left of the
 /// resulting segments.
 ///
 /// See [layoutLengths] for more details of this class' objects behavior.
 ///
-class LayoutLengthsLayouter {
-  LayoutLengthsLayouter({
+class LayedoutLengthsLayouter {
+  LayedoutLengthsLayouter({
     required this.lengths,
     required this.oneDimLayoutProperties,
     required this.lengthsConstraint,
@@ -127,7 +129,7 @@ class LayoutLengthsLayouter {
         isOverflown = (_maxLength > lengthsConstraint);
         _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _maxLength;
         break;
-      case Packing.snap:
+      case Packing.tight:
       case Packing.loose:
         // Caller should allow for lengthsConstraint to be exceeded by _sumLengths, set isOverflown, deal with it in caller
         isOverflown = (_sumLengths > lengthsConstraint);
@@ -136,7 +138,7 @@ class LayoutLengthsLayouter {
     }
   }
 
-  // LayoutLengthsLayouter members
+  // LayedoutLengthsLayouter members
   final List<double> lengths;
   final OneDimLayoutProperties oneDimLayoutProperties;
   late final double _freePadding;
@@ -154,7 +156,7 @@ class LayoutLengthsLayouter {
   /// The input are members
   ///   - [lengths] which holds the lengths to lay out, and
   ///   - [oneDimLayoutProperties] which specifies the layout properties:
-  ///     - [OneDimLayoutProperties.packing] and [OneDimLayoutProperties.lineup] that control the layout process
+  ///     - [OneDimLayoutProperties.packing] and [OneDimLayoutProperties.align] that control the layout process
   ///       (where the imaginary sticks are positioned in the result).
   ///     - [lengthsConstraint] which is effectively the 1-dimensional constraint for the
   ///       min and max values of the layed out segments.
@@ -171,11 +173,11 @@ class LayoutLengthsLayouter {
   /// which is effectively the layout size of all the layed out imaginary sticks [LayedOutLineSegments.lineSegments].
   ///
   /// Note: The total length of [lengths] depends on Packing - it is
-  ///   - sum lengths for snap or loose
+  ///   - sum lengths for tight or loose
   ///   - max length for matrjoska
   ///
   /// If the total length of [lengths] is below [lengthsConstraint],
-  /// and the combination of Packing and Lineup allows free spacing, the remaining
+  /// and the combination of Packing and Align allows free spacing, the remaining
   /// [lengthsConstraint] are used to add spaces between, around, or to the left of the
   /// resulting segments.
   ///
@@ -190,7 +192,7 @@ class LayoutLengthsLayouter {
   ///
   ///
   /// Example:
-  ///   - Laying out using the [Packing.snap] and [Lineup.start], in [OneDimLayoutProperties] :
+  ///   - Laying out using the [Packing.tight] and [Align.start], in [OneDimLayoutProperties] :
   ///     - The first length in [lengths] creates the first [LineSegment] in [layedOutLineSegments]; this first [LineSegment] has
   ///       - min = 0.0
   ///       - max = first length
@@ -210,7 +212,7 @@ class LayoutLengthsLayouter {
           isOverflown: isOverflown,
         );
         break;
-      case Packing.snap:
+      case Packing.tight:
         layedOutLineSegments = LayedOutLineSegments(
           lineSegments: _snapOrLooseLayoutAndMapLengthsToSegments(_snapLayoutLineSegmentFor),
           totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
@@ -233,27 +235,27 @@ class LayoutLengthsLayouter {
   double get _maxLength => lengths.fold(0.0, (previousValue, length) => math.max(previousValue, length));
 
   /// Intended for use in  [Packing.matrjoska], creates and returns a [util_dart.LineSegment] for the passed [length],
-  /// positioning the [util_dart.LineSegment] according to [lineup].
+  /// positioning the [util_dart.LineSegment] according to [align].
   ///
   /// [Packing.matrjoska] ignores order of lengths, so there is no dependence on length predecessor.
   ///
-  /// Also, for [Packing.matrjoska], the [lineup] applies *both* for alignment of lines inside the Matrjoska,
+  /// Also, for [Packing.matrjoska], the [align] applies *both* for alignment of lines inside the Matrjoska,
   /// as well as the whole largest Matrjoska alignment inside the available [totalLayedOutLengthIncludesPadding].
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
     double start, end, freePadding;
-    switch (oneDimLayoutProperties.lineup) {
-      case Lineup.start:
+    switch (oneDimLayoutProperties.align) {
+      case Align.start:
         freePadding = _freePadding;
         start = 0.0;
         end = length;
         break;
-      case Lineup.center:
+      case Align.center:
         freePadding = _freePadding / 2;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
         break;
-      case Lineup.end:
+      case Align.end:
         freePadding = _freePadding;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
@@ -316,18 +318,18 @@ class LayoutLengthsLayouter {
   /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
   Tuple2<double, double> _snapStartOffset(bool isFirstLength) {
     double freePadding, startOffset, freePaddingRight;
-    switch (oneDimLayoutProperties.lineup) {
-      case Lineup.start:
+    switch (oneDimLayoutProperties.align) {
+      case Align.start:
         freePadding = 0.0;
         freePaddingRight = _freePadding;
         startOffset = freePadding;
         break;
-      case Lineup.center:
+      case Align.center:
         freePadding = _freePadding / 2; // for center, half freeLength to the left
         freePaddingRight = freePadding;
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
-      case Lineup.end:
+      case Align.end:
         freePadding = _freePadding; // for max, all freeLength to the left
         freePaddingRight = 0.0;
         startOffset = isFirstLength ? freePadding : 0.0;
@@ -341,18 +343,18 @@ class LayoutLengthsLayouter {
   Tuple2<double, double> _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
     double freePadding, startOffset, freePaddingRight;
-    switch (oneDimLayoutProperties.lineup) {
-      case Lineup.start:
+    switch (oneDimLayoutProperties.align) {
+      case Align.start:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = freePadding;
         startOffset = isFirstLength ? 0.0 : freePadding;
         break;
-      case Lineup.center:
+      case Align.center:
         freePadding = lengthsCount != 0 ? _freePadding / (lengthsCount + 1) : _freePadding;
         freePaddingRight = freePadding;
         startOffset = freePadding;
         break;
-      case Lineup.end:
+      case Align.end:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = 0.0;
         startOffset = freePadding;
@@ -362,11 +364,11 @@ class LayoutLengthsLayouter {
   }
 }
 
-/// Holds a list of 1-dimensional [LineSegment]s layed out generally by [LayoutLengthsLayouter] from a list of lengths.
+/// Holds a list of 1-dimensional [LineSegment]s layed out generally by [LayedoutLengthsLayouter] from a list of lengths.
 ///
 /// Each line segment in [lineSegments] has a min and max (start and end), where
-/// the [LayoutLengthsLayouter] positioned them, the min and max values are
-/// starting at 0.0 and ending at the [LayoutLengthsLayouter.lengthsConstraint].
+/// the [LayedoutLengthsLayouter] positioned them, the min and max values are
+/// starting at 0.0 and ending at the [LayedoutLengthsLayouter.lengthsConstraint].
 ///
 /// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
 ///
@@ -374,8 +376,8 @@ class LayoutLengthsLayouter {
 /// to one side of a rectangle along the axis corresponding to children (future) positions.
 ///
 /// Note: on creation, it should be passed segments [lineSegments] already
-///       layed out to their positions with [LayoutLengthsLayouter]
-///       and [totalLayedOutLengthIncludesPadding] calculated by [LayoutLengthsLayouter.totalLayedOutLengthIncludesPadding].
+///       layed out to their positions with [LayedoutLengthsLayouter]
+///       and [totalLayedOutLengthIncludesPadding] calculated by [LayedoutLengthsLayouter.totalLayedOutLengthIncludesPadding].
 class LayedOutLineSegments {
   const LayedOutLineSegments({
     required this.lineSegments,
@@ -389,7 +391,7 @@ class LayedOutLineSegments {
   /// If there is padding, this may be BEYOND max on last lineSegments
   final double totalLayedOutLengthIncludesPadding;
   /// A marker that the process that lead to layout overflew it's original constraints given in
-  /// [LayoutLengthsLayouter.lengthsConstraint].
+  /// [LayedoutLengthsLayouter.lengthsConstraint].
   ///
   /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
   final bool isOverflown;
