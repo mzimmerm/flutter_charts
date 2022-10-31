@@ -1296,7 +1296,10 @@ class LegendIndicatorRectContainer extends BoxContainer {
   ///       );
   ///    ```
   @override
-  void post_IfLeaf_SetSizeFromInternals() {
+  void post_Leaf_SetSizeFromInternals() {
+    if (!isLeaf) {
+      throw StateError('Only a leaf can be sent this message.');
+    }
     layoutSize = ui.Size(
       _indicatorSize.width,
       _indicatorSize.height,

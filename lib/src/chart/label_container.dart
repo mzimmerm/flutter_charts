@@ -204,7 +204,7 @@ class LabelContainer extends BoxContainer {
   ///        witch exactly same code, and things would work, except missing check if 
   ///        layout size is within constraints.
   @override
-  post_IfLeaf_SetSizeFromInternals() {
+  post_Leaf_SetSizeFromInternals() {
     _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1

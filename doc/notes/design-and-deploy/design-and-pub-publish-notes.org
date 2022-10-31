@@ -1744,9 +1744,8 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
   - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
   - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
-- [ ] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
-- [ ] test representative
-- [ ] test all
+- [X] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
+- [X] test representative
 - [ ] Add container Greedy, equivalent of Expanded with ratio
   - [ ] Greedy:
     - [ ] is offsetting
@@ -1798,11 +1797,12 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
       - [ ] children already have layoutSize, including Greedy child ?????
       - [ ] C: ask NonGreedy children layoutSizes first
       - [ ] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
-      - [ ] C: creates new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
-      - [ ] C: Divides ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
-      - [ ] C: applies each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
+      - [ ] C: create new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
+      - [ ] C: Divide ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
+      - [ ] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
       - [ ] ~!!!!!!!Note: The single container wrapped in Greedy, when asked for layoutSize, returns it's layoutSize = constraint~ (the one acquired from ~greedyChildrenConstaints~ ??? *how do we do that* ???
       - [ ] descend greedy - this should give greedy their layoutSize - *how????? we are not using constraints in any way!!! just return fixed on leaf, or calculated on Row and Column, and that does not use layout size!!!! WELL MAYBE THIS CAN WORK: WHEN ASKING GREEDY FOR LAYOUT SIZE, WE SIMPLY ANSWER IT'S NEWLY PROPORTIONALLY CREATED CONSTRAINT SIZE!!!*
+      - [ ] *WHAT IS *
       - [ ] POST DESCEND GREEDY - EMPTY:
       - [ ] POST DESCEND ALL
         - [ ] Do what we normally do: ~_postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();~. As we are in Row or Column, this will:
