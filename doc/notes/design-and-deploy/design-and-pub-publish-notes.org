@@ -1738,20 +1738,23 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
   - [X] commit and push
 - [X] Rename Lineup to Align
 - [X] Rename Packing.snap to Packing.tight
-- [ ] Make sure Tests work
+- [X] Make sure Tests work
 - [ ] Containers should have either single child or multiple children
   - [ ] Add some way to throw exception if Container does not have intended amount
   - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
   - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
+- [ ] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
+- [ ] test representative
+- [ ] test all
 - [ ] Add container Greedy, equivalent of Expanded with ratio
   - [ ] Greedy:
     - [ ] is offsetting
     - [ ] has a single child
     - [ ] parent must be Row or Column
     - [ ] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
-    - [ ] has member int greed - direction is implied by parent : if parent is Row, horizontal, Column vertical
-    - [ ] it's parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???:
+    - [ ] has member int greed - direction is implied by parent : if parent is Row, the Greedy child greed direction is horizontal, for Column it is vertical
+    - [ ] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
       - [ ] Row or Column need to override newCoreLayout completely ???? Their normal loop
         #+begin_src dart
           _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();

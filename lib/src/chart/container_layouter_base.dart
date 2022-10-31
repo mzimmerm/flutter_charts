@@ -122,12 +122,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Allows a parent container to move this container after [layout].
   ///
   /// Override if parent move needs to propagate to internals of
-  /// this [BoxContainer].
+  /// this [BoxLayouter].
   ///
   /// General rules for [applyParentOffset] on extensions
   ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
   ///     as this method is integral part of autolayout (as is [newCoreLayout]).
-  ///  2) Exception would be [BoxContainers] that want to use manual or semi-manual
+  ///  2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
   ///     layout process. Those would generally (always?) be leafs, and they would do the following:
   ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
   ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
@@ -155,22 +155,22 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
-  /// making painting of this [BoxContainer] not possible.
+  /// making painting of this [BoxLayouter] not possible.
   ///
   /// Setting the [allowParentToSkipOnDistressedSize] `true` helps to solve such situation.
-  /// It causes the [BoxContainer] not be painted
+  /// It causes the [BoxLayouter] not be painted
   /// (skipped during layout) when space is constrained too much
-  /// (not enough space to reasonably paint the [BoxContainer] contents).
+  /// (not enough space to reasonably paint the [BoxLayouter] contents).
   /// Note that setting this to `true` may result
   /// in surprising behavior, instead of exceptions.
   ///
   /// Note that concrete implementations must add
   /// appropriate support for collapse to work.
   ///
-  /// Unlike [orderedSkip], which directs the parent to ignore this [BoxContainer],
+  /// Unlike [orderedSkip], which directs the parent to ignore this [BoxLayouter],
   /// [allowParentToSkipOnDistressedSize] is intended to be checked in code
   /// for some invalid conditions, and if they are reached, bypass painting
-  /// the [BoxContainer].
+  /// the [BoxLayouter].
   bool allowParentToSkipOnDistressedSize = true; // always true atm
 
   // todo-01-document
@@ -202,6 +202,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   /// Old layout forwards to [newCoreLayout].
+  // todo-01-last : pass BoxLayouter not BoxContainer
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
@@ -224,11 +225,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///   2: General rules for [newCoreLayout] on extensions
   ///      1) Generally, neither leafs nor non-leafs need to override [newCoreLayout],
   ///         as this method is integral part of autolayout (as is [applyParentOffset]).
-  ///      2) Exception would be [BoxContainer]s that want to use manual or semi-manual
+  ///      2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
   ///         layout process.
   ///           - On Leaf: override [newCoreLayout] (no super call), do manual layout calculations,
   ///             likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
-  ///             and set [layoutSize] at the end. This is already described in [BoxContainer.applyParentOffset]
+  ///             and set [layoutSize] at the end. This is already described in [BoxLayouter.applyParentOffset]
   ///           - Potentially - this would be a hack PARENT of the leaf also may need to override[newCoreLayout], where it :
   ///             - Perform layout logic to set some size-related value on it's child. We do not have example,
   ///               as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
@@ -240,8 +241,21 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // print('In newCoreLayout: parent of $this = $parent.');
 
     // Process the root of [LayouterBox] hierarchy.
+    _ifRoot_All_Processing();
+
+    // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
+    _newCoreLayoutRecurse();
+  }
+
+  // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
+
+  // 2.1 Layout methods
+
+  void _ifRoot_All_Processing() {
     if (isRoot) {
-      assert(constraints.size != const ui.Size(-1.0, -1.0)); // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
+      assert(constraints.size !=
+          const ui.Size(-1.0,
+              -1.0)); // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
       // On nested levels [RowLayouter]s OR [ColumnLayouter]s
       // force non-offsetting layout properties.
       // This is a hack that unfortunately make this baseclass [BoxLayouter]
@@ -255,9 +269,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       //                   ... maybe not needed, if anything, mark children as greedy, but wait when we have greedy layouter.
       _ifRoot_Recurse_CheckForGreedyChildren_And_PlaceGreedyChildLast();
     }
+  }
 
-    // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint on root must be set
+  void _newCoreLayoutRecurse() {
+    // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
     _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
+
     // B. node-descend
     for (var child in children) {
       // 1. child-pre-descend (empty)
@@ -268,10 +285,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // C. node-post-descend. Here, children have layoutSize and offset in me
     _postDescend_IfLeaf_SetMySize_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
   }
-
-  // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
-
-  // 2.1 Layout methods
 
   /// Iterates and looks for greedy children.
   ///
@@ -429,7 +442,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   void _post_IfNotLeaf_SetSize_As_OuterBoundOf_Offset_LayoutSize_Rectangle_Children() {
     assert(!isLeaf);
     ui.Rect childrenOuterRectangle = util_flutter
-        .outerRectangle(children.map((BoxContainer child) => child._boundingRectangle()).toList(growable: false));
+        .outerRectangle(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
     // todo-00-note-only : here, childrenOuterRectangle can be way to the right, out of screen (L=300, R=374)
     //                          we need to check against constraints on root which should be available size for app.
     //                          _check_IfMySizeFit_WithinConstraints does not help, as size is OK!
@@ -450,7 +463,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     return _convertLengthsToSize(mainLayoutAxis, mainLayedOutLength, crossLayedOutLength);
   }
   */
-  void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren);
+  // todo-00-last-last : removed : void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren);
 
 
   /// Bounding rectangle of this [BoxLayouter].
@@ -569,7 +582,7 @@ abstract class OffsettingBoxLayouter extends BoxContainer {
 
 // ^ base non-offsetting classes BoxLayouter and BoxContainer
 // ---------------------------------------------------------------------------------------------------------------------
-// v offsetting classes, rolling offsetting, RowLayouter and ColumnLayouter
+// v offsetting classes, rolling offsetting, RowLayouter and ColumnLayouter, Greedy
 
 /// Base class for [RowLayouter] and [ColumnLayouter].
 ///
@@ -606,7 +619,96 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
   //                 ALSO NEED TO MOVE to immediate class below Row and Column
   OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
   OneDimLayoutProperties crossAxisLayoutProperties =
-      OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
+  OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
+
+  ////////////////////////// todo-00-last-last vvvvv
+
+
+/* todo-00-last-last : work in this Greedy algorithm */
+  @override
+  void newCoreLayout() {
+    _ifRoot_All_Processing();
+
+
+
+    if (_hasGreedy) {
+    _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
+      // Process Non-Greedy children first, to find what size they use
+      // B. node-descend
+      for (var child in _nonGreedyChildren) {
+        // 1. child-pre-descend (empty)
+        // 2. child-descend
+        child.newCoreLayout();
+        // 3. child-post-descend (empty)
+      }
+      // C. node-post-descend. Here, non greedy children have layoutSize
+      if (_hasNonGreedy) {
+        _postDescend_NonGreedy_IfLeaf_Exception_NotLeaf_DoStuffIn_C();
+      } // same as current on Row and Column
+
+      // D. node-descend
+      for (var child in _greedyChildren) {
+        // 1. child-pre-descend (empty)
+        // 2. child-descend
+        child.newCoreLayout();
+        // 3. child-post-descend (empty)
+      }
+      // E. node-post-descend. Here, greedy children have layoutSize
+      if (_hasGreedy) {
+        _postDescend_Greedy_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+      }
+      // F. node-post-descend-all
+      _postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
+    } else {
+      // Working processing for no greedy children present. Maybe we can reuse some code with the above?
+      _newCoreLayoutRecurse();
+    }
+  }
+
+  List<BoxContainer> get _greedyChildren => children.whereType<Greedy>().toList();
+
+  List<BoxContainer> get _nonGreedyChildren {
+    List<BoxContainer> nonGreedy = List.from(children);
+    nonGreedy.removeWhere((var child) => child is Greedy);
+    return nonGreedy;
+  }
+
+  bool get _hasGreedy => _greedyChildren.isNotEmpty;
+
+  bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
+
+  // same as current code on Row and Column ???
+  _postDescend_NonGreedy_IfLeaf_Exception_NotLeaf_DoStuffIn_C() {
+    // Note: non greedy children have layout size when we reach here
+    
+    if (_hasGreedy) {
+
+      // Get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes 
+      //   the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction.
+      // The reason we want to use tight left align, is that if there are greedy children, we want them to take 
+      //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
+      // Force Align=left, Packing=tight, no matter what the Row properties are.
+      
+      // creates new constraints ~greedyChildrenRemainingConstraint~ which is a difference between 
+      
+      // self original constraint, and  nonGreedyChildrenSize
+      
+      // Divides ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
+      
+      // applies each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
+      
+    }
+  }
+  void _postDescend_Greedy_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints() {
+
+  }
+
+  void _postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints() {
+
+  }
+/* */
+
+  ////////////////////////// todo-00-last-last ^^^^^
 
   /// Converts the line segments to [Offset]s (in each axis). Children will be moved by the obtained [Offset]s.
   List<ui.Offset> _convertLayedOutSegmentsToOffsets({
@@ -793,7 +895,6 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
   }
 
   /// Applies the offsets obtained by this specific [Layouter] onto the [LayoutableBox]es [children].
-  @override
   void _offsetChildren(List<ui.Offset> layedOutOffsets, List<LayoutableBox> notGreedyChildren) {
     assert(layedOutOffsets.length == notGreedyChildren.length);
     for (int i = 0; i < layedOutOffsets.length; i++) {
@@ -836,7 +937,6 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
     );
     return mainAndCrossLayedOutSegments;
   }
-
 }
 
 // todo-01-last : How and where should we use this? This should be similar to the other Singleton use
@@ -904,14 +1004,26 @@ class ColumnLayouter extends RollingOffsettingBoxLayouter {
   }) : super(
           children: children,
           mainAxisLineup: mainAxisLineup,
-          mainAxisPacking: mainAxisPacking,
-          crossAxisLineup: crossAxisLineup,
-          crossAxisPacking: crossAxisPacking,
-        ) {
+    mainAxisPacking: mainAxisPacking,
+    crossAxisLineup: crossAxisLineup,
+    crossAxisPacking: crossAxisPacking,
+  ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = OneDimLayoutProperties(align: mainAxisLineup, packing: mainAxisPacking);
     crossAxisLayoutProperties = OneDimLayoutProperties(align: crossAxisLineup, packing: crossAxisPacking);
   }
+}
+
+// todo-00-last-last document and implement
+class Greedy extends OffsettingBoxLayouter {
+
+  final int greed;
+
+  Greedy({
+    this.greed = 1,
+    List<BoxContainer>? children,
+  }) : super(children: children);
+
 }
 
 // Helper classes ------------------------------------------------------------------------------------------------------
