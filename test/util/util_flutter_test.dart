@@ -7,7 +7,7 @@ void main() {
     ui.Rect rect1 = const ui.Rect.fromLTRB(1.0, 2.0, 4.0, 6.0);
     ui.Rect rect2 = const ui.Rect.fromLTRB(10.0, 20.0, 40.0, 50.0);
     expect(
-      outerRectangle([rect1, rect2]),
+      boundingRectOfRects([rect1, rect2]),
       const ui.Rect.fromLTRB(1.0, 2.0, 40.0, 50.0),
     );
   });

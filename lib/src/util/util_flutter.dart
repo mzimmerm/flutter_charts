@@ -7,7 +7,7 @@ import 'dart:ui' as ui show Rect;
 /// Returns the outer bound of the passed [Offset]s as [Size].
 /// todo-01 test
 
-ui.Rect outerRectangle(List<ui.Rect> rectangles) {
+ui.Rect boundingRectOfRects(List<ui.Rect> rectangles) {
   return ui.Rect.fromLTRB(
     rectangles.map((ui.Rect rectangle) => rectangle.left).reduce(math.min),   // left
     rectangles.map((ui.Rect rectangle) => rectangle.top).reduce(math.min),    // top,

@@ -71,7 +71,7 @@ enum Align {
 
 enum DivideConstraintsToChildren {
   evenly,
-  ratios,
+  intWeights,
   noDivide,
 }
 

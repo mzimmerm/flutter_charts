@@ -1,6 +1,7 @@
 import 'dart:ui' show Size;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../chart/layouter_one_dimensional.dart';
 
@@ -147,24 +148,24 @@ abstract class BoundingBoxesBase {
     required int divideIntoCount,
     required DivideConstraintsToChildren divideStrategy,
     required LayoutAxis layoutAxis,
-    List<double>? ratios,
+    List<int>? intWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
+    late final int sumIntWeights;
 
-    if (divideStrategy == DivideConstraintsToChildren.ratios && ratios == null) {
-      throw StateError('ratios only applicable for DivideConstraintsToChildren.ratio');
+    if (divideStrategy == DivideConstraintsToChildren.intWeights && intWeights == null) {
+      throw StateError('intWeights only applicable for DivideConstraintsToChildren.ratio');
     }
 
     if ((divideStrategy == DivideConstraintsToChildren.evenly ||
             divideStrategy == DivideConstraintsToChildren.evenly) &&
-        ratios != null) {
-      throw StateError('ratios not applicable for DivideConstraintsToChildren.evenly or noDivide');
+        intWeights != null) {
+      throw StateError('intWeights not applicable for DivideConstraintsToChildren.evenly or noDivide');
     }
 
-    if (ratios != null) {
-      assert(ratios.length == divideIntoCount);
-      double sumRatios = ratios.fold<double>(0.0, (previousValue, element) => previousValue + element);
-      assert(0.99 <= sumRatios && sumRatios <= 1.01);
+    if (intWeights != null) {
+      assert(intWeights.length == divideIntoCount);
+      sumIntWeights = intWeights.fold<int>(0, (previousValue, element) => previousValue + element);
     }
 
     switch (divideStrategy) {
@@ -194,21 +195,21 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return fractions;
-      case DivideConstraintsToChildren.ratios:
+      case DivideConstraintsToChildren.intWeights:
         List<BoundingBoxesBase> fractions = [];
-        for (double ratio in ratios!) {
+        for (int intWeight in intWeights!) {
           switch (layoutAxis) {
             case LayoutAxis.horizontal:
-              minWidth = minSize.width * ratio;
+              minWidth = minSize.width * (1.0 * intWeight) / sumIntWeights;
               minHeight = minSize.height;
-              maxWidth = maxSize.width * ratio;
+              maxWidth = maxSize.width * (1.0 * intWeight) / sumIntWeights;
               maxHeight = maxSize.height;
               break;
             case LayoutAxis.vertical:
               minWidth = minSize.width;
-              minHeight = minSize.height * ratio;
+              minHeight = minSize.height * (1.0 * intWeight) / sumIntWeights;
               maxWidth = maxSize.width;
-              maxHeight = maxSize.height * ratio;
+              maxHeight = maxSize.height * (1.0 * intWeight) / sumIntWeights;
               break;
           }
           var fraction = cloneWith(
@@ -223,6 +224,35 @@ abstract class BoundingBoxesBase {
       case DivideConstraintsToChildren.noDivide:
         return [clone()];
     }
+  }
+
+  Tuple4<double, double, double, double> _smallenBy(Size size) {
+    // Smallen only the max of this constraint by the passed size
+    double maxWidth = maxSize.width - size.width;
+    double maxHeight = maxSize.height - size.height;
+    double minWidth = minSize.width - size.width;
+    double minHeight = minSize.height - size.height;
+
+    // Allow to collaps minSize to zero
+    minWidth = minWidth < 0.0 ? 0.0 : minWidth;
+    minHeight = minHeight < 0.0 ? 0.0 : minHeight;
+
+    if (maxWidth < 0.0 || maxHeight < 0.0 || minWidth < 0.0 || minHeight < 0.0) {
+      throw StateError('Cannot subtract from this bounding box $this a size $size which is larger in some direction');
+    }
+    return Tuple4(minWidth, minHeight, maxWidth, maxHeight);
+  }
+
+  BoundingBoxesBase operator-(Size size) {
+
+    Tuple4<double, double, double, double> smaller = _smallenBy(size);
+
+    return cloneWith(
+      minWidth: smaller.item1,
+      minHeight: smaller.item2,
+      maxWidth: smaller.item3,
+      maxHeight: smaller.item4,
+    );
   }
 
   @override
@@ -327,6 +357,19 @@ class BoxContainerConstraints extends BoundingBoxesBase {
       maxHeight: maxHeight,
     );
   }
+
+  @override
+  BoxContainerConstraints operator -(Size size) {
+
+    Tuple4<double, double, double, double> smaller = _smallenBy(size);
+
+    return cloneWith(
+      minWidth: smaller.item1,
+      minHeight: smaller.item2,
+      maxWidth: smaller.item3,
+      maxHeight: smaller.item4,
+    );
+  }
 }
 
 class BoundingBoxes extends BoundingBoxesBase {
@@ -384,4 +427,18 @@ class BoundingBoxes extends BoundingBoxesBase {
       maxHeight: maxHeight,
     );
   }
+
+  @override
+  BoundingBoxes operator -(Size size) {
+
+    Tuple4<double, double, double, double> smaller = _smallenBy(size);
+
+    return cloneWith(
+      minWidth: smaller.item1,
+      minHeight: smaller.item2,
+      maxWidth: smaller.item3,
+      maxHeight: smaller.item4,
+    );
+  }
+
 }

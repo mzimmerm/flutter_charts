@@ -1746,14 +1746,14 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [ ] Make sure Tests work
 - [X] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
 - [X] test representative
-- [ ] Add container Greedy, equivalent of Expanded with ratio
-  - [ ] Greedy:
+- [-] Add container Greedy, equivalent of Expanded with ratio
+  - [-] Greedy:
     - [ ] is offsetting
     - [ ] has a single child
     - [ ] parent must be Row or Column
     - [ ] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
     - [ ] has member int greed - direction is implied by parent : if parent is Row, the Greedy child greed direction is horizontal, for Column it is vertical
-    - [ ] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
+    - [-] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
       - [ ] Row or Column need to override newCoreLayout completely ???? Their normal loop
         #+begin_src dart
           _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
@@ -1794,16 +1794,20 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
           _postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
 
         #+end_src
-      - [ ] children already have layoutSize, including Greedy child ?????
-      - [ ] C: ask NonGreedy children layoutSizes first
-      - [ ] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
-      - [ ] C: create new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
-      - [ ] C: Divide ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
-      - [ ] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
+      - [X] children already have layoutSize, including Greedy child ?????
+      - [X] C: ask NonGreedy children layoutSizes first
+      - [X] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
+      - [X] C: create new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
+      - [X] C: Divide ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
+      - [X] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
+      - [ ] Greedy implementation
+        - [ ] newCoreLayout : what is different?
+        - [ ] pre-descend sets constraints on immediate children as normal
+        - [ ] descend runs as normal, makes children make layoutSize available
+        - [ ] post-descend runs as normal - does 'layout self'
+          - [ ] what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!!!!!!!!!!!!!!!!!!!!!!*
       - [ ] ~!!!!!!!Note: The single container wrapped in Greedy, when asked for layoutSize, returns it's layoutSize = constraint~ (the one acquired from ~greedyChildrenConstaints~ ??? *how do we do that* ???
       - [ ] descend greedy - this should give greedy their layoutSize - *how????? we are not using constraints in any way!!! just return fixed on leaf, or calculated on Row and Column, and that does not use layout size!!!! WELL MAYBE THIS CAN WORK: WHEN ASKING GREEDY FOR LAYOUT SIZE, WE SIMPLY ANSWER IT'S NEWLY PROPORTIONALLY CREATED CONSTRAINT SIZE!!!*
-      - [ ] *WHAT IS *
-      - [ ] POST DESCEND GREEDY - EMPTY:
       - [ ] POST DESCEND ALL
         - [ ] Do what we normally do: ~_postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();~. As we are in Row or Column, this will:
           - [ ] use this row/column layouter to run the one-dim layout of children (greedy and non-greedy, they all have sizes already), use the one-dim layout converted to sizes to apply offsets as normally.
