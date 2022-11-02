@@ -18,7 +18,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, Greedy, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -230,6 +230,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
+    // todo-00-last-last : Here yContainerHeight - xContainerSize.height is negative. Replace with 0 , not sure of consequences.
+
     yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
        yContainerHeight - xContainerSize.height,
@@ -1222,8 +1224,8 @@ class LegendItemContainer extends BoxContainer {
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
-      case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
-        // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
+      case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
+        // default for legend column : Item row is top, so is NOT overridden, so must be set to intended!
         return RowLayouter(
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.tight,
@@ -1233,8 +1235,14 @@ class LegendItemContainer extends BoxContainer {
             mainAxisLineup: Align.end,
             mainAxisPacking: Packing.loose,
             children: children);
-      case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
+        return RowLayouter(
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
+      // default for legend row : desired and tested
         return RowLayouter(
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.tight,
@@ -1397,7 +1405,7 @@ class LegendContainer extends ChartAreaContainer {
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
-      case LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap:
+      case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
         // default for legend column
         return ColumnLayouter(
             mainAxisLineup: Align.start,
@@ -1408,8 +1416,15 @@ class LegendContainer extends ChartAreaContainer {
             mainAxisLineup: Align.center,
             mainAxisPacking: Packing.loose,
             children: children);
-      case LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap:
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
+        return RowLayouter(
+            mainAxisLineup: Align.start,
+            mainAxisPacking: Packing.tight,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
+        // wrap second item to greedy
+        children[1] = Greedy(children: [children[1]]);
         return RowLayouter(
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.tight,
@@ -1417,7 +1432,11 @@ class LegendContainer extends ChartAreaContainer {
     }
   }
 
-  List<BoxContainer> _legendItems(List<String> dataRowsLegends, LabelStyle labelStyle, ChartOptions options) {
+  List<BoxContainer> _legendItems(
+    List<String> dataRowsLegends,
+    LabelStyle labelStyle,
+    ChartOptions options,
+  ) {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < dataRowsLegends.length; index++)

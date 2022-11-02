@@ -1615,7 +1615,7 @@ What are those?
 
 Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
 
-- In _layoutChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
+- In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
 - after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
 - *these right-aligned large offsets are then applied on the square and label children* in ~notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);~
 - Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the RowLayouter to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN RowLayouter. So I think the core solution is not do that, and divide the constraints*
@@ -1754,46 +1754,8 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
     - [ ] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
     - [ ] has member int greed - direction is implied by parent : if parent is Row, the Greedy child greed direction is horizontal, for Column it is vertical
     - [-] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
-      - [ ] Row or Column need to override newCoreLayout completely ???? Their normal loop
-        #+begin_src dart
-          _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
-          // B. node-descend
-          for (var child in children) {
-            // 1. child-pre-descend (empty)
-            // 2. child-descend
-            child.newCoreLayout();
-            // 3. child-post-descend (empty
-          }
-          // C. node-post-descend. Here, children have layoutSize and offset (??) in me
-          _postDescend_IfLeaf_SetMySize_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
-        #+end_src
-      - [ ] Should separately process non-greedy first, greedy next
-        #+begin_src dart
-          _preDescend_DistributeMyConstraintToImmediateChildren_AccordingToLayouter();
-          // B. node-descend
-          for (var child in nonGreedyChildren) {
-            // 1. child-pre-descend (empty)
-            // 2. child-descend
-            child.newCoreLayout();
-            // 3. child-post-descend (empty)
-          }
-          // C. node-post-descend. Here, non greedy children have layoutSize
-          if (hasNonGreedy) _postDescend_NonGreedy_IfLeaf_Exception_NotLeaf_DoStuffIn_C(); // same as current on Row and Column
-
-          // D. node-descend
-          for (var child in greedyChildren) {
-            // 1. child-pre-descend (empty)
-            // 2. child-descend
-            child.newCoreLayout();
-            // 3. child-post-descend (empty)
-          }
-          // E. node-post-descend. Here, greedy children have layoutSize
-          if (hasGreedy) _postDescend_Greedy_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
-
-          // F. node-post-descend-all
-          _postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();
-
-        #+end_src
+      - [X] Row or Column need to override newCoreLayout completely
+      - [X] Should separately process non-greedy first, greedy next
       - [X] children already have layoutSize, including Greedy child ?????
       - [X] C: ask NonGreedy children layoutSizes first
       - [X] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
@@ -1802,7 +1764,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
       - [X] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
       - [ ] Greedy implementation
         - [ ] newCoreLayout : what is different?
-        - [ ] pre-descend sets constraints on immediate children as normal
+        - [ ] pre-descend sets full constraints on immediate children as normal
         - [ ] descend runs as normal, makes children make layoutSize available
         - [ ] post-descend runs as normal - does 'layout self'
           - [ ] what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!!!!!!!!!!!!!!!!!!!!!!*

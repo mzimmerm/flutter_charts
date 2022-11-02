@@ -823,10 +823,10 @@ class _ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap:
+      case ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartSnapItemIsRowStartSnap),
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
         chartData = ChartData(
@@ -851,10 +851,24 @@ class _ExampleWidgetCreator {
         );
         break;
 
-      case ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap:
+      case ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap),
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
         chartData = ChartData(

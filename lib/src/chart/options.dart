@@ -125,7 +125,7 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
-    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartSnapItemIsRowStartSnap,
+    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight,
   });
 }
 
@@ -328,8 +328,9 @@ enum DataRowsPaintingOrder {
 }
 
 enum LegendAndItemLayoutEnum {
-  legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartSnapItemIsRowStartSnap
-  legendIsColumnStartSnapItemIsRowStartSnap, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
+  legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartTightItemIsRowStartTight
+  legendIsColumnStartTightItemIsRowStartTight, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
   legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'tight' , so noop
-  legendIsRowStartSnapItemIsRowStartSnap, // default for legend row : desired and tested
+  legendIsRowStartTightItemIsRowStartTight, // default for legend row : desired and tested
+  legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped
 }

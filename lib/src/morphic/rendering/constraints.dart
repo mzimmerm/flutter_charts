@@ -19,11 +19,18 @@ abstract class BoundingBoxesBase {
   late final Size minSize;
   late final Size maxSize;
 
-  // The SINGLE UNNAMED generative constructor
+  // The SINGLE UNNAMED generative non-forwarding constructor
   BoundingBoxesBase({
     required this.minSize,
     required this.maxSize,
-  });
+  }) {
+    assertSizes(
+      minWidth: minSize.width,
+      minHeight: minSize.height,
+      maxWidth: maxSize.width,
+      maxHeight: maxSize.height,
+    );
+  }
 
   // Named constructors, forwarded to the generative constructor
   BoundingBoxesBase.exactBox({required Size size}) : this(minSize: size, maxSize: size);
@@ -31,7 +38,7 @@ abstract class BoundingBoxesBase {
   BoundingBoxesBase.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
   // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
-  BoundingBoxesBase.unused() : this.exactBox(size: const Size(-1.0, -1.0));
+  BoundingBoxesBase.unused() : this.exactBox(size: const Size(0.0, 0.0)); // todo-00-last-last : we should replace this with a null-like singleton : const Size(-1.0, -1.0));
   BoundingBoxesBase.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
@@ -47,7 +54,7 @@ abstract class BoundingBoxesBase {
   /// Abstract method for cloning, using the prototype pattern to share
   /// cloning implementation with superclasses.
   ///
-  /// Used along with the generative named constructor [BoundingBoxesBase.cloneOther].
+  /// Used along with the generative non-forwarding named constructor [BoundingBoxesBase.cloneOther].
   /// In the extensions [clone] returns newly constructed BoundingBoxesBase extensions
   /// using the concrete [cloneOther] named constructor
   /// and passing `this` to it.
@@ -56,7 +63,7 @@ abstract class BoundingBoxesBase {
   // The cloneOtherWith family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
   // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
 
-  /// Generative named constructor from other [BoundingBoxesBase] and values to change
+  /// Generative non-forwarding named constructor from other [BoundingBoxesBase] and values to change
   /// on the clone.
   BoundingBoxesBase.cloneOtherWith({
     required BoundingBoxesBase other,
@@ -72,8 +79,33 @@ abstract class BoundingBoxesBase {
     maxWidth ??= other.maxSize.width;
     maxHeight ??= other.maxSize.height;
 
+    assertSizes(
+      minWidth: minWidth,
+      minHeight: minHeight,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+    );
+
     minSize = Size(minWidth, minHeight);
     maxSize = Size(maxWidth, maxHeight);
+  }
+
+  void assertSizes({
+    required double minWidth,
+    required double minHeight,
+    required double maxWidth,
+    required double maxHeight,
+  }) {
+    if (minWidth < 0.0 || minHeight < 0.0 || maxWidth < 0.0 || maxHeight < 0.0) {
+      throw StateError(
+          'Negative sizes: minWidth $minWidth, minHeight $minHeight, maxWidth $maxWidth, maxHeight $maxHeight');
+    }
+    if (minWidth > maxWidth) {
+      throw StateError('minWidth > maxWidth : minWidth=$minWidth, maxWidth=$maxWidth');
+    }
+    if (minWidth > maxWidth) {
+      throw StateError('minWidth > maxWidth : minWidth=$minWidth, maxWidth=$maxWidth');
+    }
   }
 
   /// [cloneWith] method implementation.
@@ -144,6 +176,7 @@ abstract class BoundingBoxesBase {
   ///
   /// Extensions use this method to pass smaller constraints to children; use for layout sizes
   /// is unclear atm.
+  // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
     required DivideConstraintsToChildren divideStrategy,
@@ -299,7 +332,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
   // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
-  BoxContainerConstraints.unused() : this.exactBox(size: const Size(-1.0, -1.0));
+  BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0)); // todo-00-last-last : we should replace this with a null-like singleton : this.exactBox(size: const Size(-1.0, -1.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions

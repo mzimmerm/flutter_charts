@@ -49,9 +49,10 @@ enum ExamplesEnum {
   ex60LabelsIteration3,
   ex60LabelsIteration4,
   ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
-  ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap,
+  ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
   ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
-  ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap,
+  ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
+  ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
 
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
@@ -63,9 +64,10 @@ enum ExamplesChartTypeEnum {
   verticalBarChart,
 }
 
-/// Defines the names (enums from [ExamplesEnum] such as [ExamplesEnum.ex10RandomData])
-/// and types ([ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart]) of the examples
-/// available to be tested or run interactively in scripts.
+/// Defines the list of the examples available to be tested or run interactively in scripts.
+///
+/// Each example properties are the enums from [ExamplesEnum] (e.g. [ExamplesEnum.ex10RandomData])
+/// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart])
 ///
 /// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running in [run_all_examples.sh].
 ///
@@ -126,14 +128,18 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
         ExamplesChartTypeEnum.verticalBarChart),
     //
-    const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap,
+    const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
         ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
         ExamplesChartTypeEnum.verticalBarChart),
     //
-    const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap,
+    const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
         ExamplesChartTypeEnum.verticalBarChart),
+    //
+    //const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
+    //    ExamplesChartTypeEnum.verticalBarChart),
+
     //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
