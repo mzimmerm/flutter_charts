@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
         Align,
         Packing,
-        OneDimLayoutProperties,
+        LengthsPositionerProperties,
         LayedoutLengthsPositioner,
         LayedOutLineSegments,
         DivideConstraintsToChildren;
@@ -266,9 +266,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   void _layout_IfRoot_DefaultTreePreprocessing() {
     if (isRoot) {
-      assert(constraints.size !=
-          const ui.Size(-1.0,
-              -1.0)); // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
+      // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
+      assert(constraints.size != const ui.Size(-1.0, -1.0));
       // On nested levels [RowLayouter]s OR [ColumnLayouter]s
       // force non-offsetting layout properties.
       // This is a hack that unfortunately make this baseclass [BoxLayouter]
@@ -365,7 +364,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   /// [_post_NotLeaf_PositionChildren] is a core method of the default [newCoreLayout]
-  /// which lays out the invoker's children.
+  /// which positions the invoker's children in self.
   ///
   /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op in [BoxContainer] (returning empty list,
   /// which causes no offsetting of children.
@@ -514,11 +513,8 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
         this.children = [];
       }
     }
-    _makeMeParentOfMyChildren();
-  }
-
-  void _makeMeParentOfMyChildren() {
-    for (var child in children) {
+    // Make self a parent of all immediate children
+    for (var child in this.children) {
       child.parent = this;
     }
   }
@@ -656,8 +652,8 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
     required Packing crossAxisPacking,
   }) : super(children: children) {
     mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = OneDimLayoutProperties(align: mainAxisLineup, packing: mainAxisPacking);
-    crossAxisLayoutProperties = OneDimLayoutProperties(align: crossAxisLineup, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisLineup, packing: mainAxisPacking);
+    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisLineup, packing: crossAxisPacking);
   }
 
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
@@ -666,8 +662,8 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
   // todo-01-last : these should be private so noone overrides their 'packing: Packing.tight, align: Align.start'
-  OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
-  OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
+  LengthsPositionerProperties mainAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
+  LengthsPositionerProperties crossAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
 
   /// Override of the core layout on [RollingOffsettingBoxLayouter].
   @override
@@ -749,7 +745,7 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
       // Force Align=left, Packing=tight, no matter what the Row properties are. Rects
       // The reason we want to use tight left align, is that if there are greedy children, we want them to take
       //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
-      OneDimLayoutProperties storedLayout = mainAxisLayoutProperties;
+      LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
       _forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
@@ -875,14 +871,14 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
   /// The passed objects must both correspond to either main axis or the cross axis.
   LayedoutLengthsPositioner _layedoutLengthsPositionerAlongAxis({
     required LayoutAxis layoutAxis,
-    required OneDimLayoutProperties axisLayoutProperties,
+    required LengthsPositionerProperties axisLayoutProperties,
     required double lengthsConstraintAlongLayoutAxis,
     required List<LayoutableBox> children,
   }) {
     List<double> lengthsAlongAxis = _layoutSizesOfChildrenAlong(layoutAxis, children);
     LayedoutLengthsPositioner lengthsPositionerAlongAxis = LayedoutLengthsPositioner(
       lengths: lengthsAlongAxis,
-      oneDimLayoutProperties: axisLayoutProperties,
+      lengthsPositionerProperties: axisLayoutProperties,
       lengthsConstraint: lengthsConstraintAlongLayoutAxis,
     );
     return lengthsPositionerAlongAxis;
@@ -912,14 +908,14 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
     required Packing packing,
     required Align align,
   }) {
-    mainAxisLayoutProperties = OneDimLayoutProperties(packing: packing, align: align);
+    mainAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
   }
 
   void _forceCrossAxisLayoutProperties({
     required Packing packing,
     required Align align,
   }) {
-    crossAxisLayoutProperties = OneDimLayoutProperties(packing: packing, align: align);
+    crossAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
   }
 
   /// Implementation of the abstract method which lays out the invoker's children.
@@ -1030,8 +1026,8 @@ class RowLayouter extends RollingOffsettingBoxLayouter {
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
     mainLayoutAxis = LayoutAxis.horizontal;
-    mainAxisLayoutProperties = OneDimLayoutProperties(align: mainAxisLineup, packing: mainAxisPacking);
-    crossAxisLayoutProperties = OneDimLayoutProperties(align: crossAxisLineup, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisLineup, packing: mainAxisPacking);
+    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisLineup, packing: crossAxisPacking);
   }
 }
 
@@ -1051,8 +1047,8 @@ class ColumnLayouter extends RollingOffsettingBoxLayouter {
           crossAxisPacking: crossAxisPacking,
         ) {
     mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = OneDimLayoutProperties(align: mainAxisLineup, packing: mainAxisPacking);
-    crossAxisLayoutProperties = OneDimLayoutProperties(align: crossAxisLineup, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisLineup, packing: mainAxisPacking);
+    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisLineup, packing: crossAxisPacking);
   }
 }
 
@@ -1154,7 +1150,7 @@ class _MainAndCrossLayedOutSegments {
 
 // Functions----- ------------------------------------------------------------------------------------------------------
 
-/// Forces default non-offsetting axis layout properties [OneDimLayoutProperties]
+/// Forces default non-offsetting axis layout properties [LengthsPositionerProperties]
 /// on the nested hierarchy nodes of type [RowLayouter] and [ColumnLayouter] nodes.
 ///
 /// Motivation: The one-pass layout we use allows only the topmost [RowLayouter] or [ColumnLayouter]

@@ -80,11 +80,11 @@ enum DivideConstraintsToChildren {
 ///
 /// This class is also used to describe packing and alignment of the layed out elements
 /// for the 1-dimensional [LayedoutLengthsPositioner], where it serves to describe the 1-dimensional packing and alignment.
-class OneDimLayoutProperties {
+class LengthsPositionerProperties {
   final Packing packing;
   final Align align;
 
-  OneDimLayoutProperties({
+  LengthsPositionerProperties({
     required this.packing,
     required this.align,
   });
@@ -96,12 +96,12 @@ class OneDimLayoutProperties {
 /// a parent [BoxLayouter] which creates this object - hence the first 'Layout'
 /// in the name [LayedoutLengthsPositioner].
 ///
-/// The [oneDimLayoutProperties] specifies [Packing] and [Align] properties.
+/// The [lengthsPositionerProperties] specifies [Packing] and [Align] properties.
 /// They control the layout result, along with [lengthsConstraint],
 /// which is the constraint for the layed out segments.
 ///
 /// The core algorithm in [layoutLengths] lays out the [lengths] according to the
-/// properties specified in member [oneDimLayoutProperties], and creates list
+/// properties specified in member [lengthsPositionerProperties], and creates list
 /// of layed out segments from the [lengths]; the layed out segments may be padded
 /// if there is length available towards the [lengthsConstraint].
 ///
@@ -119,11 +119,11 @@ class OneDimLayoutProperties {
 class LayedoutLengthsPositioner {
   LayedoutLengthsPositioner({
     required this.lengths,
-    required this.oneDimLayoutProperties,
+    required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
   }) {
     assert(lengthsConstraint != double.infinity);
-    switch (oneDimLayoutProperties.packing) {
+    switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
         // Caller should allow for lengthsConstraint to be exceeded by _maxLength, set isOverflown, deal with it in caller
         isOverflown = (_maxLength > lengthsConstraint);
@@ -140,7 +140,7 @@ class LayedoutLengthsPositioner {
 
   // LayedoutLengthsPositioner members
   final List<double> lengths;
-  final OneDimLayoutProperties oneDimLayoutProperties;
+  final LengthsPositionerProperties lengthsPositionerProperties;
   late final double _freePadding;
   late final double lengthsConstraint;
   late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
@@ -148,15 +148,15 @@ class LayedoutLengthsPositioner {
   double totalLayedOutLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
-  /// defined in member [oneDimLayoutProperties].
+  /// defined in member [lengthsPositionerProperties].
   ///
   /// From the [lengths], it creates a list of layed out segments ; the layed out segments may be padded
   /// if there is length available towards the [lengthsConstraint].
   ///
   /// The input are members
   ///   - [lengths] which holds the lengths to lay out, and
-  ///   - [oneDimLayoutProperties] which specifies the layout properties:
-  ///     - [OneDimLayoutProperties.packing] and [OneDimLayoutProperties.align] that control the layout process
+  ///   - [lengthsPositionerProperties] which specifies the layout properties:
+  ///     - [LengthsPositionerProperties.packing] and [LengthsPositionerProperties.align] that control the layout process
   ///       (where the imaginary sticks are positioned in the result).
   ///     - [lengthsConstraint] which is effectively the 1-dimensional constraint for the
   ///       min and max values of the layed out segments.
@@ -192,7 +192,7 @@ class LayedoutLengthsPositioner {
   ///
   ///
   /// Example:
-  ///   - Laying out using the [Packing.tight] and [Align.start], in [OneDimLayoutProperties] :
+  ///   - Laying out using the [Packing.tight] and [Align.start], in [LengthsPositionerProperties] :
   ///     - The first length in [lengths] creates the first [LineSegment] in [layedOutLineSegments]; this first [LineSegment] has
   ///       - min = 0.0
   ///       - max = first length
@@ -204,7 +204,7 @@ class LayedoutLengthsPositioner {
   ///
   LayedOutLineSegments layoutLengths() {
     LayedOutLineSegments layedOutLineSegments;
-    switch (oneDimLayoutProperties.packing) {
+    switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
         layedOutLineSegments = LayedOutLineSegments(
           lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
@@ -243,7 +243,7 @@ class LayedoutLengthsPositioner {
   /// as well as the whole largest Matrjoska alignment inside the available [totalLayedOutLengthIncludesPadding].
   util_dart.LineSegment _matrjoskaLayoutLineSegmentFor(double length) {
     double start, end, freePadding;
-    switch (oneDimLayoutProperties.align) {
+    switch (lengthsPositionerProperties.align) {
       case Align.start:
         freePadding = _freePadding;
         start = 0.0;
@@ -318,7 +318,7 @@ class LayedoutLengthsPositioner {
   /// [length] needed to set [totalLayedOutLengthIncludesPadding] every time this is called for each child. Value of last child sticks.
   Tuple2<double, double> _tightStartOffset(bool isFirstLength) {
     double freePadding, startOffset, freePaddingRight;
-    switch (oneDimLayoutProperties.align) {
+    switch (lengthsPositionerProperties.align) {
       case Align.start:
         freePadding = 0.0;
         freePaddingRight = _freePadding;
@@ -343,7 +343,7 @@ class LayedoutLengthsPositioner {
   Tuple2<double, double> _looseStartOffset(bool isFirstLength) {
     int lengthsCount = lengths.length;
     double freePadding, startOffset, freePaddingRight;
-    switch (oneDimLayoutProperties.align) {
+    switch (lengthsPositionerProperties.align) {
       case Align.start:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = freePadding;

@@ -1630,7 +1630,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
   - [X] Done but not used
 - [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
 - [ ] also note and add to code : expandToConstraintMax=false is NOT compatible with packing = loose - add that note somewhere
-- [ ] LATER :Add to OneDimLayoutProperties
+- [ ] LATER :Add to LenghtsPositionerProperties
   - [ ] doExpandToConstraintMax: true and false, default true *I think this is for later or never*
     - [ ] If true, use all available constraint (former totalSize) - this adds padding - this is how it works now!
     - [ ] If false, do not add any padding
