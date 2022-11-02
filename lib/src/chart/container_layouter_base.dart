@@ -26,11 +26,13 @@ mixin BoxContainerHierarchy {
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   // todo-01-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
   List<BoxContainer> children = NullLikeListSingleton();
+
   bool get isRoot => parent == null;
 
   bool get isLeaf => children.isEmpty;
 
-  @Deprecated('[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
+  @Deprecated(
+      '[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
   void addChildToHierarchyDeprecated(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
     childOfThis.parent = thisBoxContainer;
     children.add(childOfThis);
@@ -51,7 +53,9 @@ abstract class LayoutableBox {
   ui.Size layoutSize = ui.Size.zero;
 
   void applyParentOffset(BoxLayouter caller, ui.Offset offset);
+
   void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip);
+
   void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints);
 
   void newCoreLayout();
@@ -102,9 +106,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // constraints ---
   /// Constraints set by parent.
   late final BoxContainerConstraints _constraints;
+
   BoxContainerConstraints get constraints => _constraints;
 
   @override
+
   /// Set private member [_constraints] with assert that the caller is parent
   void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
     _assertCallerIsParent(caller);
@@ -146,7 +152,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   @override
   void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
-
     _assertCallerIsParent(caller);
 
     if (orderedSkip) return;
@@ -191,7 +196,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // ------------------------------------------------------------------------------------------------------------------------
 
   /// Sandbox-type helper field : none so far
-
 
   // ------------------------------------------------------------------------------------------------------------------------
   void _assertCallerIsParent(BoxLayouter caller) {
@@ -329,7 +333,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Common:
   ///   - The current container [layoutSizes] is asserted to be within [constraint]
   ///
-  void _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
+  void
+      _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
     if (isLeaf) {
       post_Leaf_SetSizeFromInternals();
     } else {
@@ -518,7 +523,6 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     }
   }
 
-
   /// Override of the abstract [_post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
   /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer] - by Returning empty list,
@@ -620,8 +624,7 @@ abstract class NonOffsettingBoxLayouter extends BoxContainer {
   /// Override for non-offsetting:
   /// Does not apply any offsets on the it's children (passed in [newCoreLayout] internals.
   @override
-  void _post_NotLeaf_OffsetChildren(List<ui.Rect> layedOutRectsInMe, List<LayoutableBox> children) {
-  }
+  void _post_NotLeaf_OffsetChildren(List<ui.Rect> layedOutRectsInMe, List<LayoutableBox> children) {}
 
   /// Override for non-offsetting:
   /// Does not need to calculate position of children in self, as it will not apply offsets anyway.
@@ -664,60 +667,59 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
 
   // todo-01-last : these should be private so noone overrides their 'packing: Packing.tight, align: Align.start'
   OneDimLayoutProperties mainAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
-  OneDimLayoutProperties crossAxisLayoutProperties =
-  OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
+  OneDimLayoutProperties crossAxisLayoutProperties = OneDimLayoutProperties(packing: Packing.tight, align: Align.start);
 
   /// Override of the core layout on [RollingOffsettingBoxLayouter].
   @override
   void newCoreLayout() {
     _layout_IfRoot_DefaultTreePreprocessing();
 
-    if (_hasGreedy) {
-      // Process Non-Greedy children first, to find what size they use
-      if (_hasNonGreedy) {
-        // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
-        //                         using the constraints. Everything for _nonGreedyChildren is same as default layout.
-        _preDescend_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
-        // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
-        for (var child in _nonGreedyChildren) {
-          // Non greedy should run full layout of children.
-          child.newCoreLayout();
-        }
-        // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
-        //      which we can get and use to lay them out to find constraints left for greedy
-        //    But positioning children in self, we need to run pre-position of children in self
-        //      using left/tight to get sizes without spacing.
-        _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
-      } // same as current on Row and Column
-
-      // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
-      //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
-      //   set on non_Greedy. This will be done later in  _postDescend_IfLeaf_SetSize(etc).
-      //
-      // So to fully layout self, there are 3 things left:
-      //   1. Need to recursively layout GREEDY children to get their size.
-      //      Their greedy constraints were set in previous postDescend,
-      //        the _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
-      //      So we do NOT want to run a full [newCoreLayout] on greedy children - we need to avoid setting
-      //      child constraints again in  _layout_DefaultRecurse() -> _preDescend_DistributeConstraintsToImmediateChildren(children);
-      //      We only want the descend part of _layout_DefaultRecurse(), even the postDescend must be different
-      //        as it must apply to all children, not just GREEDY.
-      //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
-      //   3. Apply offsets from step 2 on children
-      // Steps 2. and 3 already have a default method, the
-      //       _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
-      //       which must be applies on all children. (it is).
-
-      // Step 1.
-      for (var child in _greedyChildren) {
+    // if (_hasGreedy) {
+    // Process Non-Greedy children first, to find what size they use
+    if (_hasNonGreedy) {
+      // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
+      //                         using the constraints. Everything for _nonGreedyChildren is same as default layout.
+      _preDescend_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
+      // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
+      for (var child in _nonGreedyChildren) {
+        // Non greedy should run full layout of children.
         child.newCoreLayout();
       }
-      // Step 2. and 3. is a base class method unchanged.
-      _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
-    } else {
-      // Working processing for no greedy children present. Maybe we can reuse some code with the above?
-      _layout_DefaultRecurse();
+      // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
+      //      which we can get and use to lay them out to find constraints left for greedy
+      //    But positioning children in self, we need to run pre-position of children in self
+      //      using left/tight to get sizes without spacing.
+      _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
+    } // same as current on Row and Column
+
+    // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
+    //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
+    //   set on non_Greedy. This will be done later in  _postDescend_IfLeaf_SetSize(etc).
+    //
+    // So to fully layout self, there are 3 things left:
+    //   1. Need to recursively layout GREEDY children to get their size.
+    //      Their greedy constraints were set in previous postDescend,
+    //        the _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
+    //      So we do NOT want to run a full [newCoreLayout] on greedy children - we need to avoid setting
+    //      child constraints again in  _layout_DefaultRecurse() -> _preDescend_DistributeConstraintsToImmediateChildren(children);
+    //      We only want the descend part of _layout_DefaultRecurse(), even the postDescend must be different
+    //        as it must apply to all children, not just GREEDY.
+    //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
+    //   3. Apply offsets from step 2 on children
+    // Steps 2. and 3 already have a default method, the
+    //       _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
+    //       which must be applies on all children. (it is).
+
+    // Step 1.
+    for (var child in _greedyChildren) {
+      child.newCoreLayout();
     }
+    // Step 2. and 3. is a base class method unchanged.
+    _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
+    // } else {
+    //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
+    //   _layout_DefaultRecurse();
+    // }
   }
 
   List<Greedy> get _greedyChildren => children.whereType<Greedy>().toList();
@@ -826,18 +828,20 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
     // The segments' ends are already taken into account in BoxLayouter.size.
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
-        return ui.Offset(mainSegment.min, crossSegment.min) & ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+        return ui.Offset(mainSegment.min, crossSegment.min) &
+            ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
       case LayoutAxis.vertical:
-        return ui.Offset(crossSegment.min, mainSegment.min) & ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+        return ui.Offset(crossSegment.min, mainSegment.min) &
+            ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
     }
   }
 
   /// Converts two [util_dart.LineSegment] to [Offset] according to the passed [LayoutAxis], [mainLayoutAxis].
   ui.Size _convertLengthsToSize(
-      LayoutAxis mainLayoutAxis,
-      double mainLength,
-      double crossLength,
-      ) {
+    LayoutAxis mainLayoutAxis,
+    double mainLength,
+    double crossLength,
+  ) {
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
         return ui.Size(mainLength, crossLength);
@@ -848,9 +852,9 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
 
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
   double _lengthAlong(
-      LayoutAxis layoutAxis,
-      ui.Size size,
-      ) {
+    LayoutAxis layoutAxis,
+    ui.Size size,
+  ) {
     switch (layoutAxis) {
       case LayoutAxis.horizontal:
         return size.width;
@@ -880,7 +884,6 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
       lengths: lengthsAlongAxis,
       oneDimLayoutProperties: axisLayoutProperties,
       lengthsConstraint: lengthsConstraintAlongLayoutAxis,
-
     );
     return lengthsPositionerAlongAxis;
   }
@@ -888,13 +891,13 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
   /// Creates and returns a list of lengths of the [LayoutableBox]es [children]
   /// measured along the passed [layoutAxis].
   List<double> _layoutSizesOfChildrenAlong(
-      LayoutAxis layoutAxis,
-      List<LayoutableBox> children,
-      ) =>
+    LayoutAxis layoutAxis,
+    List<LayoutableBox> children,
+  ) =>
       // This gets the layoutableBox.layoutSize
-  //     but when those lengths are calculated, we have to set the layoutSize on parent,
-  //     as envelope of all children offsets and sizes!
-  children.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
+      //     but when those lengths are calculated, we have to set the layoutSize on parent,
+      //     as envelope of all children offsets and sizes!
+      children.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
 
   /// Support which allows to enforce non-offsetting of nested extensions.
   ///
@@ -989,7 +992,8 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
       //                 Probably need to address when the whole chart is layed out using the new layouter.
       lengthsConstraintAlongLayoutAxis: 0.0,
-      children: children,);
+      children: children,
+    );
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout lengths' according it's rules.
@@ -1005,7 +1009,6 @@ abstract class RollingOffsettingBoxLayouter extends OffsettingBoxLayouter {
     return mainAndCrossLayedOutSegments;
   }
 }
-
 
 // todo-01-document
 class RowLayouter extends RollingOffsettingBoxLayouter {
@@ -1043,10 +1046,10 @@ class ColumnLayouter extends RollingOffsettingBoxLayouter {
   }) : super(
           children: children,
           mainAxisLineup: mainAxisLineup,
-    mainAxisPacking: mainAxisPacking,
-    crossAxisLineup: crossAxisLineup,
-    crossAxisPacking: crossAxisPacking,
-  ) {
+          mainAxisPacking: mainAxisPacking,
+          crossAxisLineup: crossAxisLineup,
+          crossAxisPacking: crossAxisPacking,
+        ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = OneDimLayoutProperties(align: mainAxisLineup, packing: mainAxisPacking);
     crossAxisLayoutProperties = OneDimLayoutProperties(align: crossAxisLineup, packing: crossAxisPacking);
@@ -1065,7 +1068,6 @@ class ColumnLayouter extends RollingOffsettingBoxLayouter {
 /// post-descend runs as normal - does 'layout self'
 /// what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!
 class Greedy extends NonOffsettingBoxLayouter {
-
   final int greed;
 
   Greedy({
@@ -1131,7 +1133,6 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 }
 
 class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
-
   NullLikeListSingleton._privateNamedConstructor();
 
   static final _instance = NullLikeListSingleton._privateNamedConstructor();

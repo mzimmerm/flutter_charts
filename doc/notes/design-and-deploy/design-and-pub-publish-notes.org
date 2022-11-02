@@ -1775,11 +1775,22 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Make sure Tests work
 - [ ] Try to remove the default newCoreLayout in Rolling for Greedy, and always use the version with assuming existence of _greedy. If results the same, use it even if slower.
 - [ ] Support to show yellow and black rectangle on overflow:
-  - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
-  - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
-  - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
-  - [ ] Add top paint method as super to all paint methods.
-  - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
+  - [ ] v1
+    - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
+    - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
+    - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
+    - [ ] Add top paint method as super to all paint methods.
+    - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
+  - [ ] v2
+    - [ ] Find a way to find constraints on top container - ~get topContainerConstraints~, and access them from any BoxContainer
+    - [ ] Add method ~paintIfLayoutProtrusion~ (to be used in any paint method) which checks if offset is beyond the  ~get topContainerConstraints~, 
+      - [ ] if offset is out,
+        - [ ] also find how far the offset is out, and create a rectangle ~protrudingInThisDirection~ inside  topContainerConstraints, on the general side of where offset is protruding
+        - [ ] paint the  ~protrudingInThisDirection~ rectable
+      - [ ] Add  ~paintIfLayoutProtrusion~ to every paint, or better, to paint abstract, and make sure all paint implementations call super. Maybe add to the place where we check if parentWantToHide...
+    - [ ] 
+    - [ ] 
+  - 
 - [ ] Containers should have either single child or multiple children
   - [ ] Add some way to throw exception if Container does not have intended amount
   - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
