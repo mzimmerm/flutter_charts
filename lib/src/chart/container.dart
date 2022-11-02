@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 import 'dart:math' as math show max;
+import 'package:flutter_charts/flutter_charts.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
@@ -54,6 +55,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   @override
   ui.Size get layoutSize => chartArea;
 
+  /// Added as a check. todo-01-last : Remove for new layout
+  @override
+  set layoutSize(ui.Size size) => throw UnsupportedError('The root $this does not allow setting layoutSize');
+
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
   /// area on which the painter will paint.
@@ -104,6 +109,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   ChartData data;
 
+  // Not needed for new layouter, OR for old.
+  // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
+  // BoxContainerConstraints? _beforeNewLayoutConstraints;
+
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
@@ -149,6 +158,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    // Not needed for new layouter, OR for old.
+    // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
+    // _beforeNewLayoutConstraints = boxConstraints;
+
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
     //        create labels from the stacked points (if chart is stacked).
@@ -304,6 +317,17 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
     // canvas.clipRect(const ui.Offset.zero & size); // Offset & Size => Rect
   }
+
+  // Not needed for new layouter, OR for old. Override root of ContainerHierarchy to be self. Override parent to null. Override constraints
+  // @override
+  // BoxContainer get root => this;
+  //
+  // @override
+  // BoxContainer? get parent => null;
+  //
+  // @override
+  // BoxContainerConstraints get constraints => _beforeNewLayoutConstraints!;
+
 
   /// Abstract method creates the [DataContainer],
   /// for the particular chart type (line, bar).
@@ -830,7 +854,13 @@ abstract class ChartAreaContainer extends BoxContainer {
     required this.chartRootContainer,
     List<BoxContainer>? children,
   }) : super(children: children) {
-    parent = chartRootContainer;
+    // On the LegendContainer 'fake' root, set parent to null. todo-01-last : Remove for new layout
+    // was: parent = chartRootContainer;
+    if (this is LegendContainer) {
+      parent = null;
+    } else {
+      parent = chartRootContainer;
+    }
   }
 }
 

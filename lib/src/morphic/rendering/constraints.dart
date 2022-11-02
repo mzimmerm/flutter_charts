@@ -1,6 +1,8 @@
-import 'dart:ui' show Size;
+import 'dart:math';
+import 'dart:ui' show Offset, Rect, Size;
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:flutter_charts/src/util/util_flutter.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../chart/layouter_one_dimensional.dart';
@@ -254,7 +256,6 @@ abstract class BoundingBoxesBase {
   }
 
   BoundingBoxesBase operator-(Size size) {
-
     Tuple4<double, double, double, double> smaller = _smallenBy(size);
 
     return cloneWith(
@@ -263,6 +264,25 @@ abstract class BoundingBoxesBase {
       maxWidth: smaller.item3,
       maxHeight: smaller.item4,
     );
+  }
+
+  Tuple2<Rect, Rect> offsetBy(Offset offset) {
+    return Tuple2(offset & minSize, offset & maxSize);
+  }
+
+  /// Utility method allows to check if this [BoundingBoxesBase], moved by (offset by) [offset]
+  /// does contain [other] rectangle.
+  ///
+  /// Very useful for layout algorithms to check for overflow etc.
+  bool whenOffsetContainsFullyOtherRect(Offset offset, Rect other) {
+    Tuple2<Rect, Rect> offsetBox = offsetBy(offset);
+    Rect insideRect = offsetBox.item1;
+    Rect outsideRect = offsetBox.item2;
+
+    // If other is outside of insideRect and other is inside outsideRect,
+    // then other is inside this bounding box
+    // Need: Rect.isOutsideOf(other)
+    return other.isOutsideOf(insideRect) && other.isInsideOf(outsideRect);
   }
 
   @override

@@ -1073,8 +1073,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
             - ~List<StackableValuePoint> fromPoints,~
           - ~creates the VerticalBarPresenter and LineAndHotspotPresenter from one StackableValuePoint~: 
 
-
-** DONE-THIS-ITERATION 2. Implement new Layouter algorithm
+** DONE 2. Implement new Layouter algorithm
 *** TODO Look into remaining usages of "ui.Size get layoutSize"
 *** TODO Core Problem of layout *Maybe not a problem, see useExistingChildrenOrCreateChildren* - we are creating new Containers inside layout: We are creating legendItems in legendItemContainer.layout
 
@@ -1242,9 +1241,9 @@ Core ideas
         - child.offset += previousChild.offset + previousChild.size;  // layout specific
       - this.size = sum of children sizes; // layout specific
 
+** DONE Core Layouter Rules
 
-
-** IN-PROGRESS-NOW Core Layouter Rules
+See notes about "notes for override and extensions"
 
 These are the rules we implement
 
@@ -1261,29 +1260,11 @@ These are the rules we implement
      - This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~); the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
    - OR     uses overriden ~newCoreLayout~  - THEN it adds its' actual children to itself directly, and lays out children manually in code, similar to what we do in old ~layout~
 8. [ ] Leaf ~BoxContainer~ does not need to implement neither ~buildContainerOrSelf~ (super returns this) nor  ~newCoreLayout~ (super returns when isLeaf). So leaf only needs to implement ~paint~ and ~get layoutSize~
-9. [ ] Allow 0, 1 children to be greedy in MainLayoutAxis, otherwise exception
+9. [ ] Allow 0..n children to be greedy in MainLayoutAxis
 
+** DONE 3. Implement new Box/Column layouters
 
-** HOLD 3. Implement new Box/Column layouters
-
-*** HOLD Implement ColumnLayouter similar to RowLayouter
-
-Only needed later
-
-*** HOLD (Likely NOT NEEDED) Consider if we should reverse the class hierarchy between ~BoxLayouter~ and ~BoxContainer~
-
-
-- [X]  Currently: ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
-- [ ] Consider: ~BoxLayouter extends BoxContainer~. Below are some notes how it could be done
-  - [ ] what methods or fields has BoxLayouter which BoxContainer does not have?
-    - [ ] 
-  - [ ] layout axis is already in Container, keep there for now
-  - [ ] NO SPECIAL METHOD ADDED.
-  - [ ] ~Add constructor BoxLayouter(children: List<BoxContainer>). How does it change what we are doing in BoxContainer?~
-  - [ ] ~RowLayouter~
-    - [ ] implement step301_IfNotLeafOffsetChildrenAndCheckIfMySizeFitWithinConstraints specifically.
-
-
+*** DONE Implement ColumnLayouter similar to RowLayouter
 
 ** DONE 4. 2022-10-10 Classes Review
 
@@ -1313,36 +1294,6 @@ Created in the above LegendItemContainer.build
     - mixin ~BoxLayouter~ on ~BoxContainerHierarchy~ implements ~LayoutableBox~
     - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
       
-
-** IN-PROGRESS Sequence of calls of old and new layout
-
-- ~FlutterChartPainter.paint~ calls
-- ~ChartRootContainer.paint~ calls
-- ~ChartRootContainer.layout~ which creates in order
-- The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
-  - After each container is created, it's ~layout~ is immediately called.
-
-IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
-
-** IN-PROGRESS Questions to investigate
- 
-- [ ] On which interface is layout()? -
-- [ ] On which interface is newCoreLayout()?
-- [ ] why do we have layout() and newCoreLayout()? - We want to use them simultaneously for some time
-- [X] BoxLayouter vs LayoutableBox:
-  - ~LayoutableBox~:
-    - abstract class with empty implementations of all methods. It's interface is implemented(so overriden) by *both* ~BoxLayouter~ and ~BoxContainer~
-    #+begin_src dart
-      abstract class LayoutableBox {
-        ui.Size layoutSize = ui.Size.zero;
-        void applyParentOffset(ui.Offset offset);
-        _BoxLayouterLayoutSandbox layoutableBoxLayoutSandbox = _BoxLayouterLayoutSandbox();
-        void newCoreLayout(BoxContainer parentBoxContainer);
-    #+end_src 
-- [ ] Study alignment and packing
-
-
-
 ** DONE 5. LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (ChartRootContainer, X/YContainer, DataContainer) use original code.
 
 *** DONE Use the new Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer
@@ -1608,44 +1559,8 @@ What are those?
 - NO: layoutSize member: Make still available as late final on BoxLayouter, set it after return in case it is needed later. Always set just after return from newCoreLayout.
 - NO: constraints member: Remove  
   
+** DONE 5.2 Layouter improvements DONE : Debugging, RowLayouter Packing, Align, settings, overflow rectangle, Greedy, and more
 
-  
-
-** IN-PROGRESS-NOW 5.2 Layouter improvements : Debugging, RowLayouter Packing, Align, and other settings
-
-Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
-
-- In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
-- after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
-- *these right-aligned large offsets are then applied on the square and label children* in ~notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);~
-- Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the RowLayouter to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN RowLayouter. So I think the core solution is not do that, and divide the constraints*
-- ~Solution already suggested below~ - We should have RowLayouterExpand = true/false, false default, if false, the layedOutOffsets, result of _convertLayedOutSegmentsToOffsets should be moved to start with it's first child. So layedOutOffsets would be set to 0, 20.
-- The RowLayouter layoutSize should be size of rect (20) + size of label (64)
-- also expand=false is NOT compatible with packing = flow
-
-
- I *think the above proves the approach below. We need to introduce the even distribution of constraints to children, in addition to have the expandToConstraintMax false as default.*
-
-- [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
-  - [X] Done but not used
-- [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
-- [ ] also note and add to code : expandToConstraintMax=false is NOT compatible with packing = loose - add that note somewhere
-- [ ] LATER :Add to LenghtsPositionerProperties
-  - [ ] doExpandToConstraintMax: true and false, default true *I think this is for later or never*
-    - [ ] If true, use all available constraint (former totalSize) - this adds padding - this is how it works now!
-    - [ ] If false, do not add any padding
-  - [ ] isConstraintDividedToChildren: default false
-    - [ ] If true, divide and pass constraints to children using some ratio.
-    - [ ] If false, current behavior. We still need to pass constraints to children in newCoreLayout, that is missing.
-- [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
-- [ ] LATER BoxContainer debuggability
-  - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
-  - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
-- [ ] LATER Add to  LineSegment a field 'isAddedPadding' and 'isSegment'. That way we can clearly see what is what
-  - [ ] When creating segments, add a segment also for padding and set to 'isAddedPadding'. That way LineSegment lists have all the info what portion is actual 'sticks', and what are 'added paddings'
-  
-
-*Important current*
 
 - [X] Put stuff back so tests work without changes
 - [X] Remove asserts around free space - there is TODO.
@@ -1739,7 +1654,6 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Rename Lineup to Align
 - [X] Rename Packing.snap to Packing.tight
 - [X] Make sure Tests work
-- [ ] Make sure Tests work
 - [X] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
 - [X] test representative
 - [X] Add container Greedy, equivalent of Expanded with ratio
@@ -1773,64 +1687,87 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
           - [X] check if my size is within constraints
   - [X] Test on LegendContainer, by wrapping one or two short text LegendItemContainers into Greedy, they should eat up space despite being small.
 - [X] Make sure Tests work
-- [ ] Try to remove the default newCoreLayout in Rolling for Greedy, and always use the version with assuming existence of _greedy. If results the same, use it even if slower.
-- [ ] Support to show yellow and black rectangle on overflow:
-  - [ ] v1
-    - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
-    - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
-    - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
-    - [ ] Add top paint method as super to all paint methods.
-    - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
-  - [ ] v2
-    - [ ] Find a way to find constraints on top container - ~get topContainerConstraints~, and access them from any BoxContainer
-    - [ ] Add method ~paintIfLayoutProtrusion~ (to be used in any paint method) which checks if offset is beyond the  ~get topContainerConstraints~, 
-      - [ ] if offset is out,
-        - [ ] also find how far the offset is out, and create a rectangle ~protrudingInThisDirection~ inside  topContainerConstraints, on the general side of where offset is protruding
-        - [ ] paint the  ~protrudingInThisDirection~ rectable
-      - [ ] Add  ~paintIfLayoutProtrusion~ to every paint, or better, to paint abstract, and make sure all paint implementations call super. Maybe add to the place where we check if parentWantToHide...
-    - [ ] 
-    - [ ] 
-  - 
+- [X] Try to remove the default newCoreLayout in Rolling for Greedy, and always use the version with assuming existence of _greedy. If results the same, use it even if slower.
+- [X] Support to show yellow and black rectangle on overflow:
+  - [X] v2
+    - [X] Find a way to find constraints on top container - ~get topContainerConstraints~, and access them from any BoxContainer
+    - [X] Add method ~paintIfLayoutOverflow~ (to be used in any paint method) which checks if offset is beyond the  ~get topContainerConstraints~, 
+      - [X] if offset is out,
+        - [X] also find how far the offset is out, and create a rectangle ~protrudingInThisDirection~ inside  topContainerConstraints, on the general side of where offset is protruding
+        - [X] paint the  ~protrudingInThisDirection~ rectable
+      - [X] Add  ~paintIfLayoutOverflow~ to every non-leaf non-overriden paint. This is probably not enough as leafs are not reached. But in the new layouter, non-leafs should be fully correctly contained within parents, so checking parents is enough.
+       
+** IN-PROGRESS Sequence of calls of old and new layout
+
+- ~FlutterChartPainter.paint~ calls
+- ~ChartRootContainer.paint~ calls
+- ~ChartRootContainer.layout~ which creates in order
+- The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
+  - After each container is created, it's ~layout~ is immediately called.
+
+IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
+
+** IN-PROGRESS-NOW 5.2 Layouter improvements : New Layouters (Greedy, Center, Padding), RowLayouter: Packing, Align settings; overflow rectangle, and more
+
+Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
+
+- In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
+- after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
+- *these right-aligned large offsets are then applied on the square and label children* in ~notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);~
+- Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the RowLayouter to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN RowLayouter. So I think the core solution is not do that, and divide the constraints*
+- ~Solution already suggested below~ - The Row and Column must ALWAYS ALIGN LEFT/TIGHT, UNLESS IT IS THE TOP ROW OR COLUMN. 
+- The RowLayouter layoutSize should be size of rect (20) + size of label (64)
+
+
+ I *think the above proves the approach below. In Row and Column, we need Greedy childre, and introduce the even distribution of constraints to Greedy children*
+
+- [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
+  - [X] Done but not used
+- [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
+- [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
+  
+
+*Important current*
+
 - [ ] Containers should have either single child or multiple children
   - [ ] Add some way to throw exception if Container does not have intended amount
   - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
+  - [ ] Or just change allowed signature on single-child constructors.
   - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
-- [ ] Add PaddingLayouter that can be used around boxes to pad with space - no painting needed?
-- [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be nested.
-- [ ] LATER: Add Layout which wraps! (call it WrapLayouter). This is important for long legends.
+- [ ] Add PaddingLayouter that can be used around single child to pad with space - no painting needed?
+  - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
+  - [ ] Test work
+- [ ] Add CenterLayouter that centers single child - no painting needed?
+  - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
+  - [ ] Test work
+
+** TODO-NEXT 6. REST Containers 1. : ~First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 
-Older plan, still valid:
+This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter. 
 
-- [X] Resolve why RowLayouter Packing.loose behaves same as Packing.tight !! Reason: Simplicity of single-pass layout. Cannot have Row in Row with nested Row being 'end aligned'.
-- [ ] MILESTONE !!!!!! vvvvvvv 
-- [ ] Read https://blog.logrocket.com/flutter-layouts-guide-margins-padding/
-- [X] Create proper RowLayouter, add comments
-  - [X] Basically, need to make sure I can pass constructor arguments to set pack/loose/align - see what they are
-- [X] Make sure default row layouter on container is Row, which aligns left and top (basicall, sets parent offset = 0!!
-- [X] Create proper ColumnLayouter, add comments
-- [ ] Apply RowLayouter on chart LEGEND:
-  - [ ] using a 'flow' type row layout so it fills the whole available width
-  - [ ] ALSO add 4px space around rectangle using Padding 
-  - [ ] also add 4px padding around the whole LEGEND, so it is separated from the chart
-- [ ] This will test the non-greedy portion of layout some more
+*** TODO Ensure code sets up the parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
-- [ ] --- MILESTONE
-- [ ] make ChartOptions a Singleton!!! OR add ChartOptions as parameter on BoxContainer. ****Singleton is much prefered*
-- [ ] !!!! Start converting all containers to BoxContainers and newCoreLayout, BUT KEEP MANUAL LAYOUT ON ALL CONTAINERS EXCEPT LEGEND
-- [ ] Address some relevant todo-01-last
-- [ ] Address and test greedy children layout by creating some examples of variously positioned Legend : Top, Right. and show landscape mode.
+- [X] Which containers to convert to hierarchy?
+  - [X] ~LegendContainer~ - contains LegendItemContainers children
+    - Had member  ~_legendItemContainers~ for children. 
+    - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
+    - Removed member ~_legendItemContainers~
+    - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
+  - [X] ~LegendItemContainer~ - contains ~LabelContainer~
+    - Had single child member named ~_labelContainer~
+    - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
+    - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
+  - [X] LabelContainer - has no container children, so no changes
+- [ ] Next few containers
+  - [ ] ~ChartTopContainer~
+  - [ ] ~YContainer~
+  - [ ] ~XContainer~
+  - [ ] ~DataContainer~
+- [ ] containers or container-like to leave for later.
 
-- [ ] when done:
-  - [ ] start doing Morph stuff: start with everything is a transform!
- 
-
-** TODO-NEXT 6. REST Containers 1. : ~First migrate all remaining Containers to use new Layout methods, but still use manual layout NOT auto layout with RowLayouter and ColumnLayouter~
-
-This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter.
-
-*** TODO How to do this code migration to new layout performed manually
+*** TODO code migration to new layout ~buildContainerOrSelf~, ~apply methods~ and ~paint~ - but layout is still old, manual!!!
 
 The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer)~ method typically does:
 
@@ -1857,31 +1794,9 @@ To migrate the code in the old MANUAL layout, do this:
      - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.
      - Instead of 2.2 call to child.layout we call ~child.newCoreLayout(this)~
 
+** TODO 7. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
-   
-** TODO 7. REST Containers 2. : Use the new Layouter algorithm + new Box/Column layouts instead of custom code
-
-*** LATER Ensure code sets up the parent/child hierarchy correctly in SOME existing containers
-
-- [X] Which containers to convert to hierarchy?
-  - [X] ~LegendContainer~ - contains LegendItemContainers children
-    - Had member  ~_legendItemContainers~ for children. 
-    - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
-    - Removed member ~_legendItemContainers~
-    - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
-  - [X] ~LegendItemContainer~ - contains ~LabelContainer~
-    - Had single child member named ~_labelContainer~
-    - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
-    - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
-  - [X] LabelContainer - has no container children, so no changes
-- [ ] Next few containers
-  - [ ] ~ChartTopContainer~
-  - [ ] ~YContainer~
-  - [ ] ~XContainer~
-  - [ ] ~DataContainer~
-- [ ] containers or container-like to leave for later.
-
-*** TODO Todos for the Container deep refactoring to make "everything is a Container":
+*** TODO Deep refactoring to make "everything is a Container parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
 
 - [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
   - [ ] First experiment on ~PresentersColumns~
@@ -1922,12 +1837,26 @@ To migrate the code in the old MANUAL layout, do this:
   - [ ] May need a special extension of Containers for some of the above.
 
     
-*** TODO Maybe: Change AdjustableLabelsChartAreaContainer to a MIXIN.
-
-AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
 *** TODO LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!
 
 - This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
   
 *** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
 *** TODO ~HUGE - establish hierarchy between current Containers other than children of ChartContainer~ (NOT non-container classes like Presenter, PointsColumn, PointsColumns )
+** TODO 8. ~Containers to MORPHS~
+
+  - [ ] start doing Morph stuff: start with everything is a transform!
+
+** TODO-NEXT 9. LATER. : BoxContainer debuggability, introduce Singletons on places
+
+
+- [ ] LATER BoxContainer debuggability
+  - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
+  - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
+- [ ] LATER Add to  LineSegment a field 'isAddedPadding' and 'isSegment'. That way we can clearly see what is what
+  - [ ] When creating segments, add a segment also for padding and set to 'isAddedPadding'. That way LineSegment lists have all the info what portion is actual 'sticks', and what are 'added paddings'
+- [ ] LATER: Add Layout which wraps! (call it WrapLayouter). This is important for long legends.
+- [ ] make ChartOptions a Singleton!!! OR add ChartOptions as parameter on BoxContainer. ****Singleton is much prefered*
+- [ ] Start converting all containers to BoxContainers and newCoreLayout, BUT KEEP MANUAL LAYOUT ON ALL CONTAINERS EXCEPT LEGEND
+- [ ] Address some relevant todo-01-last
+- [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer

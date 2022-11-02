@@ -1,15 +1,16 @@
-import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
+import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
+import 'package:flutter/material.dart' as material;
 import 'package:flutter_charts/flutter_charts.dart';
 // import 'package:flutter_charts/src/chart/container.dart';
 
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
-        Align,
-        Packing,
-        LengthsPositionerProperties,
-        LayedoutLengthsPositioner,
-        LayedOutLineSegments,
-        DivideConstraintsToChildren;
+    Align,
+    Packing,
+    LengthsPositionerProperties,
+    LayedoutLengthsPositioner,
+    LayedOutLineSegments,
+    DivideConstraintsToChildren;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show boundingRectOfRects;
@@ -30,6 +31,27 @@ mixin BoxContainerHierarchy {
   bool get isRoot => parent == null;
 
   bool get isLeaf => children.isEmpty;
+
+  BoxContainer? _root;
+
+  BoxContainer get root {
+    if (_root != null) {
+      return _root!;
+    }
+
+    if (parent == null) {
+      _root = children[0].parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
+      return _root!;
+    }
+
+    BoxContainer rootCandidate = parent!;
+
+    while (rootCandidate.parent != null) {
+      rootCandidate = rootCandidate.parent!;
+    }
+    _root = rootCandidate;
+    return _root!;
+  }
 
   @Deprecated(
       '[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
@@ -109,9 +131,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   BoxContainerConstraints get constraints => _constraints;
 
-  @override
-
   /// Set private member [_constraints] with assert that the caller is parent
+  @override
   void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
     _assertCallerIsParent(caller);
     _constraints = constraints;
@@ -423,9 +444,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Throws error otherwise.
   void _post_AssertSizeInsideConstraints() {
     if (!constraints.containsFully(layoutSize)) {
-      throw StateError('Layout size of this layouter $this is $layoutSize,'
-          ' which does not fit inside it\'s constraints $constraints');
+      String errText = 'Layout size of this layouter $this is $layoutSize,'
+          ' which does not fit inside it\'s constraints $constraints';
+      // Print a red error, but continue and let the paint show black overflow rectangle
+      print(errText);
+      //throw StateError(errText);
     }
+
   }
 
   /// The only responsibility is to set the [layoutSize] of this layouter.
@@ -537,10 +562,11 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
     return [];
   }
 
-  /// Override of the abstract [_post_NotLeaf_OffsetChildren] of the default [newCoreLayout].
+  /// Implementation of the abstract default [_post_NotLeaf_OffsetChildren]
+  /// invoked in the default [newCoreLayout].
   ///
   /// This class, as a non-offsetting container should make this a no-op,
-  /// resulting in no offsets applies on children during layout.
+  /// resulting in no offsets applied on children during layout.
   @override
   void _post_NotLeaf_OffsetChildren(List<ui.Rect> layedOutRectsInMe, List<LayoutableBox> children) {
     // No-op in this non-offsetting base class
@@ -561,17 +587,23 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   /// Painting base method of all [BoxContainer] extensions,
   /// which should paint self on the passed [canvas].
   ///
+  /// This default [BoxContainer] implementation does several things:
+  ///   1. Checks for layout overflows, on overflow, paints a yellow-black rectangle
+  ///   2. Checks for [orderedSkip], if true, returns as no-op
+  ///   3. Forwards [paint] to [children]
+  ///
   /// On Leaf nodes, it should generally paint whatever primitives (lines, circles, squares)
   /// the leaf container consists of.
   ///
-  /// On Non-Leaf nodes, it should generally forward the [paint] to its' children.
-  ///
+  /// On Non-Leaf nodes, it should generally forward the [paint] to its' children, as
+  /// this default implementation does.
   ///
   /// Important override notes and rules for [paint] on extensions:
-  ///  1) In non-leafs: [paint] override not needed. Details:
-  ///    -  This default implementation, orderedSkip stop painting the node
-  ///          under first parent that orders children to skip
-  ///  2) In leafs: [paint] override always(?) needed.
+  ///  1) In non-leafs: [paint] override generally not needed. Details:
+  ///    -  This default implementation, orderedSkip stops painting the node
+  ///          under first parent that orders children to skip, which is generally needed.
+  ///    - This default implementation forwards the [paint] to its' children, which is generally needed.
+  ///  2) In leafs: [paint] override is always(?) needed.
   ///    - Override should do:
   ///      - `if (orderedSkip) return;` - this is required if the leaf's parent is the first up who ordered to skip
   ///      - Perform any canvas drawing needed by calling [canvas.draw]
@@ -580,11 +612,41 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   ///      - No super call needed.
   ///
   void paint(ui.Canvas canvas) {
+    // Check for overflow on every non-leaf non-overridden paint.
+    // This is probably not enough as leafs are not reached.
+    // But in the new layouter, non-leafs should be fully correctly contained within parents, so checking parents is enough.
+    paintWarningIfLayoutOverflows(canvas);
+
     if (orderedSkip) return;
 
     for (var child in children) {
       child.paint(canvas);
     }
+  }
+
+  /// Paints a yellow-and-black warning rectangle about this BoxLayouter overflowing root constraints.
+  void paintWarningIfLayoutOverflows(ui.Canvas canvas) {
+    // Find a way to find constraints on top container - ~get topContainerConstraints~, and access them from any BoxContainer
+    BoxContainerConstraints rootConstraints = root.constraints;
+    ui.Offset rootOffset = root.offset;
+    ui.Rect rootConstraintsMaxRect = rootOffset & rootConstraints.maxSize; // assume constraints full box with maxSize
+
+    ui.Rect myPaintedRect = offset & layoutSize;
+    // Check if myPaintedRect is beyond the rootConstraints
+    bool rootConstraintsContainMyPaintedRect = rootConstraints.whenOffsetContainsFullyOtherRect(
+        rootOffset, myPaintedRect);
+    if (!rootConstraintsContainMyPaintedRect) {
+      // If rootConstraints do NOT FULLY contain myPaintedRect, find how much they intersect,
+      //   or move myPaintedRect towards rootConstraints so they have 'visibly large' intersect
+      // Then create a rectangle protrudingInThisDirection inside rootConstraints,
+      //   on the general side of where myPaintedRect is protruding
+      ui.Rect protrudingInThisDirection = rootConstraintsMaxRect.closestIntersectWith(myPaintedRect);
+      // paint the protrudingInThisDirection rectangle
+      canvas.drawRect(
+          protrudingInThisDirection,
+          ui.Paint()..color = material.Colors.black,
+          );
+      }
   }
 }
 

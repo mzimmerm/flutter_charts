@@ -266,7 +266,8 @@ class DataContainerOptions {
   /// - On the [VerticalBarChart]
   /// - For some [yTransform]s for example logarithm transform,
   ///   where both data and logarithm must start above y value of 0.
-  /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed].
+  /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed];
+  /// If not allowed, the request is rejected, and data start at 0.
   final bool startYAxisAtDataMinRequested;
 
   const DataContainerOptions({

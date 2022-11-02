@@ -31,7 +31,7 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///
-  /// Overriden to [false] on this bar chart container, where the y axis must start from 0.
+  /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
   ///
   @override
   bool get startYAxisAtDataMinAllowed => false;
