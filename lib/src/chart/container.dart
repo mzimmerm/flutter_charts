@@ -230,11 +230,11 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
-    // todo-00-last-last : Here yContainerHeight - xContainerSize.height is negative. Replace with 0 , not sure of consequences.
 
+    var yConstraintsHeight = yContainerHeight - xContainerSize.height;
     yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
-       yContainerHeight - xContainerSize.height,
+       yConstraintsHeight,
     ));
     yContainer = YContainer(
       chartRootContainer: this,
@@ -252,9 +252,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
+    var dataConstraintsHeight = chartArea.height - (legendContainerSize.height + xContainerSize.height);
     var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width - yContainerSize.width,
-      chartArea.height - (legendContainerSize.height + xContainerSize.height),
+      dataConstraintsHeight,
     ));
     dataContainer = createDataContainer(
       chartRootContainer: this,
@@ -1426,6 +1427,9 @@ class LegendContainer extends ChartAreaContainer {
         // wrap second item to greedy
         children[1] = Greedy(children: [children[1]]);
         return RowLayouter(
+            // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside Greedy
+            //       remains start + tight. That make sense, as Greedy is non-offsetting.
+            //       If we wanted to center the LegendItem inside of Greedy, wrap the inside into Center.
             mainAxisLineup: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);

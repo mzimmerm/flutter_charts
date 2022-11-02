@@ -1739,21 +1739,17 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Rename Lineup to Align
 - [X] Rename Packing.snap to Packing.tight
 - [X] Make sure Tests work
-- [ ] Containers should have either single child or multiple children
-  - [ ] Add some way to throw exception if Container does not have intended amount
-  - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
-  - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
 - [X] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
 - [X] test representative
-- [-] Add container Greedy, equivalent of Expanded with ratio
-  - [-] Greedy:
-    - [ ] is offsetting
-    - [ ] has a single child
-    - [ ] parent must be Row or Column
-    - [ ] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
-    - [ ] has member int greed - direction is implied by parent : if parent is Row, the Greedy child greed direction is horizontal, for Column it is vertical
-    - [-] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
+- [X] Add container Greedy, equivalent of Expanded with ratio
+  - [X] Greedy:
+    - [X] is offsetting
+    - [X] has a single child
+    - [X] parent must be Row or Column
+    - [X] does expand child in the direction of it's parent: if Row, horizontally, if Column, vertically 
+    - [X] has member int greed - direction is implied by parent : if parent is Row, the Greedy child greed direction is horizontal, for Column it is vertical
+    - [X] its parent (which should be Row or Column) should do in override of ~_post_IfNotLeaf_Offsetting_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~???: NO - WE NEED TO OVERRIDE IN ROW AND COLUMN, THE WHOLE newCoreLayout
       - [X] Row or Column need to override newCoreLayout completely
       - [X] Should separately process non-greedy first, greedy next
       - [X] children already have layoutSize, including Greedy child ?????
@@ -1761,30 +1757,33 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
       - [X] C: get the NonGreedy ~layoutSize~(s), and create a ~nonGreedyChildrenSize~ that envelopes the NonGreedy children, as if they were tightly layed out in the appropriate Column/Row direction
       - [X] C: create new constraints ~greedyChildrenRemainingConstraint~ which is a difference between self original constraint, and  nonGreedyChildrenSize
       - [X] C: Divide ~greedyChildrenRemainingConstraint~ into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
-      - [X] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ - recursively??? how recursively?? What is the preDescend for ???
-      - [ ] Greedy implementation
-        - [ ] newCoreLayout : what is different?
-        - [ ] pre-descend sets full constraints on immediate children as normal
-        - [ ] descend runs as normal, makes children make layoutSize available
-        - [ ] post-descend runs as normal - does 'layout self'
-          - [ ] what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!!!!!!!!!!!!!!!!!!!!!!*
-      - [ ] ~!!!!!!!Note: The single container wrapped in Greedy, when asked for layoutSize, returns it's layoutSize = constraint~ (the one acquired from ~greedyChildrenConstaints~ ??? *how do we do that* ???
-      - [ ] descend greedy - this should give greedy their layoutSize - *how????? we are not using constraints in any way!!! just return fixed on leaf, or calculated on Row and Column, and that does not use layout size!!!! WELL MAYBE THIS CAN WORK: WHEN ASKING GREEDY FOR LAYOUT SIZE, WE SIMPLY ANSWER IT'S NEWLY PROPORTIONALLY CREATED CONSTRAINT SIZE!!!*
-      - [ ] POST DESCEND ALL
-        - [ ] Do what we normally do: ~_postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();~. As we are in Row or Column, this will:
-          - [ ] use this row/column layouter to run the one-dim layout of children (greedy and non-greedy, they all have sizes already), use the one-dim layout converted to sizes to apply offsets as normally.
-          - [ ] so now all children are offset
-          - [ ] *set my size as envelope of children ??? how is that currently done???*
-          - [ ] check if my size is within constraints
-  - [ ] Change layout algorithm to process non-expanded first, GIVE EXPANDED RATIO OF remaining CONSTRAINT - THIS REQUIRES A NEW STEP
-  - [ ] Test on LegendContainer, by wrapping one or two short text LegendItemContainers into Greedy, they should eat up space despite being small.
-- [ ] Make sure Tests work
+      - [X] C: apply each greedyChild it's new  ~greedyChildrenConstaints~ 
+      - [X] Greedy implementation
+        - [X] newCoreLayout : what is different?
+        - [X] pre-descend sets full constraints on immediate children as normal
+        - [X] descend runs as normal, makes children make layoutSize available
+        - [X] post-descend runs as normal - does 'layout self'
+          - [X] what do we set THE GREEDY NODE layoutSize ~SET IT TO THE SIZE OF IT'S CONSTRAINT in main dimension, size of child in cross dimension.~
+      - [X] descend greedy - this should give greedy their layoutSize - *how????? we are not using constraints in any way!!! just return fixed on leaf, or calculated on Row and Column, and that does not use layout size!!!! WELL MAYBE THIS CAN WORK: WHEN ASKING GREEDY FOR LAYOUT SIZE, WE SIMPLY ANSWER IT'S NEWLY PROPORTIONALLY CREATED CONSTRAINT SIZE!!!*
+      - [X] POST DESCEND GREEDY
+        - [X] Do what we normally do: ~_postDescend_IfLeaf_Exception_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints();~. As we are in Row or Column, this will:
+          - [X] use this row/column layouter to run the one-dim layout of children (greedy and non-greedy, they all have sizes already), use the one-dim layout converted to sizes to apply offsets as normally.
+          - [X] so now all children are offset
+          - [X] *set my size as envelope of children ??? how is that currently done???*
+          - [X] check if my size is within constraints
+  - [X] Test on LegendContainer, by wrapping one or two short text LegendItemContainers into Greedy, they should eat up space despite being small.
+- [X] Make sure Tests work
+- [ ] Try to remove the default newCoreLayout in Rolling for Greedy, and always use the version with assuming existence of _greedy. If results the same, use it even if slower.
 - [ ] Support to show yellow and black rectangle on overflow:
   - [ ] Add an object on BoxContainer, with a Rectangle and a flag that would be set on overflows of sizes over offsets. 
   - [ ] Add some code, somehow,  Whereever we now check for layoutSize overflow constraints, set the object.
   - [ ] In top paint method, check for the flag and if true, paint a yellow/black rectangle there.
   - [ ] Add top paint method as super to all paint methods.
   - [ ] Test this on some forced layouts - *need to temporarlily revert the fix for nested layouts OR make one legend long!!*
+- [ ] Containers should have either single child or multiple children
+  - [ ] Add some way to throw exception if Container does not have intended amount
+  - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
+  - [ ] Add maxChildren overrides ad appropriate to each container
 - [ ] Make sure Tests work
 - [ ] Add PaddingLayouter that can be used around boxes to pad with space - no painting needed?
 - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be nested.

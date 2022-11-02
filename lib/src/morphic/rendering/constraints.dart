@@ -38,7 +38,7 @@ abstract class BoundingBoxesBase {
   BoundingBoxesBase.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
   // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
-  BoundingBoxesBase.unused() : this.exactBox(size: const Size(0.0, 0.0)); // todo-00-last-last : we should replace this with a null-like singleton : const Size(-1.0, -1.0));
+  BoundingBoxesBase.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoundingBoxesBase.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
@@ -127,7 +127,7 @@ abstract class BoundingBoxesBase {
 
   bool get isExact => minSize == maxSize;
 
-  bool get isInside => minSize.width < maxSize.width && minSize.height < maxSize.height;
+  bool get isInside => minSize.width <= maxSize.width && minSize.height <= maxSize.height;
 
   bool containsFully(Size size) {
     return size.width <= maxSize.width &&
@@ -135,29 +135,6 @@ abstract class BoundingBoxesBase {
         size.width >= minSize.width &&
         size.height >= minSize.height;
   }
-
-  /* todo-00-last : I am making assumption the greedy processing needs to be replaced,
-                             so ignore what is called here. Does that simplify move to non-offsetting?
-  Size maxSizeLeftAfterTakenFromAxisDirection(Size takenSize, LayoutAxis layoutAxis) {
-    if (!containsFully(takenSize)) {
-      throw StateError('This constraints $toString() does not fully contain takenSize=$takenSize');
-    }
-    Size size;
-    switch (layoutAxis) {
-      case LayoutAxis.horizontal:
-        // Make place right from takenSize. This should be layout specific, maybe
-        size = Size(maxSize.width - takenSize.width, maxSize.height);
-        assert(containsFully(size));
-        break;
-      case LayoutAxis.vertical:
-        // Make place below from takenSize. This should be layout specific, maybe
-        size = Size(maxSize.width, maxSize.height - takenSize.height);
-        assert(containsFully(size));
-        break;
-    }
-    return size;
-  }
-  */
 
   double maxLengthAlongAxis(LayoutAxis layoutAxis) {
     switch (layoutAxis) {
@@ -330,9 +307,9 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
-  // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
+  // todo-01-last : Add a singleton member unused(), initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
-  BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0)); // todo-00-last-last : we should replace this with a null-like singleton : this.exactBox(size: const Size(-1.0, -1.0));
+  BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions

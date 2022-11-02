@@ -137,8 +137,8 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
         ExamplesChartTypeEnum.verticalBarChart),
     //
-    //const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
-    //    ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
+        ExamplesChartTypeEnum.verticalBarChart),
 
     //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
