@@ -145,7 +145,7 @@ class LayedoutLengthsPositioner {
   late final double lengthsConstraint;
   late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
 
-  double totalLayedOutLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
+  double totalPositionedLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
   /// defined in member [lengthsPositionerProperties].
@@ -202,32 +202,32 @@ class LayedoutLengthsPositioner {
   ///
   ///
   ///
-  LayedOutLineSegments layoutLengths() {
-    LayedOutLineSegments layedOutLineSegments;
+  PositionedLineSegments layoutLengths() {
+    PositionedLineSegments positionedLineSegments;
     switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
-        layedOutLineSegments = LayedOutLineSegments(
+        positionedLineSegments = PositionedLineSegments(
           lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
-          totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
       case Packing.tight:
-        layedOutLineSegments = LayedOutLineSegments(
+        positionedLineSegments = PositionedLineSegments(
           lineSegments: _tightOrLooseLayoutAndMapLengthsToSegments(_tightLayoutLineSegmentFor),
-          totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
       case Packing.loose:
-        layedOutLineSegments = LayedOutLineSegments(
+        positionedLineSegments = PositionedLineSegments(
           lineSegments: _tightOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor),
-          totalLayedOutLengthIncludesPadding: totalLayedOutLengthIncludesPadding,
+          totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
     }
-    return layedOutLineSegments;
+    return positionedLineSegments;
   }
 
   double get _sumLengths => lengths.fold(0.0, (previousLength, length) => previousLength + length);
@@ -261,7 +261,7 @@ class LayedoutLengthsPositioner {
         end = freePadding + _maxLength;
         break;
     }
-    totalLayedOutLengthIncludesPadding = _maxLength + _freePadding;
+    totalPositionedLengthIncludesPadding = _maxLength + _freePadding;
 
     return util_dart.LineSegment(start, end);
   }
@@ -310,7 +310,7 @@ class LayedoutLengthsPositioner {
     double rightPad = startOffsetAndRightPad.item2;
     double start = startOffset + previousSegment.max;
     double end = startOffset + previousSegment.max + length;
-    totalLayedOutLengthIncludesPadding = end + rightPad;
+    totalPositionedLengthIncludesPadding = end + rightPad;
     return util_dart.LineSegment(start, end);
   }
 
@@ -378,10 +378,10 @@ class LayedoutLengthsPositioner {
 /// Note: on creation, it should be passed segments [lineSegments] already
 ///       layed out to their positions with [LayedoutLengthsPositioner]
 ///       and [totalLayedOutLengthIncludesPadding] calculated by [LayedoutLengthsPositioner.totalLayedOutLengthIncludesPadding].
-class LayedOutLineSegments {
-  const LayedOutLineSegments({
+class PositionedLineSegments {
+  const PositionedLineSegments({
     required this.lineSegments,
-    required this.totalLayedOutLengthIncludesPadding,
+    required this.totalPositionedLengthIncludesPadding,
     required this.isOverflown,
   });
 
@@ -389,7 +389,7 @@ class LayedOutLineSegments {
   /// Total length after layout that includes padding.
   ///
   /// If there is padding, this may be BEYOND max on last lineSegments
-  final double totalLayedOutLengthIncludesPadding;
+  final double totalPositionedLengthIncludesPadding;
   /// A marker that the process that lead to layout overflew it's original constraints given in
   /// [LayedoutLengthsPositioner.lengthsConstraint].
   ///
@@ -399,7 +399,7 @@ class LayedOutLineSegments {
   /// Envelope of the layed out [lineSegments].
   ///
   /// This will become the [BoxContainer.layoutSize] along the layout axis.
-  ui.Size get envelope => ui.Size(0.0, totalLayedOutLengthIncludesPadding);
+  ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
   /// Calculates length of all layed out [lineSegments].
   ///
@@ -410,13 +410,13 @@ class LayedOutLineSegments {
 
   @override
   bool operator ==(Object other) {
-    bool typeSame = other is LayedOutLineSegments && other.runtimeType == runtimeType;
+    bool typeSame = other is PositionedLineSegments && other.runtimeType == runtimeType;
     if (!typeSame) {
       return false;
     }
 
     // Dart knows other is LayedOutLineSegments, but for clarity:
-    LayedOutLineSegments otherSegment = other;
+    PositionedLineSegments otherSegment = other;
     if (lineSegments.length != otherSegment.lineSegments.length) {
       return false;
     }

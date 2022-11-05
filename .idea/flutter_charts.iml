@@ -25,6 +25,7 @@
       <excludeFolder url="file://$MODULE_DIR$/integration_test/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/integration_test/build" />
       <excludeFolder url="file://$MODULE_DIR$/android/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/.emacs.d" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 33, extension level 3 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

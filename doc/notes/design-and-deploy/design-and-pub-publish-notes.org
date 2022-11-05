@@ -1605,7 +1605,7 @@ What are those?
   - [X] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
     - [X] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~
       - [X] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~:
-        1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting~ called in ~newCoreLayout isRoot~ condition - MOVE THIS
+        1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonOffsetting~ called in ~newCoreLayout isRoot~ condition - MOVE THIS
         2. ~mainAxisLayoutProperties~ MEMBER - MOVE THIS
         3. ~_rebuildMainAxisLayoutPropertiesAs~ - MOVE THIS
         4. ~_ifNotLeaf_And_Greedy_calcChildrenLayoutSizeAccordingToLayouter~ called IN - ONLY CALLS OTHER METHOD
@@ -1615,7 +1615,7 @@ What are those?
         6. ~_ifNotLeaf_OffsetChildren_Then_SetSizeFromChildren~- ONLY CALLS OTHTER METHODS
         7. ~_ifNotLeaf_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~ -  MOVE THIS
       - [X] Call hierarchy of the methods YYY
-        1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting~ IN
+        1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonOffsetting~ IN
            - ~newCoreLayout~ 
         2. ~mainAxisLayoutProperties~ MEMBER
         3. ~_rebuildMainAxisLayoutPropertiesAs~ 
@@ -1634,7 +1634,7 @@ What are those?
              - ~_postDescend_IfLeaf_SetMySize_NotLeaf_OffsetImmediateChildrenInMe_ThenSetMySize_Finally_CheckIfMySizeWithinConstraints~
                - ~newCoreLayout~
       - *YYY METHODS, ARE DIRECTLY TIED TO ROW OR COLUMN LAYOUT OR crossAxisLayoutProperties* ~AND NEED TO MOVE TO RollingOffsettingBoxLayouter~ ????
-        - ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_Non_Offsetting~
+        - ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonOffsetting~
         - ~mainAxisLayoutProperties~
         - ~_rebuildMainAxisLayoutPropertiesAs~ 
         - ~ifNotLeaf_LayoutMyChildren_Then_OffsetChildrenInMe_AccordingToLayouter~ (USES _MainAndCrossLayedOutSegments)
@@ -1651,7 +1651,7 @@ What are those?
   - [X] *In the end, there should be nothing related to ~main/crossAxisLayoutProperties, Row, Column~ in BoxLayouter or BoxContainer*
   - [X] Make sure Tests work
   - [X] commit and push
-- [X] Rename Lineup to Align
+- [X] Rename Align to Align
 - [X] Rename Packing.snap to Packing.tight
 - [X] Make sure Tests work
 - [X] from newCoreLayout, pull the whole root processing into a method, so it can be used in overrides. The root processing should generally be same for all containers
@@ -1729,12 +1729,9 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 *Important current*
 
-- [ ] Containers should have either single child or multiple children
-  - [ ] Add some way to throw exception if Container does not have intended amount
-  - [ ] Maybe add a overridable method maxChildren, values either 1 or infinity
-  - [ ] Or just change allowed signature on single-child constructors.
-  - [ ] Add maxChildren overrides ad appropriate to each container
-- [ ] Make sure Tests work
+- [X] Containers should have either single child or multiple children
+  - [X] Or just change allowed signature on single-child constructors - use ~child: child~ (only Greedy at this time. Extensions of BoxContainer should follow when all old code is converted)
+- [X] Make sure Tests work
 - [ ] Add PaddingLayouter that can be used around single child to pad with space - no painting needed?
   - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
   - [ ] Test work

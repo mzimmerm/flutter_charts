@@ -19,7 +19,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, Greedy, RowLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -1252,30 +1252,30 @@ class LegendItemContainer extends BoxContainer {
       // **ELSE* the values are irrelevant, will be replaced with Align.start, Packing.tight.
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         return RowLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
         // default for legend column : Item row is top, so is NOT overridden, so must be set to intended!
         return RowLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         return RowLayouter(
-            mainAxisLineup: Align.end,
+            mainAxisAlign: Align.end,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
         return RowLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
       // default for legend row : desired and tested
         return RowLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
     }
@@ -1335,7 +1335,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
   ///       );
   ///    ```
   @override
-  void post_Leaf_SetSizeFromInternals() {
+  void post_Leaf_SetSize_FromInternals() {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
@@ -1433,34 +1433,34 @@ class LegendContainer extends ChartAreaContainer {
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         return ColumnLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
         // default for legend column
         return ColumnLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
         return RowLayouter(
-            mainAxisLineup: Align.center,
+            mainAxisAlign: Align.center,
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
         return RowLayouter(
-            mainAxisLineup: Align.start,
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        // wrap second item to greedy
-        children[1] = Greedy(children: [children[1]]);
+        // wrap second item to GreedyLayouter to test GreedyLayouter layout
+        children[1] = GreedyLayouter(child: children[1]);
         return RowLayouter(
-            // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside Greedy
-            //       remains start + tight. That make sense, as Greedy is non-offsetting.
-            //       If we wanted to center the LegendItem inside of Greedy, wrap the inside into Center.
-            mainAxisLineup: Align.start,
+            // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside GreedyLayouter
+            //       remains start + tight. That make sense, as GreedyLayouter is non-positioning.
+            //       If we wanted to center the LegendItem inside of GreedyLayouter, wrap the inside into Center.
+            mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);
     }
@@ -1557,22 +1557,22 @@ class StackableValuePoint {
 
   /// The position in the topContainer, through the PointsColumns hierarchy.
   /// Not actually scaled (because it does not represent any X data), just
-  /// always moved by offsetting by [applyParentOffset].
+  /// always moved by positioning by [applyParentOffset].
   double scaledX = 0.0;
 
   /// The position in the topContainer, representing the scaled value of [dataY].
   /// Initially scaled to available pixels on the Y axis,
-  /// then moved by offsetting by [applyParentOffset].
+  /// then moved by positioning by [applyParentOffset].
   double scaledY = 0.0;
 
   /// The position in the top container, representing the scaled value of [fromY].
   /// Initially created as `yLabelsCreator.scaleY(value: fromY)`,
-  /// then moved by offsetting by [applyParentOffset].
+  /// then moved by positioning by [applyParentOffset].
   double scaledFromY = 0.0;
 
   /// The position in the top container, representing the scaled value of [toY].
   /// Initially created as `yAxisdY = yLabelsCreator.scaleY(value: toY);`,
-  /// then moved by offsetting by [applyParentOffset].
+  /// then moved by positioning by [applyParentOffset].
   double scaledToY = 0.0;
 
   /// The [scaledFrom] and [scaledTo] are the scaled Offsets for painting in absolute chart coordinates.
