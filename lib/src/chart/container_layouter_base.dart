@@ -63,6 +63,7 @@ mixin BoxContainerHierarchy {
 }
 
 // todo-01-document as interface for [BoxLayouter] and [BoxContainer].
+// todo-00 : Why do we really need this? For use in places where a box only has layoutSize, but no children etc? For positioning in parent??
 abstract class LayoutableBox {
   /// Size after the box has been layed out.
   ///
@@ -73,6 +74,10 @@ abstract class LayoutableBox {
   /// Important note: [layoutSize] is not set by parent, but it is accessed (get) by parent.
   ///                So maybe setter could be here, getter also here
   ui.Size layoutSize = ui.Size.zero;
+
+  // todo-00-last : moved here as interface to BoxLayouter
+  ui.Offset get offset => const ui.Offset(0.0, 0.0);
+
 
   void applyParentOffset(BoxLayouter caller, ui.Offset offset);
 
@@ -113,41 +118,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Manages the layout size, the result of [newCoreLayout].
   ///
-  /// Set late in [newCoreLayout], once the layout size is known after all children were layoed out.
+  /// Set late in [newCoreLayout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
+  // todo-00-last : is this override needed?
   @override
   late final ui.Size layoutSize;
-
-  // orderedSkip ---
-  bool _orderedSkip = false; // want to be late final but would have to always init.
-
-  /// [orderedSkip] is set by parent; instructs this container that it should not be
-  /// painted or layed out - as if it collapsed to zero size.
-  ///
-  /// When set to true, implementations must add appropriate support for collapse.
-  bool get orderedSkip => _orderedSkip;
-
-  /// Set private member [_orderedSkip] with assert that caller is parent
-  ///
-  /// todo-00-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
-  @override
-  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
-    _assertCallerIsParent(caller);
-    _orderedSkip = orderedSkip;
-  }
-
-  // constraints ---
-  /// Constraints set by parent.
-  late final BoxContainerConstraints _constraints;
-
-  BoxContainerConstraints get constraints => _constraints;
-
-  /// Set private member [_constraints] with assert that the caller is parent
-  @override
-  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
-    _assertCallerIsParent(caller);
-    _constraints = constraints;
-  }
 
   // offset ---
   ui.Offset _offset = ui.Offset.zero;
@@ -160,6 +135,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// It is a sum of all offsets passed in subsequent calls
   /// to [applyParentOffset] during object lifetime.
+  @override
   ui.Offset get offset => _offset;
 
   /// Allows a parent container to move this container after [layout].
@@ -193,6 +169,37 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     for (var child in children) {
       child.applyParentOffset(this, offset);
     }
+  }
+
+  // orderedSkip ---
+  bool _orderedSkip = false; // want to be late final but would have to always init.
+
+  /// [orderedSkip] is set by parent; instructs this container that it should not be
+  /// painted or layed out - as if it collapsed to zero size.
+  ///
+  /// When set to true, implementations must add appropriate support for collapse.
+  bool get orderedSkip => _orderedSkip;
+
+  /// Set private member [_orderedSkip] with assert that caller is parent
+  ///
+  /// todo-00-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  @override
+  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
+    _assertCallerIsParent(caller);
+    _orderedSkip = orderedSkip;
+  }
+
+  // constraints ---
+  /// Constraints set by parent.
+  late final BoxContainerConstraints _constraints;
+
+  BoxContainerConstraints get constraints => _constraints;
+
+  /// Set private member [_constraints] with assert that the caller is parent
+  @override
+  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
+    _assertCallerIsParent(caller);
+    _constraints = constraints;
   }
 
   /// If size constraints imposed by parent are too tight,
@@ -390,14 +397,21 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
     // Apply the calculated layedOutRectsInMe as offsets on children.
     _post_NotLeaf_OffsetChildren(positionedRectsInMe, children);
-    // Finally, whe all children are at the right offsets within me,
-    // set the layoutSize on me - the size of envelope rectangle of all children rectangles in me.
+    // Finally, when all children are at the right offsets within me, invoke
+    // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the layoutSize on me.
+    //
+    // My [layoutSize] CAN be calculated using one of two equivalent methods:
+    //   1. Query all my children for offsets and sizes, create each child rectangle,
+    //      then create bounding rectangle from them.
+    //   2. Use the previously created [positionedRectsInMe], which is each child rectangle,
+    //      then create bounding rectangle of [positionedRectsInMe].
+    // In [_post_NotLeaf_SetSize_FromPositionedChildren] we use method 2, but assert sameness between them
     // todo-00-last-last-last : try to pass positionedChildrenRects, and change implementations
     //                          to use that instead of quering child positions.
     //                          this opens some interesting asserts, that the results from children must agree
     //                          also rename to  _post_NotLeaf_SetSize_FromChildrenPositionedRects
     // must do tests before / after
-    _post_NotLeaf_SetSize_FromPositionedChildren();
+    _post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
   }
 
   /// [_post_NotLeaf_PositionChildren] is a core method of the default [newCoreLayout]
@@ -444,6 +458,56 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
   void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
 
+  /// The responsibility of [_post_NotLeaf_SetSize_FromPositionedChildren]
+  /// is to set the [layoutSize] of self.
+  ///
+  /// In the default [newCoreLayout], at invocation time,
+  /// all children have their [layoutSize]s and [offset]s set.
+  ///
+  /// The [layoutSize] in this default implementation is set
+  /// to the size of "bounding rectangle of all positioned children".
+  /// This "bounding rectangle of all positioned children" is calculated from the passed [positionedChildrenRects],
+  /// which is the result of preceding invocation of [_post_NotLeaf_PositionChildren].
+  ///
+  /// The bounding rectangle of all positioned children, is calculated by [util_flutter.boundingRectOfRects].
+  ///
+  /// Note:  My [layoutSize] CAN be calculated using one of two equivalent methods:
+  ///        1. Query all my children for offsets and sizes, create each child rectangle,
+  ///           then create bounding rectangle from them.
+  ///        2. Use the previously created [positionedRectsInMe], which is each child rectangle,
+  ///           then create bounding rectangle of [positionedRectsInMe].
+  ///        We use method 2, but assert sameness between them
+  ///
+  /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  ///   -  Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
+  ///      Overriding extensions include layouts which do padding,
+  ///      or otherwise increase their sizes, such as [GreedyLayouter].
+  ///
+  /// todo-00-last-last-last : Add parameter List<ui.Rect> positionedChildrenRects the result of from [_post_NotLeaf_PositionChildren]
+  ///                          and change implementation
+  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+    assert(!isLeaf);
+    // todo-00-last-last-last : After changing the imlemention (Rect of children used), keep this code
+    //                            but add assert that the childrenOuterRectangle.size matches the passed rect.size.
+    //                          ALSO, childrenOuterRectangle.offset must be positionedChildrenRects.offset .
+
+    ui.Rect positionedChildrenOuterRects =  util_flutter
+        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
+    ui.Rect childrenOuterRectangle = util_flutter
+        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size); // todo-00-last-last-last : folse for column :
+
+    layoutSize = positionedChildrenOuterRects.size;
+  }
+
+  void _post_NotLeaf_SetSize_FromPositionedChildren_OLD() {
+    assert(!isLeaf);
+    ui.Rect childrenOuterRectangle = util_flutter
+        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+    layoutSize = childrenOuterRectangle.size;
+  }
+
   /// Leaf [BoxLayouter] extensions should override and set [layoutSize].
   ///
   /// Throws exception if sent to non-leaf, or sent to a leaf
@@ -467,36 +531,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       //throw StateError(errText);
     }
 
-  }
-
-  /// The responsibility of [_post_NotLeaf_SetSize_FromPositionedChildren]
-  /// is to set the [layoutSize] of self.
-  ///
-  /// It is called during the default [newCoreLayout] when all children
-  /// have been layed out AND positioned in self.
-  ///
-  /// At invocation time, all children have their [offset] and [layoutSize] set.
-  ///
-  /// THis default implementation uses the children [offset]s and [layoutSize]s to create all children bounding rectangle
-  /// using [util_flutter.boundingRectOfRects]; it's size portion becomes the [layoutSize] of this layouter.
-  ///
-  /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
-  ///   -  Override on non-leafs if self needs to set layoutSize bigger than the outer rectangle of children.
-  ///      This includes layouts which do padding, or otherwise increase their sizes, such as [GreedyLayouter].
-  ///
-  /// todo-00-last-last-last : Add parameter List<ui.Rect> positionedChildrenRects the result of from [_post_NotLeaf_PositionChildren]
-  ///                          and change implementation
-  void _post_NotLeaf_SetSize_FromPositionedChildren() {
-    assert(!isLeaf);
-    // todo-00-last-last-last : After changing the imlemention (Rect of children used), keep this code
-    //                            but add assert that the childrenOuterRectangle.size matches the passed rect.size.
-    //                          ALSO, childrenOuterRectangle.offset must be positionedChildrenRects.offset .
-    ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    // todo-00-note-only : here, childrenOuterRectangle can be way to the right, out of screen (L=300, R=374)
-    //                          we need to check against constraints on root which should be available size for app.
-    //                          _check_IfMySizeFit_WithinConstraints does not help, as size is OK!
-    layoutSize = childrenOuterRectangle.size;
   }
 
   /// Bounding rectangle of this [BoxLayouter].
@@ -586,7 +620,9 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     // todo-00-last : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
-    return [];
+    // todo-00-last-last return [];
+    // This is a no-op because it does not change children positions from where they are at their current offsets.
+    return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 
   /// Implementation of the abstract default [_post_NotLeaf_OffsetChildren]
@@ -715,7 +751,9 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// Does not need to calculate position of children in self, as it will not apply offsets anyway.
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    return [];
+    // todo-00-last-last return [];
+    // This is a no-op because it does not change children positions from where they are at their current offsets.
+    return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 }
 
@@ -919,7 +957,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
             ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
       case LayoutAxis.vertical:
         return ui.Offset(crossSegment.min, mainSegment.min) &
-            ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+            // todo-00-last-last-last : fixed : ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+        ui.Size(crossSegment.max - crossSegment.min, mainSegment.max - mainSegment.min);
     }
   }
 
@@ -1073,12 +1112,14 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
       layoutAxis: crossLayoutAxis,
       axisLayoutProperties: crossAxisLayoutProperties,
-      // todo-00-later : If we use, instead of 0.0,
+      // todo-00-last-last-last : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
       //                 Probably need to address when the whole chart is layed out using the new layouter.
-      lengthsConstraintAlongLayoutAxis: 0.0,
+      //                 The 0.0 forces that in the cross-direction (horizontal or vertical),
+      //                 we provide zero length constraint, so no length padding.
+      lengthsConstraintAlongLayoutAxis:  0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis), // 0.0,
       children: children,
     );
 
@@ -1164,20 +1205,28 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
 
   /// Override a standard hook in [newCoreLayout] which sets the layout size.
   ///
-  // todo-00-last-last-last : in this GreedyLayouter, move this code to
+  /// The set [layoutSize] of Greedy is not the default outer rectangle of children,
+  /// instead, it is the full constraint side along the greedy axis,
+  /// and children side along the cross-greedy axis
   @override
-  void _post_NotLeaf_SetSize_FromPositionedChildren() {
+  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
     // The GreedyLayouter layoutSize should be:
-    //  - In the main axis direction (of it's parent), the constraint size of self
-    //    This is because children can be smaller, even if wrapped in GreedyLayouter, but
-    //    GreedyLayouter should still expand in the main direction to it's allowed maximum
+    //  - In the main axis direction (of it's parent), the constraint size of self,
+    //    NOT the bounding rectangle of children.
+    //    This is because children can be smaller, even if wrapped in GreedyLayouter,
+    //    bu this GreedyLayouter should still expand in the main direction to it's allowed maximum.
     //  - In the cross-axis direction, take on the layout size of children outer rectangle, as
-    //    ih the default implementation
+    //    ih the default implementation.
+    ui.Rect positionedChildrenOuterRects =  util_flutter
+        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
         .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
+
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis
-    ui.Size childrenLayoutSize = childrenOuterRectangle.size; // use the portion of this size along cross axis
+    ui.Size childrenLayoutSize = positionedChildrenOuterRects.size; // use the portion of this size along cross axis
 
     if (parent is! RollingPositioningBoxLayouter) {
       throw StateError('Parent of this GreedyLayouter container "$this" must be '
@@ -1186,7 +1235,8 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
     RollingPositioningBoxLayouter p = (parent as RollingPositioningBoxLayouter);
     ui.Size size = _greedySizeAlongGreedyAxis(p.mainLayoutAxis, greedySize, childrenLayoutSize);
 
-    // Set the layout size as the full constraint side along greedy axis, and children side along cross-greedy axis
+    // Set the layout size as the full constraint side along the greedy axis,
+    // and children side along the cross-greedy axis
     layoutSize = size;
   }
 
@@ -1237,8 +1287,10 @@ class PaddingLayouter extends PositioningBoxLayouter {
   }
 
   @override
-  void _post_NotLeaf_SetSize_FromPositionedChildren() {
-
+  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+    // todo-00-last-last
+    // Take the passed, create outer rectangle size, and expandBy EdgePaddings
+    // todo-00-last-last: We need extension on Size, PaddableSize,
   }
 
 

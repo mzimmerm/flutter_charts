@@ -390,7 +390,7 @@
         <entry key="shelf_web_socket">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.2/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.3/lib" />
             </list>
           </value>
         </entry>
@@ -608,7 +608,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf-1.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-3.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_static-1.1.1/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.11/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_span-1.9.0/lib" />
