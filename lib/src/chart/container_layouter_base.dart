@@ -74,11 +74,10 @@ abstract class LayoutableBox {
   /// todo-01-last
   /// Important note: [layoutSize] is not set by parent, but it is accessed (get) by parent.
   ///                So maybe setter could be here, getter also here
-  ui.Size layoutSize = ui.Size.zero;
+  ui.Size get layoutSize; //  => ui.Size.zero;
 
   // todo-00-last : moved here as interface to BoxLayouter
-  ui.Offset get offset => const ui.Offset(0.0, 0.0);
-
+  ui.Offset get offset; //  => const ui.Offset(0.0, 0.0);
 
   void applyParentOffset(BoxLayouter caller, ui.Offset offset);
 
