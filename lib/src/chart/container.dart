@@ -20,7 +20,7 @@ import 'options.dart';
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, PaddingLayouter, RowLayouter;
+    show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, LayoutableBox, PaddingLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -523,7 +523,7 @@ class YContainer extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
@@ -708,7 +708,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
       return;
     }
@@ -970,7 +970,7 @@ abstract class DataContainer extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
     // Move all container atomic elements - lines, labels, circles etc
@@ -1181,7 +1181,7 @@ class GridLinesContainer extends BoxContainer {
 
   /// Overridden from super. Applies offset on all members.
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.applyParentOffset(this, offset);
     }
@@ -1684,7 +1684,7 @@ class StackableValuePoint {
     return this;
   }
 
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
     // not needed to offset : StackableValuePoint predecessorPoint;
@@ -1827,7 +1827,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// True if chart type presents values stacked.
   final bool _isStacked;
 
-  final BoxLayouter _caller;
+  final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [ChartData.dataRows] values in
   /// the passed [ChartRootContainer.data].
@@ -1835,7 +1835,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required this.chartRootContainer,
     required PresenterCreator presenterCreator,
     required bool isStacked,
-    required BoxLayouter caller,
+    required LayoutableBox caller,
   }) : _isStacked = isStacked,
   _caller = caller
   {
@@ -1926,7 +1926,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
   }
 
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         point.applyParentOffset(_caller, offset);

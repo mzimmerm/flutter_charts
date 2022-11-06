@@ -79,11 +79,11 @@ abstract class LayoutableBox {
   // todo-00-last : moved here as interface to BoxLayouter
   ui.Offset get offset; //  => const ui.Offset(0.0, 0.0);
 
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset);
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
-  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip);
+  void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
-  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints);
+  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
   void newCoreLayout();
 }
@@ -159,7 +159,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///           (see [LabelContainer.paint].
   ///
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     _assertCallerIsParent(caller);
 
     if (orderedSkip) return;
@@ -184,7 +184,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// todo-00-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
-  void applyParentOrderedSkip(BoxLayouter caller, bool orderedSkip) {
+  void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
     _assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
@@ -197,7 +197,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Set private member [_constraints] with assert that the caller is parent
   @override
-  void applyParentConstraints(BoxLayouter caller, BoxContainerConstraints constraints) {
+  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     _assertCallerIsParent(caller);
     _constraints = constraints;
   }
@@ -237,7 +237,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Sandbox-type helper field : none so far
 
   // ------------------------------------------------------------------------------------------------------------------------
-  void _assertCallerIsParent(BoxLayouter caller) {
+  void _assertCallerIsParent(LayoutableBox caller) {
     if (parent != null) {
       if (!identical(caller, parent)) {
         throw StateError('on this $this, parent $parent should be == to caller $caller');
@@ -349,7 +349,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     may 'divide' it's constraints evenly or unevenly to children, passing each
   ///     a fraction of it's constraint.
   ///
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<BoxContainer> children) {
+  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     // todo-00-later : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
     for (var child in children) {
       child.applyParentConstraints(this, constraints);
@@ -845,7 +845,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   List<GreedyLayouter> get _greedyChildren => children.whereType<GreedyLayouter>().toList();
 
-  List<BoxContainer> get _nonGreedyChildren {
+  List<LayoutableBox> get _nonGreedyChildren {
     List<BoxContainer> nonGreedy = List.from(children);
     nonGreedy.removeWhere((var child) => child is GreedyLayouter);
     return nonGreedy;
@@ -1279,7 +1279,7 @@ class PaddingLayouter extends PositioningBoxLayouter {
   /// (which will be added back onto self layoutSize).
   /// This ensures padded child will fit in self constraints.
   @override
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<BoxContainer> children) {
+  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     children[0].applyParentConstraints(this, constraints.deflateByPadding(edgePadding));
   }
 

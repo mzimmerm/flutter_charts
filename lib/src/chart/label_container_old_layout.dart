@@ -136,7 +136,7 @@ class LabelContainerOriginalKeep extends BoxContainer {
   //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint.
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
     // todo-01-morph : This should be part of new method 'findPosition' in the layout process

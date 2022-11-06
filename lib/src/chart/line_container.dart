@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
@@ -34,7 +34,7 @@ class LineContainer extends BoxContainer {
 
   /// Override method in superclass [Container].
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
     lineFrom += offset;
     lineTo += offset;

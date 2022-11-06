@@ -91,7 +91,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
   }
 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
@@ -227,7 +227,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   }
 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (orderedSkip) return;
 
     super.applyParentOffset(caller, offset);

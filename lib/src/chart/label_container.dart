@@ -6,7 +6,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
+import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
@@ -167,7 +167,7 @@ class LabelContainer extends BoxContainer {
   //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset 
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint. 
   @override
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
     // todo-01-morph : This should be part of new method 'findPosition' in the layout process

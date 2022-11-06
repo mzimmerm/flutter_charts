@@ -41,7 +41,7 @@ abstract class ContainerOld {
   ///
   /// Override if parent move needs to propagate to internals of
   /// this [BoxContainer].
-  void applyParentOffset(BoxLayouter caller, ui.Offset offset) {
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     this.offset += offset;
   }
 

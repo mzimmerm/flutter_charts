@@ -1732,11 +1732,22 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Containers should have either single child or multiple children
   - [X] Or just change allowed signature on single-child constructors - use ~child: child~ (only Greedy at this time. Extensions of BoxContainer should follow when all old code is converted)
 - [X] Make sure Tests work
-- [ ] Add PaddingLayouter that can be used around single child to pad with space - no painting needed?
-  - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
-  - [ ] Test work
-- [ ] Add CenterLayouter that centers single child - no painting needed?
-  - [ ] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
+- [X] Add PaddingLayouter that can be used around single child to pad with space - no painting needed
+  - [X] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
+  - [X] Test work
+- [ ] Add CenterLayouter that centers single child - no painting needed
+  - [ ] Extends Positioning
+  - [ ] Constructor is one-child, plus 2 optional arguments childWidthMultiple and childHeightMultiple.
+  - [ ] If multiple along axis not set
+    - [ ] pass self constraint to child, default
+    - [ ] Child position is set in the middle of self constraint (may overflow of course)
+    - [ ] self layoutSize is set to self constraint size
+  - [ ] If multiple along axis is set
+    - [ ] pass self constraint to child, default
+    - [ ] child position is set in the middle of to width from child's layuoutSize multiplied by Multiple - returned Rect 
+    - [ ] offset child as default
+    - [ ] self layout size is child layoutSize multiplied by multiple in the appropriate direction
+  - [ ] Use CenterLayouter in Legend and LegendItemContainer to make sure they are usable.
   - [ ] Test work
 
 ** TODO-NEXT 6. REST Containers 1. : ~First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
