@@ -64,7 +64,11 @@ extension RectExtension on ui.Rect {
     return intersection == this;
   }
 
-  // todo-00-document
+  /// If [other] intersects with self, returns the intersect, otherwise, moves [other]
+  /// towards self in the closest direction, so they overlap at least by [widthIntersect] logical
+  /// pixels, and returns the intersect.
+  ///
+  /// Used to show overlapping / protruding portion of the layout.
   ui.Rect closestIntersectWith(ui.Rect other) {
     // todo-02 : if other contains this, and is just bigger,
     //           we want to return only some piece in the direction where other overflows this.

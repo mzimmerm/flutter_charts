@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 
 /// Edge padding for the PaddingLayouter
 class EdgePadding  {

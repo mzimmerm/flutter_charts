@@ -1735,25 +1735,28 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Add PaddingLayouter that can be used around single child to pad with space - no painting needed
   - [X] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
   - [X] Test work
-- [ ] Add CenterLayouter that centers single child - no painting needed
-  - [ ] Extends Positioning
-  - [ ] Constructor is one-child, plus 2 optional arguments childWidthMultiple and childHeightMultiple.
+- [ ] Rename PaddingLayouter to Padding
+- [ ] Add Aligner, a Layouter that centers single child - no painting needed
+  - [ ] Extends Positioning layouter
+  - [ ] Constructor is one-child, plus 2 optional arguments childWidthMultiple and childHeightMultiple + Alignment new class that defines Alignment.topRight, Alignment.topLeft, Alignment.bottomLeft, Alignment.bottomLeft, Alignment.Center 
   - [ ] If multiple along axis not set
     - [ ] pass self constraint to child, default
-    - [ ] Child position is set in the middle of self constraint (may overflow of course)
+    - [ ] Child position is set in the middle of self constraint (may overflow of course). This uses the 
     - [ ] self layoutSize is set to self constraint size
   - [ ] If multiple along axis is set
     - [ ] pass self constraint to child, default
     - [ ] child position is set in the middle of to width from child's layuoutSize multiplied by Multiple - returned Rect 
     - [ ] offset child as default
     - [ ] self layout size is child layoutSize multiplied by multiple in the appropriate direction
-  - [ ] Use CenterLayouter in Legend and LegendItemContainer to make sure they are usable.
+  - [ ] Use AlignerLayouter in Legend and LegendItemContainer to make sure they are usable.
   - [ ] Test work
 
-** TODO-NEXT 6. REST Containers 1. : ~First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
+** TODO-NEXT 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter. 
+
+*** TODO Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
 *** TODO Ensure code sets up the parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
@@ -1781,10 +1784,9 @@ The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer pare
 
 1. Use options and the available passed ~boxConstraints~ to manually divide space between children. The division results in 2 things for each child 
    1.1 The ~sizeOfChild~  = boxConstraints size divided into number oof children
-   1.2 The ~offsetOfhild~ = sizeOfChild * indexOfChild in children array
+   1.2 The ~offsetOfChild~ = sizeOfChild * indexOfChild in children array
 2. children size one-by-one loop:
-   - 2.0. create new ~childBoxConstraints~ object from ~sizeOfChild~,
-the manually divided and allocated space for the child
+   - 2.0 create new ~childBoxConstraints~ object from ~sizeOfChild~, the manually divided and allocated space for the child
    - 2.1 create new ~child~
    - 2.2 call ~child.layout(childBoxConstraints, this);~
    - 2.3 call ~child.applyParentOffset(offsetOfChild)~

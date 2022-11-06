@@ -6,7 +6,7 @@ import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
+import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 

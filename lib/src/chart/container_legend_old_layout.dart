@@ -7,7 +7,7 @@ import 'container.dart';
 import 'label_container.dart';
 import 'options.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter;
+import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
 import 'label_container_old_layout.dart' show LabelContainerOriginalKeep;
 
 class LegendContainerOriginalKeep extends ChartAreaContainer {

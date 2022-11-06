@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui' show Offset, Rect, Size;
 
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
@@ -238,25 +237,6 @@ abstract class BoundingBoxesBase {
         return [clone()];
     }
   }
-
-/* todo-00-last-last-last
-  Tuple4<double, double, double, double> _deflateBySize(Size size) {
-    // Smaller constraint, on both min and max portions, by the passed size
-    double maxWidth = maxSize.width - size.width;
-    double maxHeight = maxSize.height - size.height;
-    double minWidth = minSize.width - size.width;
-    double minHeight = minSize.height - size.height;
-
-    // Allow to collapse minSize to zero
-    minWidth = minWidth < 0.0 ? 0.0 : minWidth;
-    minHeight = minHeight < 0.0 ? 0.0 : minHeight;
-
-    if (maxWidth < 0.0 || maxHeight < 0.0 || minWidth < 0.0 || minHeight < 0.0) {
-      throw StateError('Cannot subtract from this bounding box $this a size $size which is larger in some direction');
-    }
-    return Tuple4(minWidth, minHeight, maxWidth, maxHeight);
-  }
-*/
 
   Tuple2<Size, Size> _deflateBySize(Size size) {
     // Smaller constraint, on both min and max portions, by the passed size

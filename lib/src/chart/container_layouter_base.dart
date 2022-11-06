@@ -63,21 +63,30 @@ mixin BoxContainerHierarchy {
   }
 }
 
-// todo-01-document as interface for [BoxLayouter] and [BoxContainer].
-// todo-00 : Why do we really need this? For use in places where a box only has layoutSize, but no children etc? For positioning in parent??
+/// Interface common to [BoxLayouter] and [BoxContainer].
+///
+/// Used in methods that operate on [BoxLayouter] or [BoxContainer], but only require
+/// a narrower interface which exposes query for [layoutSize] and [offset],
+/// and applying several properties by parent. The apply methods in their names
+/// describe those properties should only be invoked
+/// in context of [BoxLayouter] or [BoxContainer] by a parent invoker.
+///
+/// Such use hides the extended role of [BoxLayouter] or [BoxContainer]
+/// hierarchy, (getting children, parents, etc),
+/// and points out only what is needed to position a list of [LayoutableBox]s
+/// by another [LayoutableBox].
+
 abstract class LayoutableBox {
   /// Size after the box has been layed out.
   ///
   /// Each [BoxContainer] node method [newCoreLayout] must be able to set this [layoutSize]
   ///    on itself after all children were layed out.
   ///
-  /// todo-01-last
   /// Important note: [layoutSize] is not set by parent, but it is accessed (get) by parent.
   ///                So maybe setter could be here, getter also here
-  ui.Size get layoutSize; //  => ui.Size.zero;
+  ui.Size get layoutSize;
 
-  // todo-00-last : moved here as interface to BoxLayouter
-  ui.Offset get offset; //  => const ui.Offset(0.0, 0.0);
+  ui.Offset get offset;
 
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
@@ -120,7 +129,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// Set late in [newCoreLayout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
-  // todo-00-last : is this override needed?
   @override
   late final ui.Size layoutSize;
 
@@ -182,7 +190,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Set private member [_orderedSkip] with assert that caller is parent
   ///
-  /// todo-00-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  /// todo-011-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
     _assertCallerIsParent(caller);
@@ -350,7 +358,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     a fraction of it's constraint.
   ///
   void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
-    // todo-00-later : not yet : wait for expand=false as default : crossAxisLayoutProperties.totalLength = constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis));
     for (var child in children) {
       child.applyParentConstraints(this, constraints);
     }
@@ -614,7 +621,7 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   ///
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-00 : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
+    // todo-011 : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
     // This is a no-op because it does not change children positions from where they are at their current offsets.
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
@@ -786,7 +793,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   // isLayout should be implemented differently on layouter and container. But it's not really needed
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
-  // todo-00-last : these should be private so noone overrides their 'packing: Packing.tight, align: Align.start'
+  // todo-011 : these could be private so noone overrides their 'packing: Packing.tight, align: Align.start'
   LengthsPositionerProperties mainAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
   LengthsPositionerProperties crossAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
 
@@ -1107,7 +1114,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
       layoutAxis: crossLayoutAxis,
       axisLayoutProperties: crossAxisLayoutProperties,
-      // todo-00 : Investigate : If we use, instead of 0.0,
+      // todo-011 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart

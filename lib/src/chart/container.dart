@@ -20,7 +20,7 @@ import 'options.dart';
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, LayoutableBox, PaddingLayouter, RowLayouter;
+    show BoxContainer, ColumnLayouter, GreedyLayouter, LayoutableBox, PaddingLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -376,6 +376,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
+// todo-00 : start here, move to new layout and test.
 class YContainer extends ChartAreaContainer {
   /// Containers of Y labels.
   ///
@@ -412,7 +413,6 @@ class YContainer extends ChartAreaContainer {
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer
     //   coordinates.
-    // todo 0-layout: layoutExpansion - max of yLabel height, and the 2 paddings
 
     // todo 0-layout flip Min and Max and find a place which reverses
     // Note: axisYMin > axisYMax ALWAYS.
@@ -435,6 +435,7 @@ class YContainer extends ChartAreaContainer {
       return;
     }
 
+    // todo-00 : this creates the ylabels - so this should be moved to the build method.
     _createLabelsAndLayoutThisContainerWithLabels(axisYMin, axisYMax);
 
     double yLabelsContainerWidth =
