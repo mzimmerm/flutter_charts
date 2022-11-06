@@ -475,7 +475,14 @@ class _ExampleWidgetCreator {
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
-        chartData = RandomChartData.generated(chartOptions: chartOptions);
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+        );
+        chartData = RandomChartData.generated(
+          chartOptions: chartOptions,
+        );
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
@@ -869,6 +876,21 @@ class _ExampleWidgetCreator {
         chartOptions = const ChartOptions(
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
 
         chartData = ChartData(

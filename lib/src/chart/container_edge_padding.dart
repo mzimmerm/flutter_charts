@@ -3,22 +3,34 @@ import 'dart:ui' as ui;
 /// Edge padding for the PaddingLayouter
 class EdgePadding  {
 
-  const EdgePadding.fromSTEB(this.start, this.top, this.end, this.bottom);
+  // Generative unnamed
+  const EdgePadding({
+    required this.start,
+    required this.top,
+    required this.end,
+    required this.bottom,
+  });
 
-  const EdgePadding.given({
+  const EdgePadding.withSides({
     this.start = 0.0,
     this.top = 0.0,
     this.end = 0.0,
     this.bottom = 0.0,
   });
 
-  const EdgePadding.allSides(double value)
-    : start = value,
-      top = value,
-      end = value,
-      bottom = value;
+  // constructor const EdgePadding.none() : this.withSides();
+  static const EdgePadding none = EdgePadding.withSides(); // member field
 
-  static const EdgePadding none = EdgePadding.given();
+  const EdgePadding.withAllSides(double value)
+      : start = value,
+        top = value,
+        end = value,
+        bottom = value;
+
+  /// Padding copy of self with all sides reversed signs.
+  ///
+  /// Useful for inflating and deflating Rectangles.
+  EdgePadding negate() => EdgePadding(start: -start, top: -top, end: -end, bottom: -bottom);
 
   final double start;
 
@@ -27,6 +39,5 @@ class EdgePadding  {
   final double end;
 
   final double bottom;
-
 }
 

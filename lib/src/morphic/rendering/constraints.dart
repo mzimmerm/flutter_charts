@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' show Offset, Rect, Size;
 
+import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/util/util_flutter.dart';
 import 'package:tuple/tuple.dart';
@@ -238,14 +239,15 @@ abstract class BoundingBoxesBase {
     }
   }
 
-  Tuple4<double, double, double, double> _smallenBy(Size size) {
-    // Smallen only the max of this constraint by the passed size
+/* todo-00-last-last-last
+  Tuple4<double, double, double, double> _deflateBySize(Size size) {
+    // Smaller constraint, on both min and max portions, by the passed size
     double maxWidth = maxSize.width - size.width;
     double maxHeight = maxSize.height - size.height;
     double minWidth = minSize.width - size.width;
     double minHeight = minSize.height - size.height;
 
-    // Allow to collaps minSize to zero
+    // Allow to collapse minSize to zero
     minWidth = minWidth < 0.0 ? 0.0 : minWidth;
     minHeight = minHeight < 0.0 ? 0.0 : minHeight;
 
@@ -254,19 +256,65 @@ abstract class BoundingBoxesBase {
     }
     return Tuple4(minWidth, minHeight, maxWidth, maxHeight);
   }
+*/
 
-  BoundingBoxesBase operator-(Size size) {
-    Tuple4<double, double, double, double> smaller = _smallenBy(size);
+  Tuple2<Size, Size> _deflateBySize(Size size) {
+    // Smaller constraint, on both min and max portions, by the passed size
+    Size max = maxSize.deflateBySize(size);
+    Size min = minSize.deflateBySize(size);
+
+    return Tuple2(min, max);
+  }
+
+  Tuple2<Size, Size> _inflateBySize(Size size) {
+    // Smaller constraint, on both min and max portions, by the passed size
+    Size max = maxSize.inflateBySize(size);
+    Size min = minSize.inflateBySize(size);
+
+    return Tuple2(min, max);
+  }
+
+  BoundingBoxesBase deflateBySize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateBySize(size);
 
     return cloneWith(
-      minWidth: smaller.item1,
-      minHeight: smaller.item2,
-      maxWidth: smaller.item3,
-      maxHeight: smaller.item4,
+      minWidth: smaller.item1.width,
+      minHeight: smaller.item1.height,
+      maxWidth: smaller.item2.width,
+      maxHeight: smaller.item2.height,
     );
   }
 
-  Tuple2<Rect, Rect> offsetBy(Offset offset) {
+  BoundingBoxesBase inflateBySize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateBySize(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  BoundingBoxesBase deflateByPadding(EdgePadding padding) {
+    return deflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
+
+  BoundingBoxesBase inflateByPadding(EdgePadding padding) {
+    return inflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
+
+  Tuple2<Rect, Rect> _offsetBy(Offset offset) {
     return Tuple2(offset & minSize, offset & maxSize);
   }
 
@@ -275,7 +323,7 @@ abstract class BoundingBoxesBase {
   ///
   /// Very useful for layout algorithms to check for overflow etc.
   bool whenOffsetContainsFullyOtherRect(Offset offset, Rect other) {
-    Tuple2<Rect, Rect> offsetBox = offsetBy(offset);
+    Tuple2<Rect, Rect> offsetBox = _offsetBy(offset);
     Rect insideRect = offsetBox.item1;
     Rect outsideRect = offsetBox.item2;
 
@@ -288,117 +336,6 @@ abstract class BoundingBoxesBase {
   @override
   String toString() {
     return '${runtimeType.toString()}: minSize=$minSize, maxSize=$maxSize';
-  }
-}
-
-/// Defines how a container [layout] should expand the container in a direction.
-///
-/// Direction can be "width" or "height".
-/// Generally,
-/// - If direction style is [TryFill], the container should use all
-///   available length in the direction (that is, [width] or [height].
-///   This is intended to fill a predefined
-///   available length, such as when showing X axis labels
-/// - If direction style is [GrowDoNotFill], container should use as much space
-///   as needed in the direction, but stop "well before" the available length.
-///   The "well before" is not really defined here.
-///   This is intended to for example layout Y axis in X direction,
-///   where we want to put the data container to the right of the Y labels.
-/// - If direction style is [Unused], the [layout] should fail on attempted
-///   looking at such
-///   todo-01-document
-
-class BoxContainerConstraints extends BoundingBoxesBase {
-
-  /// Expresses if it was created for the very top [RowLayouter] or [ColumnLayoter].
-  ///
-  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Align] (alignment) other
-  /// then [Align.start]
-  bool isOnTop = false;
-
-  /// The SINGLE UNNAMED generative constructor.
-  /// must call super, super initializes fields in BoundingBoxesBase
-  BoxContainerConstraints({
-    required minSize,
-    required maxSize,
-  }) : super(minSize: minSize, maxSize: maxSize);
-
-  // Named constructors, forwarded to the generative constructor
-  BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
-  BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
-  BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
-  // todo-01-last : Add a singleton member unused(), initialized with this and set as const. Then this constructor can be private ?
-  /// Named constructor for unused expansion
-  BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
-  BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
-
-  // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
-
-  /// Generative named constructor, from other constraint.
-  ///
-  /// The initializer list initializes the added field [isOnTop],
-  ///   followed by a call to super which initializes the common fields,
-  BoxContainerConstraints.cloneOther(BoxContainerConstraints other)
-      : isOnTop = other.isOnTop, super.cloneOther(other: other);
-
-  /// [clone] method implementation.
-  /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor.
-  @override
-  BoxContainerConstraints clone() {
-    return BoxContainerConstraints.cloneOther(this);
-  }
-
-  // The [cloneOtherWith] family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
-  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
-
-  /// Generative named constructor, from the passed [BoxContainerConstraints] [other].
-  /// Call super to initialize common fields, then initialize the added field
-  BoxContainerConstraints.cloneOtherWith({
-    required BoxContainerConstraints other,
-    double? minWidth,
-    double? minHeight,
-    double? maxWidth,
-    double? maxHeight,
-    bool? isOnTop,
-  }) : super.cloneOtherWith(
-          other: other,
-          minWidth: minWidth,
-          minHeight: minHeight,
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-        ) {
-    isOnTop ??= other.isOnTop;
-  }
-
-  /// [cloneWith] method implementation.
-  /// Returns instance created by the [BoxContainerConstraints.cloneOtherWith] constructor
-  @override
-  BoxContainerConstraints cloneWith({
-    double? minWidth,
-    double? minHeight,
-    double? maxWidth,
-    double? maxHeight,
-  }) {
-    return BoxContainerConstraints.cloneOtherWith(
-      other: this,
-      minWidth: minWidth,
-      minHeight: minHeight,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-    );
-  }
-
-  @override
-  BoxContainerConstraints operator -(Size size) {
-
-    Tuple4<double, double, double, double> smaller = _smallenBy(size);
-
-    return cloneWith(
-      minWidth: smaller.item1,
-      minHeight: smaller.item2,
-      maxWidth: smaller.item3,
-      maxHeight: smaller.item4,
-    );
   }
 }
 
@@ -459,16 +396,188 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 
   @override
-  BoundingBoxes operator -(Size size) {
-
-    Tuple4<double, double, double, double> smaller = _smallenBy(size);
+  BoundingBoxes deflateBySize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateBySize(size);
 
     return cloneWith(
-      minWidth: smaller.item1,
-      minHeight: smaller.item2,
-      maxWidth: smaller.item3,
-      maxHeight: smaller.item4,
+      minWidth: smaller.item1.width,
+      minHeight: smaller.item1.height,
+      maxWidth: smaller.item2.width,
+      maxHeight: smaller.item2.height,
     );
   }
 
+  @override
+  BoundingBoxes inflateBySize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateBySize(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  @override
+  BoundingBoxes deflateByPadding(EdgePadding padding) {
+    return deflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
+
+  @override
+  BoundingBoxes inflateByPadding(EdgePadding padding) {
+    return inflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
 }
+
+/// Defines how a container [layout] should expand the container in a direction.
+///
+/// Direction can be "width" or "height".
+/// Generally,
+/// - If direction style is [TryFill], the container should use all
+///   available length in the direction (that is, [width] or [height].
+///   This is intended to fill a predefined
+///   available length, such as when showing X axis labels
+/// - If direction style is [GrowDoNotFill], container should use as much space
+///   as needed in the direction, but stop "well before" the available length.
+///   The "well before" is not really defined here.
+///   This is intended to for example layout Y axis in X direction,
+///   where we want to put the data container to the right of the Y labels.
+/// - If direction style is [Unused], the [layout] should fail on attempted
+///   looking at such
+///   todo-01-document this is not correct at all
+class BoxContainerConstraints extends BoundingBoxesBase {
+
+  /// Expresses if it was created for the very top [RowLayouter] or [ColumnLayoter].
+  ///
+  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Align] (alignment) other
+  /// then [Align.start]
+  bool isOnTop = false;
+
+  /// The SINGLE UNNAMED generative constructor.
+  /// must call super, super initializes fields in BoundingBoxesBase
+  BoxContainerConstraints({
+    required minSize,
+    required maxSize,
+  }) : super(minSize: minSize, maxSize: maxSize);
+
+  // Named constructors, forwarded to the generative constructor
+  BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
+  BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
+  BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
+  // todo-01-last : Add a singleton member unused(), initialized with this and set as const. Then this constructor can be private ?
+  /// Named constructor for unused expansion
+  BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
+  BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
+
+  // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
+
+  /// Generative named constructor, from other constraint.
+  ///
+  /// The initializer list initializes the added field [isOnTop],
+  ///   followed by a call to super which initializes the common fields,
+  BoxContainerConstraints.cloneOther(BoxContainerConstraints other)
+      : isOnTop = other.isOnTop, super.cloneOther(other: other);
+
+  /// [clone] method implementation.
+  /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor.
+  @override
+  BoxContainerConstraints clone() {
+    return BoxContainerConstraints.cloneOther(this);
+  }
+
+  // The [cloneOtherWith] family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
+  // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
+
+  /// Generative named constructor, from the passed [BoxContainerConstraints] [other].
+  /// Call super to initialize common fields, then initialize the added field
+  BoxContainerConstraints.cloneOtherWith({
+    required BoxContainerConstraints other,
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+    bool? isOnTop,
+  }) : super.cloneOtherWith(
+    other: other,
+    minWidth: minWidth,
+    minHeight: minHeight,
+    maxWidth: maxWidth,
+    maxHeight: maxHeight,
+  ) {
+    isOnTop ??= other.isOnTop;
+  }
+
+  /// [cloneWith] method implementation.
+  /// Returns instance created by the [BoxContainerConstraints.cloneOtherWith] constructor
+  @override
+  BoxContainerConstraints cloneWith({
+    double? minWidth,
+    double? minHeight,
+    double? maxWidth,
+    double? maxHeight,
+  }) {
+    return BoxContainerConstraints.cloneOtherWith(
+      other: this,
+      minWidth: minWidth,
+      minHeight: minHeight,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+    );
+  }
+
+  @override
+  BoxContainerConstraints deflateBySize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateBySize(size);
+
+    return cloneWith(
+      minWidth: smaller.item1.width,
+      minHeight: smaller.item1.height,
+      maxWidth: smaller.item2.width,
+      maxHeight: smaller.item2.height,
+    );
+  }
+
+  @override
+  BoxContainerConstraints inflateBySize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateBySize(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  @override
+  BoxContainerConstraints deflateByPadding(EdgePadding padding) {
+    return deflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
+
+  @override
+  BoxContainerConstraints inflateByPadding(EdgePadding padding) {
+    return inflateBySize(
+      Size(
+        padding.start + padding.end,
+        padding.top + padding.bottom,
+      ),
+    );
+  }
+}
+

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 // import 'package:flutter_charts/src/chart/container.dart';
 
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
@@ -382,11 +383,25 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   }
 
   /// Performs the CORE of the 'layouter specific processing',
-  /// by finding all children [offset]s according to layout, then setting the [layoutSize] of non-leaf nodes.
+  /// by finding all children positions in self,
+  /// then using the positions to set children [offset]s and [layoutSize]s.
   ///
   /// Assumes that [constraints] have been set in [_preDescend_DistributeConstraintsToImmediateChildren].
   ///
-  /// Final side effect result must always be to set [layoutSize] on this node.
+  /// Final side effect result must always be setting the [layoutSize] on this node.
+  ///
+  /// Important override notes and rules for [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] on extensions:
+  ///   - On Non-positioning extensions using the default [newCoreLayout],
+  ///     best performance with non-positioning is when extensions override
+  ///     this method and perform the role of  [_post_NotLeaf_SetSize_FromPositionedChildren],
+  ///     setting the [layoutSize].
+  ///     Then the default invoked [_post_NotLeaf_PositionChildren], [_post_NotLeaf_OffsetChildren],
+  ///     and [_post_NotLeaf_SetSize_FromPositionedChildren] would be bypassed and take no cycles.
+  ///   - On positioning extensions of [BoxLayouter] using the default [newCoreLayout],
+  ///     the desired extension positioning effect is usually achieved by
+  ///     overriding only the [_post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
+  ///     is something else than [children]'s bounding rectangle ([GreedyLayouter], [PaddingLayouter])
+  ///     also need to override [_post_NotLeaf_SetSize_FromPositionedChildren].
   void _post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
     // Common processing for greedy and non-greedy:
     // First, calculate children offsets within self.
@@ -398,7 +413,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     // Apply the calculated layedOutRectsInMe as offsets on children.
     _post_NotLeaf_OffsetChildren(positionedRectsInMe, children);
     // Finally, when all children are at the right offsets within me, invoke
-    // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the layoutSize on me.
+    // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
     //
     // My [layoutSize] CAN be calculated using one of two equivalent methods:
     //   1. Query all my children for offsets and sizes, create each child rectangle,
@@ -406,11 +421,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     //   2. Use the previously created [positionedRectsInMe], which is each child rectangle,
     //      then create bounding rectangle of [positionedRectsInMe].
     // In [_post_NotLeaf_SetSize_FromPositionedChildren] we use method 2, but assert sameness between them
-    // todo-00-last-last-last : try to pass positionedChildrenRects, and change implementations
-    //                          to use that instead of quering child positions.
-    //                          this opens some interesting asserts, that the results from children must agree
-    //                          also rename to  _post_NotLeaf_SetSize_FromChildrenPositionedRects
-    // must do tests before / after
     _post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
   }
 
@@ -471,41 +481,28 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// The bounding rectangle of all positioned children, is calculated by [util_flutter.boundingRectOfRects].
   ///
-  /// Note:  My [layoutSize] CAN be calculated using one of two equivalent methods:
+  /// Note:  The [layoutSize] CAN be calculated using one of two equivalent methods:
   ///        1. Query all my children for offsets and sizes, create each child rectangle,
   ///           then create bounding rectangle from them.
   ///        2. Use the previously created [positionedRectsInMe], which is each child rectangle,
   ///           then create bounding rectangle of [positionedRectsInMe].
-  ///        We use method 2, but assert sameness between them
+  ///        We use method 2, but assert sameness between them.
   ///
   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   ///   -  Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
   ///      Overriding extensions include layouts which do padding,
   ///      or otherwise increase their sizes, such as [GreedyLayouter].
   ///
-  /// todo-00-last-last-last : Add parameter List<ui.Rect> positionedChildrenRects the result of from [_post_NotLeaf_PositionChildren]
-  ///                          and change implementation
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
-    // todo-00-last-last-last : After changing the imlemention (Rect of children used), keep this code
-    //                            but add assert that the childrenOuterRectangle.size matches the passed rect.size.
-    //                          ALSO, childrenOuterRectangle.offset must be positionedChildrenRects.offset .
-
-    ui.Rect positionedChildrenOuterRects =  util_flutter
+    ui.Rect positionedChildrenOuterRects = util_flutter
         .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
         .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size); // todo-00-last-last-last : folse for column :
+    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
 
     layoutSize = positionedChildrenOuterRects.size;
-  }
-
-  void _post_NotLeaf_SetSize_FromPositionedChildren_OLD() {
-    assert(!isLeaf);
-    ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    layoutSize = childrenOuterRectangle.size;
   }
 
   /// Leaf [BoxLayouter] extensions should override and set [layoutSize].
@@ -606,21 +603,19 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
 
   /// Override of the abstract [_post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
-  /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer] - by Returning empty list,
-  /// results in no positioning of children,
+  /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer].
+  /// The no-op is achieved by returning, the existing children rectangles, without re-positioning of children;
+  /// the follow up methods to not re-offset children.
   ///
   /// Returning an empty list here causes no offsets on children are applied,
   /// which is desired on this non-positioning base class [BoxContainer].
   ///
-  /// Note: No offsets application is also achieved if [_post_NotLeaf_OffsetChildren]
-  ///       does nothing. However, making [_post_NotLeaf_PositionChildren] to return empty list is a faster path,
-  ///       as no layout is invoked, and empty list of children is passed to
-  ///       it, which causes no offset (because of the empty list).
+  /// See the invoking [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] for more override posibilities.
+  ///
   ///
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-00-last : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
-    // todo-00-last-last return [];
+    // todo-00 : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
     // This is a no-op because it does not change children positions from where they are at their current offsets.
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
@@ -751,8 +746,10 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// Does not need to calculate position of children in self, as it will not apply offsets anyway.
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-00-last-last return [];
     // This is a no-op because it does not change children positions from where they are at their current offsets.
+    // Cannot just return [], as result is used in offsetting (which is empty, so OK there),
+    // and setting layoutSize using the returned value
+    // (which would fail, unless replaced with looking at children offsets)
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 }
@@ -891,7 +888,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
       //   self original constraint, and  nonGreedyChildrenSize
-      BoxContainerConstraints constraintsRemainingForGreedy = constraints - nonGreedyBoundingRect.size;
+      BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateBySize(nonGreedyBoundingRect.size);
 
       // Divides constraintsRemainingForGreedy~into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
@@ -957,7 +954,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
             ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
       case LayoutAxis.vertical:
         return ui.Offset(crossSegment.min, mainSegment.min) &
-            // todo-00-last-last-last : fixed : ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
         ui.Size(crossSegment.max - crossSegment.min, mainSegment.max - mainSegment.min);
     }
   }
@@ -1112,7 +1108,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
       layoutAxis: crossLayoutAxis,
       axisLayoutProperties: crossAxisLayoutProperties,
-      // todo-00-last-last-last : If we use, instead of 0.0,
+      // todo-00 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
@@ -1271,30 +1267,49 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
 ///     while the [_post_NotLeaf_OffsetChildren] uses the default super implementation, which
 ///     applies the offsets returned by [_post_NotLeaf_PositionChildren] onto the child.
 class PaddingLayouter extends PositioningBoxLayouter {
+  PaddingLayouter({
+    required this.edgePadding,
+    required BoxContainer child,
+  }) : super(children: [child]);
 
+  final EdgePadding edgePadding;
+
+  /// Applies constraints on child.
+  ///
+  /// The constraints are self constraints deflated by padding
+  /// (which will be added back onto self layoutSize).
+  /// This ensures padded child will fit in self constraints.
   @override
   void _preDescend_DistributeConstraintsToImmediateChildren(List<BoxContainer> children) {
-
-    // todo-00-last-last : need method on constraint : constraint.deflateByBy( insets) - applied to max only. throw exception if inner constraint size non sero
-    //                     get first child and applyParentConstraint the smaller constraint
+    children[0].applyParentConstraints(this, constraints.deflateByPadding(edgePadding));
   }
 
+
+  /// Returns the future child position by offsetting child's layout size down and right
+  /// by Offset created from Padding.
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-       // todo-00-last-last :
-    // return Rect which is as big as child layoutSize, but moved from zero by insets
-    return [];
+    ui.Offset childOffset = ui.Offset(edgePadding.start, edgePadding.top);
+    return [childOffset & children[0].layoutSize];
   }
 
+  /// Sets self [layoutSize], which is child layoutSize increased by EdgePadding in all directions.
+  ///
+  /// This self [layoutSize] is guaranteed to fit into self constraints.
   @override
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    // todo-00-last-last
-    // Take the passed, create outer rectangle size, and expandBy EdgePaddings
-    // todo-00-last-last: We need extension on Size, PaddableSize,
+    // Take the passed rectangle (which is same size as child, but offset from the self
+    // origin right and down of padding start and top), and inflate it by padding
+    // This will move the rectangle back to self origin (irrelevant), and it's inflated
+    // size set as layout size.
+    // So self layoutSize is increased from child layoutSize by EdgePadding in all directions.
+    // in all directions
+    ui.Rect thisRect = positionedChildrenRects[0].inflateByPadding(edgePadding);
+
+    layoutSize = thisRect.size;
   }
-
-
 }
+
 // Helper classes ------------------------------------------------------------------------------------------------------
 
 /// todo-01-document

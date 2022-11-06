@@ -55,7 +55,7 @@ List<String> randomDataRowsLegends(int dataRowsCount) {
   List<String> _defaultLegends = List.empty(growable: true);
 
   if (dataRowsCount >= 1) {
-    _defaultLegends.add('YELLOW1 aa bbb ' /*' with really long description'*/);
+    _defaultLegends.add('YELLOW' /*' with really long description'*/);
   }
   if (dataRowsCount >= 2) {
     _defaultLegends.add('GREEN');

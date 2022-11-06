@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 import 'dart:math' as math show max;
-import 'package:flutter_charts/flutter_charts.dart';
+// todo-00-last-last : import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
@@ -19,7 +20,8 @@ import 'line/presenter.dart' as line_presenters;
 import 'options.dart';
 import 'presenter.dart';
 
-import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, RowLayouter;
+import 'container_layouter_base.dart'
+    show BoxContainer, BoxLayouter, ColumnLayouter, GreedyLayouter, PaddingLayouter, RowLayouter;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -1268,34 +1270,55 @@ class LegendItemContainer extends BoxContainer {
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
-        return RowLayouter(
-            mainAxisAlign: Align.start,
-            mainAxisPacking: Packing.tight,
-            children: children);
+        return RowLayouter(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-      // default for legend row : desired and tested
-        return RowLayouter(
-            mainAxisAlign: Align.start,
-            mainAxisPacking: Packing.tight,
-            children: children);
+        // default for legend row : desired and tested
+        return RowLayouter(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+        // create padded children
+        children = _itemIndAndLabel(doPadIndAndLabel: true);
+        // default for legend row : desired and tested
+        return RowLayouter(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
     }
   }
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].
-  List<BoxContainer> _itemIndAndLabel() {
-    return [
-      LegendIndicatorRectContainer(
-        indicatorPaint: _indicatorPaint,
-        options: _options,
-      ),
-      LabelContainer(
-        label: _label,
-        labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
-        labelStyle: _labelStyle,
-        options: _options,
-      ),
-    ];
+  List<BoxContainer> _itemIndAndLabel({bool doPadIndAndLabel = false}) {
+    var indRect = LegendIndicatorRectContainer(
+      indicatorPaint: _indicatorPaint,
+      options: _options,
+    );
+    var label = LabelContainer(
+      label: _label,
+      labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
+      labelStyle: _labelStyle,
+      options: _options,
+    );
+
+    if (doPadIndAndLabel) {
+      EdgePadding edgePadding = const EdgePadding(
+        start: 3,
+        top: 10,
+        end: 3,
+        bottom: 20,
+      );
+      return [
+        PaddingLayouter(
+          edgePadding: edgePadding,
+          child: indRect,
+        ),
+        PaddingLayouter(
+          edgePadding: edgePadding,
+          child: label,
+        ),
+      ];
+    } else {
+      return [
+        indRect,
+        label,
+      ];
+    }
   }
 }
 
@@ -1437,7 +1460,7 @@ class LegendContainer extends ChartAreaContainer {
             mainAxisPacking: Packing.loose,
             children: children);
       case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
-        // default for legend column
+        // default for legend column : desired and tested
         return ColumnLayouter(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
@@ -1460,6 +1483,12 @@ class LegendContainer extends ChartAreaContainer {
             // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside GreedyLayouter
             //       remains start + tight. That make sense, as GreedyLayouter is non-positioning.
             //       If we wanted to center the LegendItem inside of GreedyLayouter, wrap the inside into Center.
+            mainAxisAlign: Align.start,
+            mainAxisPacking: Packing.tight,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
+        // This option pads items inside LegendItem
+        return RowLayouter(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
             children: children);

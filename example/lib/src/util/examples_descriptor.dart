@@ -53,6 +53,7 @@ enum ExamplesEnum {
   ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
   ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
   ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
+  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
 
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
@@ -138,6 +139,9 @@ class ExamplesDescriptor {
         ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
+        ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
         ExamplesChartTypeEnum.verticalBarChart),
 
     //
