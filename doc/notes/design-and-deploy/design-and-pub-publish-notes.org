@@ -1735,20 +1735,42 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Add PaddingLayouter that can be used around single child to pad with space - no painting needed
   - [X] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
   - [X] Test work
-- [ ] Rename PaddingLayouter to Padding
-- [ ] Add Aligner, a Layouter that centers single child - no painting needed
+- [ ] Rename PaddingLayouter to Padder
+- [ ] Rename RowLayouter to Row
+- [ ] Rename ColumnLayouter to Column
+- [ ] Rename GreedyLayouter to Greedy
+- [ ] ~Alignment~ new helper class that defines Alignment.topRight, Alignment.topStart, Alignment.topEnd, Alignment.bottomStart, Alignment.bottomEnd, Alignment.Center . layoutSize _top=-1, _bottom=-1, _start=-1, _end=1.
+  - [ ] It is an imaginary Square with sides 2x2, centered at 0, 0. Any point (offset) within the square represents the alignment.
+  - [ ] Members alignX, alignY values between -1 and +1 for now. 
+  - [ ] ~alignChildInSelf(Size childSize, Size selfSize)~ =>
+    - # selfSize assumed bigger by childHeightRatio, childWidthRatio
+    - [ ] Size sizeRatio = selfSize / childSize (is there Size / Size??)
+    - [ ] Offset(), say x coordinate 
+    - alignX =-1 => offsetX = 0
+    - alignX = 0 => offsetX = parentWidth / 2
+    - alignX =+1 => offsetX = parentWidth
+    - ~offsetX = ((1 + alignX) / 2 ) * parentWidth~
+    - ~return Offset(offsetX, offsetY) & childSize~ *represents position, in parentSize of the aligned (moved) childSize 
+- [ ] ~IS THERE SIZE * SIZE AND DIVIDED, WHICH MULTIPLY OR DIVIDE WIDTH, HEIGHT?~ IF NOT, CREATE IT
+- [ ] ~Aligner~, a Layouter that aligns single child - no painting needed
   - [ ] Extends Positioning layouter
-  - [ ] Constructor is one-child, plus 2 optional arguments childWidthMultiple and childHeightMultiple + Alignment new class that defines Alignment.topRight, Alignment.topLeft, Alignment.bottomLeft, Alignment.bottomLeft, Alignment.Center 
-  - [ ] If multiple along axis not set
-    - [ ] pass self constraint to child, default
-    - [ ] Child position is set in the middle of self constraint (may overflow of course). This uses the 
+  - [ ] Members all final
+    - ~childSizeInflateBy.width~ (>=1),
+    - ~childSizeInflateBy.height~ (>=1), self layout size should be bigger than child layout size by this much
+    - STORE IT AS ~Size childSizeInflateBy~
+    - ~alignment~
+  - [ ] Constructor is one-child, plus 3 required defaulting args for "by" multiple (no default) + Alignment (default center)
+  - [ ] Note: On BoxConstraint, and Size , use inflateBy to increase them by inflateBy - should we add methods similar to EdgePadding?
+  - [ ] Need, given a self size, child size, position child on position (offset)  defined by Alignment - see  ~alignChildInSelf(Size childSize, Size selfSize)~ =
+  - [ ] constraint push to child: if multiple set, create a constraint from self constraint, which is multiplied in directions by ~1/childSizeInflateBy.width, 1/childSizeInflateBy.height~, set on child, else copy self constraint. apply the constraint on child
+  - [ ] If ~childSizeInflateBy.width~ (>=1), ~childSizeInflateBy.height~ ( is set
+    - [ ] *child position function*: we have childSize. WE KNOW ~selfSize = childSize * childSizeInflateBy~ child position (offset) is inside selfSize: Rect childPositionInMe = ~alignChildInSelf(Size childSize, Size selfSize)~
+    - [ ] *offset child function*: use default
+    - [ ] *self layout size* : return  ~childLayoutSize * childSizeInflateBy~ 
+  - [ ] If multiple along axis not set DO NOT ALLOW FOR NOW
+    - [ ] Child position function : is set in the middle of self constraint (may overflow of course).
     - [ ] self layoutSize is set to self constraint size
-  - [ ] If multiple along axis is set
-    - [ ] pass self constraint to child, default
-    - [ ] child position is set in the middle of to width from child's layuoutSize multiplied by Multiple - returned Rect 
-    - [ ] offset child as default
-    - [ ] self layout size is child layoutSize multiplied by multiple in the appropriate direction
-  - [ ] Use AlignerLayouter in Legend and LegendItemContainer to make sure they are usable.
+  - [ ] Use Align in Legend and LegendItemContainer to make sure they are usable.
   - [ ] Test work
 
 ** TODO-NEXT 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~

@@ -266,18 +266,22 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     newCoreLayout();
   }
 
-  /// todo-01-document fully
+  /// todo-011-document fully
   ///
   /// Assumptions:
   ///   1. Before calling this method, [constraints] must be set at least on the root of the [BoxContainerHierarchy].
+  ///
   /// Important override notes and rules for [newCoreLayout] on extensions:
-  ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code which auto-layouts all known layouters
-  ///      [RowLayouter], [ColumnLayouter] etc, using their set values of [Packing] and [Align].
+  ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
+  ///      which auto-layouts all known layouters [RowLayouter], [ColumnLayouter] etc, using their set values of [Packing] and [Align].
   ///
   ///   2: General rules for [newCoreLayout] on extensions
+  ///
   ///      1) Generally, leafs do not need to override [newCoreLayout],
-  ///         as their only role in the layout process is to set and announce their [layoutSize]
-  ///         to their parents
+  ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
+  ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
+  ///         which should be overriden.
+  ///         Alternatively, it is sufficient for leafs to override [newCoreLayout] and only set [layoutSize] there.
   ///      2) Non-leafs do often need to override some methods invoked from [newCoreLayout],
   ///         or the whole [newCoreLayout]. Some details on Non-Leafs
   ///         - Non-positioning Non-leafs: Generally only need to override [_post_NotLeaf_PositionChildren] to return .
