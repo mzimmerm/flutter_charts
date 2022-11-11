@@ -232,7 +232,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   /// Return true if container would like to expand as much as possible, within it's constraints.
   ///
-  /// GreedyLayouter would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
+  /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
   ///   when this is called in [newCoreLayout].
   bool get isGreedy => false;
 
@@ -259,8 +259,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
         // this is LabelContainer ||
-        // Remove as new layout rendering starts with RowLayouter : this is RowLayouter ||
-        this is ColumnLayouter) {
+        // Remove as new layout rendering starts with Row : this is Row ||
+        this is Column) {
       throw StateError('Should not be called on $this');
     }
     newCoreLayout();
@@ -273,7 +273,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///
   /// Important override notes and rules for [newCoreLayout] on extensions:
   ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
-  ///      which auto-layouts all known layouters [RowLayouter], [ColumnLayouter] etc, using their set values of [Packing] and [Align].
+  ///      which auto-layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
   ///
   ///   2: General rules for [newCoreLayout] on extensions
   ///
@@ -319,13 +319,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (isRoot) {
       // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
       assert(constraints.size != const ui.Size(-1.0, -1.0));
-      // On nested levels [RowLayouter]s OR [ColumnLayouter]s
+      // On nested levels [Row]s OR [Column]s
       // force non-positioning layout properties.
       // This is a hack that unfortunately make this baseclass [BoxLayouter]
-      // to depend on it's extensions [ColumnLayouter] and [RowLayouter]
+      // to depend on it's extensions [Column] and [Row]
       _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
-        foundFirstRowLayouterFromTop: false,
-        foundFirstColumnLayouterFromTop: false,
+        foundFirstRowFromTop: false,
+        foundFirstColumnFromTop: false,
         boxLayouter: this,
       );
     }
@@ -357,7 +357,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///     As a result, each child will be allowed to get up to it's parent constraints size.
   ///     If all children were to use the constraint sizes fully, and set their sizes that large,
   ///     the owner layouter would overflow, but the assumption is children only use a fraction of available constraints.
-  ///   - Specific implementation (e.g. [IndividualChildConstrainingRowLayouter])
+  ///   - Specific implementation (e.g. [IndividualChildConstrainingRow])
   ///     may 'divide' it's constraints evenly or unevenly to children, passing each
   ///     a fraction of it's constraint.
   ///
@@ -410,7 +410,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///   - On positioning extensions of [BoxLayouter] using the default [newCoreLayout],
   ///     the desired extension positioning effect is usually achieved by
   ///     overriding only the [_post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
-  ///     is something else than [children]'s bounding rectangle ([GreedyLayouter], [PaddingLayouter])
+  ///     is something else than [children]'s bounding rectangle ([Greedy], [Padder])
   ///     also need to override [_post_NotLeaf_SetSize_FromPositionedChildren].
   void _post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
     // Common processing for greedy and non-greedy:
@@ -501,7 +501,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   ///   -  Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
   ///      Overriding extensions include layouts which do padding,
-  ///      or otherwise increase their sizes, such as [GreedyLayouter].
+  ///      or otherwise increase their sizes, such as [Greedy].
   ///
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
@@ -738,7 +738,7 @@ abstract class PositioningBoxLayouter extends BoxContainer {
 
 // ^ base non-positioning classes BoxLayouter and BoxContainer
 // ---------------------------------------------------------------------------------------------------------------------
-// v positioning classes, rolling positioning, RowLayouter and ColumnLayouter, GreedyLayouter
+// v positioning classes, rolling positioning, Row and Column, Greedy
 
 /// Layouter which is NOT allowed to offset it's children, or only offset with zero offset.
 abstract class NonPositioningBoxLayouter extends BoxContainer {
@@ -764,10 +764,10 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   }
 }
 
-/// Base class for [RowLayouter] and [ColumnLayouter].
+/// Base class for [Row] and [Column].
 ///
 /// The role of this class is to lay out their children along the main axis and the cross axis,
-/// in continuous flow; [RowLayouter] and [BoxLayouter] are the intended extensions.
+/// in continuous flow; [Row] and [BoxLayouter] are the intended extensions.
 ///
 /// The layouter supports different alignment and packing of children ([Align] and [Packing]),
 /// set by the [mainAxisAlign], [mainAxisPacking], [crossAxisAlign], [crossAxisPacking].
@@ -807,12 +807,12 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     _layout_IfRoot_DefaultTreePreprocessing();
 
     // if (_hasGreedy) {
-    // Process Non-GreedyLayouter children first, to find what size they use
+    // Process Non-Greedy children first, to find what size they use
     if (_hasNonGreedy) {
-      // A. Non-GreedyLayouter pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
+      // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
       //                         using the constraints. Everything for _nonGreedyChildren is same as default layout.
       _preDescend_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
-      // B. Non-GreedyLayouter node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
+      // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
       for (var child in _nonGreedyChildren) {
         // Non greedy should run full layout of children.
         child.newCoreLayout();
@@ -824,7 +824,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
     } // same as current on Row and Column
 
-    // At this point, both GreedyLayouter and non-GreedyLayouter children have constraints. In addition, non-GreedyLayouter children
+    // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
     //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
     //   set on non_Greedy. This will be done later in  _postDescend_IfLeaf_SetSize(etc).
     //
@@ -854,11 +854,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // }
   }
 
-  List<GreedyLayouter> get _greedyChildren => children.whereType<GreedyLayouter>().toList();
+  List<Greedy> get _greedyChildren => children.whereType<Greedy>().toList();
 
   List<LayoutableBox> get _nonGreedyChildren {
     List<BoxContainer> nonGreedy = List.from(children);
-    nonGreedy.removeWhere((var child) => child is GreedyLayouter);
+    nonGreedy.removeWhere((var child) => child is Greedy);
     return nonGreedy;
   }
 
@@ -866,21 +866,21 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
 
-  /// Post descend after NonGreedy children, finds and applies constraints on GreedyLayouter children.
+  /// Post descend after NonGreedy children, finds and applies constraints on Greedy children.
   ///
   /// In some detail,
   ///   - finds the constraint on self that remains after NonGreedy are given the (non greedy) space they want
-  ///   - divides the remaining constraints into smaller constraints for all GreedyLayouter children in the greedy ratio
-  ///   - applies the smaller constraints on GreedyLayouter children.
+  ///   - divides the remaining constraints into smaller constraints for all Greedy children in the greedy ratio
+  ///   - applies the smaller constraints on Greedy children.
   ///
-  /// This is required before we can layout GreedyLayouter children.
+  /// This is required before we can layout Greedy children.
   void _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
     // Note: non greedy children have layout size when we reach here
 
     if (_hasGreedy) {
       // Force Align=left, Packing=tight, no matter what the Row properties are. Rects
       // The reason we want to use tight left align, is that if there are greedy children, we want them to take
-      //   all remaining space. So any non-tight packing, center or right align, does not make sense if GreedyLayouter are present.
+      //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
       LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
       _forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
 
@@ -911,7 +911,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // Apply on greedyChildren their new greedyChildrenConstraints
       assert(greedyChildrenConstraints.length == _greedyChildren.length);
       for (int i = 0; i < _greedyChildren.length; i++) {
-        GreedyLayouter greedyChild = _greedyChildren[i];
+        Greedy greedyChild = _greedyChildren[i];
         BoxContainerConstraints childConstraint = greedyChildrenConstraints[i] as BoxContainerConstraints;
         greedyChild.applyParentConstraints(this, childConstraint);
       }
@@ -1035,11 +1035,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   /// To explain, in one-pass layout, if we want to keep the flexibility
   /// of children getting full constraint from their parents,
-  /// only the topmost [RowLayouter] can offset their children.
+  /// only the topmost [Row] can offset their children.
   ///
-  /// Nested [RowLayouter]s must not offset, as for example right alignment on a nested
-  /// [RowLayouter] would make all children to take up the whole available constraint from parent,
-  /// and the next  [RowLayouter] up has no choice but to move it to the right.
+  /// Nested [Row]s must not offset, as for example right alignment on a nested
+  /// [Row] would make all children to take up the whole available constraint from parent,
+  /// and the next  [Row] up has no choice but to move it to the right.
   void _forceMainAxisLayoutProperties({
     required Packing packing,
     required Align align,
@@ -1145,8 +1145,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 }
 
 // todo-01-document
-class RowLayouter extends RollingPositioningBoxLayouter {
-  RowLayouter({
+class Row extends RollingPositioningBoxLayouter {
+  Row({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
@@ -1170,8 +1170,8 @@ class RowLayouter extends RollingPositioningBoxLayouter {
 }
 
 // todo-01-document
-class ColumnLayouter extends RollingPositioningBoxLayouter {
-  ColumnLayouter({
+class Column extends RollingPositioningBoxLayouter {
+  Column({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
@@ -1201,10 +1201,10 @@ class ColumnLayouter extends RollingPositioningBoxLayouter {
 /// descend runs as normal, makes children make layoutSize available
 /// post-descend runs as normal - does 'layout self'
 /// what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!
-class GreedyLayouter extends NonPositioningBoxLayouter {
+class Greedy extends NonPositioningBoxLayouter {
   final int greed;
 
-  GreedyLayouter({
+  Greedy({
     this.greed = 1,
     required BoxContainer child,
   }) : super(children: [child]);
@@ -1217,11 +1217,11 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
   @override
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
-    // The GreedyLayouter layoutSize should be:
+    // The Greedy layoutSize should be:
     //  - In the main axis direction (of it's parent), the constraint size of self,
     //    NOT the bounding rectangle of children.
-    //    This is because children can be smaller, even if wrapped in GreedyLayouter,
-    //    bu this GreedyLayouter should still expand in the main direction to it's allowed maximum.
+    //    This is because children can be smaller, even if wrapped in Greedy,
+    //    bu this Greedy should still expand in the main direction to it's allowed maximum.
     //  - In the cross-axis direction, take on the layout size of children outer rectangle, as
     //    ih the default implementation.
     ui.Rect positionedChildrenOuterRects =  util_flutter
@@ -1235,7 +1235,7 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
     ui.Size childrenLayoutSize = positionedChildrenOuterRects.size; // use the portion of this size along cross axis
 
     if (parent is! RollingPositioningBoxLayouter) {
-      throw StateError('Parent of this GreedyLayouter container "$this" must be '
+      throw StateError('Parent of this Greedy container "$this" must be '
           'a ${(RollingPositioningBoxLayouter).toString()} but it is $parent');
     }
     RollingPositioningBoxLayouter p = (parent as RollingPositioningBoxLayouter);
@@ -1264,20 +1264,20 @@ class GreedyLayouter extends NonPositioningBoxLayouter {
 
 /// Layouter which lays out it's single child surrounded by [EdgePadding] within itself.
 ///
-/// [PaddingLayouter] behaves as follows:
+/// [Padder] behaves as follows:
 ///   - Decreases own constraint by Padding and provides it do a child
 ///   - When child returns it's [layoutSize], this layouter sets it's size as that of the child, surrounded with
 ///     the [EdgePadding] [edgePadding].
 ///
 /// This governs implementation:
-///   - [PaddingLayouter] uses the default [newCoreLayout].
-///   - [PaddingLayouter] changes the constraint before sending it to it's child, so
+///   - [Padder] uses the default [newCoreLayout].
+///   - [Padder] changes the constraint before sending it to it's child, so
 ///     the [_preDescend_DistributeConstraintsToImmediateChildren] must be overridden.
-///   - [PaddingLayouter] is positioning, so the [_post_NotLeaf_PositionChildren] is overridden,
+///   - [Padder] is positioning, so the [_post_NotLeaf_PositionChildren] is overridden,
 ///     while the [_post_NotLeaf_OffsetChildren] uses the default super implementation, which
 ///     applies the offsets returned by [_post_NotLeaf_PositionChildren] onto the child.
-class PaddingLayouter extends PositioningBoxLayouter {
-  PaddingLayouter({
+class Padder extends PositioningBoxLayouter {
+  Padder({
     required this.edgePadding,
     required BoxContainer child,
   }) : super(children: [child]);
@@ -1357,48 +1357,48 @@ class _MainAndCrossPositionedSegments {
 // Functions----- ------------------------------------------------------------------------------------------------------
 
 /// Forces default non-positioning axis layout properties [LengthsPositionerProperties]
-/// on the nested hierarchy nodes of type [RowLayouter] and [ColumnLayouter] nodes.
+/// on the nested hierarchy nodes of type [Row] and [Column] nodes.
 ///
-/// Motivation: The one-pass layout we use allows only the topmost [RowLayouter] or [ColumnLayouter]
+/// Motivation: The one-pass layout we use allows only the topmost [Row] or [Column]
 ///              to specify values that cause non-zero offset.
 ///
 ///              Only [Packing.tight] and [Align.start] do not cause offset and
-///              are allowed on nested level [RowLayouter] or [ColumnLayouter].
+///              are allowed on nested level [Row] or [Column].
 ///
 ///              But such behavior is contra intuitive for users to set, so
 ///              this method enforces that, even though it makes
 ///              a baseclass [BoxLayouter] to know about it's extensions
-///              [RowLayouter] or [ColumnLayouter] (by calling this method in the baseclass [BoxLayouter]).
+///              [Row] or [Column] (by calling this method in the baseclass [BoxLayouter]).
 ///              We make this a library level function to at least visually remove it from the  baseclass [BoxLayouter].
 ///
 /// This method forces the deeper level values to the non-offseting.
 void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning({
-  required bool foundFirstRowLayouterFromTop,
-  required bool foundFirstColumnLayouterFromTop,
+  required bool foundFirstRowFromTop,
+  required bool foundFirstColumnFromTop,
   required BoxLayouter boxLayouter,
 }) {
-  if (boxLayouter is RowLayouter && !foundFirstRowLayouterFromTop) {
-    foundFirstRowLayouterFromTop = true;
+  if (boxLayouter is Row && !foundFirstRowFromTop) {
+    foundFirstRowFromTop = true;
   }
 
-  if (boxLayouter is ColumnLayouter && !foundFirstColumnLayouterFromTop) {
-    foundFirstColumnLayouterFromTop = true;
+  if (boxLayouter is Column && !foundFirstColumnFromTop) {
+    foundFirstColumnFromTop = true;
   }
 
   for (var child in boxLayouter.children) {
     // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
     // so that only the top layouter can have non-start and non-tight/matrjoska
-    if (child is RowLayouter && foundFirstRowLayouterFromTop) {
+    if (child is Row && foundFirstRowFromTop) {
       child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
     }
-    if (child is ColumnLayouter && foundFirstColumnLayouterFromTop) {
+    if (child is Column && foundFirstColumnFromTop) {
       child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.matrjoska);
     }
 
     // in-child continue to child's children with the potentially updated values 'foundFirst'
     _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
-      foundFirstRowLayouterFromTop: foundFirstRowLayouterFromTop,
-      foundFirstColumnLayouterFromTop: foundFirstColumnLayouterFromTop,
+      foundFirstRowFromTop: foundFirstRowFromTop,
+      foundFirstColumnFromTop: foundFirstColumnFromTop,
       boxLayouter: child,
     );
   }

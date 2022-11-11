@@ -1,5 +1,21 @@
 
-/// Edge padding for the PaddingLayouter
+/// Edge padding for the [Padder] layouter.
+///
+/// Script-writing order dependent members [start] and [end] define padding in logical pixels
+/// on the left and the right of the child for left-to-right scripts;
+/// on the right and the left for right-to-left scripts
+///
+/// [top] and [bottom] define padding in logical pixels on the top and the bottom of the child.
+///
+/// Assuming left to right, using a construct such as
+///   ```dart
+///      Padder(
+///        edgePadding: EdgePadding(start: 1, top: 2, end: 3, bottom:4),
+///        child: Child(),
+///      )
+///   ```
+///   The child is surrounded by 1, 2, 3, and 4 pixels, and it's width is increased by 1+3 pixels,
+///   it's height by 2+4 pixels from child's width and height.
 class EdgePadding  {
 
   // Generative unnamed

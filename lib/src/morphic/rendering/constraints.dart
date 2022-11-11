@@ -438,9 +438,9 @@ class BoundingBoxes extends BoundingBoxesBase {
 ///   todo-01-document this is not correct at all
 class BoxContainerConstraints extends BoundingBoxesBase {
 
-  /// Expresses if it was created for the very top [RowLayouter] or [ColumnLayoter].
+  /// Expresses if it was created for the very top [Row] or [ColumnLayoter].
   ///
-  /// It is used to control ability of [RowLayouter] or [ColumnLayouter] to set [Align] (alignment) other
+  /// It is used to control ability of [Row] or [Column] to set [Align] (alignment) other
   /// then [Align.start]
   bool isOnTop = false;
 

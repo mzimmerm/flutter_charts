@@ -1253,18 +1253,18 @@ These are the rules we implement
 2. [ ] Each BoxContainer must build immediate children in ~buildContainerOrSelf~. Details: do this by calling ~addChildToHierarchyDeprecated~, then, for all children calling ~child.buildContainerOrSelf(this)~
 3. [ ] ~layout()~  should never be called, except on top
 4. [ ] ~newCoreLayout~ on self or children should NEVER be called in ~buildContainerOrSelf~
-5. [ ] ~BoxContainerConstraints~ are never divided - in any Layouter, including ~RowLayouter~
+5. [ ] ~BoxContainerConstraints~ are never divided - in any Layouter, including ~Row~
 6. [ ] Important: When migrating from old layout to new layout,            move the code from layout() to buildContainerOrSelf(parentBoxContainer).            layout() should not be called on new layout, except on 'fake' root.
 7. [ ] *Important: actual children of container : Ensure (manually for now), that each ~BoxContainer~*:
-   - EITHER uses non-overriden default ~newCoreLayout~ - Then it MUST wrap it's actual children in auto-layouter (~RowLayouter or ColumnLayouter~).
-     - This means that the container has only *ONE IMMEDIATE CHILD* (~RowLayouter or ColumnLayouter~); the IMMEDIATE CHILD ~RowLayouter or ColumnLayouter~ then has *ONE OR MANY* actual children.  
+   - EITHER uses non-overriden default ~newCoreLayout~ - Then it MUST wrap it's actual children in auto-layouter (~Row or Column~).
+     - This means that the container has only *ONE IMMEDIATE CHILD* (~Row or Column~); the IMMEDIATE CHILD ~Row or Column~ then has *ONE OR MANY* actual children.
    - OR     uses overriden ~newCoreLayout~  - THEN it adds its' actual children to itself directly, and lays out children manually in code, similar to what we do in old ~layout~
 8. [ ] Leaf ~BoxContainer~ does not need to implement neither ~buildContainerOrSelf~ (super returns this) nor  ~newCoreLayout~ (super returns when isLeaf). So leaf only needs to implement ~paint~ and ~get layoutSize~
 9. [ ] Allow 0..n children to be greedy in MainLayoutAxis
 
 ** DONE 3. Implement new Box/Column layouters
 
-*** DONE Implement ColumnLayouter similar to RowLayouter
+*** DONE Implement Column similar to Row
 
 ** DONE 4. 2022-10-10 Classes Review
 
@@ -1298,7 +1298,7 @@ Created in the above LegendItemContainer.build
 
 *** DONE Use the new Layout on Containers used in LEGEND = LegendContainer, LegendItemContainer, LabelContainer
 
-**** DONE Use RowLayouter in LegendContainer, LegendItemContainer, LabelContainer
+**** DONE Use Row in LegendContainer, LegendItemContainer, LabelContainer
 
 **** DONE Continue new Layout on LEGEND
 
@@ -1313,7 +1313,7 @@ Created in the above LegendItemContainer.build
 #+begin_src dart
   BoxContainer buildContainerOrSelfOLD() {
 
-    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    // Prepare the children array of actual children which will be passed to the immediately contained Row
     List<BoxContainer> children = [];
 
     // Create member containers, add as children, and lay them out
@@ -1333,12 +1333,12 @@ Created in the above LegendItemContainer.build
     children.add(labelContainer);
     */
 
-    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
-    RowLayouter rowLayouter = RowLayouter(children: children);
+    // Prepare Row which will wrap the actual children of this [LegendContainer]
+    Row row = Row(children: children);
 
-    addChildToHierarchyDeprecated(this, rowLayouter);
+    addChildToHierarchyDeprecated(this, row);
 
-    for (BoxContainer child in rowLayouter.children) {
+    for (BoxContainer child in row.children) {
       child.buildContainerOrSelf();
     }
     LegendItemContainer thisLegendItemContainer = this;
@@ -1348,8 +1348,8 @@ Created in the above LegendItemContainer.build
     /* todo-done-00 : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
+          - crate and return new Row with all the children in it
+          - return the new Row
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
     // 2. Y Center the indicator and label on same horizontal Y level
@@ -1417,15 +1417,15 @@ Created in the above LegendItemContainer.build
     /* done-new-layout-commented : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
+          - crate and return new Row with all the children in it
+          - return the new Row
 
     // Create variable boxConstraints to replace the one originally passed in
     BoxContainerConstraints boxConstraints = layoutableBoxParentSandbox.constraints!;
     double legendItemWidth = (boxConstraints.size.width - 2.0 * containerMarginLR) / dataRowsLegends.length;
     */
 
-    // Prepare the children array of actual children which will be passed to the immediately contained RowLayouter
+    // Prepare the children array of actual children which will be passed to the immediately contained Row
     List<BoxContainer> children = [];
 
     // Layout legend core: for each row, create and position
@@ -1446,8 +1446,8 @@ Created in the above LegendItemContainer.build
       /* done-new-layout-commented : Nothing layout specific, we do autolayout.
         Instead, do this:
           - create children array and add all created child containers to it
-          - crate and return new RowLayouter with all the children in it
-          - return the new RowLayouter
+          - crate and return new Row with all the children in it
+          - return the new Row
       var legendItemContainer = LegendItemContainerOriginalKeep(
         label: dataRowsLegends[index],
         labelStyle: labelStyle,
@@ -1470,12 +1470,12 @@ Created in the above LegendItemContainer.build
 
     // done-new-layout-added but this is NOT used like this anymore
 
-    // Prepare RowLayouter which will wrap the actual children of this [LegendContainer]
-    RowLayouter rowLayouter = RowLayouter(children: children);
+    // Prepare Row which will wrap the actual children of this [LegendContainer]
+    Row row = Row(children: children);
 
-    addChildToHierarchyDeprecated(this, rowLayouter);
+    addChildToHierarchyDeprecated(this, row);
 
-    for (BoxContainer child in rowLayouter.children) {
+    for (BoxContainer child in row.children) {
       child.buildContainerOrSelf();
     }
     LegendContainer thisLegendContainer = this;
@@ -1559,12 +1559,12 @@ What are those?
 - NO: layoutSize member: Make still available as late final on BoxLayouter, set it after return in case it is needed later. Always set just after return from newCoreLayout.
 - NO: constraints member: Remove  
   
-** DONE 5.2 Layouter improvements DONE : Debugging, RowLayouter Packing, Align, settings, overflow rectangle, Greedy, and more
+** DONE 5.2 Layouter improvements DONE : Debugging, Row Packing, Align, settings, overflow rectangle, Greedy, and more
 
 
 - [X] Put stuff back so tests work without changes
 - [X] Remove asserts around free space - there is TODO.
-- [X] Add check to newCoreLayout, root section, if RowLayouter OR ColumnLaoter is deeper, and Align set to anything but 'start' and Packing 'tight', replace the Row/ColumnLayouter with a new copy with 'start' and 'tight'.
+- [X] Add check to newCoreLayout, root section, if Row OR ColumnLaoter is deeper, and Align set to anything but 'start' and Packing 'tight', replace the Row/Column with a new copy with 'start' and 'tight'.
   - [X] Test it on some combinations in legend layout
     - [X] nested Align.end on Row
     - [X] we also have Column example to test
@@ -1593,18 +1593,18 @@ What are those?
       - [X] LegendItemContainer.buildContainerOrSelf - similar changes
   - [X] Make sure existing tests work !!! - using the default legend enum legendIsRowStartSnapItemIsRowStartSnap
   - [X] Add 3 examples (only use LineChart) which overrides creation of ~LegendContainer~
-    - [X] LegendContainer starts with RowLayouter    'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (default desired and tested)
-    - [X] LegendContainer starts with RowLayouter    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'tight' , so noop)
-    - [X] LegendContainer starts with ColumnLayouter 'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (is top, so is NOT overriden, so must be as intended!)
-    - [X] LegendContainer starts with ColumnLayouter 'start',  'loose', LegendItemContainer is Row 'start', 'tight' (as above)
+    - [X] LegendContainer starts with Row    'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (default desired and tested)
+    - [X] LegendContainer starts with Row    'center', 'loose', LegendItemContainer is Row 'end', 'loose' (overriden to 'start', 'tight' , so noop)
+    - [X] LegendContainer starts with Column 'start',  'tight',  LegendItemContainer is Row 'start', 'tight' (is top, so is NOT overriden, so must be as intended!)
+    - [X] LegendContainer starts with Column 'start',  'loose', LegendItemContainer is Row 'start', 'tight' (as above)
     - [X] Create new test images, check them
     - [X] Add the above to representative tests in ~ExamplesDescriptor~ (line charts only)
     - [X] Run all tests
     - [X] commit and push
-- [X] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~ in BoxLayouter or BoxContainer*
+- [X] *Add proper layouter and container hierarchy for offsetting and non-offsetting layouters. In the end, there should be nothing related to ~main/crossAxisLayoutProperties OR Row OR Column~ in BoxLayouter or BoxContainer*
   - [X] ~BoxContainer~ will serve as a default ~NonOffsettingBoxLayouter~
-    - [X] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~
-      - [X] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR RowLayouter OR ColumnLayouter~:
+    - [X] Find the method ~YYY~ which does layout of children and performs their offset - must be using ~main/crossAxisLayoutProperties OR Row OR Column~
+      - [X] There are *multiple methods* that address ~main/crossAxisLayoutProperties OR Row OR Column~:
         1. ~_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonOffsetting~ called in ~newCoreLayout isRoot~ condition - MOVE THIS
         2. ~mainAxisLayoutProperties~ MEMBER - MOVE THIS
         3. ~_rebuildMainAxisLayoutPropertiesAs~ - MOVE THIS
@@ -1644,7 +1644,7 @@ What are those?
       - [X] It must do perhaps nothing? or just applyParentOffset to 0.0? or just call super.applyParentOffset?
   - [X] Add abstract ~OffsettingBoxLayouter~ extends ~BoxContainer~ - empty impl
   - [X] Add abstract ~RollingOffsettingBoxLayouter~ (this is like Flex) extends ~OffsettingBoxLayouter~
-  - [X] Make ~Row and ColumnLayouter~ extend ~RollingOffsettingBoxLayouter~
+  - [X] Make ~Row and Column~ extend ~RollingOffsettingBoxLayouter~
     - [X] Move ~YYY~ from BoxLayouter to ~RollingOffsettingBoxLayouter~
     - [X] Move ~mainAxisLayoutProperties and many friends (which? Column and Row, Packing, Align)~ from BoxLayouter to ~RollingOffsetBoxLayouter~
   - [X] REVIEW CHANGES AND TODOS - RESOVE ABSTRACT OR NO-OP METHODS WHICH 'KNOW' ABOUT ROW_LAYOUTER OR OTHER THINGS known to extensions like RollingOffsettingBoxContainer.
@@ -1707,16 +1707,16 @@ What are those?
 
 IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
 
-** IN-PROGRESS-NOW 5.2 Layouter improvements : New Layouters (Greedy, Center, Padding), RowLayouter: Packing, Align settings; overflow rectangle, and more
+** IN-PROGRESS-NOW 5.2 Layouter improvements : New Layouters (Greedy, Center, Padding), Row: Packing, Align settings; overflow rectangle, and more
 
 Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
 
-- In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , RowLayouter _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
+- In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , Row _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
 - after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
 - *these right-aligned large offsets are then applied on the square and label children* in ~notGreedyChildren[i].applyParentOffset(this, layedOutOffsets[i]);~
-- Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the RowLayouter to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN RowLayouter. So I think the core solution is not do that, and divide the constraints*
+- Then ~_notLeaf_SetSize_As_OuterBoundOf_OffsettedChildren~ sets layoutSize of the Row to a childrenOuterRectangle, so for example, ~layoutSize = childrenOuterRectangle.size~ => (74=20+54, 20) *which is what we want. What pushes it so much to the right?  The already set 300, 320 offset on the rectangle and label. THIS IS THE RESULT OF HAVING A FULL CONSTRAINT PASSED TO ALL CHILDREN IN Row. So I think the core solution is not do that, and divide the constraints*
 - ~Solution already suggested below~ - The Row and Column must ALWAYS ALIGN LEFT/TIGHT, UNLESS IT IS THE TOP ROW OR COLUMN. 
-- The RowLayouter layoutSize should be size of rect (20) + size of label (64)
+- The Row layoutSize should be size of rect (20) + size of label (64)
 
 
  I *think the above proves the approach below. In Row and Column, we need Greedy childre, and introduce the even distribution of constraints to Greedy children*
@@ -1724,7 +1724,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
   - [X] Done but not used
 - [X] Constraint : add method List<Constraints> divideUsingStrategy(DivideConstraintsToChildren) only implement even If ratios, param must be set, if passFull, return same - plug that in code first.
-- [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on RowLayouter and ColumnLayouter.
+- [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on Row and Column.
   
 
 *Important current*
@@ -1732,17 +1732,20 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Containers should have either single child or multiple children
   - [X] Or just change allowed signature on single-child constructors - use ~child: child~ (only Greedy at this time. Extensions of BoxContainer should follow when all old code is converted)
 - [X] Make sure Tests work
-- [X] Add PaddingLayouter that can be used around single child to pad with space - no painting needed
-  - [X] Use PaddingLayouter in Legend and LegendItemContainer to make sure they can be 
+- [X] Add Padder that can be used around single child to pad with space - no painting needed
+  - [X] Use Padder in Legend and LegendItemContainer to make sure they can be
   - [X] Test work
-- [ ] Rename PaddingLayouter to Padder
-- [ ] Rename RowLayouter to Row
-- [ ] Rename ColumnLayouter to Column
-- [ ] Rename GreedyLayouter to Greedy
-- [ ] ~Alignment~ new helper class that defines Alignment.topRight, Alignment.topStart, Alignment.topEnd, Alignment.bottomStart, Alignment.bottomEnd, Alignment.Center . layoutSize _top=-1, _bottom=-1, _start=-1, _end=1.
-  - [ ] It is an imaginary Square with sides 2x2, centered at 0, 0. Any point (offset) within the square represents the alignment.
+- [X] Rename PaddingLayouter to Padder
+- [X] Rename RowLayouter to Row
+- [X] Rename ColumnLayouter to Column
+- [X] Rename GreedyLayouter to Greedy
+- [ ] Check code for warnings.
+- [ ] Run all tests
+- [ ] Commit and push
+- [ ] ~Alignment~ new helper class that defines Alignment.topRight, Alignment.topStart, Alignment.topEnd, Alignment.bottomStart, Alignment.bottomEnd, Alignment.Center . layoutSize _top=-1, _bottom=1, _start=-1, _end=1.
+  - [ ] It is an imaginary Square with sides 2x2, centered at 0, 0. Any point (offset) within the square represents the alignment. In a layout defined by ~Parent(child: Aligner(alignment: Alignment, widthFromChildBy: 1.0,  heightFromChildBy: 1.0, child: child))~, imagine Alignment is transformed (disproportionally) to ~Aligner~'s size ~alignerSize = Size(childWidth * widthFromChildBy, childHeight * heightFromChildBy, )~, let us call this ~AlignmentStretchToAligner~. It's ~alignX~, is between ~0 and AlignerSize.width~, and ~alignY~ between ~0 and alignerSize.height~. Then the child will be positioned at the Offset in aligner corresponding to ~Offset(alignX, alignY)~
   - [ ] Members alignX, alignY values between -1 and +1 for now. 
-  - [ ] ~alignChildInSelf(Size childSize, Size selfSize)~ =>
+  - [ ] ~alignChildInSelf(Size childSize, Size selfSize)~ => *HOW DOES THIS CORRESPOND TO ALIGNERsIZE ABOVE????*
     - # selfSize assumed bigger by childHeightRatio, childWidthRatio
     - [ ] Size sizeRatio = selfSize / childSize (is there Size / Size??)
     - [ ] Offset(), say x coordinate 
@@ -1750,23 +1753,23 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
     - alignX = 0 => offsetX = parentWidth / 2
     - alignX =+1 => offsetX = parentWidth
     - ~offsetX = ((1 + alignX) / 2 ) * parentWidth~
-    - ~return Offset(offsetX, offsetY) & childSize~ *represents position, in parentSize of the aligned (moved) childSize 
+    - ~return Offset(offsetX, offsetY) & childSize~ *represents position, in parentSize of the aligned (moved) childSize*
 - [ ] ~IS THERE SIZE * SIZE AND DIVIDED, WHICH MULTIPLY OR DIVIDE WIDTH, HEIGHT?~ IF NOT, CREATE IT
 - [ ] ~Aligner~, a Layouter that aligns single child - no painting needed
   - [ ] Extends Positioning layouter
   - [ ] Members all final
-    - ~childSizeInflateBy.width~ (>=1),
-    - ~childSizeInflateBy.height~ (>=1), self layout size should be bigger than child layout size by this much
-    - STORE IT AS ~Size childSizeInflateBy~
+    - ~sizeFromChildBy.width~ (>=1),
+    - ~sizeFromChildBy.height~ (>=1), self layout size should be bigger than child layout size by this much
+    - STORE IT AS ~Size sizeFromChildBy~
     - ~alignment~
-  - [ ] Constructor is one-child, plus 3 required defaulting args for "by" multiple (no default) + Alignment (default center)
+  - [ ] ~Aligner~ Constructor is one-child, plus 3 required defaulting args for "by" ~widthFromChildBy~  ~heightFromChildBy~ (no default) + ~Alignment~ (default center)
   - [ ] Note: On BoxConstraint, and Size , use inflateBy to increase them by inflateBy - should we add methods similar to EdgePadding?
   - [ ] Need, given a self size, child size, position child on position (offset)  defined by Alignment - see  ~alignChildInSelf(Size childSize, Size selfSize)~ =
-  - [ ] constraint push to child: if multiple set, create a constraint from self constraint, which is multiplied in directions by ~1/childSizeInflateBy.width, 1/childSizeInflateBy.height~, set on child, else copy self constraint. apply the constraint on child
-  - [ ] If ~childSizeInflateBy.width~ (>=1), ~childSizeInflateBy.height~ ( is set
-    - [ ] *child position function*: we have childSize. WE KNOW ~selfSize = childSize * childSizeInflateBy~ child position (offset) is inside selfSize: Rect childPositionInMe = ~alignChildInSelf(Size childSize, Size selfSize)~
+  - [ ] constraint push to child: if multiple set, create a constraint from self constraint, which is multiplied in directions by ~1/sizeFromChildBy.width, 1/sizeFromChildBy.height~, set on child, else copy self constraint. apply the constraint on child
+  - [ ] If ~sizeFromChildBy.width~ (>=1), ~sizeFromChildBy.height~ ( is set
+    - [ ] *child position function*: we have childSize. WE KNOW ~selfSize = childSize * sizeFromChildBy~ child position (offset) is inside selfSize: Rect childPositionInMe = ~alignChildInSelf(Size childSize, Size selfSize)~
     - [ ] *offset child function*: use default
-    - [ ] *self layout size* : return  ~childLayoutSize * childSizeInflateBy~ 
+    - [ ] *self layout size* : return  ~childLayoutSize * sizeFromChildBy~ (result=multiplication of sizes in both height and width direction) 
   - [ ] If multiple along axis not set DO NOT ALLOW FOR NOW
     - [ ] Child position function : is set in the middle of self constraint (may overflow of course).
     - [ ] self layoutSize is set to self constraint size
@@ -1776,7 +1779,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 ** TODO-NEXT 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 
-This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with RowLayouter and ColumnLayouter. 
+This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
 *** TODO Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
