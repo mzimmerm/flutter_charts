@@ -12,7 +12,7 @@ import 'dart:io' as io show exit;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
+import 'package:flutter_charts/src/util/extension_string.dart' show StringExtension;
 
 import 'src/util/examples_descriptor.dart';
 
@@ -891,6 +891,21 @@ class _ExampleWidgetCreator {
           legendOptions: LegendOptions(
               legendAndItemLayoutEnum:
                   LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
+        );
+
+        chartData = ChartData(
+          dataRows: animalsDefaultData,
+          xUserLabels: animalsXUserLabels,
+          dataRowsLegends: animalsDataRowsLegends,
+          chartOptions: chartOptions,
+        );
+        break;
+
+      case ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+        chartOptions = const ChartOptions(
+          legendOptions: LegendOptions(
+              legendAndItemLayoutEnum:
+              LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
 
         chartData = ChartData(

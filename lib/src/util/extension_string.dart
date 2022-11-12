@@ -1,7 +1,7 @@
-/// Library of extensions on the [String] class.
-///
 import 'util_dart.dart';
 
+/// Extensions on the [String] class.
+///
 extension StringExtension on String {
   /// Convert this string to enum.
   ///

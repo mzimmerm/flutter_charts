@@ -335,4 +335,5 @@ enum LegendAndItemLayoutEnum {
   legendIsRowStartTightItemIsRowStartTight, // default for legend row : desired and tested
   legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped
   legendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+  legendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
 }

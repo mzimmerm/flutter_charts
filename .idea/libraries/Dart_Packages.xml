@@ -355,7 +355,7 @@
         <entry key="pub_semver">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.2/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.3/lib" />
             </list>
           </value>
         </entry>
@@ -603,7 +603,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-2.1.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/pool-1.5.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/process-4.2.4/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/rational-2.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf-1.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-3.0.1/lib" />

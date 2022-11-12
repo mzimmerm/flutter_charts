@@ -15,7 +15,7 @@ echo
 echo -------------------------------------
 echo Running Dart files testing, which is still run with Flutter
 flutter test test/util/y_labels_test.dart
-flutter test test/util/string_extension_test.dart
+flutter test test/util/extension_string_test.dart
 flutter test test/util/util_dart_test.dart
 flutter test test/chart/layouter_one_dimensional_test.dart
 

@@ -16,7 +16,7 @@
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 import '../../../../lib/src/util/util_dart.dart' show enumName;
-import '../../../../lib/src/util/string_extension.dart';
+import '../../../../lib/src/util/extension_string.dart' show StringExtension;
 
 import 'package:tuple/tuple.dart' show Tuple2;
 
@@ -54,6 +54,7 @@ enum ExamplesEnum {
   ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
   ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
   ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+  ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
 
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
@@ -142,6 +143,9 @@ class ExamplesDescriptor {
         ExamplesChartTypeEnum.verticalBarChart),
     //
     const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+        ExamplesChartTypeEnum.verticalBarChart),
+    //
+    const Tuple2(ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
         ExamplesChartTypeEnum.verticalBarChart),
 
     //

@@ -17,7 +17,7 @@ echo
 echo -------------------------------------
 echo Running Dart files testing, which is still run with Flutter
 flutter test test/util/y_labels_test.dart
-flutter test test/util/string_extension_test.dart
+flutter test test/util/extension_string_test.dart
 flutter test test/util/util_dart_test.dart
 flutter test test/chart/layouter_one_dimensional_test.dart
 
@@ -35,7 +35,7 @@ echo
 echo -------------------------------------
 echo Running a wrapper around Flutter integration tests for representative screenshots
 echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
-tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
+# tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
 tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsShown
 # tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration3
@@ -45,5 +45,5 @@ tool/test/integration_test_validate_screenshots.sh ex72AnimalsBySeasonLegendIsRo
 # tool/test/integration_test_validate_screenshots.sh ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap
 tool/test/integration_test_validate_screenshots.sh ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy
 tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
-
+# tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
 

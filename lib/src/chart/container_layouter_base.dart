@@ -1,18 +1,20 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
-import 'package:flutter/material.dart' as material;
+import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 // import 'package:flutter_charts/src/chart/container.dart';
 
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
-    Align,
-    Packing,
-    LengthsPositionerProperties,
-    LayedoutLengthsPositioner,
-    PositionedLineSegments,
-    DivideConstraintsToChildren;
+        Align,
+        Packing,
+        LengthsPositionerProperties,
+        LayedoutLengthsPositioner,
+        PositionedLineSegments,
+        DivideConstraintsToChildren;
+import 'package:flutter_charts/src/chart/container_alignment.dart' show Alignment;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
+import 'package:flutter_charts/src/util/extensions_flutter.dart';
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show boundingRectOfRects;
 
@@ -420,7 +422,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     //       - no-op on baseclass [BoxLayouter].
     List<ui.Rect> positionedRectsInMe = _post_NotLeaf_PositionChildren(children);
 
-    // Apply the calculated layedOutRectsInMe as offsets on children.
+    // Apply the calculated positionedRectsInMe as offsets on children.
     _post_NotLeaf_OffsetChildren(positionedRectsInMe, children);
     // Finally, when all children are at the right offsets within me, invoke
     // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
@@ -440,7 +442,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op in [BoxContainer] (returning empty list,
   /// which causes no positioning of children.
   ///
-  /// Implementations should lay out children of the invoking [BoxLayouter],
+  /// Implementations should lay out children of self [BoxLayouter],
   /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
   /// where children will be placed relative to the invoker, in the order of the passed [children].
   ///
@@ -465,13 +467,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children);
 
   /// An abstract method of the default [newCoreLayout] which role is to
-  /// offset the [children] by the pre-calculated offsets [layedOutRectsInMe] .
+  /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
   ///
   /// Important override notes and rules for [_post_NotLeaf_OffsetChildren] on extensions:
   ///
   ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset]
   ///     for all children in argument [children] and apply the [Rect.topLeft]
-  ///     offset from the passed [layedOutRectsInMe].
+  ///     offset from the passed [positionedRectsInMe].
   ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op.
   ///
   /// First argument should be the result of [_post_NotLeaf_PositionChildren],
@@ -481,7 +483,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// The responsibility of [_post_NotLeaf_SetSize_FromPositionedChildren]
   /// is to set the [layoutSize] of self.
   ///
-  /// In the default [newCoreLayout], at invocation time,
+  /// In the default [newCoreLayout], when this method is invoked,
   /// all children have their [layoutSize]s and [offset]s set.
   ///
   /// The [layoutSize] in this default implementation is set
@@ -499,9 +501,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///        We use method 2, but assert sameness between them.
   ///
   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
-  ///   -  Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
-  ///      Overriding extensions include layouts which do padding,
-  ///      or otherwise increase their sizes, such as [Greedy].
+  ///   - Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
+  ///     Overriding extensions include layouts which do padding,
+  ///     or otherwise increase their sizes, such as [Greedy], [Padder], [Aligner].
+  ///   - [RollingPositioningBoxLayouter]s [Row] and [Column] use this
+  ///     - although they override [newCoreLayout], the method [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
+  ///     which invokes this is default. These classes rely on this default
+  ///     "bounding rectangle of all positioned children" implementaion.
   ///
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
@@ -614,8 +620,8 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   /// Override of the abstract [_post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
   /// [_post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer].
-  /// The no-op is achieved by returning, the existing children rectangles, without re-positioning of children;
-  /// the follow up methods to not re-offset children.
+  /// The no-op is achieved by returning, the existing children rectangles, without re-positioning children;
+  /// the follow up methods use the returned value and apply this offset, without re-offsetting children.
   ///
   /// Returning an empty list here causes no offsets on children are applied,
   /// which is desired on this non-positioning base class [BoxContainer].
@@ -711,22 +717,29 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
       ui.Rect protrudingInThisDirection = rootConstraintsMaxRect.closestIntersectWith(myPaintedRect);
       // paint the protrudingInThisDirection rectangle
       canvas.drawRect(
-          protrudingInThisDirection,
-          ui.Paint()..color = material.Colors.black,
-          );
-      }
+        protrudingInThisDirection,
+        ui.Paint()..color = material.Colors.black,
+      );
+    }
   }
 }
 
-/// Layouter which is allowed to offset it's children with non zero offset.
+/// Abstract layouter which is allowed to offset it's children with non zero offset.
+///
+/// The default implementation overrides [_post_NotLeaf_OffsetChildren] to position children.
 abstract class PositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
   PositioningBoxLayouter({
     List<BoxContainer>? children,
   }) : super(children: children);
 
-  /// Applies the offsets [layedOutRectsInMe] obtained by this specific [Layouter]
-  /// on the [LayoutableBox]es [children].
+  /// Applies the offsets given by the passed [positionedRectsInMe]
+  /// on the passed [LayoutableBox]es [children].
+  ///
+  /// The [positionedRectsInMe] are obtained by this [Layouter]'s
+  /// extensions using [_post_NotLeaf_PositionChildren].
+  ///
+  ///
   @override
   void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == children.length);
@@ -885,7 +898,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       _forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
-      // which returns [layedOutRectsInMe] rectangles relative to self where children should be positioned.
+      // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
       // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
       // in the Column/Row direction. This is effectively a pre-positioning of children is self
       List<ui.Rect> positionedRectsInMe = _post_NotLeaf_PositionChildren(_nonGreedyChildren);
@@ -919,7 +932,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
 
   /// Converts the line segments (which correspond to children widths and heights that have been layed out)
-  /// to [Rect]s, the rectangles where children of the invoking [BoxLayouter] node should be positioned.
+  /// to [Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
   ///
   /// Children should be offset later in [newCoreLayout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
@@ -1056,7 +1069,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   /// Implementation of the abstract method which lays out the invoker's children.
   ///
-  /// It lay out children of the invoking [BoxLayouter],
+  /// It lay out children of self [BoxLayouter],
   /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
   /// where children will be placed relative to the invoker,
   /// in the order of the passed [children].
@@ -1091,7 +1104,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       mainAndCrossPositionedSegments: mainAndCrossPositionedSegments,
       children: children,
     );
-    // print('layedOutRectsInMe = $layedOutRectsInMe');
+    // print('positionedRectsInMe = $positionedRectsInMe');
     return positionedRectsInMe;
   }
 
@@ -1317,6 +1330,106 @@ class Padder extends PositioningBoxLayouter {
     ui.Rect thisRect = positionedChildrenRects[0].inflateByPadding(edgePadding);
 
     layoutSize = thisRect.size;
+  }
+}
+
+/// todo-00-last-document
+///
+class Aligner extends PositioningBoxLayouter {
+  Aligner({
+    required this.childWidthBy,
+    required this.childHeightBy,
+    this.alignment = Alignment.center,
+    required BoxContainer child,
+  }) : super(children: [child]) {
+    assert(childWidthBy >= 1 && childHeightBy >= 1);
+  }
+
+  final Alignment alignment;
+  final double childWidthBy;
+  final double childHeightBy;
+
+  /// Position the only child in self, as mandated by this [Aligner] layouter
+  /// formulas for self size and child position in self.
+  ///
+  /// The self size mandate is implemented in [_selfLayoutSizeFromChild],
+  /// the child position is self mandate is implemented in [_positionChildInSelf].
+  @override
+  List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+    // todo-00-last-last : validate this
+    LayoutableBox child = children[0];
+
+    // This is important. In [_post_NotLeaf_SetSize_FromPositionedChildren]
+    // we will also be setting self.layoutSize to the same value, but should not be calling it here.
+    // That method is called as part of [newCoreLayout] algorithm.
+    ui.Size selfLayoutSize = _selfLayoutSizeFromChild(child.layoutSize);
+    List<ui.Rect> positionedRectsInMe = [
+      _positionChildInSelf(
+        selfSize: selfLayoutSize,
+        childSize: child.layoutSize,
+      )
+    ];
+
+    return positionedRectsInMe;
+  }
+
+  /// Calculates and returns it's layouter-mandated [layoutSize]
+  /// without setting it.
+  ///
+  /// This [Aligner] layouter mandates that it's [layoutSize]
+  /// is calculated by multiplying the [childLayoutSize]
+  /// sides by [childWidthBy] and [childHeightBy].
+  ui.Size _selfLayoutSizeFromChild(ui.Size childLayoutSize) {
+    return childLayoutSize.multiplySidesBy(ui.Size(childWidthBy, childHeightBy));
+  }
+
+  //_post_NotLeaf_OffsetChildren(positionedRectsInMe, children); using default implementation.
+
+  /// Sets self [layoutSize] to the child layoutSize multiplied by _childSizeBy, as
+  /// mandated by this [Aligner] layouter.
+  ///
+  /// This multiplication is wrapped as [_selfLayoutSizeFromChild].
+  @override
+  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+    // Set self layoutSize from child layoutSize multiplied by _childSizeBy, as
+    // mandated by this [Aligner] layouter.
+    layoutSize = _selfLayoutSizeFromChild(positionedChildrenRects[0].size);
+  }
+
+  /// Positions child in self, delegated to [_offsetChildInSelf].
+  ///
+  /// See [_offsetChildInSelf] for details
+  ///
+  /// Used in overridden [_post_NotLeaf_PositionChildren] to position child in this [Aligner] layouter.
+  ui.Rect _positionChildInSelf({
+    required ui.Size selfSize,
+    required ui.Size childSize,
+  }) {
+    return _offsetChildInSelf(
+          selfSize: selfSize,
+          childSize: childSize,
+        ) &
+        childSize;
+  }
+
+  /// Child offset function implements the positioning the child in self, mandated by this [Aligner] layouter.
+  ///
+  /// Given a [selfSize], a [childSize], returns the child offset in self,
+  /// calculated from members [alignment],  [childWidthBy], [childHeightBy].
+  ///
+  /// See discussion in [Alignment] for the positioning of child in [Aligner], given [Alignment].
+  ui.Offset _offsetChildInSelf({
+    required ui.Size selfSize,
+    required ui.Size childSize,
+  }) {
+    double childWidth = childSize.width;
+    double childHeight = childSize.height;
+
+    /// The child is then positioned in the [Aligner] at offset controlled by [alignX] and [alignY]:
+    double childTopLefOffsetX = (childWidth * (childWidthBy - 1)) * (alignment.alignX + 1) / 2;
+    double childTopLefOffsetY = (childHeight * (childHeightBy - 1)) * (alignment.alignY + 1) / 2;
+
+    return ui.Offset(childTopLefOffsetX, childTopLefOffsetY);
   }
 }
 

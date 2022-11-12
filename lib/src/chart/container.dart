@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 import 'dart:math' as math show max;
+import 'package:flutter_charts/src/chart/container_alignment.dart';
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
@@ -20,7 +21,7 @@ import 'options.dart';
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show BoxContainer, Column, Greedy, LayoutableBox, Padder, Row;
+    show Aligner, BoxContainer, Column, Greedy, LayoutableBox, Padder, Row;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -1279,12 +1280,17 @@ class LegendItemContainer extends BoxContainer {
         children = _itemIndAndLabel(doPadIndAndLabel: true);
         // default for legend row : desired and tested
         return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+      // create padded children
+        children = _itemIndAndLabel(doAlignIndAndLabel: true);
+        // default for legend row : desired and tested
+        return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
     }
   }
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].
-  List<BoxContainer> _itemIndAndLabel({bool doPadIndAndLabel = false}) {
+  List<BoxContainer> _itemIndAndLabel({bool doPadIndAndLabel = false, bool doAlignIndAndLabel = false}) {
     var indRect = LegendIndicatorRectContainer(
       indicatorPaint: _indicatorPaint,
       options: _options,
@@ -1313,6 +1319,26 @@ class LegendItemContainer extends BoxContainer {
           child: label,
         ),
       ];
+    } else if (doAlignIndAndLabel) {
+      return [
+        Row(
+          children: [
+          Aligner(
+            childHeightBy: 3,
+            childWidthBy: 1.2,
+            alignment: Alignment.startTop,
+            child: indRect,
+          ),
+            Aligner(
+              childHeightBy: 5,
+              childWidthBy: 1.2,
+              alignment: Alignment.endBottom,
+              child: label,
+            ),
+          ]
+        )
+      ];
+
     } else {
       return [
         indRect,
@@ -1488,6 +1514,12 @@ class LegendContainer extends ChartAreaContainer {
             children: children);
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
         // This option pads items inside LegendItem
+        return Row(
+            mainAxisAlign: Align.start,
+            mainAxisPacking: Packing.tight,
+            children: children);
+      case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
+      // This option aligns items inside LegendItem
         return Row(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,

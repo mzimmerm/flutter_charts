@@ -3,7 +3,7 @@
 import 'package:test/test.dart';
 
 // tested package
-import 'package:flutter_charts/src/util/string_extension.dart';
+import 'package:flutter_charts/src/util/extension_string.dart' show StringExtension;
 
 enum TestedEnum { enum1, enum2 }
 
