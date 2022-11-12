@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'package:flutter/material.dart' as material show Colors;
+import 'package:flutter/services.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 // import 'package:flutter_charts/src/chart/container.dart';
@@ -321,10 +322,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     if (isRoot) {
       // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
       assert(constraints.size != const ui.Size(-1.0, -1.0));
-      // On nested levels [Row]s OR [Column]s
-      // force non-positioning layout properties.
-      // This is a hack that unfortunately make this baseclass [BoxLayouter]
-      // to depend on it's extensions [Column] and [Row]
+      // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
+      // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
       _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
         foundFirstRowFromTop: false,
         foundFirstColumnFromTop: false,
@@ -733,7 +732,7 @@ abstract class PositioningBoxLayouter extends BoxContainer {
     List<BoxContainer>? children,
   }) : super(children: children);
 
-  /// Applies the offsets given by the passed [positionedRectsInMe]
+  /// Applies the offsets given with the passed [positionedRectsInMe]
   /// on the passed [LayoutableBox]es [children].
   ///
   /// The [positionedRectsInMe] are obtained by this [Layouter]'s
@@ -911,7 +910,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
       //   self original constraint, and  nonGreedyChildrenSize
-      BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateBySize(nonGreedyBoundingRect.size);
+      BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateWithSize(nonGreedyBoundingRect.size);
 
       // Divides constraintsRemainingForGreedy~into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
@@ -1304,7 +1303,7 @@ class Padder extends PositioningBoxLayouter {
   /// This ensures padded child will fit in self constraints.
   @override
   void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
-    children[0].applyParentConstraints(this, constraints.deflateByPadding(edgePadding));
+    children[0].applyParentConstraints(this, constraints.deflateWithPadding(edgePadding));
   }
 
 
@@ -1327,14 +1326,22 @@ class Padder extends PositioningBoxLayouter {
     // size set as layout size.
     // So self layoutSize is increased from child layoutSize by EdgePadding in all directions.
     // in all directions
-    ui.Rect thisRect = positionedChildrenRects[0].inflateByPadding(edgePadding);
+    ui.Rect thisRect = positionedChildrenRects[0].inflateWithPadding(edgePadding);
 
     layoutSize = thisRect.size;
   }
 }
 
-/// todo-00-last-document
+/// A positioning layouter that sizes self from the child,
+/// then aligns the single child within self.
 ///
+/// The self sizing from child is defined by the multiples of child width and height,
+/// the members [childWidthBy] and [childHeightBy].
+///
+/// The align process of the single child within self is defined by the member [alignment].
+///
+/// See [Alignment] for important notes and calculations on how child positioning
+/// is calculated given by [childWidthBy], [childHeightBy] and [alignment].
 class Aligner extends PositioningBoxLayouter {
   Aligner({
     required this.childWidthBy,
@@ -1349,19 +1356,30 @@ class Aligner extends PositioningBoxLayouter {
   final double childWidthBy;
   final double childHeightBy;
 
-  /// Position the only child in self, as mandated by this [Aligner] layouter
+  /// This override passes the immediate children of this [Aligner]
+  /// the constraints that are deflated from self constraints by the
+  /// [childWidthBy] and [childHeightBy]
+  @override
+  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+    LayoutableBox child = children[0];
+    BoxContainerConstraints childConstraints = constraints.multiplySidesBy(Size(1.0 / childWidthBy, 1.0 / childHeightBy));
+    child.applyParentConstraints(this, childConstraints);
+  }
+
+  /// Position the only child in self, as mandated by this [Aligner]'s
   /// formulas for self size and child position in self.
   ///
   /// The self size mandate is implemented in [_selfLayoutSizeFromChild],
-  /// the child position is self mandate is implemented in [_positionChildInSelf].
+  /// the child position in self mandate is implemented in [_positionChildInSelf].
   @override
   List<ui.Rect> _post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-00-last-last : validate this
     LayoutableBox child = children[0];
 
-    // This is important. In [_post_NotLeaf_SetSize_FromPositionedChildren]
-    // we will also be setting self.layoutSize to the same value, but should not be calling it here.
-    // That method is called as part of [newCoreLayout] algorithm.
+    // Create and return the rectangle where the single child will be positioned.
+    // Note that this layouter needs to know it's selfLayoutSize without setting it (done later).
+    // The selfLayoutSize is needed here early to position children (end of selfLayoutSize is needed
+    // to align to the end!!). This is the nature of this layouter - it defines selfLayoutSize from childSize,
+    // so selfLayoutSize is known once child is layed out - true when this method is invoked.
     ui.Size selfLayoutSize = _selfLayoutSizeFromChild(child.layoutSize);
     List<ui.Rect> positionedRectsInMe = [
       _positionChildInSelf(
@@ -1373,26 +1391,25 @@ class Aligner extends PositioningBoxLayouter {
     return positionedRectsInMe;
   }
 
-  /// Calculates and returns it's layouter-mandated [layoutSize]
+  /// Calculates and returns this [Aligner]-mandated [layoutSize]
   /// without setting it.
   ///
-  /// This [Aligner] layouter mandates that it's [layoutSize]
+  /// This [Aligner] mandates that it's [layoutSize]
   /// is calculated by multiplying the [childLayoutSize]
   /// sides by [childWidthBy] and [childHeightBy].
+  /// This method implements the self [layoutSize] mandate.
   ui.Size _selfLayoutSizeFromChild(ui.Size childLayoutSize) {
     return childLayoutSize.multiplySidesBy(ui.Size(childWidthBy, childHeightBy));
   }
 
   //_post_NotLeaf_OffsetChildren(positionedRectsInMe, children); using default implementation.
 
-  /// Sets self [layoutSize] to the child layoutSize multiplied by _childSizeBy, as
-  /// mandated by this [Aligner] layouter.
+  /// Sets self [layoutSize] to the child layoutSize multiplied along axes
+  /// by [childWidthBy], [childHeightBy], as mandated by this [Aligner].
   ///
   /// This multiplication is wrapped as [_selfLayoutSizeFromChild].
   @override
   void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    // Set self layoutSize from child layoutSize multiplied by _childSizeBy, as
-    // mandated by this [Aligner] layouter.
     layoutSize = _selfLayoutSizeFromChild(positionedChildrenRects[0].size);
   }
 
@@ -1400,7 +1417,7 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// See [_offsetChildInSelf] for details
   ///
-  /// Used in overridden [_post_NotLeaf_PositionChildren] to position child in this [Aligner] layouter.
+  /// Used in overridden [_post_NotLeaf_PositionChildren] to position child in this [Aligner].
   ui.Rect _positionChildInSelf({
     required ui.Size selfSize,
     required ui.Size childSize,
@@ -1412,7 +1429,7 @@ class Aligner extends PositioningBoxLayouter {
         childSize;
   }
 
-  /// Child offset function implements the positioning the child in self, mandated by this [Aligner] layouter.
+  /// Child offset function implements the positioning the child in self, mandated by this [Aligner].
   ///
   /// Given a [selfSize], a [childSize], returns the child offset in self,
   /// calculated from members [alignment],  [childWidthBy], [childHeightBy].
@@ -1501,6 +1518,9 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
   for (var child in boxLayouter.children) {
     // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
     // so that only the top layouter can have non-start and non-tight/matrjoska
+    // todo-02 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
+    //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
+    //           but this is not simple. ALSO: consider moving this to the buildContainerOrSelf method
     if (child is Row && foundFirstRowFromTop) {
       child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
     }

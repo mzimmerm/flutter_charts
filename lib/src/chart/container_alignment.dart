@@ -1,10 +1,10 @@
 /// [Alignment] defines how a child should be positioned in it's parent.
 ///
-/// [Alignment] is a helper class and required parameter for the [Aligner] layouter.
+/// [Alignment] is a helper class and required parameter for this [Aligner].
 ///
 /// Members [alignX], [alignY] have values between -1 and +1 for now.
 /// This allows [Alignment] to be represented by an imaginary Square with sides 2x2, centered at 0, 0.
-/// Any point (offset) within the square represents a specific alignment of child in the [Aligner] layouter.
+/// Any point (offset) within the square represents a specific alignment of child in this [Aligner].
 ///
 /// [alignX], [alignY] represent how much is child offset in the [Aligner] during layout.
 /// Alignment with ```alignX = -1; alignY = -1``` causes no offset of child in [Aligner].
@@ -86,6 +86,41 @@
 ///     topLefOffsetX = (childWidth * (childWidthBy - 1)) * (alignX + 1) / 2
 /// ```
 /// Which shows the reason for (1)
+///
+/// A pictorial of [Alignment] and [Aligner]
+///
+/// <span style="font-family:Courier;>
+///                 +----------------+----------------+
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |                                    .
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 +----------------+                |
+///                 |         ^                       |
+///                 |   Child |                       |
+///                 |      for alignX=-1              |
+///                 |      for alignY=-1              |
+///                 |                                 |
+///                 |                                 |
+///                 |                +----------------+
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///                 |                |                |
+///   Aligner------>+----------------+----------------+
+///     childWidthBy=2               ^
+///     childHeightBy=3              |
+///                                  |
+///                                  Child
+///                                    for alignX=1
+///                                        alignY=1
+/// </span>
 ///
 class Alignment {
 

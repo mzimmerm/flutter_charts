@@ -152,7 +152,7 @@ class ExamplesDescriptor {
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
 
-  /// Check if the example described by the passed enums should run in a test.
+  /// Check if the example described with the passed enums should run in a test.
   ///
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
   ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only

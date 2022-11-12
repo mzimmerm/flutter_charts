@@ -6,21 +6,23 @@ import 'package:flutter_charts/src/chart/container_edge_padding.dart' show EdgeP
 
 extension SizeExtension on ui.Size {
 
-  /// Add the [other] width and height to self width and height.
-  ui.Size inflateBySize(ui.Size other) {
+  /// Returns a Size with [width] and [height] being self [width] and [height]
+  /// increased with [other] width and height.
+  ui.Size inflateWithSize(ui.Size other) {
     return ui.Size(width + other.width, height + other.height);
   }
 
-  /// Subtract the [other] width and height to self width and height.
-  ui.Size deflateBySize(ui.Size other) {
+  /// Returns a Size with [width] and [height] being self [width] and [height]
+  /// decreased with [other] width and height.
+  ui.Size deflateWithSize(ui.Size other) {
     return ui.Size(math.max(width - other.width, 0.0), math.max(height - other.height, 0.0));
   }
 
-  /// Multiply self width and height by the [other] width and height.
+  /// Returns a Size with [width] and [height] being self [width] and [height]
+  /// multiplied by [other] width and height.
   ui.Size multiplySidesBy(ui.Size other) {
     return ui.Size(width * other.width, height * other.height);
   }
-
 }
 
 extension RectExtension on ui.Rect {
@@ -30,7 +32,7 @@ extension RectExtension on ui.Rect {
   /// That means, the Rectangle will both move (offset will change) and change size, unless padding
   /// values [padding.start] and [padding.top] are zero.
   ///
-  ui.Rect inflateByPadding(EdgePadding padding) {
+  ui.Rect inflateWithPadding(EdgePadding padding) {
     ui.Rect translated = translate(-padding.start, -padding.top);
     ui.Rect translatedAndInflated = ui.Rect.fromLTWH(
       translated.left,
@@ -41,8 +43,8 @@ extension RectExtension on ui.Rect {
     return translatedAndInflated;
   }
 
-  ui.Rect deflateByPadding(EdgePadding padding) {
-    return inflateByPadding(padding.negate());
+  ui.Rect deflateWithPadding(EdgePadding padding) {
+    return inflateWithPadding(padding.negate());
   }
 
   bool isOutsideOf(ui.Rect other) {

@@ -1697,19 +1697,10 @@ What are those?
         - [X] paint the  ~protrudingInThisDirection~ rectable
       - [X] Add  ~paintIfLayoutOverflow~ to every non-leaf non-overriden paint. This is probably not enough as leafs are not reached. But in the new layouter, non-leafs should be fully correctly contained within parents, so checking parents is enough.
        
-** IN-PROGRESS Sequence of calls of old and new layout
-
-- ~FlutterChartPainter.paint~ calls
-- ~ChartRootContainer.paint~ calls
-- ~ChartRootContainer.layout~ which creates in order
-- The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
-  - After each container is created, it's ~layout~ is immediately called.
-
-IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
-
-** IN-PROGRESS-NOW 5.2 Layouter improvements : New Layouters (Greedy, Center, Padding), Row: Packing, Align settings; overflow rectangle, and more
+** DONE 5.2 Layouter improvements : New Layouters (Greedy, Center, Padding), Row: Packing, Align settings; overflow rectangle, and more
 
 Debugging notes on why using a 'right alignment' on legend, the legend ends up outside the drawing area:
+
 
 - In _positionChildrenUsingOneDimAxisLayouter_As_LayedOutSegments, then in _notLeaf_OffsetChildrenAccordingToLayouter , Row _convertLayedOutSegmentsToOffsets creates offsets on the right -> layedOutOffsets =  300, 320 start, hugely offset to the right
 - after, _offsetChildren is called, which places the square and label starting at offset 300, 320. 
@@ -1719,7 +1710,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - The Row layoutSize should be size of rect (20) + size of label (64)
 
 
- I *think the above proves the approach below. In Row and Column, we need Greedy childre, and introduce the even distribution of constraints to Greedy children*
+ I *think the above proves the approach below. In Row and Column, we need Greedy children, and introduce the even distribution of constraints to Greedy children*
 
 - [X] Add enum DivideConstraintsToChildren : evenly, ratios, noDivide
   - [X] Done but not used
@@ -1743,7 +1734,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Run all tests
 - [X] Commit and push
 - [X] ~Alignment~ new helper class that defines Alignment.topRight, Alignment.topStart, Alignment.topEnd, Alignment.bottomStart, Alignment.bottomEnd, Alignment.Center . layoutSize _top=-1, _bottom=1, _start=-1, _end=1.
-- [-] ~Aligner~, a Layouter that aligns single child - no painting needed
+- [X] ~Aligner~, a Layouter that aligns single child - no painting needed
   - [X] Extends Positioning layouter
   - [X] ~Aligner~ Constructor is one-child, plus 3 required defaulting args for "by" ~childWidthBy~  ~childHeightBy~ (no default) + ~Alignment~ (default center)
   - [X] Members all final
@@ -1752,17 +1743,13 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
     - STORE IT AS ~Size childSizeBy~
     - ~alignment~
   - [X] Need, given a self size, child size, position child on position (offset)  defined by Alignment - see  ~_positionChildInSelf(Size childSize, Size selfSize)~ =
-  - [ ] *TODO TODO TODO* constraint push to child: if multiple set, create a constraint from self constraint, which is multiplied in directions by ~1/childSizeBy.width, 1/childSizeBy.height~, set on child, 
+  - [X] constraint push to child: if multiple set, create a constraint from self constraint, which is multiplied in directions by ~1/childSizeBy.width, 1/childSizeBy.height~, set on child, 
   - [X] If ~childSizeBy.width~ (>=1), ~childSizeBy.height~ ( is set
     - [X] *child position function*: we have childSize. WE KNOW ~selfSize = childSize * childSizeBy~ child position (offset) is inside selfSize: Rect childPositionInMe = ~_positionChildInSelf(Size childSize, Size selfSize)~
     - [X] *offset child function*: use default
     - [X] *self layout size* : return  ~childLayoutSize * childSizeBy~ (result=multiplication of sizes in both height and width direction) 
-  - [ ] If multiple along axis NOT SET-  DO NOT ALLOW FOR NOW
-    - [ ] constraint push to child: if multiple set, copy self constraint to child (this should be implemented in default). 
-    - [ ] Child position function : is set in the middle of self constraint (may overflow of course).
-    - [ ] self layoutSize is set to self constraint size
-  - [ ] Use Align in Legend and LegendItemContainer to make sure they are usable.
-  - [ ] Test work
+  - [X] Use Align in Legend and LegendItemContainer to make sure they are usable.
+  - [X] Test work, push
 
 
 #+BEGIN_SRC ditaa :file img-babel-ditaa-1.png :cmdline -E -r
@@ -1800,13 +1787,35 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
                                        alignY=1
 #+END_SRC
 
-** TODO-NEXT 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
+** IN-PROGRESS Sequence of calls of old and new layout
+
+- ~FlutterChartPainter.paint~ calls
+- ~ChartRootContainer.paint~ calls
+- ~ChartRootContainer.layout~ which creates in order
+- The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
+  - After each container is created, it's ~layout~ is immediately called.
+
+IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
+
+** IN-PROGRESS-NOW 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
 *** TODO Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
+- [ ] Study singleton in dart and select one version to use
+- [ ] In ChartOptions and extensions :
+  - [ ] Add singleton-defining methods
+  - [ ] Can ChartOptions it stay const?
+- [ ] All BoxContainer extensions which pass options, comment out
+- [ ] In main, inside the big switch, add an expression which creates instance of the appropriate OptionsSingleton.
+- [ ] In code, whereever there is compile error on now missing options, set it from the singleton
+- [ ]
+- [ ] 
+- [ ] 
+- [ ] 
+- 
 *** TODO Ensure code sets up the parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
 - [X] Which containers to convert to hierarchy?

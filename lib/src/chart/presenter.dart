@@ -107,7 +107,7 @@ class PresentersColumn {
 /// and is a "source" for creating this object.
 /// In addition to [PointsColumns.pointsColumns], a constructor
 /// of this object needs to be given a way to create each "visual atomic widget"
-/// to display each data value. This is provided by the passed
+/// to display each data value. This is provided with the passed
 /// [PresenterCreator], which "create" methods know how to create the concrete
 /// instances of the "atomic stacked display widget of the data value" using
 ///

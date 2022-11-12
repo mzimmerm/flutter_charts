@@ -238,24 +238,40 @@ abstract class BoundingBoxesBase {
     }
   }
 
-  Tuple2<Size, Size> _deflateBySize(Size size) {
-    // Smaller constraint, on both min and max portions, by the passed size
-    Size max = maxSize.deflateBySize(size);
-    Size min = minSize.deflateBySize(size);
+  /// Helper returns Tuple2 of sizes, deflated (smaller) from self [minSize] and [maxSize] with the passed [size].
+  ///
+  /// The deflation is defined by subtraction (not division).
+  Tuple2<Size, Size> _deflateWithSize(Size size) {
+    // Smaller constraint, on both min and max portions, with the passed size
+    Size min = minSize.deflateWithSize(size);
+    Size max = maxSize.deflateWithSize(size);
 
     return Tuple2(min, max);
   }
 
-  Tuple2<Size, Size> _inflateBySize(Size size) {
-    // Smaller constraint, on both min and max portions, by the passed size
-    Size max = maxSize.inflateBySize(size);
-    Size min = minSize.inflateBySize(size);
+  /// Helper returns Tuple2 of sizes, inflated (bigger) from self [minSize] and [maxSize] with the passed [size].
+  ///
+  /// The deflation is defined by addition (not multiplication).
+  Tuple2<Size, Size> _inflateWithSize(Size size) {
+    // Smaller constraint, on both min and max portions, with the passed size
+    Size min = minSize.inflateWithSize(size);
+    Size max = maxSize.inflateWithSize(size);
 
     return Tuple2(min, max);
   }
 
-  BoundingBoxesBase deflateBySize(Size size) {
-    Tuple2<Size, Size> smaller = _deflateBySize(size);
+  Tuple2<Size, Size> _multiplySidesBy(Size size) {
+    Size min = minSize.multiplySidesBy(size);
+    Size max = maxSize.multiplySidesBy(size);
+
+    return Tuple2(min, max);
+  }
+
+  /// Returns [BoundingBoxesBase], with sizes deflated (smaller) from self [minSize] and [maxSize] with the passed [size].
+  ///
+  /// The deflation is defined by subtraction (not division).
+  BoundingBoxesBase deflateWithSize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateWithSize(size);
 
     return cloneWith(
       minWidth: smaller.item1.width,
@@ -265,8 +281,11 @@ abstract class BoundingBoxesBase {
     );
   }
 
-  BoundingBoxesBase inflateBySize(Size size) {
-    Tuple2<Size, Size> bigger = _inflateBySize(size);
+  /// Returns [BoundingBoxesBase], with sizes inflated (larger) from self [minSize] and [maxSize] with the passed [size].
+  ///
+  /// The inflation is defined by addition (not multiplication).
+  BoundingBoxesBase inflateWithSize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateWithSize(size);
 
     return cloneWith(
       minWidth: bigger.item1.width,
@@ -276,8 +295,19 @@ abstract class BoundingBoxesBase {
     );
   }
 
-  BoundingBoxesBase deflateByPadding(EdgePadding padding) {
-    return deflateBySize(
+  BoundingBoxesBase multiplySidesBy(Size size) {
+    Tuple2<Size, Size> bigger = _multiplySidesBy(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  BoundingBoxesBase deflateWithPadding(EdgePadding padding) {
+    return deflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
@@ -285,8 +315,8 @@ abstract class BoundingBoxesBase {
     );
   }
 
-  BoundingBoxesBase inflateByPadding(EdgePadding padding) {
-    return inflateBySize(
+  BoundingBoxesBase inflateWithPadding(EdgePadding padding) {
+    return inflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
@@ -376,8 +406,8 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 
   @override
-  BoundingBoxes deflateBySize(Size size) {
-    Tuple2<Size, Size> smaller = _deflateBySize(size);
+  BoundingBoxes deflateWithSize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateWithSize(size);
 
     return cloneWith(
       minWidth: smaller.item1.width,
@@ -388,8 +418,8 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 
   @override
-  BoundingBoxes inflateBySize(Size size) {
-    Tuple2<Size, Size> bigger = _inflateBySize(size);
+  BoundingBoxes inflateWithSize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateWithSize(size);
 
     return cloneWith(
       minWidth: bigger.item1.width,
@@ -400,8 +430,20 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 
   @override
-  BoundingBoxes deflateByPadding(EdgePadding padding) {
-    return deflateBySize(
+  BoundingBoxes multiplySidesBy(Size size) {
+    Tuple2<Size, Size> bigger = _multiplySidesBy(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  @override
+  BoundingBoxes deflateWithPadding(EdgePadding padding) {
+    return deflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
@@ -410,8 +452,8 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 
   @override
-  BoundingBoxes inflateByPadding(EdgePadding padding) {
-    return inflateBySize(
+  BoundingBoxes inflateWithPadding(EdgePadding padding) {
+    return inflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
@@ -517,8 +559,8 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   }
 
   @override
-  BoxContainerConstraints deflateBySize(Size size) {
-    Tuple2<Size, Size> smaller = _deflateBySize(size);
+  BoxContainerConstraints deflateWithSize(Size size) {
+    Tuple2<Size, Size> smaller = _deflateWithSize(size);
 
     return cloneWith(
       minWidth: smaller.item1.width,
@@ -529,8 +571,8 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   }
 
   @override
-  BoxContainerConstraints inflateBySize(Size size) {
-    Tuple2<Size, Size> bigger = _inflateBySize(size);
+  BoxContainerConstraints inflateWithSize(Size size) {
+    Tuple2<Size, Size> bigger = _inflateWithSize(size);
 
     return cloneWith(
       minWidth: bigger.item1.width,
@@ -541,8 +583,20 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   }
 
   @override
-  BoxContainerConstraints deflateByPadding(EdgePadding padding) {
-    return deflateBySize(
+  BoxContainerConstraints multiplySidesBy(Size size) {
+    Tuple2<Size, Size> bigger = _multiplySidesBy(size);
+
+    return cloneWith(
+      minWidth: bigger.item1.width,
+      minHeight: bigger.item1.height,
+      maxWidth: bigger.item2.width,
+      maxHeight: bigger.item2.height,
+    );
+  }
+
+  @override
+  BoxContainerConstraints deflateWithPadding(EdgePadding padding) {
+    return deflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
@@ -551,8 +605,8 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   }
 
   @override
-  BoxContainerConstraints inflateByPadding(EdgePadding padding) {
-    return inflateBySize(
+  BoxContainerConstraints inflateWithPadding(EdgePadding padding) {
+    return inflateWithSize(
       Size(
         padding.start + padding.end,
         padding.top + padding.bottom,
