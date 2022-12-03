@@ -2,6 +2,14 @@
 #+TODO: TODO TODO-NEXT IN-PROGRESS IN-PROGRESS-NOW LATER HOLD DONE-THIS-ITERATION DONE NOTE
 
 
+* NOTE Commands to run tests
+
+** Eshell
+
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+- setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_representative_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+  
 * TODO Bugs and issues - flutter_charts
 ** TODO The stock charts example contains a bug which reverts the series on the negative values - both negative dataRows, and dataRowsColors must be reverted for the chart stacks to show in intended order (black, green grey red from top). But even then, dataRowsLegends are incorrect. 
  
@@ -1718,7 +1726,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 - [X] Add ability to set packing, tight, expandToConstraintMax, constraintDivisionToChildren  on Row and Column.
   
 
-*Important current*
+*Implement this*
 
 - [X] Containers should have either single child or multiple children
   - [X] Or just change allowed signature on single-child constructors - use ~child: child~ (only Greedy at this time. Extensions of BoxContainer should follow when all old code is converted)
@@ -1787,7 +1795,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
                                        alignY=1
 #+END_SRC
 
-** IN-PROGRESS Sequence of calls of old and new layout
+** IN-PROGRESS Sequence and structure of calls during old and new layout
 
 - ~FlutterChartPainter.paint~ calls
 - ~ChartRootContainer.paint~ calls
@@ -1797,13 +1805,14 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
 
 IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
 
-** IN-PROGRESS-NOW 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
-
+** IN-PROGRESS 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** TODO Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
+*** IN-PROGRESS-NOW Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
+
+- [ ] Run all tests in eshell
 - [ ] Study singleton in dart and select one version to use
 - [ ] In ChartOptions and extensions :
   - [ ] Add singleton-defining methods
