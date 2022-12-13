@@ -27,7 +27,7 @@ import 'container_layouter_base.dart'
 /// or vertical bar chart.
 ///
 /// The behavior is plugged in the container, not the container owner chart.
-mixin ChartBehavior {
+abstract class ChartBehavior {
   /// Behavior allows to start Y axis at data minimum (rather than 0).
   ///
   /// The request is asked by [DataContainerOptions.startYAxisAtDataMinRequested],

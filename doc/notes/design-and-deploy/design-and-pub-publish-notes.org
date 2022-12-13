@@ -1809,10 +1809,46 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** IN-PROGRESS-NOW Redesign Options as a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
+*** NO-NO-NO Options - turn into a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
 
+Options are NOT a singleton. Multiple charts may be used in an application, each with a different ChartOptions
 
-- [ ] Run all tests in eshell
+- [X] Run all tests in eshell
+- [ ] ChartOptions: How do they get in their lexical scope now? 
+  - [ ] ~class structure~ : LineChart( LineChartPainter( LineChartRootContainer ( ChartData ( ChartOptions
+  - [ ] *Any other class that needs ChartOptions, gets it either 1) via knowing about LineChartRootContainer, or 2) by being constructed in a place that knows aobut ChartOptions, and passing ChartOptions to constructor*
+  - [ ] Good example of 2) is ~LegendItemContainer~, constructed in ~LegendContainer._legendItems~ which passes options from it's LineChartRootContainer to  ~LegendItemContainer~ constructor.
+  - [ ] Most classes get options by holding on ChartRootContainer and accessing Options through ~ChartRootContainer -> ChartData data -> ChartOptions chartOptions~. Some classes 
+  - [ ] Classes that hold on ChartRootContainer: look for ~required ChartRootContainer chartRootContainer~  *this is also a good list of all important classes for refactoring*
+    - [ ] ChartRootContainer.createDataContainer()
+    - [ ] YContainer                                         constr
+    - [ ] XContainer                                         constr
+    - [ ] AdjustableLabelsChartAreaContainer                 constr
+    - [ ] DataContainer                                      constr
+    - [ ] VerticalBarChartDataContainer                      constr
+    - [ ] LineChartDataContainer                             constr
+    - [ ] LegendContainer                                    constr
+    - [ ] Presenter                                          constr
+    - [ ] PresentersColumns                                  constr
+    - [ ] VerticalBarPresenter                               constr
+    - [ ] LineAndHotspotPresenter                            constr
+    - [ ] PresentersColumn                                   constr
+    - [ ] PresentersColumn._createPresentersInColumn
+    - [ ] PresenterCreator.createPointPresenter
+    - [ ] VerticalBarChartRootContainer.createDataContainer 
+    - [ ] VerticalBarLeafCreator.createPointPresenter
+    - [ ] LineChartRootContainer.createDataContainer
+    - [ ] LineAndHotspotLeafCreator.createPointPresenter
+    - [ ] 
+    - [ ] 
+  - [ ] Classes that hold on ChartOptions      : look for ~required ChartOptions options~
+    - [ ] LegendItemContainer                                constr
+    - [ ] LegendIndicatorRectContainer                       constr           
+    - [ ] DefaultIterativeLabelLayoutStrategy                constr
+    - [ ] LabelContainer                                     constr
+    - [ ] AxisLabelContainer                                 constr
+    - [ ] RandomChartData                                    constr
+    - [ ] 
 - [ ] Study singleton in dart and select one version to use
 - [ ] In ChartOptions and extensions :
   - [ ] Add singleton-defining methods
@@ -1825,8 +1861,60 @@ This section describes a first step of migrating a Container such as ~XLabelCont
 - [ ] 
 - [ ] 
 - 
+
+
+
+*** IN-PROGRESS-NOW Go over existing BoxContainers, and make sure children are created before parent
+*** IN-PROGRESS-NOW Make sure each BoxContainer has a key, unique key amonng siblings
+
+- [ ] Key -> SiblingsKey (like LocalKey) -> SiblingsValueKey (ValueKey)
+- [-] On BoxContainer -  Guarantee that each child has a unique key amonng siblings
+  - [ ] 
+  - [X] Create immutable class Key, member value
+  - [-] Key
+    - [X] Add member late final Key key to BoxLayouter. Value 
+    - [X] method ensureUniqueWith((List<Key> keys) - throw exception if not
+    - [X] method Key uniqueNextWith(List<Key> keys) 
+      - [X] generate name as childN N = keys.size + 1, ID as N
+    - [ ] When adding children to BoxContainer:
+      - [ ] if child key is not null, call ensureUniqueWith((List<Key> keys)  if it's unique among children before it. If null, set to uniqueNextWith(List<Key> previousChilren.keys)  
+- [ ] On ChartRootContainer, add final Map<String, Key> childContainerKeys =
+  #+begin_src dart
+    { "legendContainer", Key( "legendContainer", 1),
+      etc
+      }
+  #+end_src
+- [ ] This is just a descriptor to make clear what are the children.
+- 
+
+
+
+
+- [ ] Add private final member Map<String, BoxContainer> _namedChildren 
+- [ ] BoxContainer and all other constructors that have children: param, remove setting children, and set _namedChildren instead, generatinve the name = child1, child2 etc.
+- [ ] Turn BoxContainer.children to getter
+- [ ] To BoxContainer add named constructor withNamedChildren(Map<String, BoxContainer> namedChildren
+  - [ ] Does this force to add same constructor to all extensions?
+- [ ] Make sure all tests work
+- [ ] commit and push
+*** IN-PROGRESS-NOW Move container.dart and related container classes to a new directory container_layouter
+
+*** IN-PROGRESS-NOW Study use of container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+
+What would it take to convert them to BoxContainer extensions?
+
+Capture the process here:
+
+- [ ] 
+- [ ] 
+- [ ] 
+- [ ] 
+- 
+
 *** TODO Ensure code sets up the parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
+
+- [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
 - [X] Which containers to convert to hierarchy?
   - [X] ~LegendContainer~ - contains LegendItemContainers children
     - Had member  ~_legendItemContainers~ for children. 
@@ -1844,6 +1932,33 @@ This section describes a first step of migrating a Container such as ~XLabelCont
   - [ ] ~XContainer~
   - [ ] ~DataContainer~
 - [ ] containers or container-like to leave for later.
+
+
+    - [ ] ChartRootContainer
+    - [ ] YContainer
+    - [ ] XContainer
+    - [ ] DataContainer
+    - [ ] VerticalBarChartDataContainer
+    - [ ] LineChartDataContainer
+    - [ ] LegendContainer
+    - [ ] abstract AdjustableLabelsChartAreaContainer
+    - [ ] Presenter
+    - [ ] PresentersColumns
+    - [ ] VerticalBarPresenter
+    - [ ] LineAndHotspotPresenter
+    - [ ] PresentersColumn
+    - [ ] PresentersColumn._createPresentersInColumn
+    - [ ] PresenterCreator.createPointPresenter
+    - [ ] VerticalBarChartRootContainer.createDataContainer
+    - [ ] VerticalBarLeafCreator.createPointPresenter
+    - [ ] LineChartRootContainer.createDataContainer
+    - [ ] LineAndHotspotLeafCreator.createPointPresenter
+    - [ ] LegendItemContainer
+    - [ ] LegendIndicatorRectContainer
+    - [ ] DefaultIterativeLabelLayoutStrategy
+    - [ ] LabelContainer
+    - [ ] AxisLabelContainer
+    - [ ] RandomChartData
 
 *** TODO code migration to new layout ~buildContainerOrSelf~, ~apply methods~ and ~paint~ - but layout is still old, manual!!!
 

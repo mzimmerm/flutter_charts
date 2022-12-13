@@ -419,7 +419,8 @@ class _ExampleSideEffects {
 /// Creates the chart [Widget] for the examples which will be tested and run in scripts.
 ///
 /// The core method [createRequestedChart] creates the chart [Widget] for the examples which are tested
-/// in [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running in [run_all_examples.sh].
+/// in [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running
+/// in [run_all_examples.sh].
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.

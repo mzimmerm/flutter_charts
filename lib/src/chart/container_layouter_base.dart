@@ -1,27 +1,50 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
+import 'dart:math' as math show Random;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/chart/container_edge_padding.dart';
-// import 'package:flutter_charts/src/chart/container.dart';
 
+import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/container_edge_padding.dart' show EdgePadding;
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
-        Align,
-        Packing,
-        LengthsPositionerProperties,
-        LayedoutLengthsPositioner,
-        PositionedLineSegments,
-        DivideConstraintsToChildren;
+    Align,
+    Packing,
+    LengthsPositionerProperties,
+    LayedoutLengthsPositioner,
+    PositionedLineSegments,
+    DivideConstraintsToChildren;
 import 'package:flutter_charts/src/chart/container_alignment.dart' show Alignment;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import 'package:flutter_charts/src/util/extensions_flutter.dart';
+import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
 import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show boundingRectOfRects;
+import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
+import 'package:flutter_charts/src/container/container_key.dart'
+    show
+    ContainerKey,
+    SiblingsKey,
+    SiblingsValueKey,
+    Keyed,
+    UniqueKeyedObjectsManager;
 
-import '../util/collection.dart' as custom_collection show CustomList;
+class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager {
 
-mixin BoxContainerHierarchy {
+  /// Implements the sole abstract method of [UniqueKeyedObjectsManager]
+  @override
+  List<Keyed> get keyedMembers => children;
+
+
+  /// Remove ability to create instance, encouraging use of [BoxContainerHierarchy]
+  /// as mixin only.
+  ///
+  /// Class must have exactly one generative named constructor
+  // todo-00
+
+
+  // todo-00-document
+
+
+  /// todo-00-document
   late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
   // Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
@@ -29,7 +52,9 @@ mixin BoxContainerHierarchy {
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  // todo-01-last : work on incorporating this null-like singleton ChildrenNotSetSingleton everywhere, and add asserts as appropriate
+  // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
+  //                and add asserts as appropriate
+  // todo-01-last : can we make children late final? Can we make immutable? Ideally all.
   List<BoxContainer> children = NullLikeListSingleton();
 
   bool get isRoot => parent == null;
@@ -100,6 +125,8 @@ abstract class LayoutableBox {
   void newCoreLayout();
 }
 
+// Non-positioning BoxLayouter and BoxContainer ------------------------------------------------------------------------
+
 /// Mixin provides role of a generic layouter for a one [LayoutableBox] or a list of [LayoutableBox]es.
 ///
 /// The core functions of this class is to position their children
@@ -121,12 +148,18 @@ abstract class LayoutableBox {
 ///     If the positioning method is implemented does not hurt (but it's useless)
 ///     as long as the offssetting method is no-op.
 ///
+mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
-mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   // Important Note: Mixin fields can still be final, bust must be late, as they are
   //   always initialized in concrete implementations constructors or their initializer list.
 
-  // 1. Overrides implementing all methods from implemented interface [LayoutableBox] ---------------------------------
+  // BoxLayouter section 1: Implements [Keyed] ----------------------------------------------------------------------------
+
+  /// Unique [ContainerKey] [key] implements [Keyed].
+  @override
+  late final ContainerKey key;
+
+  // BoxLayouter section 2: Implements [LayoutableBox] -------------------------------------------------
 
   /// Manages the layout size, the result of [newCoreLayout].
   ///
@@ -135,7 +168,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   late final ui.Size layoutSize;
 
-  // offset ---
+  // offset ------
   ui.Offset _offset = ui.Offset.zero;
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
@@ -149,9 +182,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   @override
   ui.Offset get offset => _offset;
 
-  /// Allows a parent container to move this container after [layout].
+  /// Moves this [BoxLayouter] by [offset], ensuring the invocation is by [parent] in the [BoxContainerHierarchy].
   ///
-  /// Override if parent move needs to propagate to internals of
+  /// Lifecycle: Should be invoked by [parent] during [layout] after
+  ///            sizes and positions of all this [BoxLayouter]'s siblings are calculated.
+  ///
+  /// Override if this [BoxLayouter]'s [parent] offset needs to be applied also to [children] of
   /// this [BoxLayouter].
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
@@ -182,7 +218,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     }
   }
 
-  // orderedSkip ---
+  // BoxLayouter section 3: Methods of [BoxLayouter] -------------------------------------------------------------------
+
+  // orderedSkip ------
   bool _orderedSkip = false; // want to be late final but would have to always init.
 
   /// [orderedSkip] is set by parent; instructs this container that it should not be
@@ -191,7 +229,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   /// When set to true, implementations must add appropriate support for collapse.
   bool get orderedSkip => _orderedSkip;
 
-  /// Set private member [_orderedSkip] with assert that caller is parent
+  /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
+  /// the [newCoreLayout] and [paint] processing.
+  ///
+  /// Set private member [_orderedSkip] with assert that caller is parent.
   ///
   /// todo-011-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
@@ -200,7 +241,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     _orderedSkip = orderedSkip;
   }
 
-  // constraints ---
+  // constraints ------
   /// Constraints set by parent.
   late final BoxContainerConstraints _constraints;
 
@@ -243,11 +284,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
   BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
 
-  // ------------------------------------------------------------------------------------------------------------------------
-
-  /// Sandbox-type helper field : none so far
-
-  // ------------------------------------------------------------------------------------------------------------------------
   void _assertCallerIsParent(LayoutableBox caller) {
     if (parent != null) {
       if (!identical(caller, parent)) {
@@ -314,13 +350,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
     _layout_DefaultRecurse();
   }
 
-  // 2. Non-override new methods on this class, starting with layout methods -------------------------------------------
+  // BoxLayouter section 3: Non-override new methods on this class, starting with layout methods -----------------------
 
-  // 2.1 Layout methods
+  // BoxLayouter section 3.1: Layout methods
 
   void _layout_IfRoot_DefaultTreePreprocessing() {
     if (isRoot) {
-      // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe ther is one already?
+      // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe there is one already?
       assert(constraints.size != const ui.Size(-1.0, -1.0));
       // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
       // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
@@ -338,10 +374,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
     // B. node-descend
     for (var child in children) {
-      // 1. child-pre-descend (empty)
-      // 2. child-descend
+      // b1. child-pre-descend (empty)
+      // b2. child-descend
       child.newCoreLayout();
-      // 3. child-post-descend (empty)
+      // b3. child-post-descend (empty)
     }
     // C. node-post-descend.
     //    Here, children have layoutSizes, which are used to lay them out in me, then offset them in me
@@ -384,7 +420,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
   ///   - The current container [layoutSizes] is asserted to be within [constraint]
   ///
   void
-      _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
+  _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
     if (isLeaf) {
       post_Leaf_SetSize_FromInternals();
     } else {
@@ -542,7 +578,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
       print(errText);
       //throw StateError(errText);
     }
-
   }
 
   /// Bounding rectangle of this [BoxLayouter].
@@ -566,11 +601,25 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 
 /// Base class for all containers and layouters.
 ///
-/// Effectively a [NonPositioning] class (this is inherited from [BoxLayouter] which is also [NonPositioning].
+/// Class name, roles and responsibilities of [Container] :
+///   - [Container] refers to an object which:
+///     - Is a hierarchy of [Container]s.
+///       This hierarchy role of [Container] implies also a role of being a parent of it's children.
+///     - Is able to present itself by painting itself in a graphical 2D window,
+///       as a painted part of an application, or the painted application.
+///     - Takes up, and is painted inside of, a contiguous area of the graphical window .
+///       In particular, a [BoxContainer] takes up and paints a possibly
+///       transformed (rotated, skewed etc) Rectangle in the application.
+///     - Allows it's hierarchical children to show themselves within the contiguous area
+///       painted by self by calling any child's [paint].
+///
+/// Effectively a [NonPositioningBoxLayouter] class.
+/// The property of being [NonPositioningBoxLayouter] is inherited
+/// from the [BoxLayouter] which is also a [NonPositioningBoxLayouter].
 ///
 /// Mixin [BoxContainerHierarchy] is repeated here in [BoxContainer] and in [BoxLayouter]
 /// to make clear that both [BoxContainer] and [BoxLayouter]
-/// have the same  [BoxContainerHierarchy] role (capability).
+/// have the same [BoxContainerHierarchy] role (capability).
 ///
 /// Important migration notes:
 /// When migrating from old layout to new layout,
@@ -588,28 +637,43 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox {
 ///
 ///   - [layout] should not be called on new layout, except on 'fake' root.
 ///
-abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayouter implements LayoutableBox {
+class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed {
   /// Default empty generative constructor.
-  // todo-01-last : Make ChartOptions a Singleton, so we do not have to add it here as member and constructor parameter
   BoxContainer({
+    // todo-00 : can key be required and non nullable?
+    ContainerKey? key,
+    // todo-00 : can children be required and non nullable?
     List<BoxContainer>? children,
   }) {
+    if (key != null) {
+      this.key = key;
+    }  else {
+      // A hacky thing may fail uniqueness among siblings on rare occasions.
+      // This is temporary until we require key non-nullable.
+      this.key = ContainerKey(math.Random().nextInt(1000000).toString());
+    }
+
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children;
-    }
+    } else {
     // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
-    if (children == null) {
+   // todo-00-last : removed this if (children == null) {
       //  &&  this.children == ChildrenNotSetSingleton()) {
       BoxContainer builtContainer = buildContainerOrSelf();
       if (builtContainer != this) {
         this.children = [builtContainer];
       } else {
-        // This may require consideration .. maybe exception, because buildContainerOrSelf is never called, but
-        //  I guess still can be called manually.
+        // todo-00 : Is this used or needed? .. maybe exception, because buildContainerOrSelf is never called, but
+        //           I suppose still can be called after this object creation, children added later? Do we do that?
         this.children = [];
       }
     }
+    // As [BoxContainer.children], are the the list backing the [UniqueKeyedObjectsManager.keyedMembers],
+    // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
+    // See documentation for [UniqueKeyedObjectsManager].
+    ensureUnique();
+
     // Make self a parent of all immediate children
     for (var child in this.children) {
       child.parent = this;
@@ -660,10 +724,10 @@ abstract class BoxContainer extends Object with BoxContainerHierarchy, BoxLayout
   /// Painting base method of all [BoxContainer] extensions,
   /// which should paint self on the passed [canvas].
   ///
-  /// This default [BoxContainer] implementation does several things:
-  ///   1. Checks for layout overflows, on overflow, paints a yellow-black rectangle
-  ///   2. Checks for [orderedSkip], if true, returns as no-op
-  ///   3. Forwards [paint] to [children]
+  /// This default [BoxContainer] implementation implements several roles:
+  ///   - Overflow check: Checks for layout overflows, on overflow, paints a yellow-black rectangle
+  ///   - Skip check: Checks for [orderedSkip], if true, returns as a no-op
+  ///   - Paint forward: Forwards [paint] to [children]
   ///
   /// On Leaf nodes, it should generally paint whatever primitives (lines, circles, squares)
   /// the leaf container consists of.
@@ -748,9 +812,7 @@ abstract class PositioningBoxLayouter extends BoxContainer {
   }
 }
 
-// ^ base non-positioning classes BoxLayouter and BoxContainer
-// ---------------------------------------------------------------------------------------------------------------------
-// v positioning classes, rolling positioning, Row and Column, Greedy
+// Positioning classes, rolling positioning classes, Row and Column, Greedy vvv ----------------------------------------
 
 /// Layouter which is NOT allowed to offset it's children, or only offset with zero offset.
 abstract class NonPositioningBoxLayouter extends BoxContainer {
@@ -840,7 +902,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
     //   set on non_Greedy. This will be done later in  _postDescend_IfLeaf_SetSize(etc).
     //
-    // So to fully layout self, there are 3 things left:
+    // So to fully layout self, there are 3 steps left:
     //   1. Need to recursively layout GREEDY children to get their size.
     //      Their greedy constraints were set in previous postDescend,
     //        the _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
@@ -973,7 +1035,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
         return ui.Offset(mainSegment.min, crossSegment.min) &
-            ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+        ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
       case LayoutAxis.vertical:
         return ui.Offset(crossSegment.min, mainSegment.min) &
         ui.Size(crossSegment.max - crossSegment.min, mainSegment.max - mainSegment.min);
@@ -981,11 +1043,9 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
 
   /// Converts two [util_dart.LineSegment] to [Offset] according to the passed [LayoutAxis], [mainLayoutAxis].
-  ui.Size _convertLengthsToSize(
-    LayoutAxis mainLayoutAxis,
-    double mainLength,
-    double crossLength,
-  ) {
+  ui.Size _convertLengthsToSize(LayoutAxis mainLayoutAxis,
+      double mainLength,
+      double crossLength,) {
     switch (mainLayoutAxis) {
       case LayoutAxis.horizontal:
         return ui.Size(mainLength, crossLength);
@@ -995,10 +1055,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
 
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
-  double _lengthAlong(
-    LayoutAxis layoutAxis,
-    ui.Size size,
-  ) {
+  double _lengthAlong(LayoutAxis layoutAxis,
+      ui.Size size,) {
     switch (layoutAxis) {
       case LayoutAxis.horizontal:
         return size.width;
@@ -1034,14 +1092,12 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   /// Creates and returns a list of lengths of the [LayoutableBox]es [children]
   /// measured along the passed [layoutAxis].
-  List<double> _layoutSizesOfChildrenAlong(
-    LayoutAxis layoutAxis,
-    List<LayoutableBox> children,
-  ) =>
+  List<double> _layoutSizesOfChildrenAlong(LayoutAxis layoutAxis,
+      List<LayoutableBox> children,) =>
       // This gets the layoutableBox.layoutSize
-      //     but when those lengths are calculated, we have to set the layoutSize on parent,
-      //     as envelope of all children offsets and sizes!
-      children.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
+  //     but when those lengths are calculated, we have to set the layoutSize on parent,
+  //     as envelope of all children offsets and sizes!
+  children.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
 
   /// Support which allows to enforce non-positioning of nested extensions.
   ///
@@ -1091,7 +1147,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // Create a LayedoutLengthsPositioner along each axis (main, cross), convert it to LayoutSegments,
     // then package into a wrapper class.
     _MainAndCrossPositionedSegments mainAndCrossPositionedSegments =
-        _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(children);
+    _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(children);
     // print(
     //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
     // print(
@@ -1117,8 +1173,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// Further methods convert the returned 'primitive one-dimensional format'
   /// [_MainAndCrossLayedOutSegments], into rectangles representing children positions in self.
   ///
-  _MainAndCrossPositionedSegments _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(
-      List<LayoutableBox> children) {
+  _MainAndCrossPositionedSegments _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(List<LayoutableBox> children) {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
     var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
     LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
@@ -1165,12 +1220,12 @@ class Row extends RollingPositioningBoxLayouter {
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
   }) : super(
-          children: children,
-          mainAxisAlign: mainAxisAlign,
-          mainAxisPacking: mainAxisPacking,
-          crossAxisAlign: crossAxisAlign,
-          crossAxisPacking: crossAxisPacking,
-        ) {
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: mainAxisPacking,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+  ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
@@ -1190,12 +1245,12 @@ class Column extends RollingPositioningBoxLayouter {
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
   }) : super(
-          children: children,
-          mainAxisAlign: mainAxisAlign,
-          mainAxisPacking: mainAxisPacking,
-          crossAxisAlign: crossAxisAlign,
-          crossAxisPacking: crossAxisPacking,
-        ) {
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: mainAxisPacking,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+  ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisAlign, packing: mainAxisPacking);
     crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisAlign, packing: crossAxisPacking);
@@ -1362,7 +1417,7 @@ class Aligner extends PositioningBoxLayouter {
   @override
   void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     LayoutableBox child = children[0];
-    BoxContainerConstraints childConstraints = constraints.multiplySidesBy(Size(1.0 / childWidthBy, 1.0 / childHeightBy));
+    BoxContainerConstraints childConstraints = constraints.multiplySidesBy(ui.Size(1.0 / childWidthBy, 1.0 / childHeightBy));
     child.applyParentConstraints(this, childConstraints);
   }
 
@@ -1423,10 +1478,10 @@ class Aligner extends PositioningBoxLayouter {
     required ui.Size childSize,
   }) {
     return _offsetChildInSelf(
-          selfSize: selfSize,
-          childSize: childSize,
-        ) &
-        childSize;
+      selfSize: selfSize,
+      childSize: childSize,
+    ) &
+    childSize;
   }
 
   /// Child offset function implements the positioning the child in self, mandated by this [Aligner].

@@ -26,7 +26,7 @@ flutter test test/widget_test.dart
 
 echo
 echo -------------------------------------
-echo RERUNNING All Flutter tests, showing all names
+echo RERUNNING All Flutter tests, showing all names. The option --reporter expanded is showing names.
 flutter test --reporter expanded
 
 echo

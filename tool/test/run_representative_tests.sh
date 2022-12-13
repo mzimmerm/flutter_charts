@@ -5,8 +5,13 @@
 
 # Copied from run_all_tests.sh
 
-# To run this  minimum set of flutter integration tests:
+# Run representative set of flutter integration tests in bash using:
 #   d1=$(date +%s); tool/test/run_representative_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+
+# Run representative set of flutter integration tests in eshell using:
+#   setq d1 (string-to-number (format-time-string "%s")); tool/test/run_representative_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
+# with clean, add before tool/test/run: ; flutter clean; flutter pub upgrade; flutter pub get;
 
 # To run one example:
 # tool/test/run_all_tests.sh ex31SomeNegativeValues

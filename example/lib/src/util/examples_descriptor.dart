@@ -71,13 +71,14 @@ enum ExamplesChartTypeEnum {
 /// Each example properties are the enums from [ExamplesEnum] (e.g. [ExamplesEnum.ex10RandomData])
 /// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart])
 ///
-/// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running in [run_all_examples.sh].
+/// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests,
+/// and interactively running in [run_all_examples.sh].
 ///
 /// The [_allowed] member is the list of allowed combinations of [ExamplesEnum] and [ExamplesChartTypeEnum].
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example/lib/main.dart].
 ///
-/// Method [asCommandLine] generates a shell snippet for an [_allowed] and requested example. The snippet may look like
+/// Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example. The snippet may look like
 ///    ```shell
 ///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart $2
 ///    ```
