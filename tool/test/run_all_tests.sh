@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Runs all tests - dart unit tests, flutter widget tests (both in directory 'test'), 
+# The section below shows how to run this test script - dart unit tests, flutter widget tests (both in directory 'test'),
 #   and flutter integration tests (=driver tests) (in directory 'integration_test'
 
-# To run all tests of all examples:
+# Bash with clean: Run all tests of all examples:
 #   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
 
-# To run one example:
+# Eshell with clean: Run all tests of all examples:
+#   setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
+# No clean: Run one example:
 # tool/test/run_all_tests.sh ex31SomeNegativeValues
 
 set -e

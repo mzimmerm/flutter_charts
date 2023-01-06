@@ -1864,11 +1864,10 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 
 
 
-*** IN-PROGRESS-NOW Go over existing BoxContainers, and make sure children are created before parent
-*** IN-PROGRESS-NOW Make sure each BoxContainer has a key, unique key amonng siblings
+*** IN-PROGRESS-NOW Make sure each BoxContainer has a key, unique key among siblings
 
 - [ ] Key -> SiblingsKey (like LocalKey) -> SiblingsValueKey (ValueKey)
-- [-] On BoxContainer -  Guarantee that each child has a unique key amonng siblings
+- [-] On BoxContainer -  Guarantee that each child has a unique key among siblings
   - [ ] 
   - [X] Create immutable class Key, member value
   - [-] Key
@@ -1897,6 +1896,7 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
   - [ ] Does this force to add same constructor to all extensions?
 - [ ] Make sure all tests work
 - [ ] commit and push
+*** IN-PROGRESS-NOW Go over existing BoxContainers, and make sure children are created before parent
 *** IN-PROGRESS-NOW Move container.dart and related container classes to a new directory container_layouter
 
 *** IN-PROGRESS-NOW Study use of container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~

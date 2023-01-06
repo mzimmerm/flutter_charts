@@ -5,18 +5,18 @@ import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 ///
 /// The meaning of 'unique' depends on the 'context'.
 ///
-/// In the current implementation, the only supported 'context' is 'siblings of container hierarchy'.
-/// As such, the [ContainerKey] implementations are currently supporting ability to identify [BoxContainer]
+/// In the current implementation, the only supported 'uniqueness context' is 'siblings of [BoxContainerHierarchy]'.
+/// In other words, extensions of [ContainerKey] currently support the ability to identify [BoxContainer]
 /// uniquely among it's children in the [BoxContainerHierarchy].
 ///
-/// In the future context uniqueness may support 'application', or other well-defined subsets of it.
+/// In the future the 'uniqueness context' may be 'application', or other well-defined subsets of it.
 @immutable
 abstract class ContainerKey {
 
   /// Default generative constructor constructs Key without value,
   /// allows extensions to define `const` constructor.
   ///
-  /// This trick ensures the default constructor [Key()] is not used,
+  /// This trick ensures the default constructor [Key] is not generated,
   /// replaced with this const constructor. Simply trying to use
   ///   `Key();`
   /// or
@@ -31,7 +31,11 @@ abstract class ContainerKey {
   /// Must override if uniqueness in other context key is needed.
   const factory ContainerKey(String value) = SiblingsValueKey<String>;
 
-  /// Checks uniqueness in a set of existing keys.
+/* todo-00 remove. Uniqueness moved to UniqueKeyedObjectsManager
+  /// Checks uniqueness of this [ContainerKey], if added to the set of
+  /// the passed [keys].
+  ///
+  ///
   void ensureUniqueWith(Iterable<ContainerKey> keys) {
     if (keys.contains(this)) {
       Iterable match = keys.where((element) => element == this);
@@ -55,6 +59,8 @@ abstract class ContainerKey {
   ContainerKey uniqueNextWith(Iterable<ContainerKey> keys) {
     throw UnimplementedError('todo implement');
   }
+
+ */
 }
 
 /// [SiblingsKey] is a [ContainerKey] intended to be unique among siblings
@@ -69,11 +75,11 @@ abstract class SiblingsKey extends ContainerKey {
 
 }
 
-/// A [SiblingsKey] extension using a parametrized [value] as identifier.
+/// A [SiblingsKey] extension uses a parametrized [value] as identifier.
 ///
 /// It is assumed to be created and set on [BoxContainer] during construction, unique
-/// among siblings. That means, the creator of [BoxContainer]s must be aware
-/// of any future siblings, or generate the key sufficiently randomly. todo-00 check this commanr
+/// among siblings. That means, the creator of the [BoxContainer]s must be aware
+/// of any future siblings, or generate the key sufficiently randomly.
 @immutable
 class SiblingsValueKey<T> extends SiblingsKey {
   final T value;
@@ -82,7 +88,7 @@ class SiblingsValueKey<T> extends SiblingsKey {
 
   @override
   String toString() {
-    return 'Key: value=$value';
+    return '$runtimeType: value=$value';
   }
 
   @override
@@ -94,7 +100,7 @@ class SiblingsValueKey<T> extends SiblingsKey {
 }
 
 
-// todo-00 remove
+// todo-00 remove : Keep for now, maybe we use this on ChartRootContainer, to name individual children, and make them available by name.
 /*
 class TestSome {
 
@@ -119,14 +125,14 @@ abstract class Keyed {
   ContainerKey get key;
 }
 
-/// Manages members [Keyed] with [ContainerKey] ,
-/// allows to add members, and ensures any added member's
-/// [ContainerKey] remains unique with existing members.
+/// Fulfills the role of managing a list of [Keyed] objects which [ContainerKey]s must be kept unique
+/// within a list defined by the [keyedMembers] getter.
 ///
-/// The [Keyed] members are:
-///   - Kept in [keyedMembers]
-///   - Added using [addUniquelyKeyedMember] and [addAllUniquelyKeyedMembers]
-///   - Retrieved by [ContainerKey] using [memberForKey].
+/// Works as a mixin on behalf of it's extension, by delegating the [keyedMembers] getter (a list of [Keyed] objects)
+/// to it's extension's member.
+///
+/// The method [ensureUnique] should be called by the extension after the list underlying
+/// the [keyedMembers] getter is changed.
 ///
 /// For example, for a hierarchy where siblings should be unique, the
 /// [UniqueKeyedObjectsManager] instance would be the parent OR a member on parent.
@@ -141,6 +147,7 @@ abstract class UniqueKeyedObjectsManager {
   /// method to start holding uniquely [Keyed] objects.
   List<Keyed> get keyedMembers;
 
+/* todo-00-remove ??
   /// Returns, among this holder's managed [Keyed] members, the member with the passed [containerKey].
   ///
   /// Throws exception if the passed [containerKey] is not found, or multiple are found.
@@ -153,27 +160,6 @@ abstract class UniqueKeyedObjectsManager {
       throw StateError('No matching member for key $containerKey in _keyedMembers $keyedMembers');
     }
     return matchingMembers.first;
-  }
-
-/* todo-00-last-remove
-  /// Add a [Keyed] member to this holder of unique [ContainerKey]s.
-  /// 
-  /// Exception thrown during [addKeyed], if the added member does not have
-  /// a unique key within the set of ,
-  /// so the [keyedMembers] maintain uniqueness of keys.
-  ///
-  /// Must be called for todo-00 document
-  addUniquelyKeyedMember(Keyed keyed) {
-    keyedMembers.add(keyed);
-    ensureUnique();
-  }
-
-  /// Add all [keyed] members for this holder to manage.
-  ///
-  /// See [addUniquelyKeyedMember] for details.
-  addAllUniquelyKeyedMembers(Iterable<Keyed> keyed) {
-    keyedMembers.addAll(keyed);
-    ensureUnique();
   }
 */
 

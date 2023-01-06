@@ -41,10 +41,7 @@ class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager {
   // todo-00
 
 
-  // todo-00-document
-
-
-  /// todo-00-document
+  /// todo-01-last-document
   late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
   // Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
@@ -637,12 +634,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///
 ///   - [layout] should not be called on new layout, except on 'fake' root.
 ///
-class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed {
+class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
   /// Default empty generative constructor.
   BoxContainer({
-    // todo-00 : can key be required and non nullable?
+    // todo-01-last : can key be required and non nullable?
     ContainerKey? key,
-    // todo-00 : can children be required and non nullable?
+    // todo-01-last : can children be required and non nullable?
     List<BoxContainer>? children,
   }) {
     if (key != null) {
@@ -658,14 +655,12 @@ class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements Lay
       this.children = children;
     } else {
     // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
-   // todo-00-last : removed this if (children == null) {
+   // todo-01-last : removed this if (children == null) {
       //  &&  this.children == ChildrenNotSetSingleton()) {
       BoxContainer builtContainer = buildContainerOrSelf();
       if (builtContainer != this) {
         this.children = [builtContainer];
       } else {
-        // todo-00 : Is this used or needed? .. maybe exception, because buildContainerOrSelf is never called, but
-        //           I suppose still can be called after this object creation, children added later? Do we do that?
         this.children = [];
       }
     }
