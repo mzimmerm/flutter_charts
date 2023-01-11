@@ -1358,14 +1358,11 @@ class LegendIndicatorRectContainer extends BoxContainer {
   /// Paint used to paint the indicator
   final ui.Paint _indicatorPaint;
 
-  final ChartOptions _options;
-
   LegendIndicatorRectContainer({
     required ui.Paint indicatorPaint,
     required ChartOptions options,
   })  :
         _indicatorPaint = indicatorPaint,
-        _options = options,
         // Create the indicator square, later offset in applyParentOffset
         _indicatorSize = ui.Size(
           options.legendOptions.legendColorIndicatorWidth,
@@ -1373,7 +1370,7 @@ class LegendIndicatorRectContainer extends BoxContainer {
         ),
         super(); // {} or colon
 
-  /// Overriden to set the concrete layout size on this leaf.
+  /// Overridden to set the concrete layout size on this leaf.
   ///
   /// Note: Alternatively, the same result would be achieved by overriding a getter, like so:
   ///    ``` dart

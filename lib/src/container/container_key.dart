@@ -30,37 +30,6 @@ abstract class ContainerKey {
   /// Note this creates a siblings unique key.
   /// Must override if uniqueness in other context key is needed.
   const factory ContainerKey(String value) = SiblingsValueKey<String>;
-
-/* todo-00 remove. Uniqueness moved to UniqueKeyedObjectsManager
-  /// Checks uniqueness of this [ContainerKey], if added to the set of
-  /// the passed [keys].
-  ///
-  ///
-  void ensureUniqueWith(Iterable<ContainerKey> keys) {
-    if (keys.contains(this)) {
-      Iterable match = keys.where((element) => element == this);
-      if (match.isEmpty) {
-        throw StateError('Not match for $this found in $keys despite contains.');
-      }
-      throw StateError('ensureUniqueWith: This object\' s key ${match.toList()[0]} already used in one of $keys');
-    }
-  }
-
-  /// Checks uniqueness in a set of existing keys.
-  static void ensureUnique(Iterable<ContainerKey> keys) {
-    // toSet converts to set using ==. If lengths do not match, there are at least two == keys in [keys].
-    Set toSet = keys.toSet();
-    if (toSet.length != keys.length) {
-      throw StateError('ensureUnique:  keys $keys are not unique');
-
-    }
-  }
-
-  ContainerKey uniqueNextWith(Iterable<ContainerKey> keys) {
-    throw UnimplementedError('todo implement');
-  }
-
- */
 }
 
 /// [SiblingsKey] is a [ContainerKey] intended to be unique among siblings
@@ -99,46 +68,27 @@ class SiblingsValueKey<T> extends SiblingsKey {
   int get hashCode => value.hashCode * 17;
 }
 
-
-// todo-00 remove : Keep for now, maybe we use this on ChartRootContainer, to name individual children, and make them available by name.
-/*
-class TestSome {
-
-  main() {
-
-    BoxContainer xContainer      = BoxContainer(key: SiblingsValueKey(RootContainers.xContainer.name));
-    BoxContainer yContainer      = BoxContainer(key: SiblingsValueKey(RootContainers.yContainer.name));
-    BoxContainer dataContainer   = BoxContainer(key: SiblingsValueKey(RootContainers.dataContainer.name));
-    BoxContainer legendContainer = BoxContainer(key: SiblingsValueKey(RootContainers.legendContainer.name));
-  }
-}
-
-enum RootContainers {
-  xContainer,
-  yContainer,
-  dataContainer,
-  legendContainer,
-}
-*/
-
+// todo-01-document
 abstract class Keyed {
   ContainerKey get key;
 }
 
-/// Fulfills the role of managing a list of [Keyed] objects which [ContainerKey]s must be kept unique
-/// within a list defined by the [keyedMembers] getter.
+/// Manager of [Keyed] objects in member list [keyedMembers] which [ContainerKey]s must be kept unique
+/// within the [keyedMembers].
 ///
 /// Works as a mixin on behalf of it's extension, by delegating the [keyedMembers] getter (a list of [Keyed] objects)
 /// to it's extension's member.
 ///
-/// The method [ensureUnique] should be called by the extension after the list underlying
+/// The method [ensureUnique] must be called by the extension after the list underlying
 /// the [keyedMembers] getter is changed.
 ///
-/// For example, for a hierarchy where siblings should be unique, the
-/// [UniqueKeyedObjectsManager] instance would be the parent OR a member on parent.
+/// For example, a [BoxContainer] we want siblings should be unique,
+/// so we ensure [BoxContainer] implements the [UniqueKeyedObjectsManager],
+/// and we forward the [BoxContainer]'s [children] to the [UniqueKeyedObjectsManager]'s [keyedMembers];
+/// we also ensure that in [BoxContainer]'s constructor, after [BoxContainer]'s [children] change, we call [ensureUnique].
 abstract class UniqueKeyedObjectsManager {
 
-  /// [Keyed] members holder.
+  /// Holder of the [Keyed] members, which keys must stay unique.
   ///
   /// Serves as a backing [Iterable] of the [Keyed] objects
   /// this holder manages.
@@ -147,7 +97,7 @@ abstract class UniqueKeyedObjectsManager {
   /// method to start holding uniquely [Keyed] objects.
   List<Keyed> get keyedMembers;
 
-/* todo-00-remove ??
+  /* todo-01-remove ??
   /// Returns, among this holder's managed [Keyed] members, the member with the passed [containerKey].
   ///
   /// Throws exception if the passed [containerKey] is not found, or multiple are found.
@@ -161,7 +111,7 @@ abstract class UniqueKeyedObjectsManager {
     }
     return matchingMembers.first;
   }
-*/
+ */
 
   Iterable<ContainerKey> get _memberKeys => keyedMembers.map((Keyed keyed) => keyed.key);
 

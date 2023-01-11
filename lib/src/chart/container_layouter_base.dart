@@ -22,27 +22,29 @@ import 'package:flutter_charts/src/util/collection.dart' as custom_collection sh
 import 'package:flutter_charts/src/container/container_key.dart'
     show
     ContainerKey,
-    SiblingsKey,
-    SiblingsValueKey,
     Keyed,
     UniqueKeyedObjectsManager;
 
-class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager {
+abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager {
 
   /// Implements the sole abstract method of [UniqueKeyedObjectsManager]
   @override
   List<Keyed> get keyedMembers => children;
 
+  /* KEEP
+  /// Remove ability to create instance on extensions, encouraging use of [BoxContainerHierarchy]
+  /// as mixin only. BUT IT IS NOT CLEAR HOW TO DO THIS AS  BoxContainer extends BoxContainerHierarchy,
+  /// we would need to change it to mixin, more work.
+  BoxContainerHierarchy._internal();
+  */
 
-  /// Remove ability to create instance, encouraging use of [BoxContainerHierarchy]
-  /// as mixin only.
-  ///
-  /// Class must have exactly one generative named constructor
-  // todo-00
-
-
-  /// todo-01-last-document
+  /// The parent of this [BoxContainer], late initialized in one of 2 places:
+  ///   1. If [parent] is explicitly passed to constructor of [BoxContainer] extensions, in situations when caller knows
+  ///      the parent and wants to explicitly set up the parent-child.
+  ///   2. In the [BoxContainer] constructor, if [children] are non-null,
+  ///      parent is set on all children as `child.parent = this`.
   late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+
   // Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
   //          need to start with empty array, initialized in BoxContainer.
@@ -634,8 +636,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///
 ///   - [layout] should not be called on new layout, except on 'fake' root.
 ///
-class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
-  /// Default empty generative constructor.
+abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
+  /// Default generative constructor.
   BoxContainer({
     // todo-01-last : can key be required and non nullable?
     ContainerKey? key,
@@ -664,7 +666,7 @@ class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements Lay
         this.children = [];
       }
     }
-    // As [BoxContainer.children], are the the list backing the [UniqueKeyedObjectsManager.keyedMembers],
+    // As [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
     // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
     // See documentation for [UniqueKeyedObjectsManager].
     ensureUnique();
@@ -673,6 +675,7 @@ class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements Lay
     for (var child in this.children) {
       child.parent = this;
     }
+    // NAMED GENERATIVE super() called implicitly here.
   }
 
   /// Override of the abstract [_post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
@@ -1037,6 +1040,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
+  /* Keep
   /// Converts two [util_dart.LineSegment] to [Offset] according to the passed [LayoutAxis], [mainLayoutAxis].
   ui.Size _convertLengthsToSize(LayoutAxis mainLayoutAxis,
       double mainLength,
@@ -1048,6 +1052,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
         return ui.Size(crossLength, mainLength);
     }
   }
+  */
 
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
   double _lengthAlong(LayoutAxis layoutAxis,
@@ -1110,12 +1115,14 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
   }
 
+  /* Keep
   void _forceCrossAxisLayoutProperties({
     required Packing packing,
     required Align align,
   }) {
     crossAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
   }
+  */
 
   /// Implementation of the abstract method which lays out the invoker's children.
   ///
