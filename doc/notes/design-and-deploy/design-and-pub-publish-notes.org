@@ -1545,9 +1545,9 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** IN-PROGRESS-NOW KEEP : Ensure code sets up the BoxContainer parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** IN-PROGRESS-NOW KEEP : BoxContainer setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
-Setting up container hierarchy is crucial, because the next step, 
+Setting up container hierarchy is crucial, as the ~newCoreLayout~ and methods called from it, iterate over ~children~ in ~applyParentOffset~
 
 - [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
 - [X] Which containers to convert to hierarchy?
@@ -1568,72 +1568,60 @@ Setting up container hierarchy is crucial, because the next step,
   - [X] LabelContainer
   - [X] AxisLabelContainer  : converted bc it is thin extension of LabelContainer
 - [X] Add ~BoxContainerUsingManualLayout~  which throws exception from ~post_NotLeaf_PositionChildren~. Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
-- [ ] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~
+- [X] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~ and *extend from it all classes that extend ChartAreaContainer EXCEPT LegendContainer*
 - [X] Make these extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
   - [X] ChartRootContainer
   - [X] ChartAreaContainer
   - [X] YContainer                            (via extends ChartAreaContainer)
-  - [X] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
-  - [X] DataContainer   (via extends ChartAreaContainer)
+  - [X] XContainer                            (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
+  - [X] DataContainer                         (via extends ChartAreaContainer)
   - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
   - [X] VerticalBarChartRootContainer         (via extends ChartRootContainer)
   - [X] VerticalBarChartDataContainer         (via extends DataContainer)
   - [X] LineChartRootContainer                (via extends ChartRootContainer)
   - [X] LineChartDataContainer                (via extends DataContainer)
-- [ ] Make these ~layout~ code, after creating a child, keep in children, and at the end, add children to self
+
+
+Core of setting up BoxContainer parent/child hierarchy:
+
+- [ ] Try to get rid of yContainerFirst
+- [ ] ~layout~ code: a) Add 'List children' b) after creating each child,  add to children, c) at the end, set children on self. Keep the original members for children, clean that up later. 
   - [ ] ChartRootContainer
   - [ ] ChartAreaContainer
-  - [ ] YContainer                            (via extends ChartAreaContainer)
-  - [ ] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
-  - [ ] DataContainer   (via extends ChartAreaContainer)
-  - [ ] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
-  - [ ] VerticalBarChartRootContainer         (via extends ChartRootContainer)
-  - [ ] VerticalBarChartDataContainer         (via extends DataContainer)
-  - [ ] LineChartRootContainer                (via extends ChartRootContainer)
-  - [ ] LineChartDataContainer                (via extends DataContainer)
+  - [ ] YContainer
+  - [ ] XContainer
+  - [ ] DataContainer
+  - [ ] AdjustableLabelsChartAreaContainer
+  - [ ] VerticalBarChartRootContainer
+  - [ ] VerticalBarChartDataContainer
+  - [ ] LineChartRootContainer
+  - [ ] LineChartDataContainer
+- [ ] Test everything.
 
 
+*** IN-PROGRESS KEEP : Old layout and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
 
-*** IN-PROGRESS-NOW KEEP : Old layout and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
+**** NOTE Algorithm of old manual ~layoutOLD~
 
-**** Migate these
-
-- [ ] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
-  - [ ] ChartRootContainer
-  - [ ] ChartAreaContainer
-  - [ ] YContainer                            (via extends ChartAreaContainer)
-  - [ ] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
-  - [ ] DataContainer   (via extends ChartAreaContainer)
-  - [ ] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
-  - [ ] VerticalBarChartRootContainer         (via extends ChartRootContainer)
-  - [ ] VerticalBarChartDataContainer         (via extends DataContainer)
-  - [ ] LineChartRootContainer                (via extends ChartRootContainer)
-  - [ ] LineChartDataContainer                (via extends DataContainer)
-
-
-The above must override ~BoxContainerUsingManualLayout.post_NotLeaf_PositionChildren~.
-
-Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
-
-**** Migration process
-
-However, ~newCoreLayout~ can only function if recursive calls to it is applied. So the migrated code must have children setup.
+The ~newCoreLayout~ can only function if recursive calls to it is applied. So the migrated code must have BoxContainer parent/child setup correctly. This is done in the above step
 
 
 The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer)~ method typically does:
 
 1. Use options and the available passed ~boxConstraints~ to manually divide space between children. The division results in 2 things for each child 
    1.1 The ~sizeOfChild~  = boxConstraints size divided into number of children
-   1.2 The ~offsetOfChild~ = sizeOfChild * indexOfChild in children array
-2. children size one-by-one loop:
-   - 2.0 create new ~childBoxConstraints~ object from ~sizeOfChild~, the manually divided and allocated space for the child
+   1.2 The ~childOffset~ = sizeOfChild * indexOfChild in children array
+2. For *each child to be created* in ~layout~, do this one-by-one loop or steps:
+   - 2.0 Create and calculate ~childBoxConstraints~, the manually allocated space for this child: Use the ~prevLayedoutChild.layoutSize~ from *perhaps multiple PREVIOUSLY LAYEDOUT SIBLING CHILDREN layoutSize*
    - 2.1 create new ~child~
+   - 2.1.1 if applicable, call ~child.applyParentConstraints(this, childBoxConstraints)~ (needed for split layout??)
    - 2.2 call ~child.layout(childBoxConstraints, this);~
-   - 2.3 call ~child.applyParentOffset(offsetOfChild)~
+   - 2.2.1 Calculate ~childOffset~ on this child: Use the ~prevLayedoutChild.layoutSize~, from *perhaps multiple PREVIOUSLY LAYEDOUT SIBLING CHILDREN*.
+   - 2.3 call ~child.applyParentOffset(this, childOffset)~
    - 2.4 call NOOO ~addChildToHierarchyDeprecated(child)~ *MAYBE WE WILL HAVE TO UNDEPRECATE, OR JUST USE IT*
 3. calculate and set ~BoxLayouter.layoutSize~ () = sum of sizes of all children in the layout direction, max child size in the cross-layout direction. For ChartRootContainer, layoutSize is overriden. 
 
-To migrate the code in the old MANUAL layout, do this:
+**** NOTE To migrate the code in the old MANUAL layout, do this:
 
 1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~ and return ~this~
    - Notes:
@@ -1650,6 +1638,25 @@ Notes:
 
 - [ ] For ChartRootContainer, layoutSize is overriden to setter and getter. Is that needed, or can this division be used on ~BoxLayouter~?
    
+**** TODO-NEXT Migrate these
+
+- [ ] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
+  - [ ] ChartRootContainer
+  - [ ] ChartAreaContainer
+  - [ ] YContainer
+  - [ ] XContainer
+  - [ ] DataContainer
+  - [ ] AdjustableLabelsChartAreaContainer
+  - [ ] VerticalBarChartRootContainer
+  - [ ] VerticalBarChartDataContainer
+  - [ ] LineChartRootContainer
+  - [ ] LineChartDataContainer
+
+
+The above must override ~BoxContainerUsingManualLayout.post_NotLeaf_PositionChildren~.
+
+Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
+
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 
 

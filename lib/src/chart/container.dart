@@ -161,6 +161,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   ///
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+    List<BoxContainer> children = [];
+
     // Not needed for new layouter, OR for old.
     // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
     // _beforeNewLayoutConstraints = boxConstraints;
@@ -180,6 +182,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     legendContainer = LegendContainer(
       chartRootContainer: this,
     );
+    children.add(legendContainer);
 
     // Important: On [legendContainer] which is the top of the 'fake' layout branch
     //   we must
@@ -211,6 +214,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
+    children.add(yContainerFirst);
 
     yContainerFirst.layout(yContainerBoxConstraints, yContainerFirst);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -228,6 +232,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
+    children.add(xContainer);
 
     xContainer.layout(xContainerBoxConstraints, xContainer);
 
@@ -256,6 +261,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
+    children.add(yContainer);
 
     yContainer.layout(yContainerBoxConstraints, yContainer);
 
@@ -276,6 +282,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     dataContainer = createDataContainer(
       chartRootContainer: this,
     );
+    children.add(dataContainer);
 
     // todo-01-morph-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
