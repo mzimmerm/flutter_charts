@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
 import 'dart:math' as math show max;
+import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_alignment.dart';
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
@@ -21,7 +22,7 @@ import 'options.dart';
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, LayoutableBox, Column, Row, Greedy, Padder, Aligner;
+    show BoxContainer, BoxContainerUsingManualLayout, BoxLayouter, LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -50,7 +51,7 @@ abstract class ChartBehavior {
 /// - Related to above point, the [layout(num size)] is unrelated to
 ///   a same name method on [BoxContainer].
 ///
-abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
+abstract class ChartRootContainer extends BoxContainerUsingManualLayout with ChartBehavior {
   
   /// Implements [BoxContainer.layoutSize].
   /// [ChartRootContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
@@ -378,7 +379,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
 // todo-00 : start here, move to new layout and test.
-class YContainer extends ChartAreaContainer {
+class YContainer extends ChartAreaContainerUsingManualLayout {
   /// Containers of Y labels.
   ///
   /// The actual Y labels values are always generated
@@ -807,7 +808,7 @@ abstract class AdjustableLabels {
 /// (actually currently the [ChartAreaContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
+abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout implements AdjustableLabels {
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
@@ -867,10 +868,33 @@ abstract class ChartAreaContainer extends BoxContainer {
   }
 }
 
+// todo-01 : remove when manual layout not needed
+abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
+  /// The chart top level.
+  ///
+  /// Departure from a top down approach, this allows to
+  /// access the parent [ChartRootContainer], which has (currently)
+  /// members needed by children.
+  final ChartRootContainer chartRootContainer;
+
+  ChartAreaContainerUsingManualLayout({
+    required this.chartRootContainer,
+    List<BoxContainer>? children,
+  }) : super(children: children) {
+    // On the LegendContainer 'fake' root, set parent to null. todo-01-last : Remove for new layout
+    // was: parent = chartRootContainer;
+    if (this is LegendContainer) {
+      parent = null;
+    } else {
+      parent = chartRootContainer;
+    }
+  }
+}
+
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainer extends ChartAreaContainer {
+abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 

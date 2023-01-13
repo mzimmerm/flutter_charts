@@ -204,11 +204,11 @@ reason is, yLabels have 2 modes:
       #+begin_src dart
         YScalerAndLabelFormatter _layoutCreateYScalerFromPointsColumnsData(double yAxisMin, double yAxisMax) {
           List<double> flatData =
-          geometry.iterableNumToDouble(_chartTopContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
+          geometry.iterableNumToDouble(_chartRootContainer.pointsColumns.flattenPointsValues()).toList(growable: true);
 
           Range range = Range(
             values: flatData,
-            chartOptions: _chartTopContainer.options,
+            chartOptions: _chartRootContainer.options,
           );
 
           // revert toScaleMin/Max to accommodate y axis starting from top
@@ -344,7 +344,7 @@ reason is, yLabels have 2 modes:
       #+end_src
     - yScaler notes  
       so the labels are created in "distributeLabelsIn(Interval)"
-      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartTopContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
+      - Interval is DATA interval - *a simple min/max value on data* (more precisely interval from ~_chartRootContainer.pointsColumns.flattenPointsValues()~ which on bar chart is added data)
       - *so the labels are simple distribution of as many labels as needed between data min/max - ChartData.yLabels are NEVER USED when not set in constructor.*
 
         *todo*:
@@ -352,14 +352,14 @@ reason is, yLabels have 2 modes:
         - rename value in params in range to pointsColumnsPointsValues
         - Add test that is like RandomData but with similar real data.
 **** NOTE Doc: ChartData flow in the system, data values and names, where are labels created from values 
-1. ~ChartTopContainer.layout~
-   - ~ChartTopContainer.setupPointsColumns~
+1. ~ChartRootContainer.layout~
+   - ~ChartRootContainer.setupPointsColumns~
      - ~PointsColumns~ costructor (passed TopContainer with data). Internally, this done in ~PointsColumns._createStackableValuePointsFromChartData~. In the end, *transformed data* lives in ~PointsColumns.each.PointsColumn.stackableValuePoints.each.StackableValuePoint.dataY~.
      - Result: each ~transformed~ data point from ~ChartData.dataRows is converted ==> StackableValuePoint~
 2. ~YContainer.layout~
    - ~YContainer.layoutAutomatically~
      - ~YContainer._layoutCreateYScalerFromPointsColumnsData(axisYMin, axisYMax~
-       - ~allStackedDataYs = _chartTopContainer.pointsColumns.flattenPointsValues()~
+       - ~allStackedDataYs = _chartRootContainer.pointsColumns.flattenPointsValues()~
        - ~new Range(values: allStackedDataYs, options)~
        - ~yScaler = Range.makeYScalerWithLabelInfosFromDataYsOnScale(axisYMin: axisYMin, axisYMax: axisYMax,)~
          - This creates the disctributed labels as follows:
@@ -405,7 +405,7 @@ e^loge(x) = x ; e^loge(10) = 10
 ****** DONE Steps to introduce logarithmic scale
  
 - [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
-- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartTopContainer such as VerticalBarChartTopContainer
+- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartRootContainer such as VerticalBarChartRootContainer
 - [X] NOT FOR NOW: If scale is logarithmic, enforce the setting data starts above 0
 - [X] Add comments:
   - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
@@ -422,7 +422,7 @@ e^loge(x) = x ; e^loge(10) = 10
   #+begin_src dart
     Range range = Range(
       values: allStackedDataYs,
-      chartOptions: _chartTopContainer.options,
+      chartOptions: _chartRootContainer.options,
     );
 
     // revert axisYMin/Max to accommodate y axis starting from top
@@ -470,12 +470,12 @@ Then ~VerticalBarChart extends FlutterChart~
 Then ~LineChart extends FlutterChart~
 **** DONE Add note that Envelope always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
 **** DONE Rename any _container, container members to topChartContainer if it is actually ChartableTopContainer
-**** DONE ChartTopContainer related - replace final _private + getter with just private
+**** DONE ChartRootContainer related - replace final _private + getter with just private
 
 Look for places like this
 
-  final ChartTopContainer _chartTopContainer;
-  ChartTopContainer get chartTopContainer => _chartTopContainer;
+  final ChartRootContainer _chartRootContainer;
+  ChartRootContainer get chartRootContainer => _chartRootContainer;
 
   What is the general need for a private final with a public getter? Isn't it better to just have a non-private final?  Yes. Changed that.
 **** DONE Rename DataRows to RawDataRows, DataRow to RawDataRow.
@@ -491,12 +491,7 @@ Look for places like this
 
 - [X] Convert LabelInfo.rawDataValue to getter
 - [X] Convert LabelInfo.axisValue to getter
-**** DONE Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartTopContainer.data.chartOptions. Then maybe rename chartTopContainer.data.chartOptions to chartTopContainer.data.options.
-**** DONE Options access:
-
-- [X] Go through if there are places that pass ~options~ to constructors, and see if they are needed - in ChartAreaContainers, they can be replaced with ~chartTopContainer.data.options~
-- [X] Go through if there are places with ~_options~ or ~options~ members, and see if they can be replaced - see the above point.
-- [ ]
+**** DONE Remove ~ChartOptions get options => data.chartOptions;~ and let the options be reached as chartRootContainer.data.chartOptions. Then maybe rename chartRootContainer.data.chartOptions to chartRootContainer.data.options.
 **** DONE Try to make as many members as possible final:
 - [X] LabelInfo
 - [X] YSCaler
@@ -1004,10 +999,10 @@ Also:
     -
 *** EVEN-LATER Allow to create multiple charts (combined chart) in one graph - for example, line and bar chart in one graph, on same or different Yaxis (and labels), same or different xAxis (and labels).
 This needs entity model change:
-- current ChartData and ChartOptions are kept on ChartTopContainer
+- current ChartData and ChartOptions are kept on ChartRootContainer
 - current data structure is as follows: ChartData -> DataSetsMixin -> DataPoints - unchanged
 - currently ChartOptions is set on Painter along with ChartData;  available from any Container by reaching to parentContainer or topContainer
-- need to allow/add member ChartOptions on DataSet (default still on the ChartTopContainer, placed there from Painter)
+- need to allow/add member ChartOptions on DataSet (default still on the ChartRootContainer, placed there from Painter)
 - need to allow/add member presentAs on DataSet (presentAs line chart or bar chart) 
 - need to allow xLabels and yLabels on DataSet ?? How ??
 - we allow to set both options AND enum chartType on ChartDataRows
@@ -1015,7 +1010,7 @@ This needs entity model change:
 Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
 ** EVEN-LATER Misc EVEN-LATER Around Container and Layout
 *** EVEN-LATER Later in Container refactoring: Convert all Presenter, PointsColumn, PointsColumns etc to Containers but keep the code structure the same
-*** EVEN-LATER Morph: Consider making ChartTopContainer.data.dataRows, and everything else except ChartOptions private, and provide a way to construct  ~PointsColumns~ in ~ChartData~ like _createStackableValuePointsFromChartData does.
+*** EVEN-LATER Morph: Consider making ChartRootContainer.data.dataRows, and everything else except ChartOptions private, and provide a way to construct  ~PointsColumns~ in ~ChartData~ like _createStackableValuePointsFromChartData does.
 *** EVEN-LATER Refactor StackableValuePoint
 
 2 areas:
@@ -1209,7 +1204,7 @@ Core ideas
 
 - [X] BoxContainer 
 - [X] add abstract rootLayout() - assumes constraints set!!
-- [X] Rename ChartTopContainer to ChartRootContainer
+- [X] Rename ChartRootContainer to ChartRootContainer
 - [X] NOOO : ChartRootContainer extends RootBoxContainer
 - [X] Add to BoxContainer, field _layoutSandbox, intended to be changed by the owner (not parent)
 - [X] BoxContainerSandbox new class
@@ -1550,8 +1545,9 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** IN-PROGRESS-NOW Ensure code sets up the parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** IN-PROGRESS-NOW KEEP : Ensure code sets up the BoxContainer parent/child hierarchy correctly in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
+Setting up container hierarchy is crucial, because the next step, 
 
 - [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
 - [X] Which containers to convert to hierarchy?
@@ -1565,75 +1561,112 @@ This section describes a first step of migrating a Container such as ~XLabelCont
     - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
     - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
   - [X] LabelContainer - has no container children, so no changes
-- [ ] Next few containers
-  - [ ] ~ChartTopContainer~
-  - [ ] ~YContainer~
-  - [ ] ~XContainer~
-  - [ ] ~DataContainer~
-- [ ] containers or container-like to leave for later.
-    - [ ] ChartRootContainer
-    - [ ] YContainer
-    - [ ] XContainer
-    - [ ] DataContainer
-    - [ ] VerticalBarChartDataContainer
-    - [ ] LineChartDataContainer
-    - [ ] LegendContainer
-    - [ ] abstract AdjustableLabelsChartAreaContainer
-    - [ ] Presenter
-    - [ ] PresentersColumns
-    - [ ] VerticalBarPresenter
-    - [ ] LineAndHotspotPresenter
-    - [ ] PresentersColumn
-    - [ ] PresentersColumn._createPresentersInColumn
-    - [ ] PresenterCreator.createPointPresenter
-    - [ ] VerticalBarChartRootContainer.createDataContainer
-    - [ ] VerticalBarLeafCreator.createPointPresenter
-    - [ ] LineChartRootContainer.createDataContainer
-    - [ ] LineAndHotspotLeafCreator.createPointPresenter
-    - [ ] LegendItemContainer
-    - [ ] LegendIndicatorRectContainer
-    - [ ] DefaultIterativeLabelLayoutStrategy
-    - [ ] LabelContainer
-    - [ ] AxisLabelContainer
-    - [ ] RandomChartData
+- [X] Fully converted to new layout - no manual layout used:
+  - [X] LegendContainer
+  - [X] LegendItemContainer
+  - [X] LegendIndicatorRectContainer  
+  - [X] LabelContainer
+  - [X] AxisLabelContainer  : converted bc it is thin extension of LabelContainer
+- [X] Add ~BoxContainerUsingManualLayout~  which throws exception from ~post_NotLeaf_PositionChildren~. Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
+- [ ] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~
+- [X] Make these extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
+  - [X] ChartRootContainer
+  - [X] ChartAreaContainer
+  - [X] YContainer                            (via extends ChartAreaContainer)
+  - [X] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
+  - [X] DataContainer   (via extends ChartAreaContainer)
+  - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
+  - [X] VerticalBarChartRootContainer         (via extends ChartRootContainer)
+  - [X] VerticalBarChartDataContainer         (via extends DataContainer)
+  - [X] LineChartRootContainer                (via extends ChartRootContainer)
+  - [X] LineChartDataContainer                (via extends DataContainer)
+- [ ] Make these ~layout~ code, after creating a child, keep in children, and at the end, add children to self
+  - [ ] ChartRootContainer
+  - [ ] ChartAreaContainer
+  - [ ] YContainer                            (via extends ChartAreaContainer)
+  - [ ] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
+  - [ ] DataContainer   (via extends ChartAreaContainer)
+  - [ ] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
+  - [ ] VerticalBarChartRootContainer         (via extends ChartRootContainer)
+  - [ ] VerticalBarChartDataContainer         (via extends DataContainer)
+  - [ ] LineChartRootContainer                (via extends ChartRootContainer)
+  - [ ] LineChartDataContainer                (via extends DataContainer)
 
-*** IN-PROGRESS-NOW KEEP : Old layout and code migration to new layout ~buildContainerOrSelf~, ~apply methods~ and ~paint~ - but layout is still old, manual!!!
+
+
+*** IN-PROGRESS-NOW KEEP : Old layout and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
+
+**** Migate these
+
+- [ ] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
+  - [ ] ChartRootContainer
+  - [ ] ChartAreaContainer
+  - [ ] YContainer                            (via extends ChartAreaContainer)
+  - [ ] XContainer      (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
+  - [ ] DataContainer   (via extends ChartAreaContainer)
+  - [ ] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
+  - [ ] VerticalBarChartRootContainer         (via extends ChartRootContainer)
+  - [ ] VerticalBarChartDataContainer         (via extends DataContainer)
+  - [ ] LineChartRootContainer                (via extends ChartRootContainer)
+  - [ ] LineChartDataContainer                (via extends DataContainer)
+
+
+The above must override ~BoxContainerUsingManualLayout.post_NotLeaf_PositionChildren~.
+
+Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
+
+**** Migration process
+
+However, ~newCoreLayout~ can only function if recursive calls to it is applied. So the migrated code must have children setup.
+
 
 The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer)~ method typically does:
 
 1. Use options and the available passed ~boxConstraints~ to manually divide space between children. The division results in 2 things for each child 
-   1.1 The ~sizeOfChild~  = boxConstraints size divided into number oof children
+   1.1 The ~sizeOfChild~  = boxConstraints size divided into number of children
    1.2 The ~offsetOfChild~ = sizeOfChild * indexOfChild in children array
 2. children size one-by-one loop:
    - 2.0 create new ~childBoxConstraints~ object from ~sizeOfChild~, the manually divided and allocated space for the child
    - 2.1 create new ~child~
    - 2.2 call ~child.layout(childBoxConstraints, this);~
    - 2.3 call ~child.applyParentOffset(offsetOfChild)~
-   - 2.4 call NOOO ~addChildToHierarchyDeprecated(child)~ *MAYBE WE WILL HAVE TO UNDEPRECATE, OR JUST USE*
-3. set ~layoutSize~ = sum of sizes of all children in the layout direction, max child size in the cross-layout direction.
+   - 2.4 call NOOO ~addChildToHierarchyDeprecated(child)~ *MAYBE WE WILL HAVE TO UNDEPRECATE, OR JUST USE IT*
+3. calculate and set ~BoxLayouter.layoutSize~ () = sum of sizes of all children in the layout direction, max child size in the cross-layout direction. For ChartRootContainer, layoutSize is overriden. 
 
 To migrate the code in the old MANUAL layout, do this:
 
-1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~
+1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~ and return ~this~
    - Notes:
      - The ~boxConstraints~ from the old layout code is replaced with ~applyParentConstraints(parent, constraints)~
      - NOOO In ~2.4~ (addChildToHierarchyDeprecated), we have a new argument 'this', so we call ~addChildToHierarchyDeprecated(this, child)~
-2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout(parentBoxContainer)~
+2. Move code in ~1.1 and 1.2 and the one-by-one loop code in 2.0 and 2.2 and 2.3 and 3.~ into (overriden auto layout) method  ~newCoreLayout()~ and set ~LayoutableBox.layoutSize~
    - Notes:
      - When ~newCoreLayout~ called, the container hierarchy is already established from ~buildContainerOrSelf~. The one-by-one loop can be performed over children of 'this'.
      - Instead of 2.2 call to child.layout we call ~child.newCoreLayout(this)~
+3. *How about applyParentOffset??*
+
+
+Notes:
+
+- [ ] For ChartRootContainer, layoutSize is overriden to setter and getter. Is that needed, or can this division be used on ~BoxLayouter~?
+   
+*** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
+
 
 *** LATER Study use of container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
+  - [ ] Presenter
+  - [ ] PresentersColumn
+  - [ ] PresentersColumn._createPresentersInColumn
+  - [ ] PresentersColumns
+  - [ ] VerticalBarPresenter
+  - [ ] LineAndHotspotPresenter
+  - [ ] PresenterCreator.createPointPresenter
+  - [ ] LineAndHotspotLeafCreator.createPointPresenter
+  - [ ] VerticalBarLeafCreator.createPointPresenter
+  - [ ] DefaultIterativeLabelLayoutStrategy
+
 What would it take to convert them to BoxContainer extensions?
-
-Capture the process here:
-
-- [ ] 
-- [ ] 
-- [ ] 
-- [ ] 
-- 
 
 *** LATER Make sure each BoxContainer has a key, unique key among siblings
 
