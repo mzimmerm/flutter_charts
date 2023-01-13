@@ -13,14 +13,15 @@ import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 @immutable
 abstract class ContainerKey {
 
-  /// Default generative constructor constructs Key without value,
+  /// Single generative constructor constructs Key without value,
   /// allows extensions to define `const` constructor.
   ///
-  /// This trick ensures the default constructor [Key] is not generated,
-  /// replaced with this const constructor. Simply trying to use
-  ///   `Key();`
-  /// or
-  ///   `const Key();`
+  /// This trick ensures the default no-arg constructor `ContainerKey()` is not generated,
+  /// and so ContainerKey cannot be extended outside of this library `container_key.dart`.
+  ///
+  /// Note:
+  /// Trying to use
+  ///   `ContainerKey();`
   /// causes a compile error 'the unnamed constructor is already defined'
   ///
   const ContainerKey._simple();
@@ -79,13 +80,13 @@ abstract class Keyed {
 /// Works as a mixin on behalf of it's extension, by delegating the [keyedMembers] getter (a list of [Keyed] objects)
 /// to it's extension's member.
 ///
-/// The method [ensureUnique] must be called by the extension after the list underlying
+/// The method [ensureKeyedMembersHaveUniqueKeys] must be called by the extension after the list underlying
 /// the [keyedMembers] getter is changed.
 ///
 /// For example, a [BoxContainer] we want siblings should be unique,
 /// so we ensure [BoxContainer] implements the [UniqueKeyedObjectsManager],
 /// and we forward the [BoxContainer]'s [children] to the [UniqueKeyedObjectsManager]'s [keyedMembers];
-/// we also ensure that in [BoxContainer]'s constructor, after [BoxContainer]'s [children] change, we call [ensureUnique].
+/// we also ensure that in [BoxContainer]'s constructor, after [BoxContainer]'s [children] change, we call [ensureKeyedMembersHaveUniqueKeys].
 abstract class UniqueKeyedObjectsManager {
 
   /// Holder of the [Keyed] members, which keys must stay unique.
@@ -115,11 +116,15 @@ abstract class UniqueKeyedObjectsManager {
 
   Iterable<ContainerKey> get _memberKeys => keyedMembers.map((Keyed keyed) => keyed.key);
 
+  Keyed getKeyedByKey(ContainerKey containerKey) {
+    return keyedMembers.firstWhere((Keyed keyed) => keyed.key == containerKey);
+  }
+
   /// Checks uniqueness of all managed [Keyed] members.
   ///
-  /// Implementors must call [ensureUnique] every time after the list backing
+  /// Implementors must call [ensureKeyedMembersHaveUniqueKeys] every time after the list backing
   /// the [keyedMembers] is modified.
-  void ensureUnique() {
+  void ensureKeyedMembersHaveUniqueKeys() {
     // toSet converts to set using ==. If lengths do not match, there are at least two == keys in [keys].
     Set toSet = _memberKeys.toSet();
     if (toSet.length != _memberKeys.length) {

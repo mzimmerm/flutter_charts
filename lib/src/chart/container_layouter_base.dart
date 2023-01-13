@@ -115,12 +115,78 @@ abstract class LayoutableBox {
 
   ui.Offset get offset;
 
+  /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [parent] in the [BoxContainerHierarchy].
+  ///
+  /// Lifecycle: Should be invoked by [parent] during [layout] after
+  ///            sizes and positions of all this [LayoutableBox]'s siblings are calculated.
+  ///
+  /// Override if this [LayoutableBox]'s [parent] offset needs to be applied also to [children] of
+  /// this [LayoutableBox].
+  ///
+  /// Important override notes and rules for [applyParentOffset] on extensions:
+  ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
+  ///     as this method is integral part of autolayout (as is [newCoreLayout]).
+  ///  2) Exception would be [LayoutableBox]s that want to use manual or semi-manual
+  ///     layout process. Those would generally (always?) be leafs, and they would do the following:
+  ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
+  ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
+  ///         and set [layoutSize] at the end, so parent can pick it up
+  ///       - Override [applyParentOffset] as follows:
+  ///          - likely call super [applyParentOffset] to set overall offset in parent.
+  ///          - potentially re-offset the position as a result of the manual layout
+  ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member.
+  ///        - Override [paint] by painting on the calculated (parent also applied) offset,
+  ///           (see [LabelContainer.paint].
+  ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
+  /// todo-011-document fully, also write : Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
+  /// the [newCoreLayout] and [paint] processing.
+  ///
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
+  /// todo-011-document
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
+  /// todo-011-document fully
+  ///
+  /// Assumptions:
+  ///   1. Before calling this method, [constraints] must be set at least on the root of the [BoxContainerHierarchy].
+  ///
+  /// Important override notes and rules for [newCoreLayout] on extensions:
+  ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
+  ///      which auto-layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
+  ///
+  ///   2: General rules for [newCoreLayout] on extensions
+  ///
+  ///      1) Generally, leafs do not need to override [newCoreLayout],
+  ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
+  ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
+  ///         which should be overriden.
+  ///         Alternatively, it is sufficient for leafs to override [newCoreLayout] and only set [layoutSize] there.
+  ///      2) Non-leafs do often need to override some methods invoked from [newCoreLayout],
+  ///         or the whole [newCoreLayout]. Some details on Non-Leafs
+  ///         - Non-positioning Non-leafs: Generally only need to override [_post_NotLeaf_PositionChildren] to return .
+  ///           If mostly do not need to override [newCoreLayout] at all,
+  ///           unless they wish to distribute constraints to children differently from the default,
+  ///           passing the full constraint to all children.
+  ///           The empty
+  ///         as this method is integral part of autolayout (as is [applyParentOffset]).
+  ///      2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
+  ///         layout process.
+  ///           - On Leaf: override [newCoreLayout] (no super call), do manual layout calculations,
+  ///             likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
+  ///             and set [layoutSize] at the end. This is already described in [BoxLayouter.applyParentOffset]
+  ///           - Potentially - this would be a hack PARENT of the leaf also may need to override[newCoreLayout], where it :
+  ///             - Perform layout logic to set some size-related value on it's child. We do not have example,
+  ///               as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
+  ///               See around [_layoutLogicToSetMemberMaxSizeForTextLayout]
+  ///
+  /// Misc less important notes:
+  ///   1. Can we make layoutSize result of layout (INSTEAD OF VOID)  and not store on newCoreLayout?
+  ///     - NO, because ??? todo-01 : layoutSize member: Make still available as late final on BoxLayouter,
+  ///           set it after return in case it is needed later. Always set just after return from newCoreLayout.
   void newCoreLayout();
 }
 
@@ -147,10 +213,10 @@ abstract class LayoutableBox {
 ///     If the positioning method is implemented does not hurt (but it's useless)
 ///     as long as the offssetting method is no-op.
 ///
-mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
+/// Important Note: Mixin fields can still be final, but then they must be late, as they are
+///   always initialized in concrete implementations constructors or their initializer list.
 
-  // Important Note: Mixin fields can still be final, bust must be late, as they are
-  //   always initialized in concrete implementations constructors or their initializer list.
+mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   // BoxLayouter section 1: Implements [Keyed] ----------------------------------------------------------------------------
 
@@ -164,6 +230,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// Set late in [newCoreLayout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
+  ///
+  /// todo-01 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
   @override
   late final ui.Size layoutSize;
 
@@ -181,29 +249,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   @override
   ui.Offset get offset => _offset;
 
-  /// Moves this [BoxLayouter] by [offset], ensuring the invocation is by [parent] in the [BoxContainerHierarchy].
-  ///
-  /// Lifecycle: Should be invoked by [parent] during [layout] after
-  ///            sizes and positions of all this [BoxLayouter]'s siblings are calculated.
-  ///
-  /// Override if this [BoxLayouter]'s [parent] offset needs to be applied also to [children] of
-  /// this [BoxLayouter].
-  ///
-  /// Important override notes and rules for [applyParentOffset] on extensions:
-  ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
-  ///     as this method is integral part of autolayout (as is [newCoreLayout]).
-  ///  2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
-  ///     layout process. Those would generally (always?) be leafs, and they would do the following:
-  ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
-  ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
-  ///         and set [layoutSize] at the end, so parent can pick it up
-  ///       - Override [applyParentOffset] as follows:
-  ///          - likely call super [applyParentOffset] to set overall offset in parent.
-  ///          - potentially re-offset the position as a result of the manual layout
-  ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member.
-  ///        - Override [paint] by painting on the calculated (parent also applied) offset,
-  ///           (see [LabelContainer.paint].
-  ///
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     _assertCallerIsParent(caller);
@@ -228,10 +273,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// When set to true, implementations must add appropriate support for collapse.
   bool get orderedSkip => _orderedSkip;
 
-  /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
-  /// the [newCoreLayout] and [paint] processing.
-  ///
-  /// Set private member [_orderedSkip] with assert that caller is parent.
+  /// Override of method on [LayoutableBox], uses the private member [_orderedSkip]
+  /// with assert that caller is parent.
   ///
   /// todo-011-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
@@ -304,40 +347,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     newCoreLayout();
   }
 
-  /// todo-011-document fully
-  ///
-  /// Assumptions:
-  ///   1. Before calling this method, [constraints] must be set at least on the root of the [BoxContainerHierarchy].
-  ///
-  /// Important override notes and rules for [newCoreLayout] on extensions:
-  ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
-  ///      which auto-layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
-  ///
-  ///   2: General rules for [newCoreLayout] on extensions
-  ///
-  ///      1) Generally, leafs do not need to override [newCoreLayout],
-  ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
-  ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
-  ///         which should be overriden.
-  ///         Alternatively, it is sufficient for leafs to override [newCoreLayout] and only set [layoutSize] there.
-  ///      2) Non-leafs do often need to override some methods invoked from [newCoreLayout],
-  ///         or the whole [newCoreLayout]. Some details on Non-Leafs
-  ///         - Non-positioning Non-leafs: Generally only need to override [_post_NotLeaf_PositionChildren] to return .
-  ///           If mostly do not need to override [newCoreLayout] at all,
-  ///           unless they wish to distribute constraints to children differently from the default,
-  ///           passing the full constraint to all children.
-  ///           The empty
-  ///         as this method is integral part of autolayout (as is [applyParentOffset]).
-  ///      2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
-  ///         layout process.
-  ///           - On Leaf: override [newCoreLayout] (no super call), do manual layout calculations,
-  ///             likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
-  ///             and set [layoutSize] at the end. This is already described in [BoxLayouter.applyParentOffset]
-  ///           - Potentially - this would be a hack PARENT of the leaf also may need to override[newCoreLayout], where it :
-  ///             - Perform layout logic to set some size-related value on it's child. We do not have example,
-  ///               as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
-  ///               See around [_layoutLogicToSetMemberMaxSizeForTextLayout]
-  ///
+  /// Implementation of abstract [newCoreLayout] on [LayoutableBox].
   @override
   void newCoreLayout() {
     // print('In newCoreLayout: this = $this. this.children = $children.');
@@ -625,7 +635,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///   - The child containers creation code: move from [layout] to [buildContainerOrSelf].
 ///   - if we move the container fully to autolayout:
 ///      - The 'old layouter' code should not be used;
-///   - else if keeping the manual layout (see LabelContainer)
+///   - else if keeping the manual layout (see [LabelContainer])
 ///       - the 'old layouter' code should go to [newCoreLayout].
 ///       - some layout values calculated from old layout that used to be passed as members to child containers creation:
 ///          - We need to, in the child class:
@@ -635,6 +645,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///          - Then set those layout values calculated from old layout on member children in [newCoreLayout] in the new setters
 ///
 ///   - [layout] should not be called on new layout, except on 'fake' root.
+/// todo-01-document : children are either passed, or a single child is build in [buildContainerOrSelf],
+///                    and set as a single child. Exception: If [buildContainerOrSelf] builds self, no children are added; this happens at the leaf.
 ///
 abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
   /// Default generative constructor.
@@ -669,7 +681,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // As [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
     // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
     // See documentation for [UniqueKeyedObjectsManager].
-    ensureUnique();
+    ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
     for (var child in this.children) {
@@ -715,6 +727,15 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   //   - create childN
   //   - addChild(childN)
   //   - etc
+  // todo-01-document
+  // By default return self. This should NOT be used eventually.
+  // Currently, returning self has a special handling in the [BoxContainer] constructor:
+  //   - If self is returned, no children are added to the [BoxContainer] being constructed
+  //   - Otherwise, it is assumed [buildContainerOrSelf] is building a single child,
+  //     and the returned BoxContainer is added as a single child.
+  // The above assumption, along with [buildContainerOrSelf] returning a single [BoxContainer] (not a list),
+  // means that [BoxContainer] built here has always a single child, most likely a [BoxLayouter] such as [Row] or [Column],
+  // or no children (at leaf).
   BoxContainer buildContainerOrSelf() {
     return this;
   }

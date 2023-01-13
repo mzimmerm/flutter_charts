@@ -1,5 +1,5 @@
 import 'dart:math' as math show max;
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:flutter_charts/src/chart/container_layouter_base.dart' show BoxLayouter;
 import 'package:tuple/tuple.dart';
 import 'dart:ui' as ui;
 
@@ -398,7 +398,7 @@ class PositionedLineSegments {
 
   /// Envelope of the layed out [lineSegments].
   ///
-  /// This will become the [BoxContainer.layoutSize] along the layout axis.
+  /// This will become the [BoxLayouter.layoutSize] along the layout axis.
   ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
   /// Calculates length of all layed out [lineSegments].

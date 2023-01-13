@@ -301,14 +301,13 @@ class LabelStyle {
   });
 }
 
-/// Subclass of [LabelContainerOriginalKeep] is extended with member [parentOffsetTick],
-/// which maintains the container's center position in
-/// immediate parent's coordinates.
+/// Container of axis label, this subclass of [LabelContainer] also stores
+/// this container's center [parentOffsetTick] in parent's coordinates.
 ///
-/// **This violates independence of parents not knowing
-/// and not needing their children;
-/// here, when used in parent [XContainer], the parent is storing
-/// some of it's properties on children.**
+/// **This violates independence of container parents not needing their contained children.
+/// Instances of this class are used in container parent [XContainer] (which is OK),
+/// but the parent is storing some of it's properties on children (which is not OK,
+/// effectively, this class uses it's children as sandboxes).**
 ///
 /// [parentOffsetTick] can be thought of as position of the "tick" showing
 /// the label's value on axis - the immediate parent

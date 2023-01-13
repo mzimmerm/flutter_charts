@@ -21,7 +21,7 @@ import 'options.dart';
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show Aligner, BoxContainer, Column, Greedy, LayoutableBox, Padder, Row;
+    show BoxContainer, BoxLayouter, LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -137,7 +137,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super();
 
-  /// Implements [BoxContainer.layout] for the chart as a whole.
+  /// Overrides [BoxLayouter.layout] for the chart as a whole.
   ///
   /// Uses this container's [chartArea] as available size
   ///
@@ -891,7 +891,7 @@ abstract class DataContainer extends ChartAreaContainer {
     // parent = chartRootContainer;
   }
 
-  /// Implements [BoxContainer.layout] for data area.
+  /// Overrides [BoxLayouter.layout] for data area.
   ///
   /// Uses all available space in the passed [boxConstraints],
   /// which it divides between it's children.
@@ -1173,7 +1173,7 @@ class GridLinesContainer extends BoxContainer {
     _lineContainers.add(lineContainer);
   }
 
-  /// Implements the abstract [BoxContainer.layout].
+  /// Overrides [BoxLayouter.layout].
   @override
   void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
     for (LineContainer lineContainer in _lineContainers) {
@@ -1189,7 +1189,9 @@ class GridLinesContainer extends BoxContainer {
     }
   }
 
-  /// Implements the abstract [BoxContainer.layout].
+  /// Overrides the concrete super method [BoxContainer.paint].
+  ///
+  /// Does not do super's skipping of ignored children and painting a yellow-and-black warning box.
   @override
   void paint(ui.Canvas canvas) {
     for (LineContainer lineContainer in _lineContainers) {
