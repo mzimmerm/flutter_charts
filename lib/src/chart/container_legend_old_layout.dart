@@ -96,7 +96,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(caller, offset);
+    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
 
     for (BoxContainer legendItemContainer in children) {
       legendItemContainer.applyParentOffset(this, offset);
@@ -230,7 +230,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (orderedSkip) return;
 
-    super.applyParentOffset(caller, offset);
+    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.applyParentOffset(this, offset);
     }

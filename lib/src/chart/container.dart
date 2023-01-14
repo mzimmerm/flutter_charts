@@ -284,7 +284,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     dataContainer.layout(dataContainerBoxConstraints);
     dataContainer.applyParentOffset(this, dataContainerOffset);
 
-    // this.children = children;  // todo-00-last-done
+    this.children = children;  // todo-00-last-done
   }
 
   /// Implements abstract [paint] for the whole chart.
@@ -511,7 +511,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
 
       _yLabelContainers.add(yLabelContainer);
 
-      // this.children = _yLabelContainers; // todo-00-last-done
+      this.children = _yLabelContainers; // todo-00-last-done
     }
   }
 
@@ -539,7 +539,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(caller, offset);
+    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
 
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
       yLabelContainer.applyParentOffset(this, offset);
@@ -674,7 +674,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
       _xLabelContainers.add(xLabelContainer);
     }
-    // this.children = _xLabelContainers; // todo-00-last-done
+    // this.children = _xLabelContainers; // todo-00-last-last : adding this also causes offset screwup
 
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
@@ -725,7 +725,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       return;
     }
     // super not really needed - only child containers are offset.
-    super.applyParentOffset(caller, offset);
+    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
 
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentOffset(this, offset);
@@ -1007,12 +1007,12 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
       _xGridLinesContainer._lineContainers.add(xLineContainer);
     }
 
-    // this.children = children; // todo-00-last-done
+    // this.children = children; // todo-00-last-last : adding this line causes offset screwup
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    super.applyParentOffset(caller, offset);
+    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1218,7 +1218,7 @@ class GridLinesContainer extends BoxContainer {
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
-    // this.children = _lineContainers; // todo-00-last-done
+    this.children = _lineContainers; // todo-00-last-done
   }
 
   /// Overridden from super. Applies offset on all members.

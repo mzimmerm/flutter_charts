@@ -260,6 +260,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   @override
   ui.Offset get offset => _offset;
 
+  /// Implementation of abstract super [LayoutableBox.applyParentOffset].
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     _assertCallerIsParent(caller);

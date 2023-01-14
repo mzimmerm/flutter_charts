@@ -1604,7 +1604,7 @@ Core of setting up BoxContainer parent/child hierarchy:
 - [ ] Test everything.
 
 
-*** IN-PROGRESS KEEP : Old layout and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
+*** IN-PROGRESS KEEP : ~layoutOLD()~ code and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
 
 **** NOTE Algorithm of old manual ~layoutOLD~
 
