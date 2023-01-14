@@ -284,7 +284,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     dataContainer.layout(dataContainerBoxConstraints);
     dataContainer.applyParentOffset(this, dataContainerOffset);
 
-    this.children = children;  // todo-00-last-done
+    // this.children = children;  // todo-00-last-done
   }
 
   /// Implements abstract [paint] for the whole chart.
@@ -511,7 +511,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
 
       _yLabelContainers.add(yLabelContainer);
 
-      this.children = _yLabelContainers; // todo-00-last-done
+      // this.children = _yLabelContainers; // todo-00-last-done
     }
   }
 
@@ -674,7 +674,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
       _xLabelContainers.add(xLabelContainer);
     }
-    this.children = _xLabelContainers; // todo-00-last-done
+    // this.children = _xLabelContainers; // todo-00-last-done
 
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
@@ -1007,7 +1007,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
       _xGridLinesContainer._lineContainers.add(xLineContainer);
     }
 
-    this.children = children; // todo-00-last-done
+    // this.children = children; // todo-00-last-done
   }
 
   @override
@@ -1218,7 +1218,7 @@ class GridLinesContainer extends BoxContainer {
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
-    this.children = _lineContainers; // todo-00-last-done
+    // this.children = _lineContainers; // todo-00-last-done
   }
 
   /// Overridden from super. Applies offset on all members.
