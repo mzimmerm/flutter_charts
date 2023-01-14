@@ -1033,22 +1033,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
 **** Around removing all scaled values, leaving only scaledFrom, scaledTo Offset.
 
 *** EVEN-LATER Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
-** NOTE 1. Containers structure analyzed
-
-*** NOTE How do we want the Containers lifecycle eventually?
-
-- Generally, Containers lifecycle should be as follows.
-  - Create Container Hierarchy. This is specific, but for Chart, we should just add containers we know of
-    - create Root (ChartContainer)
-    - create and add all children 
-  - Layout
-    - called by root.layout(BoxContainerConstraints)
-    - side effects
-      - set layoutSize on all members in hierarchy (currently not done)
-      - set offset (applyParentOffset) on all members in hierarchy 
-  - Paint 
-  
-*** NOTE Containers and Container-like classes overview
+** NOTE 1. Containers and Container-like classes overview
 
 - ~ChartContainer~
   - ~PointsColumns~ pointsColumns; // NOT a container  - created from DataRows.
@@ -1058,6 +1043,7 @@ Then we could also remove all the passing around of ~nextRightColumnValuePoint~.
     - has List<AxisLabelContainer> _yLabelContainers; // is container, checked all the way down
   - ~XContainer~ 
     - has List<AxisLabelContainer> _xLabelContainers; // is container, checked all the way down
+  - ~GridLinesContainer~ todo-00
   - ~DataContainer~
     - has ~GridLinesContainer~ _xGridLinesContainer; // is container, checked all the way down
     - has ~GridLinesContainer~ _yGridLinesContainer; // is container, checked all the way down
@@ -1545,57 +1531,76 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** IN-PROGRESS-NOW KEEP : BoxContainer setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** IN-PROGRESS-NOW KEEP : BoxContainer extensions : Setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
-Setting up container hierarchy is crucial, as the ~newCoreLayout~ and methods called from it, iterate over ~children~ in ~applyParentOffset~
+Setting up container hierarchy is crucial, as the ~newCoreLayout~ and methods called from it, iterate over ~children~ in ~applyParentOffset~.
 
-- [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
-- [X] Which containers to convert to hierarchy?
-  - [X] ~LegendContainer~ - contains LegendItemContainers children
-    - Had member  ~_legendItemContainers~ for children. 
-    - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
-    - Removed member ~_legendItemContainers~
-    - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
-  - [X] ~LegendItemContainer~ - contains ~LabelContainer~
-    - Had single child member named ~_labelContainer~
-    - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
-    - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
-  - [X] LabelContainer - has no container children, so no changes
-- [X] Fully converted to new layout - no manual layout used:
-  - [X] LegendContainer
-  - [X] LegendItemContainer
-  - [X] LegendIndicatorRectContainer  
-  - [X] LabelContainer
-  - [X] AxisLabelContainer  : converted bc it is thin extension of LabelContainer
-- [X] Add ~BoxContainerUsingManualLayout~  which throws exception from ~post_NotLeaf_PositionChildren~. Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
-- [X] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~ and *extend from it all classes that extend ChartAreaContainer EXCEPT LegendContainer*
-- [X] Make these extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
-  - [X] ChartRootContainer
-  - [X] ChartAreaContainer
-  - [X] YContainer                            (via extends ChartAreaContainer)
-  - [X] XContainer                            (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainer)
-  - [X] DataContainer                         (via extends ChartAreaContainer)
-  - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainer)
-  - [X] VerticalBarChartRootContainer         (via extends ChartRootContainer)
-  - [X] VerticalBarChartDataContainer         (via extends DataContainer)
-  - [X] LineChartRootContainer                (via extends ChartRootContainer)
-  - [X] LineChartDataContainer                (via extends DataContainer)
+Result of this step will be a double-presence of children on the chart BoxContainer extensions:
+
+1. In members such as ChartRootContainer.legendContainer (.xContainer, .yContainer, .dataContainer)
+
+2. In BoxContainer.children
+
+
+The first is used for direct addressing in existing code, the second for iteration and recursion when called from ~newCoreLayout~
+
+
+
+
+1. [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
+2. [X] Which containers to convert to hierarchy?
+   - [X] ~LegendContainer~ - contains LegendItemContainers children
+     - Had member  ~_legendItemContainers~ for children. 
+     - Children were managed in ~_legendItemContainers~. The changes replaced it with the ~children~ getter, and ~addChildToHierarchyDeprecated~ , but also some code reordering, where addChildToHierarchyDeprecated is called immediately after the child ~LegendItemContainer~ is created
+     - Removed member ~_legendItemContainers~
+     - added ~addChildToHierarchyDeprecated(legendItemContainer)~ after each new  legendItemContainer was created. Changed the order of code, as before, the add (to a private _legendItemContainers) was last.
+   - [X] ~LegendItemContainer~ - contains ~LabelContainer~
+     - Had single child member named ~_labelContainer~
+     - Removed the single child, and started to use ~children~ to manage it instead of the single child member.
+     - Replaced use of  ~_labelContainer~ with a single local  ~labelContainer~
+   - [X] LabelContainer - has no container children, so no changes
+3. [X] Fully converted to new layout - no manual layout used:
+   - [X] LegendContainer
+   - [X] LegendItemContainer
+   - [X] LegendIndicatorRectContainer  
+   - [X] LabelContainer
+   - [X] AxisLabelContainer  : converted bc it is thin extension of LabelContainer
+4. [X] Add ~BoxContainerUsingManualLayout~  which throws exception from ~post_NotLeaf_PositionChildren~. Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
+5. [X] Add  class ~ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout~ and *extend from it all classes that extend ChartAreaContainer EXCEPT LegendContainer*
+6. [X] Make these extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
+   - [X] ChartRootContainer
+   - [X] ChartAreaContainerUsingManualLayout
+   - [X] YContainer                            (via extends ChartAreaContainerUsingManualLayout)
+   - [X] XContainer                            (via extends AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout)
+   - [ ] GridLinesContainer : todo-00
+   - [X] DataContainer                         (via extends ChartAreaContainerUsingManualLayout)
+   - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainerUsingManualLayout)
+   - [X] VerticalBarChartRootContainer         (via extends ChartRootContainer)
+   - [X] VerticalBarChartDataContainer         (via extends DataContainer)
+   - [X] LineChartRootContainer                (via extends ChartRootContainer)
+   - [X] LineChartDataContainer                (via extends DataContainer)
 
 
 Core of setting up BoxContainer parent/child hierarchy:
 
 - [ ] Try to get rid of yContainerFirst
-- [ ] ~layout~ code: a) Add 'List children' b) after creating each child,  add to children, c) at the end, set children on self. Keep the original members for children, clean that up later. 
-  - [ ] ChartRootContainer
-  - [ ] ChartAreaContainer
-  - [ ] YContainer
-  - [ ] XContainer
-  - [ ] DataContainer
-  - [ ] AdjustableLabelsChartAreaContainer
-  - [ ] VerticalBarChartRootContainer
-  - [ ] VerticalBarChartDataContainer
-  - [ ] LineChartRootContainer
-  - [ ] LineChartDataContainer
+- [ ] ~layout~ code, do the following changes
+  - ~List<BoxContainer> children = []; // todo-00-last-done~
+  - after creating each child, ~children.add(child; // todo-00-last-done~
+  - at the end, ~this.children = children; // todo-00-last-done~ to set children on self
+  - Keep the original members for children, clean that up later. 
+- [X] Do ~layout~ changes on:
+  - [X] ChartRootContainer
+  - [X] ChartAreaContainerUsingManualLayout : no layout method, so no change
+  - [X] YContainer
+  - [X] XContainer
+  - [X] GridLinesContainer
+  - [X] DataContainer
+  - [X] AdjustableLabelsChartAreaContainer :  no layout method, so no change
+  - [X] VerticalBarChartRootContainer :  no layout method, so no change
+  - [X] VerticalBarChartDataContainer :  no layout method, so no change
+  - [X] LineChartRootContainer:  no layout method, so no change
+  - [X] LineChartDataContainer:  no layout method, so no change
 - [ ] Test everything.
 
 
@@ -1645,6 +1650,7 @@ Notes:
   - [ ] ChartAreaContainer
   - [ ] YContainer
   - [ ] XContainer
+  - [ ] GridLinesContainer
   - [ ] DataContainer
   - [ ] AdjustableLabelsChartAreaContainer
   - [ ] VerticalBarChartRootContainer

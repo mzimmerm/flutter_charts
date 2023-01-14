@@ -28,7 +28,7 @@ class LineContainer extends BoxContainer {
 
   /// Implementor of method in superclass [Container].
   @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+  void layout(BoxContainerConstraints boxConstraints) {
     throw StateError('No need to call layout on $runtimeType.');
   }
 

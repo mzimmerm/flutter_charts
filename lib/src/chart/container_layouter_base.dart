@@ -90,13 +90,23 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   }
 }
 
-/// Interface common to [BoxLayouter] and [BoxContainer].
+/// [LayoutableBox] is an abstraction of behavior of a box which was sized and positioned
+/// on a 2D plane.
+///
+/// It is an interface-only common to [BoxLayouter] and [BoxContainer].
+///
+/// Sizing is obtained by the getter [layoutSize].
+/// Positioning is obtained by the getter [offset].
+///
+/// Implementations will likely add setters to the above described getters.
+///
+/// todo-01-document-finish documentation about the apply methods.
 ///
 /// Used in methods that operate on [BoxLayouter] or [BoxContainer], but only require
 /// a narrower interface which exposes query for [layoutSize] and [offset],
 /// and applying several properties by parent. The apply methods in their names
 /// describe those properties should only be invoked
-/// in context of [BoxLayouter] or [BoxContainer] by a parent invoker.
+/// in context of [BoxLayouter] or [BoxContainer] hierarchy by a parent invoker.
 ///
 /// Such use hides the extended role of [BoxLayouter] or [BoxContainer]
 /// hierarchy, (getting children, parents, etc),
@@ -113,6 +123,7 @@ abstract class LayoutableBox {
   ///                So maybe setter could be here, getter also here
   ui.Size get layoutSize;
 
+  // todo-01 : should this be private as changes are performed by the 'apply' method?
   ui.Offset get offset;
 
   /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [parent] in the [BoxContainerHierarchy].
@@ -336,7 +347,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   /// Old layout forwards to [newCoreLayout].
   // todo-01-last : pass BoxLayouter not BoxContainer
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+  void layout(BoxContainerConstraints boxConstraints) {
     if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
         // this is LabelContainer ||
@@ -671,8 +682,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children;
     } else {
-    // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
-   // todo-01-last : removed this if (children == null) {
+      // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
+      // todo-01-last : removed this if (children == null) {
       //  &&  this.children == ChildrenNotSetSingleton()) {
       BoxContainer builtContainer = buildContainerOrSelf();
       if (builtContainer != this) {
@@ -817,7 +828,10 @@ abstract class BoxContainerUsingManualLayout extends BoxContainer {
   }) : super(key: key, children: children);
 
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  void newCoreLayout() {
+    // todo-00-last : replace layout with newCoreLayout.
+    // todo-00-last : But first resolve, at all placed where layout is called,
+    //                what to do with arguments passed to layout, and it's return
     throw StateError('Must be overridden in extensions');
   }
 }

@@ -28,7 +28,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
   ///
   /// Evenly divides the [availableWidth] to all legend items.
   @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+  void layout(BoxContainerConstraints boxConstraints) {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
@@ -71,7 +71,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
         options: options,
       );
 
-      legendItemContainer.layout(legendItemBoxConstraints, legendItemContainer);
+      legendItemContainer.layout(legendItemBoxConstraints);
 
       legendItemContainer.applyParentOffset(this, 
         ui.Offset(
@@ -141,7 +141,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
         super();
 
   @override
-  void layout(BoxContainerConstraints boxConstraints, BoxContainer parentBoxContainer) {
+  void layout(BoxContainerConstraints boxConstraints) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
     // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
@@ -164,7 +164,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       options: _options,
     );
     addChildToHierarchyDeprecated(this, indRectContainer);
-    indRectContainer.layout(BoxContainerConstraints.unused(), this);
+    indRectContainer.layout(BoxContainerConstraints.unused());
 
     LabelContainerOriginalKeep labelContainer = LabelContainerOriginalKeep(
       label: _label,
@@ -173,7 +173,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
       labelStyle: _labelStyle,
     );
     addChildToHierarchyDeprecated(this, labelContainer);
-    labelContainer.layout(BoxContainerConstraints.unused(), labelContainer);
+    labelContainer.layout(BoxContainerConstraints.unused());
 
     // Layout legend item elements (indicator, pad, label) flowing from left:
 
