@@ -136,8 +136,8 @@ abstract class LayoutableBox {
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
   ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
-  ///     as this method is integral part of autolayout (as is [newCoreLayout]).
-  ///  2) Exception would be [LayoutableBox]s that want to use manual or semi-manual
+  ///     as this method is integral part of the layout process (implemented in [newCoreLayout]).
+  ///  2) Exception that need to override would be those using manual
   ///     layout process. Those would generally (always?) be leafs, and they would do the following:
   ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
   ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
@@ -148,6 +148,11 @@ abstract class LayoutableBox {
   ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member.
   ///        - Override [paint] by painting on the calculated (parent also applied) offset,
   ///           (see [LabelContainer.paint].
+  ///  3) As a lemma of 1), generally, there is no need to call [super.applyParentOffset] ;
+  ///     Extensions covered in 2) which do override, are those manual layout classes
+  ///     which maintain some child [BoxContainer]s in addition to [BoxContainerHierarchy.children].
+  ///     Those should call [super.applyParentOffset] first, to offset the [BoxContainerHierarchy.children],
+  ///     then offset the additionally maintained children by the same offset as the [BoxContainerHierarchy.children].
   ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
@@ -831,7 +836,7 @@ abstract class BoxContainerUsingManualLayout extends BoxContainer {
   @override
   void newCoreLayout() {
     // todo-00-last : replace layout with newCoreLayout.
-    // todo-00-last : But first resolve, at all placed where layout is called,
+    //              : But first resolve, at all placed where layout is called,
     //                what to do with arguments passed to layout, and it's return
     throw StateError('Must be overridden in extensions');
   }

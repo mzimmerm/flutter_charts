@@ -156,7 +156,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   ///
   @override
   void layout(BoxContainerConstraints boxConstraints) {
-    List<BoxContainer> children = []; // todo-00-last-done
+    List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // Not needed for new layouter, OR for old.
     // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
@@ -177,7 +177,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     legendContainer = LegendContainer(
       chartRootContainer: this,
     );
-    children.add(legendContainer); // todo-00-last-done
+    children.add(legendContainer); // todo-01-done-duplicite-children
 
     // Important: On [legendContainer] which is the top of the 'fake' layout branch
     //   we must
@@ -209,7 +209,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
-    // not this, only used for test layout : children.add(yContainerFirst); // todo-00-last-done
+    // not this, only used for test layout : children.add(yContainerFirst); // todo-00 : deal with yContainerFirst
 
     yContainerFirst.layout(yContainerBoxConstraints);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -227,7 +227,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
-    children.add(xContainer); // todo-00-last-done
+    children.add(xContainer); // todo-01-done-duplicite-children
 
     xContainer.layout(xContainerBoxConstraints);
 
@@ -256,7 +256,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
-    children.add(yContainer); // todo-00-last-done
+    children.add(yContainer); // todo-01-done-duplicite-children
 
     yContainer.layout(yContainerBoxConstraints);
 
@@ -277,14 +277,14 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     dataContainer = createDataContainer(
       chartRootContainer: this,
     );
-    children.add(dataContainer); // todo-00-last-done
+    children.add(dataContainer); // todo-01-done-duplicite-children
 
     // todo-01-morph-layout : this is where most non-Container elements are layed out.
     //                problem is, part of the layout happens in applyParentOffset!
     dataContainer.layout(dataContainerBoxConstraints);
     dataContainer.applyParentOffset(this, dataContainerOffset);
 
-    this.children = children;  // todo-00-last-done
+    this.children = children;  // todo-01-done-duplicite-children
   }
 
   /// Implements abstract [paint] for the whole chart.
@@ -417,7 +417,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
   void layout(BoxContainerConstraints boxConstraints) {
-    List<BoxContainer> children = []; // todo-00-last-done
+    List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer
     //   coordinates.
@@ -511,7 +511,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
 
       _yLabelContainers.add(yLabelContainer);
 
-      this.children = _yLabelContainers; // todo-00-last-done
+      this.children = _yLabelContainers; // todo-01-done-duplicite-children
     }
   }
 
@@ -538,8 +538,8 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
-    // super not really needed - only child containers are offset.
-    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
+
+    // super.applyParentOffset(caller, offset); // super did double-offset as _yLabelContainers are on 2 places
 
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
       yLabelContainer.applyParentOffset(this, offset);
@@ -674,7 +674,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
       _xLabelContainers.add(xLabelContainer);
     }
-    // this.children = _xLabelContainers; // todo-00-last-last : adding this also causes offset screwup
+    this.children = _xLabelContainers; // todo-01-done-duplicite-children
 
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
@@ -724,8 +724,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
       return;
     }
-    // super not really needed - only child containers are offset.
-    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
+    // super.applyParentOffset(caller, offset); // super did double-offset as xLabelContainer are on 2 places
 
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentOffset(this, offset);
@@ -943,7 +942,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
 
   /// Lays out the grid lines.
   void _layoutGrid() {
-    List<BoxContainer> children = []; // todo-00-last-done
+    List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
@@ -958,7 +957,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
     _yGridLinesContainer = GridLinesContainer(parent: this);
-    children.add(_yGridLinesContainer); // todo-00-last-done
+    children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
 
     for (double xTickX in xTickXs) {
       // Add vertical yGrid line in the middle or on the left
@@ -992,7 +991,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
     // Iterate yUserLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
     _xGridLinesContainer = GridLinesContainer(parent: this);
-    children.add(_xGridLinesContainer); // todo-00-last-done
+    children.add(_xGridLinesContainer); // todo-01-done-duplicite-children
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
     for (double yTickY in yTickYs) {
@@ -1007,12 +1006,12 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
       _xGridLinesContainer._lineContainers.add(xLineContainer);
     }
 
-    // this.children = children; // todo-00-last-last : adding this line causes offset screwup
+    this.children = children; // todo-01-done-duplicite-children
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
+    // super.applyParentOffset(caller, offset); // super did double-offset as _xGridLinesContainer etc are on 2 places
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1218,7 +1217,7 @@ class GridLinesContainer extends BoxContainer {
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
-    this.children = _lineContainers; // todo-00-last-done
+    this.children = _lineContainers; // todo-01-done-duplicite-children
   }
 
   /// Overridden from super. Applies offset on all members.

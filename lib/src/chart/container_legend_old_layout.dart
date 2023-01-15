@@ -95,8 +95,7 @@ class LegendContainerOriginalKeep extends ChartAreaContainer {
     if (!chartRootContainer.data.chartOptions.legendOptions.isLegendContainerShown) {
       return;
     }
-    // super not really needed - only child containers are offset.
-    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
+    // super.applyParentOffset(caller, offset); // super did double-offset as legendItemContainer etc are on 2 places
 
     for (BoxContainer legendItemContainer in children) {
       legendItemContainer.applyParentOffset(this, offset);
@@ -230,7 +229,7 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     if (orderedSkip) return;
 
-    // todo-00-last-last-try : super.applyParentOffset(caller, offset);
+    // super.applyParentOffset(caller, offset); // super did double-offset as rectThenLabelContainer etc are on 2 places
     for (var rectThenLabelContainer in children) {
       rectThenLabelContainer.applyParentOffset(this, offset);
     }
