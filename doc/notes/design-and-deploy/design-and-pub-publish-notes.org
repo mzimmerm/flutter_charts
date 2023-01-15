@@ -1531,7 +1531,7 @@ IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~
 
 This section describes a first step of migrating a Container such as ~XLabelContainer~ - actually all Containers - to use the new layout ethods ~newCoreLayout()~ and ~buildContainerOrSelf~ *but still use manual layout AS IS* NOT auto layout with Row and Column.
 
-*** IN-PROGRESS-NOW KEEP : BoxContainer extensions : Setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** DONE KEEP FOR NOW ONLY : BoxContainer extensions : Setup parent/child hierarchy in existing containers ~EXCEPT Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
 Setting up container hierarchy is crucial, as the ~newCoreLayout~ and methods called from it, iterate over ~children~ in ~applyParentOffset~.
 
@@ -1542,9 +1542,10 @@ Result of this step will be a double-presence of children on the chart BoxContai
 2. In BoxContainer.children
 
 
-The first is used for direct addressing in existing code, the second for iteration and recursion when called from ~newCoreLayout~
+Item 1) above is used for direct addressing in existing code, 2) above for iteration and recursion when called from ~newCoreLayout~
 
 
+Details of parent/child relationship establishment:
 
 
 1. [ ] List of all classes: Mark as candidate (C) or later (L) never (N) to convert to BoxContainer
@@ -1583,8 +1584,8 @@ The first is used for direct addressing in existing code, the second for iterati
 
 Core of setting up BoxContainer parent/child hierarchy:
 
-- [ ] Try to get rid of yContainerFirst
-- [ ] ~layout~ code, do the following changes
+- [X] NO WAY POSSIBLE : EITHER X OR Y CONTAINER MYST BE LAYED OUT TWICE UNLESS WE WANT TO USE SOME HARDCODED WIDTH OF Y CONTAINER OR HEIGHT OF X CONTAINER! Try to get rid of yContainerFirst
+- [X] ~layout~ code, changes:
   - ~List<BoxContainer> children = []; // todo-00-last-done~
   - after creating each child, ~children.add(child; // todo-00-last-done~
   - at the end, ~this.children = children; // todo-00-last-done~ to set children on self
@@ -1601,10 +1602,15 @@ Core of setting up BoxContainer parent/child hierarchy:
   - [X] VerticalBarChartDataContainer :  no layout method, so no change
   - [X] LineChartRootContainer:  no layout method, so no change
   - [X] LineChartDataContainer:  no layout method, so no change
-- [ ] Test everything.
+- [X] Test everything.
 
 
-*** IN-PROGRESS KEEP : ~layoutOLD()~ code and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
+
+*** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
+
+
+
+*** IN-PROGRESS-NOW KEEP : ~layoutOLD()~ code and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
 
 **** NOTE Algorithm of old manual ~layoutOLD~
 
@@ -1627,6 +1633,18 @@ The old MANUAL ~layout(BoxContainerConstraints boxConstraints, BoxContainer pare
 3. calculate and set ~BoxLayouter.layoutSize~ () = sum of sizes of all children in the layout direction, max child size in the cross-layout direction. For ChartRootContainer, layoutSize is overriden. 
 
 **** NOTE To migrate the code in the old MANUAL layout, do this:
+
+1. Rename layout to ~layoutOLD~
+2. Copy contents of ~layoutOLD~ to ~BoxContainer buildContainerOrSelf()~ AND ~newCoreLayout()~
+3. Edit the added methods and keep child-creation code in the first and layout code in the second
+
+
+  @override
+  BoxContainer buildContainerOrSelf() {
+
+  @override
+  void newCoreLayout() {
+
 
 1. Move one-by-one loop in ~2.1 and 2.4~ into  ~buildContainerOrSelf(BoxContainer parentBoxContainer)~ and return ~this~
    - Notes:

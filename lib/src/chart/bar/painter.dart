@@ -11,8 +11,8 @@ class VerticalBarChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
-    required bar_containers.VerticalBarChartRootContainer verticalBarChartContainer,
-  }) : super(chartRootContainer: verticalBarChartContainer) {
-    verticalBarChartContainer.isStacked = true;
+    required bar_containers.VerticalBarChartRootContainer verticalBarChartRootContainer,
+  }) : super(chartRootContainer: verticalBarChartRootContainer) {
+    verticalBarChartRootContainer.isStacked = true;
   }
 }

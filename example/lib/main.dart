@@ -946,27 +946,27 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartRootContainer lineChartContainer = LineChartRootContainer(
+        LineChartRootContainer lineChartRootContainer = LineChartRootContainer(
           chartData: chartData,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         LineChart lineChart = LineChart(
           painter: LineChartPainter(
-            lineChartContainer: lineChartContainer,
+            lineChartRootContainer: lineChartRootContainer,
           ),
         );
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartRootContainer verticalBarChartContainer = VerticalBarChartRootContainer(
+        VerticalBarChartRootContainer verticalBarChartRootContainer = VerticalBarChartRootContainer(
           chartData: chartData,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
-            verticalBarChartContainer: verticalBarChartContainer,
+            verticalBarChartRootContainer: verticalBarChartRootContainer,
           ),
         );
 

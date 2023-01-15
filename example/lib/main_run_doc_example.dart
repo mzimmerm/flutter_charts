@@ -48,7 +48,7 @@ Widget chartToRun() {
 
   var lineChart = LineChart(
     painter: LineChartPainter(
-      lineChartContainer: lineChartContainer,
+      lineChartRootContainer: lineChartContainer,
     ),
   );
   return lineChart;

@@ -268,7 +268,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Implementation of abstract super [LayoutableBox.applyParentOffset].
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    _assertCallerIsParent(caller);
+    assertCallerIsParent(caller);
 
     if (orderedSkip) return;
 
@@ -296,7 +296,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// todo-011-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
-    _assertCallerIsParent(caller);
+    assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
 
@@ -309,7 +309,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Set private member [_constraints] with assert that the caller is parent
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
-    _assertCallerIsParent(caller);
+    assertCallerIsParent(caller);
     _constraints = constraints;
   }
 
@@ -343,7 +343,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
 
-  void _assertCallerIsParent(LayoutableBox caller) {
+  void assertCallerIsParent(LayoutableBox caller) {
     if (parent != null) {
       if (!identical(caller, parent)) {
         throw StateError('on this $this, parent $parent should be == to caller $caller');
@@ -675,7 +675,11 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     ContainerKey? key,
     // todo-01-last : can children be required and non nullable?
     List<BoxContainer>? children,
+    // BoxContainer? parent,
   }) {
+    //if (parent != null) {
+    //  this.parent = parent;
+    //}
     if (key != null) {
       this.key = key;
     }  else {
@@ -697,6 +701,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       } else {
         this.children = [];
       }
+      // this.children = [builtContainer];
     }
     // As [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
     // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
@@ -704,10 +709,19 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    for (var child in this.children) {
+    _makeSelfParentOfAllChildren();
+    // NAMED GENERATIVE super() called implicitly here.
+  }
+
+  void _makeSelfParentOfAllChildren() {
+    for (var child in children) {
       child.parent = this;
     }
-    // NAMED GENERATIVE super() called implicitly here.
+  }
+
+  void setChildrenAndMakeSelfParent(List<BoxContainer> children) {
+    this.children = children;
+    _makeSelfParentOfAllChildren();
   }
 
   /// Override of the abstract [post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
@@ -750,7 +764,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   // todo-01-document
   // By default return self. This should NOT be used eventually.
   // Currently, returning self has a special handling in the [BoxContainer] constructor:
-  //   - If self is returned, no children are added to the [BoxContainer] being constructed
+  //   - If self is returned, no children are added to the [BoxContainer] being constructed,
+  //     and it is assumed children will be added first using `this.children = someManuallyBuiltChildren`.
+  //     This is used in manual layout
   //   - Otherwise, it is assumed [buildContainerOrSelf] is building a single child,
   //     and the returned BoxContainer is added as a single child.
   // The above assumption, along with [buildContainerOrSelf] returning a single [BoxContainer] (not a list),
@@ -840,6 +856,15 @@ abstract class BoxContainerUsingManualLayout extends BoxContainer {
     //                what to do with arguments passed to layout, and it's return
     throw StateError('Must be overridden in extensions');
   }
+
+  // todo-00-last-last-last : Returning this as the only child wraped in DefaultNonPositioning
+/*
+  @override
+  BoxContainer buildContainerOrSelf() {
+    return DefaultNonPositioningBoxLayouter(children: [this]);
+  }
+*/
+
 }
 
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
@@ -1386,6 +1411,14 @@ class Greedy extends NonPositioningBoxLayouter {
     }
     return ui.Size(width, height);
   }
+}
+
+// todo-00 : comment and implement
+class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
+  DefaultNonPositioningBoxLayouter({
+    List<BoxContainer>? children,
+  }) : super(children: children);
+
 }
 
 /// Layouter which lays out it's single child surrounded by [EdgePadding] within itself.
