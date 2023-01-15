@@ -1606,6 +1606,13 @@ Core of setting up BoxContainer parent/child hierarchy:
 
 
 
+
+*** IN-PROGRESS-NOW Example72 is different from previous version. Investigate and fix
+
+ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_verticalBarChart.png
+
+is overflowing now, where before it was not. Investigate and fix if applicable.
+
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
 

@@ -353,7 +353,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     //   the top of the XContainer area.
 
     // todo-00-last-last added as we cannot use anything from first layout,which did not happen yet. Debug showed this was 16.0
-    var yLabelsMaxHeightFromFirstLayout = 40.0;
+    // This seems to be used as how much from the top of Y gridline is NOT used for scaling; does NOT affect correctness
+    var yLabelsMaxHeightFromFirstLayout = 16.0;
     yContainer = YContainer(
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,

@@ -43,7 +43,8 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///      the parent and wants to explicitly set up the parent-child.
   ///   2. In the [BoxContainer] constructor, if [children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
-  late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+  // todo-00-last-last-last : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+  BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
 
   // Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
