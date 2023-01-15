@@ -71,6 +71,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   late BoxContainer legendContainer; // New layouter 'fake' root must be declared as BoxContainer if returned from build.
   late XContainer xContainer;
   late YContainer yContainer;
+  late YContainer yContainerFirst; // todo-00-last-last added, to get width for xContainer layout and label size for second yContainer layout (the latter seems irrelevant)
   late DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
@@ -201,26 +202,29 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     //        is not relevant in this first call.
     double yContainerHeight = chartArea.height - legendContainerSize.height;
 
-    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+    var yContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
        yContainerHeight,
     ));
-    var yContainerFirst = YContainer(
+    // todo-00-last-last-done : var yContainerFirst = YContainer(
+    yContainerFirst = YContainer(
       chartRootContainer: this,
       yLabelsMaxHeightFromFirstLayout: 0.0,
     );
     // not this, only used for test layout : children.add(yContainerFirst); // todo-00 : deal with yContainerFirst
 
-    yContainerFirst.layout(yContainerBoxConstraints);
+    yContainerFirst.layout(yContainerFirstBoxConstraints);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    yContainer = yContainerFirst;
-    ui.Size yContainerSize = yContainer.layoutSize;
+    // todo-00-last-last-done : yContainer = yContainerFirst;
+    // todo-00-last-last-done : ui.Size yContainerFirstSize = yContainer.layoutSize;
+    // yContainerFirst.layoutSize is needed by XContainer to get it's width. Must not change on second YContainer layout
+    ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
 
     var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width - yContainerSize.width,
+      chartArea.width - yContainerFirstSize.width,
       chartArea.height - legendContainerSize.height,
     ));
     xContainer = XContainer(
@@ -235,7 +239,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     xContainer.layoutSize = xContainer.lateReLayoutSize;
 
     ui.Size xContainerSize = xContainer.layoutSize;
-    ui.Offset xContainerOffset = ui.Offset(yContainerSize.width, chartArea.height - xContainerSize.height);
+    ui.Offset xContainerOffset = ui.Offset(yContainerFirstSize.width, chartArea.height - xContainerSize.height);
     xContainer.applyParentOffset(this, xContainerOffset);
 
     // ### 5. Second call to YContainer is needed, as available height for Y
@@ -248,7 +252,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     //   the top of the XContainer area.
 
     var yConstraintsHeight = yContainerHeight - xContainerSize.height;
-    yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
        chartArea.width,
        yConstraintsHeight,
     ));
@@ -260,7 +264,11 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     yContainer.layout(yContainerBoxConstraints);
 
-    yContainerSize = yContainer.layoutSize;
+    var yContainerSize = yContainer.layoutSize;
+    // The layout relies on YContainer width first time and second time to be the same, as width
+    //    was used as remainded space for XContainer.
+    // But height, will NOT be the same, it will be shorter second time.
+    assert (yContainerFirstSize.width == yContainerSize.width);
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
     yContainer.applyParentOffset(this, yContainerOffset);
 
