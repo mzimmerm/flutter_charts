@@ -354,10 +354,10 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     // todo-00-last-last added as we cannot use anything from first layout,which did not happen yet. Debug showed this was 16.0
     // This seems to be used as how much from the top of Y gridline is NOT used for scaling; does NOT affect correctness
-    var yLabelsMaxHeightFromFirstLayout = 16.0;
+    // todo-00-last-last : var yLabelsMaxHeightFromFirstLayout = 16.0;
     yContainer = YContainer(
       chartRootContainer: this,
-      yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
+      // todo-00-last-last : yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
     children.add(yContainer); // todo-01-done-duplicite-children
 
@@ -417,7 +417,10 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     ));
 
     yContainerFirst.layout(yContainerFirstBoxConstraints);
+
+    // Use values from the yContainerFirst pre-layout on yContainer, and xContainer constraints
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
+    yContainer._yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
     // todo-00-last-last-done : yContainer = yContainerFirst;
     // todo-00-last-last-done : ui.Size yContainerFirstSize = yContainer.layoutSize;
     // yContainerFirst.layoutSize is needed by XContainer to get it's width. Must not change on second YContainer layout
@@ -592,7 +595,8 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
   /// todo 0-future-minor : above is not true now for user defined labels
   late List<AxisLabelContainer> _yLabelContainers;
 
-  final double _yLabelsMaxHeightFromFirstLayout;
+  /// Maximum label height defined by the first layout (pre-layout), in layout after this is created
+  double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
   /// Constructs the container that holds Y labels.
   ///
@@ -600,11 +604,12 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
   /// all available vertical space, and only use necessary horizontal space.
   YContainer({
     required ChartRootContainer chartRootContainer,
-    required double yLabelsMaxHeightFromFirstLayout,
-  })  : _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout,
-        super(
+    double yLabelsMaxHeightFromFirstLayout = 0.0,
+  }) : super(
           chartRootContainer: chartRootContainer,
-        );
+        ) {
+    _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
+  }
 
   /// Lays out the area containing the Y axis labels.
   ///
@@ -1442,7 +1447,8 @@ class GridLinesContainer extends BoxContainer {
 
   /// Overrides the concrete super method [BoxContainer.paint].
   ///
-  /// Does not do super's skipping of ignored children and painting a yellow-and-black warning box.
+  /// [GridLinesContainer] does not do super's skipping of ignored children and
+  /// also does not do painting a yellow-and-black warning box.
   @override
   void paint(ui.Canvas canvas) {
     for (LineContainer lineContainer in _lineContainers) {

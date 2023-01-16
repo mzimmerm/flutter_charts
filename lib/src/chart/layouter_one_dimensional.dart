@@ -18,6 +18,9 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSe
 enum Packing {
   /// [Packing.matrjoska] should layout elements so that the smallest element is fully
   /// inside the next larger element, and so on. The largest element contains all smaller elements.
+  ///
+  /// This packing is used on cross-axis for Column and Row layouters (Column is packed as matrjoska
+  /// along horizontal axis, Row is packed as matrjoska along vertical axis)
   matrjoska,
 
   /// [Packing.tight] should layout elements in a way they tight together into a group with no padding between elements.

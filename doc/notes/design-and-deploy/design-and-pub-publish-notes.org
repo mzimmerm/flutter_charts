@@ -1480,7 +1480,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
   - [X] Test work, push
 
 
-#+BEGIN_SRC ditaa :file img-babel-ditaa-1.png :cmdline -E -r
+#+BEGIN_SRC ditaa :file aligner-example.png :cmdline -E -r
 
 
                 +----------------+----------------+
@@ -1607,17 +1607,9 @@ Core of setting up BoxContainer parent/child hierarchy:
 
 
 
-*** IN-PROGRESS-NOW Example72 is different from previous version. Investigate and fix
-
-ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_verticalBarChart.png
-
-is overflowing now, where before it was not. Investigate and fix if applicable.
-
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
-
-
-*** IN-PROGRESS-NOW KEEP : ~layoutOLD()~ code and code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~post_NotLeaf_PositionChildren~,  but positioning code is still old, manual, copied from old code!!!
+*** IN-PROGRESS-NOW KEEP : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
 
 **** NOTE Algorithm of old manual ~layoutOLD~
 
@@ -1796,13 +1788,175 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 ** TODO-NEXT 9. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
 
 
-- [ ] EVEN-LATER BoxContainer debuggability
-  - [ ] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
+- [-] EVEN-LATER BoxContainer debuggability
+  - [X] Add member "nodeId" on constructor (nullable), should be member in Hierarchy, and add to constructors at least those used in Legend
   - [ ] Add misc toString methods which print the BoxContainer's type, key, and context (parent and children to start with). Great help in debugging.
 - [ ] EVEN-LATER Add to  LineSegment a field 'isAddedPadding' and 'isSegment'. That way we can clearly see what is what
   - [ ] When creating segments, add a segment also for padding and set to 'isAddedPadding'. That way LineSegment lists have all the info what portion is actual 'sticks', and what are 'added paddings'
 - [ ] EVEN-LATER: Add Layout which wraps! (call it WrapLayouter). This is important for long legends.
-- [ ] make ChartOptions a Singleton!!! OR add ChartOptions as parameter on BoxContainer. ****Singleton is much prefered*
-- [ ] Start converting all containers to BoxContainers and newCoreLayout, BUT KEEP MANUAL LAYOUT ON ALL CONTAINERS EXCEPT LEGEND
 - [ ] Address some relevant todo-01-last
 - [ ] Change AdjustableLabelsChartAreaContainer to a MIXIN. AdjustableLabelsChartAreaContainer is just a marking class to hold _labelLayoutStrategy. We should not be adding class on the hierarchy to only hold some data - those should be mixins. Note: the only extension is XContainer
+
+
+** LATER Example72 is different from previous version. Investigate and fix
+
+ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_verticalBarChart.png
+
+is overflowing now, where before it was not. Investigate and fix if applicable.
+
+** 10. IDEAS TO IMPLEMENT
+
+*** TableLayouter which can be used to layout the chart XContainer, YContainer, DataContainer
+
+Implement table layouter in 3 steps
+
+**** Common needs
+
+- class Range<T> is a list of T
+- class IntRange is a list of int
+- class TableLayouter
+  - member Function childOrder(i) is a map from int Range from 0.._table.length to the same int range  - ADD THIS MEMBER ON BoxContainer, by default it is identity map from 0..children.size -> same
+    - change BoxContainer iterators to all work in this order
+    - test for sameess
+  - new class TableLayouter
+  - On TableLayouter, Member children is mapped from a class RowsColumns
+  - member RowsColumns _table, RowsColumns class is
+    - List<List<BoxContainer>> _rowsColumns, e.g.
+      #+begin_src dart
+        List<List<BoxContainer>> _rowsColumns = [
+           ["11", "12", "13"],
+           ["21", "22", "23"],
+         ];
+      #+end_src
+    - on creation, ensure rows even for now  
+    - method at(int row, int col)
+    - method rowsCount => _rowsColumns.length
+    - method columnsCount => _rowsColumns[0].length
+  - children => _table.flatten()
+  - List<BoxContainerConstraints> childrenConstraints = array of size children, each member set to passed fullParentConstraint
+  - method at(int row, int col) => children(row * nRows + col)
+  - method rowsCount => _table.rowsCount
+  - method columnsCount => _table[0].columnsCount
+
+
+**** Step 1: Layout table children in childOrder, each child gets the full (undivided) constraint
+
+This is an example, showing the default order of layout
+
+
+#+BEGIN_SRC ditaa :file table-layouter-step-1.png :cmdline -E -r                                                                     
+
+  +--------------------+-----------------+
+  |                    |                 |
+  | Order 2            | Order 4         |
+  |                    |                 |
+  +--------------------+-----------------+
+  |                    |                 |
+  |                    |                 |
+  |  Order 3           |   Order 1       |
+  |                    |                 |
+  +--------------------+-----------------+
+
+#+END_SRC
+
+The layout algorithm should be default newCoreLayout:
+- *every child gets full Constraint available from table parent* - this is default
+- layout children iterates in childOrder; each child will define it's desired layoutSize
+- when done, find the rowHeights = maxCellHeightInRow(row), columnWidths = maxCellWidthIn(column) - probably cache those
+- position children at (x,y) where:
+  - x = sum over icolumn=0..column:  (icolumn modulo columnsCount) *  [columnWidths[icolumn]
+  - y = sum over irow=0..row:        irow *  rowHeights[irow]
+  - this is done by overriding the position method on newCoreLayout
+
+    
+**** Step 2: Layout table children in childOrder, add ability to set a cell to run a pre-layout
+
+Step 2 is adding the ability for pre-layout one cell (sourceRow, sourceColumn) and force constraints or height on cell (targetRow, targetColumn).
+
+The result of pre-layout will cause creation of new constraints, restricting
+- Either columns widths or rows heights - defined by PreLayoutResult
+- The new restricting constraints will be created and set on:
+  - the column or row of the pre-layout cell to:
+    - if PreLayoutResult.constraintWidths
+      - the cells width in the whole column to preLayoutCellSize.width
+    - else
+      - the row heights in the whol row to   preLayoutCellSize.height   
+  - the rest of the columns , either widths or heights (same logic as above) will be set to parentWidth/Height - preLayoutCellWidth/Height
+  - the 'cross' sizes will remaint those given by the parent
+    
+
+/// Defines whether the result of pre-layedout cell will constraint widths or heights on table
+enum PreLayoutResult {
+  constraintsWidths,
+  constraintsHheights,
+}
+
+/// Defines the cell to pre-layout, and whether pre-layout will constraint widths or heights on table
+class PreLayoutCellAndResult {
+   int preLayoutRow     // preLayoutRow/Column is the pre-layedout Cell
+   int preLayoutColumn
+   PreLayoutResult preLayoutResult
+
+ PreLayoutSet preLayoutSet;
+
+ constructor PreLayoutCellAndResult(
+   preLayoutRow:
+   preLayoutColumn:
+   preLayoutForceRowOrColumn:
+ )
+}
+
+TableLayouter
+
+- new member PreLayoutCellAndResult preLayoutSourceAndTarget
+
+
+For example, we can define:
+
+- pre-layout a cell on position (PreLayoutCellResult.constraintsWidth) [(1,1) in our example)] and use either the pre-layout width or height to create constraint on the target row or column (PreLayoutCellAndResult.constraintsWidths = preLayoutForceRowOrColumn.sourceColumn) [column 1 in our examplke)
+- upon setting the above EXAMPLE, we generate:
+  - childrenConstraints on all cells in column 1: (preLayoutWidth = pre-layout of (1,1).width)
+  - childrenConstraints on all cells in all columns except column 1: width = parentWidth - preLayoutWidth, height = parentHeight
+
+
+
+#+BEGIN_SRC ditaa :file table-layouter-step-1.png :cmdline -E -r                                                                     
+
+  +--------------------+----------------------------------------------+
+  |                    |                                              |
+  | Order 2            | Order 4                                      |
+  |                    |                                              |
+  | Pre-Layout         |                                              |
+  | use pre-width      |                                              |
+  | for column 1 width |                                              |
+  |                    |                                              |
+  | so after pre-layout|                                              |
+  | set constraints    |                                              |
+  | on width on column1|                                              |
+  | to pre-layout.width|                                              |
+  |                    |                                              |
+  | on all other cols  |                                              |
+  | set constraint     |                                              |
+  | so width=          |                                              |
+  | parentWidth        |                                              |
+  |  - pre-width       |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  +--------------------+----------------------------------------------+
+  |                    |                                              |
+  |  Order 3           | Order 1                                      |
+  |                    | Use pre-width of order 2 for constraint      |
+  |                    | - if pre-width, constraint is on row         |
+  |                    |   create width constraints on this row       |
+  |                    |   so row = row where pre-width was defined   |
+  |                    |   we constraint                              |
+  |                    |                                              |
+  |                    |                                              |
+  |                    |                                              |
+  +--------------------+----------------------------------------------+
+
+#+END_SRC
