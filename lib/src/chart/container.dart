@@ -58,8 +58,10 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   @override
   set layoutSize(ui.Size size) => throw UnsupportedError('The root $this does not allow setting layoutSize');
 
-  // todo-00-last-last-last : ChartRootContainer is created only once, but, when it's paint is called,
+  // todo-00-done : Added it's own non-final field _constraints, get constraints, and applyParentConstraints
+  //                Reason is, ChartRootContainer is created only once, but, when it's paint is called,
   //                          it keeps setting constraints over and over, as constraints may change on re-paint!
+  //                          This breaks default finality on _constraints
   //                          So unlike other BoxContainers, it must manage it's own non-final constraints.
   /// Constraints set by parent.
   late BoxContainerConstraints _constraints;
@@ -149,7 +151,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
-    parent = null; // todo-00-last-last-last set root as parent
+    parent = null; // todo-00-done set root as parent
   }
 
   /// Overrides [BoxLayouter.layout] for the chart as a whole.
@@ -231,9 +233,11 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     yContainerFirst.layout(yContainerFirstBoxConstraints);
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    // todo-00-last-last-done : yContainer = yContainerFirst;
-    // todo-00-last-last-done : ui.Size yContainerFirstSize = yContainer.layoutSize;
-    // yContainerFirst.layoutSize is needed by XContainer to get it's width. Must not change on second YContainer layout
+
+    // ### 4. Knowing the width required by Y axis, layout X
+    //        (from first [YContainer.layout] call).
+
+    // yContainerFirst.layoutSize needed by XContainer to get it's width. Must NOT change on second YContainer layout
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
     // ### 4. Knowing the width required by Y axis, layout X
@@ -352,12 +356,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // On the second layout, make sure YContainer expand down only to
     //   the top of the XContainer area.
 
-    // todo-00-last-last added as we cannot use anything from first layout,which did not happen yet. Debug showed this was 16.0
-    // This seems to be used as how much from the top of Y gridline is NOT used for scaling; does NOT affect correctness
-    // todo-00-last-last : var yLabelsMaxHeightFromFirstLayout = 16.0;
     yContainer = YContainer(
       chartRootContainer: this,
-      // todo-00-last-last : yLabelsMaxHeightFromFirstLayout: yLabelsMaxHeightFromFirstLayout,
     );
     children.add(yContainer); // todo-01-done-duplicite-children
 
@@ -368,7 +368,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     setChildrenAndMakeSelfParent(children);  // todo-01-done-duplicite-children
     return this;
-    // return DefaultNonPositioningBoxLayouter(children: children); // todo-00-last-last-last : Wrap result into a Non-positioning Column
+    // return DefaultNonPositioningBoxLayouter(children: children); // todo-00-done : Wrap result into a Non-positioning Column
 
   }
 
@@ -421,13 +421,12 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // Use values from the yContainerFirst pre-layout on yContainer, and xContainer constraints
     double yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
     yContainer._yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
-    // todo-00-last-last-done : yContainer = yContainerFirst;
-    // todo-00-last-last-done : ui.Size yContainerFirstSize = yContainer.layoutSize;
-    // yContainerFirst.layoutSize is needed by XContainer to get it's width. Must not change on second YContainer layout
-    ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
     // ### 4. Knowing the width required by Y axis, layout X
     //        (from first [YContainer.layout] call).
+
+    // yContainerFirst.layoutSize needed by XContainer to get it's width. Must NOT change on second YContainer layout
+    ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
     var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width - yContainerFirstSize.width,
@@ -513,6 +512,10 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // todo-00-last-last-last : This object, ChartRootContainer is not recreated, but recreate all children,
     //                           so any final fields such on existing children such as constraints,
     //                           do no fail on re-assign
+    //                           ADDRESS THIS BY ADDING AN ChartAnchorContainer which is only created once,
+    //                           has member ChartRootContainer rootOnAnchor, which concrete (VerticalChartRootContainer etc)
+    //                           is created fresh here on every paint, and set on rootOnAnchor. The Anchor newCoreLayout only calls Root
+    //                           version.
     buildContainerOrSelf();
     newCoreLayout();
 
@@ -658,7 +661,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
 
     layoutSize = ui.Size(yLabelsContainerWidth, boxConstraints.size.height);
 
-    // return boxContainer; todo-00-last-last-last : return BoxContainer from _createLabelsAndLayoutThisContainerWithLabels
+    // return boxContainer; todo-00-done : return BoxContainer from _createLabelsAndLayoutThisContainerWithLabels
   }
 
   /// Generates scaled and spaced Y labels from data or from user defines labels, scales their position
@@ -668,7 +671,6 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
   /// The data-generated label implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
-  // todo-00-last-last-last : void _createLabelsAndLayoutThisContainerWithLabels(double axisYMin, double axisYMax) {
   void _createLabelsAndLayoutThisContainerWithLabels(double axisYMin, double axisYMax) {
     YLabelsCreatorAndPositioner yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
 
@@ -883,8 +885,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
 
       _xLabelContainers.add(xLabelContainer);
     }
-    // todo-00-last-last-last : AxisLabelContainer constructor is already forcing parent!! So just set children
-    // setChildrenAndMakeSelfParent(_xLabelContainers);  // todo-01-done-duplicite-children
+    // todo-00-done : This AxisLabelContainer constructor is already forcing parent!! So just set children
     this.children = _xLabelContainers;  // todo-01-done-duplicite-children
 
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
@@ -1078,8 +1079,7 @@ abstract class ChartAreaContainer extends BoxContainer {
     List<BoxContainer>? children,
   }) : super(children: children) {
     // On the LegendContainer 'fake' root, set parent to null. todo-01-last : Remove for new layout
-    // was: parent = chartRootContainer;
-    /* todo-00-last-last-last : We need to set the parent correctly, with 'fake' root removed.
+    /* todo-00-done : We need to set the parent correctly, with 'fake' root removed. This can be removed now
     if (this is LegendContainer) {
       parent = null;
     } else {
@@ -1089,7 +1089,7 @@ abstract class ChartAreaContainer extends BoxContainer {
   }
 }
 
-// todo-01 : remove when manual layout not needed
+// todo-00-last : remove when manual layout not needed
 abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
   /// The chart top level.
   ///
@@ -1104,7 +1104,7 @@ abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManu
   }) : super(children: children) {
     // On the LegendContainer 'fake' root, set parent to null. todo-01-last : Remove for new layout
     // was: parent = chartRootContainer;
-    /* todo-00-last-last-last : We need to set the parent correctly, with 'fake' root removed.
+    /* todo-00-done : We need to set the parent correctly, with 'fake' root removed.
     if (this is LegendContainer) {
       parent = null;
     } else {
@@ -1221,8 +1221,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout {
       _xGridLinesContainer._lineContainers.add(xLineContainer);
     }
 
-    // todo-00-last-last-last : GridLinesContainer constructor is already forcing parent!! So just set children
-    // setChildrenAndMakeSelfParent(children);  // todo-01-done-duplicite-children
+    // todo-00-done : GridLinesContainer constructor is already forcing parent!! So just set children
     this.children = children;  // todo-01-done-duplicite-children
   }
 
@@ -1706,7 +1705,7 @@ class LegendContainer extends ChartAreaContainer {
 
   /// Lays out the legend area.
   ///
-  /// Evenly divides the [availableWidth] to all legend items.
+  /// Lays out legend items, one for each data series.
   @override
   void layout(BoxContainerConstraints boxConstraints) {
     // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
@@ -1804,12 +1803,6 @@ class LegendContainer extends ChartAreaContainer {
         ),
     ];
   }
-
-  // Important: Because LegendContainer is a plugged in 'fake' root, overriding isRoot and returning true.
-/* todo-00-last-last-last
-  @override
-  bool get isRoot => true;
-*/
 }
 
 // todo-01 Try to make members final and private and class immutable

@@ -43,7 +43,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///      the parent and wants to explicitly set up the parent-child.
   ///   2. In the [BoxContainer] constructor, if [children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
-  // todo-00-last-last-last : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+  // todo-01-last : maybe restore late final, was : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
   BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
 
   // Important:
@@ -858,7 +858,7 @@ abstract class BoxContainerUsingManualLayout extends BoxContainer {
     throw StateError('Must be overridden in extensions');
   }
 
-  // todo-00-last-last-last : Returning this as the only child wraped in DefaultNonPositioning
+  // todo-00-done-then-removed : Returning this as the only child wraped in DefaultNonPositioning
 /*
   @override
   BoxContainer buildContainerOrSelf() {
