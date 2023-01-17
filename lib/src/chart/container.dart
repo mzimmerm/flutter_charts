@@ -209,7 +209,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // Before layout, must set constraints
     legendContainer.applyParentConstraints(this, legendBoxConstraints);
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
-    legendContainer.layout(legendBoxConstraints);
+    // todo-00-last-done : legendContainer.layout(legendBoxConstraints);
+    legendContainer.newCoreLayout();
 
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
@@ -319,7 +320,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   BoxContainer buildContainerOrSelf() {
     List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
-     /* todo-00-last-last : trying this in newCoreLayout. Here it throws exception, as `presenterCreator = VerticalBarLeafCreator()`
+     /* todo-00-done : moved this to newCoreLayout. Here it throws exception, as `presenterCreator = VerticalBarLeafCreator()`
                             did not run yet
     // ### 1. Prepare early, from dataRows, the stackable points managed
     //        in [pointsColumns], as [YContainer] needs to scale y values and
@@ -506,7 +507,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   void paint(ui.Canvas canvas) {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
-    // todo-00-last-last : layout( BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
+
     // Introduced a rootLayout method for this
     applyParentConstraints(this, BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
     // todo-00-last-last-last : This object, ChartRootContainer is not recreated, but recreate all children,
@@ -1707,15 +1708,19 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// Lays out legend items, one for each data series.
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
-    // On the top of the 'fake' BoxContainer hierarchy, the layout() method is still called, but calling newCoreLayout immediately.
+  // todo-00-last-done : void layout(BoxContainerConstraints boxConstraints) {
+  void newCoreLayout() {
+    // todo-01-last : this appears needed, otherwise non-label results change slightly, but still correct
+    //                we should probably remove this block orderedSkip - but check behavior in debugger, what
+    //                happens to layoutSize, it may never be set?
     if (orderedSkip) {
       layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
-    newCoreLayout();
+    super.newCoreLayout(); // todo-00-last-done : added super
   }
+
 
   /// Builds the container below self starting with [Row] or [Column],
   /// and passing it [children] build separately in [_legendItems].
