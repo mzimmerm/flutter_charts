@@ -323,8 +323,15 @@ class YLabelsCreatorAndPositioner {
 
 /// The [LabelInfo] is a holder for one label, it's numeric value and the displayed label.
 ///
+/// The values used and shown on the chart undergo the following processing:
+///    [_rawDataValue] -- using [DataContainerOptions.yTransform]         --> [_dataValue] (transformed)
+///    [_dataValue]    -- using parentYScaler.scaleY(value: _dataValue)   --> [_axisValue] (transformed AND scaled)
+///    [_rawDataValue] -- using formatted String-value of [_rawDataValue] --> [_formattedLabel]
+/// The last mapping is using either `toString` if [YLabelsCreatorAndPositioner.yUserLabels] are used,
+/// or [YLabelsCreatorAndPositioner._valueToLabel] for chart-generated labels.
+///
 /// There are four values each [LabelInfo] manages:
-/// - The [_rawDataValue] : The value of dependent (y) variable in data, given by
+/// 1. The [_rawDataValue] : The value of dependent (y) variable in data, given by
 ///   the [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
 ///   - This value is **not-scaled && not-transformed**.
 ///   - This value is in the interval extended from the interval of minimum and maximum y in data
@@ -332,13 +339,13 @@ class YLabelsCreatorAndPositioner {
 ///     beyond the strict interval between minimum and maximum y in data.
 ///   - This value is created in the generative constructor's [LabelInfo]
 ///     initializer list from the [transformedDataValue].
-/// - The [_dataValue] : The [_rawDataValue] after transformation by the [DataContainerOptions.yTransform]
+/// 2. The [_dataValue] : The [_rawDataValue] after transformation by the [DataContainerOptions.yTransform]
 ///   function.
 ///   - This value is **not-scaled && transformed**
 ///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
 ///     is an identity (this is the default behavior). See [lib/chart/options.dart].
 ///   - This value is passed in the primary generative constructor [LabelInfo].
-/// - The [_axisValue] :  Equals to the **scaled && transformed** dataValue, in other words
+/// 3. The [_axisValue] :  Equals to the **scaled && transformed** dataValue, in other words
 ///   ```dart
 ///    _axisValue = parentYScaler.scaleY(value: transformedDataValue.toDouble());
 ///   ```
@@ -356,7 +363,7 @@ class YLabelsCreatorAndPositioner {
 ///            toDomainMin: _axisYMin,
 ///            toDomainMax: _axisYMax);
 ///     ```
-///   - The [_formattedLabel] : The formatted String-value of [_rawDataValue].
+/// 4. The [_formattedLabel] : The formatted String-value of [_rawDataValue].
 ///
 /// Note: The **scaled && not-transformed ** value is not maintained.
 ///
