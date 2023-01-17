@@ -4,8 +4,9 @@ import 'util_dart.dart';
 import 'test/generate_test_data_from_app_runs.dart';
 import '../chart/container.dart' show ChartBehavior;
 
-/// Creates, scales, and formats the Y labels, from the transformed data
-/// to their positions and formatted strings on the Y axis.
+/// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
+///
+/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
 /// The following members are most relevant in the creating and formatting labels
 /// - [_dataYs] is a list of numeric Y values, passed to constructor.

@@ -209,7 +209,6 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // Before layout, must set constraints
     legendContainer.applyParentConstraints(this, legendBoxConstraints);
     // Important: The legendContainer is NOT the parent during this flip to 'fake' root
-    // todo-00-last-done : legendContainer.layout(legendBoxConstraints);
     legendContainer.newCoreLayout();
 
     ui.Size legendContainerSize = legendContainer.layoutSize;
@@ -510,7 +509,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     // Introduced a rootLayout method for this
     applyParentConstraints(this, BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
-    // todo-00-last-last-last : This object, ChartRootContainer is not recreated, but recreate all children,
+    // todo-00 : This object, ChartRootContainer is not recreated, but recreate all children,
     //                           so any final fields such on existing children such as constraints,
     //                           do no fail on re-assign
     //                           ADDRESS THIS BY ADDING AN ChartAnchorContainer which is only created once,
@@ -641,20 +640,21 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
     // todo 0-layout: max of this and some padding
     double axisYMax = _yLabelsMaxHeightFromFirstLayout / 2;
 
+    // yLabelsCreator object creates and holds all Y labels to create and layout.
+    chartRootContainer.yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
+
     // Even when Y container not shown and painted, this._yLabelContainers is needed later in yLabelsMaxHeight;
     //   and chartRootContainer.yLabelsCreator is needed in [PointsColumns.scale],
     //   so we cannot just skip layout completely at the beginning.
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false);
-      chartRootContainer.yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
-      // Set layoutSize before returning from layout
       layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
 
     // todo-00 : this creates the ylabels - so this should be moved to the build method.
-    // todo-00 : below we set this.children = children
-    _createLabelsAndLayoutThisContainerWithLabels(axisYMin, axisYMax);
+    // todo-00 : inside we set this.children = children
+    _createLabelsAndLayoutThisContainerWithLabels();
 
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
@@ -672,16 +672,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
   /// The data-generated label implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
-  void _createLabelsAndLayoutThisContainerWithLabels(double axisYMin, double axisYMax) {
-    YLabelsCreatorAndPositioner yLabelsCreator = _createLabelsAndPositionIn(axisYMin, axisYMax);
-
-    // _createContainerForLabelsInCreatorAndLayoutContainer(yLabelsCreator);
-    // todo-01-morph Rework to call layout on each AxisLabelContainer.
-    /// Takes labels in the passed [yLabelsCreator], and creates a [AxisLabelContainer] from each label,
-    /// then collects the created [AxisLabelContainer]s into the [_yLabelContainers] (member list of Y label containers).
-    // Retain this scaler to be accessible to client code,
-    // e.g. for coordinates of value points.
-    chartRootContainer.yLabelsCreator = yLabelsCreator;
+  void _createLabelsAndLayoutThisContainerWithLabels() {
     ChartOptions options = chartRootContainer.data.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -695,7 +686,8 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
     // and add to yLabelContainers list.
     _yLabelContainers = List.empty(growable: true);
 
-    for (LabelInfo labelInfo in yLabelsCreator.labelInfos) {
+    // chartRootContainer.yLabelsCreator was set in caller, so non null
+    for (LabelInfo labelInfo in chartRootContainer.yLabelsCreator.labelInfos) {
       // yTickY is the vertical center of the label on the Y axis.
       // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
       // It is kept always relative to the immediate container - YContainer
@@ -724,7 +716,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout {
       _yLabelContainers.add(yLabelContainer);
     }
 
-    // return DefaultNonPositioningBoxLayouter(children: _yLabelContainers); // todo-00-last-last-last : Wrap result into a Non-positioning Column
+    // return DefaultNonPositioningBoxLayouter(children: _yLabelContainers); // todo-00-done : Wrap result into a Non-positioning Column
   }
 
   /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
@@ -1090,7 +1082,7 @@ abstract class ChartAreaContainer extends BoxContainer {
   }
 }
 
-// todo-00-last : remove when manual layout not needed
+// todo-00 : remove when manual layout all migrated.
 abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
   /// The chart top level.
   ///
@@ -1708,7 +1700,6 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// Lays out legend items, one for each data series.
   @override
-  // todo-00-last-done : void layout(BoxContainerConstraints boxConstraints) {
   void newCoreLayout() {
     // todo-01-last : this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
@@ -1718,7 +1709,7 @@ class LegendContainer extends ChartAreaContainer {
       return;
     }
     // Important: This flips from using layout() on parents to using newCoreLayout() on children
-    super.newCoreLayout(); // todo-00-last-done : added super
+    super.newCoreLayout();
   }
 
 

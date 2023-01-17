@@ -852,20 +852,11 @@ abstract class BoxContainerUsingManualLayout extends BoxContainer {
 
   @override
   void newCoreLayout() {
-    // todo-00-last : replace layout with newCoreLayout.
+    // todo-00 : remove when manual layout removed
     //              : But first resolve, at all placed where layout is called,
     //                what to do with arguments passed to layout, and it's return
     throw StateError('Must be overridden in extensions');
   }
-
-  // todo-00-done-then-removed : Returning this as the only child wraped in DefaultNonPositioning
-/*
-  @override
-  BoxContainer buildContainerOrSelf() {
-    return DefaultNonPositioningBoxLayouter(children: [this]);
-  }
-*/
-
 }
 
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
