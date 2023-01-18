@@ -404,6 +404,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
+    xContainer.buildAndAddChildrenLateDuringParentLayout(); // todo-00-last-last-last
     xContainer.newCoreLayout();
 
     // When we got here, layout is done, so set the late final layoutSize
@@ -858,7 +859,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
-class XContainer extends AdjustableLabelsChartAreaContainer {
+class XContainer extends AdjustableLabelsChartAreaContainer implements EnableBuildAndAddChildrenLateOnBoxContainer {
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
@@ -980,7 +981,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   }
 
   @override
-  BoxContainer buildContainerOrSelf() {
+  void buildAndAddChildrenLateDuringParentLayout() {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -1013,7 +1014,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       //                     problem with applying constraint in the usual place before newCoreLayout,
       //                     is that during re-layout, that code runs again, setting constraint the second time.
       //                     that is probably a bug in itself, the reLayout is so hard...
-      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+      // todo-00-last-last-last : added and removed : xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
 
 
       /* todo-00-last-last : moved to newCoreLayout
@@ -1071,7 +1072,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     return this; // todo-00-last-last : added
     */
 
-    return this; // todo-00-last-last : added
+    // return this; // todo-00-last-last : added and removed
   }
 
   @override
@@ -1099,7 +1100,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       xLabelContainer.layout(BoxContainerConstraints.unused());
       */
-      // todo-00-last-last : see corresponding comment  in the build method : xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       xLabelContainer.newCoreLayout();
 
       // We only know if parent ordered skip after layout (because some size is too large)

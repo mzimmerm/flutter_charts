@@ -1,3 +1,4 @@
+import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
@@ -141,6 +142,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     }
     
     // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
+    // todo-00-last-last-last : added to re-run the build
+    (_adjustableLabelsContainer as EnableBuildAndAddChildrenLateOnBoxContainer).buildAndAddChildrenLateDuringParentLayout();
     _adjustableLabelsContainer.layout(boxConstraints);
   }
 
