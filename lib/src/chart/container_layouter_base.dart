@@ -353,8 +353,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
   /// Old layout forwards to [newCoreLayout].
-  // todo-01-last : pass BoxLayouter not BoxContainer
-  void layout(BoxContainerConstraints boxConstraints) {
+  // todo-00-last : Delete when manual layout is gone
+  void  layout(BoxContainerConstraints boxConstraints) {
     if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
         // this is LabelContainer ||
@@ -700,8 +700,6 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       if (builtContainer != this) {
         this.children = [builtContainer];
       } else {
-        // todo-00-last-document returning 'this' the  buildContainerOrSelf()
-        //                       expresses we add children later
         this.children = [];
       }
       // this.children = [builtContainer];
@@ -845,9 +843,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 }
 
-// todo-00-last-last-last : added this
-/// Implementations may create and add [children] *late*, during [newCoreLayout]
-/// (rather than during [BoxContainer] construction).
+/// Mixin marks implementations as able to create and add [children] *late*,
+/// during [newCoreLayout] (rather than during [BoxContainer] construction, which is
+/// the 'normal' lifecycle sequence of hierarchy-child creation).
 ///
 /// It should be (rarely) mixed in by extension [BoxContainer]s
 /// that need to wait after the [BoxContainerHierarchy] is initially constructed.
@@ -871,7 +869,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 ///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
 ///     likely in parent's [newCoreLayout] that calls first [newCoreLayout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
-///   - Implementations MUST also override [newCoreLayout] todo-00-last-last-last is that right?
+///   - Implementations MUST also call [newCoreLayout] immediately after calling
+///     the [buildAndAddChildrenLateDuringParentLayout].
 
 mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
 

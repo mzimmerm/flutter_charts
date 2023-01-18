@@ -367,7 +367,6 @@ class AxisLabelContainer extends LabelContainer {
   }
 }
 
-// todo-00-last-last added
 /// Label container for Y labels, which maintain, in addition to
 /// the superclass [YAxisLabelContainer] also [LabelInfo] - the object
 /// from which each Y label is created.
@@ -386,7 +385,7 @@ class YAxisLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required BoxContainer parent,
-    required LabelInfo labelInfo, // todo-00-last-last added
+    required LabelInfo labelInfo,
   }) : _labelInfo = labelInfo, super(
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
