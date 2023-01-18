@@ -353,7 +353,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
   /// Old layout forwards to [newCoreLayout].
-  // todo-00-last : Delete when manual layout is gone
+  // todo-00 : Delete when manual layout is gone
   void  layout(BoxContainerConstraints boxConstraints) {
     if (this is LegendItemContainer ||
         this is LegendIndicatorRectContainer ||
@@ -879,7 +879,7 @@ mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
   void buildAndAddChildrenLateDuringParentLayout();
 }
 
-// todo-00-last-last remove when not needed
+// todo-00 remove when not needed
 abstract class BoxContainerUsingManualLayout extends BoxContainer {
   /// Default generative constructor.
   BoxContainerUsingManualLayout({

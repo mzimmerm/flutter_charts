@@ -140,11 +140,19 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-    
-    // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
-    // todo-00-last-last-last : added to re-run the build
+
+    // A recursive [layout] is needed after the above code did some changes to the
+    //   [XContainer _adjustableLabelsContainer]. The changes might have been decreased font,
+    //   changed label tilt, or asking some labels not to be shown.
+    // The recursively called [layout] rebuilds all children of the [XContainer _adjustableLabelsContainer],
+    //   with the changed state above (font, tilt, or asking less labels to be shown).
+    // The rebuild must be the same build called on [XContainer] in [ChartRootContainer.newCoreLayout].
+    // Because the _adjustableLabelsContainer is XContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
     (_adjustableLabelsContainer as EnableBuildAndAddChildrenLateOnBoxContainer).buildAndAddChildrenLateDuringParentLayout();
     _adjustableLabelsContainer.layout(boxConstraints);
+
+    // Return to caller, which is always [layout]. [layout] will call this [reLayout] iteratively
+    // if another [reLayout] is needed, up to [_atDepth] iterations.
   }
 
   /// Prepares the rotation matrix [_labelTiltMatrix] for tilting labels.
