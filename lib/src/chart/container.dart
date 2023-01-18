@@ -403,7 +403,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       chartArea.height - legendContainerSize.height,
     ));
 
-    xContainer.layout(xContainerBoxConstraints);
+    xContainer.applyParentConstraints(this, xContainerBoxConstraints);
+    xContainer.newCoreLayout();
 
     // When we got here, layout is done, so set the late final layoutSize
     xContainer.layoutSize = xContainer.lateReLayoutSize;
@@ -727,7 +728,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
 
   /// Lays out the previously created Y label containers managed in [_yLabelContainers].
   void _layoutYLabelContainers() {
-    ChartOptions options = chartRootContainer.data.chartOptions;
+    // todo-00-last-last : unused ChartOptions options = chartRootContainer.data.chartOptions;
 
     // Iterate, apply parent constraints, then layout all labels in [_yLabelContainers],
     //   which were previously created by [_createYLabelContainers]
@@ -858,7 +859,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
 class XContainer extends AdjustableLabelsChartAreaContainer {
-  /// X labels.
+  /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
   double _xGridStep = 0.0;
@@ -896,8 +897,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
   /// The layout is independent of whether the labels are tilted or not,
   ///   in the sense that all tilting logic is hidden in
   ///   [LabelContainerOriginalKeep], and queried by [LabelContainerOriginalKeep.layoutSize].
-  @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layoutOLD(BoxContainerConstraints boxConstraints) {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -978,6 +978,179 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     //   whichever comes first.
     labelLayoutStrategy.reLayout(boxConstraints);
   }
+
+  @override
+  BoxContainer buildContainerOrSelf() {
+    // First clear any children that could be created on nested re-layout
+    _xLabelContainers = List.empty(growable: true);
+
+    ChartOptions options = chartRootContainer.data.chartOptions;
+    List<String> xUserLabels = chartRootContainer.data.xUserLabels;
+    /* todo-00-last-last : moved to newCoreLayout
+    BoxContainerConstraints boxConstraints = constraints; // todo-00-last-last : added as used on many places
+    double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
+    double       availableWidth = boxConstraints.size.width - yTicksWidth;
+    double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
+    int numShownLabels    = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
+    _xGridStep            = labelMaxAllowedWidth;
+    _shownLabelsStepWidth = availableWidth / numShownLabels;
+    */
+    LabelStyle labelStyle = _styleForLabels(options);
+
+    // Core layout loop, creates a AxisLabelContainer from each xLabel,
+    //   and lays out the XLabelContainers along X in _gridStepWidth increments.
+
+    for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
+      var xLabelContainer = AxisLabelContainer(
+        label: xUserLabels[xIndex],
+        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
+        labelStyle: labelStyle,
+        options: options,
+        parent: this,
+      );
+
+      // todo-00-last-last : added here to apply parent constraint once on creation and never again.
+      //                     problem with applying constraint in the usual place before newCoreLayout,
+      //                     is that during re-layout, that code runs again, setting constraint the second time.
+      //                     that is probably a bug in itself, the reLayout is so hard...
+      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+
+
+      /* todo-00-last-last : moved to newCoreLayout
+      // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
+      // Set constraints before layout.
+      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+      xLabelContainer.layout(BoxContainerConstraints.unused());
+      // We only know if parent ordered skip after layout (because some size is too large)
+      xLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
+
+      // Core of X layout calcs - lay out label to find the size that is takes,
+      //   then find X middle of the bounding rectangle
+
+      ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
+      double halfStepWidth = _xGridStep / 2;
+      double atIndexOffset = _xGridStep * xIndex;
+      double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
+      double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
+
+      xLabelContainer.parentOffsetTick = xTickX;
+
+      // tickX and label centers are same. labelLeftTop = label paint start.
+      var labelLeftTop = ui.Offset(
+        xTickX - labelBound.width / 2,
+        labelTopY,
+      );
+
+      // labelLeftTop + offset for envelope
+      xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
+      */
+
+      _xLabelContainers.add(xLabelContainer);
+    }
+    // todo-00-done : This AxisLabelContainer constructor is already forcing parent!! So just set children
+    this.children = _xLabelContainers;  // todo-01-done-duplicite-children
+
+    /* todo-00-last-last - only used in newCoreLayout
+    // Set the layout size calculated by this layout. This may be called multiple times during relayout.
+    lateReLayoutSize = ui.Size(
+      boxConstraints.size.width,
+      xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
+    );
+
+    if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
+      // If not showing this container, no layout needed, just set size to 0.
+      lateReLayoutSize = const ui.Size(0.0, 0.0);
+      return this; // todo-00-last-last : added
+    }
+
+    // This achieves auto-layout of labels to fit along X axis.
+    // Iterative call to this layout method, until fit or max depth is reached,
+    //   whichever comes first.
+    labelLayoutStrategy.reLayout(boxConstraints);
+
+    return this; // todo-00-last-last : added
+    */
+
+    return this; // todo-00-last-last : added
+  }
+
+  @override
+  void newCoreLayout() {
+
+    // todo-00-last-last : unused : List<String> xUserLabels = chartRootContainer.data.xUserLabels;
+    ChartOptions options = chartRootContainer.data.chartOptions;
+
+    BoxContainerConstraints boxConstraints = constraints; // todo-00-last-last : added as used on many places
+    List<String> xUserLabels = chartRootContainer.data.xUserLabels;
+    double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
+    double       availableWidth = boxConstraints.size.width - yTicksWidth;
+    double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
+    int numShownLabels    = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
+    _xGridStep            = labelMaxAllowedWidth;
+    _shownLabelsStepWidth = availableWidth / numShownLabels;
+
+
+    // for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
+    int xIndex = 0;
+    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
+      // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
+      // Set constraints before layout.
+      /* todo-00-last-last-last converted to newCoreLayout. the constraint passed in layout was never used
+      xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+      xLabelContainer.layout(BoxContainerConstraints.unused());
+      */
+      // todo-00-last-last : see corresponding comment  in the build method : xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
+      xLabelContainer.newCoreLayout();
+
+      // We only know if parent ordered skip after layout (because some size is too large)
+      xLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
+
+      // Core of X layout calcs - lay out label to find the size that is takes,
+      //   then find X middle of the bounding rectangle
+
+      ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
+      double halfStepWidth = _xGridStep / 2;
+      double atIndexOffset = _xGridStep * xIndex;
+      double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
+      double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
+
+      xLabelContainer.parentOffsetTick = xTickX;
+
+      // tickX and label centers are same. labelLeftTop = label paint start.
+      var labelLeftTop = ui.Offset(
+        xTickX - labelBound.width / 2,
+        labelTopY,
+      );
+
+      // labelLeftTop + offset for envelope
+      xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft);
+
+      // todo-00-last-last : already added in the build method : _xLabelContainers.add(xLabelContainer);
+      xIndex++;
+    }
+    // todo-00-done : This AxisLabelContainer constructor is already forcing parent!! So just set children
+    this.children = _xLabelContainers;  // todo-01-done-duplicite-children
+
+    // Set the layout size calculated by this layout. This may be called multiple times during relayout.
+    lateReLayoutSize = ui.Size(
+      // todo-00-last-last : no longer passed,use applied constraints : boxConstraints.size.width,
+      constraints.size.width,
+      xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
+    );
+
+    if (!chartRootContainer.data.chartOptions.xContainerOptions.isXContainerShown) {
+      // If not showing this container, no layout needed, just set size to 0.
+      lateReLayoutSize = const ui.Size(0.0, 0.0);
+      return;
+    }
+
+    // This achieves auto-layout of labels to fit along X axis.
+    // Iterative call to this layout method, until fit or max depth is reached,
+    //   whichever comes first.
+    // todo-00-last-last : boxConstraints not passed, likely not used? : labelLayoutStrategy.reLayout(boxConstraints);
+    labelLayoutStrategy.reLayout(BoxContainerConstraints.unused());
+  }
+
 
   // xlabels area without padding
   double get xLabelsMaxHeight {

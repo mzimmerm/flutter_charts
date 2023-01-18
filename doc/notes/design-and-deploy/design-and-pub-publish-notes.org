@@ -1662,10 +1662,10 @@ Notes:
    
 **** TODO-NEXT Migrate these
 
-- [ ] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
-  - [ ] ChartRootContainer
+- [-] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
+  - [X] ChartRootContainer
   - [ ] ChartAreaContainer
-  - [ ] YContainer
+  - [X] YContainer
   - [ ] XContainer
   - [ ] GridLinesContainer
   - [ ] DataContainer
