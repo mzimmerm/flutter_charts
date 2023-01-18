@@ -700,6 +700,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       if (builtContainer != this) {
         this.children = [builtContainer];
       } else {
+        // todo-00-last-document returning 'this' the  buildContainerOrSelf()
+        //                       expresses we add children later
         this.children = [];
       }
       // this.children = [builtContainer];
@@ -843,6 +845,42 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 }
 
+// todo-00-last-last-last : added this
+/// Implementations may create and add [children] *late*, during [newCoreLayout]
+/// (rather than during [BoxContainer] construction).
+///
+/// It should be (rarely) mixed in by extension [BoxContainer]s
+/// that need to wait after the [BoxContainerHierarchy] is initially constructed.
+///
+/// Specifically, a [BoxContainer] that needs to mixin the [LateChildrenBoxContainer]
+/// is one that needs to create 'appropriate' number of children
+/// based on it's [constraints].
+///
+/// In such situation, a hierarchy-parent during the [newCoreLayout] would first call
+/// this [LateChildrenBoxContainer] mixin's siblings' [newCoreLayout], establishing the remaining space
+/// ([constraints]) left over for this [LateChildrenBoxContainer], then
+/// create an 'appropriate', 'non-overlapping' children of itself.
+///
+/// Example:
+///   - An example is the Y axis ([YContainer] instance), which creates only as many labels
+///     ([YAxisLabelContainer]s instances) as they fit, given how many pixels
+///     the Y axis has available. Such pixel availability is applied on  [YContainer]
+///
+///
+/// Important note:
+///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
+///     likely in parent's [newCoreLayout] that calls first [newCoreLayout] on
+///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
+///   - Implementations MUST also override [newCoreLayout] todo-00-last-last-last is that right?
+
+mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
+
+  /// Implementations can assume that [BoxLayouter.constraints] are set,
+  /// likely by a hierarchy-parent during layout, and should build children and add them to self.
+  void buildAndAddChildrenLateDuringParentLayout();
+}
+
+// todo-00-last-last remove when not needed
 abstract class BoxContainerUsingManualLayout extends BoxContainer {
   /// Default generative constructor.
   BoxContainerUsingManualLayout({
