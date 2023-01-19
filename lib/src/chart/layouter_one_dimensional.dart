@@ -60,6 +60,8 @@ enum Packing {
   ///   as padding at the beginning, and between elements. Last element end is at the boundary.
   /// - For [Align.center] : Same proportions of [LayedoutLengthsPositioner._freePadding]
   ///   are distributed as padding at the beginning, between elements, and at the end.
+  /// - todo-01 implement and test : For [Align.centerExpand] : Same proportions of [LayedoutLengthsPositioner._freePadding]
+  ///   are distributed as padding between elements; no padding at the beginning or at the end.
   ///
   loose,
 }
@@ -69,6 +71,7 @@ enum Packing {
 enum Align {
   start,
   center,
+  centerExpand,
   end,
 }
 
@@ -258,6 +261,14 @@ class LayedoutLengthsPositioner {
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
         break;
+    // todo-00-last-last vvvv Added
+      case Align.centerExpand:
+        freePadding = 0.0; // for centerExpand, no free padding
+        double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
+        start = freePadding + matrjoskaInnerRoomLeft;
+        end = freePadding + matrjoskaInnerRoomLeft + length;
+        break;
+    // todo-00-last-last ^^^^ Added
       case Align.end:
         freePadding = _freePadding;
         start = freePadding + _maxLength - length;
@@ -332,6 +343,13 @@ class LayedoutLengthsPositioner {
         freePaddingRight = freePadding;
         startOffset = isFirstLength ? freePadding : 0.0;
         break;
+    // todo-00-last-last vvvv Added
+      case Align.centerExpand:
+        freePadding = 0.0; // for centerExpand, no freeLength to the left
+        freePaddingRight = 0.0; // for centerExpand, no freeLength to the right
+        startOffset = isFirstLength ? freePadding : 0.0;
+        break;
+    // todo-00-last-last ^^^^ Added
       case Align.end:
         freePadding = _freePadding; // for max, all freeLength to the left
         freePaddingRight = 0.0;
@@ -357,6 +375,13 @@ class LayedoutLengthsPositioner {
         freePaddingRight = freePadding;
         startOffset = freePadding;
         break;
+      // todo-00-last-last vvvv Added
+      case Align.centerExpand:
+        freePadding = lengthsCount > 1 ? _freePadding / (lengthsCount - 1) : _freePadding; // for count = 0, 1
+        freePaddingRight = 0.0;
+        startOffset = 0.0;
+        break;
+      // todo-00-last-last ^^^^ Added
       case Align.end:
         freePadding = lengthsCount != 0 ? _freePadding / lengthsCount : _freePadding;
         freePaddingRight = 0.0;

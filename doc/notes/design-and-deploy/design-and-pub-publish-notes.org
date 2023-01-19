@@ -1607,7 +1607,6 @@ Core of setting up BoxContainer parent/child hierarchy:
 
 
 
-*** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
 *** IN-PROGRESS-NOW KEEP : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
 
@@ -1660,15 +1659,20 @@ Notes:
 
 - [ ] For ChartRootContainer, layoutSize is overriden to setter and getter. Is that needed, or can this division be used on ~BoxLayouter~?
    
-**** TODO-NEXT Migrate these
+**** IN-PROGRESS-NOW Migrate the following classes 
 
 - [-] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
   - [X] ChartRootContainer
   - [ ] ChartAreaContainer
   - [X] YContainer
-  - [ ] XContainer
+  - [X] XContainer
   - [ ] GridLinesContainer
-  - [ ] DataContainer
+  - [ ] LabelContainer and extensions
+    - [ ] AxisLabelContainer
+    - [ ] YAxisLabelContainer
+  - [ ] LineContainer (*has no extensions*!)
+    - NOT fully migrated, because ~layout~ is never called. This waits for full automatic layout on everything!!
+  - [X] DataContainer
   - [ ] AdjustableLabelsChartAreaContainer
   - [ ] VerticalBarChartRootContainer
   - [ ] VerticalBarChartDataContainer
@@ -1679,6 +1683,20 @@ Notes:
 The above must override ~BoxContainerUsingManualLayout.post_NotLeaf_PositionChildren~.
 
 Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
+
+
+*** IN-PROGRESS-NOW Is GridLinesContainer.layout called?
+
+*** IN-PROGRESS-NOW Add AnchoredRootContainer which only contains ChartRootContainer. ChartRootContainer is ALWAYS REBUILD
+
+*** IN-PROGRESS-NOW Remove manual layout baseclass
+
+*** IN-PROGRESS-NOW Rename newCoreLayout to layout
+
+*** IN-PROGRESS-NOW Start using BuildStateDependentOnSiblingsLayout everywhere instead of null.
+
+
+*** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 

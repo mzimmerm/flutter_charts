@@ -876,8 +876,15 @@ mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
 
   /// Implementations can assume that [BoxLayouter.constraints] are set,
   /// likely by a hierarchy-parent during layout, and should build children and add them to self.
-  void buildAndAddChildrenLateDuringParentLayout();
+  /// TODO-00 : ADD ARGUMENT with new type LateLayoutDependedState,
+  ///           INTENDED TO PASS STATE WHICH DEPENDS ON LAYOUT OF
+  ///           SIBLING CONTAINERS. FOR EXAMPLE, IF LABELS ARE SKIPPED, DATA_CONTAINER
+  ///           NUMBER OF XTICKS CHANGES
+  void buildAndAddChildrenLateDuringParentLayout(
+      BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout);
 }
+
+abstract class BuildStateDependentOnSiblingsLayout {}
 
 // todo-00 remove when not needed
 abstract class BoxContainerUsingManualLayout extends BoxContainer {
@@ -1347,6 +1354,32 @@ class Row extends RollingPositioningBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisAlign, packing: mainAxisPacking);
     crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisAlign, packing: crossAxisPacking);
   }
+}
+
+// todo-01 : Implement by overriding the constraint definer - distribute constraints
+/// Intended use : Layout LineContainers as follows
+/// ```dart
+///   RowWithUnevenChildrenConstraints(
+///     Center(LineContainer),
+///     //...
+///     Center(LineContainer),)
+/// ```
+class RowWithUnevenChildrenConstraints extends Row {
+
+  RowWithUnevenChildrenConstraints({
+    required List<BoxContainer> children,
+    required List<double> childConstraintsRatios,
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+  }) : super(
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: mainAxisPacking,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+  );
 }
 
 // todo-01-document

@@ -7,15 +7,24 @@ class LineContainer extends BoxContainer {
   ui.Paint linePaint;
   ui.Offset lineFrom;
   ui.Offset lineTo;
+  // todo-00-last-last : added
+  /// With manual layout, holds on to the layout value of horizontal or vertical lines,
+  /// between the lifecycle events of [LineContainer]
+  /// creation in parent [buildAndAddChildrenLateDuringParentLayout]
+  /// and it's layout in parent [newCoreLayout].
+  ///
+  /// ONLY used on horizontal xLineContainer or vertical yLineContainer, maintains the
+  /// coordinate that remains the same: y on xLineContainer, x on yLineContainer.
+  ///
+  double layoutValue;
 
   LineContainer({
     required this.lineFrom,
     required this.lineTo,
     required this.linePaint,
     BoxContainer? parent,
+    this.layoutValue = 0.0,
   }) {
-    // todo-01-morph-layout-size - should this be set?
-    // layoutSize = _lineContainerLayoutSize;
     this.parent = parent;
   }
 
@@ -29,7 +38,7 @@ class LineContainer extends BoxContainer {
   /// Implementor of method in superclass [Container].
   @override
   void layout(BoxContainerConstraints boxConstraints) {
-    throw StateError('No need to call layout on $runtimeType.');
+    throw StateError('No need to call layout on $runtimeType, extension of LineContainer.');
   }
 
   /// Override method in superclass [Container].
