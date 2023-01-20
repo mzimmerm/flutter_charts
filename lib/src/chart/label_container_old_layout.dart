@@ -119,7 +119,6 @@ class LabelContainerOriginalKeep extends BoxContainer {
   /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
   /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
   ///
-  // todo-01-morph : this implementation only works for tilting in [XContainer] because first call to it is
   //                 made in [XContainer.layout], after label container is created, as
   //                    `xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
@@ -139,7 +138,6 @@ class LabelContainerOriginalKeep extends BoxContainer {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
-    // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
     // Transform the point where label painting starts against the tilt of labels.
     // No-op for non-tilted labels, where _labelTiltMatrix is identity,
@@ -170,8 +168,6 @@ class LabelContainerOriginalKeep extends BoxContainer {
   ///
   @override
   void layout(BoxContainerConstraints boxConstraints) {
-    // todo-01-morph : cannot set _boxConstraints here, as it is private in another src file
-    //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
     layoutSize = sizeAndOverflow.item1;
   }

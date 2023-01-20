@@ -320,9 +320,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       dataConstraintsHeight,
     ));
 
-    // todo-01-morph-layout : this is where most non-Container elements are layed out.
-    //                problem is, part of the layout happens in applyParentOffset!
-    // todo-00-last-last-last added this for late build and layout
+    // todo-00-done added this for late build and layout
     var dataContainerBuildState = DataContainerBuildState(
       xGridStep: xContainer.xGridStep,
       xTickXs: xTickXs,
@@ -429,15 +427,6 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   List<double> get yTickYs {
     return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
   }
-
-// todo-00-last-last : vvvvvv added to use both in [buildContainerOrSelf] and [newCoreLayout],
-//                     as both only need how many gridlines to show, which happers
-//                     to also be how many labels to show!!
-
-int get xTickCount => xTickXs.length;
-int get yTickCount => yTickYs.length;
-
-// ^^^^^^^^^^^
 }
 
 /// Container of the Y axis labels.
@@ -1095,7 +1084,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
     bool isStacked = chartRootContainer.isStacked;
-    /* // todo-00-last
+    /* // todo-00-last remove the buildStateDependentOnSiblingsLayout
     double xGridStep = chartRootContainer.xContainer.xGridStep;
     List<double> xTickXs = chartRootContainer.xTickXs;
     List<double> yTickYs = chartRootContainer.yTickYs;
@@ -1126,7 +1115,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
         lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
         parent: _yGridLinesContainer,
-        layoutValue: lineX,// todo-00-last
+        layoutValue: lineX,
       );
 
       // Add a new vertical grid line - yGrid line.
@@ -1162,7 +1151,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
         lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
         linePaint: gridLinesPaint(chartOptions),
         parent: _xGridLinesContainer,
-        layoutValue: yTickY,// todo-00-last
+        layoutValue: yTickY,
      );
 
       // Add a new horizontal grid line - xGrid line.
@@ -1176,17 +1165,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
 
   @override
   void newCoreLayout() {
-    // todo-00-last-last : done : layoutSize = ui.Size(boxConstraints.size.width, boxConstraints.size.height);
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
-
-    // Vars that layout needs from the [chartRootContainer] passed to constructor
-    ChartOptions chartOptions = chartRootContainer.data.chartOptions;
-    bool isStacked = chartRootContainer.isStacked;
-    /* // todo-00-last
-    double xGridStep = chartRootContainer.xContainer.xGridStep;
-    List<double> xTickXs = chartRootContainer.xTickXs;
-    List<double> yTickYs = chartRootContainer.yTickYs;
-    */
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -1226,7 +1205,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
-    // todo-01-morph-important : problem : this call actually sets absolute values on Presenters !!
+    // todo-01-morph-important : problem : this call actually sets absolute values on Presenters, no offsetting !!
     setupPresentersColumns();
   }
 
@@ -1296,7 +1275,19 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
   // todo-01 not-referenced, why : void _drawDataPresentersColumns(ui.Canvas canvas);
 }
 
-// todo-00-last-last-last
+// todo-00-last : remove this object, also remove BuildStateDependentOnSiblingsLayout,
+//           replace with a way to define dependencies between containers:
+//             - for now, the dependency must be explicit: If Container B (sink) needs some info to be able to layout itself
+//               from Container A (source), this must be coded in code:
+//               - Container A must know it drives Container B and vice versa
+//               - they must both agree on  a common object they communicate - most likely an object on the source, call it ALayoutMessageToB.
+//               - source.layout must set the instance of ALayoutMessageToB on self
+//               - target.build code must have a way to reach source (maybe thru a parent), pick up source.ALayoutMessageToB,
+//                 and use it to lay itself out
+//             - later we can add a class BuildDependency(sourceKey, sinkKey),
+//               and BuildDependencies (List BuildDependency + some way to find container by key)
+//
+//            - in newCoreLayout, just before iterating children, add call to build method
 class DataContainerBuildState extends BuildStateDependentOnSiblingsLayout {
   final double xGridStep;
   final List<double> xTickXs;
@@ -1424,10 +1415,13 @@ class GridLinesContainer extends BoxContainer {
   /// Overrides [BoxLayouter.layout].
   @override
   void layout(BoxContainerConstraints boxConstraints) {
+    /*
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
     setChildrenAndMakeSelfParent(_lineContainers);  // todo-01-done-duplicite-children
+   */
+    throw StateError('No need to call layout on $runtimeType, extension of GridLinesContainer.');
   }
 
   /// Overridden from super. Applies offset on all members.
@@ -1948,8 +1942,6 @@ class StackableValuePoint {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  // todo-01-morph : Calling this 'scale' is suspect - this does not do any X dimension scaling at all!
-  //                Analyze the uses of the 'scale' term in the system, probably needs improvement.
   StackableValuePoint scale({
     required double scaledX,
     required YLabelsCreatorAndPositioner yLabelsCreator,
@@ -2158,7 +2150,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
-            xLabel: 'initial', // todo-01-morph : xLabel: null : consider
+            xLabel: 'initial',
             dataY: colValue.toDouble(),
             dataRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);

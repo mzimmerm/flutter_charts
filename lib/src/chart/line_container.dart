@@ -7,7 +7,7 @@ class LineContainer extends BoxContainer {
   ui.Paint linePaint;
   ui.Offset lineFrom;
   ui.Offset lineTo;
-  // todo-00-last-last : added
+  // todo-01-full-autolayout :  this was added temporarily to move between build and layout, remove
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
   /// creation in parent [buildAndAddChildrenLateDuringParentLayout]
@@ -47,14 +47,5 @@ class LineContainer extends BoxContainer {
     super.applyParentOffset(caller, offset);
     lineFrom += offset;
     lineTo += offset;
-    // todo-01-morph-layout-size-add : layoutSize = _lineContainerLayoutSize
   }
-
-  // todo-01-morph : This is not called. Call when we manage line segments like other Containers, and call their layout!
-/*
-  ui.Size get _lineContainerLayoutSize => ui.Size(
-        (lineFrom.dx - lineTo.dx).abs(),
-        (lineFrom.dy - lineTo.dy).abs(),
-      );
-*/
 }

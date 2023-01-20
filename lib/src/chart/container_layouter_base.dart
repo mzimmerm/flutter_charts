@@ -874,12 +874,12 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
 mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
 
-  /// Implementations can assume that [BoxLayouter.constraints] are set,
-  /// likely by a hierarchy-parent during layout, and should build children and add them to self.
-  /// TODO-00 : ADD ARGUMENT with new type LateLayoutDependedState,
-  ///           INTENDED TO PASS STATE WHICH DEPENDS ON LAYOUT OF
-  ///           SIBLING CONTAINERS. FOR EXAMPLE, IF LABELS ARE SKIPPED, DATA_CONTAINER
-  ///           NUMBER OF XTICKS CHANGES
+  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [newCoreLayout].
+  ///
+  /// Implementations use this as follows:
+  ///   - Implementations can assume that [BoxLayouter.constraints] are set,
+  ///     likely by a hierarchy-parent during layout.
+  ///   - Implementations should add code that creates children and adds them to self.
   void buildAndAddChildrenLateDuringParentLayout(
       BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout);
 }
@@ -1368,7 +1368,7 @@ class RowWithUnevenChildrenConstraints extends Row {
 
   RowWithUnevenChildrenConstraints({
     required List<BoxContainer> children,
-    required List<double> childConstraintsRatios,
+    required List<double> childConstraintsRatios, // todo-01 added, no implemented
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,

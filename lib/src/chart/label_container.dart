@@ -170,7 +170,6 @@ class LabelContainer extends BoxContainer {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
-    // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
     // Transform the point where label painting starts against the tilt of labels.
     // No-op for non-tilted labels, where _labelTiltMatrix is identity, 

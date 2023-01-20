@@ -143,7 +143,6 @@ class LegendItemContainerOriginalKeep extends BoxContainer {
   void layout(BoxContainerConstraints boxConstraints) {
     // Save a few repeated values, calculated the width given to LabelContainer,
     //   and create the LabelContainer.
-    // todo-01-morph : indicatorSquareSide should be the indRectContainer size. But it is not known yet. Can this be moved down after layout section?
 
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
