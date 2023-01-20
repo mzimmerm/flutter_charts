@@ -988,93 +988,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
           chartRootContainer: chartRootContainer,
         );
 
-  /// Overrides [BoxLayouter.layout] for data area.
-  ///
-  /// Uses all available space in the passed [boxConstraints],
-  /// which it divides between it's children.
-  ///
-  /// First lays out the Grid, then, based on the available size,
-  /// scales the columns to the [YContainer]'s scale.
-  void layoutKEEP(BoxContainerConstraints boxConstraints) {
-    layoutSize = ui.Size(boxConstraints.size.width, boxConstraints.size.height);
-
-    _layoutGridKEEP();
-
-    // Scale the [pointsColumns] to the [YContainer]'s scale.
-    scalePointsColumns();
-  }
-
-  /// Lays out the grid lines.
-  void _layoutGridKEEP() {
-    List<BoxContainer> children = []; // todo-01-done-duplicite-children
-
-    // Vars that layout needs from the [chartRootContainer] passed to constructor
-    ChartOptions chartOptions = chartRootContainer.data.chartOptions;
-    bool isStacked = chartRootContainer.isStacked;
-    double xGridStep = chartRootContainer.xContainer.xGridStep;
-    List<double> xTickXs = chartRootContainer.xTickXs;
-    List<double> yTickYs = chartRootContainer.yTickYs;
-
-    // ### 1. Vertical Grid (yGrid) layout:
-
-    // For each already layed out X labels in [xLabelContainers],
-    // create one [LineContainer] and add it to [yGridLinesContainer]
-
-    _yGridLinesContainer = GridLinesContainer(parent: this);
-    children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
-
-    for (double xTickX in xTickXs) {
-      // Add vertical yGrid line in the middle or on the left
-      double lineX = isStacked ? xTickX - xGridStep / 2 : xTickX;
-
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: ui.Offset(lineX, 0.0),
-        lineTo: ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        parent: _yGridLinesContainer,
-      );
-
-      // Add a new vertical grid line - yGrid line.
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-
-    // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && xTickXs.isNotEmpty) {
-      double lineX = xTickXs.last + xGridStep / 2;
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: ui.Offset(lineX, 0.0),
-        lineTo: ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        parent: _yGridLinesContainer,
-      );
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-
-    // ### 2. Horizontal Grid (xGrid) layout:
-
-    // Iterate yUserLabels and for each add a horizontal grid line
-    // When iterating Y labels, also create the horizontal lines - xGridLines
-    _xGridLinesContainer = GridLinesContainer(parent: this);
-    children.add(_xGridLinesContainer); // todo-01-done-duplicite-children
-
-    // Position the horizontal xGrid at mid-points of labels at yTickY.
-    for (double yTickY in yTickYs) {
-      LineContainer xLineContainer = LineContainer(
-          lineFrom: ui.Offset(0.0, yTickY),
-          lineTo: ui.Offset(layoutSize.width, yTickY),
-          linePaint: gridLinesPaint(chartOptions),
-          parent: _xGridLinesContainer,
-      );
-
-      // Add a new horizontal grid line - xGrid line.
-      _xGridLinesContainer._lineContainers.add(xLineContainer);
-    }
-
-    this.children = children;  // todo-01-done-duplicite-children - GridLinesContainer constructor is already forcing parent!!
-  }
-
   @override
-  // BoxContainer buildAndAddChildrenLateDuringParentLayout(BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout) {
   BoxContainer buildAndAddChildrenLateDuringParentLayout(covariant DataContainerBuildState buildStateDependentOnSiblingsLayout) {
 
     _buildState = buildStateDependentOnSiblingsLayout;
@@ -1163,6 +1077,13 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
     return this;
   }
 
+   /// Overrides [BoxLayouter.layout] for data area.
+   ///
+   /// Uses all available space in the [constraints] set in parent [buildAndAddChildrenLateDuringParentLayout],
+   /// which it divides evenly between it's children.
+   ///
+   /// First lays out the Grid, then, scales the columns to the [YContainer]'s scale
+   /// based on the available size.
   @override
   void newCoreLayout() {
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
