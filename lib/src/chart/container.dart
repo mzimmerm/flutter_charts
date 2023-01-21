@@ -330,8 +330,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     // so we need to set the [dataContainer.sourceSiblingsLayoutsResults], picked up during [dataContainer.build]
     dataContainer.sourceSiblingsLayoutsResults = _SourceYContainerAndYContainerToSinkDataContainer(
       xGridStep: xContainer.xGridStep,
-      xTickXs: xTickXs,
-      yTickYs: yTickYs,
+      xContainer: xContainer,
+      yContainer: yContainer,
     );
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildChildrenInParentLayout();
@@ -415,25 +415,6 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     );
   }
 
-  /// X coordinates of x ticks (x tick - middle of column, also middle of label).
-  /// Once [XContainer.layout] and [YContainer.layout] are complete,
-  /// this list drives the layout of [DataContainer].
-  ///
-  /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
-  ///  layout and painting of the DataContainer in ChartContainer.
-  ///
-  /// See [AxisLabelContainer.parentOffsetTick] for details.
-  List<double> get xTickXs =>
-      xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
-
-  /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
-  /// Once [XContainer.layout] and [YContainer.layout] are complete,
-  /// this list drives the layout of [DataContainer].
-  ///
-  /// See [AxisLabelContainer.parentOffsetTick] for details.
-  List<double> get yTickYs {
-    return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
-  }
 }
 
 /// Container of the Y axis labels.
@@ -919,14 +900,35 @@ class _SourceXContainerToSinkYContainer {
 //            - in newCoreLayout, just before iterating children, add call to build method
 class _SourceYContainerAndYContainerToSinkDataContainer {
   final double xGridStep;
-  final List<double> xTickXs;
-  final List<double> yTickYs;
+  final XContainer xContainer;
+  final YContainer yContainer;
 
   _SourceYContainerAndYContainerToSinkDataContainer({
     required this.xGridStep,
-    required this.xTickXs,
-    required this.yTickYs,
+    required this.xContainer,
+    required this.yContainer,
   });
+
+  /// X coordinates of x ticks (x tick - middle of column, also middle of label).
+  /// Once [XContainer.layout] and [YContainer.layout] are complete,
+  /// this list drives the layout of [DataContainer].
+  ///
+  /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
+  ///  layout and painting of the DataContainer in ChartContainer.
+  ///
+  /// See [AxisLabelContainer.parentOffsetTick] for details.
+  List<double> get xTickXs =>
+      xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
+
+  /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
+  /// Once [XContainer.layout] and [YContainer.layout] are complete,
+  /// this list drives the layout of [DataContainer].
+  ///
+  /// See [AxisLabelContainer.parentOffsetTick] for details.
+  List<double> get yTickYs {
+    return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
+  }
+
 }
 
 
@@ -975,9 +977,6 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
     bool isStacked = chartRootContainer.isStacked;
-    double xGridStep = layoutDependency.xGridStep;
-    List<double> xTickXs = layoutDependency.xTickXs;
-    List<double> yTickYs = layoutDependency.yTickYs;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -992,9 +991,9 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     ui.Offset initLineTo = const ui.Offset(100.0, 100.0);
 
     // xTickXs create horizontal yLineContainers
-    for (double xTickX in xTickXs) {
+    for (double xTickX in layoutDependency.xTickXs) {
       // Add vertical yGrid line in the middle or on the left
-      double lineX = isStacked ? xTickX - xGridStep / 2 : xTickX;
+      double lineX = isStacked ? xTickX - layoutDependency.xGridStep / 2 : xTickX;
 
       LineContainer yLineContainer = LineContainer(
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
@@ -1009,8 +1008,8 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     }
 
     // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && xTickXs.isNotEmpty) {
-      double lineX = xTickXs.last + xGridStep / 2;
+    if (isStacked && layoutDependency.xTickXs.isNotEmpty) {
+      double lineX = layoutDependency.xTickXs.last + layoutDependency.xGridStep / 2;
 
       LineContainer yLineContainer = LineContainer(
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
@@ -1031,7 +1030,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
 
     // yTickYs create vertical xLineContainers
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    for (double yTickY in yTickYs) {
+    for (double yTickY in layoutDependency.yTickYs) {
       LineContainer xLineContainer = LineContainer(
         lineFrom: initLineFrom, // ui.Offset(0.0, yTickY),
         lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
@@ -1060,6 +1059,9 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
   void newCoreLayout() {
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
 
+    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
+    sourceSiblingsLayoutsResults as _SourceYContainerAndYContainerToSinkDataContainer;
+
     // ### 1. Vertical Grid (yGrid) layout:
 
     for (var yLineContainer in _yGridLinesContainer._lineContainers) {
@@ -1079,7 +1081,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     // Scale the [pointsColumns] to the [YContainer]'s scale.
     // This is effectively a [layout] of the lines and bars presenters, currently
     //   done in [VerticalBarPresenter] and [LineChartPresenter]
-    scalePointsColumns();
+    scalePointsColumns(layoutDependency);
   }
 
   @override
@@ -1129,8 +1131,8 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
   ///
   /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
   /// uses the  absolute scaled [chartRootContainer.pointsColumns].
-  void scalePointsColumns() {
-    chartRootContainer.pointsColumns.scale();
+  void scalePointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+    chartRootContainer.pointsColumns.scale(layoutDependency);
   }
 
   /// Creates from [ChartData] (model for this container),
@@ -2139,11 +2141,12 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.scale] method.
   /// - No scaling of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void scale() {
+  void scale(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
-        double scaledX = chartRootContainer.xTickXs[col];
+        // todo-00-last-last : done : double scaledX = chartRootContainer.xTickXs[col];
+        double scaledX = layoutDependency.xTickXs[col];
         point.scale(scaledX: scaledX, yLabelsCreator: chartRootContainer.yLabelsCreator);
       });
       col++;
