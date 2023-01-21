@@ -1686,10 +1686,17 @@ Extensions must override this method by moving position-calculations from ~layou
 
 
 
+
+
 *** IN-PROGRESS-NOW Remove argument from ~BoxContainer buildAndAddChildrenLateDuringParentLayout(covariant DataContainerBuildState buildStateDependentOnSiblingsLayout)~ and replace the passed object with ALayoutMessageToB
+
 
 - probably move xTickXs and yTickYs from ChartRootContainer on YContainer and XContainer
 - access them from any place they were used
+*** TODO-NEXT Can we move creation of ChartRootContainer from newCoreLayout to constructor???
+
+This would also move YContainer build there. Only XContainer and DataContainer needs the build method it seems !!!
+
 *** IN-PROGRESS-NOW Add AnchoredRootContainer which only contains ChartRootContainer. ChartRootContainer is ALWAYS REBUILD
 
 *** IN-PROGRESS-NOW Remove manual layout baseclass

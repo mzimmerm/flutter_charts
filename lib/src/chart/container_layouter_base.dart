@@ -739,8 +739,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   ///
   @override
   List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-011 : do we need this? Ah yes, before we extend BoxContainer to NonPositioningBoxLayouter, and that becomes the base class of all elements in charts
     // This is a no-op because it does not change children positions from where they are at their current offsets.
+    // However, implementation is needed BoxContainer extensions which are positioning
+    // - in other words, all, NOT NonPositioningBoxLayouter extensions.
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 
@@ -844,47 +845,78 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 }
 
 /// Mixin marks implementations as able to create and add [children] *late*,
-/// during [newCoreLayout] (rather than during [BoxContainer] construction, which is
-/// the 'normal' lifecycle sequence of hierarchy-child creation).
+/// during [newCoreLayout] of their parent
+/// (as opposed to children created in the [BoxContainer] constructor, which is
+/// the 'normal' lifecycle of hierarchical container creation).
 ///
-/// It should be (rarely) mixed in by extension [BoxContainer]s
+/// It should be used by extension of [BoxContainer]s
 /// that need to wait after the [BoxContainerHierarchy] is initially constructed.
 ///
-/// Specifically, a [BoxContainer] that needs to mixin the [LateChildrenBoxContainer]
-/// is one that needs to create 'appropriate' number of children
-/// based on it's [constraints].
+/// As an example, we have a chart with 'root container' which contains two hierarchy-sibling areas:
+///   - the 'x axis container', which shows data labels that must not wrap, but
+///     there may be too many labels to fit the width.
+///   - The 'data container' which shows, among others, a dotted vertical line
+///     in the center of each label.
+///
+/// An acceptable solution to the problem where 'x axis container' labels that must not wrap, but
+/// there may be too many labels to fit the width, is for the chart to skip every N-th label.
+/// The N only becomes known during the 'x axis container' [layout],
+/// called from the 'root container' [layout].  But this situation creates a
+/// dependency for drawing dotted lines above the labels. As the dotted lines are part
+/// of 'data container', a sibling container to the 'x axis container',
+/// we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
+/// and call it's [buildChildrenInParentLayout] during the 'root container' [layout].
+/// The 'x axis container' [layout] can set this mixin's [sourceSiblingsLayoutsResults], which would
+/// then be used in this mixin's code in [buildChildrenInParentLayout].
+///
+/// This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
+/// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
+/// agree on the object used as [sourceSiblingsLayoutsResults].
 ///
 /// In such situation, a hierarchy-parent during the [newCoreLayout] would first call
-/// this [LateChildrenBoxContainer] mixin's siblings' [newCoreLayout], establishing the remaining space
-/// ([constraints]) left over for this [LateChildrenBoxContainer], then
+/// this mixin's siblings' [newCoreLayout], establishing the remaining space
+/// ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
 /// create an 'appropriate', 'non-overlapping' children of itself.
 ///
-/// Example:
+/// Example: todo-011 maybe remove or improve.
 ///   - An example is the Y axis ([YContainer] instance), which creates only as many labels
 ///     ([YAxisLabelContainer]s instances) as they fit, given how many pixels
 ///     the Y axis has available. Such pixel availability is applied on  [YContainer]
 ///
 ///
-/// Important note:
+/// Important note:  todo-011 maybe remove or improve.
 ///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
 ///     likely in parent's [newCoreLayout] that calls first [newCoreLayout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
 ///   - Implementations MUST also call [newCoreLayout] immediately after calling
-///     the [buildAndAddChildrenLateDuringParentLayout].
+///     the [buildChildrenInParentLayout].
 
-mixin EnableBuildAndAddChildrenLateOnBoxContainer on BoxContainer {
+mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 
-  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [newCoreLayout].
+  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [newCoreLayout]
+  /// of their parent.
   ///
   /// Implementations use this as follows:
   ///   - Implementations can assume that [BoxLayouter.constraints] are set,
   ///     likely by a hierarchy-parent during layout.
+  ///   - Implementations can assume this method is called in parent's [newCoreLayout].
   ///   - Implementations should add code that creates children and adds them to self.
-  void buildAndAddChildrenLateDuringParentLayout(
-      BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout);
-}
+  ///     The number of children or some of their properties are assumed to depend
+  ///     on results of previously layed out siblings in parent's [newCoreLayout] - otherwise,
+  ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
+  ///     and build it's children in it's [BoxContainer] constructor.
+  void buildChildrenInParentLayout();
 
-abstract class BuildStateDependentOnSiblingsLayout {}
+  /// Object that serves as a message from 'source' containers which [layout] results
+  /// affects how the 'sink' containers create their children during the sink's
+  /// [buildChildrenInParentLayout].
+  Object? _sourceSiblingsLayoutsResults;
+
+  Object? get sourceSiblingsLayoutsResults => _sourceSiblingsLayoutsResults;
+
+  set sourceSiblingsLayoutsResults(Object? sourceSiblingsLayoutsResults) =>
+      _sourceSiblingsLayoutsResults = sourceSiblingsLayoutsResults;
+}
 
 // todo-00 remove when not needed
 abstract class BoxContainerUsingManualLayout extends BoxContainer {
@@ -1475,7 +1507,7 @@ class Greedy extends NonPositioningBoxLayouter {
   }
 }
 
-// todo-00 : comment and implement
+/// Default non positioning layouter does not position it's children, but it is concrete, unlike [BoxContainer].
 class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
   DefaultNonPositioningBoxLayouter({
     List<BoxContainer>? children,

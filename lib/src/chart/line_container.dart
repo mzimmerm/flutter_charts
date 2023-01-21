@@ -10,7 +10,7 @@ class LineContainer extends BoxContainer {
   // todo-01-full-autolayout :  this was added temporarily to move between build and layout, remove
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
-  /// creation in parent [buildAndAddChildrenLateDuringParentLayout]
+  /// creation in parent [buildChildrenInParentLayout]
   /// and it's layout in parent [newCoreLayout].
   ///
   /// ONLY used on horizontal xLineContainer or vertical yLineContainer, maintains the

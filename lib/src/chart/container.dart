@@ -18,9 +18,7 @@ import 'presenter.dart';
 
 import 'container_layouter_base.dart'
     show BoxContainer, BoxContainerUsingManualLayout, BoxLayouter,
-    EnableBuildAndAddChildrenLateOnBoxContainer,
-    DefaultNonPositioningBoxLayouter,
-    BuildStateDependentOnSiblingsLayout,
+    BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
@@ -110,7 +108,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PresenterCreator] and [Presenter] for more details.
-  /// todo 1 : There may be a question "why does a container need to
+  /// todo-01 : There may be a question "why does a container need to
   /// know about Presenter, even indirectly"?
   late PresenterCreator presenterCreator;
 
@@ -159,8 +157,12 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
   /// Overrides [BoxLayouter.buildContainerOrSelf] for the chart root.
   ///
-  /// It creates a [XContainer], [YContainer] and [DataContainer] instances without
-  /// any layout code. The [DataContainer] is created in the overridable [createDataContainer]
+  /// It creates four chart areas container instances,
+  /// the [LegendContainer], [XContainer], [YContainer] and [DataContainer], without
+  /// their children. Their children are created in this [ChartRootContainer.newCoreLayout] by calling
+  /// the four chart areas containers' [buildChildrenInParentLayout] methods.
+  ///
+  /// The [DataContainer] is created in the overridable [createDataContainer]
   /// which is overridden by extensions to create a line chart or a bar chart.
   ///
   @override
@@ -259,7 +261,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     );
 
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
-    yContainerFirst.buildAndAddChildrenLateDuringParentLayout(null);
+    yContainerFirst.buildChildrenInParentLayout();
     yContainerFirst.newCoreLayout();
 
     yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -268,13 +270,15 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
+    // xContainer layout width depends on yContainerFirst layout result.  But this dependency can be expressed
+    // as a constraint on xContainer, so no need to set [xContainer.sourceSiblingsLayoutsResults]
     var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width - yContainerFirstSize.width,
       chartArea.height - legendContainerSize.height,
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
-    xContainer.buildAndAddChildrenLateDuringParentLayout(null);
+    xContainer.buildChildrenInParentLayout();
     xContainer.newCoreLayout();
 
     // When we got here, layout is done, so set the late final layoutSize
@@ -291,6 +295,8 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     //        data values to the y axis, and put labels on ticks.
     // YContainer expands down only to the top of the XContainer area.
 
+    // yContainer layout height depends on xContainer layout result.  But this dependency can be expressed
+    // as a constraint on yContainer, so no need to set [yContainer.sourceSiblingsLayoutsResults]
     var yConstraintsHeight = yContainerHeight - xContainerSize.height;
     var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       chartArea.width,
@@ -298,7 +304,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
     ));
 
     yContainer.applyParentConstraints(this, yContainerBoxConstraints);
-    yContainer.buildAndAddChildrenLateDuringParentLayout(null);
+    yContainer.buildChildrenInParentLayout();
     yContainer.newCoreLayout();
 
     var yContainerSize = yContainer.layoutSize;
@@ -320,14 +326,15 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       dataConstraintsHeight,
     ));
 
-    // todo-00-done added this for late build and layout
-    var dataContainerBuildState = DataContainerBuildState(
+    // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
+    // so we need to set the [dataContainer.sourceSiblingsLayoutsResults], picked up during [dataContainer.build]
+    dataContainer.sourceSiblingsLayoutsResults = _SourceYContainerAndYContainerToSinkDataContainer(
       xGridStep: xContainer.xGridStep,
       xTickXs: xTickXs,
       yTickYs: yTickYs,
     );
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
-    dataContainer.buildAndAddChildrenLateDuringParentLayout(dataContainerBuildState);
+    dataContainer.buildChildrenInParentLayout();
     dataContainer.newCoreLayout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
@@ -438,7 +445,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
-class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAndAddChildrenLateOnBoxContainer {
+class YContainer extends ChartAreaContainerUsingManualLayout with BuilderOfChildrenDuringParentLayout {
 
   /// Containers of Y labels.
   late List<YAxisLabelContainer> _yLabelContainers;
@@ -461,13 +468,13 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
   }
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
-  /// (instances of [YAxisLabelContainer] which are managed in this [YContainer._yLabelContainers].
+  /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
   ///
   /// The created Y labels should be layed out by invoking [newCoreLayout]
-  /// immediately after this method [buildAndAddChildrenLateDuringParentLayout]
+  /// immediately after this method [buildChildrenInParentLayout]
   /// is invoked.
   @override
-  void buildAndAddChildrenLateDuringParentLayout(BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout) {
+  void buildChildrenInParentLayout() {
 
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer coordinates.
     // Note: currently, axisYMin > axisYMax ALWAYS.
@@ -505,6 +512,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
   /// The data-generated label implementation smartly creates
   /// a limited number of Y labels from data, so that Y labels do not
   /// crowd, and little Y space is wasted on top.
+  // todo-00 : move this code to buildChildrenInParentLayout
   List<YAxisLabelContainer> _createYLabelContainers() {
     ChartOptions options = chartRootContainer.data.chartOptions;
 
@@ -537,10 +545,11 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
     return yLabelContainers;
   }
 
-  /// Lays out this [YContainer] - the area containing the Y axis labels.
+  /// Lays out this [YContainer] - the area containing the Y axis labels -
+  /// which children were build during [buildChildrenInParentLayout].
   ///
-  /// As this [YContainer] is [EnableBuildAndAddChildrenLateOnBoxContainer],
-  /// this method should be called just after [buildAndAddChildrenLateDuringParentLayout]
+  /// As this [YContainer] is [BuilderOfChildrenDuringParentLayout],
+  /// this method should be called just after [buildChildrenInParentLayout]
   /// which builds hierarchy-children of this container.
   ///
   /// In the hierarchy-parent [ChartRootContainer.newCoreLayout],
@@ -570,6 +579,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
 
 
   /// Lays out the previously created Y label containers managed in [_yLabelContainers].
+  // todo-00 : move this code to [newCoreLayout]
   void _layoutYLabelContainers() {
 
     // Iterate, apply parent constraints, then layout all labels in [_yLabelContainers],
@@ -647,7 +657,7 @@ class YContainer extends ChartAreaContainerUsingManualLayout with EnableBuildAnd
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
-class XContainer extends AdjustableLabelsChartAreaContainer implements EnableBuildAndAddChildrenLateOnBoxContainer {
+class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildrenDuringParentLayout {
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
@@ -678,7 +688,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer implements EnableBui
 
   @override
   /// Builds the label containers for this [XContainer].
-  void buildAndAddChildrenLateDuringParentLayout(BuildStateDependentOnSiblingsLayout? buildStateDependentOnSiblingsLayout) {
+  void buildChildrenInParentLayout() {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -881,97 +891,64 @@ class XContainer extends AdjustableLabelsChartAreaContainer implements EnableBui
   }
 }
 
-/// A marker of container with adjustable contents,
-/// such as labels that can be skipped.
-// todo-01-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
-//          in AdjustableLabelsChartAreaContainer
-//          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
-//          But Dart bug #25742 does not allow mixins with named parameters.
-abstract class AdjustableLabels {
-  bool labelsOverlap();
+// The 3 private classes below represent layout state dependencies between containers in ChartRootContainer.
+
+/// Result from first [YContainer] layout needed on [XContainer.sourceSiblingsLayoutsResults].
+class _SourceYContainerFirstToSinkXContainer {
+  double? yContainerFirstLayoutWidth;
 }
 
-/// Provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
-/// (actually currently the [ChartAreaContainer].
-///
-/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout implements AdjustableLabels {
-  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
-
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
-
-  AdjustableLabelsChartAreaContainer({
-    required ChartRootContainer chartRootContainer,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
-            strategy.DefaultIterativeLabelLayoutStrategy(options: chartRootContainer.data.chartOptions),
-        super(
-          chartRootContainer: chartRootContainer,
-        ) {
-    // Must initialize in body, as access to 'this' not available in initializer.
-    // parent = chartRootContainer;
-    _labelLayoutStrategy.onContainer(this);
-  }
+/// Result from [XContainer] layout needed on [YContainer.sourceSiblingsLayoutsResults].
+class _SourceXContainerToSinkYContainer {
+  double? xContainerLayoutHeight;
 }
 
-/// Base class which manages, lays out, moves, and paints
-/// each top level block on the chart. The basic top level chart blocks are:
-/// - [ChartRootContainer] - the whole chart
-/// - [LegendContainer] - manages the legend
-/// - [YContainer] - manages the Y labels layout, which defines:
-///   - Y axis label sizes
-///   - Y positions of Y axis labels, defined as yTickY.
-///     yTicksY s are the Y points of scaled data values
-///     and also Y points on which the Y labels are centered.
-/// - [XContainer] - Equivalent to YContainer, but manages X direction
-///   layout and labels.
-/// - [DataContainer] and extensions - manages the area which displays:
-///   - Data as bar chart, line chart, or other chart type.
-///   - Grid (this includes the X and Y axis).
-///
-/// See [BoxContainer] for discussion of roles of this class.
-/// This extension of  [BoxContainer] has the added ability
-/// to access the container's parent, which is handled by
-/// [chartRootContainer].
-abstract class ChartAreaContainer extends BoxContainer {
-  /// The chart top level.
-  ///
-  /// Departure from a top down approach, this allows to
-  /// access the parent [ChartRootContainer], which has (currently)
-  /// members needed by children.
-  final ChartRootContainer chartRootContainer;
+/// Result from [XContainer] and [YContainer] layout needed on [DataContainer.sourceSiblingsLayoutsResults].
+// todo-01-last : document
+//           replace with a way to define dependencies between containers:
+//             - for now, the dependency must be explicit: If Container B (sink) needs some info to be able to layout itself
+//               from Container A (source), this must be coded in code:
+//               - Container A must know it drives Container B and vice versa
+//               - they must both agree on  a common object they communicate - most likely an object on the source, call it ALayoutMessageToB.
+//               - source.layout must set the instance of ALayoutMessageToB on self
+//               - target.build code must have a way to reach source (maybe thru a parent), pick up source.ALayoutMessageToB,
+//                 and use it to lay itself out
+//             - later we can add a class BuildDependency(sourceKey, sinkKey),
+//               and BuildDependencies (List BuildDependency + some way to find container by key)
+//
+//            - in newCoreLayout, just before iterating children, add call to build method
+class _SourceYContainerAndYContainerToSinkDataContainer {
+  final double xGridStep;
+  final List<double> xTickXs;
+  final List<double> yTickYs;
 
-  ChartAreaContainer({
-    required this.chartRootContainer,
-    List<BoxContainer>? children,
-  }) : super(children: children);
+  _SourceYContainerAndYContainerToSinkDataContainer({
+    required this.xGridStep,
+    required this.xTickXs,
+    required this.yTickYs,
+  });
 }
 
-// todo-00 : remove when manual layout all migrated.
-abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
-  /// The chart top level.
-  ///
-  /// Departure from a top down approach, this allows to
-  /// access the parent [ChartRootContainer], which has (currently)
-  /// members needed by children.
-  final ChartRootContainer chartRootContainer;
-
-  ChartAreaContainerUsingManualLayout({
-    required this.chartRootContainer,
-    List<BoxContainer>? children,
-  }) : super(children: children);
-}
 
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainer extends ChartAreaContainerUsingManualLayout
-    with EnableBuildAndAddChildrenLateOnBoxContainer {
+abstract class DataContainer extends ChartAreaContainerUsingManualLayout with BuilderOfChildrenDuringParentLayout {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 
-  /// Build state depending on siblings layout
-  late final DataContainerBuildState _buildState;
+  /* Keep this, use super implementation with casts
+  /// Build state depending on siblings layout: This [DataContainer] depends
+  /// on the result of [XContainer] layout and [YContainer] layout.
+  @override
+  _SourceYContainerAndYContainerToSinkDataContainer? get sourceSiblingsLayoutsResults => _sourceSiblingsLayoutsResults;
+
+  @override
+  set sourceSiblingsLayoutsResults(covariant _SourceYContainerAndYContainerToSinkDataContainer? sourceSiblingsLayoutsResults) =>
+      _sourceSiblingsLayoutsResults = sourceSiblingsLayoutsResults;
+
+  _SourceYContainerAndYContainerToSinkDataContainer? _sourceSiblingsLayoutsResults;
+  */
 
   /// Columns of presenters.
   ///
@@ -982,30 +959,25 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
   /// todo 0 replace with getters; see if members can be made private,  manipulated via YLabelContainer.
   late PresentersColumns presentersColumns;
 
-  DataContainer({
-    required ChartRootContainer chartRootContainer,required
-  }) : super(
-          chartRootContainer: chartRootContainer,
-        );
+  DataContainer({required ChartRootContainer chartRootContainer})
+      : super(
+    chartRootContainer: chartRootContainer,
+  );
 
   @override
-  BoxContainer buildAndAddChildrenLateDuringParentLayout(covariant DataContainerBuildState buildStateDependentOnSiblingsLayout) {
+  BoxContainer buildChildrenInParentLayout() {
 
-    _buildState = buildStateDependentOnSiblingsLayout;
+    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
+      sourceSiblingsLayoutsResults as _SourceYContainerAndYContainerToSinkDataContainer;
 
     List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
     bool isStacked = chartRootContainer.isStacked;
-    /* // todo-00-last remove the buildStateDependentOnSiblingsLayout
-    double xGridStep = chartRootContainer.xContainer.xGridStep;
-    List<double> xTickXs = chartRootContainer.xTickXs;
-    List<double> yTickYs = chartRootContainer.yTickYs;
-    */
-    double xGridStep = _buildState.xGridStep;
-    List<double> xTickXs = _buildState.xTickXs;
-    List<double> yTickYs = _buildState.yTickYs;
+    double xGridStep = layoutDependency.xGridStep;
+    List<double> xTickXs = layoutDependency.xTickXs;
+    List<double> yTickYs = layoutDependency.yTickYs;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -1066,7 +1038,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
         linePaint: gridLinesPaint(chartOptions),
         parent: _xGridLinesContainer,
         layoutValue: yTickY,
-     );
+      );
 
       // Add a new horizontal grid line - xGrid line.
       _xGridLinesContainer._lineContainers.add(xLineContainer);
@@ -1077,13 +1049,13 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
     return this;
   }
 
-   /// Overrides [BoxLayouter.layout] for data area.
-   ///
-   /// Uses all available space in the [constraints] set in parent [buildAndAddChildrenLateDuringParentLayout],
-   /// which it divides evenly between it's children.
-   ///
-   /// First lays out the Grid, then, scales the columns to the [YContainer]'s scale
-   /// based on the available size.
+  /// Overrides [BoxLayouter.layout] for data area.
+  ///
+  /// Uses all available space in the [constraints] set in parent [buildChildrenInParentLayout],
+  /// which it divides evenly between it's children.
+  ///
+  /// First lays out the Grid, then, scales the columns to the [YContainer]'s scale
+  /// based on the available size.
   @override
   void newCoreLayout() {
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
@@ -1193,32 +1165,90 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout
     return presenters;
   }
 
-  // todo-01 not-referenced, why : void _drawDataPresentersColumns(ui.Canvas canvas);
+// todo-01 not-referenced, why : void _drawDataPresentersColumns(ui.Canvas canvas);
 }
 
-// todo-00-last : remove this object, also remove BuildStateDependentOnSiblingsLayout,
-//           replace with a way to define dependencies between containers:
-//             - for now, the dependency must be explicit: If Container B (sink) needs some info to be able to layout itself
-//               from Container A (source), this must be coded in code:
-//               - Container A must know it drives Container B and vice versa
-//               - they must both agree on  a common object they communicate - most likely an object on the source, call it ALayoutMessageToB.
-//               - source.layout must set the instance of ALayoutMessageToB on self
-//               - target.build code must have a way to reach source (maybe thru a parent), pick up source.ALayoutMessageToB,
-//                 and use it to lay itself out
-//             - later we can add a class BuildDependency(sourceKey, sinkKey),
-//               and BuildDependencies (List BuildDependency + some way to find container by key)
-//
-//            - in newCoreLayout, just before iterating children, add call to build method
-class DataContainerBuildState extends BuildStateDependentOnSiblingsLayout {
-  final double xGridStep;
-  final List<double> xTickXs;
-  final List<double> yTickYs;
 
-  DataContainerBuildState({
-    required this.xGridStep,
-    required this.xTickXs,
-    required this.yTickYs,
-});
+/// A marker of container with adjustable contents,
+/// such as labels that can be skipped.
+// todo-01-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+//          in AdjustableLabelsChartAreaContainer
+//          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
+//          But Dart bug #25742 does not allow mixins with named parameters.
+
+abstract class AdjustableLabels {
+  bool labelsOverlap();
+}
+
+/// Provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
+/// (actually currently the [ChartAreaContainer].
+///
+/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
+abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout implements AdjustableLabels {
+  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
+
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+
+  AdjustableLabelsChartAreaContainer({
+    required ChartRootContainer chartRootContainer,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
+            strategy.DefaultIterativeLabelLayoutStrategy(options: chartRootContainer.data.chartOptions),
+        super(
+          chartRootContainer: chartRootContainer,
+        ) {
+    // Must initialize in body, as access to 'this' not available in initializer.
+    // parent = chartRootContainer;
+    _labelLayoutStrategy.onContainer(this);
+  }
+}
+
+/// Base class which manages, lays out, moves, and paints
+/// each top level block on the chart. The basic top level chart blocks are:
+/// - [ChartRootContainer] - the whole chart
+/// - [LegendContainer] - manages the legend
+/// - [YContainer] - manages the Y labels layout, which defines:
+///   - Y axis label sizes
+///   - Y positions of Y axis labels, defined as yTickY.
+///     yTicksY s are the Y points of scaled data values
+///     and also Y points on which the Y labels are centered.
+/// - [XContainer] - Equivalent to YContainer, but manages X direction
+///   layout and labels.
+/// - [DataContainer] and extensions - manages the area which displays:
+///   - Data as bar chart, line chart, or other chart type.
+///   - Grid (this includes the X and Y axis).
+///
+/// See [BoxContainer] for discussion of roles of this class.
+/// This extension of  [BoxContainer] has the added ability
+/// to access the container's parent, which is handled by
+/// [chartRootContainer].
+abstract class ChartAreaContainer extends BoxContainer {
+  /// The chart top level.
+  ///
+  /// Departure from a top down approach, this allows to
+  /// access the parent [ChartRootContainer], which has (currently)
+  /// members needed by children.
+  final ChartRootContainer chartRootContainer;
+
+  ChartAreaContainer({
+    required this.chartRootContainer,
+    List<BoxContainer>? children,
+  }) : super(children: children);
+}
+
+// todo-00 : remove when manual layout all migrated.
+abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
+  /// The chart top level.
+  ///
+  /// Departure from a top down approach, this allows to
+  /// access the parent [ChartRootContainer], which has (currently)
+  /// members needed by children.
+  final ChartRootContainer chartRootContainer;
+
+  ChartAreaContainerUsingManualLayout({
+    required this.chartRootContainer,
+    List<BoxContainer>? children,
+  }) : super(children: children);
 }
 
 /// Provides the data area container for the bar chart.
