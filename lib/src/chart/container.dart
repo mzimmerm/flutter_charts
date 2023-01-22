@@ -159,7 +159,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   /// It creates four chart areas container instances,
   /// the [LegendContainer], [XContainer], [YContainer] and [DataContainer], without
-  /// their children. Their children are created in this [ChartRootContainer.newCoreLayout] by calling
+  /// their children. Their children are created in this [ChartRootContainer.layout] by calling
   /// the four chart areas containers' [buildChildrenInParentLayout] methods.
   ///
   /// The [DataContainer] is created in the overridable [createDataContainer]
@@ -169,14 +169,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   BoxContainer buildContainerOrSelf() {
     List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
-    // ### 1. [setupPointsColumns] later in [newCoreLayout]
+    // ### 1. [setupPointsColumns] later in [layout]
     // ### 2. Build the LegendContainer where series legend is shown
     legendContainer = LegendContainer(
       chartRootContainer: this,
     );
     children.add(legendContainer); // todo-01-done-duplicite-children
 
-    // ### 3. No [yContainerFirst] creation or setup needed. All done in [newCoreLayout]
+    // ### 3. No [yContainerFirst] creation or setup needed. All done in [layout]
 
     // ### 4. XContainer: Create and add
 
@@ -204,7 +204,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     return this;
   }
 
-  /// Overrides [BoxLayouter.newCoreLayout] for the chart as a whole.
+  /// Overrides [BoxLayouter.layout] for the chart as a whole.
   ///
   /// Uses this container's [chartArea] as available size
   ///
@@ -226,7 +226,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// The actual layout algorithm should be made pluggable.
   ///
   @override
-  void newCoreLayout() {
+  void layout() {
 
     // ### 1. Prepare early, from dataRows, the [PointsColumns] object, managed
     //        in [ChartRootContainer.pointsColumns], representing list of columns on chart.
@@ -241,7 +241,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     );
 
     legendContainer.applyParentConstraints(this, legendBoxConstraints);
-    legendContainer.newCoreLayout();
+    legendContainer.layout();
 
     ui.Size legendContainerSize = legendContainer.layoutSize;
     ui.Offset legendContainerOffset = ui.Offset.zero;
@@ -262,7 +262,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.buildChildrenInParentLayout();
-    yContainerFirst.newCoreLayout();
+    yContainerFirst.layout();
 
     yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
 
@@ -279,7 +279,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
     xContainer.buildChildrenInParentLayout();
-    xContainer.newCoreLayout();
+    xContainer.layout();
 
     // When we got here, layout is done, so set the late final layoutSize
     xContainer.layoutSize = xContainer.lateReLayoutSize;
@@ -305,7 +305,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     yContainer.applyParentConstraints(this, yContainerBoxConstraints);
     yContainer.buildChildrenInParentLayout();
-    yContainer.newCoreLayout();
+    yContainer.layout();
 
     var yContainerSize = yContainer.layoutSize;
     // The layout relies on YContainer width first time and second time to be the same, as width
@@ -328,7 +328,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildChildrenInParentLayout();
-    dataContainer.newCoreLayout();
+    dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
 
@@ -362,10 +362,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //                           do no fail on re-assign
     //                           ADDRESS THIS BY ADDING AN ChartAnchorContainer which is only created once,
     //                           has member ChartRootContainer rootOnAnchor, which concrete (VerticalChartRootContainer etc)
-    //                           is created fresh here on every paint, and set on rootOnAnchor. The Anchor newCoreLayout only calls Root
+    //                           is created fresh here on every paint, and set on rootOnAnchor. The Anchor layout only calls Root
     //                           version.
     buildContainerOrSelf();
-    newCoreLayout();
+    layout();
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);
@@ -444,7 +444,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
   /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
   ///
-  /// The created Y labels should be layed out by invoking [newCoreLayout]
+  /// The created Y labels should be layed out by invoking [layout]
   /// immediately after this method [buildChildrenInParentLayout]
   /// is invoked.
   @override
@@ -526,8 +526,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// this method should be called just after [buildChildrenInParentLayout]
   /// which builds hierarchy-children of this container.
   ///
-  /// In the hierarchy-parent [ChartRootContainer.newCoreLayout],
-  /// the call to this object's [newCoreLayout] is second, after [LegendContainer.layout].
+  /// In the hierarchy-parent [ChartRootContainer.layout],
+  /// the call to this object's [layout] is second, after [LegendContainer.layout].
   /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
@@ -535,7 +535,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
-  void newCoreLayout() {
+  void layout() {
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
@@ -553,7 +553,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
 
   /// Lays out the previously created Y label containers managed in [_yLabelContainers].
-  // todo-00 : move this code to [newCoreLayout]
+  // todo-00 : move this code to [layout]
   void _layoutYLabelContainers() {
 
     // Iterate, apply parent constraints, then layout all labels in [_yLabelContainers],
@@ -561,7 +561,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     for (var yLabelContainer in _yLabelContainers) {
       // Constraint will allow to set labelMaxWidth which has been taken out of constructor.
       yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
-      yLabelContainer.newCoreLayout();
+      yLabelContainer.layout();
 
       double yTickY = yLabelContainer.labelInfo.axisValue.toDouble();
 
@@ -695,7 +695,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   /// The layout is independent of whether the labels are tilted or not,
   ///   in the sense that all tilting logic is in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
-  void newCoreLayout() {
+  void layout() {
 
     ChartOptions options = chartRootContainer.data.chartOptions;
 
@@ -711,7 +711,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     int xIndex = 0;
     for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
-      xLabelContainer.newCoreLayout();
+      xLabelContainer.layout();
 
       // We only know if parent ordered skip after layout (because some size is too large)
       xLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
@@ -1026,7 +1026,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// First lays out the Grid, then, scales the columns to the [YContainer]'s scale
   /// based on the available size.
   @override
-  void newCoreLayout() {
+  void layout() {
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
 
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
@@ -1324,7 +1324,7 @@ class GridLinesContainer extends BoxContainer {
 
   /// Overrides [BoxLayouter.layout].
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout() {
     throw StateError('No need to call layout on $runtimeType, extension of GridLinesContainer.');
     /*
     for (LineContainer lineContainer in _lineContainers) {
@@ -1402,7 +1402,7 @@ class LegendItemContainer extends BoxContainer {
   BoxContainer buildContainerOrSelf() {
 
     // Pull out the creation, remember on this object as member _label,
-    // set _labelMaxWidth on it in newCoreLayout.
+    // set _labelMaxWidth on it in layout.
 
     var children = _itemIndAndLabel();
     switch (_options.legendOptions.legendAndItemLayoutEnum) {
@@ -1605,7 +1605,7 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// Lays out legend items, one for each data series.
   @override
-  void newCoreLayout() {
+  void layout() {
     // todo-01-last : this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
@@ -1613,8 +1613,8 @@ class LegendContainer extends ChartAreaContainer {
       layoutSize = const ui.Size(0.0, 0.0);
       return;
     }
-    // Important: This flips from using layout() on parents to using newCoreLayout() on children
-    super.newCoreLayout();
+    // Important: This flips from using layout() on parents to using layout() on children
+    super.layout();
   }
 
 

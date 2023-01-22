@@ -62,11 +62,11 @@ class PieContainerConstraints extends ContainerConstraints {
 //           - Container to BoxContainer and PieContainer
 //           - Shape to BoxShape (wraps Size) and PieShape
 //           - ContainerConstraint to BoxContainerConstraint and PieContainerConstraint 
-// todo-01 : Change Container.newCoreLayout to 
-//               Shape newCoreLayout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on layoutableBoxParentSandbox 
-//           This base newCoreLayout maybe eventually configures some constraints caching and debugging.
+// todo-01 : Change Container.layout to 
+//               Shape layout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on layoutableBoxParentSandbox 
+//           This base layout maybe eventually configures some constraints caching and debugging.
 //           Extensions of Container: BoxContainer, PieContainer override layout as
-//               BoxShape newCoreLayout({required covariant BoxContainerConstraints constraints}); // Must set BoxShape (essentially, this is Size)  on layoutableBoxParentSandbox 
-//               PieShape newCoreLayout({required covariant PieContainerConstraints constraints}); // Must set PieShape on layoutableBoxParentSandbox
+//               BoxShape layout({required covariant BoxContainerConstraints constraints}); // Must set BoxShape (essentially, this is Size)  on layoutableBoxParentSandbox 
+//               PieShape layout({required covariant PieContainerConstraints constraints}); // Must set PieShape on layoutableBoxParentSandbox
 
 

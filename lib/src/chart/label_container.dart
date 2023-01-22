@@ -199,7 +199,7 @@ class LabelContainer extends BoxContainer {
   ///   which obtains the size of [_textPainter]. The resulting [layoutSize] of this [LabelContainer]
   ///   is set from the bounding rectangle of potentially rotated [_textPainter].
   ///   
-  /// Note: On this leaf, instead of overriding this internal method, we could override [newCoreLayout]
+  /// Note: On this leaf, instead of overriding this internal method, we could override [layout]
   ///        witch exactly same code, and things would work, except missing check if 
   ///        layout size is within constraints.
   @override
@@ -215,7 +215,7 @@ class LabelContainer extends BoxContainer {
   ///  Calculated and sets [_labelMaxWidth] used to layout [_textPainter.layout].
   ///
   ///   [layoutableBoxParentSandbox.constraints] is needed to have been
-  ///   set on this object by parent in layout (before this [newCoreLayout] is called,
+  ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
@@ -372,7 +372,7 @@ class AxisLabelContainer extends LabelContainer {
 class YAxisLabelContainer extends AxisLabelContainer {
 
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
-  /// for use during [newCoreLayout] of self or parents.
+  /// for use during [layout] of self or parents.
   final LabelInfo _labelInfo;
 
   /// Getter of [LabelInfo] which created this Y label.

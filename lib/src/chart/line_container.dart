@@ -11,7 +11,7 @@ class LineContainer extends BoxContainer {
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
   /// creation in parent [buildChildrenInParentLayout]
-  /// and it's layout in parent [newCoreLayout].
+  /// and it's layout in parent [layout].
   ///
   /// ONLY used on horizontal xLineContainer or vertical yLineContainer, maintains the
   /// coordinate that remains the same: y on xLineContainer, x on yLineContainer.
@@ -37,7 +37,7 @@ class LineContainer extends BoxContainer {
 
   /// Implementor of method in superclass [Container].
   @override
-  void layout(BoxContainerConstraints boxConstraints) {
+  void layout() {
     throw StateError('No need to call layout on $runtimeType, extension of LineContainer.');
   }
 

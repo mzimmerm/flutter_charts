@@ -117,7 +117,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
 abstract class LayoutableBox {
   /// Size after the box has been layed out.
   ///
-  /// Each [BoxContainer] node method [newCoreLayout] must be able to set this [layoutSize]
+  /// Each [BoxContainer] node method [layout] must be able to set this [layoutSize]
   ///    on itself after all children were layed out.
   ///
   /// Important note: [layoutSize] is not set by parent, but it is accessed (get) by parent.
@@ -137,10 +137,10 @@ abstract class LayoutableBox {
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
   ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
-  ///     as this method is integral part of the layout process (implemented in [newCoreLayout]).
+  ///     as this method is integral part of the layout process (implemented in [layout]).
   ///  2) Exception that need to override would be those using manual
   ///     layout process. Those would generally (always?) be leafs, and they would do the following:
-  ///       - Override [newCoreLayout] (no super call), do manual layout calculations,
+  ///       - Override [layout] (no super call), do manual layout calculations,
   ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
   ///         and set [layoutSize] at the end, so parent can pick it up
   ///       - Override [applyParentOffset] as follows:
@@ -159,7 +159,7 @@ abstract class LayoutableBox {
 
   /// todo-011-document fully, also write : Important override notes and rules for [applyParentOrderedSkip] on extensions:
   /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
-  /// the [newCoreLayout] and [paint] processing.
+  /// the [layout] and [paint] processing.
   ///
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
@@ -171,40 +171,40 @@ abstract class LayoutableBox {
   /// Assumptions:
   ///   1. Before calling this method, [constraints] must be set at least on the root of the [BoxContainerHierarchy].
   ///
-  /// Important override notes and rules for [newCoreLayout] on extensions:
+  /// Important override notes and rules for [layout] on extensions:
   ///   1: Everywhere in docs, by 'layouter specific processing', we mean there is code
   ///      which auto-layouts all known layouters [Row], [Column] etc, using their set values of [Packing] and [Align].
   ///
-  ///   2: General rules for [newCoreLayout] on extensions
+  ///   2: General rules for [layout] on extensions
   ///
-  ///      1) Generally, leafs do not need to override [newCoreLayout],
+  ///      1) Generally, leafs do not need to override [layout],
   ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
   ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
   ///         which should be overriden.
-  ///         Alternatively, it is sufficient for leafs to override [newCoreLayout] and only set [layoutSize] there.
-  ///      2) Non-leafs do often need to override some methods invoked from [newCoreLayout],
-  ///         or the whole [newCoreLayout]. Some details on Non-Leafs
+  ///         Alternatively, it is sufficient for leafs to override [layout] and only set [layoutSize] there.
+  ///      2) Non-leafs do often need to override some methods invoked from [layout],
+  ///         or the whole [layout]. Some details on Non-Leafs
   ///         - Non-positioning Non-leafs: Generally only need to override [post_NotLeaf_PositionChildren] to return .
-  ///           If mostly do not need to override [newCoreLayout] at all,
+  ///           If mostly do not need to override [layout] at all,
   ///           unless they wish to distribute constraints to children differently from the default,
   ///           passing the full constraint to all children.
   ///           The empty
   ///         as this method is integral part of autolayout (as is [applyParentOffset]).
   ///      2) Exception would be [BoxLayouter]s that want to use manual or semi-manual
   ///         layout process.
-  ///           - On Leaf: override [newCoreLayout] (no super call), do manual layout calculations,
+  ///           - On Leaf: override [layout] (no super call), do manual layout calculations,
   ///             likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
   ///             and set [layoutSize] at the end. This is already described in [BoxLayouter.applyParentOffset]
-  ///           - Potentially - this would be a hack PARENT of the leaf also may need to override[newCoreLayout], where it :
+  ///           - Potentially - this would be a hack PARENT of the leaf also may need to override[layout], where it :
   ///             - Perform layout logic to set some size-related value on it's child. We do not have example,
   ///               as we moved this stuff from [LabelContainer] parent [LegendItemContainer] to [LabelContainer] .
   ///               See around [_layoutLogicToSetMemberMaxSizeForTextLayout]
   ///
   /// Misc less important notes:
-  ///   1. Can we make layoutSize result of layout (INSTEAD OF VOID)  and not store on newCoreLayout?
+  ///   1. Can we make layoutSize result of layout (INSTEAD OF VOID)  and not store on layout?
   ///     - NO, because ??? todo-01 : layoutSize member: Make still available as late final on BoxLayouter,
-  ///           set it after return in case it is needed later. Always set just after return from newCoreLayout.
-  void newCoreLayout();
+  ///           set it after return in case it is needed later. Always set just after return from layout.
+  void layout();
 }
 
 // Non-positioning BoxLayouter and BoxContainer ------------------------------------------------------------------------
@@ -216,7 +216,7 @@ abstract class LayoutableBox {
 /// then apply the positions as offsets onto children in [_post_NotLeaf_OffsetChildren].
 ///
 /// Layouter classes with this mixin can be divided into two categories,
-/// if they use the default [newCoreLayout] :
+/// if they use the default [layout] :
 ///
 ///   - *positioning* layouters position their children in self (potentially and likely to non-zero position).
 ///     This also implies that during layout, the position is converted into offsets , applied to it's children.
@@ -243,9 +243,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   // BoxLayouter section 2: Implements [LayoutableBox] -------------------------------------------------
 
-  /// Manages the layout size, the result of [newCoreLayout].
+  /// Manages the layout size, the result of [layout].
   ///
-  /// Set late in [newCoreLayout], once the layout size is known after all children were layed out.
+  /// Set late in [layout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   ///
   /// todo-01 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
@@ -337,7 +337,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Return true if container would like to expand as much as possible, within it's constraints.
   ///
   /// Greedy would take layoutSize infinity, but do not check that here, as layoutSize is late and not yet set
-  ///   when this is called in [newCoreLayout].
+  ///   when this is called in [layout].
   bool get isGreedy => false;
 
   bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
@@ -353,7 +353,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
 /* todo-00-last : removed the old forward of layout
-  /// Old layout forwards to [newCoreLayout].
+  /// Old layout forwards to [layout].
   // todo-00 : Delete when manual layout is gone
   void  layout(BoxContainerConstraints boxConstraints) {
     if (this is LegendItemContainer ||
@@ -363,15 +363,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
         this is Column) {
       throw StateError('Should not be called on $this');
     }
-    newCoreLayout();
+    layout();
   }
 */
 
-  /// Implementation of abstract [LayoutableBox.newCoreLayout].
+  /// Implementation of abstract [LayoutableBox.layout].
   @override
-  void newCoreLayout() {
-    // print('In newCoreLayout: this = $this. this.children = $children.');
-    // print('In newCoreLayout: parent of $this = $parent.');
+  void layout() {
+    // print('In layout: this = $this. this.children = $children.');
+    // print('In layout: parent of $this = $parent.');
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
@@ -408,7 +408,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     for (var child in children) {
       // b1. child-pre-descend (empty)
       // b2. child-descend
-      child.newCoreLayout();
+      child.layout();
       // b3. child-post-descend (empty)
     }
     // C. node-post-descend.
@@ -417,7 +417,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
   /// This [BoxLayouter]'s default implementation distributes this layouter's unchanged
-  /// and undivided constraints onto it's immediate children before descending to children [newCoreLayout].
+  /// and undivided constraints onto it's immediate children before descending to children [layout].
   ///
   ///  This is not recursive - the constraints are applied only on immediate children.
   ///
@@ -470,13 +470,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Final side effect result must always be setting the [layoutSize] on this node.
   ///
   /// Important override notes and rules for [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] on extensions:
-  ///   - On Non-positioning extensions using the default [newCoreLayout],
+  ///   - On Non-positioning extensions using the default [layout],
   ///     best performance with non-positioning is when extensions override
   ///     this method and perform the role of  [_post_NotLeaf_SetSize_FromPositionedChildren],
   ///     setting the [layoutSize].
   ///     Then the default invoked [post_NotLeaf_PositionChildren], [_post_NotLeaf_OffsetChildren],
   ///     and [_post_NotLeaf_SetSize_FromPositionedChildren] would be bypassed and take no cycles.
-  ///   - On positioning extensions of [BoxLayouter] using the default [newCoreLayout],
+  ///   - On positioning extensions of [BoxLayouter] using the default [layout],
   ///     the desired extension positioning effect is usually achieved by
   ///     overriding only the [post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
   ///     is something else than [children]'s bounding rectangle ([Greedy], [Padder])
@@ -503,7 +503,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     _post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
   }
 
-  /// [post_NotLeaf_PositionChildren] is a core method of the default [newCoreLayout]
+  /// [post_NotLeaf_PositionChildren] is a core method of the default [layout]
   /// which positions the invoker's children in self.
   ///
   /// [post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op in [BoxContainer] (returning empty list,
@@ -518,7 +518,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// *Important*: When invoked on a [BoxLayouter] instance, it is assumed it's children were already layed out;
   ///              so this should be invoked in any layout algorithm in the children-post-descend section.
   ///
-  /// In the default [newCoreLayout] implementation, this message [post_NotLeaf_PositionChildren]
+  /// In the default [layout] implementation, this message [post_NotLeaf_PositionChildren]
   /// is send by the invoking [BoxLayouter] to self, during the children-past-descend.
   ///
   /// Important Definition:
@@ -526,14 +526,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///    - It is invoked on a node that is a parent (so self = parent)
   ///    - The method should do the following:
   ///      - Arrange for self to ask children their layout sizes. Children MUST have already
-  ///        been recursively layed out!! (Likely by invoking child.newCoreLayout recursively).
+  ///        been recursively layed out!! (Likely by invoking child.layout recursively).
   ///      - Arrange for self to use children layout sizes and it's positioning algorithm
   ///        to calculate (but NOT set) children positions (offsets) in itself
   ///        returning a list of rectangles, one for each child
   ///
   List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children);
 
-  /// An abstract method of the default [newCoreLayout] which role is to
+  /// An abstract method of the default [layout] which role is to
   /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
   ///
   /// Important override notes and rules for [_post_NotLeaf_OffsetChildren] on extensions:
@@ -550,7 +550,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// The responsibility of [_post_NotLeaf_SetSize_FromPositionedChildren]
   /// is to set the [layoutSize] of self.
   ///
-  /// In the default [newCoreLayout], when this method is invoked,
+  /// In the default [layout], when this method is invoked,
   /// all children have their [layoutSize]s and [offset]s set.
   ///
   /// The [layoutSize] in this default implementation is set
@@ -572,7 +572,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///     Overriding extensions include layouts which do padding,
   ///     or otherwise increase their sizes, such as [Greedy], [Padder], [Aligner].
   ///   - [RollingPositioningBoxLayouter]s [Row] and [Column] use this
-  ///     - although they override [newCoreLayout], the method [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
+  ///     - although they override [layout], the method [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
   ///     which invokes this is default. These classes rely on this default
   ///     "bounding rectangle of all positioned children" implementaion.
   ///
@@ -614,7 +614,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   /// Bounding rectangle of this [BoxLayouter].
   ///
-  /// It should only be called after [newCoreLayout] has been performed on this layouter.
+  /// It should only be called after [layout] has been performed on this layouter.
   ui.Rect _boundingRectangle() {
     return offset & layoutSize;
   }
@@ -659,13 +659,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///   - if we move the container fully to autolayout:
 ///      - The 'old layouter' code should not be used;
 ///   - else if keeping the manual layout (see [LabelContainer])
-///       - the 'old layouter' code should go to [newCoreLayout].
+///       - the 'old layouter' code should go to [layout].
 ///       - some layout values calculated from old layout that used to be passed as members to child containers creation:
 ///          - We need to, in the child class:
 ///            - make the members 'late' if final
 ///            - remove setting those members from child container constructors,
 ///            - replace with setters
-///          - Then set those layout values calculated from old layout on member children in [newCoreLayout] in the new setters
+///          - Then set those layout values calculated from old layout on member children in [layout] in the new setters
 ///
 ///   - [layout] should not be called on new layout, except on 'fake' root.
 /// todo-01-document : children are either passed, or a single child is build in [buildContainerOrSelf],
@@ -748,7 +748,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 
   /// Implementation of the abstract default [_post_NotLeaf_OffsetChildren]
-  /// invoked in the default [newCoreLayout].
+  /// invoked in the default [layout].
   ///
   /// This class, as a non-positioning container should make this a no-op,
   /// resulting in no offsets applied on children during layout.
@@ -847,7 +847,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 }
 
 /// Mixin marks implementations as able to create and add [children] *late*,
-/// during [newCoreLayout] of their parent.
+/// during [layout] of their parent.
 ///
 /// Note: By default, [children] should created *early* in the [BoxContainer] constructor.
 ///
@@ -875,8 +875,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 /// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
 /// agree on the object used as [sourceSiblingsLayoutsResults].
 ///
-/// In such situation, a hierarchy-parent during the [newCoreLayout] would first call
-/// this mixin's siblings' [newCoreLayout], establishing the remaining space
+/// In such situation, a hierarchy-parent during the [layout] would first call
+/// this mixin's siblings' [layout], establishing the remaining space
 /// ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
 /// create an 'appropriate', 'non-overlapping' children of itself.
 ///
@@ -888,23 +888,23 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 ///
 /// Important note:  todo-011 maybe remove or improve.
 ///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
-///     likely in parent's [newCoreLayout] that calls first [newCoreLayout] on
+///     likely in parent's [layout] that calls first [layout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
-///   - Implementations MUST also call [newCoreLayout] immediately after calling
+///   - Implementations MUST also call [layout] immediately after calling
 ///     the [buildChildrenInParentLayout].
 
 mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 
-  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [newCoreLayout]
+  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [layout]
   /// of their parent.
   ///
   /// Implementations use this as follows:
   ///   - Implementations can assume that [BoxLayouter.constraints] are set,
   ///     likely by a hierarchy-parent during layout.
-  ///   - Implementations can assume this method is called in parent's [newCoreLayout].
+  ///   - Implementations can assume this method is called in parent's [layout].
   ///   - Implementations should add code that creates children and adds them to self.
   ///     The number of children or some of their properties are assumed to depend
-  ///     on results of previously layed out siblings in parent's [newCoreLayout] - otherwise,
+  ///     on results of previously layed out siblings in parent's [layout] - otherwise,
   ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
   ///     and build it's children in it's [BoxContainer] constructor.
   void buildChildrenInParentLayout();
@@ -968,7 +968,7 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   }) : super(children: children);
 
   /// Override for non-positioning:
-  /// Does not apply any offsets on the it's children (passed in [newCoreLayout] internals.
+  /// Does not apply any offsets on the it's children (passed in [layout] internals.
   @override
   void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {}
 
@@ -1023,7 +1023,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   /// Override of the core layout on [RollingPositioningBoxLayouter].
   @override
-  void newCoreLayout() {
+  void layout() {
     _layout_IfRoot_DefaultTreePreprocessing();
 
     // if (_hasGreedy) {
@@ -1035,7 +1035,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
       for (var child in _nonGreedyChildren) {
         // Non greedy should run full layout of children.
-        child.newCoreLayout();
+        child.layout();
       }
       // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
       //      which we can get and use to lay them out to find constraints left for greedy
@@ -1052,7 +1052,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     //   1. Need to recursively layout GREEDY children to get their size.
     //      Their greedy constraints were set in previous postDescend,
     //        the _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
-    //      So we do NOT want to run a full [newCoreLayout] on greedy children - we need to avoid setting
+    //      So we do NOT want to run a full [layout] on greedy children - we need to avoid setting
     //      child constraints again in  _layout_DefaultRecurse() -> _preDescend_DistributeConstraintsToImmediateChildren(children);
     //      We only want the descend part of _layout_DefaultRecurse(), even the postDescend must be different
     //        as it must apply to all children, not just GREEDY.
@@ -1064,7 +1064,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
     // Step 1.
     for (var child in _greedyChildren) {
-      child.newCoreLayout();
+      child.layout();
     }
     // Step 2. and 3. is a base class method unchanged.
     _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
@@ -1141,7 +1141,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// Converts the line segments (which correspond to children widths and heights that have been layed out)
   /// to [Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
   ///
-  /// Children should be offset later in [newCoreLayout] by the obtained [Rect.topLeft] offsets;
+  /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
   List<ui.Rect> _convertPositionedSegmentsToRects({
     required LayoutAxis mainLayoutAxis,
@@ -1439,7 +1439,7 @@ class Column extends RollingPositioningBoxLayouter {
 /// It is NonPositioning, so it cannot honour it's parent [Align] and [Packing], and it's
 /// child is positioned [Align.start] and [Packing.tight].
 ///
-/// Uses base class [newCoreLayout],
+/// Uses base class [layout],
 /// pre-descend sets full constraints on immediate children as normal
 /// descend runs as normal, makes children make layoutSize available
 /// post-descend runs as normal - does 'layout self'
@@ -1452,7 +1452,7 @@ class Greedy extends NonPositioningBoxLayouter {
     required BoxContainer child,
   }) : super(children: [child]);
 
-  /// Override a standard hook in [newCoreLayout] which sets the layout size.
+  /// Override a standard hook in [layout] which sets the layout size.
   ///
   /// The set [layoutSize] of Greedy is not the default outer rectangle of children,
   /// instead, it is the full constraint side along the greedy axis,
@@ -1521,7 +1521,7 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///     the [EdgePadding] [edgePadding].
 ///
 /// This governs implementation:
-///   - [Padder] uses the default [newCoreLayout].
+///   - [Padder] uses the default [layout].
 ///   - [Padder] changes the constraint before sending it to it's child, so
 ///     the [_preDescend_DistributeConstraintsToImmediateChildren] must be overridden.
 ///   - [Padder] is positioning, so the [post_NotLeaf_PositionChildren] is overridden,
