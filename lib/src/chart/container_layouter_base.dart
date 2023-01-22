@@ -845,12 +845,12 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 }
 
 /// Mixin marks implementations as able to create and add [children] *late*,
-/// during [newCoreLayout] of their parent
-/// (as opposed to children created in the [BoxContainer] constructor, which is
-/// the 'normal' lifecycle of hierarchical container creation).
+/// during [newCoreLayout] of their parent.
 ///
-/// It should be used by extension of [BoxContainer]s
-/// that need to wait after the [BoxContainerHierarchy] is initially constructed.
+/// Note: By default, [children] should created *early* in the [BoxContainer] constructor.
+///
+/// This mixin should be used by extension of [BoxContainer]s
+/// that need to wait constructing children later than in the constructor.
 ///
 /// As an example, we have a chart with 'root container' which contains two hierarchy-sibling areas:
 ///   - the 'x axis container', which shows data labels that must not wrap, but
@@ -907,15 +907,28 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
   ///     and build it's children in it's [BoxContainer] constructor.
   void buildChildrenInParentLayout();
 
-  /// Object that serves as a message from 'source' containers which [layout] results
-  /// affects how the 'sink' containers create their children during the sink's
-  /// [buildChildrenInParentLayout].
-  Object? _sourceSiblingsLayoutsResults;
-
-  Object? get sourceSiblingsLayoutsResults => _sourceSiblingsLayoutsResults;
-
-  set sourceSiblingsLayoutsResults(Object? sourceSiblingsLayoutsResults) =>
-      _sourceSiblingsLayoutsResults = sourceSiblingsLayoutsResults;
+  /// Intended implementation is to find sibling 'source' [BoxContainer]s which [layout] results 'drive'
+  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildChildrenInParentLayout]).
+  ///
+  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildChildrenInParentLayout], which
+  /// builds and adds it's children, based on the information in the object returned from this method.
+  ///
+  /// All information regarding
+  ///   - what sibling [BoxContainer]s are 'sources' which [layout] 'drives' the build of this [BoxContainer]
+  ///   - how to find such siblings
+  ///   - what is the returned object that serves as a message between the 'source' [BoxContainer]s [layout] results
+  ///     and this 'sink' [buildChildrenInParentLayout]
+  ///  must be available to this [BoxContainer].
+  ///
+  /// The finding may be done using [ContainerKey] or simply hardcoded reaching to the siblings.
+  ///
+  /// Returns the object that serves as a message from the 'source' [BoxContainer]s to this 'sink' [BoxContainer],
+  /// during the sink's [buildChildrenInParentLayout].
+  Object findSourceContainersReturnLayoutResultsToBuildSelf() {
+    throw UnimplementedError(
+        '$this.findSourceContainersReturnLayoutResultsToBuildSelf: '
+            'Implementations invoking this method must implement it.');
+  }
 }
 
 // todo-00 remove when not needed

@@ -59,7 +59,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
   @override
   set layoutSize(ui.Size size) => throw UnsupportedError('The root $this does not allow setting layoutSize');
 
-  // todo-00-done : Added it's own non-final field _constraints, get constraints, and applyParentConstraints
+  // todo-00 : Added it's own non-final field _constraints, get constraints, and applyParentConstraints
   //                Reason is, ChartRootContainer is created only once, but, when it's paint is called,
   //                          it keeps setting constraints over and over, as constraints may change on re-paint!
   //                          This breaks default finality on _constraints
@@ -326,13 +326,6 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
       dataConstraintsHeight,
     ));
 
-    // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
-    // so we need to set the [dataContainer.sourceSiblingsLayoutsResults], picked up during [dataContainer.build]
-    dataContainer.sourceSiblingsLayoutsResults = _SourceYContainerAndYContainerToSinkDataContainer(
-      xGridStep: xContainer.xGridStep,
-      xContainer: xContainer,
-      yContainer: yContainer,
-    );
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildChildrenInParentLayout();
     dataContainer.newCoreLayout();
@@ -872,42 +865,21 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   }
 }
 
-// The 3 private classes below represent layout state dependencies between containers in ChartRootContainer.
-
-/// Result from first [YContainer] layout needed on [XContainer.sourceSiblingsLayoutsResults].
-class _SourceYContainerFirstToSinkXContainer {
-  double? yContainerFirstLayoutWidth;
-}
-
-/// Result from [XContainer] layout needed on [YContainer.sourceSiblingsLayoutsResults].
-class _SourceXContainerToSinkYContainer {
-  double? xContainerLayoutHeight;
-}
-
-/// Result from [XContainer] and [YContainer] layout needed on [DataContainer.sourceSiblingsLayoutsResults].
-// todo-01-last : document
-//           replace with a way to define dependencies between containers:
-//             - for now, the dependency must be explicit: If Container B (sink) needs some info to be able to layout itself
-//               from Container A (source), this must be coded in code:
-//               - Container A must know it drives Container B and vice versa
-//               - they must both agree on  a common object they communicate - most likely an object on the source, call it ALayoutMessageToB.
-//               - source.layout must set the instance of ALayoutMessageToB on self
-//               - target.build code must have a way to reach source (maybe thru a parent), pick up source.ALayoutMessageToB,
-//                 and use it to lay itself out
-//             - later we can add a class BuildDependency(sourceKey, sinkKey),
-//               and BuildDependencies (List BuildDependency + some way to find container by key)
-//
-//            - in newCoreLayout, just before iterating children, add call to build method
+/// Result from [XContainer] and [YContainer] layouts needed to build [DataContainer]
+/// in [DataContainer.sourceSiblingsLayoutsResults].
+///
+/// Carries the layout state during the [ChartRootContainer.layout] from 'sources' to 'sinks',
+/// see the [BuilderOfChildrenDuringParentLayout.findSourceContainersReturnLayoutResultsToBuildSelf].
 class _SourceYContainerAndYContainerToSinkDataContainer {
-  final double xGridStep;
   final XContainer xContainer;
   final YContainer yContainer;
 
   _SourceYContainerAndYContainerToSinkDataContainer({
-    required this.xGridStep,
     required this.xContainer,
     required this.yContainer,
   });
+
+  double get xGridStep => xContainer.xGridStep;
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label).
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
@@ -928,7 +900,6 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
   List<double> get yTickYs {
     return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
   }
-
 }
 
 
@@ -938,19 +909,6 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
 abstract class DataContainer extends ChartAreaContainerUsingManualLayout with BuilderOfChildrenDuringParentLayout {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
-
-  /* Keep this, use super implementation with casts
-  /// Build state depending on siblings layout: This [DataContainer] depends
-  /// on the result of [XContainer] layout and [YContainer] layout.
-  @override
-  _SourceYContainerAndYContainerToSinkDataContainer? get sourceSiblingsLayoutsResults => _sourceSiblingsLayoutsResults;
-
-  @override
-  set sourceSiblingsLayoutsResults(covariant _SourceYContainerAndYContainerToSinkDataContainer? sourceSiblingsLayoutsResults) =>
-      _sourceSiblingsLayoutsResults = sourceSiblingsLayoutsResults;
-
-  _SourceYContainerAndYContainerToSinkDataContainer? _sourceSiblingsLayoutsResults;
-  */
 
   /// Columns of presenters.
   ///
@@ -969,8 +927,9 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
   @override
   BoxContainer buildChildrenInParentLayout() {
 
+    // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
-      sourceSiblingsLayoutsResults as _SourceYContainerAndYContainerToSinkDataContainer;
+        findSourceContainersReturnLayoutResultsToBuildSelf();
 
     List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
@@ -1048,6 +1007,17 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     return this;
   }
 
+  @override
+  _SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
+    // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
+    // so we need to set the [dataContainer.sourceSiblingsLayoutsResults], picked up during [dataContainer.build]
+    return _SourceYContainerAndYContainerToSinkDataContainer(
+      xContainer: chartRootContainer.xContainer,
+      yContainer: chartRootContainer.yContainer,
+    );
+
+  }
+
   /// Overrides [BoxLayouter.layout] for data area.
   ///
   /// Uses all available space in the [constraints] set in parent [buildChildrenInParentLayout],
@@ -1060,7 +1030,7 @@ abstract class DataContainer extends ChartAreaContainerUsingManualLayout with Bu
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
 
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
-    sourceSiblingsLayoutsResults as _SourceYContainerAndYContainerToSinkDataContainer;
+      findSourceContainersReturnLayoutResultsToBuildSelf();
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -2145,7 +2115,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
-        // todo-00-last-last : done : double scaledX = chartRootContainer.xTickXs[col];
         double scaledX = layoutDependency.xTickXs[col];
         point.scale(scaledX: scaledX, yLabelsCreator: chartRootContainer.yLabelsCreator);
       });
