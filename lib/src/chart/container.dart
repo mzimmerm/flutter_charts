@@ -17,7 +17,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'presenter.dart';
 
 import 'container_layouter_base.dart'
-    show BoxContainer, BoxContainerUsingManualLayout, BoxLayouter,
+    show BoxContainer, BoxLayouter,
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
@@ -48,7 +48,7 @@ abstract class ChartBehavior {
 /// - Related to above point, the [layout(num size)] is unrelated to
 ///   a same name method on [BoxContainer].
 ///
-abstract class ChartRootContainer extends BoxContainerUsingManualLayout with ChartBehavior {
+abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// Implements [BoxContainer.layoutSize].
   /// [ChartRootContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
@@ -419,7 +419,7 @@ abstract class ChartRootContainer extends BoxContainerUsingManualLayout with Cha
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
-class YContainer extends ChartAreaContainerUsingManualLayout with BuilderOfChildrenDuringParentLayout {
+class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
 
   /// Containers of Y labels.
   late List<YAxisLabelContainer> _yLabelContainers;
@@ -906,7 +906,7 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainer extends ChartAreaContainerUsingManualLayout with BuilderOfChildrenDuringParentLayout {
+abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 
@@ -1156,7 +1156,7 @@ abstract class AdjustableLabels {
 /// (actually currently the [ChartAreaContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainerUsingManualLayout implements AdjustableLabels {
+abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
@@ -1203,21 +1203,6 @@ abstract class ChartAreaContainer extends BoxContainer {
   final ChartRootContainer chartRootContainer;
 
   ChartAreaContainer({
-    required this.chartRootContainer,
-    List<BoxContainer>? children,
-  }) : super(children: children);
-}
-
-// todo-00 : remove when manual layout all migrated.
-abstract class ChartAreaContainerUsingManualLayout extends BoxContainerUsingManualLayout {
-  /// The chart top level.
-  ///
-  /// Departure from a top down approach, this allows to
-  /// access the parent [ChartRootContainer], which has (currently)
-  /// members needed by children.
-  final ChartRootContainer chartRootContainer;
-
-  ChartAreaContainerUsingManualLayout({
     required this.chartRootContainer,
     List<BoxContainer>? children,
   }) : super(children: children);
@@ -1323,7 +1308,9 @@ class LineChartDataContainer extends DataContainer {
   }
 }
 
-// todo-01-document
+/// NOT Builds, NOT lays out, offsets, and paints the dotted gridlines in the middle of labels.
+///
+/// Un-extended baseclass for both horizontal and vertical gridlines.
 class GridLinesContainer extends BoxContainer {
   final List<LineContainer> _lineContainers = List.empty(growable: true);
 

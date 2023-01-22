@@ -931,23 +931,6 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
   }
 }
 
-// todo-00 remove when not needed
-abstract class BoxContainerUsingManualLayout extends BoxContainer {
-  /// Default generative constructor.
-  BoxContainerUsingManualLayout({
-    ContainerKey? key,
-    List<BoxContainer>? children,
-  }) : super(key: key, children: children);
-
-  @override
-  void newCoreLayout() {
-    // todo-00 : remove when manual layout removed
-    //              : But first resolve, at all placed where layout is called,
-    //                what to do with arguments passed to layout, and it's return
-    throw StateError('Must be overridden in extensions');
-  }
-}
-
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
 ///
 /// The default implementation overrides [_post_NotLeaf_OffsetChildren] to position children.
