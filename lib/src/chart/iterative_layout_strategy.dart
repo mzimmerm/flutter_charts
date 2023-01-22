@@ -149,7 +149,6 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     // The rebuild must be the same build called on [XContainer] in [ChartRootContainer.layout].
     // Because the _adjustableLabelsContainer is XContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
     (_adjustableLabelsContainer as BuilderOfChildrenDuringParentLayout).buildChildrenInParentLayout();
-// todo-00-last    _adjustableLabelsContainer.layout(boxConstraints);
     _adjustableLabelsContainer.layout();
 
     // Return to caller, which is always [layout]. [layout] will call this [reLayout] iteratively

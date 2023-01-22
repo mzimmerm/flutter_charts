@@ -450,6 +450,9 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   @override
   void buildChildrenInParentLayout() {
 
+    // Init the list of y label containers
+    _yLabelContainers = [];
+
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer coordinates.
     // Note: currently, axisYMin > axisYMax ALWAYS.
     //       axisYMin should be called axisYStart, and axisYMin should be called axisYEnd - todo-01
@@ -463,31 +466,25 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // It is needed on chartRootContainer in [PointsColumns.scale], even with no labels shown.
     chartRootContainer.yLabelsCreator = _labelsCreatorForRange(axisYMin, axisYMax);
 
-    // The code above MUST run for the side-effect of setting the chartRootContainer.yLabelsCreator
+    // The code in _labelsCreatorForRange MUST run for the side-effect of setting the chartRootContainer.yLabelsCreator
     //    and side-effect of creating scaled values in LabelInfo which are still needed to manage data values
     //    in PointsColumns.scale()!
     // So let the above run, then check if labels are shown, if not, set empty _yLabelContainers and return
     // without creating _yLabelContainers.
+
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       this.children = _yLabelContainers;
       return;
     }
 
-    // Adds to _yLabelContainers, so express explicitly it changed
-    _yLabelContainers = _createYLabelContainers();
-    this.children = _yLabelContainers;
-  }
-
-  /// Uses the prepared [chartRootContainer.yLabelsCreator.labelInfos]
-  /// to create scaled Y labels from data or from user defined labels,
-  /// scales their position on the Y axis range [axisYMin] to [axisYMax].
-  ///
-  /// The data-generated label implementation smartly creates
-  /// a limited number of Y labels from data, so that Y labels do not
-  /// crowd, and little Y space is wasted on top.
-  // todo-00 : move this code to buildChildrenInParentLayout
-  List<YAxisLabelContainer> _createYLabelContainers() {
+    // Uses the prepared [chartRootContainer.yLabelsCreator.labelInfos]
+    // to create scaled Y labels from data or from user defined labels,
+    // scales their position on the Y axis range [axisYMin] to [axisYMax].
+    //
+    // The data-generated label implementation smartly creates
+    // a limited number of Y labels from data, so that Y labels do not
+    // crowd, and little Y space is wasted on top.
     ChartOptions options = chartRootContainer.data.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
@@ -497,8 +494,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       textAlign: options.labelCommonOptions.labelTextAlign, // center text
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
-
-    List<YAxisLabelContainer> yLabelContainers = [];
 
     // chartRootContainer.yLabelsCreator was set in caller, so non null
     for (LabelInfo labelInfo in chartRootContainer.yLabelsCreator.labelInfos) {
@@ -514,9 +509,10 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
         labelInfo: labelInfo,
       );
 
-      yLabelContainers.add(yLabelContainer);
+      _yLabelContainers.add(yLabelContainer);
     }
-    return yLabelContainers;
+
+    this.children = _yLabelContainers;
   }
 
   /// Lays out this [YContainer] - the area containing the Y axis labels -
@@ -542,20 +538,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       return;
     }
 
-    _layoutYLabelContainers();
-
-    double yLabelsContainerWidth =
-        _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * chartRootContainer.data.chartOptions.yContainerOptions.yLabelsPadLR;
-
-    layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
-  }
-
-
-  /// Lays out the previously created Y label containers managed in [_yLabelContainers].
-  // todo-00 : move this code to [layout]
-  void _layoutYLabelContainers() {
-
     // Iterate, apply parent constraints, then layout all labels in [_yLabelContainers],
     //   which were previously created in [_createYLabelContainers]
     for (var yLabelContainer in _yLabelContainers) {
@@ -574,6 +556,13 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
         ui.Offset(chartRootContainer.data.chartOptions.yContainerOptions.yLabelsPadLR, labelTopY),
       );
     }
+
+    // Set the [layoutSize]
+    double yLabelsContainerWidth =
+        _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
+            2 * chartRootContainer.data.chartOptions.yContainerOptions.yLabelsPadLR;
+
+    layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
   /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].

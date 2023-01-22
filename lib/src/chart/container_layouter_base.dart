@@ -352,21 +352,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
-/* todo-00-last : removed the old forward of layout
-  /// Old layout forwards to [layout].
-  // todo-00 : Delete when manual layout is gone
-  void  layout(BoxContainerConstraints boxConstraints) {
-    if (this is LegendItemContainer ||
-        this is LegendIndicatorRectContainer ||
-        // this is LabelContainer ||
-        // Remove as new layout rendering starts with Row : this is Row ||
-        this is Column) {
-      throw StateError('Should not be called on $this');
-    }
-    layout();
-  }
-*/
-
   /// Implementation of abstract [LayoutableBox.layout].
   @override
   void layout() {

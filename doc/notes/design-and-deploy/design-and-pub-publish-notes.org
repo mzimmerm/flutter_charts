@@ -1608,7 +1608,7 @@ Core of setting up BoxContainer parent/child hierarchy:
 
 
 
-*** IN-PROGRESS-NOW KEEP : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
+*** DONE KEEP : ~layout()~ code migration: split ~layoutOLD~ to ~buildContainerOrSelf~, and ~newCoreLayout~,  but positioning code is still old, manual, copied from old code!!!
 
 **** NOTE Algorithm of old manual ~layoutOLD~
 
@@ -1659,35 +1659,6 @@ Notes:
 
 - [ ] For ChartRootContainer, layoutSize is overriden to setter and getter. Is that needed, or can this division be used on ~BoxLayouter~?
    
-**** IN-PROGRESS-NOW Migrate the following classes 
-
-- [-] These extend ~BoxContainerUsingManualLayout~ instead of ~BoxContainer~ This forwards layout to manual layout
-  - [X] ChartRootContainer
-  - [ ] ChartAreaContainer
-  - [X] YContainer
-  - [X] XContainer
-  - [ ] GridLinesContainer
-  - [ ] LabelContainer and extensions
-    - [ ] AxisLabelContainer
-    - [ ] YAxisLabelContainer
-  - [ ] LineContainer (*has no extensions*!)
-    - NOT fully migrated, because ~layout~ is never called. This waits for full automatic layout on everything!!
-  - [X] DataContainer
-  - [ ] AdjustableLabelsChartAreaContainer
-  - [ ] VerticalBarChartRootContainer
-  - [ ] VerticalBarChartDataContainer
-  - [ ] LineChartRootContainer
-  - [ ] LineChartDataContainer
-
-
-The above must override ~BoxContainerUsingManualLayout.post_NotLeaf_PositionChildren~.
-
-Extensions must override this method by moving position-calculations from ~layoutOLD~ to this method.
-
-
-*** IN-PROGRESS-NOW Remove manual layout baseclass
-
-*** IN-PROGRESS-NOW Rename newCoreLayout to layout
 
 *** TODO-NEXT Can we move creation of ChartRootContainer from newCoreLayout to constructor???
 
@@ -1702,20 +1673,39 @@ This would also move YContainer build there. Only XContainer and DataContainer n
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 
 
-*** LATER Study use of container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** LATER Classes UN-migrated to [BoxContainer] including layout, and container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
-  - [ ] Presenter
-  - [ ] PresentersColumn
-  - [ ] PresentersColumn._createPresentersInColumn
-  - [ ] PresentersColumns
-  - [ ] VerticalBarPresenter
-  - [ ] LineAndHotspotPresenter
-  - [ ] PresenterCreator.createPointPresenter
-  - [ ] LineAndHotspotLeafCreator.createPointPresenter
-  - [ ] VerticalBarLeafCreator.createPointPresenter
-  - [ ] DefaultIterativeLabelLayoutStrategy
 
-What would it take to convert them to BoxContainer extensions?
+Classes with X are BoxContainers with layout implemented
+
+- [X] ~ChartRootContainer~
+  - [X] ~VerticalBarChartRootContainer~
+  - [X] ~LineChartRootContainer~
+- [X] ~LabelContainer~ and extensions : all use BoxContainer.layout 
+  - [X] ~AxisLabelContainer~
+  - [X] ~YAxisLabelContainer~
+- [-] ~ChartAreaContainer~ : abstract, uses Presenters
+  - [X] ~AdjustableLabelsChartAreaContainer~ extends ChartAreaContainer implements AdjustableLabels
+    - [X] ~XContainer~
+  - [X] ~DataContainer~
+    - [X] ~LineChartDataContainer~
+    - [X] ~VerticalBarChartDataContainer~
+  - [X] ~LegendContainer~
+  - [X] ~YContainer~
+- [ ] ~GridLinesContainer~
+- [ ] ~LineContainer~ (*has no extensions*!)
+    - NOT fully migrated, because ~layout~ is never called. This waits for full automatic layout on everything!!
+- [ ] Presenter
+- [ ] PresentersColumn
+- [ ] PresentersColumn._createPresentersInColumn
+- [ ] PresentersColumns
+- [ ] VerticalBarPresenter
+- [ ] LineAndHotspotPresenter
+- [ ] PresenterCreator.createPointPresenter
+- [ ] LineAndHotspotLeafCreator.createPointPresenter
+- [ ] VerticalBarLeafCreator.createPointPresenter
+- [ ] DefaultIterativeLabelLayoutStrategy
+
 
 *** LATER Make sure each BoxContainer has a key, unique key among siblings
 
