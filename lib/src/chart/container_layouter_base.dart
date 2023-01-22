@@ -352,6 +352,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
+/* todo-00-last : removed the old forward of layout
   /// Old layout forwards to [newCoreLayout].
   // todo-00 : Delete when manual layout is gone
   void  layout(BoxContainerConstraints boxConstraints) {
@@ -364,6 +365,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
     newCoreLayout();
   }
+*/
 
   /// Implementation of abstract [LayoutableBox.newCoreLayout].
   @override

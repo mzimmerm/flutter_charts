@@ -1325,13 +1325,13 @@ class GridLinesContainer extends BoxContainer {
   /// Overrides [BoxLayouter.layout].
   @override
   void layout(BoxContainerConstraints boxConstraints) {
+    throw StateError('No need to call layout on $runtimeType, extension of GridLinesContainer.');
     /*
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
     setChildrenAndMakeSelfParent(_lineContainers);  // todo-01-done-duplicite-children
    */
-    throw StateError('No need to call layout on $runtimeType, extension of GridLinesContainer.');
   }
 
   /// Overridden from super. Applies offset on all members.
