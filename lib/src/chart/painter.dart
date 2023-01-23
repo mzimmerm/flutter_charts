@@ -21,7 +21,8 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// Container provides the auto-layout of chart elements.
   ///
   /// Also currently holds [ChartData] and [ChartOptions].
-  containers.ChartRootContainer chartRootContainer;
+// todo-00-last  containers.ChartRootContainer chartRootContainer;
+  containers.ChartAnchor chartAnchor;
 
   /// Constructs this chart painter, giving it [chartData] to paint,
   /// and [chartOptions] which are configurable options that allow to
@@ -30,7 +31,8 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// Constructor ensures the [FlutterChartPainter] is initialized with
   /// the [ChartContainer]
   FlutterChartPainter({
-    required this.chartRootContainer,
+// todo-00-last     required this.chartRootContainer,
+    required this.chartAnchor,
   });
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
@@ -57,7 +59,9 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     }
 
     // set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
+    // todo-00-last any reference to chartRootContainer, change to chartAnchor.chartRootContainer
 
+    /* todo-00-last : moved this code to ChartAnchor.createChartRootContainerLayoutAndPaint
     // Once we know the size, let the container manage it's size.
     // This is the layout size. Once done, we can delegate painting
     // to canvas to the [ChartContainer].
@@ -66,6 +70,9 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     // Layout the whole chart container - provides all positions to paint and draw
     // all chart elements.
     chartRootContainer.paint(canvas);
+    */
+    chartAnchor.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+
 
     // clip canvas to size - this does nothing
     // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??

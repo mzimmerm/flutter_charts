@@ -12,8 +12,10 @@ class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
   LineChartPainter({
-    required line_containers.LineChartRootContainer lineChartRootContainer,
-  }) : super(chartRootContainer: lineChartRootContainer) {
-    lineChartRootContainer.isStacked = false;
+    // todo-00-last required line_containers.LineChartRootContainer lineChartRootContainer,
+    required line_containers.LineChartAnchor lineChartAnchor,
+  // todo-00-last }) : super(chartRootContainer: lineChartRootContainer) {
+  }) : super(chartAnchor: lineChartAnchor) {
+    // todo-00-last-last-last : set this somewhere : lineChartRootContainer.isStacked = false;
   }
 }

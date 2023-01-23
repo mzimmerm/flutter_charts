@@ -5,6 +5,43 @@ import '../options.dart';
 
 import 'presenter.dart';
 
+// todo-00-last : progress
+class LineChartAnchor extends ChartAnchor {
+
+/*
+  LineChartAnchor({
+    required ChartData chartData,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : data = chartData,
+        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+        super() {
+    parent = null;
+  }
+*/
+
+  LineChartAnchor({
+    required ChartData chartData,
+    required bool isStacked,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  }) : super(
+    chartData: chartData,
+    isStacked: false, // only supported for now
+    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+  );
+
+  @override
+  LineChartRootContainer createRootContainer() {
+
+    return LineChartRootContainer(
+      chartData: chartData,
+      isStacked: isStacked,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+
+  }
+
+}
+
 /// Container of the line chart.
 ///
 /// The core override is setting the [presenterCreator] -
@@ -13,9 +50,11 @@ import 'presenter.dart';
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required ChartData chartData,
+    required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
+          isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     presenterCreator = LineAndHotspotLeafCreator();

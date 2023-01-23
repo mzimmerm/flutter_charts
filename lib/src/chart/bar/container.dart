@@ -4,6 +4,42 @@ import '../container.dart';
 
 import 'presenter.dart';
 
+class VerticalBarChartAnchor extends ChartAnchor {
+
+/*
+  VerticalBarChartAnchor({
+    required ChartData chartData,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : data = chartData,
+        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+        super() {
+    parent = null;
+  }
+*/
+
+  VerticalBarChartAnchor({
+    required ChartData chartData,
+    required bool isStacked,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  }) : super(
+    chartData: chartData,
+    isStacked: true, // only supported for now
+    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+  );
+
+  @override
+  VerticalBarChartRootContainer createRootContainer() {
+
+    return VerticalBarChartRootContainer(
+      chartData: chartData,
+      isStacked: isStacked,
+      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    );
+
+  }
+
+}
+
 /// Container of the vertical bar chart.
 ///
 /// The core override is setting the [presenterCreator] -
@@ -12,9 +48,11 @@ import 'presenter.dart';
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
     required ChartData chartData,
+    required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
+          isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     presenterCreator = VerticalBarLeafCreator();

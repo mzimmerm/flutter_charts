@@ -21,6 +21,63 @@ import 'container_layouter_base.dart'
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
+// todo-00-last : progress
+abstract class ChartAnchor {
+  /// ChartData to hold on before member [chartRootContainer] is created late
+  ///
+  /// After [chartRootContainer] is created and set, [chartData] should be set on it.
+  ChartData chartData;
+  strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+  bool isStacked = false;
+  late ChartRootContainer chartRootContainer;
+
+  ChartAnchor({
+    required this.chartData,
+    this.isStacked = false,
+    this.xContainerLabelLayoutStrategy,
+  });
+
+  // todo-00-document
+  ChartRootContainer createRootContainer();
+
+  void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
+    /*
+    // Applications should handle size=(0,0) which may happen
+    //   - just return and wait for re-call with size > (0,0).
+    if (size == ui.Size.zero) {
+      print(' ### Size: paint(): passed size 0!');
+      return;
+    }
+    */
+
+    // todo-00-last-last-last : where to create this?
+    chartRootContainer = createRootContainer();
+
+    // set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
+
+    // Once we know the size, let the container manage it's size.
+    // This is the layout size. Once done, we can delegate painting
+    // to canvas to the [ChartContainer].
+    chartRootContainer.chartArea = size;
+
+    // todo-00-last : added apply constraints - but figure out, why we can just set the chartRootContainer as parent which it is not.
+    chartRootContainer.applyParentConstraints(chartRootContainer, BoxContainerConstraints.insideBox(size: ui.Size(chartRootContainer.chartArea.width, chartRootContainer.chartArea.height)));
+    chartRootContainer.buildContainerOrSelf();
+
+    chartRootContainer.layout();
+    // Layout the whole chart container - provides all positions to paint and draw
+    // all chart elements.
+    // todo-00-last call chartAnchor.startPaint
+    chartRootContainer.paint(canvas);
+
+    // clip canvas to size - this does nothing
+    // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
+    // canvas.clipRect(ui.Offset.zero & size); // Offset & Size => Rect
+  }
+
+}
+
+
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
 ///
@@ -124,6 +181,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late PointsColumns pointsColumns;
 
   late bool isStacked;
+  // todo-00-last-last : bool isStacked = false;
 
   ChartData data;
 
@@ -148,6 +206,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// required to paint half of the topmost label.
   ChartRootContainer({
     required ChartData chartData,
+    required this.isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
@@ -352,11 +411,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// in their calculated layout positions.
   @override
   void paint(ui.Canvas canvas) {
-    // Layout the whole chart container - provides all positions to paint and draw
-    // all chart elements.
 
     // Introduced a rootLayout method for this
-    applyParentConstraints(this, BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
+    // todo-00-last-last-last : removed : applyParentConstraints(this, BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
     // todo-00 : This object, ChartRootContainer is not recreated, but recreate all children,
     //                           so any final fields such on existing children such as constraints,
     //                           do no fail on re-assign
@@ -364,8 +421,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //                           has member ChartRootContainer rootOnAnchor, which concrete (VerticalChartRootContainer etc)
     //                           is created fresh here on every paint, and set on rootOnAnchor. The Anchor layout only calls Root
     //                           version.
-    buildContainerOrSelf();
-    layout();
+    // todo-00-last-last-last : removed : buildContainerOrSelf();
+    // todo-00-last-last-last : removed : layout();
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);

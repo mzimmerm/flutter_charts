@@ -1660,16 +1660,25 @@ Notes:
 - [ ] For ChartRootContainer, layoutSize is overriden to setter and getter. Is that needed, or can this division be used on ~BoxLayouter~?
    
 
-*** TODO-NEXT Can we move creation of ChartRootContainer from newCoreLayout to constructor???
 
-This would also move YContainer build there. Only XContainer and DataContainer needs the build method it seems !!!todo
 *** IN-PROGRESS-NOW Add AnchoredRootContainer which only contains ChartRootContainer. ChartRootContainer is ALWAYS REBUILD
+
+
+*** Remove buildContainerOrSelf from interface.
+
+1. classes that use is, move contents to constructor
+2. remove from interface
+3. deal with default BoxContainer constructor
 
 *** IN-PROGRESS-NOW Start using BuildStateDependentOnSiblingsLayout everywhere instead of null.
 
 
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
+
+*** TODO-NEXT Can we move creation of ChartRootContainer from newCoreLayout to constructor???
+
+This would also move YContainer build there. Only XContainer and DataContainer needs the build method it seems !!!todo
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 
 

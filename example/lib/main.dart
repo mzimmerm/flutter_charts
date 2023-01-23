@@ -946,27 +946,44 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartRootContainer lineChartRootContainer = LineChartRootContainer(
+        //  todo-00-last : create class ChartAnchor, extended by LineChartAnchor, VerticalBarchartAnchor
+      // member:
+      //   - ONLY MEMBER ChartRootContainer
+      //      - member presenterCreator (as is)
+        // todo-00-last : Create class LineChartAnchor extends ChartAnchor
+        //  - constructor is copied from LineChartRootContainer, passes through
+      //       - the presenterCreator to ChartRootContainer (CRC)
+      //       - chartData and xContainerLabelLayoutStrategy to CRC
+      // method:
+      //   - only method startPaint
+      //   - called from ChartPainter.paint
+        // todo-00-last   LineChartRootContainer lineChartRootContainer = LineChartRootContainer(
+        LineChartAnchor lineChartAnchor = LineChartAnchor(
           chartData: chartData,
+          isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         LineChart lineChart = LineChart(
           painter: LineChartPainter(
-            lineChartRootContainer: lineChartRootContainer,
+            // todo-00-last   lineChartRootContainer: lineChartRootContainer,
+            lineChartAnchor: lineChartAnchor,
           ),
         );
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartRootContainer verticalBarChartRootContainer = VerticalBarChartRootContainer(
+      // todo-00-last   VerticalBarChartRootContainer verticalBarChartRootContainer = VerticalBarChartRootContainer(
+        VerticalBarChartAnchor verticalBarChartAnchor = VerticalBarChartAnchor(
           chartData: chartData,
+          isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
-            verticalBarChartRootContainer: verticalBarChartRootContainer,
+            // todo-00-last : verticalBarChartRootContainer: verticalBarChartRootContainer,
+            verticalBarChartAnchor: verticalBarChartAnchor,
           ),
         );
 
