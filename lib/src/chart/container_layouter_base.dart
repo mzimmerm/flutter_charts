@@ -350,7 +350,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// On the root in [BoxContainerHierarchy], 'apply' can be invoked with any 'caller' instance.
   /// On any other [BoxContainer], 'apply' much be called from the  container-hierarchy-parent.
   void assertCallerIsParent(LayoutableBox caller) {
-    // todo-00-last-last-last if (parent != null) {
     if (!isRoot) {
       if (!identical(caller, parent)) {
         throw StateError('on this $this, parent $parent should be == to caller $caller');

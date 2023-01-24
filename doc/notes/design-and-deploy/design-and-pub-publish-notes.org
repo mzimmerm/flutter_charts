@@ -1661,16 +1661,33 @@ Notes:
    
 
 
-*** IN-PROGRESS-NOW Add AnchoredRootContainer which only contains ChartRootContainer. ChartRootContainer is ALWAYS REBUILD
+
+*** IN-PROGRESS-NOW Remove buildContainerOrSelf from interface.
+
+1. [ ] List classes that use ~buildContainerOrSelf~, move contents to constructor
+   1. [ ] 
+2. [ ] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
+3. [ ] run minitest 
+4. [ ] remove ~buildContainerOrSelf~ from interface and everywhere
+5. [ ] run tests and commit
 
 
-*** Remove buildContainerOrSelf from interface.
+next:
 
-1. classes that use is, move contents to constructor
-2. remove from interface
-3. deal with default BoxContainer constructor
+1. [ ] Review BoxContainer constructor use of ~children~
+2. [ ] List classes that ~do not use children~ directly, but use member containers such as xContainer.
+   1. [ ] 
+   2. [ ] 
+3. [ ] On the above classes, override children by adding concrete xContainer, yContainer etc
+   1. [ ] 
+4. [ ] Remove this.children from those classes and everywhere.
 
-*** IN-PROGRESS-NOW Start using BuildStateDependentOnSiblingsLayout everywhere instead of null.
+next:
+
+1. [ ] BoxContainerHierarchy
+   1. [ ] split children to get and set ????
+   2. [ ]
+
 
 
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????

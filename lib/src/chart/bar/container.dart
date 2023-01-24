@@ -1,9 +1,5 @@
 import 'package:flutter_charts/flutter_charts.dart';
-
-import '../data.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../container.dart';
-
 import 'presenter.dart';
 
 /// Concrete [ChartAnchor] for [VerticalBarChart].
@@ -30,9 +26,7 @@ class VerticalBarChartAnchor extends ChartAnchor {
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
-
   }
-
 }
 
 /// Container of the vertical bar chart.

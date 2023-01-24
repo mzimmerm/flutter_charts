@@ -59,16 +59,16 @@ abstract class ChartAnchor {
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
-    // Layout size and constraint size of the [ChartRootContainer] are the same, and
-    // are equal to the full size made available by the framework via [FlutterChartPainter.paint].
-    chartRootContainer.chartArea = size;
+    // Apply constraints on root. Layout size and constraint size of the [ChartRootContainer] are the same, and
+    // are equal to the full 'size' passed here from the framework via [FlutterChartPainter.paint].
+    // This passed 'size' is guaranteed to be the same area on which the painter will paint.
 
     chartRootContainer.applyParentConstraints(
       chartRootContainer,
       BoxContainerConstraints.insideBox(
         size: ui.Size(
-          chartRootContainer.chartArea.width,
-          chartRootContainer.chartArea.height,
+          size.width,
+          size.height,
         ),
       ),
     );
@@ -115,17 +115,6 @@ abstract class ChartBehavior {
 
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
-  /// [chartArea] is the chart area size of this container.
-  /// In flutter_charts, this is guaranteed to be the same
-  /// area on which the painter will paint.
-  /// See the call to [layout] of this class.
-  /// [chartArea] marked late, as there is virtually no practical situation
-  /// it can be known before runtime; it is required,
-  /// but not set at construction time.
-  ///
-  // todo-011 : Get rid of chartArea, replace with constraints!!
-  late ui.Size chartArea;
-
   /// Base Areas of chart.
   late BoxContainer legendContainer; // New layouter 'fake' root must be declared as BoxContainer if returned from build.
   late XContainer xContainer;
@@ -147,8 +136,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PresenterCreator] and [Presenter] for more details.
-  /// todo-01 : There may be a question "why does a container need to
-  /// know about Presenter, even indirectly"?
+  /// todo-01 : There may be a question "why does a container need to know about Presenter, even indirectly"?
   late PresenterCreator presenterCreator;
 
   /// ##### Subclasses - aware members.
@@ -276,8 +264,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // ### 2. Layout the LegendContainer where series legend is shown
     var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width,
-      chartArea.height,)
+      constraints.width,
+      constraints.height,)
     );
 
     legendContainer.applyParentConstraints(this, legendBoxConstraints);
@@ -289,9 +277,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // ### 3. Layout [yContainerFirst] to get Y container width
     //        that moves [XContainer] and [DataContainer].
-    double yContainerHeight = chartArea.height - legendContainerSize.height;
+    double yContainerHeight = constraints.height - legendContainerSize.height;
     var yContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width,
+      constraints.width,
       yContainerHeight,
     ));
 
@@ -313,8 +301,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // xContainer layout width depends on yContainerFirst layout result.  But this dependency can be expressed
     // as a constraint on xContainer, so no need to set [xContainer.sourceSiblingsLayoutsResults]
     var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width - yContainerFirstSize.width,
-      chartArea.height - legendContainerSize.height,
+      constraints.width - yContainerFirstSize.width,
+      constraints.height - legendContainerSize.height,
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
@@ -325,7 +313,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.layoutSize = xContainer.lateReLayoutSize;
 
     ui.Size xContainerSize = xContainer.layoutSize;
-    ui.Offset xContainerOffset = ui.Offset(yContainerFirstSize.width, chartArea.height - xContainerSize.height);
+    ui.Offset xContainerOffset = ui.Offset(yContainerFirstSize.width, constraints.height - xContainerSize.height);
     xContainer.applyParentOffset(this, xContainerOffset);
 
     // ### 5. [YContainer]: Second call to YContainer is needed, as available height for Y
@@ -339,7 +327,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // as a constraint on yContainer, so no need to set [yContainer.sourceSiblingsLayoutsResults]
     var yConstraintsHeight = yContainerHeight - xContainerSize.height;
     var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width,
+      constraints.width,
       yConstraintsHeight,
     ));
 
@@ -360,9 +348,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-    var dataConstraintsHeight = chartArea.height - (legendContainerSize.height + xContainerSize.height);
+    var dataConstraintsHeight = constraints.height - (legendContainerSize.height + xContainerSize.height);
     var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      chartArea.width - yContainerSize.width,
+      constraints.width - yContainerSize.width,
       dataConstraintsHeight,
     ));
 

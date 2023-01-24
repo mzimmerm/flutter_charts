@@ -127,6 +127,10 @@ abstract class BoundingBoxesBase {
     }
   }
 
+  double get width => size.width;
+
+  double get height => size.height;
+
   bool get isExact => minSize == maxSize;
 
   bool get isInside => minSize.width <= maxSize.width && minSize.height <= maxSize.height;
