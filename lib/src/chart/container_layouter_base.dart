@@ -344,8 +344,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
 
+  /// Assert if caller is identical to container-hierarchy-parent in the [BoxContainerHierarchy].
+  ///
+  /// Works on behalf of 'apply' methods.
+  /// On the root in [BoxContainerHierarchy], 'apply' can be invoked with any 'caller' instance.
+  /// On any other [BoxContainer], 'apply' much be called from the  container-hierarchy-parent.
   void assertCallerIsParent(LayoutableBox caller) {
-    if (parent != null) {
+    // todo-00-last-last-last if (parent != null) {
+    if (!isRoot) {
       if (!identical(caller, parent)) {
         throw StateError('on this $this, parent $parent should be == to caller $caller');
       }

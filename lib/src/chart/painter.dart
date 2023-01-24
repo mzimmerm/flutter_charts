@@ -18,20 +18,18 @@ import 'line/chart.dart';
 /// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class FlutterChartPainter extends widgets.CustomPainter {
-  /// Container provides the auto-layout of chart elements.
+  /// The anchor holder of the root of the chart container hierarchy, the [chartRootContainer].
   ///
-  /// Also currently holds [ChartData] and [ChartOptions].
-// todo-00-last  containers.ChartRootContainer chartRootContainer;
+  /// This object is created once per chart, and is NOT recreated on each [FlutterChartPainter.paint] invocation.
+  /// That behavior is in contrast to concrete [containers.ChartRootContainer], which is created anew on every
+  /// [FlutterChartPainter.paint] invocation.
   containers.ChartAnchor chartAnchor;
 
-  /// Constructs this chart painter, giving it [chartData] to paint,
-  /// and [chartOptions] which are configurable options that allow to
-  /// change some elements of chart's layout, colors, and overall look and feel.
+  /// Constructs this chart painter, giving it [chartAnchor], which
+  /// holds on [chartData] and other members needed for
+  /// the late creation of [containers.ChartAnchor.chartRootContainer].
 
-  /// Constructor ensures the [FlutterChartPainter] is initialized with
-  /// the [ChartContainer]
   FlutterChartPainter({
-// todo-00-last     required this.chartRootContainer,
     required this.chartAnchor,
   });
 
@@ -42,40 +40,24 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// (see class comment), hence it provides a "hook" into the chart
   /// being able to paint and draw itself.
   ///
-  /// A substantial duty of this [paint] method is to pass the [size] provided by the framework layout
-  /// to [chartRootContainer]'s [ChartRootContainer.chartArea]. The [chartRootContainer] needs the [size]
-  /// to provide top size constraints for it's layout,
-  /// see [chartRootContainer]'s [ChartRootContainer.layout].
+  /// A core role of this [paint] method is to call [chartAnchor.chartRootContainerCreateBuildLayoutPaint],
+  /// which creates, builds, lays out and paints the concrete [containers.ChartRootContainer].
   ///
-  /// Once the above role is done, this method delegates all painting to canvas to the
-  /// [chartRootContainer].
+  /// The [chartRootContainer] created in the [chartAnchor.chartRootContainerCreateBuildLayoutPaint]
+  /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
     if (size == ui.Size.zero) {
-      print(' ### Size: paint(): passed size 0!');
+      print(' ### Size: paint(): passed size 0 to CustomPainter $this! Nothing can be painted here, returning.');
       return;
     }
 
-    // set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
-    // todo-00-last any reference to chartRootContainer, change to chartAnchor.chartRootContainer
-
-    /* todo-00-last : moved this code to ChartAnchor.createChartRootContainerLayoutAndPaint
-    // Once we know the size, let the container manage it's size.
-    // This is the layout size. Once done, we can delegate painting
-    // to canvas to the [ChartContainer].
-    chartRootContainer.chartArea = size;
-
-    // Layout the whole chart container - provides all positions to paint and draw
-    // all chart elements.
-    chartRootContainer.paint(canvas);
-    */
     chartAnchor.chartRootContainerCreateBuildLayoutPaint(canvas, size);
 
-
     // clip canvas to size - this does nothing
-    // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
+    // todo-02: canvas.clipRect vvvv causes the paint() to be called again. why??
     // canvas.clipRect(ui.Offset.zero & size); // Offset & Size => Rect
   }
 

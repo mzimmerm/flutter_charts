@@ -1,21 +1,15 @@
+import 'package:flutter_charts/flutter_charts.dart';
+
 import '../data.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import '../container.dart';
 
 import 'presenter.dart';
 
+/// Concrete [ChartAnchor] for [VerticalBarChart].
+///
+/// See [ChartAnchor] for help.
 class VerticalBarChartAnchor extends ChartAnchor {
-
-/*
-  VerticalBarChartAnchor({
-    required ChartData chartData,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : data = chartData,
-        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
-        super() {
-    parent = null;
-  }
-*/
 
   VerticalBarChartAnchor({
     required ChartData chartData,
@@ -27,6 +21,7 @@ class VerticalBarChartAnchor extends ChartAnchor {
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 
+  /// Concrete implementation returns the root for vertical bar chart.
   @override
   VerticalBarChartRootContainer createRootContainer() {
 

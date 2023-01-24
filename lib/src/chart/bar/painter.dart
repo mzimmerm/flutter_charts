@@ -1,20 +1,16 @@
+import 'package:flutter_charts/flutter_charts.dart';
+
 import '../bar/container.dart' as bar_containers;
 import '../painter.dart';
 
-/// This concrete [CustomPainter] only provides a constructor,
-/// specifically requiring [bar_containers.VerticalBarChartRootContainer],
-/// and setting [verticalBarChartContainer.isStacked] to true,
-/// as bars are stacked by default.
+/// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
+/// requiring [bar_containers.VerticalBarChartAnchor] which anchors the [ChartRootContainer] hierarchy.
 ///
 /// See [FlutterChartPainter] for more information.
 class VerticalBarChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
-// todo-00-last    required bar_containers.VerticalBarChartRootContainer verticalBarChartRootContainer,
     required bar_containers.VerticalBarChartAnchor verticalBarChartAnchor,
-// todo-00-last  }) : super(chartRootContainer: verticalBarChartRootContainer) {
-  }) : super(chartAnchor: verticalBarChartAnchor) {
-    // todo-00-last-last-last : set this where needed : verticalBarChartRootContainer.isStacked = true;
-  }
+  }) : super(chartAnchor: verticalBarChartAnchor);
 }

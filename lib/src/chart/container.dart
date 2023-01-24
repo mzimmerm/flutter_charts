@@ -3,6 +3,7 @@ import 'dart:math' as math show max;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_alignment.dart';
 import 'package:flutter_charts/src/chart/container_edge_padding.dart';
+import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
@@ -21,7 +22,18 @@ import 'container_layouter_base.dart'
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
-// todo-00-last : progress
+/// Base class for classes that hold [chartData], [xContainerLabelLayoutStrategy], [isStacked],
+/// members needed for late creation of the root of the chart container hierarchy, the [chartRootContainer].
+///
+/// [ChartAnchor] is not a [BoxContainer], it provides a 'link' between [FlutterChartPainter] which [paint] method
+/// is called by the Flutter framework, and the root of the chart container hierarchy, the [chartRootContainer].
+///
+/// Core methods of [ChartAnchor] are
+///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];
+///     this method creates, builds, lays out, and paints
+///     the root of the chart container hierarchy, the [chartRootContainer].
+///   - abstract [createRootContainer]; extensions of [ChartAnchor] (for example, [LineChartAnchor]) should create
+///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
 abstract class ChartAnchor {
   /// ChartData to hold on before member [chartRootContainer] is created late
   ///
@@ -37,37 +49,34 @@ abstract class ChartAnchor {
     this.xContainerLabelLayoutStrategy,
   });
 
-  // todo-00-document
+  /// Extensions of this [ChartAnchor] (for example, [LineChartAnchor]) should
+  /// create and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
   ChartRootContainer createRootContainer();
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
-    /*
-    // Applications should handle size=(0,0) which may happen
-    //   - just return and wait for re-call with size > (0,0).
-    if (size == ui.Size.zero) {
-      print(' ### Size: paint(): passed size 0!');
-      return;
-    }
-    */
-
-    // todo-00-last-last-last : where to create this?
+    // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor]
     chartRootContainer = createRootContainer();
 
-    // set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
+    // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
-    // Once we know the size, let the container manage it's size.
-    // This is the layout size. Once done, we can delegate painting
-    // to canvas to the [ChartContainer].
+    // Layout size and constraint size of the [ChartRootContainer] are the same, and
+    // are equal to the full size made available by the framework via [FlutterChartPainter.paint].
     chartRootContainer.chartArea = size;
 
-    // todo-00-last : added apply constraints - but figure out, why we can just set the chartRootContainer as parent which it is not.
-    chartRootContainer.applyParentConstraints(chartRootContainer, BoxContainerConstraints.insideBox(size: ui.Size(chartRootContainer.chartArea.width, chartRootContainer.chartArea.height)));
+    chartRootContainer.applyParentConstraints(
+      chartRootContainer,
+      BoxContainerConstraints.insideBox(
+        size: ui.Size(
+          chartRootContainer.chartArea.width,
+          chartRootContainer.chartArea.height,
+        ),
+      ),
+    );
+
     chartRootContainer.buildContainerOrSelf();
 
     chartRootContainer.layout();
-    // Layout the whole chart container - provides all positions to paint and draw
-    // all chart elements.
-    // todo-00-last call chartAnchor.startPaint
+
     chartRootContainer.paint(canvas);
 
     // clip canvas to size - this does nothing
@@ -91,48 +100,20 @@ abstract class ChartBehavior {
   bool get startYAxisAtDataMinAllowed;
 }
 
-/// Abstract class representing the [BoxContainer] of the whole chart.
+/// Abstract class representing the root [BoxContainer] of the whole chart.
 ///
-/// Containers calculate coordinates of chart points
+/// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation
+/// in the [ChartAnchor.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartAnchor]
+/// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
+///
+/// Child containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
-/// Creates a simple chart container and call all needed [layout] methods.
-///
-/// Notes:
-/// - [ChartRootContainer] and it's extensions,
-///   such as [LineChartContainer] and [VerticalBarChartContainer]
-///   are the only container which does not extend [BoxContainer]
-/// - Related to above point, the [layout(num size)] is unrelated to
-///   a same name method on [BoxContainer].
-///
+/// The lifecycle of [ChartRootContainer] follows the lifecycle of any [BoxContainer], the sequence of
+/// method invocations should be as follows:
+///   - todo-011 : document here and in [BoxContainer]
+
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
-
-  /// Implements [BoxContainer.layoutSize].
-  /// [ChartRootContainer] is the only one overriding layoutSize setter, to express the layoutSize is fixed chartArea
-  @override
-  ui.Size get layoutSize => chartArea;
-
-  /// Added as a check. todo-01-last : Remove for new layout
-  @override
-  set layoutSize(ui.Size size) => throw UnsupportedError('The root $this does not allow setting layoutSize');
-
-  // todo-00 : Added it's own non-final field _constraints, get constraints, and applyParentConstraints
-  //                Reason is, ChartRootContainer is created only once, but, when it's paint is called,
-  //                          it keeps setting constraints over and over, as constraints may change on re-paint!
-  //                          This breaks default finality on _constraints
-  //                          So unlike other BoxContainers, it must manage it's own non-final constraints.
-  /// Constraints set by parent.
-  late BoxContainerConstraints _constraints;
-
-  @override
-  BoxContainerConstraints get constraints => _constraints;
-
-  /// Set private member [_constraints] with assert that the caller is parent
-  @override
-  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
-    assertCallerIsParent(caller);
-    _constraints = constraints;
-  }
 
   /// [chartArea] is the chart area size of this container.
   /// In flutter_charts, this is guaranteed to be the same
@@ -142,6 +123,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// it can be known before runtime; it is required,
   /// but not set at construction time.
   ///
+  // todo-011 : Get rid of chartArea, replace with constraints!!
   late ui.Size chartArea;
 
   /// Base Areas of chart.
@@ -181,7 +163,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late PointsColumns pointsColumns;
 
   late bool isStacked;
-  // todo-00-last-last : bool isStacked = false;
 
   ChartData data;
 
@@ -391,10 +372,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
 
-  /// Implements abstract [paint] for the whole chart.
-  /// Paints the chart on the passed [canvas], limited to the [size] area.
+  /// Implements abstract [paint] for the whole chart container hierarchy, the [ChartRootContainer].
+  /// Paints the chart on the passed [canvas], limited to the [size] area,
+  /// which must be set before invoking this [paint] method.
   ///
-  /// This [paint] method is the core method call of painting the chart.
   /// Called from the chart's painter baseclass, the [ChartPainter], which
   /// [paint(Canvas, Size)] is guaranteed to be called by the Flutter framework
   /// (see class comment), hence [ChartPainter.paint] starts the chart painting.
@@ -411,18 +392,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// in their calculated layout positions.
   @override
   void paint(ui.Canvas canvas) {
-
-    // Introduced a rootLayout method for this
-    // todo-00-last-last-last : removed : applyParentConstraints(this, BoxContainerConstraints.insideBox(size: ui.Size(chartArea.width, chartArea.height)));
-    // todo-00 : This object, ChartRootContainer is not recreated, but recreate all children,
-    //                           so any final fields such on existing children such as constraints,
-    //                           do no fail on re-assign
-    //                           ADDRESS THIS BY ADDING AN ChartAnchorContainer which is only created once,
-    //                           has member ChartRootContainer rootOnAnchor, which concrete (VerticalChartRootContainer etc)
-    //                           is created fresh here on every paint, and set on rootOnAnchor. The Anchor layout only calls Root
-    //                           version.
-    // todo-00-last-last-last : removed : buildContainerOrSelf();
-    // todo-00-last-last-last : removed : layout();
 
     // Draws the Y labels area of the chart.
     yContainer.paint(canvas);

@@ -946,18 +946,6 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        //  todo-00-last : create class ChartAnchor, extended by LineChartAnchor, VerticalBarchartAnchor
-      // member:
-      //   - ONLY MEMBER ChartRootContainer
-      //      - member presenterCreator (as is)
-        // todo-00-last : Create class LineChartAnchor extends ChartAnchor
-        //  - constructor is copied from LineChartRootContainer, passes through
-      //       - the presenterCreator to ChartRootContainer (CRC)
-      //       - chartData and xContainerLabelLayoutStrategy to CRC
-      // method:
-      //   - only method startPaint
-      //   - called from ChartPainter.paint
-        // todo-00-last   LineChartRootContainer lineChartRootContainer = LineChartRootContainer(
         LineChartAnchor lineChartAnchor = LineChartAnchor(
           chartData: chartData,
           isStacked: false,
@@ -966,14 +954,12 @@ class _ExampleWidgetCreator {
 
         LineChart lineChart = LineChart(
           painter: LineChartPainter(
-            // todo-00-last   lineChartRootContainer: lineChartRootContainer,
             lineChartAnchor: lineChartAnchor,
           ),
         );
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-      // todo-00-last   VerticalBarChartRootContainer verticalBarChartRootContainer = VerticalBarChartRootContainer(
         VerticalBarChartAnchor verticalBarChartAnchor = VerticalBarChartAnchor(
           chartData: chartData,
           isStacked: false,
@@ -982,7 +968,6 @@ class _ExampleWidgetCreator {
 
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
-            // todo-00-last : verticalBarChartRootContainer: verticalBarChartRootContainer,
             verticalBarChartAnchor: verticalBarChartAnchor,
           ),
         );

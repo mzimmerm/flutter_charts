@@ -5,19 +5,10 @@ import '../options.dart';
 
 import 'presenter.dart';
 
-// todo-00-last : progress
+/// Concrete [ChartAnchor] for [LineChart].
+///
+/// See [ChartAnchor] for help.
 class LineChartAnchor extends ChartAnchor {
-
-/*
-  LineChartAnchor({
-    required ChartData chartData,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : data = chartData,
-        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
-        super() {
-    parent = null;
-  }
-*/
 
   LineChartAnchor({
     required ChartData chartData,
@@ -29,6 +20,7 @@ class LineChartAnchor extends ChartAnchor {
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 
+  /// Concrete implementation returns the root for line chart.
   @override
   LineChartRootContainer createRootContainer() {
 

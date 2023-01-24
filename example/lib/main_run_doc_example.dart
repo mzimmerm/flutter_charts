@@ -41,7 +41,6 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-// todo-00-last   var lineChartContainer = LineChartRootContainer(
   var lineChartAnchor = LineChartAnchor(
     chartData: chartData,
     isStacked: false,
@@ -50,7 +49,6 @@ Widget chartToRun() {
 
   var lineChart = LineChart(
     painter: LineChartPainter(
-      // todo-00-last lineChartRootContainer: lineChartContainer,
       lineChartAnchor: lineChartAnchor,
     ),
   );
