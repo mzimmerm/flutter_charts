@@ -644,23 +644,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 /// to make clear that both [BoxContainer] and [BoxLayouter]
 /// have the same [BoxContainerHierarchy] role (capability).
 ///
-/// Important migration notes:
-/// When migrating from old layout to new layout,
-///   - The child containers creation code: move from [layout] to [buildContainerOrSelf].
-///   - if we move the container fully to autolayout:
-///      - The 'old layouter' code should not be used;
-///   - else if keeping the manual layout (see [LabelContainer])
-///       - the 'old layouter' code should go to [layout].
-///       - some layout values calculated from old layout that used to be passed as members to child containers creation:
-///          - We need to, in the child class:
-///            - make the members 'late' if final
-///            - remove setting those members from child container constructors,
-///            - replace with setters
-///          - Then set those layout values calculated from old layout on member children in [layout] in the new setters
-///
-///   - [layout] should not be called on new layout, except on 'fake' root.
-/// todo-01-document : children are either passed, or a single child is build in [buildContainerOrSelf],
-///                    and set as a single child. Exception: If [buildContainerOrSelf] builds self, no children are added; this happens at the leaf.
+/// todo-01-document : children are either passed, or created in constructor body. Show example.
 ///
 abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
   /// Default generative constructor.
@@ -687,7 +671,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
     /* todo-00-last
     else {
-      // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
+      // Important: Enforce either children passed, or set in here by calling
       // todo-01-last : removed this if (children == null) {
       //  &&  this.children == ChildrenNotSetSingleton()) {
       BoxContainer builtContainer = buildContainerOrSelf();
@@ -724,11 +708,13 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
+/* todo-00-last removed
   void replaceChildrenAndMakeSelfParentOn(List<BoxContainer> children) {
     this.children = children;
     _makeSelfParentOn(children);
     ensureKeyedMembersHaveUniqueKeys();
   }
+*/
 
   // todo-00 : added this, document
   /// Appends all children passed in [addedChildren] to existing [children],

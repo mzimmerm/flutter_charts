@@ -186,15 +186,15 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     addChildren(_createChildrenOfRootContainer());
   }
 
-  // todo-00-fix-documentation
-  /// Overrides [BoxLayouter.buildContainerOrSelf] for the chart root.
+  /// Creates child containers for the chart root.
   ///
   /// It creates four chart areas container instances,
-  /// the [LegendContainer], [XContainer], [YContainer] and [DataContainer], without
+  /// and sets them on members
+  /// [legendContainer], [xContainer], [yContainer] and [dataContainer], without
   /// their children. Their children are created in this [ChartRootContainer.layout] by calling
   /// the four chart areas containers' [buildChildrenInParentLayout] methods.
   ///
-  /// The [DataContainer] is created in the overridable [createDataContainer]
+  /// The [dataContainer] is created in the overridable [createDataContainer]
   /// which is overridden by extensions to create a line chart or a bar chart.
   ///
   List<BoxContainer> _createChildrenOfRootContainer() {

@@ -1664,42 +1664,24 @@ Notes:
 
 *** IN-PROGRESS-NOW Remove buildContainerOrSelf from interface.
 
-**** Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
+**** DONE Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
 
 // todo-00-last : 
 
 1. buildContainerOrSelf can be
-   - [ ] either removed, OR
-   - [ ] made private non-interface _buildContainerOrSelf, AND passed to constructor by adding parameter children: _buildContainerChildrenOrSelf
-     - [ ] _buildContainerChildrenOrSelf should remove the list of containers created in it, such as [legendContainer, xContainer, etc]
-     - [ ] _buildContainerChildrenOrSelf : remove ~setChildrenAndMakeSelfParent~, this is done in [BoxContainer] constructor if ~children~ are passed
+   - [X] made private non-interface _buildContainerOrSelf, AND passed to constructor by adding parameter children: _buildContainerChildrenOrSelf
+     - [X] _buildContainerChildrenOrSelf should remove the list of containers created in it, such as [legendContainer, xContainer, etc]
+     - [X] _buildContainerChildrenOrSelf : remove ~setChildrenAndMakeSelfParent~, this is done in [BoxContainer] constructor if ~children~ are passed
      - 
 
-**** Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children
+**** IN-PROGRESS-NOW Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children. Remove this.children setter
 
-1. [ ] List classes that use ~buildContainerOrSelf~, move contents to constructor
-   1. [ ] 
-2. [ ] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
-3. [ ] run minitest 
-4. [ ] remove ~buildContainerOrSelf~ from interface and everywhere
-5. [ ] remove ~buildContainerOrSelf~  from comments and everywhere
+1. [X] List classes that use ~buildContainerOrSelf~, move contents to constructor
+2. [X] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
+3. [ ] remove ~buildContainerOrSelf~ from comments
+4. [ ] Remove ~this.children~ from code and everywhere. Any consequences???? Look at ChartRootContainer returning [legendContainer, yContainer, etc]
+5. [ ] run minitest 
 6. [ ] run tests and commit
-
-
-**** Review BoxContainer constructor use of ~children~
-
-1. [ ] List classes that ~do not use children~ directly, but use member containers such as xContainer.
-   1. [ ] 
-   2. [ ] 
-2. [ ] On the above classes, override children by adding concrete xContainer, yContainer etc
-   1. [ ] 
-3. [ ] Remove ~this.children~ from those classes and everywhere.
-
-
-**** Remove from interface:
-
-- setChildrenAndMakeSelfParent
-- 
 
 **** BoxContainerHierarchy split children to get and set ????
    
@@ -1709,6 +1691,10 @@ Notes:
 
 - [ ] never set parent in code, except default code in constructor and addChildren
 - [ ] 
+
+
+
+**** Can we make ~ensureKeyedMembersHaveUniqueKeys~ private?
 
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 
