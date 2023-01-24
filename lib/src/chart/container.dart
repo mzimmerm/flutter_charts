@@ -57,6 +57,8 @@ abstract class ChartAnchor {
     // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor]
     chartRootContainer = createRootContainer();
 
+    chartRootContainer.buildContainerOrSelf();
+
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
     // Apply constraints on root. Layout size and constraint size of the [ChartRootContainer] are the same, and
@@ -72,8 +74,6 @@ abstract class ChartAnchor {
         ),
       ),
     );
-
-    chartRootContainer.buildContainerOrSelf();
 
     chartRootContainer.layout();
 

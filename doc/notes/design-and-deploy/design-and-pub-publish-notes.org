@@ -1664,6 +1664,13 @@ Notes:
 
 *** IN-PROGRESS-NOW Remove buildContainerOrSelf from interface.
 
+next:
+
+1. [ ] Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
+
+
+next:
+
 1. [ ] List classes that use ~buildContainerOrSelf~, move contents to constructor
    1. [ ] 
 2. [ ] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
