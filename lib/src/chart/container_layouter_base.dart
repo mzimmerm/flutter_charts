@@ -55,7 +55,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
   //                and add asserts as appropriate
   // todo-01-last : can we make children late final? Can we make immutable? Ideally all.
-  // todo-00 : make the NullLikeListSingleton non extensible, otherwise we may keep adding to it from everywhere!!
+  // todo-00-last : done, but check and add test : make the NullLikeListSingleton non extensible, otherwise we may keep adding to it from everywhere!!
   List<BoxContainer> children = NullLikeListSingleton();
 
   bool get isRoot => parent == null;
@@ -669,22 +669,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       this.children = children;
     }
 
-    /* todo-00-last
-    else {
-      // Important: Enforce either children passed, or set in here by calling
-      // todo-01-last : removed this if (children == null) {
-      //  &&  this.children == ChildrenNotSetSingleton()) {
-      BoxContainer builtContainer = buildContainerOrSelf();
-      if (builtContainer != this) {
-        this.children = [builtContainer];
-      } else {
-        this.children = [];
-      }
-    }
-    */
-    // As [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
-    // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
-    // See documentation for [UniqueKeyedObjectsManager].
+    // Having added children, ensure key uniqueness
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
@@ -708,17 +693,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
-/* todo-00-last removed
-  void replaceChildrenAndMakeSelfParentOn(List<BoxContainer> children) {
-    this.children = children;
-    _makeSelfParentOn(children);
-    ensureKeyedMembersHaveUniqueKeys();
-  }
-*/
-
-  // todo-00 : added this, document
   /// Appends all children passed in [addedChildren] to existing [children],
-  /// and changes all [addedChildren] member [parent] to self.
+  /// changes all [addedChildren] member [parent] to self, and ensures unique
+  /// keys among all [children].
   void addChildren(List<BoxContainer> addedChildren) {
     children.addAll(addedChildren);
     _makeSelfParentOn(addedChildren);
@@ -754,31 +731,6 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     // No-op in this non-positioning base class
   }
-
-/* todo-00-last : removed everywhere
-  // todo-01-last : after new layout is used everywhere : make abstract, each Container must implement. Layouter has this no-op.
-  /// todo-01-last  Important override notes and rules for [buildContainerOrSelf] on extensions:
-  // Create children one after another, or do nothing if children were created in constructor.
-  // Any child created here must be added to the list of children.
-  //   - if (we do not want any children created here (may exist from constructor)) return
-  //   - create childN
-  //   - addChild(childN)
-  //   - etc
-  // todo-01-document
-  // By default return self. This should NOT be used eventually.
-  // Currently, returning self has a special handling in the [BoxContainer] constructor:
-  //   - If self is returned, no children are added to the [BoxContainer] being constructed,
-  //     and it is assumed children will be added first using `this.children = someManuallyBuiltChildren`.
-  //     This is used in manual layout
-  //   - Otherwise, it is assumed [buildContainerOrSelf] is building a single child,
-  //     and the returned BoxContainer is added as a single child.
-  // The above assumption, along with [buildContainerOrSelf] returning a single [BoxContainer] (not a list),
-  // means that [BoxContainer] built here has always a single child, most likely a [BoxLayouter] such as [Row] or [Column],
-  // or no children (at leaf).
-  BoxContainer buildContainerOrSelf() {
-    return this;
-  }
-*/
 
   /// Painting base method of all [BoxContainer] extensions,
   /// which should paint self on the passed [canvas].
@@ -1704,7 +1656,10 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 }
 
 class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
-  NullLikeListSingleton._privateNamedConstructor();
+
+  // todo-00-last : added growable on/off
+  /// Generative
+  NullLikeListSingleton._privateNamedConstructor() : super(growable: false);
 
   static final _instance = NullLikeListSingleton._privateNamedConstructor();
 

@@ -122,13 +122,17 @@ abstract class UniqueKeyedObjectsManager {
 
   /// Checks uniqueness of all managed [Keyed] members.
   ///
-  /// Implementors must call [ensureKeyedMembersHaveUniqueKeys] every time after the list backing
+  /// Implementors must call this method every time after the list backing
   /// the [keyedMembers] is modified.
+  ///
+  /// As by default, the [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
+  /// this method must be called after changing [children].
   void ensureKeyedMembersHaveUniqueKeys() {
-    // toSet converts to set using ==. If lengths do not match, there are at least two == keys in [keys].
+    // toSet converts to set using ==.
+    // If lengths do not match, there are at least two == keys in [keys].
     Set toSet = _memberKeys.toSet();
     if (toSet.length != _memberKeys.length) {
-      throw StateError('ensureUnique:  keys $_memberKeys of members $keyedMembers are not unique');
+      throw StateError('ensureKeyedMembersHaveUniqueKeys:  keys $_memberKeys of members $keyedMembers are not unique');
     }
   }
 }

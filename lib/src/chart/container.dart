@@ -50,14 +50,23 @@ abstract class ChartAnchor {
   });
 
   /// Extensions of this [ChartAnchor] (for example, [LineChartAnchor]) should
-  /// create and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
+  /// create and return an instance of the concrete [chartRootContainer]
+  /// (for example [LineChartRootContainer]), populated with it's children, but not
+  /// children's children. The children's children hierarchy is assumed to
+  /// be created in [chartRootContainerCreateBuildLayoutPaint] during
+  /// it's call to [ChartRootContainer.layout].
+  ///
+  /// In the default implementations, the [chartRootContainer]'s children created are
+  /// [ChartRootContainer.legendContainer],  [ChartRootContainer.yContainer],
+  ///  [ChartRootContainer.xContainer], and  [ChartRootContainer.dataContainer].
+  ///
+  /// If an extension uses an implementation that does not adhere to the above
+  /// description, the [ChartRootContainer.layout] should be overridden.
   ChartRootContainer createRootContainer();
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
     // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor]
     chartRootContainer = createRootContainer();
-
-    // todo-00-last : moved to createRootContainer : chartRootContainer.buildContainerOrSelf();
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
@@ -182,7 +191,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
     parent = null;
-    // todo-00-last set children
+    // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
   }
 
@@ -198,14 +207,12 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// which is overridden by extensions to create a line chart or a bar chart.
   ///
   List<BoxContainer> _createChildrenOfRootContainer() {
-    // todo-00-last : List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // ### 1. [setupPointsColumns] later in [layout]
     // ### 2. Build the LegendContainer where series legend is shown
     legendContainer = LegendContainer(
       chartRootContainer: this,
     );
-    // todo-00-last : children.add(legendContainer); // todo-01-done-duplicite-children
 
     // ### 3. No [yContainerFirst] creation or setup needed. All done in [layout]
 
@@ -215,24 +222,20 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartRootContainer: this,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
-    // todo-00-last : children.add(xContainer); // todo-01-done-duplicite-children
 
     // ### 5. [YContainer]: YContainer create and add.
 
     yContainer = YContainer(
       chartRootContainer: this,
     );
-    // todo-00-last : children.add(yContainer); // todo-01-done-duplicite-children
 
     // ### 6. [DataContainer]: Constraint and layout the data area
 
     dataContainer = createDataContainer(
       chartRootContainer: this,
     );
-    // todo-00-last : children.add(dataContainer); // todo-01-done-duplicite-children
 
-    // todo-00-last : replaceChildrenAndMakeSelfParentOn(children);  // todo-01-done-duplicite-children
-    // todo-00-last : return this;
+    // return the members which will also become [children].
     return [legendContainer, xContainer, yContainer, dataContainer];
   }
 
@@ -1405,12 +1408,15 @@ class LegendItemContainer extends BoxContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super() {
-    // todo-00-last  : added this to create children and attach to self
+    // Create children and attach to self
     addChildren(_createChildrenOfLegendItemContainer());
   }
 
 
-  // todo-00-last : BoxContainer buildContainerOrSelf() {
+  /// Creates child of this [LegendItemContainer] a [Row] with two containers:
+  ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
+  ///   - the [LabelContainer] which describes the series.
+  ///
   List<BoxContainer> _createChildrenOfLegendItemContainer() {
 
     // Pull out the creation, remember on this object as member _label,
@@ -1631,9 +1637,8 @@ class LegendContainer extends ChartAreaContainer {
     // List<BoxContainer>? children, // could add for extensibility by e.g. add legend comment
   }) : super(
           chartRootContainer: chartRootContainer,
-          // todo-00-last : children: children,
         ) {
-     // todo-00-last : added
+    // Create children and attach to self
      addChildren(_createChildrenOfLegendContainer());
 
     // parent = null; We set isRoot to true, so this is not needed.
@@ -1645,9 +1650,10 @@ class LegendContainer extends ChartAreaContainer {
     }
   }
 
-  /// Builds the container below self starting with [Row] or [Column],
-  /// and passing it [children] build separately in [_legendItems].
-  // todo-00-last : renamed and moved to constructor
+  /// Builds the legend container contents below self,
+  /// a child [Row] or [Column],
+  /// which contains a list of [LegendItemContainer]s,
+  /// created separately in [_legendItems].
   List<BoxContainer> _createChildrenOfLegendContainer() {
     ChartOptions options = chartRootContainer.data.chartOptions;
 
@@ -1662,6 +1668,7 @@ class LegendContainer extends ChartAreaContainer {
     );
 
     BoxContainer childLayout;
+    // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
     var children = _legendItems(dataRowsLegends, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
@@ -2079,7 +2086,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required bool isStacked,
     required LayoutableBox caller,
   }) : _isStacked = isStacked,
-  _caller = caller
+  _caller = caller, super(growable: true) // todo-00-last : added , super(growable: true)
   {
     ChartData chartData = chartRootContainer.data;
 

@@ -1,9 +1,13 @@
 import 'dart:collection' as collection show ListBase;
 
 class CustomList<E> extends collection.ListBase<E> {
+  final _growable = false; // todo-00-last-added
+
   final List<E> delegate = List.empty(growable: true);
 
-  CustomList();
+  /// todo-00-last : Ensure a single public unnamed constructor exists (would be generated anyway)
+  /// todo-00-last : added the whole growable argument.
+  CustomList({required bool growable});
 
   // ListBase implements all read operations using only the
   // - `length` and
