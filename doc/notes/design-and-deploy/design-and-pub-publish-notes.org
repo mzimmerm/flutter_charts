@@ -1664,38 +1664,51 @@ Notes:
 
 *** IN-PROGRESS-NOW Remove buildContainerOrSelf from interface.
 
-next:
+**** Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
 
-1. [ ] Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
+// todo-00-last : 
 
+1. buildContainerOrSelf can be
+   - [ ] either removed, OR
+   - [ ] made private non-interface _buildContainerOrSelf, AND passed to constructor by adding parameter children: _buildContainerChildrenOrSelf
+     - [ ] _buildContainerChildrenOrSelf should remove the list of containers created in it, such as [legendContainer, xContainer, etc]
+     - [ ] _buildContainerChildrenOrSelf : remove ~setChildrenAndMakeSelfParent~, this is done in [BoxContainer] constructor if ~children~ are passed
+     - 
 
-next:
+**** Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children
 
 1. [ ] List classes that use ~buildContainerOrSelf~, move contents to constructor
    1. [ ] 
 2. [ ] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
 3. [ ] run minitest 
 4. [ ] remove ~buildContainerOrSelf~ from interface and everywhere
-5. [ ] run tests and commit
+5. [ ] remove ~buildContainerOrSelf~  from comments and everywhere
+6. [ ] run tests and commit
 
 
-next:
+**** Review BoxContainer constructor use of ~children~
 
-1. [ ] Review BoxContainer constructor use of ~children~
-2. [ ] List classes that ~do not use children~ directly, but use member containers such as xContainer.
+1. [ ] List classes that ~do not use children~ directly, but use member containers such as xContainer.
    1. [ ] 
    2. [ ] 
-3. [ ] On the above classes, override children by adding concrete xContainer, yContainer etc
+2. [ ] On the above classes, override children by adding concrete xContainer, yContainer etc
    1. [ ] 
-4. [ ] Remove this.children from those classes and everywhere.
-
-next:
-
-1. [ ] BoxContainerHierarchy
-   1. [ ] split children to get and set ????
-   2. [ ]
+3. [ ] Remove ~this.children~ from those classes and everywhere.
 
 
+**** Remove from interface:
+
+- setChildrenAndMakeSelfParent
+- 
+
+**** BoxContainerHierarchy split children to get and set ????
+   
+
+
+**** Go over setting ~parent~ and rationalize
+
+- [ ] never set parent in code, except default code in constructor and addChildren
+- [ ] 
 
 *** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
 

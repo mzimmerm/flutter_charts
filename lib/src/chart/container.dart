@@ -57,7 +57,7 @@ abstract class ChartAnchor {
     // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor]
     chartRootContainer = createRootContainer();
 
-    chartRootContainer.buildContainerOrSelf();
+    // todo-00-last : moved to createRootContainer : chartRootContainer.buildContainerOrSelf();
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
@@ -176,13 +176,17 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ChartRootContainer({
     required ChartData chartData,
     required this.isStacked,
+    // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
     parent = null;
+    // todo-00-last set children
+    addChildren(_createChildrenOfRootContainer());
   }
 
+  // todo-00-fix-documentation
   /// Overrides [BoxLayouter.buildContainerOrSelf] for the chart root.
   ///
   /// It creates four chart areas container instances,
@@ -193,16 +197,15 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// The [DataContainer] is created in the overridable [createDataContainer]
   /// which is overridden by extensions to create a line chart or a bar chart.
   ///
-  @override
-  BoxContainer buildContainerOrSelf() {
-    List<BoxContainer> children = []; // todo-01-done-duplicite-children
+  List<BoxContainer> _createChildrenOfRootContainer() {
+    // todo-00-last : List<BoxContainer> children = []; // todo-01-done-duplicite-children
 
     // ### 1. [setupPointsColumns] later in [layout]
     // ### 2. Build the LegendContainer where series legend is shown
     legendContainer = LegendContainer(
       chartRootContainer: this,
     );
-    children.add(legendContainer); // todo-01-done-duplicite-children
+    // todo-00-last : children.add(legendContainer); // todo-01-done-duplicite-children
 
     // ### 3. No [yContainerFirst] creation or setup needed. All done in [layout]
 
@@ -212,24 +215,25 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartRootContainer: this,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
-    children.add(xContainer); // todo-01-done-duplicite-children
+    // todo-00-last : children.add(xContainer); // todo-01-done-duplicite-children
 
     // ### 5. [YContainer]: YContainer create and add.
 
     yContainer = YContainer(
       chartRootContainer: this,
     );
-    children.add(yContainer); // todo-01-done-duplicite-children
+    // todo-00-last : children.add(yContainer); // todo-01-done-duplicite-children
 
     // ### 6. [DataContainer]: Constraint and layout the data area
 
     dataContainer = createDataContainer(
       chartRootContainer: this,
     );
-    children.add(dataContainer); // todo-01-done-duplicite-children
+    // todo-00-last : children.add(dataContainer); // todo-01-done-duplicite-children
 
-    setChildrenAndMakeSelfParent(children);  // todo-01-done-duplicite-children
-    return this;
+    // todo-00-last : replaceChildrenAndMakeSelfParentOn(children);  // todo-01-done-duplicite-children
+    // todo-00-last : return this;
+    return [legendContainer, xContainer, yContainer, dataContainer];
   }
 
   /// Overrides [BoxLayouter.layout] for the chart as a whole.
@@ -1333,7 +1337,7 @@ class GridLinesContainer extends BoxContainer {
     for (LineContainer lineContainer in _lineContainers) {
       lineContainer.layout(boxConstraints);
     }
-    setChildrenAndMakeSelfParent(_lineContainers);  // todo-01-done-duplicite-children
+    replaceChildrenAndMakeSelfParentOn(_lineContainers);  // todo-01-done-duplicite-children
    */
   }
 
@@ -1392,7 +1396,7 @@ class LegendItemContainer extends BoxContainer {
     required LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
     required ChartOptions options,
-    List<BoxContainer>? children,
+    // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
   })  :
   // We want to only create as much as we can in layout for clarity,
   // as a price, need to hold on on label and style from constructor
@@ -1400,52 +1404,86 @@ class LegendItemContainer extends BoxContainer {
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        super(children: children);
-  @override
-  BoxContainer buildContainerOrSelf() {
+        super() {
+    // todo-00-last  : added this to create children and attach to self
+    addChildren(_createChildrenOfLegendItemContainer());
+  }
+
+
+  // todo-00-last : BoxContainer buildContainerOrSelf() {
+  List<BoxContainer> _createChildrenOfLegendItemContainer() {
 
     // Pull out the creation, remember on this object as member _label,
     // set _labelMaxWidth on it in layout.
 
+    BoxContainer layoutChild;
     var children = _itemIndAndLabel();
     switch (_options.legendOptions.legendAndItemLayoutEnum) {
-      // **IFF* the returned layout is the topmost Row (Legend starts with Column),
-      //        the passed Packing and Align values are used.
-      // **ELSE* the values are irrelevant, will be replaced with Align.start, Packing.tight.
+    // **IFF* the returned layout is the topmost Row (Legend starts with Column),
+    //        the passed Packing and Align values are used.
+    // **ELSE* the values are irrelevant, will be replaced with Align.start, Packing.tight.
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
-        return Row(
-            mainAxisAlign: Align.start,
-            mainAxisPacking: Packing.loose,
-            children: children);
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.loose,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
-        // default for legend column : Item row is top, so is NOT overridden, so must be set to intended!
-        return Row(
-            mainAxisAlign: Align.start,
-            mainAxisPacking: Packing.tight,
-            children: children);
+      // default for legend column : Item row is top, so is NOT overridden, so must be set to intended!
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
-        return Row(
-            mainAxisAlign: Align.end,
-            mainAxisPacking: Packing.loose,
-            children: children);
+        layoutChild = Row(
+          mainAxisAlign: Align.end,
+          mainAxisPacking: Packing.loose,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
-        // default for legend row : desired and tested
-        return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+      // default for legend row : desired and tested
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        // default for legend row : desired and tested
-        return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+      // default for legend row : desired and tested
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
-        // create padded children
+      // create padded children
         children = _itemIndAndLabel(doPadIndAndLabel: true);
         // default for legend row : desired and tested
-        return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
       // create padded children
         children = _itemIndAndLabel(doAlignIndAndLabel: true);
         // default for legend row : desired and tested
-        return Row(mainAxisAlign: Align.start, mainAxisPacking: Packing.tight, children: children);
+        layoutChild = Row(
+          mainAxisAlign: Align.start,
+          mainAxisPacking: Packing.tight,
+          children: children,
+        );
+        break;
     }
+    return [layoutChild];
   }
+
 
   /// Constructs the list with the legend indicator and legend label, which caller wraps
   /// in [RowLayout].
@@ -1590,11 +1628,14 @@ class LegendContainer extends ChartAreaContainer {
   ///             traversing up would fail, so use [isRoot] not [parent] for that.
   LegendContainer({
     required ChartRootContainer chartRootContainer,
-    List<BoxContainer>? children,
+    // List<BoxContainer>? children, // could add for extensibility by e.g. add legend comment
   }) : super(
           chartRootContainer: chartRootContainer,
-          children: children,
+          // todo-00-last : children: children,
         ) {
+     // todo-00-last : added
+     addChildren(_createChildrenOfLegendContainer());
+
     // parent = null; We set isRoot to true, so this is not needed.
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
@@ -1604,27 +1645,10 @@ class LegendContainer extends ChartAreaContainer {
     }
   }
 
-  /// Lays out the legend area.
-  ///
-  /// Lays out legend items, one for each data series.
-  @override
-  void layout() {
-    // todo-01-last : this appears needed, otherwise non-label results change slightly, but still correct
-    //                we should probably remove this block orderedSkip - but check behavior in debugger, what
-    //                happens to layoutSize, it may never be set?
-    if (orderedSkip) {
-      layoutSize = const ui.Size(0.0, 0.0);
-      return;
-    }
-    // Important: This flips from using layout() on parents to using layout() on children
-    super.layout();
-  }
-
-
   /// Builds the container below self starting with [Row] or [Column],
   /// and passing it [children] build separately in [_legendItems].
-  @override
-  BoxContainer buildContainerOrSelf() {
+  // todo-00-last : renamed and moved to constructor
+  List<BoxContainer> _createChildrenOfLegendContainer() {
     ChartOptions options = chartRootContainer.data.chartOptions;
 
     List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
@@ -1637,53 +1661,69 @@ class LegendContainer extends ChartAreaContainer {
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
+    BoxContainer childLayout;
     var children = _legendItems(dataRowsLegends, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
-        return Column(
+        childLayout = Column(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.loose,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight:
         // default for legend column : desired and tested
-        return Column(
+        childLayout = Column(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose:
-        return Row(
+        childLayout = Row(
             mainAxisAlign: Align.center,
             mainAxisPacking: Packing.loose,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight:
         // default for legend row : desired and tested
-        return Row(
+        childLayout = Row(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy:
         // wrap second item to Greedy to test Greedy layout
         children[1] = Greedy(child: children[1]);
-        return Row(
+        childLayout = Row(
             // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside Greedy
             //       remains start + tight. That make sense, as Greedy is non-positioning.
             //       If we wanted to center the LegendItem inside of Greedy, wrap the inside into Center.
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
         // This option pads items inside LegendItem
-        return Row(
+        childLayout = Row(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
-            children: children);
+            children: children,
+        );
+        break;
       case LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
       // This option aligns items inside LegendItem
-        return Row(
+        childLayout = Row(
             mainAxisAlign: Align.start,
             mainAxisPacking: Packing.tight,
-            children: children);
+            children: children,
+        );
+        break;
     }
+    return [childLayout];
   }
 
   List<BoxContainer> _legendItems(
@@ -1706,6 +1746,22 @@ class LegendContainer extends ChartAreaContainer {
           options: options,
         ),
     ];
+  }
+
+  /// Lays out the legend area.
+  ///
+  /// Lays out legend items, one for each data series.
+  @override
+  void layout() {
+    // todo-00 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    //                we should probably remove this block orderedSkip - but check behavior in debugger, what
+    //                happens to layoutSize, it may never be set?
+    if (orderedSkip) {
+      layoutSize = const ui.Size(0.0, 0.0);
+      return;
+    }
+    // Important: This flips from using layout() on parents to using layout() on children
+    super.layout();
   }
 }
 

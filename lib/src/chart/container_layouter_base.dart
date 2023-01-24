@@ -55,6 +55,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
   //                and add asserts as appropriate
   // todo-01-last : can we make children late final? Can we make immutable? Ideally all.
+  // todo-00 : make the NullLikeListSingleton non extensible, otherwise we may keep adding to it from everywhere!!
   List<BoxContainer> children = NullLikeListSingleton();
 
   bool get isRoot => parent == null;
@@ -352,7 +353,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void assertCallerIsParent(LayoutableBox caller) {
     if (!isRoot) {
       if (!identical(caller, parent)) {
-        throw StateError('on this $this, parent $parent should be == to caller $caller');
+        throw StateError('On this $this, parent is $parent, BUT it should be == to caller $caller');
       }
     }
   }
@@ -673,18 +674,19 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     //if (parent != null) {
     //  this.parent = parent;
     //}
-    if (key != null) {
-      this.key = key;
-    }  else {
-      // A hacky thing may fail uniqueness among siblings on rare occasions.
-      // This is temporary until we require key non-nullable.
-      this.key = ContainerKey(math.Random().nextInt(1000000).toString());
-    }
+    _ensureKeySet(key);
 
+    // Initialize children list to empty
+    this.children = [];
+    // children can be not passed (null), then let concrete extension to create them,
+    // and add using code like todo-00 : add example
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children;
-    } else {
+    }
+
+    /* todo-00-last
+    else {
       // Important: Enforce either children passed, or set in here by calling buildContainerOrSelf
       // todo-01-last : removed this if (children == null) {
       //  &&  this.children == ChildrenNotSetSingleton()) {
@@ -694,27 +696,47 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       } else {
         this.children = [];
       }
-      // this.children = [builtContainer];
     }
+    */
     // As [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
     // after changing [children], the [UniqueKeyedObjectsManager.ensureUnique] must be called.
     // See documentation for [UniqueKeyedObjectsManager].
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    _makeSelfParentOfAllChildren();
+    _makeSelfParentOn(this.children);
     // NAMED GENERATIVE super() called implicitly here.
   }
 
-  void _makeSelfParentOfAllChildren() {
-    for (var child in children) {
+  void _ensureKeySet(ContainerKey? key) {
+    if (key != null) {
+      this.key = key;
+    }  else {
+      // A hacky thing may fail uniqueness among siblings on rare occasions.
+      // This is temporary until we require key non-nullable.
+      this.key = ContainerKey(math.Random().nextInt(1000000).toString());
+    }
+  }
+
+  void _makeSelfParentOn(List<BoxContainer> parentedChildren) {
+    for (var child in parentedChildren) {
       child.parent = this;
     }
   }
 
-  void setChildrenAndMakeSelfParent(List<BoxContainer> children) {
+  void replaceChildrenAndMakeSelfParentOn(List<BoxContainer> children) {
     this.children = children;
-    _makeSelfParentOfAllChildren();
+    _makeSelfParentOn(children);
+    ensureKeyedMembersHaveUniqueKeys();
+  }
+
+  // todo-00 : added this, document
+  /// Appends all children passed in [addedChildren] to existing [children],
+  /// and changes all [addedChildren] member [parent] to self.
+  void addChildren(List<BoxContainer> addedChildren) {
+    children.addAll(addedChildren);
+    _makeSelfParentOn(addedChildren);
+    ensureKeyedMembersHaveUniqueKeys();
   }
 
   /// Override of the abstract [post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
@@ -747,6 +769,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // No-op in this non-positioning base class
   }
 
+/* todo-00-last : removed everywhere
   // todo-01-last : after new layout is used everywhere : make abstract, each Container must implement. Layouter has this no-op.
   /// todo-01-last  Important override notes and rules for [buildContainerOrSelf] on extensions:
   // Create children one after another, or do nothing if children were created in constructor.
@@ -769,6 +792,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   BoxContainer buildContainerOrSelf() {
     return this;
   }
+*/
 
   /// Painting base method of all [BoxContainer] extensions,
   /// which should paint self on the passed [canvas].
