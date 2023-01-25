@@ -122,7 +122,7 @@ class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
     required PointsColumns pointsColumns,
     required ChartRootContainer chartRootContainer,
     required PresenterCreator presenterCreator,
-  }) : super(growable: true) // todo-00-last : added , super(growable: true)
+  }) : super(growable: true)
   {
     // iterate "column oriented", that is, over valuePointsColumns.
     PresentersColumn? leftPresentersColumn;

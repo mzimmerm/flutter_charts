@@ -2091,7 +2091,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   })  : _isStacked = isStacked,
         _caller = caller,
         super(growable: true) {
-    // todo-00-last-done : ChartData chartData = chartRootContainer.data;
     _createStackableValuePointsFromChartData(chartRootContainer.data);
   }
 

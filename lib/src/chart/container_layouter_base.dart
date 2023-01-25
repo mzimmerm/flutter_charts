@@ -1654,17 +1654,22 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 
 class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
 
-  // todo-00-last : added growable on/off
-  /// Generative NAMED (1- UNNAMED already used up by factory)
+  /// Generative PRIVATE NAMED constructor allows to create private-only instances.
+  ///
+  /// Note: The  1 UNNAMED already used up by factory [NullLikeListSingleton] constructor.
   NullLikeListSingleton._privateNamedConstructor() : super(growable: false);
 
+  /// The single private instance returned from the factory every time.
   static final _instance = NullLikeListSingleton._privateNamedConstructor();
 
-  /// Existence of UNNAMED prevents UNNAMED GENERATIVE 'NullLikeListSingleton()'
+  /// Factory UNNAMED constructor.
+  ///
+  /// This existence of UNNAMED prevents UNNAMED GENERATIVE 'NullLikeListSingleton()'
   ///   to be code-generated. So, the only way to create instance is
   ///   via [NullLikeListSingleton._privateNamedConstructor].
-  /// We could create multiple instances, but only in this library file container_layouter_base.dart.
+  /// We could use it create multiple instances, but only in this library file container_layouter_base.dart.
   ///
+  /// In this library, we only ever create the single [_instance] to make this class a singleton.
   factory NullLikeListSingleton() {
     return _instance;
   }

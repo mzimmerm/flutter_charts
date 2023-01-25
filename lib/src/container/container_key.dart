@@ -80,8 +80,8 @@ abstract class Keyed {
 /// Works as a mixin on behalf of it's extension, by delegating the [keyedMembers] getter (a list of [Keyed] objects)
 /// to it's extension's member.
 ///
-/// The method [ensureKeyedMembersHaveUniqueKeys] must be called by the extension after the list underlying
-/// the [keyedMembers] getter is changed.
+/// The method [ensureKeyedMembersHaveUniqueKeys] must be called by the extension
+/// every time after the list underlying the [keyedMembers] getter is changed.
 ///
 /// For example, a [BoxContainer] we want siblings should be unique,
 /// so we ensure [BoxContainer] implements the [UniqueKeyedObjectsManager],
