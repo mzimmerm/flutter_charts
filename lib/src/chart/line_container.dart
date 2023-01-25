@@ -21,10 +21,10 @@ class LineContainer extends BoxContainer {
     required this.lineFrom,
     required this.lineTo,
     required this.linePaint,
-    BoxContainer? parent,
+    // todo-00-last BoxContainer? parent,
     this.layoutValue = 0.0,
   }) {
-    this.parent = parent;
+    // todo-00-last this.parent = parent;
   }
 
   // #####  Implementors of method in superclass [Container].

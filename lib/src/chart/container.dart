@@ -190,7 +190,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
-    parent = null;
+    // todo-00-last : parent = null;
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
   }
@@ -531,7 +531,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
         options: options,
-        parent: this,
+        // todo-00-last : parent: this,
         labelInfo: labelInfo,
       );
 
@@ -694,7 +694,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
-        parent: this,
+        // todo-00-last : parent: this,
       );
       _xLabelContainers.add(xLabelContainer);
     }
@@ -956,7 +956,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // For each already layed out X labels in [xLabelContainers],
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    _yGridLinesContainer = GridLinesContainer(parent: this);
+    _yGridLinesContainer = GridLinesContainer(/*// todo-00-last parent: this*/);
     children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
 
     // Initial values which will show as bad lines if not changed during layout.
@@ -972,7 +972,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
         lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
-        parent: _yGridLinesContainer,
+        // todo-00-last parent: _yGridLinesContainer,
         layoutValue: lineX,
       );
 
@@ -988,7 +988,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
         lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
-        parent: _yGridLinesContainer,
+        // todo-00-last parent: _yGridLinesContainer,
         layoutValue: lineX,
       );
       _yGridLinesContainer.addLine(yLineContainer);
@@ -998,7 +998,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // Iterate yUserLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    _xGridLinesContainer = GridLinesContainer(parent: this);
+    _xGridLinesContainer = GridLinesContainer(/*// todo-00-last parent: this*/);
     children.add(_xGridLinesContainer); // todo-01-done-duplicite-children
 
     // yTickYs create vertical xLineContainers
@@ -1008,7 +1008,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(0.0, yTickY),
         lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
         linePaint: gridLinesPaint(chartOptions),
-        parent: _xGridLinesContainer,
+        // todo-00-last parent: _xGridLinesContainer,
         layoutValue: yTickY,
       );
 
@@ -1327,8 +1327,13 @@ class LineChartDataContainer extends DataContainer {
 class GridLinesContainer extends BoxContainer {
   final List<LineContainer> _lineContainers = List.empty(growable: true);
 
+/* // todo-00-last :
   GridLinesContainer({BoxContainer? parent}) : super() {
    this.parent = parent;
+  }
+*/
+  GridLinesContainer(/*{BoxContainer? parent}*/) : super() {
+     // todo-00-last : this.parent = parent;
   }
 
   void addLine(LineContainer lineContainer) {

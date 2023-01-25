@@ -29,7 +29,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
 
   /// Implements the sole abstract method of [UniqueKeyedObjectsManager]
   @override
-  List<Keyed> get keyedMembers => children;
+  List<Keyed> get keyedMembers => _children;
 
   /* KEEP
   /// Remove ability to create instance on extensions, encouraging use of [BoxContainerHierarchy]
@@ -41,7 +41,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// The parent of this [BoxContainer], late initialized in one of 2 places:
   ///   1. If [parent] is explicitly passed to constructor of [BoxContainer] extensions, in situations when caller knows
   ///      the parent and wants to explicitly set up the parent-child.
-  ///   2. In the [BoxContainer] constructor, if [children] are non-null,
+  ///   2. In the [BoxContainer] constructor, if [_children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
   // todo-01-last : maybe restore late final, was : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
   BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
@@ -55,11 +55,17 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
   //                and add asserts as appropriate
   // todo-01-last : can we make children late final? Can we make immutable? Ideally all. Maybe just init to []?
-  List<BoxContainer> children = NullLikeListSingleton();
+  List<BoxContainer> __children = NullLikeListSingleton();
+
+  /// Get children list and protect with copy
+  List<BoxContainer> get _children => List.from(__children);
+
+  /// Set children list
+  // set _children(List<BoxContainer> children) { __children = children; }
 
   bool get isRoot => parent == null;
 
-  bool get isLeaf => children.isEmpty;
+  bool get isLeaf => _children.isEmpty;
 
   BoxContainer? _root;
 
@@ -69,7 +75,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     }
 
     if (parent == null) {
-      _root = children[0].parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
+      _root = _children[0].parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
       return _root!;
     }
 
@@ -86,7 +92,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
       '[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
   void addChildToHierarchyDeprecated(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
     childOfThis.parent = thisBoxContainer;
-    children.add(childOfThis);
+    _children.add(childOfThis);
     // throw StateError('This is deprecated.');
   }
 }
@@ -132,7 +138,7 @@ abstract class LayoutableBox {
   /// Lifecycle: Should be invoked by [parent] during [layout] after
   ///            sizes and positions of all this [LayoutableBox]'s siblings are calculated.
   ///
-  /// Override if this [LayoutableBox]'s [parent] offset needs to be applied also to [children] of
+  /// Override if this [LayoutableBox]'s [parent] offset needs to be applied also to [_children] of
   /// this [LayoutableBox].
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
@@ -151,9 +157,9 @@ abstract class LayoutableBox {
   ///           (see [LabelContainer.paint].
   ///  3) As a lemma of 1), generally, there is no need to call [super.applyParentOffset] ;
   ///     Extensions covered in 2) which do override, are those manual layout classes
-  ///     which maintain some child [BoxContainer]s in addition to [BoxContainerHierarchy.children].
-  ///     Those should call [super.applyParentOffset] first, to offset the [BoxContainerHierarchy.children],
-  ///     then offset the additionally maintained children by the same offset as the [BoxContainerHierarchy.children].
+  ///     which maintain some child [BoxContainer]s in addition to [BoxContainerHierarchy._children].
+  ///     Those should call [super.applyParentOffset] first, to offset the [BoxContainerHierarchy._children],
+  ///     then offset the additionally maintained children by the same offset as the [BoxContainerHierarchy._children].
   ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
@@ -275,7 +281,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
     _offset += offset;
 
-    for (var child in children) {
+    for (var child in _children) {
       child.applyParentOffset(this, offset);
     }
   }
@@ -340,9 +346,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   when this is called in [layout].
   bool get isGreedy => false;
 
-  bool get hasGreedyChild => children.where((child) => child.isGreedy).isNotEmpty;
+  bool get hasGreedyChild => _children.where((child) => child.isGreedy).isNotEmpty;
 
-  BoxLayouter get firstGreedyChild => children.firstWhere((child) => child.isGreedy);
+  BoxLayouter get firstGreedyChild => _children.firstWhere((child) => child.isGreedy);
 
   /// Assert if caller is identical to container-hierarchy-parent in the [BoxContainerHierarchy].
   ///
@@ -390,10 +396,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   void _layout_DefaultRecurse() {
     // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
-    _preDescend_DistributeConstraintsToImmediateChildren(children);
+    _preDescend_DistributeConstraintsToImmediateChildren(_children);
 
     // B. node-descend
-    for (var child in children) {
+    for (var child in _children) {
       // b1. child-pre-descend (empty)
       // b2. child-descend
       child.layout();
@@ -467,7 +473,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - On positioning extensions of [BoxLayouter] using the default [layout],
   ///     the desired extension positioning effect is usually achieved by
   ///     overriding only the [post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
-  ///     is something else than [children]'s bounding rectangle ([Greedy], [Padder])
+  ///     is something else than [_children]'s bounding rectangle ([Greedy], [Padder])
   ///     also need to override [_post_NotLeaf_SetSize_FromPositionedChildren].
   void _post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
     // Common processing for greedy and non-greedy:
@@ -475,10 +481,10 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // Note: - When the greedy child is re-layed out, it has a final size (remainder after non greedy sizes added up),
     //         we can deal with the greedy child as if non greedy child.
     //       - no-op on baseclass [BoxLayouter].
-    List<ui.Rect> positionedRectsInMe = post_NotLeaf_PositionChildren(children);
+    List<ui.Rect> positionedRectsInMe = post_NotLeaf_PositionChildren(_children);
 
     // Apply the calculated positionedRectsInMe as offsets on children.
-    _post_NotLeaf_OffsetChildren(positionedRectsInMe, children);
+    _post_NotLeaf_OffsetChildren(positionedRectsInMe, _children);
     // Finally, when all children are at the right offsets within me, invoke
     // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
     //
@@ -570,7 +576,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
         .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
     assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
 
     layoutSize = positionedChildrenOuterRects.size;
@@ -658,19 +664,19 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     _ensureKeySet(key);
 
     // Initialize children list to empty
-    this.children = [];
+    __children = [];
     // [children] may be omitted (not passed, null), then concrete extension must create and
     // add [children] in the constructor using [addChildren], see [LegendContainer] as example
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
-      this.children = children;
+      __children = children;
     }
 
     // Having added children, ensure key uniqueness
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    _makeSelfParentOn(this.children);
+    _makeSelfParentOn(__children);
     // NAMED GENERATIVE super() called implicitly here.
   }
 
@@ -690,11 +696,12 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
-  /// Appends all children passed in [addedChildren] to existing [children],
+  /// Appends all children passed in [addedChildren] to existing [_children],
   /// changes all [addedChildren] member [parent] to self, and ensures unique
-  /// keys among all [children].
+  /// keys among all [_children].
+  /// todo-01 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
   void addChildren(List<BoxContainer> addedChildren) {
-    children.addAll(addedChildren);
+    __children.addAll(addedChildren);
     _makeSelfParentOn(addedChildren);
     ensureKeyedMembersHaveUniqueKeys();
   }
@@ -735,7 +742,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   /// This default [BoxContainer] implementation implements several roles:
   ///   - Overflow check: Checks for layout overflows, on overflow, paints a yellow-black rectangle
   ///   - Skip check: Checks for [orderedSkip], if true, returns as a no-op
-  ///   - Paint forward: Forwards [paint] to [children]
+  ///   - Paint forward: Forwards [paint] to [_children]
   ///
   /// On Leaf nodes, it should generally paint whatever primitives (lines, circles, squares)
   /// the leaf container consists of.
@@ -764,7 +771,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
     if (orderedSkip) return;
 
-    for (var child in children) {
+    for (var child in _children) {
       child.paint(canvas);
     }
   }
@@ -795,10 +802,10 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 }
 
-/// Mixin marks implementations as able to create and add [children] *late*,
+/// Mixin marks implementations as able to create and add [_children] *late*,
 /// during [layout] of their parent.
 ///
-/// Note: By default, [children] should created *early* in the [BoxContainer] constructor.
+/// Note: By default, [_children] should created *early* in the [BoxContainer] constructor.
 ///
 /// This mixin should be used by extension of [BoxContainer]s
 /// that need to wait constructing children later than in the constructor.
@@ -1023,10 +1030,10 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // }
   }
 
-  List<Greedy> get _greedyChildren => children.whereType<Greedy>().toList();
+  List<Greedy> get _greedyChildren => _children.whereType<Greedy>().toList();
 
   List<LayoutableBox> get _nonGreedyChildren {
-    List<BoxContainer> nonGreedy = List.from(children);
+    List<BoxContainer> nonGreedy = List.from(_children);
     nonGreedy.removeWhere((var child) => child is Greedy);
     return nonGreedy;
   }
@@ -1420,7 +1427,7 @@ class Greedy extends NonPositioningBoxLayouter {
         .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
     assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
 
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis
@@ -1716,7 +1723,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     foundFirstColumnFromTop = true;
   }
 
-  for (var child in boxLayouter.children) {
+  for (var child in boxLayouter._children) {
     // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
     // so that only the top layouter can have non-start and non-tight/matrjoska
     // todo-02 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does

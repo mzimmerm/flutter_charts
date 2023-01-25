@@ -85,8 +85,8 @@ abstract class Keyed {
 ///
 /// For example, a [BoxContainer] we want siblings should be unique,
 /// so we ensure [BoxContainer] implements the [UniqueKeyedObjectsManager],
-/// and we forward the [BoxContainer]'s [children] to the [UniqueKeyedObjectsManager]'s [keyedMembers];
-/// we also ensure that in [BoxContainer]'s constructor, after [BoxContainer]'s [children] change, we call [ensureKeyedMembersHaveUniqueKeys].
+/// and we forward the [BoxContainer]'s [_children] to the [UniqueKeyedObjectsManager]'s [keyedMembers];
+/// we also ensure that in [BoxContainer]'s constructor, after [BoxContainer]'s [_children] change, we call [ensureKeyedMembersHaveUniqueKeys].
 abstract class UniqueKeyedObjectsManager {
 
   /// Holder of the [Keyed] members, which keys must stay unique.
@@ -125,8 +125,8 @@ abstract class UniqueKeyedObjectsManager {
   /// Implementors must call this method every time after the list backing
   /// the [keyedMembers] is modified.
   ///
-  /// As by default, the [BoxContainer.children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
-  /// this method must be called after changing [children].
+  /// As by default, the [BoxContainer._children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
+  /// this method must be called after changing [_children].
   void ensureKeyedMembersHaveUniqueKeys() {
     // toSet converts to set using ==.
     // If lengths do not match, there are at least two == keys in [keys].

@@ -355,14 +355,14 @@ class AxisLabelContainer extends LabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
-    required BoxContainer parent,
+    // todo-00-last required BoxContainer parent,
   }) : super(
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
            options: options,
         ) {
-    this.parent = parent;
+    // todo-00-last this.parent = parent;
   }
 }
 
@@ -383,13 +383,13 @@ class YAxisLabelContainer extends AxisLabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
-    required BoxContainer parent,
+    // todo-00-last required BoxContainer parent,
     required LabelInfo labelInfo,
   }) : _labelInfo = labelInfo, super(
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,
     options:         options,
-    parent:          parent,
+    // todo-00-last parent:          parent,
   );
 }

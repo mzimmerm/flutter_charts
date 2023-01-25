@@ -1674,23 +1674,36 @@ Notes:
      - [X] _buildContainerChildrenOrSelf : remove ~setChildrenAndMakeSelfParent~, this is done in [BoxContainer] constructor if ~children~ are passed
      - 
 
-**** IN-PROGRESS-NOW Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children. Remove this.children setter
+**** DONE Move ~buildContainerOrSelf~, move contents to BoxContainer constructor as children. Remove this.children setter
 
 1. [X] List classes that use ~buildContainerOrSelf~, move contents to constructor
 2. [X] In [BoxContainer] constructor, where  ~buildContainerOrSelf~, remove 
-3. [ ] remove ~buildContainerOrSelf~ from comments
-4. [ ] Remove ~this.children~ from code and everywhere. Any consequences???? Look at ChartRootContainer returning [legendContainer, yContainer, etc]
-5. [ ] run minitest 
-6. [ ] run tests and commit
+3. [X] remove ~buildContainerOrSelf~ from comments
+4. [X] Remove ~this.children~ from code and everywhere. Any consequences???? Look at ChartRootContainer returning [legendContainer, yContainer, etc]
+5. [X] run minitest 
 
-**** BoxContainerHierarchy split children to get and set ????
-   
+**** DONE BoxContainerHierarchy make __children private delegater, and protect the returned get _children as copy of List(__children) 
 
+
+- [X] Change BoxContainer.children to __children
+- [X] Split the children to set children and get children.
+- [X] get _children is public
+- [X] ACTUALLY NOT NEEDED AT ALL! set _children is private
+- [X] getter returns a copy of __children, NOT __children
+- [X] minitest
+
+It seems both getter and setter can remain private, good.
 
 **** Go over setting ~parent~ and rationalize
 
-- [ ] never set parent in code, except default code in constructor and addChildren
-- [ ] 
+- [X] never set parent in code, except default code in container_base, and addChildren setting up parent on children.
+- [X] minitest AND test
+- [X] commit and push
+- [ ] remove all commented out parent code
+- [ ] minitest
+- [ ] rename parent to _parent
+- [ ] minitest and test
+- [ ] commit and push
 
 
 
