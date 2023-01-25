@@ -465,6 +465,11 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
   /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
   ///
+  /// The reason the hierarchy-children Y labels are created late in this
+  /// method [buildChildrenInParentLayout] is that we do not know until the parent
+  /// [chartRootContainer] is being layed out, how much Y-space there is, therefore,
+  /// how many Y labels would fit.
+  ///
   /// The created Y labels should be layed out by invoking [layout]
   /// immediately after this method [buildChildrenInParentLayout]
   /// is invoked.
@@ -495,7 +500,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
-      this.children = _yLabelContainers;
+      addChildren(_yLabelContainers);
       return;
     }
 
@@ -533,7 +538,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       _yLabelContainers.add(yLabelContainer);
     }
 
-    this.children = _yLabelContainers;
+    addChildren(_yLabelContainers);
   }
 
   /// Lays out this [YContainer] - the area containing the Y axis labels -
@@ -693,7 +698,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       );
       _xLabelContainers.add(xLabelContainer);
     }
-    this.children = _xLabelContainers;  // todo-01-done-duplicite-children: This AxisLabelContainer constructor is already forcing parent
+    addChildren(_xLabelContainers);
   }
 
   @override
@@ -747,7 +752,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
       xIndex++;
     }
-    this.children = _xLabelContainers;  // todo-01-done-duplicite-children
 
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
@@ -1012,8 +1016,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
       _xGridLinesContainer._lineContainers.add(xLineContainer);
     }
 
-    this.children = children;  // todo-01-done-duplicite-children - GridLinesContainer constructor is already forcing parent!!
-
+    addChildren(children);
     return this;
   }
 
@@ -2085,12 +2088,11 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     required PresenterCreator presenterCreator,
     required bool isStacked,
     required LayoutableBox caller,
-  }) : _isStacked = isStacked,
-  _caller = caller, super(growable: true) // todo-00-last : added , super(growable: true)
-  {
-    ChartData chartData = chartRootContainer.data;
-
-    _createStackableValuePointsFromChartData(chartData);
+  })  : _isStacked = isStacked,
+        _caller = caller,
+        super(growable: true) {
+    // todo-00-last-done : ChartData chartData = chartRootContainer.data;
+    _createStackableValuePointsFromChartData(chartRootContainer.data);
   }
 
   // todo-01-morph : Create this object, PointsColumns here and return. Maybe this should be converted to factory constructor?

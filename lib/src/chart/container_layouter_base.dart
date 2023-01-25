@@ -46,7 +46,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   // todo-01-last : maybe restore late final, was : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
   BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
 
-  // Important:
+  // todo-01 Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
   //          need to start with empty array, initialized in BoxContainer.
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
@@ -54,8 +54,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
   //                and add asserts as appropriate
-  // todo-01-last : can we make children late final? Can we make immutable? Ideally all.
-  // todo-00-last : done, but check and add test : make the NullLikeListSingleton non extensible, otherwise we may keep adding to it from everywhere!!
+  // todo-01-last : can we make children late final? Can we make immutable? Ideally all. Maybe just init to []?
   List<BoxContainer> children = NullLikeListSingleton();
 
   bool get isRoot => parent == null;
@@ -361,8 +360,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Implementation of abstract [LayoutableBox.layout].
   @override
   void layout() {
-    // print('In layout: this = $this. this.children = $children.');
-    // print('In layout: parent of $this = $parent.');
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
@@ -662,8 +659,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
     // Initialize children list to empty
     this.children = [];
-    // children can be not passed (null), then let concrete extension to create them,
-    // and add using code like todo-00 : add example
+    // [children] may be omitted (not passed, null), then concrete extension must create and
+    // add [children] in the constructor using [addChildren], see [LegendContainer] as example
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
       this.children = children;
@@ -1658,11 +1655,16 @@ LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
 class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
 
   // todo-00-last : added growable on/off
-  /// Generative
+  /// Generative NAMED (1- UNNAMED already used up by factory)
   NullLikeListSingleton._privateNamedConstructor() : super(growable: false);
 
   static final _instance = NullLikeListSingleton._privateNamedConstructor();
 
+  /// Existence of UNNAMED prevents UNNAMED GENERATIVE 'NullLikeListSingleton()'
+  ///   to be code-generated. So, the only way to create instance is
+  ///   via [NullLikeListSingleton._privateNamedConstructor].
+  /// We could create multiple instances, but only in this library file container_layouter_base.dart.
+  ///
   factory NullLikeListSingleton() {
     return _instance;
   }
@@ -1714,7 +1716,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     // so that only the top layouter can have non-start and non-tight/matrjoska
     // todo-02 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
     //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
-    //           but this is not simple. ALSO: consider moving this to the buildContainerOrSelf method
+    //           but this is not simple.
     if (child is Row && foundFirstRowFromTop) {
       child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
     }
