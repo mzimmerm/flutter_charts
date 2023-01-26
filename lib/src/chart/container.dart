@@ -124,8 +124,13 @@ abstract class ChartBehavior {
 
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
+  /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
+  /// which is never set on instances of this [ChartRootContainer].
+  @override
+  bool get isRoot => true;
+
   /// Base Areas of chart.
-  late BoxContainer legendContainer; // New layouter 'fake' root must be declared as BoxContainer if returned from build.
+  late BoxContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;
   late DataContainer dataContainer;
@@ -190,7 +195,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
-    // todo-00-last : parent = null;
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
   }
@@ -295,6 +299,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       yLabelsMaxHeightFromFirstLayout: 0.0, // not relevant in this first layout
     );
 
+    // Note: yContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
+    //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
+    //       so _parent cannot be late final.
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.buildChildrenInParentLayout();
     yContainerFirst.layout();
@@ -531,7 +538,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
         options: options,
-        // todo-00-last : parent: this,
         labelInfo: labelInfo,
       );
 
@@ -694,7 +700,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
-        // todo-00-last : parent: this,
       );
       _xLabelContainers.add(xLabelContainer);
     }
@@ -956,7 +961,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // For each already layed out X labels in [xLabelContainers],
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
-    _yGridLinesContainer = GridLinesContainer(/*// todo-00-last parent: this*/);
+    _yGridLinesContainer = GridLinesContainer();
     children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
 
     // Initial values which will show as bad lines if not changed during layout.
@@ -972,7 +977,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
         lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
-        // todo-00-last parent: _yGridLinesContainer,
         layoutValue: lineX,
       );
 
@@ -988,7 +992,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
         lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
         linePaint: gridLinesPaint(chartOptions),
-        // todo-00-last parent: _yGridLinesContainer,
         layoutValue: lineX,
       );
       _yGridLinesContainer.addLine(yLineContainer);
@@ -998,8 +1001,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // Iterate yUserLabels and for each add a horizontal grid line
     // When iterating Y labels, also create the horizontal lines - xGridLines
-    _xGridLinesContainer = GridLinesContainer(/*// todo-00-last parent: this*/);
-    children.add(_xGridLinesContainer); // todo-01-done-duplicite-children
+    _xGridLinesContainer = GridLinesContainer();
+    children.add(_xGridLinesContainer);
 
     // yTickYs create vertical xLineContainers
     // Position the horizontal xGrid at mid-points of labels at yTickY.
@@ -1008,7 +1011,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         lineFrom: initLineFrom, // ui.Offset(0.0, yTickY),
         lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
         linePaint: gridLinesPaint(chartOptions),
-        // todo-00-last parent: _xGridLinesContainer,
         layoutValue: yTickY,
       );
 
@@ -1327,14 +1329,7 @@ class LineChartDataContainer extends DataContainer {
 class GridLinesContainer extends BoxContainer {
   final List<LineContainer> _lineContainers = List.empty(growable: true);
 
-/* // todo-00-last :
-  GridLinesContainer({BoxContainer? parent}) : super() {
-   this.parent = parent;
-  }
-*/
-  GridLinesContainer(/*{BoxContainer? parent}*/) : super() {
-     // todo-00-last : this.parent = parent;
-  }
+  GridLinesContainer();
 
   void addLine(LineContainer lineContainer) {
     _lineContainers.add(lineContainer);
@@ -1636,10 +1631,6 @@ class LegendContainer extends ChartAreaContainer {
   ///
   /// The passed [chartRootContainer] can be used to get both [ChartData] [data]
   /// and [ChartOptions] [options].
-  ///
-  ///  Important: This object is the 'fake' root of hierarchy for the new layout.
-  ///             Override [isRoot] to true; [parent] can still be set even though
-  ///             traversing up would fail, so use [isRoot] not [parent] for that.
   LegendContainer({
     required ChartRootContainer chartRootContainer,
     // List<BoxContainer>? children, // could add for extensibility by e.g. add legend comment

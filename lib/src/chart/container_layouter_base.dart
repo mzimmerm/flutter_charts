@@ -34,17 +34,17 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /* KEEP
   /// Remove ability to create instance on extensions, encouraging use of [BoxContainerHierarchy]
   /// as mixin only. BUT IT IS NOT CLEAR HOW TO DO THIS AS  BoxContainer extends BoxContainerHierarchy,
-  /// we would need to change it to mixin, more work.
+  /// to change BoxContainerHierarchy to mixin, more work.
   BoxContainerHierarchy._internal();
   */
 
-  /// The parent of this [BoxContainer], late initialized in one of 2 places:
-  ///   1. If [parent] is explicitly passed to constructor of [BoxContainer] extensions, in situations when caller knows
+  /// The parent of this [BoxContainer], initialized to null here, set to in one of 2 places:
+  ///   1. If [_parent] is explicitly passed to constructor of [BoxContainer] extensions, in situations when caller knows
   ///      the parent and wants to explicitly set up the parent-child.
   ///   2. In the [BoxContainer] constructor, if [_children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
   // todo-01-last : maybe restore late final, was : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
-  BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+  BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this parent
 
   // todo-01 Important:
   //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
@@ -52,10 +52,9 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
   //          in BoxContainer)
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  // todo-02-last : work on incorporating this null-like singleton ChildrenNotSetSingleton in other classes,
   //                and add asserts as appropriate
   // todo-01-last : can we make children late final? Can we make immutable? Ideally all. Maybe just init to []?
-  List<BoxContainer> __children = NullLikeListSingleton();
+  List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
 
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
@@ -63,7 +62,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// Set children list
   // set _children(List<BoxContainer> children) { __children = children; }
 
-  bool get isRoot => parent == null;
+  bool get isRoot => _parent == null;
 
   bool get isLeaf => _children.isEmpty;
 
@@ -74,15 +73,15 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
       return _root!;
     }
 
-    if (parent == null) {
-      _root = _children[0].parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
+    if (_parent == null) {
+      _root = _children[0]._parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
       return _root!;
     }
 
-    BoxContainer rootCandidate = parent!;
+    BoxContainer rootCandidate = _parent!;
 
-    while (rootCandidate.parent != null) {
-      rootCandidate = rootCandidate.parent!;
+    while (rootCandidate._parent != null) {
+      rootCandidate = rootCandidate._parent!;
     }
     _root = rootCandidate;
     return _root!;
@@ -91,7 +90,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   @Deprecated(
       '[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
   void addChildToHierarchyDeprecated(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
-    childOfThis.parent = thisBoxContainer;
+    childOfThis._parent = thisBoxContainer;
     _children.add(childOfThis);
     // throw StateError('This is deprecated.');
   }
@@ -133,12 +132,12 @@ abstract class LayoutableBox {
   // todo-01 : should this be private as changes are performed by the 'apply' method?
   ui.Offset get offset;
 
-  /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [parent] in the [BoxContainerHierarchy].
+  /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [_parent] in the [BoxContainerHierarchy].
   ///
-  /// Lifecycle: Should be invoked by [parent] during [layout] after
+  /// Lifecycle: Should be invoked by [_parent] during [layout] after
   ///            sizes and positions of all this [LayoutableBox]'s siblings are calculated.
   ///
-  /// Override if this [LayoutableBox]'s [parent] offset needs to be applied also to [_children] of
+  /// Override if this [LayoutableBox]'s [_parent] offset needs to be applied also to [_children] of
   /// this [LayoutableBox].
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
@@ -357,8 +356,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// On any other [BoxContainer], 'apply' much be called from the  container-hierarchy-parent.
   void assertCallerIsParent(LayoutableBox caller) {
     if (!isRoot) {
-      if (!identical(caller, parent)) {
-        throw StateError('On this $this, parent is $parent, BUT it should be == to caller $caller');
+      if (!identical(caller, _parent)) {
+        throw StateError('On this $this, parent is $_parent, BUT it should be == to caller $caller');
       }
     }
   }
@@ -664,7 +663,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     _ensureKeySet(key);
 
     // Initialize children list to empty
-    __children = [];
+    // __children = [];
     // [children] may be omitted (not passed, null), then concrete extension must create and
     // add [children] in the constructor using [addChildren], see [LegendContainer] as example
     if (children != null) {
@@ -692,12 +691,12 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
   void _makeSelfParentOn(List<BoxContainer> parentedChildren) {
     for (var child in parentedChildren) {
-      child.parent = this;
+      child._parent = this;
     }
   }
 
   /// Appends all children passed in [addedChildren] to existing [_children],
-  /// changes all [addedChildren] member [parent] to self, and ensures unique
+  /// changes all [addedChildren] member [_parent] to self, and ensures unique
   /// keys among all [_children].
   /// todo-01 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
   void addChildren(List<BoxContainer> addedChildren) {
@@ -1433,11 +1432,11 @@ class Greedy extends NonPositioningBoxLayouter {
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis
     ui.Size childrenLayoutSize = positionedChildrenOuterRects.size; // use the portion of this size along cross axis
 
-    if (parent is! RollingPositioningBoxLayouter) {
+    if (_parent is! RollingPositioningBoxLayouter) {
       throw StateError('Parent of this Greedy container "$this" must be '
-          'a ${(RollingPositioningBoxLayouter).toString()} but it is $parent');
+          'a ${(RollingPositioningBoxLayouter).toString()} but it is $_parent');
     }
-    RollingPositioningBoxLayouter p = (parent as RollingPositioningBoxLayouter);
+    RollingPositioningBoxLayouter p = (_parent as RollingPositioningBoxLayouter);
     ui.Size size = _greedySizeAlongGreedyAxis(p.mainLayoutAxis, greedySize, childrenLayoutSize);
 
     // Set the layout size as the full constraint side along the greedy axis,

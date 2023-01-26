@@ -1281,11 +1281,8 @@ Created in the above LegendItemContainer.build
     - mixin ~BoxLayouter~ on ~BoxContainerHierarchy~ implements ~LayoutableBox~
     - abstract class ~BoxContainer~ extends Object with ~BoxContainerHierarchy~, ~BoxLayouter~ implements ~LayoutableBox~ 
       
-** DONE 5. STUB - LEGEND LAYOUT: Use new Layouter algorithm + new Box/Column wrap ON LEGEND Containers (LegendContainer) instead of custom code. REST of Containers (ChartRootContainer, X/YContainer, DataContainer) use original code.
-
-** DONE 5.1 STUB - Members which should always be set by parent, use name 'applyParent', and add explicit caller test
-
-** DONE 5.2 Layouter improvements (long but keep)
+** DONE 5. Use auto-layout on LegendContainer and children
+** DONE 6. Layouter improvements (long but keep)
 
 *** DONE Basic Layouters : Row Packing, Align, settings, overflow rectangle, Greedy, and more
 
@@ -1515,17 +1512,7 @@ Debugging notes on why using a 'right alignment' on legend, the legend ends up o
                                        alignY=1
 #+END_SRC
 
-** IN-PROGRESS Sequence and structure of calls during old and new layout
-
-- ~FlutterChartPainter.paint~ calls
-- ~ChartRootContainer.paint~ calls
-- ~ChartRootContainer.layout~ which creates in order
-- The ~LegendContainer~, ~YContainer~, ~XContainer~ etc.
-  - After each container is created, it's ~layout~ is immediately called.
-
-IMPORTANT: ~BoxContainer~ extends ~BoxLayouter and BoxContainerHierarchy mixins~, ADDS ONLY METHODs ~paint(Canvas)~ and ~buildContainerOrSelf~ to ~BoxLayouter~
-
-** IN-PROGRESS 6. REST Containers 1. : ~HUGE: First migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
+** DONE 7. ~Migrate all existing Containers to use new Layout methods, but still use manual layout as is. Do NOT deal with Presenter, VerticalBarPresenter, LineAndHotspotPresenter~
 
 *** TLDR
 
@@ -1662,7 +1649,7 @@ Notes:
 
 
 
-*** IN-PROGRESS-NOW Remove buildContainerOrSelf from interface.
+*** DONE Remove buildContainerOrSelf from interface. Convert it to private methods _createChildrenOfAAA() called from BoxContainer constructors.
 
 **** DONE Review where should the long build method (name?) be called after removing ~buildContainerOrSelf~
 
@@ -1694,31 +1681,27 @@ Notes:
 
 It seems both getter and setter can remain private, good.
 
-**** Go over setting ~parent~ and rationalize
+**** DONE Go over setting ~parent~ and rationalize
 
 - [X] never set parent in code, except default code in container_base, and addChildren setting up parent on children.
 - [X] minitest AND test
 - [X] commit and push
-- [ ] remove all commented out parent code
-- [ ] minitest
-- [ ] rename parent to _parent
-- [ ] minitest and test
-- [ ] commit and push
+- [X] remove all commented out parent code
+- [X] minitest
+- [X] rename parent to _parent
+- [X] minitest
+- [X] commit and push
 
 
 
-**** Can we make ~ensureKeyedMembersHaveUniqueKeys~ private?
-
-*** IN-PROGRESS-NOW Resolve what to return from constructor when children passed OR not passed. What should ~buildContainerOrSelf~ return?????????
+**** DONE NO Can we make ~ensureKeyedMembersHaveUniqueKeys~ private?
 
 
-*** TODO-NEXT Can we move creation of ChartRootContainer from newCoreLayout to constructor???
 
-This would also move YContainer build there. Only XContainer and DataContainer needs the build method it seems !!!todo
 *** TODO-NEXT Rename ~PositionChildren~ to ~CalcChildrenPositions~ then rename ~_Position~ to ~CalcChildrenPositions~ but this will make some method names long
 
 
-*** LATER Classes UN-migrated to [BoxContainer] including layout, and container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
+*** LATER Migrate to [BoxContainer] container-hard-to-convert classes:  ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
 
 
 Classes with X are BoxContainers with layout implemented
@@ -1778,7 +1761,6 @@ We also add a 'convenience' application support that allows to *give name* to Bo
   - [ ] Does this force to add same constructor to all extensions?
 - [ ] Make sure all tests work
 - [ ] commit and push
-*** LATER Go over existing BoxContainers, and make sure children are created before parent
 *** LATER Move container.dart and related container classes to a new directory container_layouter
 
 *** NOTE NO-NO-NO ChartOptions turn into a singleton, and access it that way everywhere. This probably changes the code a lot, including main.
@@ -1786,9 +1768,13 @@ We also add a 'convenience' application support that allows to *give name* to Bo
 Options are NOT a singleton. Multiple charts may be used in an application, each with a different ChartOptions
 
 
-** LATER 7. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
+** IN-PROGRESS-NOW 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
-*** TODO Deep refactoring to make "everything is a Container parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
+*** IN-PROGRESS-NOW Merge to master, and create a new branch flutter_charts_v4
+
+branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers
+
+*** TODO Deep refactoring to make "everything is a BoxContainer parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
 
 - [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
   - [ ] First experiment on ~PresentersColumns~
@@ -1832,14 +1818,16 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 *** TODO LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!
 
 - This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
+
+
+** LATER 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
+
   
-*** TODO ~HUGE - establish hierarchy between current Containers children of ChartContainer~ 
-*** TODO ~HUGE - establish hierarchy between current Containers other than children of ChartContainer~ (NOT non-container classes like Presenter, PointsColumn, PointsColumns )
-** TODO 8. ~Containers to MORPHS~
+** TODO 10. ~Containers to MORPHS~
 
   - [ ] start doing Morph stuff: start with everything is a transform!
 
-** TODO-NEXT 9. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
+** TODO-NEXT 11. EVEN-LATER. : BoxContainer debuggability, introduce Singletons on places
 
 
 - [-] EVEN-LATER BoxContainer debuggability
