@@ -1868,12 +1868,12 @@ class StackableValuePoint {
   /// The position in the top container, representing the scaled value of [fromY].
   /// Initially created as `yLabelsCreator.scaleY(value: fromY)`,
   /// then moved by positioning by [applyParentOffset].
-  double scaledFromY = 0.0;
+  // todo-00-last : unused-2 : double scaledFromY = 0.0;
 
   /// The position in the top container, representing the scaled value of [toY].
   /// Initially created as `yAxisdY = yLabelsCreator.scaleY(value: toY);`,
   /// then moved by positioning by [applyParentOffset].
-  double scaledToY = 0.0;
+  // todo-00-last : unused-2 : double scaledToY = 0.0;
 
   /// The [scaledFrom] and [scaledTo] are the scaled Offsets for painting in absolute chart coordinates.
   /// More precisely, offsets of the bottom and top of the presenter of this
@@ -1945,11 +1945,16 @@ class StackableValuePoint {
   }) {
     // todo-00-last : unused : this.scaledX = scaledX;
     // todo-00-last : unused : scaledY = yLabelsCreator.scaleY(value: dataY);
-    scaledFromY = yLabelsCreator.scaleY(value: fromY);
-    scaledToY = yLabelsCreator.scaleY(value: toY);
+    // todo-00-last : unused-2 : scaledFromY = yLabelsCreator.scaleY(value: fromY);
+    // todo-00-last : unused-2 : scaledToY = yLabelsCreator.scaleY(value: toY);
     // todo-01-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
+
+    /* // todo-00-last : unused-2 :
     scaledFrom = ui.Offset(scaledX, scaledFromY);
     scaledTo = ui.Offset(scaledX, scaledToY);
+    */
+    scaledFrom = ui.Offset(scaledX, yLabelsCreator.scaleY(value: fromY));
+    scaledTo = ui.Offset(scaledX, yLabelsCreator.scaleY(value: toY));
 
     return this;
   }
@@ -1963,8 +1968,8 @@ class StackableValuePoint {
     /// Scaled values represent screen coordinates, apply offset to all.
     // todo-00-last : unused : scaledX += offset.dx;
     // todo-00-last : unused : scaledY += offset.dy;
-    scaledFromY += offset.dy;
-    scaledToY += offset.dy;
+    // todo-00-last : unused-2 : scaledFromY += offset.dy;
+    // todo-00-last : unused-2 : scaledToY += offset.dy;
 
     scaledFrom += offset;
     scaledTo += offset;
@@ -1995,8 +2000,8 @@ class StackableValuePoint {
     clone.toY = toY;
     // todo-00-last : unused : clone.scaledX = scaledX;
     // todo-00-last : unused : clone.scaledY = scaledY;
-    clone.scaledFromY = scaledFromY;
-    clone.scaledToY = scaledToY;
+    // todo-00-last : unused-2 : clone.scaledFromY = scaledFromY;
+    // todo-00-last : unused-2 : clone.scaledToY = scaledToY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
     clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 
