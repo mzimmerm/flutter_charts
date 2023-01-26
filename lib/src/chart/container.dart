@@ -957,7 +957,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     _yGridLinesContainer = GridLinesContainer();
     List<BoxContainer> children = [];
-    children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
+    children.add(_yGridLinesContainer);
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
@@ -1118,6 +1118,13 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     if (chartRootContainer.data.chartOptions.yContainerOptions.isYGridlinesShown) {
       _yGridLinesContainer.paint(canvas);
     }
+  }
+
+  @override
+  void paint(ui.Canvas canvas) {
+    throw StateError('No need to call paint on $runtimeType, extension of DataContainer.'
+        ' Overridden in LineCharDataContainer and VerticalBarCharDataContainer'
+        ' where details are served by _paintGridLines and _drawDataPointPresentersColumns');
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]

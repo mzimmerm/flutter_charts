@@ -3,9 +3,11 @@ import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends BoxContainer {
-  ui.Paint linePaint;
+  /// Points from which line starts and ends. NOT added to children ATM.
   ui.Offset lineFrom;
   ui.Offset lineTo;
+  ui.Paint linePaint;
+
   // todo-01-full-autolayout :  this was added temporarily to move between build and layout, remove
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
@@ -26,11 +28,6 @@ class LineContainer extends BoxContainer {
 
   // #####  Implementors of method in superclass [Container].
 
-  @override
-  void paint(ui.Canvas canvas) {
-    canvas.drawLine(lineFrom, lineTo, linePaint);
-  }
-
   /// Implementor of method in superclass [Container].
   @override
   void layout() {
@@ -43,5 +40,10 @@ class LineContainer extends BoxContainer {
     super.applyParentOffset(caller, offset);
     lineFrom += offset;
     lineTo += offset;
+  }
+
+  @override
+  void paint(ui.Canvas canvas) {
+    canvas.drawLine(lineFrom, lineTo, linePaint);
   }
 }
