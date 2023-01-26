@@ -212,7 +212,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   List<BoxContainer> _createChildrenOfRootContainer() {
 
-    // ### 1. [setupPointsColumns] later in [layout]
+    // ### 1. construct [PointsColumns] later in [layout]
     // ### 2. Build the LegendContainer where series legend is shown
     legendContainer = LegendContainer(
       chartRootContainer: this,
@@ -267,11 +267,18 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   @override
   void layout() {
 
-    // ### 1. Prepare early, from dataRows, the [PointsColumns] object, managed
+    // ### 1. Construct early, from dataRows, the [PointsColumns] object, managed
     //        in [ChartRootContainer.pointsColumns], representing list of columns on chart.
-    //        [YContainer] is first to need it, to display and scale y values and
+    //        First [YContainer] is first to need it, to display and scale y values and
     //        create labels from the stacked points (if chart is stacked).
-    setupPointsColumns(); // todo-00-last : This needs to be separated into  PointsColumns BoxContainer 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout. But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
+    /// Create member [pointsColumns] from [data.dataRows].
+    // todo-00-last : This needs to be separated into  PointsColumns BoxContainer 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout. But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
+    pointsColumns = PointsColumns(
+      chartRootContainer: this,
+      presenterCreator: presenterCreator,
+      isStacked: isStacked,
+      caller: this,
+    );
 
     // ### 2. Layout the LegendContainer where series legend is shown
     var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
@@ -425,17 +432,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   });
-
-  /// Create member [pointsColumns] from [data.dataRows].
-  void setupPointsColumns() {
-    pointsColumns = PointsColumns(
-      chartRootContainer: this,
-      presenterCreator: presenterCreator,
-      isStacked: isStacked,
-      caller: this,
-    );
-  }
-
 }
 
 /// Container of the Y axis labels.
@@ -950,8 +946,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
         findSourceContainersReturnLayoutResultsToBuildSelf();
 
-    List<BoxContainer> children = []; // todo-01-done-duplicite-children
-
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
     bool isStacked = chartRootContainer.isStacked;
@@ -962,6 +956,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // create one [LineContainer] and add it to [yGridLinesContainer]
 
     _yGridLinesContainer = GridLinesContainer();
+    List<BoxContainer> children = [];
     children.add(_yGridLinesContainer); // todo-01-done-duplicite-children
 
     // Initial values which will show as bad lines if not changed during layout.
@@ -1098,7 +1093,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     /// and bars from the presenters' prepared ui elements:
     /// lines, points, bars, etc.
 
-    // todo-00-last-1 : What is the difference between this and setupPointsColumns() which is called earlier in ChartRootContainer.layout?
+    // todo-00-last-1 : What is the difference between this PresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
     //                  PointsColumns is DATA, PresentersColumns should be converted to BoxContainer
     // todo-00-last-1 :
     presentersColumns = PresentersColumns(
@@ -1338,12 +1333,6 @@ class GridLinesContainer extends BoxContainer {
   @override
   void layout() {
     throw StateError('No need to call layout on $runtimeType, extension of GridLinesContainer.');
-    /*
-    for (LineContainer lineContainer in _lineContainers) {
-      lineContainer.layout(boxConstraints);
-    }
-    replaceChildrenAndMakeSelfParentOn(_lineContainers);  // todo-01-done-duplicite-children
-   */
   }
 
   /// Overridden from super. Applies offset on all members.
