@@ -1101,7 +1101,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // todo-00-last-1 : What is the difference between this and setupPointsColumns() which is called earlier in ChartRootContainer.layout?
     //                  PointsColumns is DATA, PresentersColumns should be converted to BoxContainer
     // todo-00-last-1 :
-    // todo-done-last : setupPresentersColumns();
     presentersColumns = PresentersColumns(
       pointsColumns: chartRootContainer.pointsColumns,
       chartRootContainer: chartRootContainer,
@@ -1139,28 +1138,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   void scalePointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     chartRootContainer.pointsColumns.scale(layoutDependency);
   }
-
-/* todo-00-last-done : moved directly to where it was called, as it has single call point
-  /// Creates from [ChartData] (model for this container),
-  /// columns of leaf values encapsulated as [StackableValuePoint]s,
-  /// and from the values, the columns of leaf presenters,
-  /// encapsulated as [Presenter]s.
-  ///
-  /// The resulting elements (points and presenters) are
-  /// stored in member [presentersColumns].
-  /// This is a core method that must run at the end of layout.
-  /// Painters use the created leaf presenters directly to draw lines, points,
-  /// and bars from the presenters' prepared ui elements:
-  /// lines, points, bars, etc.
-
-  void setupPresentersColumns() {
-    presentersColumns = PresentersColumns(
-      pointsColumns: chartRootContainer.pointsColumns,
-      chartRootContainer: chartRootContainer,
-      presenterCreator: chartRootContainer.presenterCreator,
-    );
-  }
-*/
 
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
@@ -1810,12 +1787,9 @@ class LegendContainer extends ChartAreaContainer {
 ///   the values of [dataY] from the bottom of the stacked values to this point,
 ///   by calling the [stackOnAnother] method.
 ///
-/// 3. The [scaledX], [scaledY], [scaledFromY], [scaledToY], are scaled-coordinates -
+/// 3. The [scaledFrom] and [scaledTo] type [ui.Offset] are scaled-coordinates -
 ///   represent members from group 2, scaled to the container coordinates (display coordinates).
 ///   *This group's members DO change under [applyParentOffset] as they represent coordinates.*
-///   - The [scaledY], [scaledFromY], [scaledToY] are converted from the stacked data values [dataY], [fromY] and [toY].
-///   - The [scaledX] is not converted from any data value (does not represent any data value).
-///   - The [scaledFrom] and [scaledTo] are [ui.Offset] wrappers for [scaledX], [scaledFromY], [scaledToY].
 ///
 /// Stacking management:
 /// - This object does not manage it's stacking,
@@ -1855,11 +1829,6 @@ class StackableValuePoint {
   // ### 3. Group 3, are the scaled-coordinates - copy-converted from members from group 2,
   //        by scaling group 2 members to the container coordinates (display coordinates)
 
-  /// The position in the topContainer, through the PointsColumns hierarchy.
-  /// Not actually scaled (because it does not represent any X data), just
-  /// always moved by positioning by [applyParentOffset].
-  // todo-00-last : unused : double scaledX = 0.0;
-
   /// The position in the topContainer, representing the scaled value of [dataY].
   /// Initially scaled to available pixels on the Y axis,
   /// then moved by positioning by [applyParentOffset].
@@ -1875,14 +1844,22 @@ class StackableValuePoint {
   /// then moved by positioning by [applyParentOffset].
   // todo-00-last : unused-2 : double scaledToY = 0.0;
 
-  /// The [scaledFrom] and [scaledTo] are the scaled Offsets for painting in absolute chart coordinates.
-  /// More precisely, offsets of the bottom and top of the presenter of this
-  /// point - for example, for VerticalBar, bottom left and top right of each bar
-  /// representing this value point (data point).
-  /// Wrapper for [scaledX], [scaledFromY]
+  /// The [scaledFrom] and [scaledTo] are the pixel (scaled) coordinates
+  /// of (possibly stacked) data values in the [ChartRootContainer] coordinates.
+  /// They are positions used by [Presenter] to paint the 'widget'
+  /// that represents the (possibly stacked) data value.
+  ///
+  /// Initially scaled to available pixels on the Y axis,
+  /// then moved by positioning by [applyParentOffset].
+  ///
+  /// In other words, they hold offsets of the bottom and top of the [Presenter] of this
+  /// data value point.
+  ///
+  /// For example, for VerticalBar, [scaledFrom] is the bottom left and
+  /// [scaledTo] is the top right of each bar representing this value point (data point).
   ui.Offset scaledFrom = ui.Offset.zero;
 
-  /// Wrapper for [scaledX], [scaledToY]
+  /// See [scaledFrom].
   ui.Offset scaledTo = ui.Offset.zero;
 
   /// The generative constructor of objects for this class.
@@ -1934,7 +1911,7 @@ class StackableValuePoint {
   ///
   /// Note that the x values are not really scaled, as object does not
   /// manage the unscaled [x] (it manages the corresponding label only).
-  /// For this reason, the [scaledX] value must be provided explicitly.
+  /// For this reason, the [scaledX] value must be *already scaled*!
   /// The provided [scaledX] value should be the
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
@@ -1943,16 +1920,6 @@ class StackableValuePoint {
     required double scaledX,
     required YLabelsCreatorAndPositioner yLabelsCreator,
   }) {
-    // todo-00-last : unused : this.scaledX = scaledX;
-    // todo-00-last : unused : scaledY = yLabelsCreator.scaleY(value: dataY);
-    // todo-00-last : unused-2 : scaledFromY = yLabelsCreator.scaleY(value: fromY);
-    // todo-00-last : unused-2 : scaledToY = yLabelsCreator.scaleY(value: toY);
-    // todo-01-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
-
-    /* // todo-00-last : unused-2 :
-    scaledFrom = ui.Offset(scaledX, scaledFromY);
-    scaledTo = ui.Offset(scaledX, scaledToY);
-    */
     scaledFrom = ui.Offset(scaledX, yLabelsCreator.scaleY(value: fromY));
     scaledTo = ui.Offset(scaledX, yLabelsCreator.scaleY(value: toY));
 
@@ -1966,11 +1933,6 @@ class StackableValuePoint {
     // not needed to offset : StackableValuePoint predecessorPoint;
 
     /// Scaled values represent screen coordinates, apply offset to all.
-    // todo-00-last : unused : scaledX += offset.dx;
-    // todo-00-last : unused : scaledY += offset.dy;
-    // todo-00-last : unused-2 : scaledFromY += offset.dy;
-    // todo-00-last : unused-2 : scaledToY += offset.dy;
-
     scaledFrom += offset;
     scaledTo += offset;
   }
@@ -1998,10 +1960,6 @@ class StackableValuePoint {
     clone.isStacked = false;
     clone.fromY = fromY;
     clone.toY = toY;
-    // todo-00-last : unused : clone.scaledX = scaledX;
-    // todo-00-last : unused : clone.scaledY = scaledY;
-    // todo-00-last : unused-2 : clone.scaledFromY = scaledFromY;
-    // todo-00-last : unused-2 : clone.scaledToY = scaledToY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
     clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 
