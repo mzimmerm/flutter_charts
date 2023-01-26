@@ -1770,11 +1770,19 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 
 ** IN-PROGRESS-NOW 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
-*** IN-PROGRESS-NOW Merge to master, and create a new branch flutter_charts_v4
+*** DONE Merge to master, and create a new branch flutter_charts_v4
 
 branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers
 
-*** TODO Deep refactoring to make "everything is a BoxContainer parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
+*** IN-PROGRESS-NOW Deep refactoring to make "everything is a BoxContainer parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
+
+
+**** IN-PROGRESS-NOW Initial investigations and steps
+
+Create a LinearScaler class, and move an improved scaleValue to it
+
+
+**** TODO-NEXT Conversion of ~Presenters~ to ~BoxContainer~
 
 - [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
   - [ ] First experiment on ~PresentersColumns~

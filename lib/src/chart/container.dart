@@ -271,7 +271,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        in [ChartRootContainer.pointsColumns], representing list of columns on chart.
     //        [YContainer] is first to need it, to display and scale y values and
     //        create labels from the stacked points (if chart is stacked).
-    setupPointsColumns();
+    setupPointsColumns(); // todo-00-last : This needs to be separated into  PointsColumns BoxContainer 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout. But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
 
     // ### 2. Layout the LegendContainer where series legend is shown
     var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
@@ -1086,7 +1086,27 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
     // todo-01-morph-important : problem : this call actually sets absolute values on Presenters, no offsetting !!
-    setupPresentersColumns();
+    /// Creates from [ChartData] (model for this container),
+    /// columns of leaf values encapsulated as [StackableValuePoint]s,
+    /// and from the values, the columns of leaf presenters,
+    /// encapsulated as [Presenter]s.
+    ///
+    /// The resulting elements (points and presenters) are
+    /// stored in member [presentersColumns].
+    /// This is a core method that must run at the end of layout.
+    /// Painters use the created leaf presenters directly to draw lines, points,
+    /// and bars from the presenters' prepared ui elements:
+    /// lines, points, bars, etc.
+
+    // todo-00-last-1 : What is the difference between this and setupPointsColumns() which is called earlier in ChartRootContainer.layout?
+    //                  PointsColumns is DATA, PresentersColumns should be converted to BoxContainer
+    // todo-00-last-1 :
+    // todo-done-last : setupPresentersColumns();
+    presentersColumns = PresentersColumns(
+      pointsColumns: chartRootContainer.pointsColumns,
+      chartRootContainer: chartRootContainer,
+      presenterCreator: chartRootContainer.presenterCreator,
+    );
   }
 
   /// Paints the Grid lines of the chart area.
@@ -1120,6 +1140,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     chartRootContainer.pointsColumns.scale(layoutDependency);
   }
 
+/* todo-00-last-done : moved directly to where it was called, as it has single call point
   /// Creates from [ChartData] (model for this container),
   /// columns of leaf values encapsulated as [StackableValuePoint]s,
   /// and from the values, the columns of leaf presenters,
@@ -1139,6 +1160,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
       presenterCreator: chartRootContainer.presenterCreator,
     );
   }
+*/
 
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
@@ -1836,12 +1858,12 @@ class StackableValuePoint {
   /// The position in the topContainer, through the PointsColumns hierarchy.
   /// Not actually scaled (because it does not represent any X data), just
   /// always moved by positioning by [applyParentOffset].
-  double scaledX = 0.0;
+  // todo-00-last : unused : double scaledX = 0.0;
 
   /// The position in the topContainer, representing the scaled value of [dataY].
   /// Initially scaled to available pixels on the Y axis,
   /// then moved by positioning by [applyParentOffset].
-  double scaledY = 0.0;
+  // todo-00-last : unused : double scaledY = 0.0;
 
   /// The position in the top container, representing the scaled value of [fromY].
   /// Initially created as `yLabelsCreator.scaleY(value: fromY)`,
@@ -1921,8 +1943,8 @@ class StackableValuePoint {
     required double scaledX,
     required YLabelsCreatorAndPositioner yLabelsCreator,
   }) {
-    this.scaledX = scaledX;
-    scaledY = yLabelsCreator.scaleY(value: dataY);
+    // todo-00-last : unused : this.scaledX = scaledX;
+    // todo-00-last : unused : scaledY = yLabelsCreator.scaleY(value: dataY);
     scaledFromY = yLabelsCreator.scaleY(value: fromY);
     scaledToY = yLabelsCreator.scaleY(value: toY);
     // todo-01-morph : Can we remove scaledX, scaledFromY, scaledX, scaledToY and only maintain these offsets???
@@ -1932,14 +1954,15 @@ class StackableValuePoint {
     return this;
   }
 
+  // todo-00-last : This applies offset on this StackableValuePoint
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
     // not needed to offset : StackableValuePoint predecessorPoint;
 
     /// Scaled values represent screen coordinates, apply offset to all.
-    scaledX += offset.dx;
-    scaledY += offset.dy;
+    // todo-00-last : unused : scaledX += offset.dx;
+    // todo-00-last : unused : scaledY += offset.dy;
     scaledFromY += offset.dy;
     scaledToY += offset.dy;
 
@@ -1970,8 +1993,8 @@ class StackableValuePoint {
     clone.isStacked = false;
     clone.fromY = fromY;
     clone.toY = toY;
-    clone.scaledX = scaledX;
-    clone.scaledY = scaledY;
+    // todo-00-last : unused : clone.scaledX = scaledX;
+    // todo-00-last : unused : clone.scaledY = scaledY;
     clone.scaledFromY = scaledFromY;
     clone.scaledToY = scaledToY;
     clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
@@ -2068,6 +2091,8 @@ class PointsColumn {
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
 /// A (single instance per chart) is used to create a [PresentersColumns] instance, managed in the [DataContainer].
+// todo-00-later : NO NEED YET: THIS IS A MODEL, NOT PRESENTER : Convert to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout
+//                 Each PointsColumn is a child.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.
   final ChartRootContainer chartRootContainer;

@@ -41,6 +41,7 @@ class Presenter {
 /// By one "visual column" here we mean the area above one label, which
 /// shows all data value at that label, each value in one instance of
 /// [Presenter].
+// todo-00-last-2 : Convert PresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout
 class PresentersColumn {
   List<Presenter> presenters = List.empty(growable: true);
   List<Presenter> positivePresenters = List.empty(growable: true);
@@ -117,6 +118,11 @@ class PresentersColumn {
 ///   - Each [PresentersColumn] element of [presentersColumns]
 ///     manages a link to the [PresentersColumn] on it's right, allowing
 ///     walk without the [presentersColumns] list.
+// todo-00-last-1 : Convert PresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout
+//                - each child is PresentersColumn
+//                - still use everything in it the same
+//                - find where to a) create this instance and b) where to call the newly added methods
+///
 class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
   PresentersColumns({
     required PointsColumns pointsColumns,
