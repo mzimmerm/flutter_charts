@@ -145,13 +145,13 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// ##### Abstract methods or subclasses-implemented getters
 
-  /// Makes presenters, the visuals painted on each chart column that
+  /// Makes pointPresenters, the visuals painted on each chart column that
   /// represent data, (points and lines for the line chart,
   /// rectangles for the bar chart, and so on).
   ///
-  /// See [PresenterCreator] and [Presenter] for more details.
-  /// todo-01 : There may be a question "why does a container need to know about Presenter, even indirectly"?
-  late PresenterCreator presenterCreator;
+  /// See [PointPresenterCreator] and [PointPresenter] for more details.
+  /// todo-01 : There may be a question "why does a container need to know about PointPresenter, even indirectly"?
+  late PointPresenterCreator pointPresenterCreator;
 
   /// ##### Subclasses - aware members.
 
@@ -161,7 +161,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// (immediate owner of [YContainer] and [DataContainer])
   /// as their data points are needed both during [YContainer.layout]
   /// to calculate scaling, and also in [DataContainer.layout] to create
-  /// [PresentersColumns] instance.
+  /// [PointPresentersColumns] instance.
   late PointsColumns pointsColumns;
 
   late bool isStacked;
@@ -275,7 +275,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // todo-00-last : This needs to be separated into  PointsColumns BoxContainer 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout. But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
     pointsColumns = PointsColumns(
       chartRootContainer: this,
-      presenterCreator: presenterCreator,
+      pointPresenterCreator: pointPresenterCreator,
       isStacked: isStacked,
       caller: this,
     );
@@ -391,7 +391,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   /// In detail, this method paints all elements of the chart - the legend in [_paintLegend],
   /// the grid in [drawGrid], the x/y labels in [_paintXLabels] and [_paintYLabels],
-  /// and the data values, column by column, in [drawDataPresentersColumns].
+  /// and the data values, column by column, in [drawDataPointPresentersColumns].
   ///
   /// Before the actual canvas painting, at the beginning of this method,
   /// this class's [layout] is performed, which recursively lays out all member [BoxContainer]s.
@@ -925,14 +925,14 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 
-  /// Columns of presenters.
+  /// Columns of pointPresenters.
   ///
-  /// Presenters may be:
+  /// PointPresenters may be:
   /// - points and lines in line chart
   /// - bars (stacked or grouped) in bar chart
   ///
   /// todo 0 replace with getters; see if members can be made private,  manipulated via YLabelContainer.
-  late PresentersColumns presentersColumns;
+  late PointPresentersColumns pointPresentersColumns;
 
   DataContainer({required ChartRootContainer chartRootContainer})
       : super(
@@ -1059,8 +1059,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     }
 
     // Scale the [pointsColumns] to the [YContainer]'s scale.
-    // This is effectively a [layout] of the lines and bars presenters, currently
-    //   done in [VerticalBarPresenter] and [LineChartPresenter]
+    // This is effectively a [layout] of the lines and bars pointPresenters, currently
+    //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
     scalePointsColumns(layoutDependency);
   }
 
@@ -1080,26 +1080,26 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
-    // todo-01-morph-important : problem : this call actually sets absolute values on Presenters, no offsetting !!
+    // todo-01-morph-important : problem : this constructor actually creates absolute values on PointPresenters, no offsetting !!
     /// Creates from [ChartData] (model for this container),
     /// columns of leaf values encapsulated as [StackableValuePoint]s,
-    /// and from the values, the columns of leaf presenters,
-    /// encapsulated as [Presenter]s.
+    /// and from the values, the columns of leaf pointPresenters,
+    /// encapsulated as [PointPresenter]s.
     ///
-    /// The resulting elements (points and presenters) are
-    /// stored in member [presentersColumns].
+    /// The resulting elements (points and pointPresenters) are
+    /// stored in member [pointPresentersColumns].
     /// This is a core method that must run at the end of layout.
-    /// Painters use the created leaf presenters directly to draw lines, points,
-    /// and bars from the presenters' prepared ui elements:
+    /// Painters use the created leaf pointPresenters directly to draw lines, points,
+    /// and bars from the pointPresenters' prepared ui elements:
     /// lines, points, bars, etc.
 
-    // todo-00-last-1 : What is the difference between this PresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
-    //                  PointsColumns is DATA, PresentersColumns should be converted to BoxContainer
+    // todo-00-last-1 : What is the difference between this PointPresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
+    //                  PointsColumns is DATA, PointPresentersColumns should be converted to BoxContainer
     // todo-00-last-1 :
-    presentersColumns = PresentersColumns(
+    pointPresentersColumns = PointPresentersColumns(
       pointsColumns: chartRootContainer.pointsColumns,
       chartRootContainer: chartRootContainer,
-      presenterCreator: chartRootContainer.presenterCreator,
+      pointPresenterCreator: chartRootContainer.pointPresenterCreator,
     );
   }
 
@@ -1108,7 +1108,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// Note that the super [paint] remains not implemented in this class.
   /// Superclasses (for example the line chart data container) should
   /// call this method at the beginning of it's [paint] implementation,
-  /// followed by painting the [Presenter]s in [_drawDataPresentersColumns].
+  /// followed by painting the [PointPresenter]s in [_drawDataPointPresentersColumns].
   ///
   void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
@@ -1121,14 +1121,14 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
-  //       and [presentersColumns]
+  //       and [pointPresentersColumns]
 
   /// Scales all data stored in leafs of columns and rows
   /// as [StackableValuePoint]. Depending on whether we are layouting
   /// a stacked or unstacked chart, scaling is done on stacked or unstacked
   /// values.
   ///
-  /// Must be called before [setupPresentersColumns] as [setupPresentersColumns]
+  /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute scaled [chartRootContainer.pointsColumns].
   void scalePointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     chartRootContainer.pointsColumns.scale(layoutDependency);
@@ -1138,15 +1138,15 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// vs last to first which is default).
   ///
   /// See [DataContainerOptions.dataRowsPaintingOrder].
-  List<Presenter> optionalPaintOrderReverse(List<Presenter> presenters) {
+  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
     var options = chartRootContainer.data.chartOptions;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
-      presenters = presenters.reversed.toList();
+      pointPresenters = pointPresenters.reversed.toList();
     }
-    return presenters;
+    return pointPresenters;
   }
 
-// todo-01 not-referenced, why : void _drawDataPresentersColumns(ui.Canvas canvas);
+// todo-01 not-referenced, why : void _drawDataPointPresentersColumns(ui.Canvas canvas);
 }
 
 
@@ -1220,7 +1220,7 @@ abstract class ChartAreaContainer extends BoxContainer {
 /// Provides the data area container for the bar chart.
 ///
 /// The only role is to implement the abstract method of the baseclass,
-/// [paint] and [_drawDataPresentersColumns].
+/// [paint] and [_drawDataPointPresentersColumns].
 class VerticalBarChartDataContainer extends DataContainer {
   VerticalBarChartDataContainer({
     required ChartRootContainer chartRootContainer,
@@ -1231,33 +1231,33 @@ class VerticalBarChartDataContainer extends DataContainer {
   @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
-    _drawDataPresentersColumns(canvas);
+    _drawDataPointPresentersColumns(canvas);
   }
 
   /// Draws the actual atomic visual elements representing data on the chart.
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
-  void _drawDataPresentersColumns(ui.Canvas canvas) {
-    PresentersColumns presentersColumns = this.presentersColumns;
+  void _drawDataPointPresentersColumns(ui.Canvas canvas) {
+    PointPresentersColumns pointPresentersColumns = this.pointPresentersColumns;
 
-    for (PresentersColumn presentersColumn in presentersColumns) {
+    for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
       // todo-2 do not repeat loop, collapse to one construct
 
-      var positivePresenterList = presentersColumn.positivePresenters;
-      positivePresenterList = optionalPaintOrderReverse(positivePresenterList);
-      for (Presenter presenter in positivePresenterList) {
-        bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
+      var positivePointPresenterList = pointPresentersColumn.positivePointPresenters;
+      positivePointPresenterList = optionalPaintOrderReverse(positivePointPresenterList);
+      for (PointPresenter pointPresenter in positivePointPresenterList) {
+        bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
           presenterCast.dataRowPaint,
         );
       }
 
-      var negativePresenterList = presentersColumn.negativePresenters;
-      negativePresenterList = optionalPaintOrderReverse(negativePresenterList);
-      for (Presenter presenter in negativePresenterList) {
-        bar_presenters.VerticalBarPresenter presenterCast = presenter as bar_presenters.VerticalBarPresenter;
+      var negativePointPresenterList = pointPresentersColumn.negativePointPresenters;
+      negativePointPresenterList = optionalPaintOrderReverse(negativePointPresenterList);
+      for (PointPresenter pointPresenter in negativePointPresenterList) {
+        bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
           presenterCast.dataRowPaint,
@@ -1270,7 +1270,7 @@ class VerticalBarChartDataContainer extends DataContainer {
 /// Provides the data area container for the line chart.
 ///
 /// The only role is to implement the abstract method of the baseclass,
-/// [paint] and [drawDataPresentersColumns].
+/// [paint] and [drawDataPointPresentersColumns].
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
     required ChartRootContainer chartRootContainer,
@@ -1281,36 +1281,36 @@ class LineChartDataContainer extends DataContainer {
   @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
-    _drawDataPresentersColumns(canvas);
+    _drawDataPointPresentersColumns(canvas);
   }
 
   /// Draws the actual atomic visual elements representing data on the chart.
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
-  void _drawDataPresentersColumns(ui.Canvas canvas) {
-    var presentersColumns = this.presentersColumns;
-    for (PresentersColumn presentersColumn in presentersColumns) {
-      var presenterList = presentersColumn.presenters;
-      presenterList = optionalPaintOrderReverse(presenterList);
-      for (Presenter presenter in presenterList) {
-        line_presenters.LineAndHotspotPresenter presenterCast = presenter as line_presenters.LineAndHotspotPresenter;
+  void _drawDataPointPresentersColumns(ui.Canvas canvas) {
+    var pointPresentersColumns = this.pointPresentersColumns;
+    for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
+      var pointPresenterList = pointPresentersColumn.pointPresenters;
+      pointPresenterList = optionalPaintOrderReverse(pointPresenterList);
+      for (PointPresenter pointPresenter in pointPresenterList) {
+        line_presenters.LineAndHotspotPointPresenter pointPresenterCast = pointPresenter as line_presenters.LineAndHotspotPointPresenter;
         // todo 0-future-minor Use call to Container.paint
         canvas.drawLine(
-          presenterCast.lineContainer.lineFrom,
-          presenterCast.lineContainer.lineTo,
-          presenterCast.lineContainer.linePaint,
+          pointPresenterCast.lineContainer.lineFrom,
+          pointPresenterCast.lineContainer.lineTo,
+          pointPresenterCast.lineContainer.linePaint,
         );
         // todo 0-future-medium Add hotspot as Container, use Container.paint
         canvas.drawCircle(
-          presenterCast.offsetPoint,
-          presenterCast.outerRadius,
-          presenterCast.outerPaint,
+          pointPresenterCast.offsetPoint,
+          pointPresenterCast.outerRadius,
+          pointPresenterCast.outerPaint,
         );
         canvas.drawCircle(
-          presenterCast.offsetPoint,
-          presenterCast.innerRadius,
-          presenterCast.innerPaint,
+          pointPresenterCast.offsetPoint,
+          pointPresenterCast.innerRadius,
+          pointPresenterCast.innerPaint,
         );
       }
     }
@@ -1747,7 +1747,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
-    // todo-00 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    // todo-011 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip) {
@@ -1818,30 +1818,15 @@ class StackableValuePoint {
   // ### 3. Group 3, are the scaled-coordinates - copy-converted from members from group 2,
   //        by scaling group 2 members to the container coordinates (display coordinates)
 
-  /// The position in the topContainer, representing the scaled value of [dataY].
-  /// Initially scaled to available pixels on the Y axis,
-  /// then moved by positioning by [applyParentOffset].
-  // todo-00-last : unused : double scaledY = 0.0;
-
-  /// The position in the top container, representing the scaled value of [fromY].
-  /// Initially created as `yLabelsCreator.scaleY(value: fromY)`,
-  /// then moved by positioning by [applyParentOffset].
-  // todo-00-last : unused-2 : double scaledFromY = 0.0;
-
-  /// The position in the top container, representing the scaled value of [toY].
-  /// Initially created as `yAxisdY = yLabelsCreator.scaleY(value: toY);`,
-  /// then moved by positioning by [applyParentOffset].
-  // todo-00-last : unused-2 : double scaledToY = 0.0;
-
   /// The [scaledFrom] and [scaledTo] are the pixel (scaled) coordinates
   /// of (possibly stacked) data values in the [ChartRootContainer] coordinates.
-  /// They are positions used by [Presenter] to paint the 'widget'
+  /// They are positions used by [PointPresenter] to paint the 'widget'
   /// that represents the (possibly stacked) data value.
   ///
   /// Initially scaled to available pixels on the Y axis,
   /// then moved by positioning by [applyParentOffset].
   ///
-  /// In other words, they hold offsets of the bottom and top of the [Presenter] of this
+  /// In other words, they hold offsets of the bottom and top of the [PointPresenter] of this
   /// data value point.
   ///
   /// For example, for VerticalBar, [scaledFrom] is the bottom left and
@@ -1958,7 +1943,7 @@ class StackableValuePoint {
 
 /// Represents a column of [StackableValuePoint]s, with support for both stacked and non-stacked charts.
 ///
-/// Corresponds to one column of data from [ChartData.dataRows], ready for presentation by [Presenter]s.
+/// Corresponds to one column of data from [ChartData.dataRows], ready for presentation by [PointPresenter]s.
 ///
 /// The
 /// - unstacked (such as in the line chart),  in which case it manages
@@ -2035,14 +2020,14 @@ class PointsColumn {
 /// A list of [PointsColumn] instances, created from user data rows [ChartData.dataRows].
 ///
 /// Represents the chart data created from the [ChartData.dataRows], but is an internal format suitable for
-/// presenting by the chart [Presenter] instances.
+/// presenting by the chart [PointPresenter] instances.
 ///
-/// Passed to the [Presenter] instances, which use this instance's data to
+/// Passed to the [PointPresenter] instances, which use this instance's data to
 /// paint the values in areas above the labels in the appropriate presentation (point and line chart, column chart, etc).
 ///
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
-/// A (single instance per chart) is used to create a [PresentersColumns] instance, managed in the [DataContainer].
+/// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainer].
 // todo-00-later : NO NEED YET: THIS IS A MODEL, NOT PRESENTER : Convert to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildChildrenInParentLayout 3) layout
 //                 Each PointsColumn is a child.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
@@ -2058,7 +2043,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// the passed [ChartRootContainer.data].
   PointsColumns({
     required this.chartRootContainer,
-    required PresenterCreator presenterCreator,
+    required PointPresenterCreator pointPresenterCreator,
     required bool isStacked,
     required LayoutableBox caller,
   })  : _isStacked = isStacked,

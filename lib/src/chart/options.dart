@@ -227,11 +227,11 @@ num inverseLog10(num y) => math.pow(10, y); // 10^y;
 class DataContainerOptions {
   final ui.Color gridLinesColor;
 
-  /// Portion of horizontal (X) grid width, used to display presenter leafs.
+  /// Portion of horizontal (X) grid width, used to display [PointPresenter] leafs.
   ///
   /// For example, for the bar chart, this represents the portion of one
   /// label width along X axis, which displays the bars (grouped or stacked).
-  final double gridStepWidthPortionUsedByAtomicPresenter;
+  final double gridStepWidthPortionUsedByAtomicPointPresenter;
 
   /// Controls the order in which the painter paints the [ChartData.dataRows].
   ///
@@ -272,7 +272,7 @@ class DataContainerOptions {
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
-    this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
+    this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
     this.startYAxisAtDataMinRequested = false,
     this.yTransform = identity<num>,

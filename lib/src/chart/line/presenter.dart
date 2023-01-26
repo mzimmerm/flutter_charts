@@ -4,15 +4,15 @@ import '../presenter.dart';
 import '../container.dart';
 import '../../chart/line_container.dart';
 
-/// Presenter of the atomic/leaf element of one data point on the
+/// PointPresenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
 /// and the line from this data value point to the next data value point
 /// on the right.
 ///
 /// The line leads from this [offsetPoint]
-/// to the [offsetPoint] of the [LineAndHotspotPresenter]
-/// which is next in the [PresentersColumn.presenters] list.
-class LineAndHotspotPresenter extends Presenter {
+/// to the [offsetPoint] of the [LineAndHotspotPointPresenter]
+/// which is next in the [PointPresentersColumn.pointPresenters] list.
+class LineAndHotspotPointPresenter extends PointPresenter {
   late LineContainer lineContainer;
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
@@ -22,13 +22,12 @@ class LineAndHotspotPresenter extends Presenter {
 
   late ui.Paint rowDataPaint;
 
-  LineAndHotspotPresenter({
+  LineAndHotspotPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartRootContainer chartRootContainer,
   }) : super(
-          point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
           chartRootContainer: chartRootContainer,
@@ -55,21 +54,21 @@ class LineAndHotspotPresenter extends Presenter {
   }
 }
 
-/// Creator of the [LineAndHotspotPresenter] instances - the leaf visual
+/// Creator of the [LineAndHotspotPointPresenter] instances - the leaf visual
 /// elements on the line chart (point and line showing one data value).
 ///
-/// See [PresenterCreator].
-class LineAndHotspotLeafCreator extends PresenterCreator {
-  LineAndHotspotLeafCreator() : super();
+/// See [PointPresenterCreator].
+class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreator {
+  LineAndHotspotLeafPointPresenterCreator() : super();
 
   @override
-  Presenter createPointPresenter({
+  PointPresenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartRootContainer chartRootContainer,
   }) {
-    return LineAndHotspotPresenter(
+    return LineAndHotspotPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,

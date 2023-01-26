@@ -3,22 +3,21 @@ import 'dart:ui' as ui show Rect, Offset, Paint, Color;
 import '../presenter.dart';
 import '../container.dart';
 
-/// Presenter of the atomic/leaf element of one data point on the
+/// PointPresenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
 /// for which it calculates size and color.
 ///
-/// See [Presenter].
-class VerticalBarPresenter extends Presenter {
+/// See [PointPresenter].
+class VerticalBarPointPresenter extends PointPresenter {
   late ui.Rect presentedRect;
   late ui.Paint dataRowPaint;
 
-  VerticalBarPresenter({
+  VerticalBarPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartRootContainer chartRootContainer,
   }) : super(
-          point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
           chartRootContainer: chartRootContainer,
@@ -31,7 +30,7 @@ class VerticalBarPresenter extends Presenter {
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
     double barWidth = chartRootContainer.xContainer.xGridStep *
-        chartRootContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPresenter;
+        chartRootContainer.data.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -40,21 +39,21 @@ class VerticalBarPresenter extends Presenter {
   }
 }
 
-/// Creator of the [VerticalBarPresenter] instances - the leaf visual
+/// Creator of the [VerticalBarPointPresenter] instances - the leaf visual
 /// elements on the bar chart (rectangle one data value).
 ///
-/// See [PresenterCreator].
-class VerticalBarLeafCreator extends PresenterCreator {
-  VerticalBarLeafCreator() : super();
+/// See [PointPresenterCreator].
+class VerticalBarLeafPointPresenterCreator extends PointPresenterCreator {
+  VerticalBarLeafPointPresenterCreator() : super();
 
   @override
-  Presenter createPointPresenter({
+  PointPresenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
     required ChartRootContainer chartRootContainer,
   }) {
-    return VerticalBarPresenter(
+    return VerticalBarPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,

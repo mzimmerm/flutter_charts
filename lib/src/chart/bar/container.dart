@@ -31,8 +31,8 @@ class VerticalBarChartAnchor extends ChartAnchor {
 
 /// Container of the vertical bar chart.
 ///
-/// The core override is setting the [presenterCreator] -
-/// object which makes instances of [VerticalBarPresenter]s,
+/// The core override is setting the [pointPresenterCreator] -
+/// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
@@ -44,7 +44,7 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    presenterCreator = VerticalBarLeafCreator();
+    pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
   @override

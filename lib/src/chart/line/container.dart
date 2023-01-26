@@ -36,8 +36,8 @@ class LineChartAnchor extends ChartAnchor {
 
 /// Container of the line chart.
 ///
-/// The core override is setting the [presenterCreator] -
-/// object which makes instances of [LineAndHotspotPresenter]s,
+/// The core override is setting the [pointPresenterCreator] -
+/// object which makes instances of [LineAndHotspotPointPresenter]s,
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
@@ -49,7 +49,7 @@ class LineChartRootContainer extends ChartRootContainer {
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    presenterCreator = LineAndHotspotLeafCreator();
+    pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 
   @override
