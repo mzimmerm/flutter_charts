@@ -950,98 +950,10 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   }
 
-/* todo-00-last-last-last
-  BoxContainer buildAndAddChildren_DuringParentLayoutORI() {
-
-    // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
-    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
-    findSourceContainersReturnLayoutResultsToBuildSelf();
-
-    // Vars that layout needs from the [chartRootContainer] passed to constructor
-    ChartOptions chartOptions = chartRootContainer.data.chartOptions;
-    bool isStacked = chartRootContainer.isStacked;
-
-    // ### 1. Vertical Grid (yGrid) layout:
-
-    // For each already layed out X labels in [xLabelContainers],
-    // create one [LineContainer] and add it to [yGridLinesContainer]
-
-    // todo-00-last-last : BUILD GridLinesContainer children INSIDE  children: argument
-    _yGridLinesContainer = GridLinesContainer();
-    addChildren([_yGridLinesContainer]);
-
-    // Initial values which will show as bad lines if not changed during layout.
-    ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
-    ui.Offset initLineTo = const ui.Offset(100.0, 100.0);
-
-    // xTickXs create horizontal yLineContainers
-    for (double xTickX in layoutDependency.xTickXs) {
-      // Add vertical yGrid line in the middle or on the left
-      double lineX = isStacked ? xTickX - layoutDependency.xGridStep / 2 : xTickX;
-
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
-        lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: lineX,
-        manualLayedOutFromY: 0.0,
-        manualLayedOutToX: lineX,
-        manualLayedOutToY: constraints.height,
-      );
-
-      // Add a new vertical grid line - yGrid line.
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-
-    // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && layoutDependency.xTickXs.isNotEmpty) {
-      double lineX = layoutDependency.xTickXs.last + layoutDependency.xGridStep / 2;
-
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
-        lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: lineX,
-        manualLayedOutFromY: 0.0,
-        manualLayedOutToX: lineX,
-        manualLayedOutToY: constraints.height,
-      );
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-
-    // ### 2. Horizontal Grid (xGrid) layout:
-
-    // Iterate yUserLabels and for each add a horizontal grid line
-    // When iterating Y labels, also create the horizontal lines - xGridLines
-    // todo-00-last-last : BUILD GridLinesContainer children INSIDE  children: argument
-    _xGridLinesContainer = GridLinesContainer();
-    addChildren([_xGridLinesContainer]);
-
-    // yTickYs create vertical xLineContainers
-    // Position the horizontal xGrid at mid-points of labels at yTickY.
-    for (double yTickY in layoutDependency.yTickYs) {
-      LineContainer xLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(0.0, yTickY),
-        lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: 0.0,
-        manualLayedOutFromY: yTickY,
-        manualLayedOutToX: constraints.width,
-        manualLayedOutToY: yTickY,
-      );
-
-      // Add a new horizontal grid line - xGrid line.
-      _xGridLinesContainer._lineContainers.add(xLineContainer);
-    }
-
-    return this;
-  }
-*/
-
-  // todo-00-last-last : modifying this because GridLinesContainer children should be build during it's creation
-  // todo-00-last-last :  (or in GridLinesContainer.buildAndAddChildren_DuringParentLayout) NOT HERE IN DATA CONTAINER
+  /// Overridden builds children of self [DataContainer], the [_yGridLinesContainer] and [_xGridLinesContainer]
+  /// and adds them as self children.
   @override
-  BoxContainer buildAndAddChildren_DuringParentLayout() {
+  void buildAndAddChildren_DuringParentLayout() {
 
     // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
@@ -1053,24 +965,21 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // ### 1. Vertical Grid (yGrid) layout:
 
-    // For each already layed out X labels in [xLabelContainers],
-    // create one [LineContainer] and add it to [yGridLinesContainer]
+    // Use this DataContainer layout dependency on [xTickXs] as guidelines for X labels
+    // in [XContainer._xLabelContainers], for each create one [LineContainer] as child of [_yGridLinesContainer]
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
     ui.Offset initLineTo = const ui.Offset(100.0, 100.0);
 
-    // todo-00-last-last : BUILD GridLinesContainer children INSIDE  children: argument
+    // Construct the GridLinesContainer with children: [LineContainer]s
     _yGridLinesContainer = GridLinesContainer(
       children: layoutDependency.xTickXs.map((double xTickX) {
-        // Add vertical yGrid line in the middle or on the left
+        // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
         double lineX = isStacked ? xTickX - layoutDependency.xGridStep / 2 : xTickX;
-        // todo-00-last-last : LineContainer yLineContainer = LineContainer(
         return LineContainer(
           lineFrom: initLineFrom,
-          // ui.Offset(lineX, 0.0),
           lineTo: initLineTo,
-          // ui.Offset(lineX, layoutSize.height),
           linePaint: gridLinesPaint(chartOptions),
           manualLayedOutFromX: lineX,
           manualLayedOutFromY: 0.0,
@@ -1078,15 +987,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
           manualLayedOutToY: constraints.height,
         );
       }).toList(growable: false),
-      // Add a new vertical grid line - yGrid line.
-      // todo-00-last-last : _yGridLinesContainer.addLine(yLineContainer);
     );
 
     // For stacked, we need to add last right vertical yGrid line
     if (isStacked && layoutDependency.xTickXs.isNotEmpty) {
       double lineX = layoutDependency.xTickXs.last + layoutDependency.xGridStep / 2;
 
-      // todo-00-last-last :LineContainer yLineContainer = LineContainer(
       _yGridLinesContainer.addChildren([
         LineContainer(
           lineFrom: initLineFrom,
@@ -1100,96 +1006,35 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
           manualLayedOutToY: constraints.height,
         ),
       ]);
-      // todo-00-last-last : _yGridLinesContainer.addLine(yLineContainer);
     }
+    // Add the constructed Y - parallel GridLinesContainer as child to self DataContainer
     addChildren([_yGridLinesContainer]);
-
-    /* todo-00-last-last-last : removed, converted to loop
-    // xTickXs create horizontal yLineContainers
-    for (double xTickX in layoutDependency.xTickXs) {
-      // Add vertical yGrid line in the middle or on the left
-      double lineX = isStacked ? xTickX - layoutDependency.xGridStep / 2 : xTickX;
-
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
-        lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: lineX,
-        manualLayedOutFromY: 0.0,
-        manualLayedOutToX: lineX,
-        manualLayedOutToY: constraints.height,
-      );
-
-      // Add a new vertical grid line - yGrid line.
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-    // For stacked, we need to add last right vertical yGrid line
-    if (isStacked && layoutDependency.xTickXs.isNotEmpty) {
-      double lineX = layoutDependency.xTickXs.last + layoutDependency.xGridStep / 2;
-
-      LineContainer yLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(lineX, 0.0),
-        lineTo: initLineTo, // ui.Offset(lineX, layoutSize.height),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: lineX,
-        manualLayedOutFromY: 0.0,
-        manualLayedOutToX: lineX,
-        manualLayedOutToY: constraints.height,
-      );
-      _yGridLinesContainer.addLine(yLineContainer);
-    }
-    addChildren([_yGridLinesContainer]);
-    */
-
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
-    // Iterate yUserLabels and for each add a horizontal grid line
-    // When iterating Y labels, also create the horizontal lines - xGridLines
-    // todo-00-last-last : BUILD GridLinesContainer children INSIDE  children: argument
+    // Use this DataContainer layout dependency on [yTickYs] as guidelines for Y labels
+    // in [YContainer._yLabelContainers], for each create one [LineContainer] as child of [_xGridLinesContainer]
+
+    // Construct the GridLinesContainer with children: [LineContainer]s
     _xGridLinesContainer = GridLinesContainer(
       children:
           // yTickYs create vertical xLineContainers
           // Position the horizontal xGrid at mid-points of labels at yTickY.
           layoutDependency.yTickYs.map((double yTickY) {
-        // todo-00-last-last : LineContainer xLineContainer = LineContainer(
         return LineContainer(
           lineFrom: initLineFrom,
-          // ui.Offset(0.0, yTickY),
           lineTo: initLineTo,
-          // ui.Offset(layoutSize.width, yTickY),
           linePaint: gridLinesPaint(chartOptions),
           manualLayedOutFromX: 0.0,
           manualLayedOutFromY: yTickY,
           manualLayedOutToX: constraints.width,
           manualLayedOutToY: yTickY,
         );
-
-        // Add a new horizontal grid line - xGrid line.
-        // todo-00-last-last : _xGridLinesContainer._lineContainers.add(xLineContainer);
       }).toList(growable: false),
-      // Add a new vertical grid line - yGrid line.
-      // todo-00-last-last : _yGridLinesContainer.addLine(yLineContainer);
     );
-    /* todo-00-last-last-last
-    for (double yTickY in layoutDependency.yTickYs) {
-      LineContainer xLineContainer = LineContainer(
-        lineFrom: initLineFrom, // ui.Offset(0.0, yTickY),
-        lineTo: initLineTo, // ui.Offset(layoutSize.width, yTickY),
-        linePaint: gridLinesPaint(chartOptions),
-        manualLayedOutFromX: 0.0,
-        manualLayedOutFromY: yTickY,
-        manualLayedOutToX: constraints.width,
-        manualLayedOutToY: yTickY,
-      );
 
-      // Add a new horizontal grid line - xGrid line.
-      _xGridLinesContainer._lineContainers.add(xLineContainer);
-    }
-    */
+    // Add the constructed X - parallel GridLinesContainer as child to self DataContainer
     addChildren([_xGridLinesContainer]);
-
-    return this;
   }
 
   /// Overrides [BoxLayouter.layout] for data area.
@@ -1209,25 +1054,13 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // ### 1. Vertical Grid (yGrid) layout:
 
-    /* todo-00-last-last-last : moved to GridLinesContainer.layout
-    for (var yLineContainer in _yGridLinesContainer._lineContainers) {
-      // Layout this yLineContainer using it's stored layoutValue.
-      yLineContainer.lineFrom = ui.Offset(yLineContainer.layoutValue, 0.0);
-      yLineContainer.lineTo = ui.Offset(yLineContainer.layoutValue, layoutSize.height);
-    }
-    */
+    // Position the vertical yGrid in the middle of labels (line chart) or on label left edge (stacked bar)
     _yGridLinesContainer.applyParentConstraints(this, constraints);
     _yGridLinesContainer.layout();
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    /* todo-00-last-last-last : moved to GridLinesContainer.layout
-   for (var xLineContainer in _xGridLinesContainer._lineContainers) {
-      xLineContainer.lineFrom = ui.Offset(0.0, xLineContainer.layoutValue);
-      xLineContainer.lineTo = ui.Offset(layoutSize.width, xLineContainer.layoutValue);
-    }
-    */
     _xGridLinesContainer.applyParentConstraints(this, constraints);
     _xGridLinesContainer.layout();
 
@@ -1497,64 +1330,26 @@ class LineChartDataContainer extends DataContainer {
   }
 }
 
-/// NOT Builds, NOT lays out, offsets, and paints the dotted gridlines in the middle of labels.
+/// Represents a set of gridlines (either horizontal or vertical, but not both),
+/// which draw the dotted grid lines in chart.
 ///
-/// Un-extended baseclass for both horizontal and vertical gridlines.
+/// The grid lines are positioned in the middle of labels (Y labels, and X labels for non-stacked)
+/// or on the left label edge (X labels for stacked).
+///
+/// Note: Methods [layout], [applyParentOffset], and [paint], use the default implementation.
+///
 class GridLinesContainer extends BoxContainer {
 
-  /// Children of [GridLinesContainer]
-  // todo-00-last-last-last : remove _lineContainers and use children: instead.
-  //                          review usages of _lineContainers if that can be done.
-  final List<LineContainer> _lineContainers = List.empty(growable: true);
 
-  // todo-00-last-last : add children: argument for List<LineContainer>
-  GridLinesContainer({required List<LineContainer>? children}) : super(children: children);
+  /// Construct from children [LineContainer]s.
+  GridLinesContainer({
+    required List<LineContainer>? children,
+  }) : super(children: children);
 
-  /* todo-00-last-last-last : this must be removed
-  void addLine(LineContainer lineContainer) {
-    _lineContainers.add(lineContainer);
-  }
-   */
 
-  /* todo-00-last-last-last On all methods, use the default versions which just iterate over children LineContainers.
-  /// Overrides [BoxLayouter.layout].
+  /// Implementor of getter [layoutSize], makes the [layoutSize]
+  /// the size of [constraints] which should be the full size of the parent [DataContainer].
   @override
-  void layout() {
-    for (var lineContainer in _lineContainers) {
-      // Layout this lineContainer using it's stored layoutValue.
-      lineContainer.lineFrom = ui.Offset(lineContainer.manualLayedOutFromX, lineContainer.manualLayedOutFromY);
-      lineContainer.lineTo = ui.Offset(lineContainer.manualLayedOutToX, lineContainer.manualLayedOutToY);
-    }
-  }
-
-  /// Overridden from super. Applies offset on all members.
-  @override
-  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    for (LineContainer lineContainer in _lineContainers) {
-      lineContainer.applyParentOffset(this, offset);
-    }
-  }
-
-  /// Overrides the concrete super method [BoxContainer.paint].
-  ///
-  /// [GridLinesContainer] does not do super's skipping of ignored children and
-  /// also does not do painting a yellow-and-black warning box.
-  @override
-  void paint(ui.Canvas canvas) {
-    for (LineContainer lineContainer in _lineContainers) {
-      lineContainer.paint(canvas);
-    }
-  }
-  */
-
-  /// Implementor of method in superclass [BoxContainer].
-  ///
-  /// Return the size of the outermost rectangle which contains all lines
-  ///   in the member _xLineContainers.
-  // ui.Size get layoutSize => _xLineContainers.reduce((lineContainer.+));
-  // todo-01 look into this
-  @override
-  // todo-00-last-last : ui.Size get layoutSize => throw StateError('todo-2 implement this.');
   ui.Size get layoutSize => constraints.size;
 
   // todo-00-last-last-last : added as this must be implemented in Leafs. Bizarrely, layoutSize must be set in layout,
