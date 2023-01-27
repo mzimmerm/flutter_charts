@@ -203,9 +203,11 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   /// It creates four chart areas container instances,
   /// and sets them on members
-  /// [legendContainer], [xContainer], [yContainer] and [dataContainer], without
-  /// their children. Their children are created in this [ChartRootContainer.layout] by calling
+  /// [legendContainer], [xContainer], [yContainer] and [dataContainer], WITHOUT
+  /// their children. Their children are created later in this [ChartRootContainer.layout] by calling
   /// the four chart areas containers' [buildAndAddChildren_DuringParentLayout] methods.
+  /// The reason for late creation of their children is that number of their children is
+  /// only knows after [yContainer] and [xContainer] are layed out (to fit labels).
   ///
   /// The [dataContainer] is created in the overridable [createDataContainer]
   /// which is overridden by extensions to create a line chart or a bar chart.
@@ -233,7 +235,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       chartRootContainer: this,
     );
 
-    // ### 6. [DataContainer]: Constraint and layout the data area
+    // ### 6. [DataContainer]: Construct a concrete (Line, Bar) DataContainer.
 
     dataContainer = createDataContainer(
       chartRootContainer: this,
@@ -330,7 +332,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.buildAndAddChildren_DuringParentLayout();
     xContainer.layout();
 
-    // When we got here, layout is done, so set the late final layoutSize
+    // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
     xContainer.layoutSize = xContainer.lateReLayoutSize;
 
     ui.Size xContainerSize = xContainer.layoutSize;
@@ -427,8 +429,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   // BoxContainerConstraints get constraints => _beforeNewLayoutConstraints!;
 
 
-  /// Abstract method creates the [DataContainer],
-  /// for the particular chart type (line, bar).
+  /// Abstract method constructs and returns the concrete [DataContainer] instance,
+  /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
   DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   });
@@ -922,6 +924,9 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+  /// Container of gridlines parellel to X axis.
+  ///
+  /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
   late GridLinesContainer _xGridLinesContainer;
   late GridLinesContainer _yGridLinesContainer;
 
@@ -957,7 +962,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
-    findSourceContainersReturnLayoutResultsToBuildSelf();
+        findSourceContainersReturnLayoutResultsToBuildSelf();
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartRootContainer.data.chartOptions;
@@ -1072,7 +1077,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    // super.applyParentOffset(caller, offset); // super did double-offset as _xGridLinesContainer etc are on 2 places
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1340,28 +1344,22 @@ class LineChartDataContainer extends DataContainer {
 ///
 class GridLinesContainer extends BoxContainer {
 
-
   /// Construct from children [LineContainer]s.
   GridLinesContainer({
     required List<LineContainer>? children,
   }) : super(children: children);
 
-
-  /// Implementor of getter [layoutSize], makes the [layoutSize]
-  /// the size of [constraints] which should be the full size of the parent [DataContainer].
-  @override
-  ui.Size get layoutSize => constraints.size;
-
-  // todo-00-last-last-last : added as this must be implemented in Leafs. Bizarrely, layoutSize must be set in layout,
-  //                          and this just needs to be overriden.
-  // GridLinesContainer CAN BE LEAF (NO GRID LINE CHILDREN) IF NO LABELS ARE SHOWN. SO THIS MUST BE OVERRIDED.
+  /// Override from base class sets the layout size.
+  ///
+  /// This [GridLinesContainer] can be leaf if there are no labels or labels are not shown.
+  /// Leaf containers which do not override [BoxLayouter.layout] must override this method,
+  /// setting [layoutSize].
   @override
   void post_Leaf_SetSize_FromInternals() {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
-    // throw UnimplementedError('Method must be overridden by leaf BoxLayouters');
-    layoutSize = constraints.size; // todo-00-last-last also added this
+    layoutSize = constraints.size;
   }
 
 }

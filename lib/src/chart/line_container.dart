@@ -8,9 +8,12 @@ class LineContainer extends BoxContainer {
   ui.Offset lineTo;
   ui.Paint linePaint;
 
-  // todo-01-full-autolayout :  this was added temporarily to move between build and layout, remove
-  /// todo-01-full-autolayout : THIS IS TEMPORARY FOR MANUAL LAYOUT TO SHUFFLE VALUES FROM PARENT LAYOUT (GridLinesContainer, something else??)
-  /// todo-01-full-autolayout :   TO LineContainer.layout()
+  // todo-01-full-autolayout : manualLayedOutFromX and friends ADDED TEMPORARILY to be set during construction
+  //                         : of [LineContainer] in [GridLinesContainer.buildAndAddChildren_DuringParentLayout]
+  //                         : where these layout values are calculated, held on,
+  //                         : and used later in self [layout], to set [lineFrom] and [lineTo]
+  //                         : THIS IS TEMPORARY FOR MANUAL LAYOUT TO SHUFFLE VALUES FROM PARENT LAYOUT
+  //                         : (GridLinesContainer, something else??) TO LineContainer.layout()
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
   /// creation in parent [buildAndAddChildren_DuringParentLayout]
@@ -37,14 +40,17 @@ class LineContainer extends BoxContainer {
   // #####  Implementors of method in superclass [Container].
 
   /// Implementor of method in superclass [Container].
+  ///
+  /// Ensure [layoutSize] is set.
+  /// Note that because this leaf container overrides [layout] here,
+  /// it does not need to override [post_Leaf_SetSize_FromInternals].
   @override
   void layout() {
-    // todo-00-last-last-last : throw StateError('No need to call layout on $runtimeType, extension of LineContainer.');
-    /// Use the manually layed out coordinates
+    // Use the coordinates manually layed out during creation in [GridLinesContainer] by
     lineFrom = ui.Offset(manualLayedOutFromX, manualLayedOutFromY);
     lineTo = ui.Offset(manualLayedOutToX, manualLayedOutToY);
 
-    layoutSize = constraints.size; // todo-00-last-last also added this
+    layoutSize = constraints.size;
   }
 
   /// Override method in superclass [Container].
@@ -59,17 +65,4 @@ class LineContainer extends BoxContainer {
   void paint(ui.Canvas canvas) {
     canvas.drawLine(lineFrom, lineTo, linePaint);
   }
-
-  // todo-00-last-last-last : added as this must be implemented in Leafs. Bizarrely, layoutSize must be set in layout,
-  //                          and this just needs to be overriden.
-  @override
-  void post_Leaf_SetSize_FromInternals() {
-    if (!isLeaf) {
-      throw StateError('Only a leaf can be sent this message.');
-    }
-    // throw UnimplementedError('Method must be overridden by leaf BoxLayouters');
-    layoutSize = constraints.size; // todo-00-last-last also added this
-  }
-
-
 }

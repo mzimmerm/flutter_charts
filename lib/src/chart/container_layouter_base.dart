@@ -177,7 +177,7 @@ abstract class LayoutableBox {
   ///      1) Generally, leafs do not need to override [layout],
   ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
   ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
-  ///         which should be overriden.
+  ///         which MUST be overridden on classes which do NOT override [layout].
   ///         Alternatively, it is sufficient for leafs to override [layout] and only set [layoutSize] there.
   ///      2) Non-leafs do often need to override some methods invoked from [layout],
   ///         or the whole [layout]. Some details on Non-Leafs
@@ -581,7 +581,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
-    throw UnimplementedError('Method must be overridden by leaf BoxLayouters');
+    throw UnimplementedError('On leaf [BoxLayouter] which do NOT override [layout], this method '
+        '[post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
   }
 
   /// Checks if [layoutSize] box is within the [constraints] box.
