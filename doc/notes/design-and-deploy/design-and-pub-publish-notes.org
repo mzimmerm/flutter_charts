@@ -1774,12 +1774,37 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 
 branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers
 
+
+
+*** IN-PROGRESS-NOW See if GridLinesContainer _lineContainers can delegate to GridLinesContainer.children
+
+
+*** IN-PROGRESS-NOW Where possible, Make sure paint and apply methods use the default implementation that iterates on children NOT on members
+
+Alternatively, call super first, then perform class-specific changes, but do NOT re-perform changes on members, as this was already done during super work on children!!!
+
+Methods:
+
+- applyParentConstraint
+- layout
+- applyParentOffset
+- paint
+
+
+Classes:
+
+- [X] LineContainer
+- [ ] GridLinesContainer
+- [ ] DataContainer and extensions:
+  - [ ] LineChartDataContainer
+  - [ ] VerticalBarChartDataContainer
+  
+  
 *** IN-PROGRESS-NOW Deep refactoring to make "everything is a BoxContainer parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
 
 
 **** IN-PROGRESS-NOW Initial investigations and steps
 
-Create a LinearScaler class, and move an improved scaleValue to it
 
 
 **** TODO-NEXT Conversion of ~Presenters~ to ~BoxContainer~

@@ -86,14 +86,6 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     _root = rootCandidate;
     return _root!;
   }
-
-  @Deprecated(
-      '[addChildToHierarchyDeprecated] is deprecated, since BoxContainerHierarchy should be fully built using its children array')
-  void addChildToHierarchyDeprecated(BoxContainer thisBoxContainer, BoxContainer childOfThis) {
-    childOfThis._parent = thisBoxContainer;
-    _children.add(childOfThis);
-    // throw StateError('This is deprecated.');
-  }
 }
 
 /// [LayoutableBox] is an abstraction of behavior of a box which was sized and positioned
@@ -589,7 +581,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
-    throw UnimplementedError('Method must be overriden by leaf BoxLayouters');
+    throw UnimplementedError('Method must be overridden by leaf BoxLayouters');
   }
 
   /// Checks if [layoutSize] box is within the [constraints] box.
@@ -668,7 +660,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // add [children] in the constructor using [addChildren], see [LegendContainer] as example
     if (children != null) {
       //  && this.children != ChildrenNotSetSingleton()) {
-      __children = children;
+      __children.clear();
+      __children.addAll(children);
     }
 
     // Having added children, ensure key uniqueness
@@ -822,9 +815,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 /// dependency for drawing dotted lines above the labels. As the dotted lines are part
 /// of 'data container', a sibling container to the 'x axis container',
 /// we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
-/// and call it's [buildChildrenInParentLayout] during the 'root container' [layout].
+/// and call it's [buildAndAddChildren_DuringParentLayout] during the 'root container' [layout].
 /// The 'x axis container' [layout] can set this mixin's [sourceSiblingsLayoutsResults], which would
-/// then be used in this mixin's code in [buildChildrenInParentLayout].
+/// then be used in this mixin's code in [buildAndAddChildren_DuringParentLayout].
 ///
 /// This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
 /// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
@@ -846,7 +839,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 ///     likely in parent's [layout] that calls first [layout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
 ///   - Implementations MUST also call [layout] immediately after calling
-///     the [buildChildrenInParentLayout].
+///     the [buildAndAddChildren_DuringParentLayout].
 
 mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 
@@ -862,25 +855,38 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
   ///     on results of previously layed out siblings in parent's [layout] - otherwise,
   ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
   ///     and build it's children in it's [BoxContainer] constructor.
-  void buildChildrenInParentLayout();
+  ///     
+  /// Important note - lifecycle:
+  ///   For instances of [BoxContainer] mixed in with this [BuilderOfChildrenDuringParentLayout], \
+  ///   the sequence of method invocations of such object should be as follows
+  ///   ``` dart
+  ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
+  ///     2.  instance.buildAndAddChildren_DuringParentLayout();
+  ///     3.  instance.layout();
+  ///     4.  instance.applyParentOffset(this, instanceParentOffset);
+  ///   ```
+  ///   The reason is, there are legitimite reasons for the [buildAndAddChildren_DuringParentLayout]
+  ///   to need the instance's [constraints].
+  ///
+  void buildAndAddChildren_DuringParentLayout();
 
   /// Intended implementation is to find sibling 'source' [BoxContainer]s which [layout] results 'drive'
-  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildChildrenInParentLayout]).
+  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildAndAddChildren_DuringParentLayout]).
   ///
-  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildChildrenInParentLayout], which
+  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildAndAddChildren_DuringParentLayout], which
   /// builds and adds it's children, based on the information in the object returned from this method.
   ///
   /// All information regarding
   ///   - what sibling [BoxContainer]s are 'sources' which [layout] 'drives' the build of this [BoxContainer]
   ///   - how to find such siblings
   ///   - what is the returned object that serves as a message between the 'source' [BoxContainer]s [layout] results
-  ///     and this 'sink' [buildChildrenInParentLayout]
+  ///     and this 'sink' [buildAndAddChildren_DuringParentLayout]
   ///  must be available to this [BoxContainer].
   ///
   /// The finding may be done using [ContainerKey] or simply hardcoded reaching to the siblings.
   ///
   /// Returns the object that serves as a message from the 'source' [BoxContainer]s to this 'sink' [BoxContainer],
-  /// during the sink's [buildChildrenInParentLayout].
+  /// during the sink's [buildAndAddChildren_DuringParentLayout].
   Object findSourceContainersReturnLayoutResultsToBuildSelf() {
     throw UnimplementedError(
         '$this.findSourceContainersReturnLayoutResultsToBuildSelf: '
