@@ -129,6 +129,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   @override
   bool get isRoot => true;
 
+  late final int dataColumnsCount; // todo-00-new-done
+
   /// Base Areas of chart.
   late BoxContainer legendContainer;
   late XContainer xContainer;
@@ -324,7 +326,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
 
     // xContainer layout width depends on yContainerFirst layout result.  But this dependency can be expressed
-    // as a constraint on xContainer, so no need to set [xContainer.sourceSiblingsLayoutsResults]
+    // as a constraint on xContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
     var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width - yContainerFirstSize.width,
       constraints.height - legendContainerSize.height,
@@ -333,6 +335,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
     xContainer.buildAndAddChildren_DuringParentLayout();
     xContainer.layout();
+    dataColumnsCount = xContainer._xLabelContainers.length; // todo-00-new-done
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
     xContainer.layoutSize = xContainer.lateReLayoutSize;
@@ -349,7 +352,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // YContainer expands down only to the top of the XContainer area.
 
     // yContainer layout height depends on xContainer layout result.  But this dependency can be expressed
-    // as a constraint on yContainer, so no need to set [yContainer.sourceSiblingsLayoutsResults]
+    // as a constraint on yContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
     var yConstraintsHeight = yContainerHeight - xContainerSize.height;
     var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
@@ -884,8 +887,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   }
 }
 
-/// Result from [XContainer] and [YContainer] layouts needed to build [DataContainer]
-/// in [DataContainer.sourceSiblingsLayoutsResults].
+/// Result object created after [XContainer] and [YContainer] layouts needed to build [DataContainer].
 ///
 /// Carries the layout state during the [ChartRootContainer.layout] from 'sources' to 'sinks',
 /// see the [BuilderOfChildrenDuringParentLayout.findSourceContainersReturnLayoutResultsToBuildSelf].
@@ -949,7 +951,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   @override
   _SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
     // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
-    // so we need to set the [dataContainer.sourceSiblingsLayoutsResults], picked up during [dataContainer.build]
+    // This object moves the required information for the above into the DataContainer build.
     return _SourceYContainerAndYContainerToSinkDataContainer(
       xContainer: chartRootContainer.xContainer,
       yContainer: chartRootContainer.yContainer,

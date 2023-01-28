@@ -54,7 +54,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
   //                and add asserts as appropriate
   // todo-01-last : can we make children late final? Can we make immutable? Ideally all. Maybe just init to []?
-  List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
+  final List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
 
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
@@ -817,12 +817,11 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 /// of 'data container', a sibling container to the 'x axis container',
 /// we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
 /// and call it's [buildAndAddChildren_DuringParentLayout] during the 'root container' [layout].
-/// The 'x axis container' [layout] can set this mixin's [sourceSiblingsLayoutsResults], which would
-/// then be used in this mixin's code in [buildAndAddChildren_DuringParentLayout].
 ///
 /// This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
 /// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
-/// agree on the object used as [sourceSiblingsLayoutsResults].
+/// agree on the object to exchange the 'sink' create information - this is the object
+/// returned from [findSourceContainersReturnLayoutResultsToBuildSelf]
 ///
 /// In such situation, a hierarchy-parent during the [layout] would first call
 /// this mixin's siblings' [layout], establishing the remaining space

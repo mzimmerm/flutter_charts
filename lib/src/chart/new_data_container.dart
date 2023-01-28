@@ -1,18 +1,45 @@
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 
-/*
-class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout  {
-
+class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
   // constructor:
-  // create with all children
+  // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
 
-  void layout() {
+  NewValuesColumnsContainer({
+    required ChartRootContainer chartRootContainer,
+    // required List<BoxContainer> children,
+  }) : super(
+          chartRootContainer: chartRootContainer,
+          //children: children,
+        );
 
+  @override
+  _NewSourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
+    return _NewSourceYContainerAndYContainerToSinkDataContainer(
+      dataColumnsCount:
+          chartRootContainer.dataColumnsCount,
+    );
   }
 
-    void buildAndAddChildren_DuringParentLayout() {
-    }
+  @override
+  void layout() {
+    // todo-00
+  }
 
+  @override
+  void buildAndAddChildren_DuringParentLayout() {
+    // todo-00
+  }
 
-}*/
+// void applyParentConstraints - default
+// void applyParentOffset - default
+// void paint(Canvas convas) - default
+}
+
+class _NewSourceYContainerAndYContainerToSinkDataContainer {
+  final int dataColumnsCount;
+
+  _NewSourceYContainerAndYContainerToSinkDataContainer({
+    required this.dataColumnsCount,
+  });
+}
