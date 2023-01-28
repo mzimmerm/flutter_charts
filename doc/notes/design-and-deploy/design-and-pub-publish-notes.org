@@ -1770,16 +1770,8 @@ Options are NOT a singleton. Multiple charts may be used in an application, each
 
 ** IN-PROGRESS-NOW 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
-*** DONE Merge to master, and create a new branch flutter_charts_v4
 
-branch flutter_charts_v4_2023-01-26_convert_Presenters_to_BoxContainers
-
-
-
-*** IN-PROGRESS-NOW See if GridLinesContainer _lineContainers can delegate to GridLinesContainer.children
-
-
-*** IN-PROGRESS-NOW Where possible, Make sure paint and apply methods use the default implementation that iterates on children NOT on members
+*** DONE Where possible, Make sure paint and apply methods use the default implementation that iterates on children NOT on members
 
 Alternatively, call super first, then perform class-specific changes, but do NOT re-perform changes on members, as this was already done during super work on children!!!
 
@@ -1794,20 +1786,25 @@ Methods:
 Classes:
 
 - [X] LineContainer
-- [ ] GridLinesContainer
-- [ ] DataContainer and extensions:
-  - [ ] LineChartDataContainer
-  - [ ] VerticalBarChartDataContainer
+- [X] GridLinesContainer
+- [X] DataContainer and extensions:
+  - [X] LineChartDataContainer
+  - [X] VerticalBarChartDataContainer
   
   
-*** IN-PROGRESS-NOW Deep refactoring to make "everything is a BoxContainer parent/child hierarchy correctly": for ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter to Container conversion~
+*** IN-PROGRESS-NOW Keep ~PointPresenter~ s and friends and create a *completely new* BoxContainers from DataContainer down.
+
+Key approach:
+
+- Keep ~~, 
+- Keep model-like objects: ~PointsColumn~,  ~PointsColumns~,  ~StackableValuePoint~,  ~~,  ~~,  ~~, 
+- Keep presented objects:  ~PointPresenter~,  ~PointPresenterCreator~,  ~PointPresentersColumn~,  ~PointPresentersColumns~, ~VerticalBarPointPresenter~,  ~VerticalBarLeafPointPresenterCreator~
+- Create new objects from ~DataContainer~ down in a new library ~new_data_container.dart~, classes from bottom:
+- ~NewValueContainer~, ~NewValuesColumnContainer~, ~NewValuesColumnsContainer~ - the last is equivalent to ~DataContainer~
+- change anything using ~DataContainer~ to use ~ValuesColumnsContainer~ - what is it?
 
 
-**** IN-PROGRESS-NOW Initial investigations and steps
-
-
-
-**** TODO-NEXT Conversion of ~Presenters~ to ~BoxContainer~
+*** HOLD Notes on ~Presenters~ to ~BoxContainers~ conversion
 
 - [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
   - [ ] First experiment on ~PresentersColumns~
@@ -1848,10 +1845,6 @@ Classes:
   - [ ] May need a special extension of Containers for some of the above.
 
     
-*** TODO LineContainer: Call layout as called on other containters, rather than rely on this.lineFrom and this.lineTo being changed in the constructor!!
-
-- This is related to the fact that LineContainer.paint is just painting the  this.lineFrom and this.lineTo, so no layout is needed
-
 
 ** LATER 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
 

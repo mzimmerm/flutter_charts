@@ -274,7 +274,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        First [YContainer] is first to need it, to display and scale y values and
     //        create labels from the stacked points (if chart is stacked).
     /// Create member [pointsColumns] from [data.dataRows].
-    // todo-00-last : This needs to be separated into  PointsColumns BoxContainer 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout. But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
+    // todo-01 : PointsColumns needs to be separated into  PointsColumns BoxContainer
+    //           1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout.
+    //           But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
     pointsColumns = PointsColumns(
       chartRootContainer: this,
       pointPresenterCreator: pointPresenterCreator,
@@ -1090,7 +1092,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
-    // todo-01-morph-important : problem : this constructor actually creates absolute values on PointPresenters, no offsetting !!
     /// Creates from [ChartData] (model for this container),
     /// columns of leaf values encapsulated as [StackableValuePoint]s,
     /// and from the values, the columns of leaf pointPresenters,
@@ -1102,10 +1103,9 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     /// Painters use the created leaf pointPresenters directly to draw lines, points,
     /// and bars from the pointPresenters' prepared ui elements:
     /// lines, points, bars, etc.
-
-    // todo-00-last-1 : What is the difference between this PointPresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
+    // todo-01 : What is the difference between this PointPresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
     //                  PointsColumns is DATA, PointPresentersColumns should be converted to BoxContainer
-    // todo-00-last-1 :
+    //                  Also : problem : this constructor actually creates absolute values on PointPresenters, no offsetting !!
     pointPresentersColumns = PointPresentersColumns(
       pointsColumns: chartRootContainer.pointsColumns,
       chartRootContainer: chartRootContainer,
@@ -1169,7 +1169,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo-01-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+// todo-02-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
 //          in AdjustableLabelsChartAreaContainer
 //          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
@@ -1900,7 +1900,7 @@ class StackableValuePoint {
     return this;
   }
 
-  // todo-00-last : This applies offset on this StackableValuePoint
+  // todo-01 : This applies offset on this StackableValuePoint
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
@@ -2028,8 +2028,9 @@ class PointsColumn {
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
 /// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainer].
-// todo-00-later : NO NEED YET: THIS IS A MODEL, NOT PRESENTER : Convert to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
-//                 Each PointsColumn is a child.
+// todo-01-note : PointsColumns IS A MODEL, NOT PRESENTER :
+//                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
+//                 Each PointsColumn is a child in children.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.
   final ChartRootContainer chartRootContainer;
@@ -2052,8 +2053,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     _createStackableValuePointsFromChartData(chartRootContainer.data);
   }
 
-  // todo-01-morph : Create this object, PointsColumns here and return. Maybe this should be converted to factory constructor?
-  //                 Also, this class PointsColumns is a list, why do we need the nextRightPointsColumn at all???
   /// Constructs internals of this object, the [PointsColumns].
   ///
   /// Transposes data passed as rows in [chartData.dataRows]

@@ -24,7 +24,7 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 class PointPresenter {
   // Not actually stored here, but could be
   // todo-01-morph : is point used?
-  // todo-00-last : SURPRISINGLY, PointPresenter DOES NOT HOLD ONTO StackableValuePoint point. WHERE DOES IT GET IT FROM??
+  // todo-01 : SURPRISINGLY, PointPresenter DOES NOT HOLD ONTO [StackableValuePoint point]. WHERE DOES IT GET IT FROM??
   // StackableValuePoint point;
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
@@ -41,7 +41,7 @@ class PointPresenter {
 /// By one "visual column" here we mean the area above one label, which
 /// shows all data value at that label, each value in one instance of
 /// [PointPresenter].
-// todo-00-last-2 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
+// todo-01 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
 class PointPresentersColumn {
   List<PointPresenter> pointPresenters = List.empty(growable: true);
   List<PointPresenter> positivePointPresenters = List.empty(growable: true);
@@ -118,7 +118,7 @@ class PointPresentersColumn {
 ///   - Each [PointPresentersColumn] element of [pointPresentersColumns]
 ///     manages a link to the [PointPresentersColumn] on it's right, allowing
 ///     walk without the [pointPresentersColumns] list.
-// todo-00-last-1 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
+// todo-01 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
 //                - each child is PointPresentersColumn
 //                - still use everything in it the same
 //                - find where to a) create this instance and b) where to call the newly added methods
@@ -160,7 +160,7 @@ abstract class PointPresenterCreator {
   PointPresenterCreator(); // same as  {}
 
   PointPresenter createPointPresenter({
-    // todo-00-last-note : point is needed for VerticalBarPointPresenter to obtain scaledFrom and scaledTo for stacking
+    // todo-01-note : point is needed for VerticalBarPointPresenter to obtain scaledFrom and scaledTo for stacking
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
