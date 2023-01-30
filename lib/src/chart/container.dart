@@ -129,6 +129,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   @override
   bool get isRoot => true;
 
+  /// Number of columns in the [DataContainer].
   late final int dataColumnsCount; // todo-done-last
 
   /// Base Areas of chart.
@@ -335,7 +336,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
     xContainer.buildAndAddChildren_DuringParentLayout();
     xContainer.layout();
-    dataColumnsCount = xContainer._xLabelContainers.length; // todo-done-last : document
+    dataColumnsCount = xContainer._xLabelContainers.length;
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
     xContainer.layoutSize = xContainer.lateReLayoutSize;

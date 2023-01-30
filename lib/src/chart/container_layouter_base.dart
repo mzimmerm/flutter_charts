@@ -1042,21 +1042,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   // isLayout should be implemented differently on layouter and container. But it's not really needed
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
-  // todo-011 : these could be private so noone overrides their 'packing: Packing.tight, align: Align.start'
-/* todo-done-last : removed the initializer, rely on constructory, but have to make this late
-  LengthsPositionerProperties mainAxisLayoutProperties = LengthsPositionerProperties(
-    align: Align.start,
-    packing: Packing.tight,
-    layoutDirection: mainAxisLayoutDirection,
-    isPositioningMainAxis: true,
-  );
-  LengthsPositionerProperties crossAxisLayoutProperties = LengthsPositionerProperties(
-    align: Align.start,
-    packing: Packing.tight,
-    layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
-    isPositioningMainAxis: false,
-  );
-*/
+  // todo-011 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
+  //            so noone overrides their 'packing: Packing.tight, align: Align.start'
   /// Properties of layout on main axis.
   ///
   /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize

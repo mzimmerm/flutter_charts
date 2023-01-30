@@ -99,34 +99,43 @@ enum DivideConstraintsToChildren {
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along
 /// either a main axis or cross axis.
 ///
-/// todo-011: document the added [layoutDirection], [isPositioningMainAxis]
-/// This class is also used to describe packing and alignment of the layed out elements
+/// Instances are intended to be members on [RollingPositioningBoxLayouter]; they describe
+/// the properties of the layouter and it's extensions such as [Row] and [Column].
+/// In more detail: the members [align] and [packing] define alignment and packing of children
+/// during layout; the member [layoutDirection] defines if children are layed out start-to-end
+/// or end-to-start; the member [isPositioningMainAxis] is held on here for the logic in
+/// [LayedoutLengthsPositioner.layoutLengths] to perform [PositionedLineSegments.reversedCopy]
+/// only on main axis.
+///
+/// This class is used to describe packing and alignment of the layed out elements
 /// for the 1-dimensional [LayedoutLengthsPositioner], where it serves to describe the 1-dimensional packing and alignment.
 class LengthsPositionerProperties {
 
-  // todo-00 add LayoutDirection member layoutDirection, see [RollingPositioningBoxLayouter],
-  //           `  final LayoutDirection mainAxisLayoutDirection` document as 'layout direction along the axis this
-  //              properties object describes. MUST be on main axis (todo- assert somehow?)
-  // todo-done-last: Added layoutDirection, and isPositioningMainAxis
   final Align align;
   final Packing packing;
-  /// The layout direction along the axis this properties object describes.
-  /// MUST be on main axis (todo-011 assert somehow?)
-  final LayoutDirection layoutDirection;  // todo-done-last : added
-  final bool isPositioningMainAxis; // todo-done-last : added
+  /// The layout direction along the axis which this properties object describes.
+  /// Note: If [isPositioningMainAxis] is false, [layoutDirection] value must be [LayoutDirection.coordinatesDirection].
+  final LayoutDirection layoutDirection;
+  // todo-01 : isPositioningMainAxis should not be necessary, as layoutDirection should always be set correctly
+  final bool isPositioningMainAxis;
 
   LengthsPositionerProperties({
     required this.align,
     required this.packing,
     required this.layoutDirection,
     required this.isPositioningMainAxis,
-  });
+  }) {
+    // Currently, on cross axis, layout direction must be the default [LayoutDirection.coordinatesDirection].
+    if (!isPositioningMainAxis) {
+      assert (layoutDirection == LayoutDirection.coordinatesDirection);
+    }
+  }
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
 ///
 /// The [lengths] typically originate from [BoxLayouter.layoutSize]s of children of
-/// a parent [BoxLayouter] which creates this object - hence the first 'Layout'
+/// a parent [BoxLayouter] which creates this object - this is reflected in the adjective 'Layedout'
 /// in the name [LayedoutLengthsPositioner].
 ///
 /// The [lengthsPositionerProperties] specifies [Packing] and [Align] properties.
@@ -259,14 +268,11 @@ class LayedoutLengthsPositioner {
         );
         break;
     }
-    // todo-00 ONLY if [LayedoutLengthsPositioner] positions along the main axis, AND is set to reverse,
-    //              then reverse before return, as this [LayedoutLengthsPositioner] instance knows
-    //    - a) total length, in it's member [totalPositionedLengthIncludesPadding]
-    //    - b) individual segments layed out positions in positionedLineSegments returned here
-    //    - c) LayoutDirection via it's member [lengthsPositionerProperties]
+    // If [LayedoutLengthsPositioner] positions along the main axis, AND is set to reverse, return reverse.
     if (lengthsPositionerProperties.isPositioningMainAxis &&
         lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed
     ) {
+      // todo-done-last
       positionedLineSegments = positionedLineSegments.reversedCopy();
     }
 
@@ -423,20 +429,33 @@ class LayedoutLengthsPositioner {
   }
 }
 
-/// Holds a list of 1-dimensional [LineSegment]s layed out generally by [LayedoutLengthsPositioner] from a list of lengths.
+/// Holds on the invocation result of 1-dimensional layouter [LayedoutLengthsPositioner.layoutLengths].
 ///
-/// Each line segment in [lineSegments] has a min and max (start and end), where
-/// the [LayedoutLengthsPositioner] positioned them, the min and max values are
-/// starting at 0.0 and ending at the [LayedoutLengthsPositioner.lengthsConstraint].
+/// It's members and what each holds on:
+///   - [lineSegments] a list of [util_dart.LineSegment]s that have been positioned
+///     by [LayedoutLengthsPositioner.layoutLengths] from a list of lengths
+///     [LayedoutLengthsPositioner.lengths] which the [LayedoutLengthsPositioner] was asked to lay out.
+///     Each line segment in [lineSegments] has a min and max (start and end), where
+///     the [LayedoutLengthsPositioner.layoutLengths] positioned them; the min and max values are
+///     starting at 0.0 and ending at [totalPositionedLengthIncludesPadding].
+///     If [totalPositionedLengthIncludesPadding] needed by the layouter was
+///     greater than LayedoutLengthsPositioner.lengthsConstraint] [isOverflown] is set to true.
+///   - [totalPositionedLengthIncludesPadding] is the total length used by the positioner during
+///     [LayedoutLengthsPositioner.layoutLengths].
+///   - [isOverflown] is set to true if the [totalPositionedLengthIncludesPadding] needed
+///     was larger then [LayedoutLengthsPositioner.lengthsConstraint].
 ///
 /// The [isOverflown] is only a marker that the process that lead to layout overflew it's constraints.
 ///
-/// The clients of this object usually use it to convert the member [lineSegments]
+/// The clients of this object usually use this object to convert the member [lineSegments]
 /// to one side of a rectangle along the axis corresponding to children (future) positions.
 ///
 /// Note: on creation, it should be passed segments [lineSegments] already
-///       layed out to their positions with [LayedoutLengthsPositioner]
-///       and [totalLayedOutLengthIncludesPadding] calculated by [LayedoutLengthsPositioner.totalLayedOutLengthIncludesPadding].
+///       layed out to their positions with [LayedoutLengthsPositioner.layoutLengths]
+///       and [totalLayedOutLengthIncludesPadding]
+///       calculated by [LayedoutLengthsPositioner.totalLayedOutLengthIncludesPadding],
+///       as well as [isOverflown].
+///
 class PositionedLineSegments {
   const PositionedLineSegments({
     required this.lineSegments,
@@ -468,16 +487,17 @@ class PositionedLineSegments {
   /// This will become the [BoxLayouter.layoutSize] along the layout axis.
   ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
-  /* todo-00 what is this?
-  /// Calculates length of all layed out [lineSegments].
+  /// Returns copy of this instance's [lineSegments] that are reversed and
+  /// re-layedout (layed out from end rather than start).
   ///
-  /// Because the [lineSegments] are created
-  /// in [LayedOutLineSegments.layoutLengths] and start at offset 0.0 first to last,
-  /// the total length is between 0.0 and the end of the last [util_dart.LineSegment] element in [lineSegments].
-  /// As the [lineSegments] are all in 0.0 based coordinates, the last element end is the length of all [lineSegments].
-  */
-
-  // todo-done-last document Reverse line segments (layout from end rather than start
+  /// The reversal is equivalent to two 1-dimensional transforms:
+  ///   - x -> x + -totalPositionedLengthIncludesPadding
+  ///   - x -> -x
+  /// Combined, the transform is
+  ///   - x -> totalPositionedLengthIncludesPadding -x
+  ///
+  /// Because the [lineSegments] members were layed out and kept in increasing order of [LineSegment.min],
+  /// for the result to keep the same order, the order of elements in [lineSegments] is also reversed.
   List<util_dart.LineSegment> _reverseLineSegments() {
     List<util_dart.LineSegment> reversedAndRepositioned = [];
     for (util_dart.LineSegment lineSegment in lineSegments.reversed.toList(growable: false)) {
