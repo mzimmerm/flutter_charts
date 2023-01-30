@@ -9,6 +9,7 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
     Align,
     Packing,
+    LayoutDirection,
     LengthsPositionerProperties,
     LayedoutLengthsPositioner,
     PositionedLineSegments,
@@ -39,32 +40,32 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   */
 
   /// The parent of this [BoxContainer], initialized to null here, set to in one of 2 places:
-  ///   1. If [_parent] is explicitly passed to constructor of [BoxContainer] extensions, in situations when caller knows
-  ///      the parent and wants to explicitly set up the parent-child.
-  ///   2. In the [BoxContainer] constructor, if [_children] are non-null,
+  ///   1. In the [BoxContainer] constructor, if [__children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
-  // todo-01-last : maybe restore late final, was : late final BoxContainer? parent; // will be initialized when addChild(this) is called on this parent
+  ///   2. In [BoxContainer.addChildren], [_parent] is set on all passed children.
   BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this parent
 
-  // todo-01 Important:
-  //  1. Removed the late final on children. Some extensions (eg. LineChartContainer)
-  //          need to start with empty array, initialized in BoxContainer.
-  //          Some others, e.g. BoxLayouter need to pass it (which fails if already initialized
-  //          in BoxContainer)
-  //  2. can we make children a getter, or hide it somehow, so establishing hierarchy parent/children is in methods?
-  //                and add asserts as appropriate
-  // todo-01-last : can we make children late final? Can we make immutable? Ideally all. Maybe just init to []?
+  /// Manages children of this [BoxContainer].
+  ///
+  /// All children are a siblings linked list.
+  /// The next sibling can be accessed by invoking [nextSibling].
   final List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
 
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
+
+  /// Maintains linked list from previous child to next child.
+  BoxContainer? _nextSibling;
+
+  /// Public getter reaches the [nextSibling] sibling child.
+  BoxContainer? get nextSibling => _nextSibling;
 
   /// Set children list
   // set _children(List<BoxContainer> children) { __children = children; }
 
   bool get isRoot => _parent == null;
 
-  bool get isLeaf => _children.isEmpty;
+  bool get isLeaf => __children.isEmpty;
 
   BoxContainer? _root;
 
@@ -355,6 +356,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
   /// Implementation of abstract [LayoutableBox.layout].
+  ///
+  /// Important notes:
+  ///   - The layouter order of processing of [_children] always starts with the first child
+  ///     in the [_children] list, proceeds in it's [Iterator.moveNext] sequence.
+  ///     This is also true for [_preDescend_DistributeConstraintsToImmediateChildren],
+  ///     which, if overridden without overriding [layout], must distribute constraints in the same order.
+  ///   -
+  ///
   @override
   void layout() {
 
@@ -663,13 +672,16 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       //  && this.children != ChildrenNotSetSingleton()) {
       __children.clear();
       __children.addAll(children);
+      // Establish a 'nextSibling' linked list between __children
+      _linkNextChildren(null);
     }
 
     // Having added children, ensure key uniqueness
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    _makeSelfParentOn(__children);
+    _makeSelfParentOf(__children);
+
     // NAMED GENERATIVE super() called implicitly here.
   }
 
@@ -683,10 +695,42 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
-  void _makeSelfParentOn(List<BoxContainer> parentedChildren) {
+  void _makeSelfParentOf(List<BoxContainer> parentedChildren) {
     for (var child in parentedChildren) {
       child._parent = this;
     }
+  }
+
+  /// Set the [_nextSibling] on [_children].
+  ///
+  /// After invoking this method, [nextSibling] can be called on any child in [_children].
+  ///
+  /// There are two ways to invoke this method:
+  ///   - invoked with a [null] parameter, it is assumed this method is invoked
+  ///     from the [BoxContainer] constructor. 
+  ///   - Invoked with a non-null list, it is assumed this method is invoked from [addChildren].
+  void _linkNextChildren(List<BoxContainer>? addedChildren) {
+    BoxContainer? previous;
+    if (addedChildren == null) {
+      for (var child in __children) {
+        previous = _previousSetNextIsChild(previous, child);
+      }
+    } else {
+      for (var child in addedChildren) {
+        if (__children.isNotEmpty) {
+          previous = __children.last;
+        }
+        previous = _previousSetNextIsChild(previous, child);
+      }
+    }
+  }
+
+  /// Set previous.next = child, and return child as the new previous
+  BoxContainer _previousSetNextIsChild(BoxContainer? previous, BoxContainer child) {
+    if (previous != null) {
+      previous._nextSibling = child;
+    }
+    return child;
   }
 
   /// Appends all children passed in [addedChildren] to existing [_children],
@@ -694,10 +738,14 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   /// keys among all [_children].
   /// todo-01 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
   void addChildren(List<BoxContainer> addedChildren) {
+    // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
+    // are added to [__children];
+    _linkNextChildren(addedChildren);
     __children.addAll(addedChildren);
-    _makeSelfParentOn(addedChildren);
+    _makeSelfParentOf(addedChildren);
     ensureKeyedMembersHaveUniqueKeys();
   }
+
 
   /// Override of the abstract [post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
@@ -948,16 +996,21 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 /// Base class for [Row] and [Column] layouters, which allow to process [Greedy] children.
 ///
 /// The role of this class is to lay out their children along the main axis and the cross axis,
-/// in continuous flow without wrapping. [Row] and [Column] are the intended extensions.
+/// in continuous flow without wrapping along the main axis.
 ///
-/// This base layouter supports different alignment and packing of children ([Align] and [Packing]),
-/// set by the [mainAxisAlign], [mainAxisPacking], [crossAxisAlign], [crossAxisPacking].
+/// [Row] and [Column] are the intended extensions.
+///
+/// This base layouter supports various alignment and packing of children,
+/// along both the main and the cross axes. The alignment and packing is set
+/// by the named parameters [mainAxisAlign], [mainAxisPacking], [crossAxisAlign], [crossAxisPacking].
+/// See [Align] and [Packing] for the supported values of the named parameters;
+/// their values affect the resulting layout of the [children].
 ///
 /// The members [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
 /// are private wrappers for alignment and packing properties.
 ///
-/// Note that [Align] and [Packing] are needed both on the 'main' direction,
-/// as well as the 'cross' direction: this corresponds to layout both widths and heights of the boxes.
+/// Note that [Align] and [Packing] are needed to be set both on the 'main' direction,
+/// as well as the 'cross' direction on this base class constructor.
 ///
 /// Similar to Flex.
 abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
@@ -967,10 +1020,21 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
+    required this.mainAxisLayoutDirection,
   }) : super(children: children) {
     mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisAlign, packing: mainAxisPacking);
-    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisAlign, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: mainAxisPacking,
+      layoutDirection: mainAxisLayoutDirection,
+      isPositioningMainAxis: true,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      isPositioningMainAxis: false,
+    );
   }
 
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
@@ -979,8 +1043,40 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
   // todo-011 : these could be private so noone overrides their 'packing: Packing.tight, align: Align.start'
-  LengthsPositionerProperties mainAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
-  LengthsPositionerProperties crossAxisLayoutProperties = LengthsPositionerProperties(packing: Packing.tight, align: Align.start);
+/* todo-done-last : removed the initializer, rely on constructory, but have to make this late
+  LengthsPositionerProperties mainAxisLayoutProperties = LengthsPositionerProperties(
+    align: Align.start,
+    packing: Packing.tight,
+    layoutDirection: mainAxisLayoutDirection,
+    isPositioningMainAxis: true,
+  );
+  LengthsPositionerProperties crossAxisLayoutProperties = LengthsPositionerProperties(
+    align: Align.start,
+    packing: Packing.tight,
+    layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+    isPositioningMainAxis: false,
+  );
+*/
+  /// Properties of layout on main axis.
+  ///
+  /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize
+  late LengthsPositionerProperties mainAxisLayoutProperties;
+  late LengthsPositionerProperties crossAxisLayoutProperties;
+
+
+  /// Layout direction along the main axis.
+  ///
+  /// This does NOT control the sequence in which the layouter lays out [_children] - the layouter always
+  /// lays out children sequentially, starting with the first child in the [_children] list, see [BoxLayouter.layout].
+  ///
+  /// The layout direction is as follows:
+  ///   - If set to the default [LayoutDirection.coordinatesDirection],
+  ///     - for main axis = [LayoutAxis.horizontal] the first child is layedout *leftmost*
+  ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *topmost*.
+  ///   - If set to the default [LayoutDirection.reversed],
+  ///     - for main axis = [LayoutAxis.horizontal] the first child is layedout *rightmost*
+  ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *bottommost*.
+  final LayoutDirection mainAxisLayoutDirection;
 
   /// Override of the core layout on [RollingPositioningBoxLayouter].
   @override
@@ -1174,7 +1270,13 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
-  /// Creates a [LayedoutLengthsPositioner] for the passed [children].
+  /// Creates a [LayedoutLengthsPositioner] for the passed [children], and the axis
+  /// along which the [children] are layed out.
+  ///
+  /// The passed objects must all correspond to the axis for which the positioner is being created:
+  /// [layoutAxis] defines horizontal or vertical,
+  /// [axisLayoutProperties] defines alignment, packing, layout direction and whether the positioner is from main axes,
+  /// [lengthsConstraintAlongLayoutAxis] defines the number which is the constraint along the [layoutAxis].
   ///
   /// This layouter can layout children in the dimension along the passed [layoutAxis],
   /// according the passed [axisLayoutProperties]. The passed [lengthsConstraintAlongLayoutAxis]
@@ -1183,7 +1285,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// See [LayedoutLengthsPositioner] for details of how the returned layouter lays out the children's
   /// sides along the [layoutAxis].
   ///
-  /// The passed objects must both correspond to either main axis or the cross axis.
   LayedoutLengthsPositioner _layedoutLengthsPositionerAlongAxis({
     required LayoutAxis layoutAxis,
     required LengthsPositionerProperties axisLayoutProperties,
@@ -1221,7 +1322,12 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     required Packing packing,
     required Align align,
   }) {
-    mainAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: align,
+      packing: packing,
+      layoutDirection: mainAxisLayoutDirection, // pass from this PositioningBoxLayouter member
+      isPositioningMainAxis: true,
+    );
   }
 
   /* Keep
@@ -1330,20 +1436,32 @@ class Row extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
+    LayoutDirection mainAxisLayoutDirection = LayoutDirection.coordinatesDirection,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
+    mainAxisLayoutDirection: mainAxisLayoutDirection,
   ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
     // Important: As a result, mixin fields can still be final, bust must be late, as they are
     //   always initialized in concrete implementations.
     mainLayoutAxis = LayoutAxis.horizontal;
-    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisAlign, packing: mainAxisPacking);
-    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisAlign, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: mainAxisPacking,
+      layoutDirection: mainAxisLayoutDirection,
+      isPositioningMainAxis: true,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      isPositioningMainAxis: false,
+    );
   }
 }
 
@@ -1381,16 +1499,28 @@ class Column extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
+    LayoutDirection mainAxisLayoutDirection = LayoutDirection.coordinatesDirection,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
+    mainAxisLayoutDirection: mainAxisLayoutDirection,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(align: mainAxisAlign, packing: mainAxisPacking);
-    crossAxisLayoutProperties = LengthsPositionerProperties(align: crossAxisAlign, packing: crossAxisPacking);
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: mainAxisPacking,
+      layoutDirection: mainAxisLayoutDirection,
+      isPositioningMainAxis: true,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      isPositioningMainAxis: false,
+    );
   }
 }
 
@@ -1403,8 +1533,9 @@ class Column extends RollingPositioningBoxLayouter {
 /// Uses base class [layout],
 /// pre-descend sets full constraints on immediate children as normal
 /// descend runs as normal, makes children make layoutSize available
-/// post-descend runs as normal - does 'layout self'
-/// what do we set THE GREEDY NODE layoutSize to???? todo-new ~I THINK WE SET IT TO THE SIZE OF IT'S CONSTRAINT. THATH WAY, EVEN IF IT'S CHILD DOES NOT TAKE THE FULL CONSTRAINT, THE ROW LAYOUT WILL ENSURE THE GREEDY WILL TAKE THE FULL LAYOUT_SIZE~  *!!!!!!
+/// post-descend runs as normal - does 'layout self'.
+/// layoutSize is set to the calculated [_greedySizeAlongGreedyAxis].
+///
 class Greedy extends NonPositioningBoxLayouter {
   final int greed;
 
@@ -1653,7 +1784,10 @@ class Aligner extends PositioningBoxLayouter {
 // Helper classes ------------------------------------------------------------------------------------------------------
 
 /// todo-01-document
-enum LayoutAxis { horizontal, vertical }
+enum LayoutAxis {
+  horizontal,
+  vertical,
+}
 
 LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
   switch (layoutAxis) {
@@ -1714,7 +1848,7 @@ class _MainAndCrossPositionedSegments {
 ///              [Row] or [Column] (by calling this method in the baseclass [BoxLayouter]).
 ///              We make this a library level function to at least visually remove it from the  baseclass [BoxLayouter].
 ///
-/// This method forces the deeper level values to the non-offseting.
+/// This method forces the deeper level values to the non-offsetting.
 void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning({
   required bool foundFirstRowFromTop,
   required bool foundFirstColumnFromTop,
@@ -1735,10 +1869,16 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
     //           but this is not simple.
     if (child is Row && foundFirstRowFromTop) {
-      child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
+      child._forceMainAxisLayoutProperties(
+        align: Align.start,
+        packing: Packing.tight,
+      );
     }
     if (child is Column && foundFirstColumnFromTop) {
-      child._forceMainAxisLayoutProperties(align: Align.start, packing: Packing.matrjoska);
+      child._forceMainAxisLayoutProperties(
+        align: Align.start,
+        packing: Packing.matrjoska,
+      );
     }
 
     // in-child continue to child's children with the potentially updated values 'foundFirst'

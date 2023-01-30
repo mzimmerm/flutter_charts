@@ -129,7 +129,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   @override
   bool get isRoot => true;
 
-  late final int dataColumnsCount; // todo-00-new-done
+  late final int dataColumnsCount; // todo-done-last
 
   /// Base Areas of chart.
   late BoxContainer legendContainer;
@@ -335,7 +335,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
     xContainer.buildAndAddChildren_DuringParentLayout();
     xContainer.layout();
-    dataColumnsCount = xContainer._xLabelContainers.length; // todo-00-new-done
+    dataColumnsCount = xContainer._xLabelContainers.length; // todo-done-last : document
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
     xContainer.layoutSize = xContainer.lateReLayoutSize;
