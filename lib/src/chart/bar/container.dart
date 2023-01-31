@@ -49,11 +49,22 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
     pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
+  /* todo-done-last
   @override
   VerticalBarChartDataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
     return VerticalBarChartDataContainer(
+      chartRootContainer: chartRootContainer,
+    );
+  }
+  */
+
+  @override
+  VerticalBarChartNewDataContainer createNewDataContainer({
+    required ChartRootContainer chartRootContainer,
+  }) {
+    return VerticalBarChartNewDataContainer(
       chartRootContainer: chartRootContainer,
     );
   }

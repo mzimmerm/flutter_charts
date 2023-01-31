@@ -104,7 +104,7 @@ mixin DoubleLinked<E> {
   /// Public getter reaches the [next] sibling child.
   E? get next => _next;
 
-  late bool _hasNext;
+  bool _hasNext = false;
 
   bool get hasNext => _hasNext;
 
@@ -114,7 +114,7 @@ mixin DoubleLinked<E> {
   /// Public getter reaches the [next] sibling child.
   E? get previous => _previous;
 
-  late bool _hasPrevious;
+  bool _hasPrevious = false;
 
   bool get hasPrevious => _hasPrevious;
 
@@ -708,7 +708,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
-    throw UnimplementedError('On leaf [BoxLayouter] which do NOT override [layout], this method '
+    throw UnimplementedError('On leaf [BoxLayouter] which does NOT override [layout], this method named '
         '[post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
   }
 

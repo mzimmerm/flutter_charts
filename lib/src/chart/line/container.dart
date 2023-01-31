@@ -54,11 +54,22 @@ class LineChartRootContainer extends ChartRootContainer {
     pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 
+  /* todo-done-last
   @override
   LineChartDataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
     return LineChartDataContainer(
+      chartRootContainer: chartRootContainer,
+    );
+  }
+  */
+
+  @override
+  LineChartNewDataContainer createNewDataContainer({
+    required ChartRootContainer chartRootContainer,
+  }) {
+    return LineChartNewDataContainer(
       chartRootContainer: chartRootContainer,
     );
   }

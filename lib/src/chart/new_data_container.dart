@@ -1,3 +1,4 @@
+import 'dart:ui' as ui show Size;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
@@ -65,6 +66,11 @@ class NewValueContainer extends BoxContainer {
     children: children,
     key: key,
   );
+
+  @override
+  void post_Leaf_SetSize_FromInternals() {
+    layoutSize = const ui.Size(20.0, 20.0); // todo-00-last : implement this right
+  }
 }
 
 class _NewSourceYContainerAndYContainerToSinkDataContainer {

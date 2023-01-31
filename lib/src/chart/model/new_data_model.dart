@@ -166,7 +166,7 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
     List<NewValueContainer> columnPointContainers = [];
     if (hasLinkedElements) {
       for (var current = firstLinked(); current.hasNext; current = current.next) {
-        current.buildNewValueContainer();
+        columnPointContainers.add(current.buildNewValueContainer());
       }
     }
     return columnPointContainers;

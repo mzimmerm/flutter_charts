@@ -22,7 +22,7 @@ import 'container_layouter_base.dart'
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
-// import 'new_data_container.dart';
+import 'new_data_container.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 
@@ -140,7 +140,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late BoxContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;
-  late DataContainer dataContainer;
+  late NewDataContainer dataContainer; // todo-done-last DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
   ///
@@ -244,7 +244,13 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // ### 6. [DataContainer]: Construct a concrete (Line, Bar) DataContainer.
 
+    /* todo-done-last
     dataContainer = createDataContainer(
+      chartRootContainer: this,
+    );
+    */
+
+    dataContainer = createNewDataContainer(
       chartRootContainer: this,
     );
 
@@ -441,7 +447,13 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
+  /* todo-done-last
   DataContainer createDataContainer({
+    required ChartRootContainer chartRootContainer,
+  });
+  */
+
+  NewDataContainer createNewDataContainer({
     required ChartRootContainer chartRootContainer,
   });
 }
@@ -1291,6 +1303,14 @@ class VerticalBarChartDataContainer extends DataContainer {
   }
 }
 
+class VerticalBarChartNewDataContainer extends NewDataContainer {
+  VerticalBarChartNewDataContainer({
+    required ChartRootContainer chartRootContainer,
+  }) : super(
+    chartRootContainer: chartRootContainer,
+  );
+}
+
 /// Provides the data area container for the line chart.
 ///
 /// The only role is to implement the abstract method of the baseclass,
@@ -1339,6 +1359,14 @@ class LineChartDataContainer extends DataContainer {
       }
     }
   }
+}
+
+class LineChartNewDataContainer extends NewDataContainer {
+  LineChartNewDataContainer({
+    required ChartRootContainer chartRootContainer,
+  }) : super(
+    chartRootContainer: chartRootContainer,
+  );
 }
 
 /// Represents a set of gridlines (either horizontal or vertical, but not both),
