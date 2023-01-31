@@ -6,13 +6,13 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
 
-/// todo-done-last  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
+/// todo-done-last-1  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
 @immutable
 class NewDataModel {
 
   // NEW CODE =============================================================
   /// List of data series in the model.
-  final List<NewDataModelSeries> seriesList = []; // todo-done-last : added for the NewDataModel
+  final List<NewDataModelSeries> seriesList = []; // todo-done-last-1 : added for the NewDataModel
 
   List<NewValuesColumnContainer> createNewValuesColumnContainerList() {
     List<NewValuesColumnContainer> columns = [];
@@ -130,7 +130,7 @@ class NewDataModel {
 
 }
 
-/// todo-done-last : Replaces PointsColumn
+/// todo-done-last-1 : Replaces PointsColumn
 class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint> {
 
   /// Points of this series.

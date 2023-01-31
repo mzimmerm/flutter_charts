@@ -4,12 +4,12 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import '../container/container_key.dart';
 
-// todo-01-document The container of chart columns.
-class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+// todo-01-document The container of chart columns. NewValuesColumnsContainer - but we use the name NewDataContainer
+class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
   // constructor:
   // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
 
-  NewValuesColumnsContainer({
+  NewDataContainer({
     required ChartRootContainer chartRootContainer,
     // required List<BoxContainer> children,
   }) : super(

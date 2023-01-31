@@ -272,7 +272,7 @@ class LayedoutLengthsPositioner {
     if (lengthsPositionerProperties.isPositioningMainAxis &&
         lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed
     ) {
-      // todo-done-last-1
+      // todo-done-last-2
       positionedLineSegments = positionedLineSegments.reversedCopy();
     }
 

@@ -10,7 +10,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class VerticalBarChartAnchor extends ChartAnchor {
 
   VerticalBarChartAnchor({
-    required NewDataModel chartData, // todo-done-last ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -38,7 +38,7 @@ class VerticalBarChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
-    required NewDataModel chartData, // todo-done-last ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(

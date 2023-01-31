@@ -42,7 +42,7 @@ abstract class ChartAnchor {
   /// ChartData to hold on before member [chartRootContainer] is created late
   ///
   /// After [chartRootContainer] is created and set, [chartData] should be set on it.
-  NewDataModel chartData; // todo-done-last : ChartData chartData;
+  NewDataModel chartData; // todo-done-last-1 : ChartData chartData;
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   bool isStacked = false;
   late ChartRootContainer chartRootContainer;
@@ -134,7 +134,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   bool get isRoot => true;
 
   /// Number of columns in the [DataContainer].
-  late final int dataColumnsCount; // todo-done-last-1
+  late final int dataColumnsCount; // todo-done-last-2
 
   /// Base Areas of chart.
   late BoxContainer legendContainer;
@@ -195,7 +195,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainer({
-    required NewDataModel chartData, // todo-done-last ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -933,7 +933,7 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
-  /// Container of gridlines parellel to X axis.
+  /// Container of gridlines parallel to X axis.
   ///
   /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
   late GridLinesContainer _xGridLinesContainer;
@@ -2070,7 +2070,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last ChartData chartData) {
+  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last-1 ChartData chartData) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
