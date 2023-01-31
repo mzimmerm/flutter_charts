@@ -9,7 +9,6 @@ class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildre
   // constructor:
   // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
 
-
   NewValuesColumnsContainer({
     required ChartRootContainer chartRootContainer,
     // required List<BoxContainer> children,
@@ -19,6 +18,24 @@ class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildre
   ) {
     // todo-00-last:
     // build
+  }
+
+  @override
+  void buildAndAddChildren_DuringParentLayout() {
+/*
+    NewDataModel dataModel = NewDataModel(
+      dataRows: dataRows,
+      xUserLabels: xUserLabels,
+      dataRowsLegends: dataRowsLegends,
+      chartOptions: chartOptions,
+    );
+*/
+   NewDataModel dataModel = chartRootContainer.data;
+
+   List<NewValuesColumnContainer>  children = dataModel.createNewValuesColumnContainerList();
+
+   addChildren(children);
+
   }
 
   @override
@@ -33,10 +50,6 @@ class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildre
     //
   }
 
-  @override
-  void buildAndAddChildren_DuringParentLayout() {
-    //
-  }
 
 // todo-00
 // void applyParentConstraints - default

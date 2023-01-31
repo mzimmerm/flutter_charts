@@ -1,9 +1,11 @@
-import 'package:flutter_charts/src/chart/data.dart';
+// import 'package:flutter_charts/src/chart/data.dart';
 import 'package:flutter_charts/src/chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import '../container.dart';
 import '../options.dart';
 
 import 'presenter.dart';
+
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 /// Concrete [ChartAnchor] for [LineChart].
 ///
@@ -11,7 +13,7 @@ import 'presenter.dart';
 class LineChartAnchor extends ChartAnchor {
 
   LineChartAnchor({
-    required ChartData chartData,
+    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -41,7 +43,7 @@ class LineChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
-    required ChartData chartData,
+    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(

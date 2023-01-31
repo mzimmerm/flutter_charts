@@ -54,28 +54,6 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
 
-  /* todo-00-done-last
-  /// Maintains linked list from previous child to next child.
-  BoxContainer? _nextSibling;
-
-  /// Public getter reaches the [nextSibling] sibling child.
-  BoxContainer? get nextSibling => _nextSibling;
-
-  late bool _hasNext;
-
-  bool get hasNext => _hasNext;
-
-  /// Maintains linked list from previous child to next child.
-  BoxContainer? _previousSibling;
-
-  /// Public getter reaches the [nextSibling] sibling child.
-  BoxContainer? get previousSibling => _previousSibling;
-
-  late bool _hasPrevious;
-
-  bool get hasPrevious => _hasPrevious;
-  */
-
   /// Set children list
   // set _children(List<BoxContainer> children) { __children = children; }
 
@@ -115,6 +93,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
 /// It should be used on [E] which is also mixed in with [DoubleLinked<E>],
 /// because then [E] is both [DoubleLinked] and [E], and can be mutually cast.
 ///
+/// See [DoubleLinkedOwner] for a typical use.
 mixin DoubleLinked<E> {
 
   late final DoubleLinkedOwner<E> doubleLinkedOwner;
@@ -143,17 +122,17 @@ mixin DoubleLinked<E> {
   E createLink(E? previous, E current) {
     if (previous != null) {
       (previous as DoubleLinked)._next = current;
+      previous._hasNext = true;
       (current as DoubleLinked)._previous = previous;
+      current._hasPrevious = true;
     }
     return current;
   }
 
-/*
-  /// Abstract method defines the elements to be linked
-  Iterable<E> allElements();
-
-*/
   /// Establishes previous/next relationship between all elements defined by [allElements].
+  ///
+  /// Calling this method on any [DoubleLinked] element causes the whole set of  [DoubleLinked] elements to be linked
+  /// for previous/next operation.
   void linkAll() {
     E? previous;
     for (E element in doubleLinkedOwner.allElements()) {
@@ -176,7 +155,34 @@ mixin DoubleLinked<E> {
   }
 }
 
-// todo-00-document
+/// todo-done-last
+/// Owner of [DoubleLinked] elements.
+///
+/// Its existence is necessary for any [DoubleLinked] set of objects to be linked and moved along.
+///
+/// It's [allElements] method must return iterable of all elements that should be linked
+/// to enable moving back and forth.
+///
+/// It's [hasLinkedElements] method must be called before the [firstLinked].
+///
+/// Assuming [DoubleLinked.linkAll] has been called on the first  nce [hasLinkedElements] returns true,
+///
+/// A typical use:
+/// ```dart
+/// if (doubleLinkedOwner.hasLinkedElements) {
+///   E element = doubleLinkedOwner.firstLinked();
+///   do {
+///      use(element);
+///      element = element.next;
+///   } while(element.hasNext);
+/// ```
+/// OR
+/// ```dart
+/// if (doubleLinkedOwner.hasLinkedElements) {
+///   for (E element = doubleLinkedOwner.firstLinked(); element.hasNext(); element = element.next) {
+///      use(element);
+///   }
+/// ```
 mixin DoubleLinkedOwner<E> {
 
   /// Abstract method defines the elements to be linked
@@ -188,9 +194,16 @@ mixin DoubleLinkedOwner<E> {
 
   E firstLinked() {
     if (hasNoLinkedElements) {
-      throw StateError('$runtimeType instance $this has no points. Cannot ask for firstPoint.');
+      throw StateError('$runtimeType instance $this has no points. Cannot ask for firstLinked().');
     }
     return allElements().first;
+  }
+
+  E lastLinked() {
+    if (hasNoLinkedElements) {
+      throw StateError('$runtimeType instance $this has no points. Cannot ask for lastLinked().');
+    }
+    return allElements().last;
   }
 }
 

@@ -2,13 +2,15 @@ import 'package:flutter_charts/flutter_charts.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import 'presenter.dart';
 
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
+
 /// Concrete [ChartAnchor] for [VerticalBarChart].
 ///
 /// See [ChartAnchor] for help.
 class VerticalBarChartAnchor extends ChartAnchor {
 
   VerticalBarChartAnchor({
-    required ChartData chartData,
+    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -36,7 +38,7 @@ class VerticalBarChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
-    required ChartData chartData,
+    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(

@@ -22,6 +22,10 @@ import 'container_layouter_base.dart'
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner;
 
+// import 'new_data_container.dart';
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
+
+
 /// Base class for classes that hold [chartData], [xContainerLabelLayoutStrategy], [isStacked],
 /// members needed for late creation of the root of the chart container hierarchy, the [chartRootContainer].
 ///
@@ -38,7 +42,7 @@ abstract class ChartAnchor {
   /// ChartData to hold on before member [chartRootContainer] is created late
   ///
   /// After [chartRootContainer] is created and set, [chartData] should be set on it.
-  ChartData chartData;
+  NewDataModel chartData; // todo-done-last : ChartData chartData;
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   bool isStacked = false;
   late ChartRootContainer chartRootContainer;
@@ -169,7 +173,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  ChartData data;
+  // todo-00-last-done : ChartData data;
+  NewDataModel data;
 
   // Not needed for new layouter, OR for old.
   // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
@@ -191,7 +196,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainer({
-    required ChartData chartData,
+    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -2066,7 +2071,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(ChartData chartData) {
+  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last ChartData chartData) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {

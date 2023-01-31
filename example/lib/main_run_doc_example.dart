@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 
+import 'package:flutter_charts/src/chart/model/new_data_model.dart' show NewDataModel;
+
 /// Example app for flutter_charts.
 ///
 /// Intended as a simple app that runs example code from README.md,
@@ -20,7 +22,7 @@ void main() {
 /// ```
 Widget chartToRun() {
   LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-  ChartData chartData;
+  NewDataModel chartData; // todo-done-last : ChartData chartData;
   ChartOptions chartOptions = const ChartOptions();
   // Set option which will ask to start Y axis at data minimum.
   // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
@@ -29,7 +31,7 @@ Widget chartToRun() {
       startYAxisAtDataMinRequested: true,
     ),
   );
-  chartData = ChartData(
+  chartData = NewDataModel( // todo-00-done-last ChartData(
     dataRows: const [
       [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
       [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],

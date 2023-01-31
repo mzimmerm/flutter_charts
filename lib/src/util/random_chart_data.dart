@@ -1,11 +1,13 @@
 import 'dart:math' as math show Random;
 import '../chart/options.dart';
-import '../chart/data.dart';
+// import '../chart/data.dart';
+
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
 ///
-class RandomChartData extends ChartData {
+class RandomChartData extends NewDataModel { // todo-last-done : ChartData {
   RandomChartData({
     required dataRows,
     required xUserLabels,

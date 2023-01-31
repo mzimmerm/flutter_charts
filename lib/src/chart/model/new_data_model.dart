@@ -1,7 +1,7 @@
-import 'dart:math' as math show Random, pow, min, max;
+import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' as material show Colors;
+// import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
@@ -40,6 +40,7 @@ class NewDataModel {
   /// Each element of the outer list represents one row.
   /// Alternative name would be "data series".
   final List<List<double>> _dataRows;
+  List<List<double>> get dataRows => _dataRows;
 
   /// Labels on independent (X) axis.
   ///
@@ -53,6 +54,7 @@ class NewDataModel {
   /// One Legend String per row.
   /// Alternative name would be "series names".
   final List<String> _dataRowsLegends;
+  List<String> get dataRowsLegends => _dataRowsLegends;
 
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
@@ -64,6 +66,7 @@ class NewDataModel {
 
   /// Colors corresponding to each data row (series) in [NewDataModel].
   final List<ui.Color> _dataRowsColors;
+  List<ui.Color> get dataRowsColors => _dataRowsColors;
 
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
@@ -84,7 +87,7 @@ class NewDataModel {
   // must be in the initializer list by a non-member function (member methods only in constructor)
         _dataRows = dataRows,
         _dataRowsLegends = dataRowsLegends,
-        _dataRowsColors = dataRowsColors ?? _dataRowsDefaultColors(dataRows.length)
+        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
   {
     validate();
 
@@ -137,7 +140,7 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
   /// [NewDataModelPoint] in this series.
   final List<NewDataModelPoint> _points = [];
 
-  /// Implement the [DoubleLinkedOwner] abstract method which provides all elements for
+  /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
   /// the [DoubleLinked] instances of [NewDataModelPoint].
   ///
   /// When all points in this series are created, we create links between the points.
@@ -362,6 +365,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
 
 // -------------------- Functions
 
+/*
 // To initialize default colors with dynamic list that allows the colors NOT null, initialization must be done in
 //  initializer list (it is too late in constructor, by then, the colors list would have to be NULLABLE).
 /// Sets up colors for legends, first several explicitly, rest randomly.
@@ -397,4 +401,5 @@ List<ui.Color> _dataRowsDefaultColors(int _dataRowsCount) {
   }
   return _rowsColors;
 }
+*/
 
