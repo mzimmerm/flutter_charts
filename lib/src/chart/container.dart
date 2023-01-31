@@ -130,7 +130,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   bool get isRoot => true;
 
   /// Number of columns in the [DataContainer].
-  late final int dataColumnsCount; // todo-done-last
+  late final int dataColumnsCount; // todo-done-last-1
 
   /// Base Areas of chart.
   late BoxContainer legendContainer;

@@ -26,7 +26,7 @@ import 'package:flutter_charts/src/container/container_key.dart'
     Keyed,
     UniqueKeyedObjectsManager;
 
-abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager {
+abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager, DoubleLinked<BoxContainer>, DoubleLinkedOwner<BoxContainer> {
 
   /// Implements the sole abstract method of [UniqueKeyedObjectsManager]
   @override
@@ -48,17 +48,33 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// Manages children of this [BoxContainer].
   ///
   /// All children are a siblings linked list.
-  /// The next sibling can be accessed by invoking [nextSibling].
+  /// The next sibling can be accessed by invoking [next].
   final List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
 
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
 
+  /* todo-00-done-last
   /// Maintains linked list from previous child to next child.
   BoxContainer? _nextSibling;
 
   /// Public getter reaches the [nextSibling] sibling child.
   BoxContainer? get nextSibling => _nextSibling;
+
+  late bool _hasNext;
+
+  bool get hasNext => _hasNext;
+
+  /// Maintains linked list from previous child to next child.
+  BoxContainer? _previousSibling;
+
+  /// Public getter reaches the [nextSibling] sibling child.
+  BoxContainer? get previousSibling => _previousSibling;
+
+  late bool _hasPrevious;
+
+  bool get hasPrevious => _hasPrevious;
+  */
 
   /// Set children list
   // set _children(List<BoxContainer> children) { __children = children; }
@@ -86,6 +102,95 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     }
     _root = rootCandidate;
     return _root!;
+  }
+
+
+  /// Implementation of [DoubleLinkedOwner.allElements]
+  @override
+  Iterable<BoxContainer> allElements() => __children;
+}
+
+/// Mixin allows to create a doubly-linked list on a set of objects.
+///
+/// It should be used on [E] which is also mixed in with [DoubleLinked<E>],
+/// because then [E] is both [DoubleLinked] and [E], and can be mutually cast.
+///
+mixin DoubleLinked<E> {
+
+  late final DoubleLinkedOwner<E> doubleLinkedOwner;
+
+  /// Maintains linked list from previous child to next child.
+  E? _next;
+
+  /// Public getter reaches the [next] sibling child.
+  E? get next => _next;
+
+  late bool _hasNext;
+
+  bool get hasNext => _hasNext;
+
+  /// Maintains linked list from previous child to next child.
+  E? _previous;
+
+  /// Public getter reaches the [next] sibling child.
+  E? get previous => _previous;
+
+  late bool _hasPrevious;
+
+  bool get hasPrevious => _hasPrevious;
+
+  /// Set `previous.next = current`, and return [current] as the new previous
+  E createLink(E? previous, E current) {
+    if (previous != null) {
+      (previous as DoubleLinked)._next = current;
+      (current as DoubleLinked)._previous = previous;
+    }
+    return current;
+  }
+
+/*
+  /// Abstract method defines the elements to be linked
+  Iterable<E> allElements();
+
+*/
+  /// Establishes previous/next relationship between all elements defined by [allElements].
+  void linkAll() {
+    E? previous;
+    for (E element in doubleLinkedOwner.allElements()) {
+      previous = createLink(previous, element);
+    }
+  }
+
+  /// Assuming previous/next relationship is already done between [allElements],
+  /// links the first [addedToLinked] to the end of [allElements] and establishes link
+  /// between all [addedToLinked]. The end effect is that all [allElements] and [addedToLinked]
+  /// are linked together.
+  void linkAllWith(Iterable<E> addedToLinked) {
+    E? previous;
+    if (doubleLinkedOwner.allElements().isNotEmpty) {
+      previous = doubleLinkedOwner.allElements().last;
+    }
+    for (var child in addedToLinked) {
+      previous = createLink(previous, child);
+    }
+  }
+}
+
+// todo-00-document
+mixin DoubleLinkedOwner<E> {
+
+  /// Abstract method defines the elements to be linked
+  Iterable<E> allElements();
+
+  bool get hasLinkedElements => allElements().isNotEmpty;
+
+  bool get hasNoLinkedElements => allElements().isEmpty;
+
+  E firstLinked() {
+    if (hasNoLinkedElements) {
+      throw StateError('$runtimeType instance $this has no points. Cannot ask for firstPoint.');
+    }
+    return allElements().first;
   }
 }
 
@@ -659,6 +764,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     List<BoxContainer>? children,
     // BoxContainer? parent,
   }) {
+    // Place self as the DoubleLinkedOwner of it's children
+    doubleLinkedOwner = this;
+
     //if (parent != null) {
     //  this.parent = parent;
     //}
@@ -673,7 +781,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       __children.clear();
       __children.addAll(children);
       // Establish a 'nextSibling' linked list between __children
-      _linkNextChildren(null);
+      linkAll(); // todo-last-done _linkChildrenOrAddedChildren(null);
     }
 
     // Having added children, ensure key uniqueness
@@ -701,37 +809,32 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
+  /* todo-last-done
   /// Set the [_nextSibling] on [_children].
   ///
   /// After invoking this method, [nextSibling] can be called on any child in [_children].
   ///
-  /// There are two ways to invoke this method:
+  /// By contract, there are two ways to invoke this method:
   ///   - invoked with a [null] parameter, it is assumed this method is invoked
   ///     from the [BoxContainer] constructor. 
   ///   - Invoked with a non-null list, it is assumed this method is invoked from [addChildren].
-  void _linkNextChildren(List<BoxContainer>? addedChildren) {
+  /// This invocation contract is assumed in the implementation.
+  void _linkChildrenOrAddedChildren(List<BoxContainer>? addedChildren) {
     BoxContainer? previous;
     if (addedChildren == null) {
       for (var child in __children) {
-        previous = _previousSetNextIsChild(previous, child);
+        previous = createLink(previous, child);
       }
     } else {
+      if (__children.isNotEmpty) {
+        previous = __children.last;
+      }
       for (var child in addedChildren) {
-        if (__children.isNotEmpty) {
-          previous = __children.last;
-        }
-        previous = _previousSetNextIsChild(previous, child);
+        previous = createLink(previous, child);
       }
     }
   }
-
-  /// Set previous.next = child, and return child as the new previous
-  BoxContainer _previousSetNextIsChild(BoxContainer? previous, BoxContainer child) {
-    if (previous != null) {
-      previous._nextSibling = child;
-    }
-    return child;
-  }
+  */
 
   /// Appends all children passed in [addedChildren] to existing [_children],
   /// changes all [addedChildren] member [_parent] to self, and ensures unique
@@ -740,7 +843,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   void addChildren(List<BoxContainer> addedChildren) {
     // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
     // are added to [__children];
-    _linkNextChildren(addedChildren);
+    linkAllWith(addedChildren); // todo-last-done : _linkChildrenOrAddedChildren(addedChildren);
     __children.addAll(addedChildren);
     _makeSelfParentOf(addedChildren);
     ensureKeyedMembersHaveUniqueKeys();
