@@ -14,7 +14,6 @@ class NewDataModel {
   /// List of data series in the model.
   final List<NewDataModelSeries> seriesList = []; // todo-done-last : added for the NewDataModel
 
-  // todo-00
   List<NewValuesColumnContainer> createNewValuesColumnContainerList() {
     List<NewValuesColumnContainer> columns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
@@ -91,7 +90,7 @@ class NewDataModel {
   {
     validate();
 
-    // todo-00 Create seriesList and attach to member
+    // Create one [NewDataModelSeries] for each data row, and add to member [seriesList]
     for (List<double> dataRow in _dataRows) {
       seriesList.add(NewDataModelSeries(
         dataRow: dataRow,
@@ -163,7 +162,6 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
     }
   }
 
-  // todo-00
   List<NewValueContainer> buildNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
     if (hasLinkedElements) {
@@ -175,7 +173,7 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
   }
 }
 
-// todo-00  Represents one data point. Replaces the legacy [StackableValuePoint].
+// Represents one data point. Replaces the legacy [StackableValuePoint].
 class NewDataModelPoint extends Object with DoubleLinked {
 
   // ===================== CONSTRUCTOR ============================================

@@ -4,7 +4,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import '../container/container_key.dart';
 
-// todo-00-document The container of chart columns.
+// todo-01-document The container of chart columns.
 class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
   // constructor:
   // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
@@ -15,21 +15,11 @@ class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildre
   }) : super(
     chartRootContainer: chartRootContainer,
     //children: children,
-  ) {
-    // todo-00-last:
-    // build
-  }
+  );
 
   @override
   void buildAndAddChildren_DuringParentLayout() {
-/*
-    NewDataModel dataModel = NewDataModel(
-      dataRows: dataRows,
-      xUserLabels: xUserLabels,
-      dataRowsLegends: dataRowsLegends,
-      chartOptions: chartOptions,
-    );
-*/
+
    NewDataModel dataModel = chartRootContainer.data;
 
    List<NewValuesColumnContainer>  children = dataModel.createNewValuesColumnContainerList();
@@ -45,19 +35,12 @@ class NewValuesColumnsContainer extends ChartAreaContainer with BuilderOfChildre
     );
   }
 
-  @override
-  void layout() {
-    //
-  }
-
-
-// todo-00
+// void layout() - default
 // void applyParentConstraints - default
 // void applyParentOffset - default
 // void paint(Canvas convas) - default
 }
 
-// todo-00
 class NewValuesColumnContainer extends BoxContainer {
   NewDataModelSeries backingDataModelSeries;
 

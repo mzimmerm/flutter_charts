@@ -173,8 +173,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  // todo-00-last-done : ChartData data;
-  NewDataModel data;
+  NewDataModel data; // todo-last-done : ChartData data;
 
   // Not needed for new layouter, OR for old.
   // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
@@ -196,7 +195,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainer({
-    required NewDataModel chartData, // todo-00-done-last ChartData chartData,
+    required NewDataModel chartData, // todo-done-last ChartData chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
