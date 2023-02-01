@@ -7,26 +7,79 @@ import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
 
 /// todo-done-last-1  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
+/// Notes:
+///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
+///     - SCALING OF MODEL VALUES (does not)
+///     - COLORS   (currently does)
+///     - LABELS   (currently does)
+///     - LEGENDS  (currently does)
+///     - OPTIONS  (currently does)
+///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR SCALING, OFFSET AND PAINTING.
+///
+/// Important lifecycle notes:
+///   - When [NewDataModel] is constructed, the [ChartRootContainer] is not available.
+///     So in constructor, [NewDataModel] cannot be given access to the root container, and it's needed members
+///     such as [ChartRootContainer.yLabelsCreator].
 @immutable
 class NewDataModel {
 
+  // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
+
+  /// todo-011 : Default constructor only assumes [_dataRows] are set,
+  /// and assigns default values of [_dataRowsLegends], [_dataRowsColors], [xUserLabels], [yUserLabels].
+  ///
+  NewDataModel({
+    required dataRows,
+    required this.xUserLabels,
+    required dataRowsLegends,
+    required this.chartOptions,
+    this.yUserLabels,
+    List<ui.Color>? dataRowsColors,
+  })
+      :
+  // Initializing of non-nullable _dataRowsColors which is a non-required argument
+  // must be in the initializer list by a non-member function (member methods only in constructor)
+        _dataRows = dataRows,
+        _dataRowsLegends = dataRowsLegends,
+        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
+  {
+    validate();
+
+    // Create one [NewDataModelSeries] for each data row, and add to member [seriesList]
+    int indexInDataModel = 0;
+    for (List<double> dataRow in _dataRows) {
+      seriesList.add(NewDataModelSeries(
+        dataRow: dataRow,
+        dataModel: this,
+        indexInDataModel: indexInDataModel++,
+      ));
+    }
+  }
+
   // NEW CODE =============================================================
+
   /// List of data series in the model.
   final List<NewDataModelSeries> seriesList = []; // todo-done-last-1 : added for the NewDataModel
 
   List<NewValuesColumnContainer> createNewValuesColumnContainerList() {
-    List<NewValuesColumnContainer> columns = [];
+    List<NewValuesColumnContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
 
     for (NewDataModelSeries series in seriesList) {
       // NewValuesColumnContainer valuesColumnContainer =
-      columns.add(NewValuesColumnContainer(
+      chartColumns.add(NewValuesColumnContainer(
+        chartRootContainer: chartRootContainer,
         backingDataModelSeries: series,
         children: series.buildNewValueContainersList(),
       ));
     }
-    return columns;
+    return chartColumns;
   }
+
+  // todo-00-last : added : this is needed because model creates containers, and containers need the root container.
+  // Must be public, as it must be set after creation of this [NewDataModel],
+  //   in the root container constructor which is in turn, constructed from this model.
+  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always recreate everything in chart
 
   // OLD CODE =============================================================
   // Legacy stuff below
@@ -70,34 +123,6 @@ class NewDataModel {
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
-  /// Default constructor only assumes [_dataRows] are set,
-  /// and assigns default values of [_dataRowsLegends], [_dataRowsColors], [xUserLabels], [yUserLabels].
-  ///
-  NewDataModel({
-    required dataRows,
-    required this.xUserLabels,
-    required dataRowsLegends,
-    required this.chartOptions,
-    this.yUserLabels,
-    List<ui.Color>? dataRowsColors,
-  })
-      :
-  // Initializing of non-nullable _dataRowsColors which is a non-required argument
-  // must be in the initializer list by a non-member function (member methods only in constructor)
-        _dataRows = dataRows,
-        _dataRowsLegends = dataRowsLegends,
-        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
-  {
-    validate();
-
-    // Create one [NewDataModelSeries] for each data row, and add to member [seriesList]
-    for (List<double> dataRow in _dataRows) {
-      seriesList.add(NewDataModelSeries(
-        dataRow: dataRow,
-      ));
-    }
-  }
-
   bool get isUsingUserLabels => yUserLabels != null;
 
   List<double> get flatten => _dataRows.expand((element) => element).toList();
@@ -133,23 +158,14 @@ class NewDataModel {
 /// todo-done-last-1 : Replaces PointsColumn
 class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint> {
 
-  /// Points of this series.
-  ///
-  /// Only needed to provide [DoubleLinked.allElements] for the
-  /// [NewDataModelPoint] in this series.
-  final List<NewDataModelPoint> _points = [];
-
-  /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
-  /// the [DoubleLinked] instances of [NewDataModelPoint].
-  ///
-  /// When all points in this series are created, we create links between the points.
-  /// We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
-  @override
-  Iterable<NewDataModelPoint> allElements() => _points;
-
+  /// Constructor. todo-011 document
   NewDataModelSeries({
     required List<double> dataRow,
-  }) {
+    required NewDataModel dataModel,
+    required int indexInDataModel,
+  })
+      : _dataModel = dataModel,
+        _indexInDataModel = indexInDataModel {
     // Create points from the passed [dataRow] and add each point to member _points
     for (double dataValue in dataRow) {
       var point = NewDataModelPoint(dataValue: dataValue, ownerSeries: this,);
@@ -162,6 +178,33 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
     }
   }
 
+  /// Owner [NewDataModel] to which this [NewDataModelSeries] belongs by existence in
+  /// [NewDataModel.seriesList].
+  ///
+  final NewDataModel _dataModel;
+  NewDataModel get dataModel => _dataModel;
+
+  /// Index of this series in _dataModel.seriesList.
+  /// This is needed to access the legacy arrays such as:
+  ///   -  [NewDataModel.dataRowsLegends]
+  ///   -  [NewDataModel.dataRowsColors]
+  final int _indexInDataModel;
+
+  /// Points of this series.
+  ///
+  /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
+  /// owned by this [DoubleLinkedOwner]. At the same time, the points are all [NewDataModelPoint] in this series.
+  final List<NewDataModelPoint> _points = [];
+
+  /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
+  /// the [DoubleLinked] instances of [NewDataModelPoint].
+  ///
+  /// When all points in this series are created, we create links between the points.
+  /// We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
+  @override
+  Iterable<NewDataModelPoint> allElements() => _points;
+
+  /// todo-011 document
   List<NewValueContainer> buildNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
     if (hasLinkedElements) {
@@ -173,15 +216,23 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
   }
 }
 
-// Represents one data point. Replaces the legacy [StackableValuePoint].
+/// Represents one data point. Replaces the legacy [StackableValuePoint].
+///
+/// Notes:
+///   - Has private access to the owner [NewDataModel] to which it belongs through it's member [ownerSeries]
+///     which in turn has access to [NewDataModel] through it's member [NewDataModelSeries._dataModel].
+///     THIS ACCESS IS CURRENTLY UNUSED
+///
 class NewDataModelPoint extends Object with DoubleLinked {
 
   // ===================== CONSTRUCTOR ============================================
+  // todo-011 document
   NewDataModelPoint({
     required double dataValue,
     required this.ownerSeries,
   }) : _dataValue = dataValue {
-    // Place self as the DoubleLinkedOwner of it's children
+    // The ownerSeries is NewDataModelSeries which is DoubleLinkedOwner
+    // of all [NewDataModelPoint]s, from [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerSeries;
   }
 
@@ -195,8 +246,12 @@ class NewDataModelPoint extends Object with DoubleLinked {
   double get dataValue => _dataValue;
 
   NewValueContainer buildNewValueContainer() {
-    return NewValueContainer(dataModelPoint: this);
+    return NewValueContainer(
+        dataModelPoint: this,
+        chartRootContainer: ownerSeries._dataModel.chartRootContainer);
   }
+
+  ui.Color get color => ownerSeries._dataModel._dataRowsColors[ownerSeries._indexInDataModel];
 
   // ====================== LEGACY CODE ====================================
 

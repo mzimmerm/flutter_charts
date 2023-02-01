@@ -7,6 +7,7 @@ import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
+import '../container/container_key.dart';
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/collection.dart' as custom_collection show CustomList;
 import '../util/geometry.dart' as geometry;
@@ -128,6 +129,35 @@ abstract class ChartBehavior {
 
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
+  /// Simple Legend+X+Y+Data Container for a flutter chart.
+  ///
+  /// The simple flutter chart layout consists of only 2 major areas:
+  /// - [YContainer] area manages and lays out the Y labels area, by calculating
+  ///   sizes required for Y labels (in both X and Y direction).
+  ///   The [YContainer]
+  /// - [XContainer] area manages and lays out the
+  ///   - X labels area, and the
+  ///   - grid area.
+  /// In the X direction, takes up all space left after the
+  /// YContainer layes out the  Y labels area, that is, full width
+  /// minus [YContainer.yLabelsContainerWidth].
+  /// In the Y direction, takes
+  /// up all available chart area, except a top horizontal strip,
+  /// required to paint half of the topmost label.
+  ChartRootContainer({
+    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
+    required this.isStacked,
+    // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : data = chartData,
+        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+        super() {
+    // Create children and attach to self
+    addChildren(_createChildrenOfRootContainer());
+    // todo-00-done-last : added link from model to root container
+    data.chartRootContainer = this;
+  }
+
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
   /// which is never set on instances of this [ChartRootContainer].
   @override
@@ -174,37 +204,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late bool isStacked;
 
   NewDataModel data; // todo-last-done : ChartData data;
-
-  // Not needed for new layouter, OR for old.
-  // Store constraints on self. With new layouter, this should be applied via apply and set to _constraints
-  // BoxContainerConstraints? _beforeNewLayoutConstraints;
-
-  /// Simple Legend+X+Y+Data Container for a flutter chart.
-  ///
-  /// The simple flutter chart layout consists of only 2 major areas:
-  /// - [YContainer] area manages and lays out the Y labels area, by calculating
-  ///   sizes required for Y labels (in both X and Y direction).
-  ///   The [YContainer]
-  /// - [XContainer] area manages and lays out the
-  ///   - X labels area, and the
-  ///   - grid area.
-  /// In the X direction, takes up all space left after the
-  /// YContainer layes out the  Y labels area, that is, full width
-  /// minus [YContainer.yLabelsContainerWidth].
-  /// In the Y direction, takes
-  /// up all available chart area, except a top horizontal strip,
-  /// required to paint half of the topmost label.
-  ChartRootContainer({
-    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
-    required this.isStacked,
-    // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : data = chartData,
-        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
-        super() {
-    // Create children and attach to self
-    addChildren(_createChildrenOfRootContainer());
-  }
 
   /// Creates child containers for the chart root.
   ///
@@ -1250,7 +1249,11 @@ abstract class ChartAreaContainer extends BoxContainer {
   ChartAreaContainer({
     required this.chartRootContainer,
     List<BoxContainer>? children,
-  }) : super(children: children);
+    ContainerKey? key,
+  }) : super(
+          children: children,
+          key: key,
+        );
 }
 
 /// Provides the data area container for the bar chart.

@@ -172,6 +172,83 @@ class LineSegment extends Interval {
   }
 }
 
+class LinearTransform1D {
+
+  LinearTransform1D({
+    required this.fromDomainMin,
+    required this.fromDomainMax,
+    required this.toDomainMin,
+    required this.toDomainMax,
+  }) : domainStretch = (toDomainMax - toDomainMin) / (fromDomainMax - fromDomainMin);
+
+  final double fromDomainMin;
+  final double fromDomainMax;
+  final double toDomainMin;
+  final double toDomainMax;
+
+  final double domainStretch;
+
+  /// Map [fromValue] from the 'from' domain to it's corresponding linear transform it the 'to' domain.
+  ///
+  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [fromDomainMin]
+  /// and [fromDomainMax] are at a certain ratio, call it R.
+  /// This returns a value of point in the 'to' domain, which ratio of distances to the
+  /// [toDomainMin] and [toDomainMax] is same as R.
+  ///
+  /// This transform includes BOTH stretching AND translation of origin.
+  double domainsTransform(double fromValue) {
+    return toDomainMin + domainStretch * (fromValue - fromDomainMin);
+  }
+
+  /// Returns the [fromValue] in the coordinate system
+  /// which has been flipped (changed direction) around origin.
+  double axisFlippedAtOrigin(double fromValue) {
+    return -fromValue;
+  }
+
+  /// Returns the [fromValue] in the coordinate system
+  /// which origin has been translated by [translateBy].
+  double axisOriginTranslatedBy(double fromValue, double translateBy) {
+    return fromValue - translateBy;
+  }
+
+  /// Assuming 'from' domain is the interval of values we want to display,
+  /// and the 'to' domain is the pixels interval on screen on which we want for display them - that is, starts at 0 on top,
+  /// and directed positively towards bottom:
+  ///
+  /// This transforms a point in the 'from' domain, to the point on the displayed 'to' domain.
+  double transformValueToPixels(double fromValue) {
+    double result =
+      axisOriginTranslatedBy(
+        axisFlippedAtOrigin(
+            domainsTransform( fromValue ),
+        ),
+        -toDomainMin,
+      );
+    // Assert result is the same as an intuitive transform
+    if (!isCloserThanEpsilon(result, domainStretch * (fromDomainMin - fromValue))) {
+      throw StateError(
+          'Results do not match. Result was $result, '
+              'Simple result was ${domainStretch * (fromDomainMin - fromValue)}. Transform instance = $this');
+    }
+    return result;
+  }
+
+  // todo-011 document , unused
+  double stretchAxisBy(double fromValue, double stretchBy) => stretchBy * fromValue;
+
+  @override
+  String toString() {
+    return
+    'fromDomainMin = $fromDomainMin, '
+    'fromDomainMax = $fromDomainMax,'
+    'toDomainMin   = $toDomainMin,'
+    'toDomainMax   = $toDomainMax, '
+    'domainStretch = $domainStretch';
+  }
+}
+
+
 // todo-02 Refactor scaling
 /// Scale the [value] that must be from the scale
 /// given by [fromDomainMin] - [fromDomainMax]
@@ -264,6 +341,13 @@ bool bothHaveValue({
 }
 
 double get epsilon => 0.000001;
+
+bool isCloserThanEpsilon(double d1, double d2) {
+  if (-epsilon < d1 - d2 && d1 - d2  < epsilon) {
+    return true;
+  }
+  return false;
+}
 
 String enumName(Enum e) {
   return e.toString().split('.')[1];

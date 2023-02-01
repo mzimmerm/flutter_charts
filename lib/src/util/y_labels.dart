@@ -158,6 +158,13 @@ class YLabelsCreatorAndPositioner {
         dataYsOfLabels.reduce(math.max),
       ).merge(dataYsEnvelope); // dataY from PointsColumns, which is also not-scaled && transformed, data
 
+  // todo-00 : added the 4 getters for a quick access by the new scaler
+  double get fromDomainMin => _mergedLabelYsIntervalWithDataYsEnvelope.min;
+  double get fromDomainMax => _mergedLabelYsIntervalWithDataYsEnvelope.max;
+  double get toDomainMin => _axisY.min;
+  double get toDomainMax => _axisY.max;
+
+
   /// Derive the interval of [dataY] values for automatically created labels.
   ///
   /// This is the closure of the [_dataYs] numeric values, extended (in default situation)
@@ -322,7 +329,9 @@ class YLabelsCreatorAndPositioner {
   }
 }
 
-/// The [LabelInfo] is a holder for one label, it's numeric value and the displayed label.
+/// The [LabelInfo] is a holder for one label,
+/// it's numeric values (raw, transformed, transformed and scaled)
+/// and the displayed label.
 ///
 /// The values used and shown on the chart undergo the following processing:
 ///    [_rawDataValue] -- using [DataContainerOptions.yTransform]         --> [_dataValue] (transformed)
