@@ -13,7 +13,7 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     LengthsPositionerProperties,
     LayedoutLengthsPositioner,
     PositionedLineSegments,
-    DivideConstraintsToChildren;
+    DivideConstraints;
 import 'package:flutter_charts/src/chart/container_alignment.dart' show Alignment;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension, RectExtension;
@@ -475,12 +475,38 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   /// Implementation of abstract [LayoutableBox.layout].
   ///
-  /// Important notes:
+  /// Terminology:
+  ///   - A leaf in documentation and method names of this algorithm is a [BoxContainer] with empty [__children].
+  ///     todo-01 : we may consider explicitly set another property such as [alwaysLeaf]. Reason: in dynamic layouts,
+  ///               we may get a node that is normally not a leaf become a leaf using this definition,
+  ///               causing that the default implementation of [post_Leaf_SetSize_FromInternals]
+  ///               (which throws if called on no-children) stops the layout.
+  ///               So in principle current approach forces us to always override [post_Leaf_SetSize_FromInternals].
+  ///
+  /// Implementation:
   ///   - The layouter order of processing of [_children] always starts with the first child
   ///     in the [_children] list, proceeds in it's [Iterator.moveNext] sequence.
   ///     This is also true for [_preDescend_DistributeConstraintsToImmediateChildren],
   ///     which, if overridden without overriding [layout], must distribute constraints in the same order.
-  ///   -
+  ///   - For a leaf, the only method called is [post_Leaf_SetSize_FromInternals]!
+  ///     As a consequence, for a leaf, overriding [layout] and overriding [post_Leaf_SetSize_FromInternals]
+  ///     achieves the same result, as long as either override has the same code.
+  ///
+  /// Important notes about this default implementation, overrides, terms, and conditions:
+  ///   - For an extension overriding [layout] to function in a [BoxContainerHierarchy] the requirements are:
+  ///     - The [layout] sets [layoutSize] (usually, just before return) which should contain the whole
+  ///       area to which [BoxContainer.paint] will draw graphics.
+  ///       This is the only requirement for leafs.
+  ///     - On non-leafs only:
+  ///       - On each child [__children] that need to be shown, invoke, in this order
+  ///         - child.[applyParentConstraints]
+  ///         - child.[layout]
+  ///         - store of child [layoutSize]
+  ///       - Calculate self [layoutSize] from children [layoutSize]s
+  ///
+  ///   - For an extension overriding SOME OF THE PUBLIC METHODS CALLED IN [layout] BUT NOT [layout],
+  ///     to function in a [BoxContainerHierarchy] the requirements are:
+  ///     - On leaf, override [post_Leaf_SetSize_FromInternals] and set [layoutSize].
   ///
   @override
   void layout() {
@@ -1137,6 +1163,9 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
     required this.mainAxisLayoutDirection,
+    // todo-00-last-last added vvvvvvvvvv
+    // DivideConstraints mainAxisChildConstraintsDivision = DivideConstraints.noDivide,
+    // ^^^^^^^^^^^^^
   }) : super(children: children) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
@@ -1148,7 +1177,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
       isPositioningMainAxis: false,
     );
   }
@@ -1173,7 +1202,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// lays out children sequentially, starting with the first child in the [_children] list, see [BoxLayouter.layout].
   ///
   /// The layout direction is as follows:
-  ///   - If set to the default [LayoutDirection.coordinatesDirection],
+  ///   - If set to the default [LayoutDirection.alongCoordinates],
   ///     - for main axis = [LayoutAxis.horizontal] the first child is layedout *leftmost*
   ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *topmost*.
   ///   - If set to the default [LayoutDirection.reversed],
@@ -1181,7 +1210,18 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *bottommost*.
   final LayoutDirection mainAxisLayoutDirection;
 
-  /// Override of the core layout on [RollingPositioningBoxLayouter].
+  /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
+  ///
+  /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
+  ///   obviously implementing the abstract functionality of the base layout:
+  ///   - Distributes constraints to children in [_preDescend_DistributeConstraintsToImmediateChildren];
+  ///     constraints given to each child are full parent's constraints.
+  /// - If [Greedy] children are     present, this implementation first processed non [Greedy] children:
+  ///   - Distributes constraints to non-greedy children in in [_preDescend_DistributeConstraintsToImmediateChildren];
+  ///     (constraints on non-greedy are same as parent's, as if greedy were not present),
+  ///   - Invokes child [layout] on non [Greedy] first
+  ///   - Then uses the size unused by non-greedy [layoutSize] as constraint to the [Greedy] child which is layed out.
+  ///
   @override
   void layout() {
     _layout_IfRoot_DefaultTreePreprocessing();
@@ -1283,7 +1323,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // Divides constraintsRemainingForGreedy~into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
-        divideStrategy: DivideConstraintsToChildren.intWeights,
+        divideStrategy: DivideConstraints.intWeights,
         layoutAxis: mainLayoutAxis,
         intWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
@@ -1539,7 +1579,7 @@ class Row extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    LayoutDirection mainAxisLayoutDirection = LayoutDirection.coordinatesDirection,
+    LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
@@ -1562,7 +1602,7 @@ class Row extends RollingPositioningBoxLayouter {
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
       isPositioningMainAxis: false,
     );
   }
@@ -1602,7 +1642,7 @@ class Column extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
-    LayoutDirection mainAxisLayoutDirection = LayoutDirection.coordinatesDirection,
+    LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
@@ -1621,7 +1661,7 @@ class Column extends RollingPositioningBoxLayouter {
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.coordinatesDirection, // cross axis always positions coordinatesDirection
+      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
       isPositioningMainAxis: false,
     );
   }

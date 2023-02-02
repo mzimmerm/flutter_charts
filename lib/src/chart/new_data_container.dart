@@ -70,31 +70,60 @@ class NewValueContainer extends ChartAreaContainer {
     children: children,
     key: key,
   );
+}
+
+/// See [LegendIndicatorRectContainer] for similar implementaion
+class NewValueHBarContainer extends NewValueContainer {
+
+  /// The rectangle representing the value.
+  ///
+  /// It's height represents [dataModelPoint.dataValue] scaled from the value range to the
+  /// pixel height available for data in the vertical direction.
+  ///
+  /// It's size should be calculated in [layout], and used in [paint];
+  late final ui.Size _rectangleSize;
+
+  NewValueHBarContainer({
+    required ChartRootContainer chartRootContainer,
+    required NewDataModelPoint dataModelPoint,
+    List<BoxContainer>? children,
+    ContainerKey? key,
+  }) : super(
+    dataModelPoint: dataModelPoint,
+    chartRootContainer: chartRootContainer,
+    children: children,
+    key: key,
+  );
 
   @override
-  void post_Leaf_SetSize_FromInternals() {
-    layoutSize = const ui.Size(200.0, 200.0); // todo-00-last : implement this right - layoutSize should be from constraints, and all painting must fit within constraints
-  }
+  void layout() {
 
-  @override paint(ui.Canvas canvas) {
-    // for now, put the offset calculation and scaling here . todo-00-last - where should they go?
+    // Calculate [_indicatorSize], the width and height of the Rectangle that represents data:
 
-    // todo-00-last : rect width should be from constraints
+    // Rectangle width is from constraints
+    double width = constraints.width;
 
-    // todo-00-last : rect height should be scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
-    double width = 180.0;
+    // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
     YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSeries.dataModel.chartRootContainer.yLabelsCreator;
-    // todo-00-last : double height = scaler.scaleY(value: dataModelPoint.dataValue);
+    // double height = scaler.scaleY(value: dataModelPoint.dataValue);
     var transform = LinearTransform1D(
       fromDomainMin: scaler.fromDomainMin,
       fromDomainMax: scaler.fromDomainMax,
       toDomainMin: scaler.toDomainMax, // YES - min and max are flipped in scaler
       toDomainMax: scaler.toDomainMin,);
-    double height = transform.transformValueToPixels(dataModelPoint.dataValue);
+    double height = transform.scaleValueToYPixels(dataModelPoint.dataValue);
 
-    ui.Rect rect = ui.Rect.fromLTWH(0.0, 0.0, width, height);
+    _rectangleSize = ui.Size(width, height);
 
-    // todo-00-last : rect color should be from dataModelPoint.
+    layoutSize = _rectangleSize; // todo-00-last : implement this right - layoutSize should be from constraints, and all painting must fit within constraints
+  }
+
+  @override paint(ui.Canvas canvas) {
+    // for now, put the offset calculation and scaling here . todo-00-last - where should they go?
+
+    ui.Rect rect = offset & _rectangleSize;
+
+    // Rectangle color should be from dataModelPoint's color.
     ui.Paint paint = ui.Paint();
     paint.color = dataModelPoint.color;
 

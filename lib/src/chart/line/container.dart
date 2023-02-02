@@ -54,7 +54,7 @@ class LineChartRootContainer extends ChartRootContainer {
     pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 
-  /* todo-done-last
+  /* todo-00-switch
   @override
   LineChartDataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
@@ -63,13 +63,22 @@ class LineChartRootContainer extends ChartRootContainer {
       chartRootContainer: chartRootContainer,
     );
   }
-  */
 
   @override
   LineChartNewDataContainer createNewDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
     return LineChartNewDataContainer(
+      chartRootContainer: chartRootContainer,
+    );
+  }
+  */
+
+  @override
+  LineChartDataContainer createDataContainer({
+    required ChartRootContainer chartRootContainer,
+  }) {
+    return LineChartDataContainer(
       chartRootContainer: chartRootContainer,
     );
   }

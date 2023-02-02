@@ -172,6 +172,7 @@ class LineSegment extends Interval {
   }
 }
 
+// todo-011 document
 class LinearTransform1D {
 
   LinearTransform1D({
@@ -188,7 +189,7 @@ class LinearTransform1D {
 
   final double domainStretch;
 
-  /// Map [fromValue] from the 'from' domain to it's corresponding linear transform it the 'to' domain.
+  /// Transform [fromValue] from the 'from' domain to it's corresponding linear transform value it the 'to' domain.
   ///
   /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [fromDomainMin]
   /// and [fromDomainMax] are at a certain ratio, call it R.
@@ -196,7 +197,7 @@ class LinearTransform1D {
   /// [toDomainMin] and [toDomainMax] is same as R.
   ///
   /// This transform includes BOTH stretching AND translation of origin.
-  double domainsTransform(double fromValue) {
+  double domainsScaleAndTranslate(double fromValue) {
     return toDomainMin + domainStretch * (fromValue - fromDomainMin);
   }
 
@@ -213,25 +214,46 @@ class LinearTransform1D {
   }
 
   /// Assuming 'from' domain is the interval of values we want to display,
-  /// and the 'to' domain is the pixels interval on screen on which we want for display them - that is, starts at 0 on top,
-  /// and directed positively towards bottom:
+  /// and the 'to' domain is the downwards oriented Y axis on screen (0 on top)
+  /// on which we want for display the values, then:
   ///
-  /// This transforms a point in the 'from' domain, to the point on the displayed 'to' domain.
-  double transformValueToPixels(double fromValue) {
+  /// This linearly transforms a point in the 'from' domain, to the point in the 'to' domain.
+  ///
+  /// Note: The term 'pixels' in this method name may be misleading, as the 'to' domain does not have to be
+  ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
+  double scaleValueToYPixels(double fromValue) {
     double result =
       axisOriginTranslatedBy(
         axisFlippedAtOrigin(
-            domainsTransform( fromValue ),
+            domainsScaleAndTranslate( fromValue ),
         ),
         -toDomainMin,
       );
-    // Assert result is the same as an intuitive transform
-    if (!isCloserThanEpsilon(result, domainStretch * (fromDomainMin - fromValue))) {
+    // Assert result is the same as an intuitively derived transform
+    double intuitiveResult = domainStretch * (fromDomainMin - fromValue);
+    _assertResultsSame(result, intuitiveResult);
+    return result;
+  }
+
+  /// Similar to [scaleValueToYPixels], this [scaleValueToXPixels] does not flip axis.
+  double scaleValueToXPixels(double fromValue) {
+    double result =
+    axisOriginTranslatedBy(
+        domainsScaleAndTranslate( fromValue ),
+      -toDomainMin,
+    );
+    // Assert result is the same as an intuitively derived transform
+    double intuitiveResult = domainStretch * (fromValue - fromDomainMin);
+    _assertResultsSame(result, intuitiveResult);
+    return result;
+  }
+
+  void _assertResultsSame(double result, double intuitiveResult) {
+    if (!isCloserThanEpsilon(result, intuitiveResult)) {
       throw StateError(
           'Results do not match. Result was $result, '
-              'Simple result was ${domainStretch * (fromDomainMin - fromValue)}. Transform instance = $this');
+              'Simple result was $intuitiveResult. Transform instance = $this');
     }
-    return result;
   }
 
   // todo-011 document , unused

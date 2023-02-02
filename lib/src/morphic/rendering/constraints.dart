@@ -152,7 +152,7 @@ abstract class BoundingBoxesBase {
   }
 
   /// Divide this [BoundingBoxesBase] into a list of 'smaller' [BoundingBoxesBase]s objects,
-  /// depending on the dividing strategy [DivideConstraintsToChildren].
+  /// depending on the dividing strategy [DivideConstraints].
   ///
   /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
   /// cross-sizes remain the same as this constraint.
@@ -162,21 +162,21 @@ abstract class BoundingBoxesBase {
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
-    required DivideConstraintsToChildren divideStrategy,
+    required DivideConstraints divideStrategy,
     required LayoutAxis layoutAxis,
     List<int>? intWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
     late final int sumIntWeights;
 
-    if (divideStrategy == DivideConstraintsToChildren.intWeights && intWeights == null) {
-      throw StateError('intWeights only applicable for DivideConstraintsToChildren.ratio');
+    if (divideStrategy == DivideConstraints.intWeights && intWeights == null) {
+      throw StateError('intWeights only applicable for DivideConstraints.ratio');
     }
 
-    if ((divideStrategy == DivideConstraintsToChildren.evenly ||
-            divideStrategy == DivideConstraintsToChildren.evenly) &&
+    if ((divideStrategy == DivideConstraints.evenly ||
+            divideStrategy == DivideConstraints.evenly) &&
         intWeights != null) {
-      throw StateError('intWeights not applicable for DivideConstraintsToChildren.evenly or noDivide');
+      throw StateError('intWeights not applicable for DivideConstraints.evenly or noDivide');
     }
 
     if (intWeights != null) {
@@ -185,7 +185,7 @@ abstract class BoundingBoxesBase {
     }
 
     switch (divideStrategy) {
-      case DivideConstraintsToChildren.evenly:
+      case DivideConstraints.evenly:
         switch (layoutAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -211,7 +211,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return fractions;
-      case DivideConstraintsToChildren.intWeights:
+      case DivideConstraints.intWeights:
         List<BoundingBoxesBase> fractions = [];
         for (int intWeight in intWeights!) {
           switch (layoutAxis) {
@@ -237,7 +237,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return fractions;
-      case DivideConstraintsToChildren.noDivide:
+      case DivideConstraints.noDivide:
         return [clone()];
     }
   }

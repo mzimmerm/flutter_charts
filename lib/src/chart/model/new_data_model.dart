@@ -246,7 +246,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   double get dataValue => _dataValue;
 
   NewValueContainer buildNewValueContainer() {
-    return NewValueContainer(
+    return NewValueHBarContainer(
         dataModelPoint: this,
         chartRootContainer: ownerSeries._dataModel.chartRootContainer);
   }

@@ -82,18 +82,23 @@ enum Align {
 /// By default, layouters layout both primary and cross axis in the direction of increasing coordinates,
 /// left to right along the horizontal direction, and top to bottom along the vertical direction.
 ///
-/// The value [coordinatesDirection]   should be used for default layouters direction (described above).
+/// The value [alongCoordinates]   should be used for default layouters direction (described above).
 /// The value [reversed] should be used to direct layouters to layout in a direction reverse to coordinates.
 enum LayoutDirection {
-  coordinatesDirection,
+  alongCoordinates,
   reversed,
 }
 
 /// todo-011 document
-enum DivideConstraintsToChildren {
-  evenly,
+/// Describes how a constraint should be divided into multiple constraints,
+/// presumably for the divided constraints to be passed to children.
+///
+/// The term 'divided' may be misleading for [DivideConstraints.noDivide], as that
+/// describes that a given constraint should create multiple constraints that are the same.
+enum DivideConstraints {
+  evenly, // todo-00 : deprecate and remove. Rely on children to set intWeights instead
   intWeights,
-  noDivide,
+  noDivide, // todo-00-last-last : make sure this is Default. Pass constraints to children that are the same size as self constraints
 }
 
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along
@@ -114,7 +119,7 @@ class LengthsPositionerProperties {
   final Align align;
   final Packing packing;
   /// The layout direction along the axis which this properties object describes.
-  /// Note: If [isPositioningMainAxis] is false, [layoutDirection] value must be [LayoutDirection.coordinatesDirection].
+  /// Note: If [isPositioningMainAxis] is false, [layoutDirection] value must be [LayoutDirection.alongCoordinates].
   final LayoutDirection layoutDirection;
   // todo-01 : isPositioningMainAxis should not be necessary, as layoutDirection should always be set correctly
   final bool isPositioningMainAxis;
@@ -127,7 +132,7 @@ class LengthsPositionerProperties {
   }) {
     // Currently, on cross axis, layout direction must be the default [LayoutDirection.coordinatesDirection].
     if (!isPositioningMainAxis) {
-      assert (layoutDirection == LayoutDirection.coordinatesDirection);
+      assert (layoutDirection == LayoutDirection.alongCoordinates);
     }
   }
 }

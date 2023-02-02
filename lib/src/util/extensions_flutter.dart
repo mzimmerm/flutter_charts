@@ -15,6 +15,7 @@ extension SizeExtension on ui.Size {
   /// Returns a Size with [width] and [height] being self [width] and [height]
   /// decreased with [other] width and height.
   ui.Size deflateWithSize(ui.Size other) {
+    // todo-00 : size may become negative. What to do ?
     return ui.Size(math.max(width - other.width, 0.0), math.max(height - other.height, 0.0));
   }
 
