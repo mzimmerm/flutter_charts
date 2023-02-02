@@ -43,7 +43,7 @@ class NewDataModel {
   {
     validate();
 
-    // Create one [NewDataModelSeries] for each data row, and add to member [seriesList]
+    // Construct one [NewDataModelSeries] for each data row, and add to member [seriesList]
     int indexInDataModel = 0;
     for (List<double> dataRow in _dataRows) {
       seriesList.add(NewDataModelSeries(
@@ -59,7 +59,7 @@ class NewDataModel {
   /// List of data series in the model.
   final List<NewDataModelSeries> seriesList = []; // todo-done-last-1 : added for the NewDataModel
 
-  List<NewValuesColumnContainer> createNewValuesColumnContainerList() {
+  List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList() {
     List<NewValuesColumnContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
 
@@ -69,8 +69,10 @@ class NewDataModel {
         NewValuesColumnContainer(
           chartRootContainer: chartRootContainer,
           backingDataModelSeries: series,
-          children: series.buildNewValueContainersList(),
-          //
+          children: [Column(
+              children: series.generateViewChildrenAsNewValueContainersList(),
+          )],
+          // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
         ),
       );
@@ -78,10 +80,10 @@ class NewDataModel {
     return chartColumns;
   }
 
-  // todo-00-last : added : this is needed because model creates containers, and containers need the root container.
+  // todo-00-last : added : this is needed because model constructs containers, and containers need the root container.
   // Must be public, as it must be set after creation of this [NewDataModel],
   //   in the root container constructor which is in turn, constructed from this model.
-  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always recreate everything in chart
+  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
 
   // OLD CODE =============================================================
   // Legacy stuff below
@@ -168,12 +170,12 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
   })
       : _dataModel = dataModel,
         _indexInDataModel = indexInDataModel {
-    // Create points from the passed [dataRow] and add each point to member _points
+    // Construct data points from the passed [dataRow] and add each point to member _points
     for (double dataValue in dataRow) {
       var point = NewDataModelPoint(dataValue: dataValue, ownerSeries: this,);
       _points.add(point);
     }
-    // When all points in this series are created, we can create links between the points.
+    // When all points in this series are constructed and added to [_points], we can double-link the points.
     // We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
     if (_points.isNotEmpty) {
       firstLinked().linkAll();
@@ -199,19 +201,16 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
   final List<NewDataModelPoint> _points = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
-  /// the [DoubleLinked] instances of [NewDataModelPoint].
-  ///
-  /// When all points in this series are created, we create links between the points.
-  /// We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
+  /// the owned [DoubleLinked] instances of [NewDataModelPoint].
   @override
   Iterable<NewDataModelPoint> allElements() => _points;
 
   /// todo-011 document
-  List<NewValueContainer> buildNewValueContainersList() {
+  List<NewValueContainer> generateViewChildrenAsNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
     if (hasLinkedElements) {
       for (var current = firstLinked(); current.hasNext; current = current.next) {
-        columnPointContainers.add(current.buildNewValueContainer());
+        columnPointContainers.add(current.generateViewChildrenAsNewValueContainer());
       }
     }
     return columnPointContainers;
@@ -247,7 +246,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
 
   double get dataValue => _dataValue;
 
-  NewValueContainer buildNewValueContainer() {
+  NewValueContainer generateViewChildrenAsNewValueContainer() {
     return NewValueHBarContainer(
         dataModelPoint: this,
         chartRootContainer: ownerSeries._dataModel.chartRootContainer);
@@ -278,11 +277,12 @@ class NewDataModelPoint extends Object with DoubleLinked {
   bool isStacked = false;
 
   // ### 2. Group 2, are data-values representing this point's numeric value.
+
   /// The stacked-data-value where this point's Y value starts.
-  /// Created, along with [toY] as follows:
+  /// [fromY] and [toY] receive their value as follows:
   /// ```dart
   ///    fromY = predecessorPoint != null ? predecessorPoint!.toY : 0.0;
-  ///     toY = fromY + dataY;
+  ///    toY = fromY + dataY;
   /// ```
   /// This value is NOT coordinate based, so [applyParentOffset] is never applied to it.
   double fromY;
@@ -402,7 +402,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
         xLabel: xLabel, dataY: dataY, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.
-    // rest of objects (ui.Offset) must be created from immutable leafs.
+    // rest of objects (ui.Offset) must be constructed from immutable leafs.
     clone.xLabel = xLabel;
     clone.dataY = dataY;
     clone.predecessorPoint = null;

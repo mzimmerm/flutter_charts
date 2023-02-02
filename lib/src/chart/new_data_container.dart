@@ -23,10 +23,13 @@ class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringPa
 
    NewDataModel dataModel = chartRootContainer.data;
 
-   List<NewValuesColumnContainer>  children = dataModel.createNewValuesColumnContainerList();
+   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildrenAsNewValuesColumnContainerList();
 
-   addChildren(children);
-
+    addChildren([
+      Row(
+        children: viewColumnList,
+      )
+    ]);
   }
 
   @override

@@ -22,7 +22,7 @@ import 'container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner,
-    ConstraintsWeight, ConstraintsWeights;
+    ConstraintsWeight;
 
 import 'new_data_container.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';

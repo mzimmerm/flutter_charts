@@ -88,7 +88,10 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   Iterable<BoxContainer> allElements() => __children;
 }
 
-/// Mixin allows to create a doubly-linked list on a set of objects.
+/// Mixin allows to create a double-linked list on a set of objects.
+///
+/// The set of object which became double-linked are defined by
+/// member [doubleLinkedOwner] and calling [DoubleLinkedOwner.allElements].
 ///
 /// It should be used on [E] which is also mixed in with [DoubleLinked<E>],
 /// because then [E] is both [DoubleLinked] and [E], and can be mutually cast.
@@ -155,13 +158,21 @@ mixin DoubleLinked<E> {
   }
 }
 
-/// todo-done-last
 /// Owner of [DoubleLinked] elements.
 ///
-/// Its existence is necessary for any [DoubleLinked] set of objects to be linked and moved along.
+/// Its existence is necessary for any [DoubleLinked] set of objects to define the set to be linked [allElements]
+/// as well as to be moved along later by finding one of the [DoubleLinked] objects, for example
+/// by invoking [allElements.first].
 ///
-/// It's [allElements] method must return iterable of all elements that should be linked
-/// to enable moving back and forth.
+/// Client using a set of [DoubleLinked] objects need to hold on to [DoubleLinkedOwner] instance to
+/// be able to make use of the set of  [DoubleLinked] objects by two lifecycle actions:
+///   - First client needs to define the set of [DoubleLinked] that should be linked using [DoubleLinked.linkAll].
+///     This set is defined by [DoubleLinkedOwner.allElements].
+///   - Next, to start walking through the set of [DoubleLinked] objects, client needs to
+///     access one object from the set of [DoubleLinked] objects.
+///     This access can be done by invoking [DoubleLinkedOwner.firstLinked].
+///
+/// todo-01 : Describe a lifecycle of creating, linking, and using [DoubleLinked] from a client code example
 ///
 /// It's [hasLinkedElements] method must be called before the [firstLinked].
 ///
@@ -185,7 +196,10 @@ mixin DoubleLinked<E> {
 /// ```
 mixin DoubleLinkedOwner<E> {
 
-  /// Abstract method defines the elements to be linked
+  /// Abstract method defines the elements accessed (and owned) by this [DoubleLinkedOwner].
+  ///
+  /// This method must return iterable of all [DoubleLinked] instances that should be linked
+  /// to enable moving back and forth.
   Iterable<E> allElements();
 
   bool get hasLinkedElements => allElements().isNotEmpty;
@@ -408,7 +422,7 @@ abstract class LayoutableBox {
 ///   - *non-positioning* (equivalent to *non-offsetting*) should implement both positioning
 ///     and offsetting methods as non-op.
 ///     If the positioning method is implemented does not hurt (but it's useless)
-///     as long as the offssetting method is no-op.
+///     as long as the offsetting method is no-op.
 ///
 /// Important Note: Mixin fields can still be final, but then they must be late, as they are
 ///   always initialized in concrete implementations constructors or their initializer list.
