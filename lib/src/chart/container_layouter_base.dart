@@ -13,7 +13,7 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     LengthsPositionerProperties,
     LayedoutLengthsPositioner,
     PositionedLineSegments,
-    DivideConstraints;
+    ConstraintsDistribution;
 import 'package:flutter_charts/src/chart/container_alignment.dart' show Alignment;
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension, RectExtension;
@@ -207,6 +207,70 @@ mixin DoubleLinkedOwner<E> {
   }
 }
 
+// todo-01-document : added
+/// When used on a child [BoxLayouter], defines how constraints should be distributed among it's siblings.
+/// 
+/// Definition: Weights with value of 0 [defaultWeight] or negative values are all classified as *undefined weight*
+///             [BoxLayouter] with [BoxLayouter.constraintsWeight] set to [defaultWeight] or negative value
+///             is also classified as *undefined weight* layouter.
+///
+/// Important note: On [BoxLayouter] children where at least one sibling has *undefined weight*,
+///                 layout algorithm should pass to all children a full constraint of parent.
+///
+class ConstraintsWeight {
+
+  const ConstraintsWeight({
+    this.weight = 0,
+  });
+
+  final int weight;
+
+  static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
+
+  @override
+  bool operator ==(Object other) {
+    return other is ConstraintsWeight && weight == other.weight;
+  }
+
+  @override
+  int get hashCode => Object.hash(this, weight);
+
+
+  @override
+  String toString() {
+    return 'weight = weight.toString()';
+  }
+}
+
+class ConstraintsWeights {
+
+  final List<ConstraintsWeight> constraintsWeightList;
+
+  ConstraintsWeights.from({
+     required List<ConstraintsWeight> constraintsWeightList,
+  }) : constraintsWeightList = List.from(constraintsWeightList, growable: false);
+
+  bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
+
+  List<int> get intWeightList {
+    if (!allDefined) {
+      throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
+    }
+    return constraintsWeightList.map((element) => element.weight).toList();
+  }
+
+  /// Sum of weights in [constraintsWeightList].
+  ///
+  /// Before invoking, should invoke [allDefined] to check if all siblings have a defined
+  /// (non 0, non negative, non-default) weight.
+  int get sum {
+    if (!allDefined) {
+      throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
+    }
+    return constraintsWeightList.fold(0, (previousValue, element) => previousValue + element.weight);
+  }
+}
+
 /// [LayoutableBox] is an abstraction of behavior of a box which was sized and positioned
 /// on a 2D plane.
 ///
@@ -356,6 +420,16 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Unique [ContainerKey] [key] implements [Keyed].
   @override
   late final ContainerKey key;
+
+  /// When considered a child among siblings, [constraintsWeight] defines the relative size of constraints
+  /// this [BoxLayouter] should receive from parent relative to it's children.
+  ///
+  /// Only needs to be set to a different value (during construction), if parents want to proportionally layout
+  /// this instance as one of it's children.
+  late final ConstraintsWeight constraintsWeight;
+
+  ConstraintsWeights get childrenWeights =>
+      ConstraintsWeights.from(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
 
   // BoxLayouter section 2: Implements [LayoutableBox] -------------------------------------------------
 
@@ -554,8 +628,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
   }
 
-  /// This [BoxLayouter]'s default implementation distributes this layouter's unchanged
-  /// and undivided constraints onto it's immediate children before descending to children [layout].
+  /// This [BoxLayouter]'s default implementation distributes this layouter 's unchanged
+  /// and undivided constraints onto all it's immediate children before descending to children [layout].
   ///
   ///  This is not recursive - the constraints are applied only on immediate children.
   ///
@@ -797,12 +871,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
   /// Default generative constructor.
   BoxContainer({
-    // todo-01-last : can key be required and non nullable?
+    // todo-01-last : can key and children be required, final, and non nullable?
     ContainerKey? key,
-    // todo-01-last : can children be required and non nullable?
     List<BoxContainer>? children,
-    // BoxContainer? parent,
+    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) {
+    // Late initialize the constraintsWeight
+    this.constraintsWeight = constraintsWeight;
+
     // Place self as the DoubleLinkedOwner of it's children
     doubleLinkedOwner = this;
 
@@ -1091,7 +1167,11 @@ abstract class PositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
   PositioningBoxLayouter({
     List<BoxContainer>? children,
-  }) : super(children: children);
+    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
+  }) : super(
+          children: children,
+          constraintsWeight: constraintsWeight,
+        );
 
   /// Applies the offsets given with the passed [positionedRectsInMe]
   /// on the passed [LayoutableBox]es [children].
@@ -1163,10 +1243,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
     required this.mainAxisLayoutDirection,
-    // todo-00-last-last added vvvvvvvvvv
-    // DivideConstraints mainAxisChildConstraintsDivision = DivideConstraints.noDivide,
-    // ^^^^^^^^^^^^^
-  }) : super(children: children) {
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+  }) : super(
+    children: children,
+    constraintsWeight: mainAxisConstraintsWeight,
+  ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
@@ -1230,7 +1311,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // Process Non-Greedy children first, to find what size they use
     if (_hasNonGreedy) {
       // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
-      //                         using the constraints. Everything for _nonGreedyChildren is same as default layout.
+      //                         using the constraints. Uses default constraints distribution method from [BoxLayouter],
+      //                         All children obtain full self (parent) constraints.
       _preDescend_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
       // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
       for (var child in _nonGreedyChildren) {
@@ -1286,6 +1368,44 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
 
+  /// Distributes constraints to the passed [children] specifically for this layout, the
+  ///
+  /// Overridden from [BoxLayouter] to work like this:
+  ///
+  ///   - If all children have a weight defined
+  ///     (that is, not [ConstraintsWeight defaultWeight], checked by [ConstraintsWeights.allDefined])
+  ///     method divides the self constraints to smaller pieces along the main axis, keeping the self constraint size
+  ///     along the cross axis. Then distributes the divided constraints to children
+  ///   - else method invokes super implementation equivalent, which distributes self constraints undivided to all children.
+  @override
+  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+    ConstraintsWeights childrenWeights = ConstraintsWeights.from(
+        constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
+            .toList());
+    if (childrenWeights.allDefined) {
+      assert (childrenWeights.constraintsWeightList.length == children.length);
+      // Create divided constraints for children according to defined weights
+      List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
+        divideIntoCount: children.length,
+        divideStrategy: ConstraintsDistribution.intWeights,
+        layoutAxis:  mainLayoutAxis,
+        intWeights: childrenWeights.intWeightList,
+      );
+
+      assert (childrenConstraints.length == children.length);
+
+      // Apply the divided constraints on children
+      for (int i = 0; i < children.length; i++) {
+        _children[i].applyParentConstraints(this, childrenConstraints[i] as BoxContainerConstraints);
+      }
+    } else {
+      // This code is the same as super implementation in [BoxLayouter]
+      for (var child in children) {
+        child.applyParentConstraints(this, constraints);
+      }
+    }
+  }
+
   /// Post descend after NonGreedy children, finds and applies constraints on Greedy children.
   ///
   /// In some detail,
@@ -1323,7 +1443,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // Divides constraintsRemainingForGreedy~into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
-        divideStrategy: DivideConstraints.intWeights,
+        divideStrategy: ConstraintsDistribution.intWeights,
         layoutAxis: mainLayoutAxis,
         intWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
@@ -1580,6 +1700,7 @@ class Row extends RollingPositioningBoxLayouter {
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
@@ -1587,6 +1708,7 @@ class Row extends RollingPositioningBoxLayouter {
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
     mainAxisLayoutDirection: mainAxisLayoutDirection,
+    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
     //   but in constructor here.
@@ -1608,6 +1730,7 @@ class Row extends RollingPositioningBoxLayouter {
   }
 }
 
+// todo-00 : probably remove. Served by ConstraintsWeight on children
 // todo-01 : Implement by overriding the constraint definer - distribute constraints
 /// Intended use : Layout LineContainers as follows
 /// ```dart
@@ -1616,6 +1739,7 @@ class Row extends RollingPositioningBoxLayouter {
 ///     //...
 ///     Center(LineContainer),)
 /// ```
+/*
 class RowWithUnevenChildrenConstraints extends Row {
 
   RowWithUnevenChildrenConstraints({
@@ -1633,6 +1757,7 @@ class RowWithUnevenChildrenConstraints extends Row {
     crossAxisPacking: crossAxisPacking,
   );
 }
+*/
 
 // todo-01-document
 class Column extends RollingPositioningBoxLayouter {
@@ -1643,6 +1768,7 @@ class Column extends RollingPositioningBoxLayouter {
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
     LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
@@ -1650,6 +1776,7 @@ class Column extends RollingPositioningBoxLayouter {
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
     mainAxisLayoutDirection: mainAxisLayoutDirection,
+    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
@@ -1680,6 +1807,7 @@ class Column extends RollingPositioningBoxLayouter {
 /// layoutSize is set to the calculated [_greedySizeAlongGreedyAxis].
 ///
 class Greedy extends NonPositioningBoxLayouter {
+  // todo-00 : replace with ConstraintsWeight
   final int greed;
 
   Greedy({
@@ -1806,8 +1934,11 @@ class Padder extends PositioningBoxLayouter {
   }
 }
 
-/// A positioning layouter that sizes self from the child,
-/// then aligns the single child within self.
+/// A positioning layouter that sizes self from the child
+/// by relative ratios [childWidthBy] and [childHeightBy],
+/// then aligns the single child within resized self.
+///
+/// The resizing of self makes self typically larger than the child, although not necessarily.
 ///
 /// The self sizing from child is defined by the multiples of child width and height,
 /// the members [childWidthBy] and [childHeightBy].
@@ -1815,7 +1946,7 @@ class Padder extends PositioningBoxLayouter {
 /// The align process of the single child within self is defined by the member [alignment].
 ///
 /// See [Alignment] for important notes and calculations on how child positioning
-/// is calculated given by [childWidthBy], [childHeightBy] and [alignment].
+/// is calculated given [childWidthBy], [childHeightBy] and [alignment].
 class Aligner extends PositioningBoxLayouter {
   Aligner({
     required this.childWidthBy,

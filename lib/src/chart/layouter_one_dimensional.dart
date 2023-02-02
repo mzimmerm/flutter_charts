@@ -93,11 +93,11 @@ enum LayoutDirection {
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
 ///
-/// The term 'divided' may be misleading for [DivideConstraints.noDivide], as that
+/// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
 /// describes that a given constraint should create multiple constraints that are the same.
-enum DivideConstraints {
-  evenly, // todo-00 : deprecate and remove. Rely on children to set intWeights instead
-  intWeights,
+enum ConstraintsDistribution {
+  evenly, // todo-00 : deprecate and remove. Rely on children to all set intWeights=1 instead
+  intWeights, //
   noDivide, // todo-00-last-last : make sure this is Default. Pass constraints to children that are the same size as self constraints
 }
 

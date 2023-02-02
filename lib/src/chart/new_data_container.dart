@@ -50,10 +50,13 @@ class NewValuesColumnContainer extends ChartAreaContainer {
     required this.backingDataModelSeries,
     List<BoxContainer>? children,
     ContainerKey? key,
+    // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
+    required ConstraintsWeight constraintsWeight,
   }) : super(
     chartRootContainer: chartRootContainer,
     children: children,
     key: key,
+    constraintsWeight: constraintsWeight,
   );
 }
 

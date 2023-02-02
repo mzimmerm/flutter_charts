@@ -152,7 +152,7 @@ abstract class BoundingBoxesBase {
   }
 
   /// Divide this [BoundingBoxesBase] into a list of 'smaller' [BoundingBoxesBase]s objects,
-  /// depending on the dividing strategy [DivideConstraints].
+  /// depending on the dividing strategy [ConstraintsDistribution].
   ///
   /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
   /// cross-sizes remain the same as this constraint.
@@ -162,21 +162,21 @@ abstract class BoundingBoxesBase {
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
-    required DivideConstraints divideStrategy,
+    required ConstraintsDistribution divideStrategy,
     required LayoutAxis layoutAxis,
     List<int>? intWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
     late final int sumIntWeights;
 
-    if (divideStrategy == DivideConstraints.intWeights && intWeights == null) {
-      throw StateError('intWeights only applicable for DivideConstraints.ratio');
+    if (divideStrategy == ConstraintsDistribution.intWeights && intWeights == null) {
+      throw StateError('intWeights only applicable for ConstraintsDistribution.ratio');
     }
 
-    if ((divideStrategy == DivideConstraints.evenly ||
-            divideStrategy == DivideConstraints.evenly) &&
+    if ((divideStrategy == ConstraintsDistribution.evenly ||
+            divideStrategy == ConstraintsDistribution.evenly) &&
         intWeights != null) {
-      throw StateError('intWeights not applicable for DivideConstraints.evenly or noDivide');
+      throw StateError('intWeights not applicable for ConstraintsDistribution.evenly or noDivide');
     }
 
     if (intWeights != null) {
@@ -185,7 +185,7 @@ abstract class BoundingBoxesBase {
     }
 
     switch (divideStrategy) {
-      case DivideConstraints.evenly:
+      case ConstraintsDistribution.evenly:
         switch (layoutAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -210,8 +210,8 @@ abstract class BoundingBoxesBase {
           );
           fractions.add(fraction);
         }
-        return fractions;
-      case DivideConstraints.intWeights:
+        return List.from(fractions, growable: false);
+      case ConstraintsDistribution.intWeights:
         List<BoundingBoxesBase> fractions = [];
         for (int intWeight in intWeights!) {
           switch (layoutAxis) {
@@ -236,9 +236,9 @@ abstract class BoundingBoxesBase {
           );
           fractions.add(fraction);
         }
-        return fractions;
-      case DivideConstraints.noDivide:
-        return [clone()];
+        return List.from(fractions, growable: false);
+      case ConstraintsDistribution.noDivide:
+        return List.filled(divideIntoCount, clone(), growable: false);
     }
   }
 
@@ -481,7 +481,8 @@ class BoundingBoxes extends BoundingBoxesBase {
 ///   where we want to put the data container to the right of the Y labels.
 /// - If direction style is [Unused], the [layout] should fail on attempted
 ///   looking at such
-///   todo-01-document this is not correct at all
+///   todo-01-document this documentation is not correct
+///   todo-01 : can we make this immutable? Or even make const constructors?
 class BoxContainerConstraints extends BoundingBoxesBase {
 
   /// Expresses if it was created for the very top [Row] or [ColumnLayoter].

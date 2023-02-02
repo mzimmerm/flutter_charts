@@ -1,7 +1,5 @@
 import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
-import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
@@ -20,12 +18,12 @@ import 'package:flutter_charts/src/chart/new_data_container.dart';
 ///   - When [NewDataModel] is constructed, the [ChartRootContainer] is not available.
 ///     So in constructor, [NewDataModel] cannot be given access to the root container, and it's needed members
 ///     such as [ChartRootContainer.yLabelsCreator].
-@immutable
+// todo-011 make immutable, probably impossible to make const.
 class NewDataModel {
 
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
-  /// todo-011 : Default constructor only assumes [_dataRows] are set,
+  /// todo-011 : Default constructor only assumes [_dataRows] is set,
   /// and assigns default values of [_dataRowsLegends], [_dataRowsColors], [xUserLabels], [yUserLabels].
   ///
   NewDataModel({
@@ -67,11 +65,15 @@ class NewDataModel {
 
     for (NewDataModelSeries series in seriesList) {
       // NewValuesColumnContainer valuesColumnContainer =
-      chartColumns.add(NewValuesColumnContainer(
-        chartRootContainer: chartRootContainer,
-        backingDataModelSeries: series,
-        children: series.buildNewValueContainersList(),
-      ));
+      chartColumns.add(
+        NewValuesColumnContainer(
+          chartRootContainer: chartRootContainer,
+          backingDataModelSeries: series,
+          children: series.buildNewValueContainersList(),
+          //
+          constraintsWeight: const ConstraintsWeight(weight: 1),
+        ),
+      );
     }
     return chartColumns;
   }

@@ -21,7 +21,8 @@ import 'presenter.dart';
 import 'container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     BuilderOfChildrenDuringParentLayout,
-    LayoutableBox, Column, Row, Greedy, Padder, Aligner;
+    LayoutableBox, Column, Row, Greedy, Padder, Aligner,
+    ConstraintsWeight, ConstraintsWeights;
 
 import 'new_data_container.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
@@ -154,7 +155,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
         super() {
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
-    // todo-00-done-last : added link from model to root container
+    // todo-done-last : added link for model to reach the root container
     data.chartRootContainer = this;
   }
 
@@ -1261,9 +1262,11 @@ abstract class ChartAreaContainer extends BoxContainer {
     required this.chartRootContainer,
     List<BoxContainer>? children,
     ContainerKey? key,
+    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
           children: children,
           key: key,
+          constraintsWeight: constraintsWeight,
         );
 }
 
@@ -1317,7 +1320,7 @@ class VerticalBarChartDataContainer extends DataContainer {
   }
 }
 
-class VerticalBarChartNewDataContainer extends DataContainer { // todo-00-switch : NewDataContainer { //  DataContainer {
+class VerticalBarChartNewDataContainer extends NewDataContainer {
   VerticalBarChartNewDataContainer({
     required ChartRootContainer chartRootContainer,
   }) : super(
@@ -1375,7 +1378,7 @@ class LineChartDataContainer extends DataContainer {
   }
 }
 
-class LineChartNewDataContainer extends DataContainer { // todo-00-switch : NewDataContainer { // DataContainer {
+class LineChartNewDataContainer extends NewDataContainer {
   LineChartNewDataContainer({
     required ChartRootContainer chartRootContainer,
   }) : super(
