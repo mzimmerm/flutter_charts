@@ -67,13 +67,13 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
       chartRootContainer: chartRootContainer,
     );
   }
-*/
+  */
 
   @override
-  VerticalBarChartDataContainer createDataContainer({
+  VerticalBarChartNewDataContainer createNewDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
-    return VerticalBarChartDataContainer(
+    return VerticalBarChartNewDataContainer(
       chartRootContainer: chartRootContainer,
     );
   }

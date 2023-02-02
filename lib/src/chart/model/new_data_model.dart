@@ -2,6 +2,7 @@ import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
 
 /// todo-done-last-1  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
@@ -71,6 +72,7 @@ class NewDataModel {
           backingDataModelSeries: series,
           children: [Column(
               children: series.generateViewChildrenAsNewValueContainersList(),
+              mainAxisLayoutDirection: LayoutDirection.reversed,
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
