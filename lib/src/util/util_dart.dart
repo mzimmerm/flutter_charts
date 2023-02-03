@@ -172,102 +172,141 @@ class LineSegment extends Interval {
   }
 }
 
-// todo-011 document
+/// Encapsulates the concept of linear transformations in 1D.
+///
+/// The unnamed generative constructor [LinearTransform1D] creates a transformation which,
+/// applied on a value, first scales the value by the scaling factor is [_scaleBy],
+/// then translates by the translation amount is [_translateBy].
+///
+/// The application of the transform on a double value is performed by the [apply] method.
+/// 
+/// Note: The atomic transformation actions we can do in 1D are:
+///   - Multiplicative scaling (stretching or compression) around origin, with origin the fixed point.
+///     The scaling factor is [_scaleBy]. Note that scaling by [_scaleBy] = -1.0 is equivalent to
+///     reversing direction.
+///   - Additive translation (moving along) (no fixed point).
+///     The translation amount is [_translateBy].
+///   - Multiplicative reversing direction (flipping around origin), with origin the fixed point.
+///     This is the same as scaling by -1 (as noted above).
+///
+/// Commutation notes:
+///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
+///   - any combination of translations commute
+///   - any other combination (that is, with translate) does NOT commute.
+
 class LinearTransform1D {
+  final double _scaleBy;
+  final double _translateBy;
 
-  LinearTransform1D({
-    required this.fromDomainMin,
-    required this.fromDomainMax,
-    required this.toDomainMin,
-    required this.toDomainMax,
-  }) : domainStretch = (toDomainMax - toDomainMin) / (fromDomainMax - fromDomainMin);
+  const LinearTransform1D({
+    required scaleBy,
+    required translateBy,
+  }) : _scaleBy = scaleBy, _translateBy = translateBy;
 
-  final double fromDomainMin;
-  final double fromDomainMax;
-  final double toDomainMin;
-  final double toDomainMax;
+  /// Constructs transformation which scales (stretches or compresses),
+  /// all points on the axis with origin as the fixed point, by the multiplying [_scaleBy] factor.
+  const LinearTransform1D.scaleAtOrigin({
+    required scaleBy,
+  }) : this(scaleBy: scaleBy, translateBy: 0.0,);
+
+  /// Constructs transformation which transforms (moves)
+  /// all points on the axis with origin as the fixed point by the additive [_translateBy] value.
+  ///
+  /// This transform has no fixed point (so no 'origin' in the name).
+  const LinearTransform1D.translateAtOrigin({
+    required translateBy,
+  }) : this(scaleBy: 1.0, translateBy: translateBy,);
+
+  /// Constructs transformation which inverts (flips, reverses),
+  /// all points on the axis with origin as the fixed point.
+  ///
+  /// This transform is equivalent to
+  /// ```
+  ///    LinearTransform1D.scaleAtOrigin(-1.0)
+  /// ```
+  const LinearTransform1D.inverse() : this(scaleBy: -1.0, translateBy: 0.0,);
+
+
+  /// Default transformation first scales, then translates all points.
+  ///
+  /// Note that scaling may include inversion.
+  double apply(double fromValue) {
+    return _scaleBy * fromValue - _translateBy;
+  }
+}
+
+/// A transformation between domains which [apply] method, invoked on a double value
+/// assumed to be on the 'from' domain, answers the linearly extrapolated value in the 'to' domain.
+///
+/// The start and end points on both domains define uniquely (up to a ratio of domain sizes) a linear transform and it's
+/// scaleBy and translateBy factors.
+///
+/// Transforms a value in 'from' domain into a 'linearly correspondent' value in the 'to' domain, assuming
+/// the two domains are linearly scaled using a scaling that transforms
+/// the [fromDomainStart] to [toDomainStart] and  [fromDomainEnd] to [toDomainEnd]. This defines the
+/// scaling factor to be
+/// ```
+///   (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart); // this may include inversion if negative
+/// ```
+/// and the following translation factor to be
+/// ```
+///   toDomainStart
+/// ```
+///
+class DomainExtrapolation1D {
+  const DomainExtrapolation1D({
+    required this.fromDomainStart,
+    required this.fromDomainEnd,
+    required this.toDomainStart,
+    required this.toDomainEnd,
+  }) : domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart);
+
+  /// First point of the 'from' domain. If larger than [fromDomainEnd], represents reversed direction.
+  final double fromDomainStart;
+  final double fromDomainEnd;
+  final double toDomainStart;
+  final double toDomainEnd;
 
   final double domainStretch;
 
   /// Transform [fromValue] from the 'from' domain to it's corresponding linear transform value it the 'to' domain.
   ///
-  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [fromDomainMin]
-  /// and [fromDomainMax] are at a certain ratio, call it R.
+  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [fromDomainStart]
+  /// and [fromDomainEnd] are at a certain ratio, call it R.
   /// This returns a value of point in the 'to' domain, which ratio of distances to the
-  /// [toDomainMin] and [toDomainMax] is same as R.
+  /// [toDomainStart] and [toDomainEnd] is same as R.
   ///
-  /// This transform includes BOTH stretching AND translation of origin.
-  double domainsScaleAndTranslate(double fromValue) {
-    return toDomainMin + domainStretch * (fromValue - fromDomainMin);
-  }
-
-  /// Returns the [fromValue] in the coordinate system
-  /// which has been flipped (changed direction) around origin.
-  double axisFlippedAtOrigin(double fromValue) {
-    return -fromValue;
-  }
-
-  /// Returns the [fromValue] in the coordinate system
-  /// which origin has been translated by [translateBy].
-  double axisOriginTranslatedBy(double fromValue, double translateBy) {
-    return fromValue - translateBy;
-  }
-
-  /// Assuming 'from' domain is the interval of values we want to display,
-  /// and the 'to' domain is the downwards oriented Y axis on screen (0 on top)
-  /// on which we want for display the values, then:
+  /// This transform includes BOTH stretching AND translation of origin, in that order
   ///
-  /// This linearly transforms a point in the 'from' domain, to the point in the 'to' domain.
+  /// Note: Assuming 'from' domain is the interval of values we want to display,
+  ///       and the 'to' domain is the downwards oriented Y axis on screen (0 on top)
+  ///       on which we want for display the values, then:
   ///
-  /// Note: The term 'pixels' in this method name may be misleading, as the 'to' domain does not have to be
+  ///       This linearly transforms a point in the 'from' domain, to the point in the 'to' domain.
+  ///
+  ///       The term 'pixels' in this method name may be misleading, as the 'to' domain does not have to be
   ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
-  double scaleValueToYPixels(double fromValue) {
-    double result =
-      axisOriginTranslatedBy(
-        axisFlippedAtOrigin(
-            domainsScaleAndTranslate( fromValue ),
-        ),
-        -toDomainMin,
-      );
-    // Assert result is the same as an intuitively derived transform
-    double intuitiveResult = domainStretch * (fromDomainMin - fromValue);
-    _assertResultsSame(result, intuitiveResult);
+  ///
+  double apply(double fromValue) {
+    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: domainStretch).apply(fromValue);
+    double scaledAndMoved = LinearTransform1D.translateAtOrigin(translateBy: -toDomainStart).apply(scaled);
+
+    double result = domainStretch * (fromValue - fromDomainStart) + toDomainStart;
+
+    assertResultsSame(scaledAndMoved, result);
+
     return result;
   }
-
-  /// Similar to [scaleValueToYPixels], this [scaleValueToXPixels] does not flip axis.
-  double scaleValueToXPixels(double fromValue) {
-    double result =
-        domainsScaleAndTranslate( fromValue )
-    ;
-    // Assert result is the same as an intuitively derived transform
-    double intuitiveResult = toDomainMin + domainStretch * (fromValue - fromDomainMin);
-    _assertResultsSame(result, intuitiveResult);
-    return result;
-  }
-
-  void _assertResultsSame(double result, double intuitiveResult) {
-    if (!isCloserThanEpsilon(result, intuitiveResult)) {
-      throw StateError(
-          'Results do not match. Result was $result, '
-              'Simple result was $intuitiveResult. Transform instance = $this');
-    }
-  }
-
-  // todo-011 document , unused
-  double stretchAxisBy(double fromValue, double stretchBy) => stretchBy * fromValue;
 
   @override
   String toString() {
-    return
-    'fromDomainMin = $fromDomainMin, '
-    'fromDomainMax = $fromDomainMax,'
-    'toDomainMin   = $toDomainMin,'
-    'toDomainMax   = $toDomainMax, '
-    'domainStretch = $domainStretch';
+    return 'fromDomainStart = $fromDomainStart, '
+        'fromDomainEnd = $fromDomainEnd,'
+        'toDomainStart   = $toDomainStart,'
+        'toDomainEnd   = $toDomainEnd, '
+        'domainStretch = $domainStretch';
   }
 }
-
 
 // todo-02 Refactor scaling
 /// Scale the [value] that must be from the scale
@@ -368,6 +407,13 @@ bool isCloserThanEpsilon(double d1, double d2) {
     return true;
   }
   return false;
+}
+
+void assertResultsSame(double result, double otherResult) {
+  if (!isCloserThanEpsilon(result, otherResult)) {
+    throw StateError('Results do not match. Result was $result, '
+        'Simple result was $otherResult.');
+  }
 }
 
 String enumName(Enum e) {

@@ -114,12 +114,12 @@ class NewValueHBarContainer extends NewValueContainer {
     // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
     YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSameXValuesList.dataModel.chartRootContainer.yLabelsCreator;
     // double height = scaler.scaleY(value: dataModelPoint.dataValue);
-    var transform = LinearTransform1D(
-      fromDomainMin: scaler.fromDomainMin,
-      fromDomainMax: scaler.fromDomainMax,
-      toDomainMin: scaler.toDomainMin,
-      toDomainMax: scaler.toDomainMax,);
-    double height = transform.scaleValueToXPixels(dataModelPoint.dataValue);
+    var transform = DomainExtrapolation1D(
+      fromDomainStart: scaler.fromDomainMin,
+      fromDomainEnd: scaler.fromDomainMax,
+      toDomainStart: scaler.toDomainMin,
+      toDomainEnd: scaler.toDomainMax,);
+    double height = transform.apply(dataModelPoint.dataValue);
 
     _rectangleSize = ui.Size(width, height);
 
