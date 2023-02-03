@@ -377,7 +377,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     var yContainerSize = yContainer.layoutSize;
     // The layout relies on YContainer width first time and second time to be the same, as width
-    //    was used as remainded space for XContainer.
+    //    was used as remainder space for XContainer.
     // But height, will NOT be the same, it will be shorter second time.
     assert (yContainerFirstSize.width == yContainerSize.width);
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);

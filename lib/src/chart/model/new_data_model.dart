@@ -238,11 +238,16 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   /// todo-011 document
   List<NewValueContainer> generateViewChildrenAsNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
+
     if (hasLinkedElements) {
-      for (var current = firstLinked(); current.hasNext; current = current.next) {
+      for (var current = firstLinked(); ; current = current.next) {
         columnPointContainers.add(current.generateViewChildrenAsNewValueContainer());
+        if (!current.hasNext) {
+          break;
+        }
       }
     }
+
     return columnPointContainers;
   }
 }

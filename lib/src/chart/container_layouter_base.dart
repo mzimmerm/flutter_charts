@@ -180,19 +180,26 @@ mixin DoubleLinked<E> {
 ///
 /// A typical use:
 /// ```dart
-/// if (doubleLinkedOwner.hasLinkedElements) {
-///   E element = doubleLinkedOwner.firstLinked();
-///   do {
-///      use(element);
-///      element = element.next;
-///   } while(element.hasNext);
+///   // todo-00 : introduce a form that allows to iterate and apply
+///   if (doubleLinkedOwner.hasLinkedElements) {
+///     E element = doubleLinkedOwner.firstLinked();
+///     while (true) {
+///        use(element);
+///        if (!element.hasNext) {
+///          break;
+///        }
+///        element = element.next;
+///   }
 /// ```
 /// OR
 /// ```dart
-/// if (doubleLinkedOwner.hasLinkedElements) {
-///   for (E element = doubleLinkedOwner.firstLinked(); element.hasNext(); element = element.next) {
-///      use(element);
-///   }
+///   if (doubleLinkedOwner.hasLinkedElements) {
+///     for (E element = doubleLinkedOwner.firstLinked(); ; element = element.next) {
+///        use(element);
+///        if (!element.hasNext()) {
+///          break;
+///        }
+///     }
 /// ```
 mixin DoubleLinkedOwner<E> {
 
