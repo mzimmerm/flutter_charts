@@ -48,11 +48,11 @@ class NewDataContainer extends DataContainer {
 }
 
 class NewValuesColumnContainer extends ChartAreaContainer {
-  NewDataModelSeries backingDataModelSeries;
+  NewDataModelSameXValues backingDataModelSameXValues;
 
   NewValuesColumnContainer({
     required ChartRootContainer chartRootContainer,
-    required this.backingDataModelSeries,
+    required this.backingDataModelSameXValues,
     List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
@@ -112,7 +112,7 @@ class NewValueHBarContainer extends NewValueContainer {
     double width = constraints.width;
 
     // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
-    YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSeries.dataModel.chartRootContainer.yLabelsCreator;
+    YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSameXValuesList.dataModel.chartRootContainer.yLabelsCreator;
     // double height = scaler.scaleY(value: dataModelPoint.dataValue);
     var transform = LinearTransform1D(
       fromDomainMin: scaler.fromDomainMin,

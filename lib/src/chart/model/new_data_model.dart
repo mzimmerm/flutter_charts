@@ -44,34 +44,54 @@ class NewDataModel {
   {
     validate();
 
-    // Construct one [NewDataModelSeries] for each data row, and add to member [seriesList]
-    int indexInDataModel = 0;
-    for (List<double> dataRow in _dataRows) {
-      seriesList.add(NewDataModelSeries(
-        dataRow: dataRow,
-        dataModel: this,
-        indexInDataModel: indexInDataModel++,
-      ));
+    _dataColumns = _rowsToColumns();
+
+    // Construct one [NewDataModelSeries] for each data row, and add to member [sameXValuesList]
+    int columnIndex = 0;
+    for (List<double> dataColumn in _dataColumns) {
+      sameXValuesList.add(
+        NewDataModelSameXValues(
+          dataColumn: dataColumn,
+          dataModel: this,
+          columnIndex: columnIndex++,
+        ),
+      );
     }
   }
 
   // NEW CODE =============================================================
 
-  /// List of data series in the model.
-  final List<NewDataModelSeries> seriesList = []; // todo-done-last-1 : added for the NewDataModel
+  // todo-00 move to util
+  List<List<double>> _rowsToColumns() {
+    List<List<double>> dataColumns = [];
+    // Walk length of first row (if exists) and fill all dataColumns assuming fixed size of _dataRows
+    if (_dataRows.isNotEmpty) {
+      for (int column = 0; column < _dataRows[0].length; column++) {
+        List<double> dataColumn = [];
+        for (int row = 0; row < _dataRows.length; row++) {
+          dataColumn.add(_dataRows[row][column]); // Add a row value on the row where dataColumn stands
+        }
+        dataColumns.add(dataColumn);
+      }
+    }
+    return dataColumns;
+  }
+
+  /// List of data sameXValues in the model.
+  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-1 : added for the NewDataModel
 
   List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList() {
     List<NewValuesColumnContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
 
-    for (NewDataModelSeries series in seriesList) {
+    for (NewDataModelSameXValues sameXValues in sameXValuesList) {
       // NewValuesColumnContainer valuesColumnContainer =
       chartColumns.add(
         NewValuesColumnContainer(
           chartRootContainer: chartRootContainer,
-          backingDataModelSeries: series,
+          backingDataModelSameXValues: sameXValues,
           children: [Column(
-              children: series.generateViewChildrenAsNewValueContainersList(),
+              children: sameXValues.generateViewChildrenAsNewValueContainersList(),
               // todo-00 : remove this : mainAxisLayoutDirection: LayoutDirection.reversed,
               mainAxisAlign: Align.end,
           )],
@@ -91,15 +111,19 @@ class NewDataModel {
   // OLD CODE =============================================================
   // Legacy stuff below
 
+  // _dataRows[columnIndex][rowIndex]
   /// Data in rows.
   ///
   /// Each row of data represents one data series.
   /// Legends per row are managed by [_dataRowsLegends].
   ///
-  /// Each element of the outer list represents one row.
-  /// Alternative name would be "data series".
   final List<List<double>> _dataRows;
   List<List<double>> get dataRows => _dataRows;
+
+  // todo-00-last : added
+  /// Data reorganized from rows to columns.
+  late final List<List<double>> _dataColumns;
+  List<List<double>> get dataColumns => _dataColumns;
 
   /// Labels on independent (X) axis.
   ///
@@ -108,7 +132,7 @@ class NewDataModel {
   /// in each row in [_dataRows].
   final List<String> xUserLabels;
 
-  /// The legends for the [_dataRows] (data series).
+  /// The legends for each row in [_dataRows].
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
@@ -163,44 +187,47 @@ class NewDataModel {
 }
 
 /// todo-done-last-1 : Replaces PointsColumn
-class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint> {
+class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModelPoint> {
 
   /// Constructor. todo-011 document
-  NewDataModelSeries({
-    required List<double> dataRow,
+  NewDataModelSameXValues({
+    required List<double> dataColumn,
     required NewDataModel dataModel,
-    required int indexInDataModel,
+    required int columnIndex,
   })
       : _dataModel = dataModel,
-        _indexInDataModel = indexInDataModel {
+        _columnIndex = columnIndex {
     // Construct data points from the passed [dataRow] and add each point to member _points
-    for (double dataValue in dataRow) {
-      var point = NewDataModelPoint(dataValue: dataValue, ownerSeries: this,);
+    int rowIndex = 0;
+    for (double dataValue in dataColumn) {
+      var point = NewDataModelPoint(dataValue: dataValue, ownerSameXValuesList: this, rowIndex: rowIndex);
       _points.add(point);
+      rowIndex++;
     }
-    // When all points in this series are constructed and added to [_points], we can double-link the points.
+    // When all points in this sameXValues are constructed and added to [_points], we can double-link the points.
     // We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
     if (_points.isNotEmpty) {
       firstLinked().linkAll();
     }
   }
 
-  /// Owner [NewDataModel] to which this [NewDataModelSeries] belongs by existence in
-  /// [NewDataModel.seriesList].
+  /// Owner [NewDataModel] to which this [NewDataModelSameXValues] belongs by existence in
+  /// [NewDataModel.sameXValuesList].
   ///
   final NewDataModel _dataModel;
   NewDataModel get dataModel => _dataModel;
 
-  /// Index of this series in _dataModel.seriesList.
+  /// Index of this column (sameXValues list) in [NewDataModel.sameXValuesList].
   /// This is needed to access the legacy arrays such as:
   ///   -  [NewDataModel.dataRowsLegends]
   ///   -  [NewDataModel.dataRowsColors]
-  final int _indexInDataModel;
+  final int _columnIndex;
 
-  /// Points of this series.
+  /// Points of this column (sameXValues.
   ///
   /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
-  /// owned by this [DoubleLinkedOwner]. At the same time, the points are all [NewDataModelPoint] in this series.
+  /// owned by this [DoubleLinkedOwner]. 
+  /// At the same time, the points are all [NewDataModelPoint] in this column (sameXValues list).
   final List<NewDataModelPoint> _points = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
@@ -223,27 +250,30 @@ class NewDataModelSeries extends Object with DoubleLinkedOwner<NewDataModelPoint
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
 ///
 /// Notes:
-///   - Has private access to the owner [NewDataModel] to which it belongs through it's member [ownerSeries]
-///     which in turn has access to [NewDataModel] through it's member [NewDataModelSeries._dataModel].
+///   - Has private access to the owner [NewDataModel] to which it belongs through it's member [ownerSameXValuesList]
+///     which in turn has access to [NewDataModel] through it's member [NewDataModelSameXValues._dataModel].
 ///     THIS ACCESS IS CURRENTLY UNUSED
 ///
 class NewDataModelPoint extends Object with DoubleLinked {
+
+  final int _rowIndex;
 
   // ===================== CONSTRUCTOR ============================================
   // todo-011 document
   NewDataModelPoint({
     required double dataValue,
-    required this.ownerSeries,
-  }) : _dataValue = dataValue {
+    required this.ownerSameXValuesList,
+    required int rowIndex,
+  }) : _dataValue = dataValue, _rowIndex = rowIndex {
     // The ownerSeries is NewDataModelSeries which is DoubleLinkedOwner
     // of all [NewDataModelPoint]s, from [DoubleLinkedOwner.allElements]
-    doubleLinkedOwner = ownerSeries;
+    doubleLinkedOwner = ownerSameXValuesList;
   }
 
   // ===================== NEW CODE ============================================
 
-  /// References the data series this point belongs to
-  NewDataModelSeries ownerSeries;
+  /// References the data column (sameXValues list) this point belongs to
+  NewDataModelSameXValues ownerSameXValuesList;
 
   final double _dataValue;
 
@@ -252,10 +282,10 @@ class NewDataModelPoint extends Object with DoubleLinked {
   NewValueContainer generateViewChildrenAsNewValueContainer() {
     return NewValueHBarContainer(
         dataModelPoint: this,
-        chartRootContainer: ownerSeries._dataModel.chartRootContainer);
+        chartRootContainer: ownerSameXValuesList._dataModel.chartRootContainer);
   }
 
-  ui.Color get color => ownerSeries._dataModel._dataRowsColors[ownerSeries._indexInDataModel];
+  ui.Color get color => ownerSameXValuesList._dataModel._dataRowsColors[_rowIndex];
 
   // ====================== LEGACY CODE ====================================
 
