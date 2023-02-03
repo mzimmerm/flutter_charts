@@ -54,33 +54,19 @@ class LineChartRootContainer extends ChartRootContainer {
     pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 
-  /* todo-00-switch
   @override
-  LineChartDataContainer createDataContainer({
+  DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
-    return LineChartDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
-  }
-
-  @override
-  LineChartNewDataContainer createNewDataContainer({
-    required ChartRootContainer chartRootContainer,
-  }) {
-    return LineChartNewDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
-  }
-  */
-
-  @override
-  LineChartDataContainer createDataContainer({
-    required ChartRootContainer chartRootContainer,
-  }) {
-    return LineChartDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
+    if (chartRootContainer.isUseOldDataContainer) {
+      return LineChartDataContainer(
+        chartRootContainer: chartRootContainer,
+      );
+    } else {
+      return LineChartNewDataContainer(
+        chartRootContainer: chartRootContainer,
+      );
+    }
   }
 
   /// Implements [ChartBehavior] mixin abstract method.

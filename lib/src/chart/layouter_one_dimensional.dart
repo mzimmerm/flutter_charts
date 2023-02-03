@@ -253,33 +253,33 @@ class LayedoutLengthsPositioner {
     switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false),
+          lineSegments: _assertLengthsPositiveAndReturn(
+              lengths.map((length) => _matrjoskaLayoutLineSegmentFor(length)).toList(growable: false)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
       case Packing.tight:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: _tightOrLooseLayoutAndMapLengthsToSegments(_tightLayoutLineSegmentFor),
+          lineSegments:
+              _assertLengthsPositiveAndReturn(_tightOrLooseLayoutAndMapLengthsToSegments(_tightLayoutLineSegmentFor)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
       case Packing.loose:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: _tightOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor),
+          lineSegments:
+              _assertLengthsPositiveAndReturn(_tightOrLooseLayoutAndMapLengthsToSegments(_looseLayoutLineSegmentFor)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
         break;
     }
-    // If [LayedoutLengthsPositioner] positions along the main axis, AND is set to reverse, return reverse.
-    // todo-00-last-last-last : the whole LayoutDirection.reversed and reversedCopy seems wrong, as the totalPositionedLengthIncludesPadding is always positive,
+    // todo-00 : remove LayoutDirection.reversed and code using it. the whole LayoutDirection.reversed and reversedCopy seems wrong, as the totalPositionedLengthIncludesPadding is always positive,
     //                          while the positionedLineSegments.lineSegments are in negative, going backwards (?? why)
     if (lengthsPositionerProperties.isPositioningMainAxis &&
-        lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed
-    ) {
-      // todo-done-last-2
+        lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed) {
       positionedLineSegments = positionedLineSegments.reversedCopy();
     }
 
@@ -434,6 +434,15 @@ class LayedoutLengthsPositioner {
     }
     return Tuple2(startOffset, freePaddingRight);
   }
+
+  List<util_dart.LineSegment> _assertLengthsPositiveAndReturn(List<util_dart.LineSegment> lineSegments) {
+    for (var lineSegment in lineSegments) {
+      if (lineSegment.min > lineSegment.max) {
+        throw StateError('LineSegment min > max in lineSegment=$lineSegment; all segments=$lineSegments');
+      }
+    }
+    return lineSegments;
+  }
 }
 
 /// Holds on the invocation result of 1-dimensional layouter [LayedoutLengthsPositioner.layoutLengths].
@@ -465,19 +474,11 @@ class LayedoutLengthsPositioner {
 ///
 class PositionedLineSegments {
 
-  // todo-00-last-last-last : add const back   const PositionedLineSegments({
-  PositionedLineSegments({
+  const PositionedLineSegments({
     required this.lineSegments,
     required this.totalPositionedLengthIncludesPadding,
     required this.isOverflown,
-  }) {
-    // todo-00-last-last-last : added to check all passed lengths are positive
-    for (var lineSegment in lineSegments) {
-      if (lineSegment.min > lineSegment.max) {
-        throw StateError('LineSegment min > max in lineSegment=$lineSegment; all segments=$lineSegments');
-      }
-    }
-  }
+  });
 
   PositionedLineSegments reversedCopy() {
     return PositionedLineSegments(

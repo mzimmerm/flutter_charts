@@ -5,8 +5,8 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import '../container/container_key.dart';
 
-// todo-01-document The container of chart columns. NewValuesColumnsContainer - but we use the name NewDataContainer
-class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+// todo-01-switch-from-command-arg class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+class NewDataContainer extends DataContainer {
   // constructor:
   // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
 
@@ -32,12 +32,14 @@ class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringPa
     ]);
   }
 
+  /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
   @override
   _NewSourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
     return _NewSourceYContainerAndYContainerToSinkDataContainer(
       dataColumnsCount: chartRootContainer.dataColumnsCount,
     );
   }
+  */
 
 // void layout() - default
 // void applyParentConstraints - default
@@ -117,16 +119,14 @@ class NewValueHBarContainer extends NewValueContainer {
       fromDomainMax: scaler.fromDomainMax,
       toDomainMin: scaler.toDomainMin,
       toDomainMax: scaler.toDomainMax,);
-    double height = transform.scaleValueToYPixels(dataModelPoint.dataValue);
+    double height = transform.scaleValueToXPixels(dataModelPoint.dataValue);
 
-    // todo-00-last-last-last-last : start here : height is negative, because scaler.toDomainMin >  scaler.toDomainMax, but that works in OLD DataContainer!!
     _rectangleSize = ui.Size(width, height);
 
     layoutSize = _rectangleSize; // todo-00-last : implement this right - layoutSize should be from constraints, and all painting must fit within constraints
   }
 
   @override paint(ui.Canvas canvas) {
-    // for now, put the offset calculation and scaling here . todo-00-last - where should they go?
 
     ui.Rect rect = offset & _rectangleSize;
 
@@ -138,6 +138,7 @@ class NewValueHBarContainer extends NewValueContainer {
   }
 }
 
+/* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
 class _NewSourceYContainerAndYContainerToSinkDataContainer {
   final int dataColumnsCount;
 
@@ -145,3 +146,4 @@ class _NewSourceYContainerAndYContainerToSinkDataContainer {
     required this.dataColumnsCount,
   });
 }
+*/

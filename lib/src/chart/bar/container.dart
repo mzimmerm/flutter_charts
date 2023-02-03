@@ -49,33 +49,19 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
     pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
-  /* todo-00-switch
   @override
-  VerticalBarChartDataContainer createDataContainer({
+  DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
-    return VerticalBarChartDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
-  }
-
-  @override
-  VerticalBarChartNewDataContainer createNewDataContainer({
-    required ChartRootContainer chartRootContainer,
-  }) {
-    return VerticalBarChartNewDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
-  }
-  */
-
-  @override
-  VerticalBarChartDataContainer createDataContainer({
-    required ChartRootContainer chartRootContainer,
-  }) {
-    return VerticalBarChartDataContainer(
-      chartRootContainer: chartRootContainer,
-    );
+    if (chartRootContainer.isUseOldDataContainer) {
+      return VerticalBarChartDataContainer(
+        chartRootContainer: chartRootContainer,
+      );
+    } else {
+      return VerticalBarChartNewDataContainer(
+        chartRootContainer: chartRootContainer,
+      );
+    }
   }
 
   /// Implements [ChartBehavior] mixin abstract method.

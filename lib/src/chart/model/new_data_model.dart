@@ -72,7 +72,7 @@ class NewDataModel {
           backingDataModelSeries: series,
           children: [Column(
               children: series.generateViewChildrenAsNewValueContainersList(),
-              // todo-00-last-last-last : mainAxisLayoutDirection: LayoutDirection.reversed,
+              // todo-00 : remove this : mainAxisLayoutDirection: LayoutDirection.reversed,
               mainAxisAlign: Align.end,
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
@@ -83,7 +83,7 @@ class NewDataModel {
     return chartColumns;
   }
 
-  // todo-00-last : added : this is needed because model constructs containers, and containers need the root container.
+  // todo-done-last : added NewDataModel.chartRootContainer : this is needed because model constructs containers, and containers need the root container.
   // Must be public, as it must be set after creation of this [NewDataModel],
   //   in the root container constructor which is in turn, constructed from this model.
   late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart

@@ -153,11 +153,18 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
+    isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+
+
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
     // todo-done-last : added link for model to reach the root container
     data.chartRootContainer = this;
+
   }
+
+  // switch-from-command-arg : find usages to see where old/new DataContainer differs
+  late final bool isUseOldDataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
   /// which is never set on instances of this [ChartRootContainer].
@@ -171,10 +178,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late BoxContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;
-  /* todo-00-switch
-  late DataContainer dataContainer;
-  late NewDataContainer dataContainer;
-  */
   late DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
@@ -247,16 +250,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     );
 
     // ### 6. [DataContainer]: Construct a concrete (Line, Bar) DataContainer.
-
-    /* todo-00-switch
-    dataContainer = createDataContainer(
-      chartRootContainer: this,
-    );
-
-    dataContainer = createNewDataContainer(
-      chartRootContainer: this,
-    );
-    */
 
     dataContainer = createDataContainer(
       chartRootContainer: this,
@@ -455,16 +448,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /* todo-00-switch
-  DataContainer createDataContainer({
-    required ChartRootContainer chartRootContainer,
-  });
-
-  NewDataContainer createNewDataContainer({
-    required ChartRootContainer chartRootContainer,
-  });
-  */
-
   DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   });
@@ -1082,6 +1065,11 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// based on the available size.
   @override
   void layout() {
+    if (!chartRootContainer.isUseOldDataContainer) {
+      super.layout();
+      return;
+    }
+
     // DataContainer uses it's full constraints to lay out it's grid and presenters!
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
 
@@ -1108,6 +1096,10 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
+    if (!chartRootContainer.isUseOldDataContainer) {
+      super.applyParentOffset(caller, offset);
+      return;
+    }
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1159,15 +1151,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     }
   }
 
-/* todo-00-switch : Use for NEW NewDataContainer, do NOT use for OLD DataContainer
-  @override
-  void paint(ui.Canvas canvas) {
-    throw StateError('No need to call paint on $runtimeType, extension of DataContainer.'
-        ' Overridden in LineCharDataContainer and VerticalBarCharDataContainer'
-        ' where details are served by _paintGridLines and _drawDataPointPresentersColumns');
-  }
-*/
-
+  // paint(ui.Canvas canvas)  switch old and new DataContainer : super called in both
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
   //       and [pointPresentersColumns]

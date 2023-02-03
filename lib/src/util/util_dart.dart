@@ -238,12 +238,10 @@ class LinearTransform1D {
   /// Similar to [scaleValueToYPixels], this [scaleValueToXPixels] does not flip axis.
   double scaleValueToXPixels(double fromValue) {
     double result =
-    axisOriginTranslatedBy(
-        domainsScaleAndTranslate( fromValue ),
-      -toDomainMin,
-    );
+        domainsScaleAndTranslate( fromValue )
+    ;
     // Assert result is the same as an intuitively derived transform
-    double intuitiveResult = domainStretch * (fromValue - fromDomainMin);
+    double intuitiveResult = toDomainMin + domainStretch * (fromValue - fromDomainMin);
     _assertResultsSame(result, intuitiveResult);
     return result;
   }
