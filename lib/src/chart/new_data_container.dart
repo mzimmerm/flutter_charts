@@ -115,8 +115,8 @@ class NewValueHBarContainer extends NewValueContainer {
     var transform = LinearTransform1D(
       fromDomainMin: scaler.fromDomainMin,
       fromDomainMax: scaler.fromDomainMax,
-      toDomainMin: scaler.toDomainMax, // YES - min and max are flipped in scaler
-      toDomainMax: scaler.toDomainMin,);
+      toDomainMin: scaler.toDomainMin,
+      toDomainMax: scaler.toDomainMax,);
     double height = transform.scaleValueToYPixels(dataModelPoint.dataValue);
 
     // todo-00-last-last-last-last : start here : height is negative, because scaler.toDomainMin >  scaler.toDomainMax, but that works in OLD DataContainer!!

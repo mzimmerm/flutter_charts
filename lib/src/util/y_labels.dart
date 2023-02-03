@@ -71,7 +71,6 @@ class YLabelsCreatorAndPositioner {
     required Function yInverseTransform,
     this.yUserLabels,
   })  : _dataYs = dataYs,
-        // todo-00-last-last : _axisY.min > _axisY.max, but that works in OLD DataContainer!!
         _axisY = axisY,
         _chartBehavior = chartBehavior,
         _valueToLabel = valueToLabel,
@@ -108,13 +107,6 @@ class YLabelsCreatorAndPositioner {
       }
     }
 
-    // This test is always true. Should address in the bigger context
-    // todo-00-last-last : min > max, but that works in OLD DataContainer!!
-    if (_axisY.min > _axisY.max) {
-      // we are inverting scales, so invert labels.
-      labelInfos = labelInfos.reversed.toList();
-    }
-
     // Collect data for testing. Disabled in production
     collectTestData(
         'for_Range.makeYScalerWithLabelInfosFromDataYsOnScale_test',
@@ -143,9 +135,8 @@ class YLabelsCreatorAndPositioner {
         value: value.toDouble(),
         fromDomainMin: _mergedLabelYsIntervalWithDataYsEnvelope.min.toDouble(),
         fromDomainMax: _mergedLabelYsIntervalWithDataYsEnvelope.max.toDouble(),
-        // todo-00-last-last : min > max, but that works in OLD DataContainer!!
-        toDomainMin: _axisY.min,
-        toDomainMax: _axisY.max);
+        toDomainNewMax: _axisY.max,
+        toDomainNewMin: _axisY.min);
   }
 
   // ### Helper accessors to collection of LabelInfos

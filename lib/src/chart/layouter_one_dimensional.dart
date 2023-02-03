@@ -98,7 +98,7 @@ enum LayoutDirection {
 enum ConstraintsDistribution {
   evenly, // todo-00 : deprecate and remove. Rely on children to all set intWeights=1 instead
   intWeights, //
-  noDivide, // todo-00-last-last : make sure this is Default. Pass constraints to children that are the same size as self constraints
+  noDivide,
 }
 
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along
@@ -464,11 +464,20 @@ class LayedoutLengthsPositioner {
 ///       as well as [isOverflown].
 ///
 class PositionedLineSegments {
-  const PositionedLineSegments({
+
+  // todo-00-last-last-last : add const back   const PositionedLineSegments({
+  PositionedLineSegments({
     required this.lineSegments,
     required this.totalPositionedLengthIncludesPadding,
     required this.isOverflown,
-  });
+  }) {
+    // todo-00-last-last-last : added to check all passed lengths are positive
+    for (var lineSegment in lineSegments) {
+      if (lineSegment.min > lineSegment.max) {
+        throw StateError('LineSegment min > max in lineSegment=$lineSegment; all segments=$lineSegments');
+      }
+    }
+  }
 
   PositionedLineSegments reversedCopy() {
     return PositionedLineSegments(

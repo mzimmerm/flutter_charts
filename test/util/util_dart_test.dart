@@ -7,8 +7,8 @@ void main() {
       value: 1.0,
       fromDomainMin: 1.0,
       fromDomainMax: 2.0,
-      toDomainMin: 10.0,
-      toDomainMax: 20.0,
+      toDomainNewMax: 10.0,
+      toDomainNewMin: 20.0,
     ),
       10.0,);
   });
@@ -101,8 +101,8 @@ void main() {
           value: dataRow[0],
           fromDomainMin: dataRow[1],
           fromDomainMax: dataRow[2],
-          toDomainMin: dataRow[3],
-          toDomainMax: dataRow[4],
+          toDomainNewMax: dataRow[3],
+          toDomainNewMin: dataRow[4],
         ),
         dataRow[5],
       );

@@ -520,13 +520,10 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     _yLabelContainers = [];
 
     // axisYMin and axisYMax define end points of the Y axis, in the YContainer coordinates.
-    // Note: currently, axisYMin > axisYMax ALWAYS.
-    //       axisYMin should be called axisYStart, and axisYMin should be called axisYEnd - todo-01
-    double axisYMin =
-        constraints.size.height - (chartRootContainer.data.chartOptions.xContainerOptions.xBottomMinTicksHeight);
+    double axisYMin = _yLabelsMaxHeightFromFirstLayout / 2;
 
-    // todo-02-layout: max of this and some padding
-    double axisYMax = _yLabelsMaxHeightFromFirstLayout / 2;
+    double axisYMax =
+        constraints.size.height - (chartRootContainer.data.chartOptions.xContainerOptions.xBottomMinTicksHeight);
 
     // yLabelsCreator object creates and holds all Y labels to create and layout.
     // It is needed on chartRootContainer in [PointsColumns.scale], even with no labels shown.

@@ -274,7 +274,7 @@ class LinearTransform1D {
 // todo-02 Refactor scaling
 /// Scale the [value] that must be from the scale
 /// given by [fromDomainMin] - [fromDomainMax]
-/// to the "to scale" given by  [toDomainMin] - [toDomainMax].
+/// to the "to scale" given by  [toDomainNewMax] - [toDomainNewMin].
 ///
 /// The calculations are rather pig headed and should be made more terse;
 /// also could be separated by caching the scales which do not change
@@ -283,11 +283,12 @@ double scaleValue({
   required double value,
   required double fromDomainMin,
   required double fromDomainMax,
-  required double toDomainMin,
-  required double toDomainMax,
+  required double toDomainNewMax,
+  required double toDomainNewMin,
 }) {
   var fromDomainLength = fromDomainMax - fromDomainMin;
-  var toDomainLength = toDomainMax - toDomainMin;
+  var toDomainLength = toDomainNewMin - toDomainNewMax;
+
   // Handle degenerate cases:
   // 1. If exactly one of the scales is zero length, exception.
   if (exactlyOneHasValue(
@@ -297,11 +298,11 @@ double scaleValue({
   )) {
     if (fromDomainLength == 0.0 && value == fromDomainMin) {
       // OK to have own scale degenerate, if value is the same as the degenerate min/max
-      return toDomainMin;
+      return toDomainNewMax;
       // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelope
     } else {
       throw StateError(
-          'Cannot convert value $value between scales $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
+          'Cannot convert value $value between scales $fromDomainMin, $fromDomainMax and $toDomainNewMax $toDomainNewMin');
     }
     // 2. If both scales are zero length:
   } else if (bothHaveValue(
@@ -311,10 +312,10 @@ double scaleValue({
   )) {
     // if value != dataYsEnvelopeMin (same as dataYsEnvelopeMax), exception
     if (value != fromDomainMin) {
-      throw StateError('Value is not on own scale: $fromDomainMin, $fromDomainMax and $toDomainMin $toDomainMax');
+      throw StateError('Value is not on own scale: $fromDomainMin, $fromDomainMax and $toDomainNewMax $toDomainNewMin');
       //  else return axisYMin (same as axisYMax)
     } else {
-      return toDomainMin;
+      return toDomainNewMax;
     }
   }
   // first move scales to be both starting at 0; also move value equivalently.
@@ -335,9 +336,9 @@ double scaleValue({
 
   // And finally shift the valueOnAxisY0 to a non-0 start on "to scale"
 
-  double scaled = valueOnAxisY0 + toDomainMin;
+  double scaled = valueOnAxisY0 + toDomainNewMax;
 
-  collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainMin, toDomainMax], scaled);
+  collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainNewMax, toDomainNewMin], scaled);
 
   return scaled;
 }
