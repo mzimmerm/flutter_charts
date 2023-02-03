@@ -72,7 +72,8 @@ class NewDataModel {
           backingDataModelSeries: series,
           children: [Column(
               children: series.generateViewChildrenAsNewValueContainersList(),
-              mainAxisLayoutDirection: LayoutDirection.reversed,
+              // todo-00-last-last-last : mainAxisLayoutDirection: LayoutDirection.reversed,
+              mainAxisAlign: Align.end,
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),

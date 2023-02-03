@@ -75,10 +75,10 @@ class LineChartRootContainer extends ChartRootContainer {
   */
 
   @override
-  LineChartNewDataContainer createNewDataContainer({
+  LineChartDataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
-    return LineChartNewDataContainer(
+    return LineChartDataContainer(
       chartRootContainer: chartRootContainer,
     );
   }

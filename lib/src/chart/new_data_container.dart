@@ -119,6 +119,7 @@ class NewValueHBarContainer extends NewValueContainer {
       toDomainMax: scaler.toDomainMin,);
     double height = transform.scaleValueToYPixels(dataModelPoint.dataValue);
 
+    // todo-00-last-last-last-last : start here : height is negative, because scaler.toDomainMin >  scaler.toDomainMax, but that works in OLD DataContainer!!
     _rectangleSize = ui.Size(width, height);
 
     layoutSize = _rectangleSize; // todo-00-last : implement this right - layoutSize should be from constraints, and all painting must fit within constraints

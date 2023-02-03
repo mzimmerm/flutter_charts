@@ -274,6 +274,8 @@ class LayedoutLengthsPositioner {
         break;
     }
     // If [LayedoutLengthsPositioner] positions along the main axis, AND is set to reverse, return reverse.
+    // todo-00-last-last-last : the whole LayoutDirection.reversed and reversedCopy seems wrong, as the totalPositionedLengthIncludesPadding is always positive,
+    //                          while the positionedLineSegments.lineSegments are in negative, going backwards (?? why)
     if (lengthsPositionerProperties.isPositioningMainAxis &&
         lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed
     ) {

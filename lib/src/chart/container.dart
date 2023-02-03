@@ -175,7 +175,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late DataContainer dataContainer;
   late NewDataContainer dataContainer;
   */
-  late NewDataContainer dataContainer;
+  late DataContainer dataContainer;
 
   /// Layout strategy for XContainer labels.
   ///
@@ -258,7 +258,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     );
     */
 
-    dataContainer = createNewDataContainer(
+    dataContainer = createDataContainer(
       chartRootContainer: this,
     );
 
@@ -465,7 +465,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   });
   */
 
-  NewDataContainer createNewDataContainer({
+  DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   });
 
@@ -1171,12 +1171,6 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   }
 */
 
-  @override
-  void paint(ui.Canvas canvas) {
-    throw StateError('No need to call paint on $runtimeType, extension of DataContainer.'
-        ' Overridden in LineCharDataContainer and VerticalBarCharDataContainer'
-        ' where details are served by _paintGridLines and _drawDataPointPresentersColumns');
-  }
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
   //       and [pointPresentersColumns]
