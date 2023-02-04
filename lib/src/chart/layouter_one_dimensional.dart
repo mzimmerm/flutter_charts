@@ -77,18 +77,6 @@ enum Align {
   end,
 }
 
-/// Defines layout direction.
-///
-/// By default, layouters layout both primary and cross axis in the direction of increasing coordinates,
-/// left to right along the horizontal direction, and top to bottom along the vertical direction.
-///
-/// The value [alongCoordinates]   should be used for default layouters direction (described above).
-/// The value [reversed] should be used to direct layouters to layout in a direction reverse to coordinates.
-enum LayoutDirection {
-  alongCoordinates,
-  reversed,
-}
-
 /// todo-011 document
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
@@ -118,23 +106,11 @@ class LengthsPositionerProperties {
 
   final Align align;
   final Packing packing;
-  /// The layout direction along the axis which this properties object describes.
-  /// Note: If [isPositioningMainAxis] is false, [layoutDirection] value must be [LayoutDirection.alongCoordinates].
-  final LayoutDirection layoutDirection;
-  // todo-01 : isPositioningMainAxis should not be necessary, as layoutDirection should always be set correctly
-  final bool isPositioningMainAxis;
 
-  LengthsPositionerProperties({
+  const LengthsPositionerProperties({
     required this.align,
     required this.packing,
-    required this.layoutDirection,
-    required this.isPositioningMainAxis,
-  }) {
-    // Currently, on cross axis, layout direction must be the default [LayoutDirection.coordinatesDirection].
-    if (!isPositioningMainAxis) {
-      assert (layoutDirection == LayoutDirection.alongCoordinates);
-    }
-  }
+  });
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
@@ -275,12 +251,6 @@ class LayedoutLengthsPositioner {
           isOverflown: isOverflown,
         );
         break;
-    }
-    // todo-00 : remove LayoutDirection.reversed and code using it. the whole LayoutDirection.reversed and reversedCopy seems wrong, as the totalPositionedLengthIncludesPadding is always positive,
-    //                          while the positionedLineSegments.lineSegments are in negative, going backwards (?? why)
-    if (lengthsPositionerProperties.isPositioningMainAxis &&
-        lengthsPositionerProperties.layoutDirection == LayoutDirection.reversed) {
-      positionedLineSegments = positionedLineSegments.reversedCopy();
     }
 
     return positionedLineSegments;

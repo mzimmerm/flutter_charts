@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import '../container/container_key.dart';
@@ -28,6 +29,7 @@ class NewDataContainer extends DataContainer {
     addChildren([
       Row(
         children: viewColumnList,
+        crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
       )
     ]);
   }

@@ -1,8 +1,9 @@
 /// Utility that contain only Dart code BUT DOES import 'dart:ui' or anything Flutter.
 /// See util_dart.dart for reason.
 import 'dart:math' as math;
+import 'package:flutter_charts/src/util/util_dart.dart';
 
-import 'dart:ui' as ui show Rect;
+import 'dart:ui' as ui show Rect, Size;
 
 /// Returns the outer bound of the passed [Offset]s as [Size].
 /// todo-01 test
@@ -16,3 +17,10 @@ ui.Rect boundingRectOfRects(List<ui.Rect> rectangles) {
   );
 }
 
+void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
+  if (!(isCloserThanEpsilon(result.width, otherResult.width) ||
+      isCloserThanEpsilon(result.height, otherResult.height))) {
+    throw StateError('Size results do not match. Result was $result, '
+        'Other result was $otherResult.');
+  }
+}

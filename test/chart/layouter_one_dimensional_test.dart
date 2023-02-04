@@ -1,5 +1,5 @@
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
-    show Align, LayedoutLengthsPositioner, LayoutDirection, LengthsPositionerProperties, Packing, PositionedLineSegments;
+    show Align, LayedoutLengthsPositioner, LengthsPositionerProperties, Packing, PositionedLineSegments;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
 // Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
@@ -14,23 +14,23 @@ main() {
   group('LayedoutLengthsPositioner.layout() Matrjoska Left,', () {
     var matrjoskaLeftLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var matrjoskaLeftTotalLength10Exception
     var matrjoskaLeftTotalLength15 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 15.0,
     );
     var matrjoskaLeftTotalLength27Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 27.0,
     );
     var matrjoskaLeftLengthConstraints10LessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start),
       lengthsConstraint: 10.0,
     );
 
@@ -66,7 +66,7 @@ main() {
           () => LayedoutLengthsPositioner(
                 lengths: lengths,
                 lengthsPositionerProperties:
-                    LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start)
+                    const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.start)
                     lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
@@ -101,12 +101,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Matrjoska Center,', () {
     var matrjoskaCenterLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.center),
       lengthsConstraint: 0.0,
     );
     var matrjoskaCenterTotalLength27Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.center),
       lengthsConstraint: 27.0,
     );
 
@@ -140,12 +140,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Matrjoska Right,', () {
     var matrjoskaRightLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.end),
       lengthsConstraint : 0.0,
     );
     var matrjoskaRightTotalLength27Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.matrjoska, align: Align.end),
       lengthsConstraint : 27.0,
     );
 
@@ -181,23 +181,23 @@ main() {
   group('LayedoutLengthsPositioner.layout() Tight Left,', () {
     var tightLeftLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 0.0,
     );
     // Testing exception so create in test : var tightLeftTotalLength10Exception
     var tightLeftTotalLength30 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 30.0,
     );
     var tightLeftTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 42.0,
     );
     var tightLeftTotalLengthsConstraint10LessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
       lengthsConstraint: 10.0,
     );
 
@@ -242,7 +242,7 @@ main() {
        expect(
           () => LayedoutLengthsPositioner(
                 lengths: lengths,
-                lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
+                lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.start),
                 lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
@@ -265,12 +265,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Tight Center,', () {
     var tightCenterLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.center),
       lengthsConstraint: 0.0,
     );
     var tightCenterTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.center),
       lengthsConstraint: 42.0,
     );
 
@@ -305,12 +305,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Tight Right,', () {
     var tightRightLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.end),
         lengthsConstraint: 0.0
     );
     var tightRightTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.tight, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.end),
       lengthsConstraint: 42.0
     );
 
@@ -346,23 +346,23 @@ main() {
   group('LayedoutLengthsPositioner.layout() Loose Left,', () {
     var looseLeftLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 0.0
     );
     // Testing exception so create in test : var looseLeftTotalLength10Exception
     var looseLeftTotalLength30 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 30.0
     );
     var looseLeftTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 42.0,
     );
     var looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.start, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
       lengthsConstraint: 30.0,
     );
 
@@ -396,7 +396,7 @@ main() {
       expect(
           () => LayedoutLengthsPositioner(
                 lengths: lengths,
-                lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
+                lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.start),
                 lengthsConstraint: 10.0,
               ),
           flutter_test.throwsAssertionError);
@@ -433,12 +433,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Loose Center,', () {
     var looseCenterLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.center),
         lengthsConstraint: 0.0
     );
     var looseCenterTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.center, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.center),
       lengthsConstraint: 42.0
     );
 
@@ -474,12 +474,12 @@ main() {
   group('LayedoutLengthsPositioner.layout() Loose Right,', () {
     var looseRightLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.end),
       lengthsConstraint: 0.0,
     );
     var looseRightTotalLength42Added12 = LayedoutLengthsPositioner(
       lengths: lengths,
-      lengthsPositionerProperties: LengthsPositionerProperties(packing: Packing.loose, align: Align.end, layoutDirection: LayoutDirection.alongCoordinates, isPositioningMainAxis: true),
+      lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.loose, align: Align.end),
       lengthsConstraint: 42.0,
     );
 

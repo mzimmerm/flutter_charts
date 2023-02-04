@@ -9,7 +9,6 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show
     Align,
     Packing,
-    LayoutDirection,
     LengthsPositionerProperties,
     LayedoutLengthsPositioner,
     PositionedLineSegments,
@@ -816,7 +815,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
         .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
+    assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
 
     layoutSize = positionedChildrenOuterRects.size;
   }
@@ -838,7 +837,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Throws error otherwise.
   void _post_AssertSizeInsideConstraints() {
     if (!constraints.containsFully(layoutSize)) {
-      String errText = 'Layout size of this layouter $this is $layoutSize,'
+      String errText = 'Warning: Layout size of this layouter $this is $layoutSize,'
           ' which does not fit inside it\'s constraints $constraints';
       // Print a red error, but continue and let the paint show black overflow rectangle
       print(errText);
@@ -1263,7 +1262,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
-    required this.mainAxisLayoutDirection,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1273,14 +1271,10 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
-      layoutDirection: mainAxisLayoutDirection,
-      isPositioningMainAxis: true,
     );
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
-      isPositioningMainAxis: false,
     );
   }
 
@@ -1296,21 +1290,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
-
-
-  /// Layout direction along the main axis.
-  ///
-  /// This does NOT control the sequence in which the layouter lays out [_children] - the layouter always
-  /// lays out children sequentially, starting with the first child in the [_children] list, see [BoxLayouter.layout].
-  ///
-  /// The layout direction is as follows:
-  ///   - If set to the default [LayoutDirection.alongCoordinates],
-  ///     - for main axis = [LayoutAxis.horizontal] the first child is layedout *leftmost*
-  ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *topmost*.
-  ///   - If set to the default [LayoutDirection.reversed],
-  ///     - for main axis = [LayoutAxis.horizontal] the first child is layedout *rightmost*
-  ///     - for main axis = [LayoutAxis.vertical],  the first child is layedout *bottommost*.
-  final LayoutDirection mainAxisLayoutDirection;
 
   /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
@@ -1609,8 +1588,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: align,
       packing: packing,
-      layoutDirection: mainAxisLayoutDirection, // pass from this PositioningBoxLayouter member
-      isPositioningMainAxis: true,
     );
   }
 
@@ -1720,7 +1697,6 @@ class Row extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1728,7 +1704,6 @@ class Row extends RollingPositioningBoxLayouter {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    mainAxisLayoutDirection: mainAxisLayoutDirection,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
@@ -1739,14 +1714,10 @@ class Row extends RollingPositioningBoxLayouter {
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
-      layoutDirection: mainAxisLayoutDirection,
-      isPositioningMainAxis: true,
     );
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
-      isPositioningMainAxis: false,
     );
   }
 }
@@ -1788,7 +1759,6 @@ class Column extends RollingPositioningBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
-    LayoutDirection mainAxisLayoutDirection = LayoutDirection.alongCoordinates,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1796,21 +1766,16 @@ class Column extends RollingPositioningBoxLayouter {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    mainAxisLayoutDirection: mainAxisLayoutDirection,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
-      layoutDirection: mainAxisLayoutDirection,
-      isPositioningMainAxis: true,
     );
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
       packing: crossAxisPacking,
-      layoutDirection: LayoutDirection.alongCoordinates, // cross axis always positions coordinatesDirection
-      isPositioningMainAxis: false,
     );
   }
 }

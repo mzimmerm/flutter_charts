@@ -2,7 +2,7 @@ import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart';
+// import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
 
 /// todo-done-last-1  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
@@ -91,9 +91,9 @@ class NewDataModel {
           chartRootContainer: chartRootContainer,
           backingDataModelSameXValues: sameXValues,
           children: [Column(
-              children: sameXValues.generateViewChildrenAsNewValueContainersList(),
-              // todo-00 : remove this : mainAxisLayoutDirection: LayoutDirection.reversed,
-              mainAxisAlign: Align.end,
+              children: sameXValues.generateViewChildrenAsNewValueContainersList().reversed.toList(growable: false),
+              // todo-00-last : remove reversed, achieve by simply reversing children on add mainAxisLayoutDirection: LayoutDirection.reversed,
+              // todo-00-last-last : this shifts columns down, and does not reverse as intended. Add to a test, why wrong? mainAxisAlign: Align.end,
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),

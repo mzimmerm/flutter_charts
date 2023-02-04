@@ -293,7 +293,7 @@ class DomainExtrapolation1D {
 
     double result = domainStretch * (fromValue - fromDomainStart) + toDomainStart;
 
-    assertResultsSame(scaledAndMoved, result);
+    assertDoubleResultsSame(scaledAndMoved, result);
 
     return result;
   }
@@ -409,12 +409,13 @@ bool isCloserThanEpsilon(double d1, double d2) {
   return false;
 }
 
-void assertResultsSame(double result, double otherResult) {
+void assertDoubleResultsSame(double result, double otherResult) {
   if (!isCloserThanEpsilon(result, otherResult)) {
-    throw StateError('Results do not match. Result was $result, '
-        'Simple result was $otherResult.');
+    throw StateError('Double results do not match. Result was $result, '
+        'Other result was $otherResult.');
   }
 }
+
 
 String enumName(Enum e) {
   return e.toString().split('.')[1];
