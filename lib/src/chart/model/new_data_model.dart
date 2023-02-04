@@ -92,8 +92,6 @@ class NewDataModel {
           backingDataModelSameXValues: sameXValues,
           children: [Column(
               children: sameXValues.generateViewChildrenAsNewValueContainersList().reversed.toList(growable: false),
-              // todo-00-last : remove reversed, achieve by simply reversing children on add mainAxisLayoutDirection: LayoutDirection.reversed,
-              // todo-00-last-last : this shifts columns down, and does not reverse as intended. Add to a test, why wrong? mainAxisAlign: Align.end,
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
@@ -120,7 +118,6 @@ class NewDataModel {
   final List<List<double>> _dataRows;
   List<List<double>> get dataRows => _dataRows;
 
-  // todo-00-last : added
   /// Data reorganized from rows to columns.
   late final List<List<double>> _dataColumns;
   List<List<double>> get dataColumns => _dataColumns;

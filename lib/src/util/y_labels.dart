@@ -219,6 +219,11 @@ class YLabelsCreatorAndPositioner {
   /// This is simply the closure of the [_dataYs] numeric values.
   /// The user defined string labels are then distributed in the returned interval.
   Interval _deriveDataYsEnvelopeForUserLabels() {
+    // todo-00-last : in new layout, don't use this.
+    //   data envelope should be calculated from midpoint of min/max labels after laying out Y axis, and scaled to Y axis constraint height.
+    //   For example, if all positive: If smallest label is 0M at pixel 1000, largest label is 10M at pixel 100, and Y axis constraint.height = 1200,
+    //   the result should be to scale (1200 - (1000 - 100)) (free length of pixels) using scaleBy = (1000 - 100) / (10M - 0M) - this is the corresponding
+    //     free length of data values, which should be added to the 0M - 10M domain - actually, this should be done separately on bottom and top, taking into account if values go across zero!!
     return Interval(_dataYs.reduce(math.min), _dataYs.reduce(math.max));
   }
 

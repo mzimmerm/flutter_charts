@@ -455,6 +455,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   /// Manages the layout size, the result of [layout].
   ///
+  /// - On leaf layouters, it should generally be set as a tight rectangular envelope of pixels
+  ///   that will be painted. For example, if a leaf paints a rectangle, it would be size of the rectangle.
+  /// - On non-leaf , it should generally be set as a tight rectangular envelope of layed out and
+  ///   positioned children.
+  ///
   /// Set late in [layout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   ///

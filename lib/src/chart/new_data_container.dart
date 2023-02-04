@@ -125,7 +125,7 @@ class NewValueHBarContainer extends NewValueContainer {
 
     _rectangleSize = ui.Size(width, height);
 
-    layoutSize = _rectangleSize; // todo-00-last : implement this right - layoutSize should be from constraints, and all painting must fit within constraints
+    layoutSize = _rectangleSize;
   }
 
   @override paint(ui.Canvas canvas) {
