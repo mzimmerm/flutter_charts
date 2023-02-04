@@ -179,7 +179,7 @@ class LineSegment extends Interval {
 /// then translates by the translation amount is [_translateBy].
 ///
 /// The application of the transform on a double value is performed by the [apply] method.
-/// 
+///
 /// Note: The atomic transformation actions we can do in 1D are:
 ///   - Multiplicative scaling (stretching or compression) around origin, with origin the fixed point.
 ///     The scaling factor is [_scaleBy]. Note that scaling by [_scaleBy] = -1.0 is equivalent to
@@ -255,6 +255,7 @@ class LinearTransform1D {
 ///
 class DomainExtrapolation1D {
   const DomainExtrapolation1D({
+    // todo-00-last : rename fromDomainStart/End to valuesStart/End, rename toDomainStart/End to pixelsStart/End
     required this.fromDomainStart,
     required this.fromDomainEnd,
     required this.toDomainStart,
@@ -306,6 +307,97 @@ class DomainExtrapolation1D {
         'toDomainEnd   = $toDomainEnd, '
         'domainStretch = $domainStretch';
   }
+}
+
+/// Class that supports mapping between axis pixel points and values.
+// todo-00-last
+class AxisMapping {
+  final double startPixels; // known, usually 0
+  final double firstLabelPixels;  // known,
+  final double lastLabelPixels;  // known,
+  final double endPixels; // known
+
+  late final double startValue;
+  final double firstLabelValue; // known
+  final double lastLabelValue; // known
+  late final double endValue;
+
+  AxisMapping({
+    required this.startPixels,
+    required this.firstLabelPixels,
+    required this.lastLabelPixels,
+    required this.endPixels,
+
+    // required this.startValue,
+    required this.firstLabelValue,
+    required this.lastLabelValue,
+    //required this.endValue,
+  });
+}
+
+// ################ Functions ########################
+/// Derive the interval of data values, usually given as chart data independent or dependent variables.
+///
+/// This is the closure of the [_dataYs] numeric values, extended (in default situation)
+/// to start at 0 (if all positive values), or end at 0 (if all negative values).
+/// todo-01 document better
+Interval deriveDataEnvelopeForAutoLabels(List<double> allDataValues, bool startYAxisAtDataMinAllowed) {
+  double dataYsMin = allDataValues.reduce(math.min);
+  double dataYsMax = allDataValues.reduce(math.max);
+
+  Poly polyMin = Poly(from: dataYsMin);
+  Poly polyMax = Poly(from: dataYsMax);
+
+  int signMin = polyMin.signum;
+  int signMax = polyMax.signum;
+
+  // Minimum and maximum for all y values, by DEFAULT EXTENDED TO 0.
+  // More precisely, "extended to 0" means that
+  //   if all y values are positive,
+  //     the range start at 0 (that is, dataYsMinExt is 0);
+  //   else if all y values are negative,
+  //     the range ends at 0 (that is, dataYsMaxExt is 0);
+  //   otherwise [there are both positive and negative y values]
+  //     the dataYsMinExt is the minimum of data, the dataYsMaxExt is the maximum of data.
+  double dataYsMinExt, dataYsMaxExt;
+
+  if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+    if (startYAxisAtDataMinAllowed) {
+      if (signMax <= 0) {
+        dataYsMinExt = dataYsMin;
+        dataYsMaxExt = dataYsMax;
+      } else {
+        dataYsMinExt = dataYsMin;
+        dataYsMaxExt = dataYsMax;
+      }
+    } else {
+      // both negative or positive, extend the range to start or end at zero
+      if (signMax <= 0) {
+        dataYsMinExt = dataYsMin;
+        dataYsMaxExt = 0.0;
+      } else {
+        dataYsMinExt = 0.0;
+        dataYsMaxExt = dataYsMax;
+      }
+    }
+  } else {
+    dataYsMinExt = dataYsMin;
+    dataYsMaxExt = dataYsMax;
+  }
+
+  // Now create distributedLabelYs, evenly distributed in
+  //   the dataYsMinExt, dataYsMaxExt interval.
+  // Make distributedLabelYs only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
+  // Label values are (obviously) unscaled, that is, on the scale of transformed data.
+  return Interval(dataYsMinExt, dataYsMaxExt);
+}
+
+/// Derive the interval of [dataY] values for user defined labels.
+///
+/// This is simply the closure of the [_dataYs] numeric values.
+/// The user defined string labels are then distributed in the returned interval.
+Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
+  return Interval(allDataValues.reduce(math.min), allDataValues.reduce(math.max));
 }
 
 // todo-02 Refactor scaling

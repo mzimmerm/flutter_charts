@@ -116,6 +116,29 @@ class NewValueHBarContainer extends NewValueContainer {
     // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
     YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSameXValuesList.dataModel.chartRootContainer.yLabelsCreator;
     // double height = scaler.scaleY(value: dataModelPoint.dataValue);
+
+    // todo-00-last : in new layout,
+    //    - don't use scaler to get fromDomainMin, fromDomainMax, because it uses the full machinery of StackableValuePoint
+    //       - instead, use NewDataModelPoint : add stackedDataValue, build it in NewDataModelSameXValues.
+    //       - then, add on NewDataModelSameXValues instances, method columnStackedDataValue that will get it from children.
+    //       - after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
+    //          - for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
+    //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used
+    //
+    //   - dont use scaler to get toDomainMin, toDomainMax, because that links to yContainer.
+    //     - Instead, use toDomainMin=0.0 as that is in NewDataContainer coordinates
+    //     -          use toDomainMax=NewDataContainer.constraints.height to tie it to local 0-based pixels!
+    //
+    //   ?????? data envelope should be calculated from midpoint of min/max labels after laying out Y axis, and scaled to Y axis constraint height.
+    //   For example, if all positive: If smallest label is 0M at pixel 1000, largest label is 10M at pixel 100, and Y axis constraint.height = 1200,
+    //   the result should be to scale (1200 - (1000 - 100)) (free length of pixels) using scaleBy = (1000 - 100) / (10M - 0M) - this is the corresponding
+    //     free length of data values, which should be added to the 0M - 10M domain - actually, this should be done separately on bottom and top, taking into account if values go across zero!!
+
+    //  double get fromDomainMin => _mergedLabelYsIntervalWithDataYsEnvelope.min;
+    //   double get fromDomainMax => _mergedLabelYsIntervalWithDataYsEnvelope.max;
+    //   double get toDomainMin => 0.0;
+    //   double get toDomainMax => _axisY.max - _axisY.min;
+
     var transform = DomainExtrapolation1D(
       fromDomainStart: scaler.fromDomainMin,
       fromDomainEnd: scaler.fromDomainMax,

@@ -1,6 +1,6 @@
 import 'dart:math' as math show min, max, pow;
 // import 'package:flutter_charts/flutter_charts.dart';
-import 'util_dart.dart';
+import 'util_dart.dart' as util_dart;
 import 'test/generate_test_data_from_app_runs.dart';
 import '../chart/container.dart' show ChartBehavior;
 
@@ -31,7 +31,7 @@ class YLabelsCreatorAndPositioner {
   final List<double> _dataYs;
 
   /// Coordinates of the Y axis.
-  final Interval _axisY;
+  final util_dart.Interval _axisY;
 
   /// The chart options.
   final ChartBehavior _chartBehavior;
@@ -51,7 +51,7 @@ class YLabelsCreatorAndPositioner {
   ///
   /// Further, the  [_dataYs] are from the [StackableValuePoint.toY] from the [PointsColumns.flattenPointsValues].
   /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
-  late final Interval dataYsEnvelope;
+  late final util_dart.Interval dataYsEnvelope;
 
   /// Maintains labels created from data values, scaled and unscaled.
   late List<LabelInfo> labelInfos;
@@ -65,7 +65,7 @@ class YLabelsCreatorAndPositioner {
   /// See the class comment for examples of how auto labels are created.
   YLabelsCreatorAndPositioner({
     required List<double> dataYs,
-    required Interval axisY,
+    required util_dart.Interval axisY,
     required ChartBehavior chartBehavior,
     required Function valueToLabel,
     required Function yInverseTransform,
@@ -79,10 +79,10 @@ class YLabelsCreatorAndPositioner {
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
     if (_isUsingUserLabels) {
-      dataYsEnvelope = _deriveDataYsEnvelopeForUserLabels();
+      dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
       distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
     } else {
-      dataYsEnvelope = _deriveDataYsEnvelopeForAutoLabels();
+      dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
       distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
     }
     // Create LabelInfos for all labels and point each to this scaler
@@ -131,7 +131,7 @@ class YLabelsCreatorAndPositioner {
     required double value,
   }) {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
-    return scaleValue(
+    return util_dart.scaleValue(
         value: value.toDouble(),
         fromDomainMin: _mergedLabelYsIntervalWithDataYsEnvelope.min.toDouble(),
         fromDomainMax: _mergedLabelYsIntervalWithDataYsEnvelope.max.toDouble(),
@@ -147,7 +147,7 @@ class YLabelsCreatorAndPositioner {
   /// Constructs interval which is a merge (outer bound) of
   /// two ranges: the labels interval [dataYsOfLabels] (calculated from [LabelInfo._dataValue])
   /// and the [dataYsEnvelope] (envelop of [_dataYs]). Both are not-scaled && transformed.
-  Interval get _mergedLabelYsIntervalWithDataYsEnvelope => Interval(
+  util_dart.Interval get _mergedLabelYsIntervalWithDataYsEnvelope => util_dart.Interval(
         dataYsOfLabels.reduce(math.min), // not-scaled && transformed data from  labelInfo.transformedDataValue
         dataYsOfLabels.reduce(math.max),
       ).merge(dataYsEnvelope); // dataY from PointsColumns, which is also not-scaled && transformed, data
@@ -155,77 +155,10 @@ class YLabelsCreatorAndPositioner {
   // todo-00 : added the 4 getters for a quick access by the new scaler
   double get fromDomainMin => _mergedLabelYsIntervalWithDataYsEnvelope.min;
   double get fromDomainMax => _mergedLabelYsIntervalWithDataYsEnvelope.max;
-  double get toDomainMin => _axisY.min;
-  double get toDomainMax => _axisY.max;
-
-
-  /// Derive the interval of [dataY] values for automatically created labels.
-  ///
-  /// This is the closure of the [_dataYs] numeric values, extended (in default situation)
-  /// to start at 0 (if all positive values), or end at 0 (if all negative values).
-  Interval _deriveDataYsEnvelopeForAutoLabels() {
-    double dataYsMin = _dataYs.reduce(math.min);
-    double dataYsMax = _dataYs.reduce(math.max);
-
-    Poly polyMin = Poly(from: dataYsMin);
-    Poly polyMax = Poly(from: dataYsMax);
-
-    int signMin = polyMin.signum;
-    int signMax = polyMax.signum;
-
-    // Minimum and maximum for all y values, by DEFAULT EXTENDED TO 0.
-    // More precisely, "extended to 0" means that
-    //   if all y values are positive,
-    //     the range start at 0 (that is, dataYsMinExt is 0);
-    //   else if all y values are negative,
-    //     the range ends at 0 (that is, dataYsMaxExt is 0);
-    //   otherwise [there are both positive and negative y values]
-    //     the dataYsMinExt is the minimum of data, the dataYsMaxExt is the maximum of data.
-    double dataYsMinExt, dataYsMaxExt;
-
-    if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-      if (_chartBehavior.startYAxisAtDataMinAllowed) {
-        if (signMax <= 0) {
-          dataYsMinExt = dataYsMin;
-          dataYsMaxExt = dataYsMax;
-        } else {
-          dataYsMinExt = dataYsMin;
-          dataYsMaxExt = dataYsMax;
-        }
-      } else {
-        // both negative or positive, extend the range to start or end at zero
-        if (signMax <= 0) {
-          dataYsMinExt = dataYsMin;
-          dataYsMaxExt = 0.0;
-        } else {
-          dataYsMinExt = 0.0;
-          dataYsMaxExt = dataYsMax;
-        }
-      }
-    } else {
-      dataYsMinExt = dataYsMin;
-      dataYsMaxExt = dataYsMax;
-    }
-
-    // Now create distributedLabelYs, evenly distributed in
-    //   the dataYsMinExt, dataYsMaxExt interval.
-    // Make distributedLabelYs only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
-    // Label values are (obviously) unscaled, that is, on the scale of transformed data.
-    return Interval(dataYsMinExt, dataYsMaxExt);
-  }
-
-  /// Derive the interval of [dataY] values for user defined labels.
-  ///
-  /// This is simply the closure of the [_dataYs] numeric values.
-  /// The user defined string labels are then distributed in the returned interval.
-  Interval _deriveDataYsEnvelopeForUserLabels() {
-    // todo-00-last : in new layout, don't use this.
-    //   data envelope should be calculated from midpoint of min/max labels after laying out Y axis, and scaled to Y axis constraint height.
-    //   For example, if all positive: If smallest label is 0M at pixel 1000, largest label is 10M at pixel 100, and Y axis constraint.height = 1200,
-    //   the result should be to scale (1200 - (1000 - 100)) (free length of pixels) using scaleBy = (1000 - 100) / (10M - 0M) - this is the corresponding
-    //     free length of data values, which should be added to the 0M - 10M domain - actually, this should be done separately on bottom and top, taking into account if values go across zero!!
-    return Interval(_dataYs.reduce(math.min), _dataYs.reduce(math.max));
-  }
+  // used in new scaling within NewDataContainer coordinates!! So make sure it starts with 0.0 and
+  // length is same as constraint size given to NewDataContainer.
+  double get toDomainMin => 0.0;
+  double get toDomainMax => _axisY.max - _axisY.min;
 
   /// Automatically generates labels from data.
   ///
@@ -240,13 +173,13 @@ class YLabelsCreatorAndPositioner {
   /// Precision is 1 (that is, only leading digit, rest 0s).
   ///
   /// Examples:
-  ///   1. [Interval] is <0, 123> then labels=[0, 100]
-  ///   2. [Interval] is <0, 299> then labels=[0, 100, 200]
-  ///   3. [Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
+  ///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
+  ///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
+  ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
-  List<double> _distributeAutoLabelsIn(Interval dataYsEnvelope) {
-    Poly polyMin = Poly(from: dataYsEnvelope.min);
-    Poly polyMax = Poly(from: dataYsEnvelope.max);
+  List<double> _distributeAutoLabelsIn(util_dart.Interval dataYsEnvelope) {
+    var polyMin = util_dart.Poly(from: dataYsEnvelope.min);
+    var polyMax = util_dart.Poly(from: dataYsEnvelope.max);
 
     int powerMax = polyMax.maxPower;
     int coeffMax = polyMax.coefficientAtMaxPower;
@@ -316,7 +249,7 @@ class YLabelsCreatorAndPositioner {
   ///
   /// Preconditions:
   /// - This method assumes that a list of user labels was provided in [ChartData.yUserLabels].
-  List<double> _distributeUserLabelsIn(Interval dataYsEnvelope) {
+  List<double> _distributeUserLabelsIn(util_dart.Interval dataYsEnvelope) {
     double dataStepHeight = (dataYsEnvelope.max - dataYsEnvelope.min) / (yUserLabels!.length - 1);
 
     // Evenly distribute labels in [dataYsEnvelope]

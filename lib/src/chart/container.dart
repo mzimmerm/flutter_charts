@@ -112,6 +112,16 @@ abstract class ChartBehavior {
   /// The request is asked by [DataContainerOptions.startYAxisAtDataMinRequested],
   /// but the implementation of this behavior must confirm it.
   /// See the extensions of this class for overrides of this method.
+  ///
+  /// [ChartBehavior] is mixed in to [ChartRootContainer]. This method
+  /// is implemented by concrete [LineChartRootContainer] and [VerticalBarChartRootContainer].
+  /// - In the stacked containers, such as [VerticalBarChartRootContainer], it should return [false],
+  ///   as stacked values should always start at zero, because stacked charts must show absolute values.
+  ///   See [VerticalBarChartRootContainer.startYAxisAtDataMinAllowed].
+  /// - In the unstacked containers such as  [LineChartRootContainer], this is usually implemented to
+  ///   return the option [DataContainerOptions.startYAxisAtDataMinRequested],
+  ///   see [LineChartRootContainer.startYAxisAtDataMinAllowed].
+  ///
   bool get startYAxisAtDataMinAllowed;
 }
 
@@ -366,7 +376,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // yContainer layout height depends on xContainer layout result.  But this dependency can be expressed
     // as a constraint on yContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
     var yConstraintsHeight = yContainerHeight - xContainerSize.height;
-    var yContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+    var yContainerBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
       yConstraintsHeight,
     ));
@@ -383,16 +393,28 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
     yContainer.applyParentOffset(this, yContainerOffset);
 
-    ui.Offset dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
+    ui.Offset dataContainerOffset;
 
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-    var dataConstraintsHeight = constraints.height - (legendContainerSize.height + xContainerSize.height);
-    var dataContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      constraints.width - yContainerSize.width,
-      dataConstraintsHeight,
-    ));
+    // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
+    BoxContainerConstraints dataContainerBoxConstraints;
+    if (isUseOldDataContainer) {
+      dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
+          size: ui.Size(
+            constraints.width - yContainerSize.width,
+            constraints.height - (legendContainerSize.height + xContainerSize.height),
+          ));
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
+    } else {
+      dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
+          size: ui.Size(
+            constraints.width - yContainerSize.width,
+            yContainer._axisYMax - yContainer._axisYMin,
+          ));
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer._axisYMin);
+    }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildAndAddChildren_DuringParentLayout();
@@ -465,6 +487,12 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
 class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
 
+  /// Late calculated minimum and maximum pixels available for the Y axis when a half-label height
+  /// and a vertical tick height is excluded. At the same time, the difference is a height constraint
+  /// on [NewDataContainer];
+  late final double _axisYMin;
+  late final double _axisYMax;
+
   /// Containers of Y labels.
   late List<YAxisLabelContainer> _yLabelContainers;
 
@@ -502,15 +530,16 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // Init the list of y label containers
     _yLabelContainers = [];
 
-    // axisYMin and axisYMax define end points of the Y axis, in the YContainer coordinates.
-    double axisYMin = _yLabelsMaxHeightFromFirstLayout / 2;
-
-    double axisYMax =
+    // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the YContainer coordinates.
+    // The [_axisYMin] does not start at 0, but leaves space for half label height
+    _axisYMin = _yLabelsMaxHeightFromFirstLayout / 2;
+    // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
+    _axisYMax =
         constraints.size.height - (chartRootContainer.data.chartOptions.xContainerOptions.xBottomMinTicksHeight);
 
     // yLabelsCreator object creates and holds all Y labels to create and layout.
     // It is needed on chartRootContainer in [PointsColumns.scale], even with no labels shown.
-    chartRootContainer.yLabelsCreator = _labelsCreatorForRange(axisYMin, axisYMax);
+    chartRootContainer.yLabelsCreator = _labelsCreatorForPixelRange(); // Uses _axisYMin and max
 
     // The code in _labelsCreatorForRange MUST run for the side-effect of setting the chartRootContainer.yLabelsCreator
     //    and side-effect of creating scaled values in LabelInfo which are still needed to manage data values
@@ -526,7 +555,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     // Uses the prepared [chartRootContainer.yLabelsCreator.labelInfos]
     // to create scaled Y labels from data or from user defined labels,
-    // scales their position on the Y axis range [axisYMin] to [axisYMax].
+    // scales their position on the Y axis range [_axisYMin] to [_axisYMax].
     //
     // The data-generated label implementation smartly creates
     // a limited number of Y labels from data, so that Y labels do not
@@ -610,15 +639,22 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
-  /// Creates labels from Y data values in [PointsColumns], and positions the labels between [axisYMin], [axisYMax].
-  YLabelsCreatorAndPositioner _labelsCreatorForRange(double axisYMin, double axisYMax) {
+  /// Creates labels from Y data values in [PointsColumns], and positions the labels centers
+  /// between [_axisYMin], [_axisYMax] in pixels on the Y axis. The [_axisYMin], [_axisYMax] leave
+  /// space above and below for half label and vertical tick.
+  ///
+  /// Effectively, The distance between [_axisYMin], [_axisYMax] is a constraint on the [NewDataContainer];
+  /// at the same time it is the interval to which the [DomainExtrapolation1D] should extrapolate the
+  /// Y values [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
+  /// todo-00-done-last
+  YLabelsCreatorAndPositioner _labelsCreatorForPixelRange() {
     // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartRootContainer.data (etc)
     List<double> dataYs = geometry.iterableNumToDouble(chartRootContainer.pointsColumns.flattenPointsValues()).toList();
 
     // Create formatted labels, with positions scaled to the [axisY] interval.
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
-      axisY: Interval(axisYMin, axisYMax),
+      axisY: Interval(_axisYMin, _axisYMax),
       chartBehavior: chartRootContainer,
       // only 'as ChartBehavior' mixin needed
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
