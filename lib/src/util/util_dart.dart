@@ -310,7 +310,7 @@ class DomainExtrapolation1D {
 }
 
 /// Class that supports mapping between axis pixel points and values.
-// todo-00-last
+// todo-00-last : maybe not needed at all?
 class AxisMapping {
   final double startPixels; // known, usually 0
   final double firstLabelPixels;  // known,

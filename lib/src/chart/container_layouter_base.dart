@@ -155,6 +155,15 @@ mixin DoubleLinked<E> {
       previous = createLink(previous, child);
     }
   }
+
+  /// From this [DoubleLinked], iterates all owned [DoubleLinked] elements
+  /// and applies the passed function on the passed object.
+  ///
+  /// Delegated to the implementation of self [doubleLinkedOwner].
+  void applyOnAllElements(Function(E, dynamic passedObject) useElementWith, dynamic object) {
+    doubleLinkedOwner.applyOnAllElements(useElementWith, object);
+  }
+
 }
 
 /// Owner of [DoubleLinked] elements.
@@ -224,6 +233,24 @@ mixin DoubleLinkedOwner<E> {
       throw StateError('$runtimeType instance $this has no points. Cannot ask for lastLinked().');
     }
     return allElements().last;
+  }
+
+  /// Iterates all owned [DoubleLinked] elements
+  /// and applies the passed function on the passed object.
+  /// 
+  /// The [object] is passed to the function [useElementWith] as second parameter after the
+  /// processed element is passed.
+  void applyOnAllElements(Function(E, dynamic passedObject) useElementWith, dynamic object) {
+
+    if (hasLinkedElements) {
+      for (E element = firstLinked(); ; element = element.next) {
+        // columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        useElementWith(element, object);
+        if (!(element as DoubleLinked).hasNext) {
+          break;
+        }
+      }
+    }
   }
 }
 

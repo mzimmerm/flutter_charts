@@ -117,17 +117,17 @@ class NewValueHBarContainer extends NewValueContainer {
     YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSameXValuesList.dataModel.chartRootContainer.yLabelsCreator;
     // double height = scaler.scaleY(value: dataModelPoint.dataValue);
 
-    // todo-00-last : in new layout,
+    // todo-00-last-last : in new layout,
     //    - don't use scaler to get fromDomainMin, fromDomainMax, because it uses the full machinery of StackableValuePoint
     //       - instead, use NewDataModelPoint : add stackedDataValue, build it in NewDataModelSameXValues.
     //       - then, add on NewDataModelSameXValues instances, method columnStackedDataValue that will get it from children.
     //       - after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
     //          - for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
-    //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used
+    //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
     //
     //   - dont use scaler to get toDomainMin, toDomainMax, because that links to yContainer.
     //     - Instead, use toDomainMin=0.0 as that is in NewDataContainer coordinates
-    //     -          use toDomainMax=NewDataContainer.constraints.height to tie it to local 0-based pixels!
+    //     -          use toDomainMax=NewDataContainer.constraints.height to tie it to local 0-based pixels, for extrapolation on the TO domain!
     //
     //   ?????? data envelope should be calculated from midpoint of min/max labels after laying out Y axis, and scaled to Y axis constraint height.
     //   For example, if all positive: If smallest label is 0M at pixel 1000, largest label is 10M at pixel 100, and Y axis constraint.height = 1200,

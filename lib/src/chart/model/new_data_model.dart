@@ -232,18 +232,35 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   @override
   Iterable<NewDataModelPoint> allElements() => _points;
 
-  /// todo-011 document
+  /// Generates [NewValueContainer] view from each [NewDataModelPoint]
+  /// and collects the views in a list which is returned.
   List<NewValueContainer> generateViewChildrenAsNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
 
+    /* KEEP for now.
     if (hasLinkedElements) {
-      for (var current = firstLinked(); ; current = current.next) {
-        columnPointContainers.add(current.generateViewChildrenAsNewValueContainer());
-        if (!current.hasNext) {
+      for (var element = firstLinked(); ; element = element.next) {
+        columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        if (!element.hasNext) {
           break;
         }
       }
     }
+    --- or ---
+    // Inner function will be invoked on each element.
+    void generateViewFromElementThenAddTo(NewDataModelPoint element, dynamic columnPointContainers) {
+      columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+    }
+    applyOnAllElements(generateViewFromElementThenAddTo, columnPointContainers);
+    */
+
+    // Generates [NewValueContainer] view from each [NewDataModelPoint]
+    // and collect the views in a list which is returned.
+    applyOnAllElements(
+      (NewDataModelPoint element, dynamic columnPointContainers) =>
+          columnPointContainers.add(element.generateViewChildrenAsNewValueContainer()),
+      columnPointContainers,
+    );
 
     return columnPointContainers;
   }

@@ -183,6 +183,7 @@ class ExamplesDescriptor {
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
+          '--dart-define=USE_OLD_DATA_CONTAINER=\$USE_OLD_DATA_CONTAINER '
           '\$2' // ' example/lib/main.dart'
           );
     }
