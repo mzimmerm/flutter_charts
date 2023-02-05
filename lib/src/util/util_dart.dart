@@ -243,7 +243,7 @@ class LinearTransform1D {
 ///
 /// Transforms a value in 'from' domain into a 'linearly correspondent' value in the 'to' domain, assuming
 /// the two domains are linearly scaled using a scaling that transforms
-/// the [fromDomainStart] to [toDomainStart] and  [fromDomainEnd] to [toDomainEnd]. This defines the
+/// the [_fromDomainStart] to [_toDomainStart] and [_fromDomainEnd] to [_toDomainEnd]. This defines the
 /// scaling factor to be
 /// ```
 ///   (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart); // this may include inversion if negative
@@ -255,27 +255,48 @@ class LinearTransform1D {
 ///
 class DomainExtrapolation1D {
   const DomainExtrapolation1D({
-    // todo-00-last : rename fromDomainStart/End to valuesStart/End, rename toDomainStart/End to pixelsStart/End
-    required this.fromDomainStart,
-    required this.fromDomainEnd,
-    required this.toDomainStart,
-    required this.toDomainEnd,
-  }) : domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart);
+    required double fromDomainStart,
+    required double fromDomainEnd,
+    required double toDomainStart,
+    required double toDomainEnd,
+  }) :
+    _fromDomainStart = fromDomainStart ,
+    _fromDomainEnd   = fromDomainEnd   ,
+    _toDomainStart   = toDomainStart   ,
+    _toDomainEnd     = toDomainEnd     ,
+    _domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart);
 
-  /// First point of the 'from' domain. If larger than [fromDomainEnd], represents reversed direction.
-  final double fromDomainStart;
-  final double fromDomainEnd;
-  final double toDomainStart;
-  final double toDomainEnd;
+  /// Constructs a new [DomainExtrapolation1D] instance using different argument names from the
+  /// unnamed [DomainExtrapolation1D] constructor.
+  ///
+  /// Exists solely for reading clarity when used in an application that needs to extrapolate values to pixels,
+  /// to clear which parameters ore values and which are pixels.
+  const DomainExtrapolation1D.valuesToPixels({
+    required double fromValuesStart,
+    required double fromValuesEnd,
+    required double toPixelsStart,
+    required double toPixelsEnd,
+  }) : this(
+        fromDomainStart: fromValuesStart ,
+        fromDomainEnd  : fromValuesEnd   ,
+        toDomainStart  : toPixelsStart   ,
+        toDomainEnd    : toPixelsEnd     ,
+  );
 
-  final double domainStretch;
+  /// First point of the 'from' domain. If larger than [_fromDomainEnd], represents reversed direction.
+  final double _fromDomainStart;
+  final double _fromDomainEnd;
+  final double _toDomainStart;
+  final double _toDomainEnd;
+
+  final double _domainStretch;
 
   /// Transform [fromValue] from the 'from' domain to it's corresponding linear transform value it the 'to' domain.
   ///
-  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [fromDomainStart]
-  /// and [fromDomainEnd] are at a certain ratio, call it R.
+  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [_fromDomainStart]
+  /// and [_fromDomainEnd] are at a certain ratio, call it R.
   /// This returns a value of point in the 'to' domain, which ratio of distances to the
-  /// [toDomainStart] and [toDomainEnd] is same as R.
+  /// [_toDomainStart] and [_toDomainEnd] is same as R.
   ///
   /// This transform includes BOTH stretching AND translation of origin, in that order
   ///
@@ -289,10 +310,10 @@ class DomainExtrapolation1D {
   ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
   ///
   double apply(double fromValue) {
-    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: domainStretch).apply(fromValue);
-    double scaledAndMoved = LinearTransform1D.translateAtOrigin(translateBy: -toDomainStart).apply(scaled);
+    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(fromValue);
+    double scaledAndMoved = LinearTransform1D.translateAtOrigin(translateBy: -_toDomainStart).apply(scaled);
 
-    double result = domainStretch * (fromValue - fromDomainStart) + toDomainStart;
+    double result = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
 
     assertDoubleResultsSame(scaledAndMoved, result);
 
@@ -301,11 +322,11 @@ class DomainExtrapolation1D {
 
   @override
   String toString() {
-    return 'fromDomainStart = $fromDomainStart, '
-        'fromDomainEnd = $fromDomainEnd,'
-        'toDomainStart   = $toDomainStart,'
-        'toDomainEnd   = $toDomainEnd, '
-        'domainStretch = $domainStretch';
+    return '_fromDomainStart = $_fromDomainStart, '
+        '_fromDomainEnd = $_fromDomainEnd,'
+        '_toDomainStart   = $_toDomainStart,'
+        '_toDomainEnd   = $_toDomainEnd, '
+        'domainStretch = $_domainStretch';
   }
 }
 
@@ -341,6 +362,7 @@ class AxisMapping {
 /// This is the closure of the [_dataYs] numeric values, extended (in default situation)
 /// to start at 0 (if all positive values), or end at 0 (if all negative values).
 /// todo-01 document better
+@Deprecated('Replaced with NewDataModel.dataValuesEnvelope')
 Interval deriveDataEnvelopeForAutoLabels(List<double> allDataValues, bool startYAxisAtDataMinAllowed) {
   double dataYsMin = allDataValues.reduce(math.min);
   double dataYsMax = allDataValues.reduce(math.max);
@@ -388,8 +410,22 @@ Interval deriveDataEnvelopeForAutoLabels(List<double> allDataValues, bool startY
   // Now create distributedLabelYs, evenly distributed in
   //   the dataYsMinExt, dataYsMaxExt interval.
   // Make distributedLabelYs only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
-  // Label values are (obviously) unscaled, that is, on the scale of transformed data.
+  // Label values are (obviously) not-scaled, that is, on the scale of transformed data.
   return Interval(dataYsMinExt, dataYsMaxExt);
+}
+
+Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
+  if (interval.min - epsilon > interval.max) {
+    throw StateError('Min < max on interval $interval');
+  }
+  // todo-00-last-last-last : If not allowed, always forces to extend to 0. This seems wrong. Need to check requested && ! stacked, then extend.
+  if (!startYAxisAtDataMinAllowed) {
+    return Interval(
+      interval.min >= 0.0 ? math.min(0.0, interval.min) : interval.min,
+      interval.max >= 0.0 ? math.max(0.0, interval.max) : 0.0,
+    );
+  }
+  return interval;
 }
 
 /// Derive the interval of [dataY] values for user defined labels.

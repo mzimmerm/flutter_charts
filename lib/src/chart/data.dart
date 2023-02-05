@@ -5,6 +5,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 /// Manages Chart Data.
 // todo-00 : this is from cupertino package??? @immutable
+@Deprecated('Use NewDataModel instead.')
 class ChartData {
   /// Data in rows.
   ///

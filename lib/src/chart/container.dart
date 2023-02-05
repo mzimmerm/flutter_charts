@@ -41,10 +41,12 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 ///   - abstract [createRootContainer]; extensions of [ChartAnchor] (for example, [LineChartAnchor]) should create
 ///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
 abstract class ChartAnchor {
-  /// ChartData to hold on before member [chartRootContainer] is created late
+  /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
-  /// After [chartRootContainer] is created and set, [chartData] should be set on it.
-  NewDataModel chartData; // todo-done-last-1 : ChartData chartData;
+  /// After [chartRootContainer] is created and set, This [NewDataModel] type member [chartData]
+  /// should be placed on the member [ChartRootContainer.data].
+  // todo-00 : NewDataModel is member on both [ChartAnchor] and [ChartRootContainer]??? Only use one
+  NewDataModel chartData; // todo-done-last-2 : ChartData chartData;
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   bool isStacked = false;
   late ChartRootContainer chartRootContainer;
@@ -156,7 +158,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainer({
-    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -168,9 +170,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
-    // todo-done-last : added link for model to reach the root container
+    // todo-done-last-1 : added link for model to reach the root container, and bool for testing
     data.chartRootContainer = this;
-
+    data.startYAxisAtDataMinAllowedNeededForTesting = data.chartRootContainer.startYAxisAtDataMinAllowed;
   }
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
@@ -182,7 +184,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   bool get isRoot => true;
 
   /// Number of columns in the [DataContainer].
-  late final int dataColumnsCount; // todo-done-last-2
 
   /// Base Areas of chart.
   late BoxContainer legendContainer;
@@ -357,7 +358,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
     xContainer.buildAndAddChildren_DuringParentLayout();
     xContainer.layout();
-    dataColumnsCount = xContainer._xLabelContainers.length;
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
     xContainer.layoutSize = xContainer.lateReLayoutSize;
@@ -646,7 +646,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// Effectively, The distance between [_axisYMin], [_axisYMax] is a constraint on the [NewDataContainer];
   /// at the same time it is the interval to which the [DomainExtrapolation1D] should extrapolate the
   /// Y values [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
-  /// todo-00-done-last
+  /// todo-done-last-1
+  // todo-00 get rid of this in new version
   YLabelsCreatorAndPositioner _labelsCreatorForPixelRange() {
     // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartRootContainer.data (etc)
     List<double> dataYs = geometry.iterableNumToDouble(chartRootContainer.pointsColumns.flattenPointsValues()).toList();
@@ -655,11 +656,13 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(_axisYMin, _axisYMax),
-      chartBehavior: chartRootContainer,
+      startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
       // only 'as ChartBehavior' mixin needed
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
       yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
       yUserLabels: chartRootContainer.data.yUserLabels,
+      newDataModelForFunction: chartRootContainer.data,
+      isStacked: chartRootContainer.isStacked,
     );
     return yLabelsCreator;
   }
@@ -1834,7 +1837,7 @@ class LegendContainer extends ChartAreaContainer {
 }
 
 // todo-01 Try to make members final and private and class immutable
-/// Represents one Y numeric value in the [ChartData.dataRows],
+/// Represents one Y numeric value in the [DeprecatedChartData.dataRows],
 /// with added information about the X coordinate (display coordinate).
 ///
 /// Instances are stacked if [isStacked] is true.
@@ -1958,7 +1961,7 @@ class StackableValuePoint {
   /// See class documentation for which members are data-members and which are scaled-members.
   ///
   /// Note that the x values are not really scaled, as object does not
-  /// manage the unscaled [x] (it manages the corresponding label only).
+  /// manage the not-scaled [x] (it manages the corresponding label only).
   /// For this reason, the [scaledX] value must be *already scaled*!
   /// The provided [scaledX] value should be the
   /// "within [ChartPainter] absolute" x coordinate (generally the center
@@ -2017,13 +2020,13 @@ class StackableValuePoint {
 
 /// Represents a column of [StackableValuePoint]s, with support for both stacked and non-stacked charts.
 ///
-/// Corresponds to one column of data from [ChartData.dataRows], ready for presentation by [PointPresenter]s.
+/// Corresponds to one column of data from [DeprecatedChartData.dataRows], ready for presentation by [PointPresenter]s.
 ///
 /// The
 /// - unstacked (such as in the line chart),  in which case it manages
-///   [stackableValuePoints] that have values from [ChartData.dataRows].
+///   [stackableValuePoints] that have values from [DeprecatedChartData.dataRows].
 /// - stacked (such as in the bar chart), in which case it manages
-///   [stackableValuePoints] that have values added up from [ChartData.dataRows].
+///   [stackableValuePoints] that have values added up from [DeprecatedChartData.dataRows].
 ///
 /// Negative and positive points must be stacked separately,
 /// to support correctly displayed stacked values above and below zero.
@@ -2091,9 +2094,9 @@ class PointsColumn {
   }
 }
 
-/// A list of [PointsColumn] instances, created from user data rows [ChartData.dataRows].
+/// A list of [PointsColumn] instances, created from user data rows [DeprecatedChartData.dataRows].
 ///
-/// Represents the chart data created from the [ChartData.dataRows], but is an internal format suitable for
+/// Represents the chart data created from the [DeprecatedChartData.dataRows], but is an internal format suitable for
 /// presenting by the chart [PointPresenter] instances.
 ///
 /// Passed to the [PointPresenter] instances, which use this instance's data to
@@ -2114,7 +2117,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   final LayoutableBox _caller;
 
-  /// Constructor creates a [PointsColumns] instance from [ChartData.dataRows] values in
+  /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.dataRows] values in
   /// the passed [ChartRootContainer.data].
   PointsColumns({
     required this.chartRootContainer,
@@ -2137,7 +2140,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last-1 ChartData chartData) {
+  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last-2 ChartData chartData) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
@@ -2187,7 +2190,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Scales this object's column values managed in [pointsColumns].
   ///
   /// This allows separation of creating this object with
-  /// the original, unscaled data points, and apply scaling later
+  /// the original, not-scaled data points, and apply scaling later
   /// on the stackable (stacked or unstacked) values.
   ///
   /// Notes:

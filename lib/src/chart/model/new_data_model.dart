@@ -2,10 +2,11 @@ import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-// import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
+import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 
-/// todo-done-last-1  Copied from [ChartData], it is a replacement for both legacy [ChartData], and [PointsColumns].
+// todo-done-last-2  Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
+//                   and various holders of Y data values, including some parts of [YLabelsCreatorAndPositioner]
 /// Notes:
 ///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
 ///     - SCALING OF MODEL VALUES (does not)
@@ -34,6 +35,7 @@ class NewDataModel {
     required this.chartOptions,
     this.yUserLabels,
     List<ui.Color>? dataRowsColors,
+    this.startYAxisAtDataMinAllowedNeededForTesting,
   })
       :
   // Initializing of non-nullable _dataRowsColors which is a non-required argument
@@ -44,7 +46,7 @@ class NewDataModel {
   {
     validate();
 
-    _dataColumns = _rowsToColumns();
+    _dataColumns = _transposeRowsToColumns();
 
     // Construct one [NewDataModelSeries] for each data row, and add to member [sameXValuesList]
     int columnIndex = 0;
@@ -61,8 +63,33 @@ class NewDataModel {
 
   // NEW CODE =============================================================
 
-  // todo-00 move to util
-  List<List<double>> _rowsToColumns() {
+  // todo-done-last-1 : added NewDataModel.chartRootContainer and : this is needed because model constructs containers, and containers need the root container.
+  // Must be public, as it must be set after creation of this [NewDataModel],
+  //   in the root container constructor which is in turn, constructed from this model.
+  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
+  late bool? startYAxisAtDataMinAllowedNeededForTesting;
+  // todo-00 move to util and generacise
+  /// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
+  /// the [_dataRows] 2D array List<List<Object>>, so that
+  /// for each row and column index in valid range,
+  /// ```dart
+  ///   _dataRows[row][column] = transposed[column][row];
+  /// ```
+  /// The original and transposed example
+  /// ```
+  ///  // original
+  ///  [
+  ///    [ 1, A ],
+  ///    [ 2, B ],
+  ///    [ 3, C ],
+  ///  ]
+  ///  // transposed
+  ///  [
+  ///    [ 1, 2, 3 ],
+  ///    [ A, B, C ],
+  ///  ]
+  /// ```
+  List<List<double>> _transposeRowsToColumns() {
     List<List<double>> dataColumns = [];
     // Walk length of first row (if exists) and fill all dataColumns assuming fixed size of _dataRows
     if (_dataRows.isNotEmpty) {
@@ -78,7 +105,57 @@ class NewDataModel {
   }
 
   /// List of data sameXValues in the model.
-  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-1 : added for the NewDataModel
+  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-2 : added for the NewDataModel
+
+  // todo-00-last-last-progress
+  //       - after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
+  //          - for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
+  //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
+
+  /// Returns the minimum and maximum non-scaled, non-transformed (todo-01 : this may be needed) values min and max
+  Interval _dataValuesInterval(bool isStacked) {
+    if (isStacked) {
+      return Interval(
+        // todo-00-last-last-last : sameXValuesList.fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        sameXValuesList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        sameXValuesList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.max(previous, pointsColumn._stackedPositiveValue))),
+      );
+    } else {
+      return Interval(
+        sameXValuesList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._minPointValue))),
+        sameXValuesList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.max(previous, pointsColumn._maxPointValue))),
+      );
+    }
+  }
+
+  /// Returns the interval that envelopes all data values in [NewDataModel.dataRows], possibly extended to 0.
+  ///
+  /// Whether the resulting Interval is extended from the simple min/max of [NewDataModel.dataRows],
+  /// is controlled by [NewDataModel.chartRootContainer] getter
+  /// mixed to [ChartRootContainer] from [ChartBehavior.startYAxisAtDataMinAllowed],
+  Interval dataValuesEnvelope({
+    required bool isStacked,
+  }) {
+    return util_dart.extendToOrigin(
+      _dataValuesInterval(isStacked),
+      // todo-00-last  : chartRootContainer.startYAxisAtDataMinAllowed,
+      startYAxisAtDataMinAllowedNeededForTesting!,
+    );
+  }
+
+  // todo-00-last-last-progress
+  Interval _newMergedLabelYsIntervalWithDataYsEnvelope() {
+    bool _isUsingUserLabels = false;
+    if (_isUsingUserLabels) {
+      //  dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
+      //  distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
+      throw StateError('not implemented');
+    } else {
+      // dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
+      // distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
+      return dataValuesEnvelope(isStacked: true);
+    }
+  }
 
   List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList() {
     List<NewValuesColumnContainer> chartColumns = [];
@@ -101,10 +178,7 @@ class NewDataModel {
     return chartColumns;
   }
 
-  // todo-done-last : added NewDataModel.chartRootContainer : this is needed because model constructs containers, and containers need the root container.
-  // Must be public, as it must be set after creation of this [NewDataModel],
-  //   in the root container constructor which is in turn, constructed from this model.
-  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
+
 
   // OLD CODE =============================================================
   // Legacy stuff below
@@ -183,7 +257,15 @@ class NewDataModel {
 
 }
 
-/// todo-done-last-1 : Replaces PointsColumn
+/// todo-done-last-2 : Replaces PointsColumn
+/// Represents a list of data values, in the [NewDataModel].
+///
+/// As we consider the [NewDataModel] to represent a 2D array 'rows first', rows oriented
+/// 'top-to-bottom', columns oriented left-to-right, then:
+/// The list of data values in this object represent one column in the 2D array,
+/// oriented 'top-to-bottom'. We can also consider the list of data values represented by
+/// this object to be created by diagonal transpose of the [NewDataModel._dataRows] and
+/// looking at one row in the transpose, left-to-right.
 class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModelPoint> {
 
   /// Constructor. todo-011 document
@@ -206,7 +288,38 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
     if (_points.isNotEmpty) {
       firstLinked().linkAll();
     }
+    // Once the owned DoubleLinked data points are linked, we can do iteration operations of them, such as stacking.
+
+    // Calculate and initialize stacked point values of this column of points.
+    applyOnAllElements(
+      _stackPoints,
+      this,
+    );
   }
+
+  /// Calculates and initializes the final stacked positive and negative values on points.
+  _stackPoints(NewDataModelPoint point, unused) {
+      if (point.hasPrevious) {
+        if (point._dataValue < 0.0) {
+          point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue + point._dataValue;
+          point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue;
+        } else {
+          point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue + point._dataValue;
+          point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue;
+        }
+      } else {
+        // first element
+        if (point._dataValue < 0.0) {
+          point._stackedNegativeDataValue = point._dataValue;
+          point._stackedPositiveDataValue = 0.0;
+        } else {
+          point._stackedNegativeDataValue = 0.0;
+          point._stackedPositiveDataValue = point._dataValue;
+        }
+      }
+    }
+
+  /// Get the stacked value of this column of points - the sum of all
 
   /// Owner [NewDataModel] to which this [NewDataModelSameXValues] belongs by existence in
   /// [NewDataModel.sameXValuesList].
@@ -214,7 +327,14 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   final NewDataModel _dataModel;
   NewDataModel get dataModel => _dataModel;
 
-  /// Index of this column (sameXValues list) in [NewDataModel.sameXValuesList].
+  /// Index of this column (sameXValues list) in the [NewDataModel.sameXValuesList].
+  ///
+  /// Also indexes one column, top-to-bottom, in the two dimensional [NewDataModel.dataRows].
+  /// Also indexes one row, left-to-right, in the `transpose(NewDataModel.dataRows)`.
+  ///
+  /// The data values of this column are stored in the [_points] list,
+  /// values and order as in top-to-bottom column in [NewDataModel.dataRows].
+  ///
   /// This is needed to access the legacy arrays such as:
   ///   -  [NewDataModel.dataRowsLegends]
   ///   -  [NewDataModel.dataRowsColors]
@@ -232,27 +352,55 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   @override
   Iterable<NewDataModelPoint> allElements() => _points;
 
+  /// Returns height of this column in terms of data values on points, separately for positive and negative.
+  ///
+  /// Getters always recalculates, should be cached in new member on column
+  double get _stackedPositiveValue => __maxOnPoints((NewDataModelPoint point) => point._stackedPositiveDataValue);
+  double get _stackedNegativeValue => __minOnPoints((NewDataModelPoint point) => point._stackedNegativeDataValue);
+
+  double get _minPointValue         => __minOnPoints((NewDataModelPoint point) => point._dataValue);
+  double get _maxPointValue         => __maxOnPoints((NewDataModelPoint point) => point._dataValue);
+
+  //double __stackedPositive(NewDataModelPoint point) => point._stackedPositiveDataValue;
+  //double __stackedNegative(NewDataModelPoint point) => point._stackedNegativeDataValue;
+
+  double __maxOnPoints(double Function(NewDataModelPoint) getNumFromPoint) {
+    return __applyFoldableOnPoints(getNumFromPoint, math.max);
+  }
+
+  double __minOnPoints(double Function(NewDataModelPoint) getNumFromPoint) {
+    return __applyFoldableOnPoints(getNumFromPoint, math.min);
+  }
+
+  /// Apply the fold performed by [foldable] (double, double) => double function,
+  /// on some double values from the owned [allElements] which are [DoubleLinked] and [NewDataModelPoint]s.
+  ///
+  /// The double values are pulled from each [NewDataModelPoint]
+  /// using the [getNumFromPoint] (NewDataModelPoint) => double function.
+  ///
+  double __applyFoldableOnPoints(
+    double Function(NewDataModelPoint) getNumFromPoint,
+    double Function(double, double) foldable,
+  ) {
+    _DoubleValue result = _DoubleValue();
+    applyOnAllElements(
+      (NewDataModelPoint point, result) {
+        if (!point.hasPrevious) {
+          result.value = getNumFromPoint(point);
+        } else {
+          result.value = foldable(result.value as double, getNumFromPoint(point));
+        }
+        // print('result = ${result.value}');
+      },
+      result,
+    );
+    return result.value;
+  }
+
   /// Generates [NewValueContainer] view from each [NewDataModelPoint]
   /// and collects the views in a list which is returned.
   List<NewValueContainer> generateViewChildrenAsNewValueContainersList() {
     List<NewValueContainer> columnPointContainers = [];
-
-    /* KEEP for now.
-    if (hasLinkedElements) {
-      for (var element = firstLinked(); ; element = element.next) {
-        columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
-        if (!element.hasNext) {
-          break;
-        }
-      }
-    }
-    --- or ---
-    // Inner function will be invoked on each element.
-    void generateViewFromElementThenAddTo(NewDataModelPoint element, dynamic columnPointContainers) {
-      columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
-    }
-    applyOnAllElements(generateViewFromElementThenAddTo, columnPointContainers);
-    */
 
     // Generates [NewValueContainer] view from each [NewDataModelPoint]
     // and collect the views in a list which is returned.
@@ -266,6 +414,10 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   }
 }
 
+class _DoubleValue {
+  double value = 0.0;
+}
+
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
 ///
 /// Notes:
@@ -274,8 +426,6 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
 ///     THIS ACCESS IS CURRENTLY UNUSED
 ///
 class NewDataModelPoint extends Object with DoubleLinked {
-
-  final int _rowIndex;
 
   // ===================== CONSTRUCTOR ============================================
   // todo-011 document
@@ -287,16 +437,37 @@ class NewDataModelPoint extends Object with DoubleLinked {
     // The ownerSeries is NewDataModelSeries which is DoubleLinkedOwner
     // of all [NewDataModelPoint]s, from [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerSameXValuesList;
+    assertDoubleResultsSame(
+        ownerSameXValuesList.dataModel._dataRows[_rowIndex][ownerSameXValuesList._columnIndex],
+        _dataValue,
+    );
   }
 
   // ===================== NEW CODE ============================================
 
-  /// References the data column (sameXValues list) this point belongs to
-  NewDataModelSameXValues ownerSameXValuesList;
-
+  /// The original (not-transformed, not-scaled) data value from one data item
+  /// in the two dimensional, rows first, [NewDataModel.dataRows].
+  ///
+  /// This [_dataValue] point is created from the [NewDataModel.dataRows] using the indexes:
+  ///   - row at index [_rowIndex]
+  ///   - column at the [ownerSameXValuesList] index [NewDataModelSameXValues._columnIndex].
+  ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double _dataValue;
 
   double get dataValue => _dataValue;
+
+  late final double _stackedPositiveDataValue;
+  late final double _stackedNegativeDataValue;
+
+  /// Refers to the row index in [NewDataModel.dataRows] from which this point was created.
+  ///
+  /// Also, this point object is kept in [NewDataModelSameXValues._points] index [_rowIndex].
+  ///
+  /// See [_dataValue] for details of the column index from which this point was created.
+  final int _rowIndex;
+
+  /// References the data column (sameXValues list) this point belongs to
+  NewDataModelSameXValues ownerSameXValuesList;
 
   NewValueContainer generateViewChildrenAsNewValueContainer() {
     return NewValueHBarContainer(
@@ -412,7 +583,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// See class documentation for which members are data-members and which are scaled-members.
   ///
   /// Note that the x values are not really scaled, as object does not
-  /// manage the unscaled [x] (it manages the corresponding label only).
+  /// manage the not-scaled [x] (it manages the corresponding label only).
   /// For this reason, the [scaledX] value must be *already scaled*!
   /// The provided [scaledX] value should be the
   /// "within [ChartPainter] absolute" x coordinate (generally the center

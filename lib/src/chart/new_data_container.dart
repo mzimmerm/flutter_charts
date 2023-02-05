@@ -119,13 +119,13 @@ class NewValueHBarContainer extends NewValueContainer {
 
     // todo-00-last-last : in new layout,
     //    - don't use scaler to get fromDomainMin, fromDomainMax, because it uses the full machinery of StackableValuePoint
-    //       - instead, use NewDataModelPoint : add stackedDataValue, build it in NewDataModelSameXValues.
-    //       - then, add on NewDataModelSameXValues instances, method columnStackedDataValue that will get it from children.
-    //       - after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
-    //          - for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
-    //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
+    //       - d instead, use NewDataModelPoint : add stackedDataValue, build it in NewDataModelSameXValues.
+    //       - d then, add on NewDataModelSameXValues instances, method columnStackedDataValue that will get it from children.
+    //       - todo after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
+    //          - todo for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
+    //       - todo then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
     //
-    //   - dont use scaler to get toDomainMin, toDomainMax, because that links to yContainer.
+    //   - todo dont use scaler to get toDomainMin, toDomainMax, because that links to yContainer.
     //     - Instead, use toDomainMin=0.0 as that is in NewDataContainer coordinates
     //     -          use toDomainMax=NewDataContainer.constraints.height to tie it to local 0-based pixels, for extrapolation on the TO domain!
     //
@@ -139,11 +139,12 @@ class NewValueHBarContainer extends NewValueContainer {
     //   double get toDomainMin => 0.0;
     //   double get toDomainMax => _axisY.max - _axisY.min;
 
-    var transform = DomainExtrapolation1D(
-      fromDomainStart: scaler.fromDomainMin,
-      fromDomainEnd: scaler.fromDomainMax,
-      toDomainStart: scaler.toDomainMin,
-      toDomainEnd: scaler.toDomainMax,);
+    // todo-00-last-last : remove dependence on scaler
+    var transform = DomainExtrapolation1D.valuesToPixels(
+      fromValuesStart: scaler.fromDomainMin,
+      fromValuesEnd: scaler.fromDomainMax,
+      toPixelsStart: scaler.toDomainMin,
+      toPixelsEnd: scaler.toDomainMax,);
     double height = transform.apply(dataModelPoint.dataValue);
 
     _rectangleSize = ui.Size(width, height);

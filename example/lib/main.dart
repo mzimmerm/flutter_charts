@@ -458,7 +458,7 @@ class _ExampleWidgetCreator {
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
     // Declare chartData; the data object will be different in every examples.
-    NewDataModel chartData; // todo-done-last : ChartData chartData;
+    NewDataModel chartData; // todo-done-last-1 : ChartData chartData;
 
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
@@ -496,7 +496,7 @@ class _ExampleWidgetCreator {
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = NewDataModel( // todo-done-last was : " = ChartData(" : changed everywhere in this file
+        chartData = NewDataModel( // todo-done-last-1 was : " = ChartData(" : changed everywhere in this file
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],

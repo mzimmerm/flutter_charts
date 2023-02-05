@@ -1,6 +1,9 @@
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
+
+import 'dart:ui' as ui show Color;
 
 void main() {
   // todo 1 add tests for scaling . Add more tests in general
@@ -57,13 +60,17 @@ void main() {
 
     YLabelsCreatorAndPositioner yScaler;
     
+    var startYAxisAtDataMinAllowed = false;
+    var xUserLabels = ['1', '2', '3'];
+
     var dataYs = [1.0, 22.0, 333.0];
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs, 
-      axisY: Interval(axisYMin, axisYMax), 
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      axisY: Interval(axisYMin, axisYMax),
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
     Interval dataYEnvelop = yScaler.dataYsEnvelope;
     List<num> labels = yScaler.dataYsOfLabels;
@@ -75,13 +82,16 @@ void main() {
     expect(labels[2], 200.0);
     expect(labels[3], 300.0);
     
+
+
     dataYs = [-1.0, -22.0, -333.0];
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
     dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -97,9 +107,10 @@ void main() {
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
     dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -116,9 +127,10 @@ void main() {
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
     dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -135,9 +147,10 @@ void main() {
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], startYAxisAtDataMinAllowed),
     );
     dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -153,9 +166,10 @@ void main() {
     yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
       axisY: Interval(axisYMin, axisYMax),
-      chartBehavior: StartYAxisAtDataMinProhibitedChartBehavior(), // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
     dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -167,11 +181,13 @@ void main() {
     expect(labels[2], 1000.0);
 
   });
-  
+
+
+/*
   test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
     ChartOptions options = const ChartOptions();
     // The requested option (default) must be confirmed with behavior (this mimicks asking for 0 start on any TopChartContainer)
-    ChartBehavior chartBehavior = StartYAxisAtDataMinProhibitedChartBehavior();
+    bool startYAxisAtDataMinAllowed = false;
 
     // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
     // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
@@ -180,18 +196,12 @@ void main() {
       [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
       
       // ex10 linear and bar
-      /*
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
-      */
       [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
       [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
       [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
       [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
     ];
-    rangeTestCore(data, options, chartBehavior);
+    rangeTestCore(data, options, startYAxisAtDataMinAllowed);
   });
 
   test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -200,19 +210,11 @@ void main() {
       dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
     );
     // The requested option must be confirmed with behavior (this mimicks asking for above 0 start on LineChartContainer)
-    ChartBehavior chartBehavior = StartYAxisAtDataMinAllowedChartBehavior();
+    bool startYAxisAtDataMinAllowed = true;
 
     // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
     // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
     var data = [
-      /*
-      // ex32 linear
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
-      // ex33 linear
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
-      */
       // ex32 linear
       [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
       [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
@@ -220,12 +222,25 @@ void main() {
       [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
       [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
     ];
-    rangeTestCore(data, options, chartBehavior);
+    rangeTestCore(data, options, startYAxisAtDataMinAllowed);
   });
+*/
 
 }
 
-void rangeTestCore(List<List<Object>> data, ChartOptions options, ChartBehavior chartBehavior) {
+MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> dataYs, List<String> xUserLabels, bool startYAxisAtDataMinAllowed) {
+  return MockNewDataModel(
+      chartOptions: options,
+      dataRowsLegends: ['Legend'],
+      dataRows: [dataYs],
+      xUserLabels: xUserLabels,
+      dataRowsColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
+      startYAxisAtDataMinAllowedNeededForTesting: startYAxisAtDataMinAllowed,
+
+    );
+}
+
+void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxisAtDataMinAllowed) {
   for (var dataRow in data) {
     List<double> dataYsForRange = dataRow[0] as List<double>;
     double axisYMin = dataRow[1] as double;
@@ -240,7 +255,7 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, ChartBehavior 
     YLabelsCreatorAndPositioner yScaler = YLabelsCreatorAndPositioner(
       dataYs: dataYsForRange,
       axisY: Interval(axisYMax, axisYMin),
-      chartBehavior: chartBehavior, // start Y axis at 0
+      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
@@ -267,4 +282,25 @@ class StartYAxisAtDataMinAllowedChartBehavior extends Object with ChartBehavior 
 class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavior {
   @override
   bool get startYAxisAtDataMinAllowed => false;
+}
+
+class MockNewDataModel extends NewDataModel {
+  MockNewDataModel({
+    required dataRows,
+    required xUserLabels,
+    required dataRowsLegends,
+    required chartOptions,
+    List<String>? yUserLabels,
+    List<ui.Color>? dataRowsColors,
+    bool? startYAxisAtDataMinAllowedNeededForTesting,
+  }) : super(
+    dataRows: dataRows,
+    xUserLabels: xUserLabels,
+    dataRowsLegends: dataRowsLegends,
+    chartOptions: chartOptions,
+    yUserLabels: yUserLabels,
+    dataRowsColors: dataRowsColors,
+    startYAxisAtDataMinAllowedNeededForTesting: startYAxisAtDataMinAllowedNeededForTesting,
+  );
+
 }

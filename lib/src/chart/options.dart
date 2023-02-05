@@ -233,7 +233,7 @@ class DataContainerOptions {
   /// label width along X axis, which displays the bars (grouped or stacked).
   final double gridStepWidthPortionUsedByAtomicPointPresenter;
 
-  /// Controls the order in which the painter paints the [ChartData.dataRows].
+  /// Controls the order in which the painter paints the [DeprecatedChartData.dataRows].
   ///
   /// Motivation: On the line chart, if two data rows have same values,
   /// the "last painted value wins". This option helps to change the data rows

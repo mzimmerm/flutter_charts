@@ -1,5 +1,8 @@
 import 'dart:math' as math show min, max, pow;
 // import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/model/new_data_model.dart';
+
 import 'util_dart.dart' as util_dart;
 import 'test/generate_test_data_from_app_runs.dart';
 import '../chart/container.dart' show ChartBehavior;
@@ -25,16 +28,24 @@ import '../chart/container.dart' show ChartBehavior;
 /// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [labelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class YLabelsCreatorAndPositioner {
+
+  // todo-00-last-last-done : hack to get code access to ChartRootContainer, but can be null in tests
+  late final NewDataModel? _newDataModelForFunction;
+  bool? _isStacked;
+
   List<String>? yUserLabels;
 
   /// The list of numeric Y values, passed to constructor.
+  ///
+  /// Calculated as : geometry.iterableNumToDouble(chartRootContainer.pointsColumns.flattenPointsValues()).toList(),
+  ///                 contains all values in [DeprecatedChartData.dataRows].
   final List<double> _dataYs;
 
   /// Coordinates of the Y axis.
   final util_dart.Interval _axisY;
 
   /// The chart options.
-  final ChartBehavior _chartBehavior;
+  // todo-00-last-last : removed final bool _startYAxisAtDataMinAllowed;
 
   /// The function converts value to label.
   ///
@@ -53,7 +64,7 @@ class YLabelsCreatorAndPositioner {
   /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
   late final util_dart.Interval dataYsEnvelope;
 
-  /// Maintains labels created from data values, scaled and unscaled.
+  /// Maintains labels created from data values, scaled and not-scaled.
   late List<LabelInfo> labelInfos;
 
   /// Generative constructor allows to create labels.
@@ -66,15 +77,22 @@ class YLabelsCreatorAndPositioner {
   YLabelsCreatorAndPositioner({
     required List<double> dataYs,
     required util_dart.Interval axisY,
-    required ChartBehavior chartBehavior,
+    required bool startYAxisAtDataMinAllowed,
     required Function valueToLabel,
     required Function yInverseTransform,
     this.yUserLabels,
+    NewDataModel? newDataModelForFunction,
+    bool? isStacked,
   })  : _dataYs = dataYs,
         _axisY = axisY,
-        _chartBehavior = chartBehavior,
+        // todo-00-last-last : removed _startYAxisAtDataMinAllowed = startYAxisAtDataMinAllowed,
         _valueToLabel = valueToLabel,
-        _yInverseTransform = yInverseTransform {
+        _yInverseTransform = yInverseTransform,
+        _newDataModelForFunction = newDataModelForFunction,
+        _isStacked = isStacked {
+    // hack for tests to not have to change. todo-011 : fix in tests
+    _isStacked ??= false;
+
     List<double> distributedLabelYs;
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
@@ -82,8 +100,11 @@ class YLabelsCreatorAndPositioner {
       dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
       distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
     } else {
-      dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
-      distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
+      // todo-00-last-last-last : replaced with new version : dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
+      // todo-00-last-last-last : added arg : distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
+
+      dataYsEnvelope = _newDataModelForFunction!.dataValuesEnvelope(isStacked: _isStacked!);
+      distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope, startYAxisAtDataMinAllowed);
     }
     // Create LabelInfos for all labels and point each to this scaler
     labelInfos = distributedLabelYs // this is the label/DataYs enveloper - all values after transform
@@ -177,7 +198,7 @@ class YLabelsCreatorAndPositioner {
   ///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
   ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
   ///
-  List<double> _distributeAutoLabelsIn(util_dart.Interval dataYsEnvelope) {
+  List<double> _distributeAutoLabelsIn(util_dart.Interval dataYsEnvelope, bool startYAxisAtDataMinAllowed) {
     var polyMin = util_dart.Poly(from: dataYsEnvelope.min);
     var polyMax = util_dart.Poly(from: dataYsEnvelope.max);
 
@@ -198,7 +219,7 @@ class YLabelsCreatorAndPositioner {
       if (signMax <= 0) {
         double startCoeff = 1.0 * signMin * coeffMin;
         int endCoeff = 0;
-        if (_chartBehavior.startYAxisAtDataMinAllowed) {
+        if (startYAxisAtDataMinAllowed) {
           endCoeff = signMax * coeffMax;
         }
         for (double l = startCoeff; l <= endCoeff; l++) {
@@ -208,7 +229,7 @@ class YLabelsCreatorAndPositioner {
         // signMax >= 0
         double startCoeff = 1.0 * 0;
         int endCoeff = signMax * coeffMax;
-        if (_chartBehavior.startYAxisAtDataMinAllowed) {
+        if (startYAxisAtDataMinAllowed) {
           startCoeff = 1.0 * coeffMin;
         }
         for (double l = startCoeff; l <= endCoeff; l++) {
@@ -242,13 +263,13 @@ class YLabelsCreatorAndPositioner {
   /// Evenly distributes non-null [yUserLabels] inside the passed interval [dataYsEnvelope].
   ///
   /// The passed interval[dataYsEnvelope] is the closure interval of all Y values
-  /// [StackableValuePoint.dataY] in all [StackableValuePoint]s created from [ChartData.dataRows].
+  /// [StackableValuePoint.dataY] in all [StackableValuePoint]s created from [DeprecatedChartData.dataRows].
   ///
   /// The first label from the [yUserLabels] list is positioned on the Y closure minimum values
   /// (which corresponds with the start of the Y axis - the horizontal level of the X axis).
   ///
   /// Preconditions:
-  /// - This method assumes that a list of user labels was provided in [ChartData.yUserLabels].
+  /// - This method assumes that a list of user labels was provided in [DeprecatedChartData.yUserLabels].
   List<double> _distributeUserLabelsIn(util_dart.Interval dataYsEnvelope) {
     double dataStepHeight = (dataYsEnvelope.max - dataYsEnvelope.min) / (yUserLabels!.length - 1);
 

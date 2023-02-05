@@ -156,14 +156,23 @@ mixin DoubleLinked<E> {
     }
   }
 
-  /// From this [DoubleLinked], iterates all owned [DoubleLinked] elements
+  /// From this [DoubleLinked], iterates all owned [DoubleLinked] elements starting with the first,
   /// and applies the passed function on the passed object.
   ///
-  /// Delegated to the implementation of self [doubleLinkedOwner].
+  /// Delegated to the implementation of this  [DoubleLinked] object's [doubleLinkedOwner],
+  /// see [DoubleLinkedOwner.applyOnAllElements].
   void applyOnAllElements(Function(E, dynamic passedObject) useElementWith, dynamic object) {
     doubleLinkedOwner.applyOnAllElements(useElementWith, object);
   }
 
+  /// From this [DoubleLinked], iterates all owned [DoubleLinked] elements starting with the last,
+  /// and applies the passed function on the passed object.
+  ///
+  /// Delegated to the implementation of this  [DoubleLinked] object's [doubleLinkedOwner],
+  /// see [DoubleLinkedOwner.applyOnAllElementsReversed].
+  void applyOnAllElementsReversed(Function(E, dynamic passedObject) useElementWith, dynamic object) {
+    doubleLinkedOwner.applyOnAllElements(useElementWith, object);
+  }
 }
 
 /// Owner of [DoubleLinked] elements.
@@ -235,18 +244,35 @@ mixin DoubleLinkedOwner<E> {
     return allElements().last;
   }
 
-  /// Iterates all owned [DoubleLinked] elements
-  /// and applies the passed function on the passed object.
+  /// Iterates all owned [DoubleLinked] elements starting with the first,
+  /// and applies the passed function on the passed [object].
   /// 
   /// The [object] is passed to the function [useElementWith] as second parameter after the
-  /// processed element is passed.
+  /// processed element.
   void applyOnAllElements(Function(E, dynamic passedObject) useElementWith, dynamic object) {
 
     if (hasLinkedElements) {
       for (E element = firstLinked(); ; element = element.next) {
-        // columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        // e.g. columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasNext) {
+          break;
+        }
+      }
+    }
+  }
+
+  /// Iterates all owned [DoubleLinked] elements starting with the last,
+  /// and applies the passed function on the passed [object].
+  ///
+  /// See [applyOnAllElements] for details.
+  void applyOnAllElementsReversed(Function(E, dynamic passedObject) useElementWith, dynamic object) {
+
+    if (hasLinkedElements) {
+      for (E element = lastLinked(); ; element = element.previous) {
+        // e.g.  columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        useElementWith(element, object);
+        if (!(element as DoubleLinked).hasPrevious) {
           break;
         }
       }

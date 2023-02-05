@@ -13,7 +13,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class LineChartAnchor extends ChartAnchor {
 
   LineChartAnchor({
-    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -43,7 +43,7 @@ class LineChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
-    required NewDataModel chartData, // todo-done-last-1 ChartData chartData,
+    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
