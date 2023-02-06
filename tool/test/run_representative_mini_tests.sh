@@ -42,6 +42,7 @@ echo Running a wrapper around Flutter integration tests for representative scree
 echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
 # tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
 tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsShown
+tool/test/integration_test_validate_screenshots.sh ex40LanguagesWithYOrdinalUserLabelsAndUserColors
 # tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration3
 tool/test/integration_test_validate_screenshots.sh ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose

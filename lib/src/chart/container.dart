@@ -172,7 +172,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     addChildren(_createChildrenOfRootContainer());
     // todo-done-last-1 : added link for model to reach the root container, and bool for testing
     data.chartRootContainer = this;
-    data.startYAxisAtDataMinAllowedNeededForTesting = data.chartRootContainer.startYAxisAtDataMinAllowed;
   }
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
@@ -539,7 +538,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     // yLabelsCreator object creates and holds all Y labels to create and layout.
     // It is needed on chartRootContainer in [PointsColumns.scale], even with no labels shown.
-    chartRootContainer.yLabelsCreator = _labelsCreatorForPixelRange(); // Uses _axisYMin and max
+    chartRootContainer.yLabelsCreator = _labelsCreatorForPixelRange(_axisYMin, _axisYMax); // Uses _axisYMin and max
 
     // The code in _labelsCreatorForRange MUST run for the side-effect of setting the chartRootContainer.yLabelsCreator
     //    and side-effect of creating scaled values in LabelInfo which are still needed to manage data values
@@ -648,14 +647,33 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// Y values [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
   /// todo-done-last-1
   // todo-00 get rid of this in new version
-  YLabelsCreatorAndPositioner _labelsCreatorForPixelRange() {
-    // todo-04-later: place the utility geometry.iterableNumToDouble on ChartData and access here as _chartRootContainer.data (etc)
+/* todo-00-last-last-last : using this, but calculating all values from NewDataModel
+  YLabelsCreatorAndPositioner _labelsCreatorForPixelRange(double pixelsMin, pixelsMax) {
     List<double> dataYs = geometry.iterableNumToDouble(chartRootContainer.pointsColumns.flattenPointsValues()).toList();
 
     // Create formatted labels, with positions scaled to the [axisY] interval.
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
       dataYs: dataYs,
-      axisY: Interval(_axisYMin, _axisYMax),
+      axisY: Interval(pixelsMin, pixelsMax),
+      startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
+      // only 'as ChartBehavior' mixin needed
+      valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
+      yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
+      yUserLabels: chartRootContainer.data.yUserLabels,
+      newDataModelForFunction: chartRootContainer.data,
+      isStacked: chartRootContainer.isStacked,
+    );
+    return yLabelsCreator;
+  }
+*/
+
+  YLabelsCreatorAndPositioner _labelsCreatorForPixelRange(double pixelsMin, pixelsMax) {
+    // todo-00-last-last-last : List<double> dataYs = geometry.iterableNumToDouble(chartRootContainer.pointsColumns.flattenPointsValues()).toList();
+
+    // Create formatted labels, with positions scaled to the [axisY] interval.
+    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
+       // todo-00-last-last-last : dataYs: dataYs,
+      axisY: Interval(pixelsMin, pixelsMax),
       startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
       // only 'as ChartBehavior' mixin needed
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,

@@ -367,7 +367,7 @@ Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
   if (interval.min - epsilon > interval.max) {
     throw StateError('Min < max on interval $interval');
   }
-  // todo-00-last-last-last : If not allowed, always forces to extend to 0. This seems wrong. Need to check requested && ! stacked, then extend.
+  // todo-00-last : If not allowed, always forces to extend to 0. This seems wrong. Need to check requested && ! stacked, then extend.
   if (!startYAxisAtDataMinAllowed) {
     return Interval(
       interval.min >= 0.0 ? math.min(0.0, interval.min) : interval.min,
@@ -456,6 +456,129 @@ double scaleValue({
 
   return scaled;
 }
+
+/// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
+/// ending at [interval.max], and returns the positions list.
+///
+/// The positions include both ends, unless [pointsCount] is one, then the positions at ends
+/// are not included, list with center position is returned.
+///
+/// As this method simply divides the available interval into [pointsCount],
+/// it is not relevant whether the interval is translated or scaled or not, as long as it is linear
+/// (which it would be even for logarithmic scale). But usually the interval represents
+/// scaled, non-transformed values.
+List<double> evenlySpacedPoints({
+  required Interval interval,
+  required int pointsCount,
+}) {
+  if (pointsCount <= 0) {
+    throw StateError('Cannot distribute 0 or negative number of positions');
+  }
+
+  if (pointsCount == 1) {
+    return [(interval.max - interval.min) / 2.0];
+  }
+  double dataStepHeight = (interval.max - interval.min) / (pointsCount - 1);
+
+  // Evenly distribute labels in [interval]
+  List<double> pointsPositions = List.empty(growable: true);
+  for (int yIndex = 0; yIndex < pointsCount; yIndex++) {
+    pointsPositions.add(interval.min + dataStepHeight * yIndex);
+  }
+  return pointsPositions;
+}
+
+/// Automatically generates values (anywhere from zero to nine values) intended to
+/// be displayed as label in [interval], which represents a domain
+///
+/// More precisely, all generated label values are inside, or slightly protruding from,
+/// the passed [interval], which was created as tight envelope of all data values.
+///
+/// As the values are generated from [interval], the values us whatever is the
+/// [interval]'s values scale and transform. Likely, the [interval] represents
+/// transformed but non-scaled values.
+///
+/// The label values power is the same as the greatest power
+/// of the passed number [interval.end], when expanded to 10 based power series.
+///
+/// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
+///
+/// Examples:
+///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
+///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
+///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
+///
+/// Further notes and related topics:
+///   - Labels are encapsulated in the [YLabelsCreatorAndPositioner],
+///     which creates [LabelInfo]s for all generated labels.
+///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
+///
+List<double> generateValuesForLabelsIn({
+  required Interval interval,
+  required bool startYAxisAtDataMinAllowed,
+}) {
+  var polyMin = Poly(from: interval.min);
+  var polyMax = Poly(from: interval.max);
+
+  int powerMax = polyMax.maxPower;
+  int coeffMax = polyMax.coefficientAtMaxPower;
+  int signMax = polyMax.signum;
+
+  // using Min makes sense if one or both (min, max) are negative
+  int powerMin = polyMin.maxPower;
+  int coeffMin = polyMin.coefficientAtMaxPower;
+  int signMin = polyMin.signum;
+
+  List<double> labels = [];
+  int power = math.max(powerMin, powerMax);
+
+  if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+    // both negative or positive
+    if (signMax <= 0) {
+      double startCoeff = 1.0 * signMin * coeffMin;
+      int endCoeff = 0;
+      if (startYAxisAtDataMinAllowed) {
+        endCoeff = signMax * coeffMax;
+      }
+      for (double l = startCoeff; l <= endCoeff; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    } else {
+      // signMax >= 0
+      double startCoeff = 1.0 * 0;
+      int endCoeff = signMax * coeffMax;
+      if (startYAxisAtDataMinAllowed) {
+        startCoeff = 1.0 * coeffMin;
+      }
+      for (double l = startCoeff; l <= endCoeff; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    }
+  } else {
+    // min is negative, max is positive - need added logic
+    if (powerMax == powerMin) {
+      for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    } else if (powerMax < powerMin) {
+      for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+        // just one over 0
+        labels.add(l * math.pow(10, power));
+      }
+    } else if (powerMax > powerMin) {
+      for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+        // just one under 0
+        labels.add(l * math.pow(10, power));
+      }
+    } else {
+      throw Exception('Unexpected power: $powerMin, $powerMax ');
+    }
+  }
+
+  // todo-00-last : check if positions are fully inside interval
+  return labels;
+}
+
 
 /// Returns [true] if exactly one of the passed values [one], [two] hase the passed [value],
 /// [false] otherwise.

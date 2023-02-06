@@ -35,7 +35,6 @@ class NewDataModel {
     required this.chartOptions,
     this.yUserLabels,
     List<ui.Color>? dataRowsColors,
-    this.startYAxisAtDataMinAllowedNeededForTesting,
   })
       :
   // Initializing of non-nullable _dataRowsColors which is a non-required argument
@@ -48,7 +47,9 @@ class NewDataModel {
 
     _dataColumns = _transposeRowsToColumns();
 
-    // Construct one [NewDataModelSeries] for each data row, and add to member [sameXValuesList]
+    // Construct the full [NewDataModel] as well, so we can use it, and also gradually
+    // use it's methods and members in OLD DataContainer.
+    // Here, create one [NewDataModelSeries] for each data row, and add to member [sameXValuesList]
     int columnIndex = 0;
     for (List<double> dataColumn in _dataColumns) {
       sameXValuesList.add(
@@ -67,7 +68,7 @@ class NewDataModel {
   // Must be public, as it must be set after creation of this [NewDataModel],
   //   in the root container constructor which is in turn, constructed from this model.
   late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
-  late bool? startYAxisAtDataMinAllowedNeededForTesting;
+
   // todo-00 move to util and generacise
   /// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
   /// the [_dataRows] 2D array List<List<Object>>, so that
@@ -114,7 +115,9 @@ class NewDataModel {
   //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
 
   /// Returns the minimum and maximum non-scaled, non-transformed (todo-01 : this may be needed) values min and max
-  Interval _dataValuesInterval(bool isStacked) {
+  Interval dataValuesInterval({
+    required bool isStacked,
+  }) {
     if (isStacked) {
       return Interval(
         // reduce, not fold: sameXValuesList.fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
@@ -131,35 +134,22 @@ class NewDataModel {
 
   /// Returns the interval that envelopes all data values in [NewDataModel.dataRows], possibly extended to 0.
   ///
-  /// Whether the resulting Interval is extended from the simple min/max of [NewDataModel.dataRows],
-  /// is controlled by [NewDataModel.chartRootContainer] getter
-  /// mixed to [ChartRootContainer] from [ChartBehavior.startYAxisAtDataMinAllowed],
-  Interval dataValuesEnvelope({
+  /// The [isStacked] controls whether the interval is created from values in [NewDataModelPoint._dataValue]
+  /// or the stacked values [NewDataModelPoint._stackedPositiveDataValue] and
+  /// [NewDataModelPoint._stackedNegativeDataValue]
+  ///
+  /// Whether the resulting Interval is extended from the simple min/max of all data values
+  /// is controlled by [startYAxisAtDataMinAllowed]. If [true] the interval is extended to zero
+  /// if all values are positive or all are negative.
+  ///
+  Interval extendedDataValuesInterval({
     required bool isStacked,
     required bool startYAxisAtDataMinAllowed,
   }) {
     return util_dart.extendToOrigin(
-      _dataValuesInterval(isStacked),
-      // todo-00-last  : chartRootContainer.startYAxisAtDataMinAllowed,
+      dataValuesInterval(isStacked: isStacked),
       startYAxisAtDataMinAllowed,
     );
-  }
-
-  // todo-00-last-last-progress
-  Interval _newMergedLabelYsIntervalWithDataYsEnvelope(bool startYAxisAtDataMinAllowed) {
-    bool _isUsingUserLabels = false;
-    if (_isUsingUserLabels) {
-      //  dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
-      //  distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
-      throw StateError('not implemented');
-    } else {
-      // dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
-      // distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
-      return dataValuesEnvelope(
-          startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed,
-          isStacked: true,
-      );
-    }
   }
 
   List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList() {
