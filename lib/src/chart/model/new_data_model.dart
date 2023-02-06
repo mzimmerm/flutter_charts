@@ -96,7 +96,8 @@ class NewDataModel {
       for (int column = 0; column < _dataRows[0].length; column++) {
         List<double> dataColumn = [];
         for (int row = 0; row < _dataRows.length; row++) {
-          dataColumn.add(_dataRows[row][column]); // Add a row value on the row where dataColumn stands
+          // Add a row value on the row where dataColumn stands
+          dataColumn.add(_dataRows[row][column]);
         }
         dataColumns.add(dataColumn);
       }
@@ -116,14 +117,14 @@ class NewDataModel {
   Interval _dataValuesInterval(bool isStacked) {
     if (isStacked) {
       return Interval(
-        // todo-00-last-last-last : sameXValuesList.fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        sameXValuesList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        sameXValuesList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.max(previous, pointsColumn._stackedPositiveValue))),
+        // reduce, not fold: sameXValuesList.fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        sameXValuesList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
+        sameXValuesList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );
     } else {
       return Interval(
-        sameXValuesList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._minPointValue))),
-        sameXValuesList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max), // fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.max(previous, pointsColumn._maxPointValue))),
+        sameXValuesList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
+        sameXValuesList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
       );
     }
   }
@@ -433,13 +434,17 @@ class NewDataModelPoint extends Object with DoubleLinked {
     required double dataValue,
     required this.ownerSameXValuesList,
     required int rowIndex,
-  }) : _dataValue = dataValue, _rowIndex = rowIndex {
+  })  : _dataValue = ownerSameXValuesList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
+        _rowIndex = rowIndex {
     // The ownerSeries is NewDataModelSeries which is DoubleLinkedOwner
-    // of all [NewDataModelPoint]s, from [DoubleLinkedOwner.allElements]
+    // of all [NewDataModelPoint]s, managed by [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerSameXValuesList;
+    // By the time a NewDataModelPoint is constructed, DataModel and it's ownerSameXValuesList INDEXES are configured
     assertDoubleResultsSame(
-        ownerSameXValuesList.dataModel._dataRows[_rowIndex][ownerSameXValuesList._columnIndex],
-        _dataValue,
+      ownerSameXValuesList._dataModel.chartOptions.dataContainerOptions
+          .yTransform(ownerSameXValuesList.dataModel._dataRows[_rowIndex][ownerSameXValuesList._columnIndex])
+          .toDouble(),
+      _dataValue,
     );
   }
 
