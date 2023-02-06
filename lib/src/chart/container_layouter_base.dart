@@ -992,7 +992,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }  else {
       // A hacky thing may fail uniqueness among siblings on rare occasions.
       // This is temporary until we require key non-nullable.
-      this.key = ContainerKey(math.Random().nextInt(1000000).toString());
+      this.key = ContainerKey(math.Random().nextInt(10000000).toString());
     }
   }
 

@@ -136,16 +136,17 @@ class NewDataModel {
   /// mixed to [ChartRootContainer] from [ChartBehavior.startYAxisAtDataMinAllowed],
   Interval dataValuesEnvelope({
     required bool isStacked,
+    required bool startYAxisAtDataMinAllowed,
   }) {
     return util_dart.extendToOrigin(
       _dataValuesInterval(isStacked),
       // todo-00-last  : chartRootContainer.startYAxisAtDataMinAllowed,
-      startYAxisAtDataMinAllowedNeededForTesting!,
+      startYAxisAtDataMinAllowed,
     );
   }
 
   // todo-00-last-last-progress
-  Interval _newMergedLabelYsIntervalWithDataYsEnvelope() {
+  Interval _newMergedLabelYsIntervalWithDataYsEnvelope(bool startYAxisAtDataMinAllowed) {
     bool _isUsingUserLabels = false;
     if (_isUsingUserLabels) {
       //  dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
@@ -154,7 +155,10 @@ class NewDataModel {
     } else {
       // dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
       // distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
-      return dataValuesEnvelope(isStacked: true);
+      return dataValuesEnvelope(
+          startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed,
+          isStacked: true,
+      );
     }
   }
 
@@ -450,7 +454,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
 
   // ===================== NEW CODE ============================================
 
-  /// The original (not-transformed, not-scaled) data value from one data item
+  /// The original (transformed, not-scaled) data value from one data item
   /// in the two dimensional, rows first, [NewDataModel.dataRows].
   ///
   /// This [_dataValue] point is created from the [NewDataModel.dataRows] using the indexes:

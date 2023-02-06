@@ -129,6 +129,11 @@ class Interval {
     return false;
   }
 
+  /// Returns [true] if the passed [other] is inside self.
+  bool containsFully(Interval other) {
+    return includes(other.min) && includes(other.max);
+  }
+
   /// Outermost union of this interval with [other].
   Interval merge(Interval other) {
     return Interval(math.min(min, other.min), math.max(max, other.max));
@@ -357,62 +362,6 @@ class AxisMapping {
 }
 
 // ################ Functions ########################
-/// Derive the interval of data values, usually given as chart data independent or dependent variables.
-///
-/// This is the closure of the [_dataYs] numeric values, extended (in default situation)
-/// to start at 0 (if all positive values), or end at 0 (if all negative values).
-/// todo-01 document better
-@Deprecated('Replaced with NewDataModel.dataValuesEnvelope')
-Interval deriveDataEnvelopeForAutoLabels(List<double> allDataValues, bool startYAxisAtDataMinAllowed) {
-  double dataYsMin = allDataValues.reduce(math.min);
-  double dataYsMax = allDataValues.reduce(math.max);
-
-  Poly polyMin = Poly(from: dataYsMin);
-  Poly polyMax = Poly(from: dataYsMax);
-
-  int signMin = polyMin.signum;
-  int signMax = polyMax.signum;
-
-  // Minimum and maximum for all y values, by DEFAULT EXTENDED TO 0.
-  // More precisely, "extended to 0" means that
-  //   if all y values are positive,
-  //     the range start at 0 (that is, dataYsMinExt is 0);
-  //   else if all y values are negative,
-  //     the range ends at 0 (that is, dataYsMaxExt is 0);
-  //   otherwise [there are both positive and negative y values]
-  //     the dataYsMinExt is the minimum of data, the dataYsMaxExt is the maximum of data.
-  double dataYsMinExt, dataYsMaxExt;
-
-  if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-    if (startYAxisAtDataMinAllowed) {
-      if (signMax <= 0) {
-        dataYsMinExt = dataYsMin;
-        dataYsMaxExt = dataYsMax;
-      } else {
-        dataYsMinExt = dataYsMin;
-        dataYsMaxExt = dataYsMax;
-      }
-    } else {
-      // both negative or positive, extend the range to start or end at zero
-      if (signMax <= 0) {
-        dataYsMinExt = dataYsMin;
-        dataYsMaxExt = 0.0;
-      } else {
-        dataYsMinExt = 0.0;
-        dataYsMaxExt = dataYsMax;
-      }
-    }
-  } else {
-    dataYsMinExt = dataYsMin;
-    dataYsMaxExt = dataYsMax;
-  }
-
-  // Now create distributedLabelYs, evenly distributed in
-  //   the dataYsMinExt, dataYsMaxExt interval.
-  // Make distributedLabelYs only in polyMax steps (e.g. 100, 200 - not 100, 110 .. 200).
-  // Label values are (obviously) not-scaled, that is, on the scale of transformed data.
-  return Interval(dataYsMinExt, dataYsMaxExt);
-}
 
 Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
   if (interval.min - epsilon > interval.max) {

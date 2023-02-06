@@ -102,8 +102,8 @@ class YLabelsCreatorAndPositioner {
     } else {
       // todo-00-last-last-last : replaced with new version : dataYsEnvelope = util_dart.deriveDataEnvelopeForAutoLabels(_dataYs, _chartBehavior.startYAxisAtDataMinAllowed);
       // todo-00-last-last-last : added arg : distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope);
-
-      dataYsEnvelope = _newDataModelForFunction!.dataValuesEnvelope(isStacked: _isStacked!);
+      // todo-00-last-last remove :   dataYsEnvelope = _newDataModelForFunction!.dataValuesEnvelope(startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowedNeededForTesting!, ,isStacked: _isStacked!);
+      dataYsEnvelope = _newDataModelForFunction!.dataValuesEnvelope(startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, isStacked: _isStacked!);
       distributedLabelYs = _distributeAutoLabelsIn(dataYsEnvelope, startYAxisAtDataMinAllowed);
     }
     // Create LabelInfos for all labels and point each to this scaler
@@ -167,11 +167,22 @@ class YLabelsCreatorAndPositioner {
 
   /// Constructs interval which is a merge (outer bound) of
   /// two ranges: the labels interval [dataYsOfLabels] (calculated from [LabelInfo._dataValue])
-  /// and the [dataYsEnvelope] (envelop of [_dataYs]). Both are not-scaled && transformed.
-  util_dart.Interval get _mergedLabelYsIntervalWithDataYsEnvelope => util_dart.Interval(
-        dataYsOfLabels.reduce(math.min), // not-scaled && transformed data from  labelInfo.transformedDataValue
-        dataYsOfLabels.reduce(math.max),
-      ).merge(dataYsEnvelope); // dataY from PointsColumns, which is also not-scaled && transformed, data
+  /// and the [dataYsEnvelope] (envelop of [_dataYs]).
+  ///
+  /// Both are not-scaled && transformed.
+  ///
+  /// Note: It is normal for one interval to be larger than the other on one or the other end,
+  ///       but they should have a significant intersect.
+  util_dart.Interval get _mergedLabelYsIntervalWithDataYsEnvelope {
+    Interval dataYsOfLabelsEnvelope = util_dart.Interval(
+      dataYsOfLabels.reduce(math.min), // not-scaled && transformed data from  labelInfo.transformedDataValue
+      dataYsOfLabels.reduce(math.max),
+    );
+    // if (!dataYsEnvelope.containsFully(dataYsOfLabelsEnvelope)) {
+    //   throw StateError('!dataYsEnvelope.containsFully(dataYsOfLabelsEnvelope). dataYsEnvelope=$dataYsEnvelope, dataYsOfLabelsEnvelope=$dataYsOfLabelsEnvelope');
+    // }
+    return dataYsOfLabelsEnvelope.merge(dataYsEnvelope);
+  } // dataY from PointsColumns, which is also not-scaled && transformed, data
 
   // todo-00 : added the 4 getters for a quick access by the new scaler
   double get fromDomainMin => _mergedLabelYsIntervalWithDataYsEnvelope.min;
@@ -181,22 +192,25 @@ class YLabelsCreatorAndPositioner {
   double get toDomainMin => 0.0;
   double get toDomainMax => _axisY.max - _axisY.min;
 
-  /// Automatically generates labels from data.
+  /// Automatically generates labels from data (anywhere from zero to nine label values).
   ///
-  /// Labels are encapsulated in the created and returned [YLabelsCreatorAndPositioner],
-  /// which manages [LabelInfo]s for all generated labels.
+  /// All generated label's values are inside, or slightly protruding from,
+  /// the passed [dataYsEnvelope], which was created as tight envelope of all Y values.
   ///
-  /// The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
-
-  /// Makes anywhere from zero to nine label values, of greatest power of
-  /// the passed [dataYsEnvelope.end].
+  /// The label values power is the same as the greatest power
+  /// of the passed number [dataYsEnvelope.end], when expanded to 10 based power series.
   ///
-  /// Precision is 1 (that is, only leading digit, rest 0s).
+  /// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
   ///
   /// Examples:
   ///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
   ///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
   ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
+  ///
+  /// Further notes and related topics:
+  ///   - Labels are encapsulated in the [YLabelsCreatorAndPositioner],
+  ///     which creates [LabelInfo]s for all generated labels.
+  ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
   ///
   List<double> _distributeAutoLabelsIn(util_dart.Interval dataYsEnvelope, bool startYAxisAtDataMinAllowed) {
     var polyMin = util_dart.Poly(from: dataYsEnvelope.min);
@@ -260,7 +274,8 @@ class YLabelsCreatorAndPositioner {
     return labels;
   }
 
-  /// Evenly distributes non-null [yUserLabels] inside the passed interval [dataYsEnvelope].
+  /// Evenly distributes non-null [yUserLabels] inside the passed interval [dataYsEnvelope]
+  /// which was created as tight envelope of all Y values.
   ///
   /// The passed interval[dataYsEnvelope] is the closure interval of all Y values
   /// [StackableValuePoint.dataY] in all [StackableValuePoint]s created from [DeprecatedChartData.dataRows].

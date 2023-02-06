@@ -182,49 +182,47 @@ void main() {
 
   });
 
+  // test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
+  //   ChartOptions options = const ChartOptions();
+  //   // The requested option (default) must be confirmed with behavior (this mimicks asking for 0 start on any TopChartContainer)
+  //   bool startYAxisAtDataMinAllowed = false;
+  //
+  //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
+  //   var data = [
+  //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
+  //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
+  //
+  //     // ex10 linear and bar
+  //     [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //   ];
+  //   rangeTestCore(data, options, startYAxisAtDataMinAllowed);
+  // });
+  //
+  // test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
+  //   // Here, options are non-default.
+  //   ChartOptions options = const ChartOptions(
+  //     dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
+  //   );
+  //   // The requested option must be confirmed with behavior (this mimicks asking for above 0 start on LineChartContainer)
+  //   bool startYAxisAtDataMinAllowed = true;
+  //
+  //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
+  //   var data = [
+  //     // ex32 linear
+  //     [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     // ex33 linear
+  //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
+  //   ];
+  //   rangeTestCore(data, options, startYAxisAtDataMinAllowed);
+  // });
 
-/*
-  test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
-    ChartOptions options = const ChartOptions();
-    // The requested option (default) must be confirmed with behavior (this mimicks asking for 0 start on any TopChartContainer)
-    bool startYAxisAtDataMinAllowed = false;
-
-    // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-    // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
-    var data = [
-      [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
-      [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
-      
-      // ex10 linear and bar
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-200.0, 600.0, 2000.0, 3600.0, -800.0, 200.0, 1200.0, 2800.0, -400.0, 600.0, 2000.0, 4000.0, -800.0, 600.0, 1600.0, 3600.0, -200.0, 400.0, 1400.0, 3400.0, -600.0, 600.0, 1600.0, 3600.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0, 3000.0, 4000.0], -800.0, 4000.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of YLabelsCreatorAndPositioner'],
-    ];
-    rangeTestCore(data, options, startYAxisAtDataMinAllowed);
-  });
-
-  test('Range.makeYScalerWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
-    // Here, options are non-default.
-    ChartOptions options = const ChartOptions(
-      dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
-    );
-    // The requested option must be confirmed with behavior (this mimicks asking for above 0 start on LineChartContainer)
-    bool startYAxisAtDataMinAllowed = true;
-
-    // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-    // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
-    var data = [
-      // ex32 linear
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 441.42857142857144, 0.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of YLabelsCreatorAndPositioner'],
-      // ex33 linear
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
-      [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of YLabelsCreatorAndPositioner'],
-    ];
-    rangeTestCore(data, options, startYAxisAtDataMinAllowed);
-  });
-*/
 
 }
 

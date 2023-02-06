@@ -9,12 +9,11 @@ import '../../chart/layouter_one_dimensional.dart';
 
 class ContainerConstraints {}
 
-/// Represents sizes of two centered boxes.
+/// Represents sizes of two boxes without specifying positions.
 ///
-/// 
 /// Objects of this class's extensions allow two core roles:
 ///   - Role of a constraint that a parent in a layout hierarchy requires of it's children.
-///     This is used in the current one-pass layout.
+///     This role is used in the current one-pass layout, implemented by [BoxContainerConstraints].
 ///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
 ///     This could be used it a future two pass layout.
 abstract class BoundingBoxesBase {
@@ -105,8 +104,9 @@ abstract class BoundingBoxesBase {
     if (minWidth > maxWidth) {
       throw StateError('minWidth > maxWidth : minWidth=$minWidth, maxWidth=$maxWidth');
     }
-    if (minWidth > maxWidth) {
-      throw StateError('minWidth > maxWidth : minWidth=$minWidth, maxWidth=$maxWidth');
+    // todo-done-last : fixed bug : if (minWidth > maxWidth) {
+    if (minHeight > maxHeight) {
+      throw StateError('minHeight > minHeight : minHeight=$minHeight, minHeight=$minHeight');
     }
   }
 
