@@ -33,6 +33,10 @@ class YLabelsCreatorAndPositioner {
   late final NewDataModel? _newDataModelForFunction;
   bool? _isStacked;
 
+  // todo-00-last-last-last : Storing the merged interval from labels and values.
+  // todo-00-last-last : Note this is now from NewDataModelPoints !!
+  late final util_dart.Interval _mergedIntervalsFromLabelsAndValues;
+
   List<String>? yUserLabels;
 
   /// The list of numeric Y values, passed to constructor.
@@ -59,7 +63,8 @@ class YLabelsCreatorAndPositioner {
   ///
   /// Further, the  [_dataYs] are from the [StackableValuePoint.toY] from the [PointsColumns.flattenPointsValues].
   /// The [StackableValuePoint]s are located on [PointsColumns], then [PointsColumn.stackableValuePoints].
-  late final util_dart.Interval dataYsEnvelope;
+  /// todo-00-last-last : Note this is now from NewDataModelPoints !!
+  /// todo-00-last-last : unused except tests : late final util_dart.Interval dataYsEnvelope;
 
   /// Maintains labels created from data values, scaled and not-scaled.
   late List<LabelInfo> labelInfos;
@@ -89,25 +94,35 @@ class YLabelsCreatorAndPositioner {
     // hack for tests to not have to change. todo-011 : fix in tests
     _isStacked ??= false;
 
-    List<double> distributedLabelYs;
+    List<double> yLabelPositions;
+    util_dart.Interval dataYsEnvelope;
+
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
     if (_isUsingUserLabels) {
       // todo-00-last-done : dataYsEnvelope = util_dart.deriveDataEnvelopeForUserLabels(_dataYs);
-      // todo-00-last-done :  distributedLabelYs = _distributeUserLabelsIn(dataYsEnvelope);
+      // todo-00-last-done :  yLabelPositions = _distributeUserLabelsIn(dataYsEnvelope);
       dataYsEnvelope = _newDataModelForFunction!.dataValuesInterval(isStacked: _isStacked!);
-      distributedLabelYs = util_dart.evenlySpacedPoints(interval: dataYsEnvelope, pointsCount: yUserLabels!.length);
+      yLabelPositions = util_dart.evenlySpacedValuesIn(interval: dataYsEnvelope, pointsCount: yUserLabels!.length);
     } else {
       dataYsEnvelope = _newDataModelForFunction!.extendedDataValuesInterval(startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, isStacked: _isStacked!);
-      distributedLabelYs = util_dart.generateValuesForLabelsIn(interval: dataYsEnvelope, startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed);
+      yLabelPositions = util_dart.generateValuesForLabelsIn(interval: dataYsEnvelope, startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed);
     }
     // Create LabelInfos for all labels and point each to this scaler
-    labelInfos = distributedLabelYs // this is the label/DataYs enveloper - all values after transform
+    labelInfos = yLabelPositions // this is the label/DataYs enveloper - all values after transform
         .map((transformedLabelValue) => LabelInfo(
               dataValue: transformedLabelValue,
               parentYScaler: this,
             ))
         .toList();
+
+    // Once LabelInfos are prepared, we can store the merged interval
+    // All values are calculated using the [NewDataModel] methods! That proves sameness nicely
+    // dataYsOfLabels : not-scaled && transformed data from labelInfo.transformedDataValue
+    _mergedIntervalsFromLabelsAndValues = util_dart.Interval(
+      yLabelPositions.reduce(math.min),
+      yLabelPositions.reduce(math.max),
+    ).merge(dataYsEnvelope);
 
     // Format and scale the labels we just created
     for (int i = 0; i < labelInfos.length; i++) {
@@ -131,7 +146,7 @@ class YLabelsCreatorAndPositioner {
           _dataYs,
           axisY.min,
           axisY.max,
-          distributedLabelYs,
+          yLabelPositions,
           dataYsEnvelope.min,
           dataYsEnvelope.max,
         ],
@@ -151,8 +166,8 @@ class YLabelsCreatorAndPositioner {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
     return util_dart.scaleValue(
         value: value.toDouble(),
-        fromDomainMin: _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).min.toDouble(),
-        fromDomainMax: _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).max.toDouble(),
+        fromDomainMin: _mergedIntervalsFromLabelsAndValues.min, // todo-00-last-last-last : _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).min.toDouble(),
+        fromDomainMax: _mergedIntervalsFromLabelsAndValues.max, // todo-00-last-last-last : _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).max.toDouble(),
         toDomainNewMax: _axisY.max,
         toDomainNewMin: _axisY.min);
   }
@@ -170,19 +185,8 @@ class YLabelsCreatorAndPositioner {
   ///
   /// Note: It is normal for one interval to be larger than the other on one or the other end,
   ///       but they should have a significant intersect.
-/* todo-00-last-last-progress
-  util_dart.Interval get _mergedLabelYsIntervalWithDataYsEnvelope {
-    util_dart.Interval dataYsOfLabelsEnvelope = util_dart.Interval(
-      dataYsOfLabels.reduce(math.min), // not-scaled && transformed data from  labelInfo.transformedDataValue
-      dataYsOfLabels.reduce(math.max),
-    );
-    // if (!dataYsEnvelope.containsFully(dataYsOfLabelsEnvelope)) {
-    //   throw StateError('!dataYsEnvelope.containsFully(dataYsOfLabelsEnvelope). dataYsEnvelope=$dataYsEnvelope, dataYsOfLabelsEnvelope=$dataYsOfLabelsEnvelope');
-    // }
-    return dataYsOfLabelsEnvelope.merge(dataYsEnvelope);
-  } // dataY from PointsColumns, which is also not-scaled && transformed, data
-*/
 
+/* todo-00-last-last-last : delete unused
   util_dart.Interval _mergedLabelYsIntervalWithDataYsEnvelope({
     required util_dart.Interval dataYsEnvelope,
     required List<double> dataYsOfLabels,
@@ -197,10 +201,11 @@ class YLabelsCreatorAndPositioner {
     // }
     return dataYsOfLabelsEnvelope.merge(dataYsEnvelope);
   } // dataY from PointsColumns, which is also not-scaled && transformed, data
+*/
 
   // todo-00 : added the 4 getters for a quick access by the new scaler
-  double get fromDomainMin => _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).min;
-  double get fromDomainMax => _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).max;
+  double get fromDomainMin => _mergedIntervalsFromLabelsAndValues.min; // todo-00-last-last-last : _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).min;
+  double get fromDomainMax => _mergedIntervalsFromLabelsAndValues.max; // todo-00-last-last-last : _mergedLabelYsIntervalWithDataYsEnvelope(dataYsEnvelope: dataYsEnvelope, dataYsOfLabels: dataYsOfLabels).max;
   // used in new scaling within NewDataContainer coordinates!! So make sure it starts with 0.0 and
   // length is same as constraint size given to NewDataContainer.
   double get toDomainMin => 0.0;

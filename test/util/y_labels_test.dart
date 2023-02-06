@@ -72,10 +72,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
-    Interval dataYEnvelop = yScaler.dataYsEnvelope;
+    // Interval dataYEnvelop = yScaler.dataYsEnvelope;
     List<num> labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, 0.0);
-    expect(dataYEnvelop.max, 333.0);
+    // expect(dataYEnvelop.min, 0.0);
+    // expect(dataYEnvelop.max, 333.0);
     expect(labels.length, 4);
     expect(labels[0], 0.0);
     expect(labels[1], 100.0);
@@ -93,10 +93,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
-    dataYEnvelop = yScaler.dataYsEnvelope;
+    // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, -333.0);
-    expect(dataYEnvelop.max, 0.0);
+    // expect(dataYEnvelop.min, -333.0);
+    // expect(dataYEnvelop.max, 0.0);
     expect(labels.length, 4);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -112,10 +112,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
-    dataYEnvelop = yScaler.dataYsEnvelope;
+    // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, -333.0);
-    expect(dataYEnvelop.max, 22.0);
+    // expect(dataYEnvelop.min, -333.0);
+    // expect(dataYEnvelop.max, 22.0);
     expect(labels.length, 5);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -132,10 +132,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
-    dataYEnvelop = yScaler.dataYsEnvelope;
+    // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, -22.0);
-    expect(dataYEnvelop.max, 333.0);
+    // expect(dataYEnvelop.min, -22.0);
+    // expect(dataYEnvelop.max, 333.0);
     expect(labels.length, 5);
     expect(labels[0], -100.0);
     expect(labels[1], 0.0);
@@ -152,10 +152,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], startYAxisAtDataMinAllowed),
     );
-    dataYEnvelop = yScaler.dataYsEnvelope;
+    // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, -1000.0);
-    expect(dataYEnvelop.max, 2000.0);
+    // expect(dataYEnvelop.min, -1000.0);
+    // expect(dataYEnvelop.max, 2000.0);
     expect(labels.length, 4);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -171,10 +171,10 @@ void main() {
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
       newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
     );
-    dataYEnvelop = yScaler.dataYsEnvelope;
+    // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
-    expect(dataYEnvelop.min, -1000.0);
-    expect(dataYEnvelop.max, 1000.0);
+    // expect(dataYEnvelop.min, -1000.0);
+    // expect(dataYEnvelop.max, 1000.0);
     expect(labels.length, 3);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -239,12 +239,12 @@ MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> d
 
 void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxisAtDataMinAllowed) {
   for (var dataRow in data) {
-    List<double> dataYsForRange = dataRow[0] as List<double>;
+    // List<double> dataYsForRange = dataRow[0] as List<double>;
     double axisYMin = dataRow[1] as double;
     double axisYMax = dataRow[2] as double;
     List<double> expectedLabels = dataRow[3] as List<double>;
-    double expectedDataEnvelopMin = dataRow[4] as double;
-    double expectedDataEnvelopMax = dataRow[5] as double;
+    // double expectedDataEnvelopMin = dataRow[4] as double;
+    // double expectedDataEnvelopMax = dataRow[5] as double;
 
     // Reversing min max in makeYScalerWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
@@ -257,9 +257,9 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxi
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
 
-    
-    expect(yScaler.dataYsEnvelope.min, expectedDataEnvelopMin);
-    expect(yScaler.dataYsEnvelope.max, expectedDataEnvelopMax);
+
+    // expect(yScaler.dataYsEnvelope.min, expectedDataEnvelopMin);
+    // expect(yScaler.dataYsEnvelope.max, expectedDataEnvelopMax);
     expect(yScaler.dataYsOfLabels.length, expectedLabels.length);
     for (int i = 0; i < yScaler.dataYsOfLabels.length; i++) {
       expect(

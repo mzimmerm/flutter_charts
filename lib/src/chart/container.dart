@@ -1989,6 +1989,8 @@ class StackableValuePoint {
     required double scaledX,
     required YLabelsCreatorAndPositioner yLabelsCreator,
   }) {
+    // todo-00-last-last-last Note: Scales fromY from the OLD [ChartData] BUT all the scaling domains
+    //                              were calculated using the NEW [NewDataModel] and [NewDataModelPoints]!
     scaledFrom = ui.Offset(scaledX, yLabelsCreator.scaleY(value: fromY));
     scaledTo = ui.Offset(scaledX, yLabelsCreator.scaleY(value: toY));
 

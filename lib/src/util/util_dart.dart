@@ -467,7 +467,7 @@ double scaleValue({
 /// it is not relevant whether the interval is translated or scaled or not, as long as it is linear
 /// (which it would be even for logarithmic scale). But usually the interval represents
 /// scaled, non-transformed values.
-List<double> evenlySpacedPoints({
+List<double> evenlySpacedValuesIn({
   required Interval interval,
   required int pointsCount,
 }) {
