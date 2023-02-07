@@ -122,8 +122,8 @@ class NewValueHBarContainer extends NewValueContainer {
       fromValuesStart: yLabelsCreator.mergedIntervalsFromLabelsAndValues.min,
       fromValuesEnd: yLabelsCreator.mergedIntervalsFromLabelsAndValues.max,
       toPixelsStart: yContainer.yContainerAxisPixelsYMin,
-      toPixelsEnd: yContainer.yContainerAxisPixelsYMin,
-    ); // scaler.toDomainMax,);
+      toPixelsEnd: yContainer.yContainerAxisPixelsYMax,
+    );
     double height = transform.apply(dataModelPoint.dataValue);
 
     _rectangleSize = ui.Size(width, height);

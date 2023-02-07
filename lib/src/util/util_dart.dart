@@ -315,12 +315,18 @@ class DomainExtrapolation1D {
   ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
   ///
   double apply(double fromValue) {
-    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(fromValue);
+    double moved1 = LinearTransform1D.translateAtOrigin(translateBy: _fromDomainStart).apply(fromValue);
+    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(moved1);
     double scaledAndMoved = LinearTransform1D.translateAtOrigin(translateBy: -_toDomainStart).apply(scaled);
 
     double result = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
 
-    assertDoubleResultsSame(scaledAndMoved, result);
+    assertDoubleResultsSame(
+        scaledAndMoved,
+        result,
+        'in caller: fromValue=$fromValue, _domainStretch=$_domainStretch, '
+            'scaled=$scaled, scaledAndMoved=$scaledAndMoved',
+    );
 
     return result;
   }
@@ -583,10 +589,10 @@ bool isCloserThanEpsilon(double d1, double d2) {
   return false;
 }
 
-void assertDoubleResultsSame(double result, double otherResult) {
+void assertDoubleResultsSame(double result, double otherResult, [String callerMessage = '']) {
   if (!isCloserThanEpsilon(result, otherResult)) {
     throw StateError('Double results do not match. Result was $result, '
-        'Other result was $otherResult.');
+        'Other result was $otherResult. Caller message=$callerMessage');
   }
 }
 
