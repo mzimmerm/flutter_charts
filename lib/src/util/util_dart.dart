@@ -335,32 +335,6 @@ class DomainExtrapolation1D {
   }
 }
 
-/// Class that supports mapping between axis pixel points and values.
-// todo-00-last : maybe not needed at all?
-class AxisMapping {
-  final double startPixels; // known, usually 0
-  final double firstLabelPixels;  // known,
-  final double lastLabelPixels;  // known,
-  final double endPixels; // known
-
-  late final double startValue;
-  final double firstLabelValue; // known
-  final double lastLabelValue; // known
-  late final double endValue;
-
-  AxisMapping({
-    required this.startPixels,
-    required this.firstLabelPixels,
-    required this.lastLabelPixels,
-    required this.endPixels,
-
-    // required this.startValue,
-    required this.firstLabelValue,
-    required this.lastLabelValue,
-    //required this.endValue,
-  });
-}
-
 // ################ Functions ########################
 
 Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
@@ -575,7 +549,7 @@ List<double> generateValuesForLabelsIn({
     }
   }
 
-  // todo-00-last : check if positions are fully inside interval
+  // Check if positions are fully inside interval - probably not, which is fine
   return labels;
 }
 

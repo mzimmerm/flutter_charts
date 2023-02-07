@@ -73,26 +73,25 @@ abstract class ChartAnchor {
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
+  ///
+  /// Important notes:
+  ///   - This controller (Anchor) can access both on ChartRootContainer and NewDataModel.
+  //    - NewDataModel has ChartOptions
   ChartRootContainer createRootContainer({required ChartAnchor chartAnchor});
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
     // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor].
-    // The created root container is NOT populated with any children. Just the [BoxContainer.root]
-    // with arguments added by concrete constructors : [isStacked], [chartData], [xContainerLabelLayoutStrategy]
+    // After this invocation, the created root container is populated with children
+    // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
+    // depending on the concrete container. For example YContainer is populated with YLabelsCreatorAndPositioner.
     chartRootContainer = createRootContainer(chartAnchor: this); // also link from this Anchor to ChartRootContainer.
 
-    // todo-00-last-last-last-last-last-last vvvvvvvvvvvvv
-    // This controller stuff which depends both on ChartRootContainer and NewDataModel.
-    // Note that NewDataModel has ChartOptions!!!
-    // todo-00-last-last-last MOVED from ChartRootContainer constructor
     // Only set `chartData.chartAnchor = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
     // To have chartData late final, we have to keep track to only initialize chartData.chartAnchor = this on first run.
     if (_isFirst) {
       chartData.chartAnchor = this; // Because Data is created first ATM, set Anchor late
       _isFirst = false;
     }
-
-    // todo-00-last-last-last-last-last-last ^^^^^^^^^^^^^
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
 
@@ -188,25 +187,12 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
         super() {
     isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
 
-    // todo-done-last-1 : added link for model to reach the root container, and bool for testing
-    // Set self on NewDataModel EARLY, as [_createChildrenOfRootContainer] needs the data.chartRootContainer
-    // in YContainer constructor to access things in [YLabelsCreatorAndPositioner] constructor args.
-    //
-    // todo-00-last-last-last data.chartRootContainer = this;
-
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
 
-    // todo-00-last-last-last
-    // Once [NewDataModel] is fully constructed, we can use it to get values, and things dependent on them,
-    // such as Y label values. But we also need to wait for NewDataModel.chartRootContainer to be set.
-    // todo-00-last-last-last : try to place this code to NewDataModel constructor
-    // todo-00-last-last-last data.chartRootContainer.yLabelsCreator = data.labelsCreatorForPixelRange();
-    // todo-00-last-last-last MOVING TO ChartAnchor : data.yLabelsCreator = data.labelsCreatorForPixelRange(this);
-
   }
 
-  // todo-00-last-last-last-last : added, document
+  // todo-01 document
   final ChartAnchor chartAnchor;
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
@@ -229,9 +215,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   /// Cached from constructor here, until the late [xContainer] is created.
   final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy;
-
-  /// Scaler of data values to values on the Y axis.
-  // todo-00-last-last-last : moved to NewDataModel : late YLabelsCreatorAndPositioner yLabelsCreator;
 
   /// ##### Abstract methods or subclasses-implemented getters
 
@@ -519,17 +502,19 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
 
   /// Late calculated minimum and maximum pixels available for the Y axis when a half-label height
-  /// and a vertical tick height is excluded. At the same time, the difference is a height constraint
-  /// on [NewDataContainer];
+  /// and a vertical tick height is excluded.
+  ///
+  /// At the same time, the difference between [yContainerAxisPixelsYMin] and max is a height constraint
+  /// on [NewDataContainer]. The difference is also the interval to which the [DomainExtrapolation1D] should
+  /// extrapolate the Y values.
+  ///
   late final double yContainerAxisPixelsYMin;
   late final double yContainerAxisPixelsYMax;
 
-  // todo-00-last-last-last : MOVED HERE FROM YContainer
-  late YLabelsCreatorAndPositioner yLabelsCreator; // no dependence
+  // todo-00-document
+  late YLabelsCreatorAndPositioner yLabelsCreator;
 
-  // todo-00-last-last-last : moved here from YLabelsCreatorAndPositioner,
-  //  as this contains layout pixel positions.
-  // late List<LabelInfo> labelInfos;
+  // Describes layout pixel positions, so included in this view [YContainer], rather than model or controller.
   late LabelInfos labelInfos;
 
   /// Containers of Y labels.
@@ -550,50 +535,20 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
           chartRootContainer: chartRootContainer,
         ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
-    // Also create [YContainer.labelInfos] from the [YLabelsCreatorAndPositioner.yLabelPositions]
 
-    // todo-00-last-last-last : THIS IS TOO EARLY, DATA DOES NOT HAVE YLABELSCREATOR, WHICH DEPENDS ON BOTH DATA AND CONTAINER. WE ARE CALLED IN CHART_ROOT_CONTAINER CONSTRUCTOR _createChildrenOfRootContainer
-    // labelInfos = chartRootContainer.chartAnchor.yLabelsCreator.createLabelInfos();
-
-    //////////////////////////////////////// todo-00-last-last-done
-
-    // THIS IS THE EARLIEST WE CAN DO THIs
+    // The earliest we can create the member [yLabelsCreator], which depends on both NewDataModel and ChartRootContainer.
     // Only when both ChartRootContainer and NewDataModel are created, we can make Creator
     // as it depends on both
-    yLabelsCreator = labelsCreatorForPixelRange(
-      chartRootContainer: chartRootContainer,
-      newDataModel: chartRootContainer.data,
-    );
-    // todo-00-last-last-last : THIS IS TOO EARLY, DATA DOES NOT HAVE YLABELSCREATOR, WHICH DEPENDS ON BOTH DATA AND CONTAINER. WE ARE CALLED IN CHART_ROOT_CONTAINER CONSTRUCTOR _createChildrenOfRootContainer
-    labelInfos = yLabelsCreator.createLabelInfos();
-    labelInfos.formatLabels(yLabelsCreatorAndPositioner: yLabelsCreator);
-
-    ////////////////////////////////////////
-
-  }
-  // todo-00-last-last-last : Moved to this class NewDataModel from YContainer, to NewDataModel AND NOW TO ANCHOR,
-  /// Creates [YLabelsCreatorAndPositioner], which, during it's construction,
-  /// decides how many Y labels will be created, and generates points on which Y labels will be placed
-  /// (these points are at the same time values of the labels).
-  ///
-  /// All values are calculated using [NewDataModel].
-  ///
-  /// From there, Y [LabelInfo]s are created
-  YLabelsCreatorAndPositioner labelsCreatorForPixelRange({
-    required ChartRootContainer chartRootContainer,
-    required NewDataModel newDataModel,
-  }) {
-    // Create formatted labels, with positions scaled to the [axisY] interval.
-    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
+    yLabelsCreator = YLabelsCreatorAndPositioner(
       startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
-      // only 'as ChartBehavior' mixin needed
-      valueToLabel: newDataModel.chartOptions.yContainerOptions.valueToLabel,
-      yInverseTransform: newDataModel.chartOptions.dataContainerOptions.yInverseTransform,
-      yUserLabels: newDataModel.yUserLabels,
-      newDataModelForFunction: newDataModel,
+      valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
+      yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
+      yUserLabels: chartRootContainer.data.yUserLabels,
+      newDataModelForFunction: chartRootContainer.data,
       isStacked: chartRootContainer.isStacked,
     );
-    return yLabelsCreator;
+    labelInfos = yLabelsCreator.createLabelInfos();
+    // labelInfos.formatLabels(yLabelsCreatorAndPositioner: yLabelsCreator);
   }
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
@@ -620,17 +575,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     yContainerAxisPixelsYMax =
         constraints.size.height - (chartRootContainer.data.chartOptions.xContainerOptions.xBottomMinTicksHeight);
 
-    // yLabelsCreator object creates and holds all Y labels to create and layout.
-    // It is needed on chartRootContainer in [PointsColumns.scale], even with no labels shown.
-    // todo-00-last-last-last : moved to earlier to generate y labels as soon as we have Model : chartRootContainer.yLabelsCreator = _labelsCreatorForPixelRange(_axisPixelsYMin, _axisPixelsYMax); // Uses _axisYMin and max
-    // todo-00-last-last-last : must be in layout or build, as we need pixels for scaling
-    /*
-    chartRootContainer.data.yLabelsCreator.formatAndScaleLabels(
-        axisPixelsYMin: yContainerAxisPixelsYMin,
-        axisPixelsYMax: yContainerAxisPixelsYMax,
-    );
-    */
-    labelInfos.scaleLabels(
+    // We now know how long the Y axis will be in pixels, so we can calculate pixel positions on labels in LabeInfos
+    labelInfos.layoutByScalingToPixels(
       axisPixelsYMin: yContainerAxisPixelsYMin,
       axisPixelsYMax: yContainerAxisPixelsYMax,
       // yLabelsCreatorAndPositioner: chartRootContainer.yContainer.yLabelsCreator,
@@ -666,8 +612,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    // chartRootContainer.yLabelsCreator was set in caller, so non null
-    // todo-00-last-last-last : for (LabelInfo labelInfo in chartRootContainer.data.yLabelsCreator.labelInfos) {
     for (LabelInfo labelInfo in labelInfos.labelInfoList) {
       // yTickY is the vertical center of the label on the Y axis.
       // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
@@ -737,41 +681,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
-
-  /// Creates labels from Y data values in [PointsColumns], and positions the labels centers
-  /// between [yContainerAxisPixelsYMin], [yContainerAxisPixelsYMax] in pixels on the Y axis. The [yContainerAxisPixelsYMin], [yContainerAxisPixelsYMax] leave
-  /// space above and below for half label and vertical tick.
-  ///
-  /// Effectively, The distance between [yContainerAxisPixelsYMin], [yContainerAxisPixelsYMax] is a constraint on the [NewDataContainer];
-  /// at the same time it is the interval to which the [DomainExtrapolation1D] should extrapolate the
-  /// Y values [YLabelsCreatorAndPositioner._mergedLabelYsIntervalWithDataYsEnvelope].
-  /// todo-done-last-1
-  // todo-00 get rid of this in new version
-
-/*
-  // todo-00-last-last-last : Moved to NewDataModel
-  /// Creates [YLabelsCreatorAndPositioner], which, during it's construction,
-  /// decides how many Y labels will be created, and generates points on which Y labels will be placed
-  /// (these points are at the same time values of the labels).
-  ///
-  /// All values are calculated using [NewDataModel].
-  ///
-  /// From there, Y [LabelInfo]s are created
-  YLabelsCreatorAndPositioner labelsCreatorForPixelRange(double pixelsMin, pixelsMax) {
-    // Create formatted labels, with positions scaled to the [axisY] interval.
-    YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
-      axisY: Interval(pixelsMin, pixelsMax),
-      startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
-      // only 'as ChartBehavior' mixin needed
-      valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
-      yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
-      yUserLabels: chartRootContainer.data.yUserLabels,
-      newDataModelForFunction: chartRootContainer.data,
-      isStacked: chartRootContainer.isStacked,
-    );
-    return yLabelsCreator;
-  }
-*/
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
@@ -1996,7 +1905,7 @@ class StackableValuePoint {
   // ### Group 0: Structural
 
   /// Root container added to access yContainer._yAxisPixelsMin / Max
-  /// todo-00-last-last-last
+  /// todo-done-last
   late final ChartRootContainer? chartRootContainer;
 
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
@@ -2088,8 +1997,8 @@ class StackableValuePoint {
     required double scaledX,
     required YLabelsCreatorAndPositioner yLabelsCreator,
   }) {
-    // todo-00-last-last-last Note: Scales fromY from the OLD [ChartData] BUT all the scaling domains
-    //                              were calculated using the NEW [NewDataModel] and [NewDataModelPoints]!
+    // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsCreator
+    // were calculated using the NEW [NewDataModel]
 
     double axisPixelsYMin = chartRootContainer!.yContainer.yContainerAxisPixelsYMin;
     double axisPixelsYMax = chartRootContainer!.yContainer.yContainerAxisPixelsYMax;
@@ -2100,7 +2009,7 @@ class StackableValuePoint {
         value: fromY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: yLabelsCreator.isAxisAndLabelsInverse,
+        isInverse: yLabelsCreator.isAxisAndLabelsSameDirection,
       ),
     );
     scaledTo = ui.Offset(
@@ -2109,7 +2018,7 @@ class StackableValuePoint {
         value: toY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: yLabelsCreator.isAxisAndLabelsInverse,
+        isInverse: yLabelsCreator.isAxisAndLabelsSameDirection,
       ),
     );
 
@@ -2146,10 +2055,9 @@ class StackableValuePoint {
       predecessorPoint: predecessorPoint,
     );
 
-    // todo-00-last-last-last-last : Why are we setting all those values when must have been set during clone construction????
+    // todo-00 : Why are we setting all those values when must have been set during clone construction????
     // numbers and Strings, being immutable, can be just assigned.
     // rest of objects (ui.Offset) must be created from immutable leafs.
-    // todo-00-last-last-last : already initialized : clone.chartRootContainer = chartRootContainer;
     clone.xLabel = xLabel;
     clone.dataY = dataY;
     clone.predecessorPoint = null;

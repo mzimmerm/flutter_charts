@@ -8,11 +8,15 @@ import 'util_dart.dart' as util_dart;
 import 'test/generate_test_data_from_app_runs.dart';
 import '../chart/container.dart' show ChartBehavior;
 
-// todo-00-last-last-last-last : move to NewDataModel
-
+// todo-00 : not specific to Y labels, although only used there. Generalize.
 /// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
 ///
-/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
+/// During it's construction, decides how many Y labels will be created, and generates points on which the Y labels
+/// will be placed (these points are also values of the labels).
+///
+/// All values are calculated using [NewDataModel].
+///
+/// From there, Y [LabelInfo]s are created/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
 /// The following members are most relevant in the creating and formatting labels
 /// - [_dataYs] is a list of numeric Y values, passed to constructor.
@@ -42,15 +46,11 @@ class YLabelsCreatorAndPositioner {
 
   List<String>? yUserLabels;
 
-  /// Coordinates of the Y axis.
-  /// todo-00-last-last-last REMOVE THIS, AND PASS TO SCALING ONLY. MAKES THIS INDEPENDENT OF ANY PIXEL VALUES.
-  // todo-00-last-last-last : final util_dart.Interval _axisY;
-
   /// Keeps the transformed, non-scaled data values at which labels are shown.
   /// [YContainer.labelInfos] are created from them first, and scaled to pixel values during [ChartRootContainer.layout].
-  /// todo-00-last-last-last : make private
-  late final List<double> yLabelPositions;
-  final bool isAxisAndLabelsInverse = false; // On Y axis, positions go up, but axis down. Will scale inverse.
+  late final List<double> _yLabelPositions;
+  // On Y axis, label values go up, but axis down. true scale inverses that.
+  final bool isAxisAndLabelsSameDirection = false;
 
   /// The function converts value to label.
   ///
@@ -62,9 +62,6 @@ class YLabelsCreatorAndPositioner {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _yInverseTransform;
 
-  /// Maintains values of labels.
-  // todo-00-last-last-last : moved to YContainer, as this contains layout pixel positions. late List<LabelInfo> labelInfos;
-
   /// Generative constructor allows to create labels.
   ///
   /// If [yUserLabels] list of user labels is passed, user labels will be used and distributed linearly between the
@@ -73,19 +70,18 @@ class YLabelsCreatorAndPositioner {
   /// highest order of numeric values in the passed [dataYs].
   /// See the class comment for examples of how auto labels are created.
   YLabelsCreatorAndPositioner({
-    // todo-00-last-last-last : required util_dart.Interval axisY,
     required bool startYAxisAtDataMinAllowed,
     required Function valueToLabel,
     required Function yInverseTransform,
     this.yUserLabels,
     NewDataModel? newDataModelForFunction,
     bool? isStacked,
-  })  : // todo-00-last-last-last : _axisY = axisY,
+  })  :
         _valueToLabel = valueToLabel,
         _yInverseTransform = yInverseTransform,
         _newDataModelForFunction = newDataModelForFunction,
         _isStacked = isStacked {
-    // hack for tests to not have to change. todo-011 : fix in tests
+    // hack for tests to not have to change. todo-00 : fix in tests
     _isStacked ??= false;
 
     // List<double> yLabelPositions;
@@ -93,32 +89,29 @@ class YLabelsCreatorAndPositioner {
 
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
+    // Both [dataYsEnvelope] and member [_yLabelPositions] ,
+    // are  not-scaled && transformed data from [NewDataModelPoint].
     if (isUsingUserLabels) {
       dataYsEnvelope = _newDataModelForFunction!.dataValuesInterval(isStacked: _isStacked!);
-      yLabelPositions = util_dart.evenlySpacedValuesIn(interval: dataYsEnvelope, pointsCount: yUserLabels!.length);
+      _yLabelPositions = util_dart.evenlySpacedValuesIn(interval: dataYsEnvelope, pointsCount: yUserLabels!.length);
     } else {
       dataYsEnvelope = _newDataModelForFunction!.extendedDataValuesInterval(startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, isStacked: _isStacked!);
-      yLabelPositions = util_dart.generateValuesForLabelsIn(interval: dataYsEnvelope, startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed);
+      _yLabelPositions = util_dart.generateValuesForLabelsIn(interval: dataYsEnvelope, startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed);
     }
-    // Create LabelInfos for all labels and point each to this scaler
-    // todo-00-last-last : move creation from model to when YContainer is created. createLabelInfos(yLabelPositions);
 
-    // Once LabelInfos are prepared, we can store the merged interval
-    // All values are calculated using the [NewDataModel] methods! That proves sameness nicely
-    // dataYsOfLabels : not-scaled && transformed data from labelInfo.transformedDataValue
+    // Store the merged interval of values and label envelope for [LabelInfos] creation
+    // that can be created immediately after by invoking [createLabelInfos].
     mergedIntervalsFromLabelsAndValues = util_dart.Interval(
-      yLabelPositions.reduce(math.min),
-      yLabelPositions.reduce(math.max),
+      _yLabelPositions.reduce(math.min),
+      _yLabelPositions.reduce(math.max),
     ).merge(dataYsEnvelope);
 
-    // Format and scale the labels we just created
-    // todo-00-last-last-last : must be moved in layout or build, as we need pixels for scaling
-    // formatAndScaleLabels();
   }
 
-  // todo-00-last : document
+  // todo-00-document
+  // Format and scale the labels we just created should be done in layout, where we know Y axis pixel size.
   LabelInfos createLabelInfos() {
-    List<LabelInfo> labelInfos = yLabelPositions // this is the label/DataYs enveloper - all values after transform
+    List<LabelInfo> labelInfos = _yLabelPositions // this is the label/DataYs enveloper - all values after transform
         .map((transformedLabelValue) => LabelInfo(
               dataValue: transformedLabelValue,
               parentYScaler: this,
@@ -126,31 +119,9 @@ class YLabelsCreatorAndPositioner {
         .toList();
     return LabelInfos(
       from: labelInfos,
-      isAxisAndLabelsInverse: isAxisAndLabelsInverse,
+      yLabelsCreatorAndPositioner: this,
     );
   }
-
-/*
-  // todo-00-last-last-last rename to : layoutGeneratedLabelPointsAndFormatLabels
-  void formatAndScaleLabels({
-    required double axisPixelsYMin,
-    required double axisPixelsYMax,
-  }) {
-    for (int i = 0; i < labelInfos.length; i++) {
-      LabelInfo labelInfo = labelInfos[i];
-      // Scale labels
-      // todo-00-last-last-last-last : We cannot do this until we know Y axis pixels!!! 
-      labelInfo._scaleLabelValue(axisPixelsYMin: axisPixelsYMin, axisPixelsYMax: axisPixelsYMax, ); // This sets labelInfo._axisValue = YScaler.scaleY(labelInfo.transformedDataValue)
-    
-      // Format labels takes a different form in user labels
-      if (isUsingUserLabels) {
-        labelInfo._formattedLabel = yUserLabels![i];
-      } else {
-        labelInfo._formattedLabel = _valueToLabel(labelInfo._rawDataValue);
-      }
-    }
-  }
-*/
 
   bool get isUsingUserLabels => yUserLabels != null;
 
@@ -158,7 +129,6 @@ class YLabelsCreatorAndPositioner {
   /// - From own scale, given be the merged data and label intervals
   ///   calculated in [_mergedLabelYsIntervalWithDataYsEnvelope]
   /// - To the Y axis scale defined by [_axisYMin], [_axisYMax].
-  /// todo-00-last-last-last : added the axis pixels to which to scale
   double scaleY({
     required double value,
     required double axisPixelsYMin,
@@ -166,30 +136,15 @@ class YLabelsCreatorAndPositioner {
     required bool isInverse,
   }) {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
-    // todo-00-last-last-last : pull out of this class
+    // todo-00-last : Use the new scaling utility
     return util_dart.scaleValue(
       value: value.toDouble(),
       fromDomainMin: mergedIntervalsFromLabelsAndValues.min,
       fromDomainMax: mergedIntervalsFromLabelsAndValues.max,
-      // todo-00-last-last-last toDomainNewMax: _axisY.max,
-      // todo-00-last-last-last toDomainNewMin: _axisY.min,
       toDomainNewMin: isInverse ? axisPixelsYMax : axisPixelsYMin,
       toDomainNewMax: isInverse ? axisPixelsYMin : axisPixelsYMax,
     );
   }
-
-  // ### Helper accessors to collection of LabelInfos
-
-  /// Extracts not-scaled && transformed values where labels from [labelInfos] are positioned.
-  // todo-00-last-last : moved : List<double> get dataYsOfLabels => labelInfos.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
-
-  // todo-00-last-last-last : added the 4 getters for a quick access by the new scaler
-  double get fromDomainMin => mergedIntervalsFromLabelsAndValues.min;
-  double get fromDomainMax => mergedIntervalsFromLabelsAndValues.max;
-  // used in new scaling within NewDataContainer coordinates!! So make sure it starts with 0.0 and
-  // length is same as constraint size given to NewDataContainer.
-   // todo-00-last-last-last double get toDomainMin => 0.0;
-   // todo-00-last-last-last double get toDomainMax => _axisY.max - _axisY.min;
 }
 
 /// The [LabelInfo] is a holder for one label,
@@ -245,6 +200,7 @@ class YLabelsCreatorAndPositioner {
 /// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
 class LabelInfo {
+  // todo-00-last : review places and names of YLabelsCreatorAndPositioner _parentYScaler and organize better
   final YLabelsCreatorAndPositioner _parentYScaler;
 
   /// Not-scaled and not-transformed label value.
@@ -285,9 +241,6 @@ class LabelInfo {
     required double axisPixelsYMax,
     required bool isInverse,
   }) {
-    // todo-02 consider what to do about the toDouble() - ensure higher up so if parent scaler not set by now, scaledLabelValue remains null.
-    // todo-00-last-last
-    // todo-00-last-last-last : _axisValue = _parentYScaler.scaleY(value: _dataValue.toDouble());
     _pixelPositionOnAxis = _parentYScaler.scaleY(
         value: _dataValue.toDouble(),
         axisPixelsYMin: axisPixelsYMin,
@@ -310,22 +263,15 @@ class LabelInfo {
 ///
 /// Represents list of label values always in increasing order
 /// because of the [YLabelsCreatorAndPositioner] implementation which creates instances of this class.
+///
+/// During creation, formats the labels using each [LabelInfo]'s own formatter.
 class LabelInfos {
   LabelInfos({
     required List<LabelInfo> from,
-    required bool isAxisAndLabelsInverse,
+    required YLabelsCreatorAndPositioner yLabelsCreatorAndPositioner,
   })  : _labelInfoList = from,
-        _isAxisAndLabelsInverse = isAxisAndLabelsInverse;
-
-  final List<LabelInfo> _labelInfoList;
-  Iterable<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
-  final bool _isAxisAndLabelsInverse;
-
-  // todo-00-last-last-last rename to : layoutGeneratedLabelPointsAndFormatLabels
-  // todo-00-last-last : merge to constructor
-  void formatLabels({
-    required YLabelsCreatorAndPositioner yLabelsCreatorAndPositioner
-  }) {
+        _yLabelsCreatorAndPositioner = yLabelsCreatorAndPositioner {
+    // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
       LabelInfo labelInfo = _labelInfoList[i];
       // Format labels takes a different form in user labels
@@ -337,19 +283,24 @@ class LabelInfos {
     }
   }
 
-  void scaleLabels({
+  late final YLabelsCreatorAndPositioner _yLabelsCreatorAndPositioner;
+  final List<LabelInfo> _labelInfoList;
+  Iterable<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
+
+  // todo-00-document
+  // cannot invoke this until we know Y axis pixels!!!
+  void layoutByScalingToPixels({
     required double axisPixelsYMin,
     required double axisPixelsYMax,
   }) {
     for (int i = 0; i < _labelInfoList.length; i++) {
       LabelInfo labelInfo = _labelInfoList[i];
       // Scale labels
-      // todo-00-last-last-last-last : We cannot do this until we know Y axis pixels!!!
       // This sets labelInfo._axisValue = YScaler.scaleY(labelInfo.transformedDataValue)
       labelInfo._scaleLabelValue(
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: _isAxisAndLabelsInverse,
+        isInverse: _yLabelsCreatorAndPositioner.isAxisAndLabelsSameDirection,
       );
     }
   }

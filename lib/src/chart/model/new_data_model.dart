@@ -65,15 +65,8 @@ class NewDataModel {
 
   // NEW CODE =============================================================
 
-  // todo-done-last-1 : added NewDataModel.chartRootContainer and : this is needed because model constructs containers, and containers need the root container.
-  // Must be public, as it must be set after creation of this [NewDataModel],
-  //   in the root container constructor which is in turn, constructed from this model.
-  // todo-00-last-last-last : removed direct link. Can reach via Anchor : late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
+  // [NewDataModel] is created first. So Anchor must be set publicly late.
   late final ChartAnchor chartAnchor;
-
-  /// Scaler of data values to values on the Y axis.
-  // todo-00-last-last-last : moved here from ChartRootContainer
-  // todo-00-last-last-last : MOVED TO ANCHOR late YLabelsCreatorAndPositioner yLabelsCreator;
 
   // todo-00 move to util and make generic
   /// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
@@ -476,7 +469,6 @@ class NewDataModelPoint extends Object with DoubleLinked {
   NewValueContainer generateViewChildrenAsNewValueContainer(ChartRootContainer chartRootContainer) {
     return NewValueHBarContainer(
         dataModelPoint: this,
-        // todo-00-last-last : chartRootContainer: ownerSameXValuesList._dataModel.chartRootContainer
         chartRootContainer: chartRootContainer,
     );
   }
