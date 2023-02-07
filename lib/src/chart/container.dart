@@ -563,8 +563,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     yLabelsCreator = labelsCreatorForPixelRange(
       chartRootContainer: chartRootContainer,
       newDataModel: chartRootContainer.data,
-      // chartOptions: chartData.chartOptions,
-      // yUserLabels: chartData.yUserLabels,
     );
     // todo-00-last-last-last : THIS IS TOO EARLY, DATA DOES NOT HAVE YLABELSCREATOR, WHICH DEPENDS ON BOTH DATA AND CONTAINER. WE ARE CALLED IN CHART_ROOT_CONTAINER CONSTRUCTOR _createChildrenOfRootContainer
     labelInfos = yLabelsCreator.createLabelInfos();
@@ -584,12 +582,9 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   YLabelsCreatorAndPositioner labelsCreatorForPixelRange({
     required ChartRootContainer chartRootContainer,
     required NewDataModel newDataModel,
-    // required ChartOptions chartOptions,
-    // required List<String>? yUserLabels,
   }) {
     // Create formatted labels, with positions scaled to the [axisY] interval.
     YLabelsCreatorAndPositioner yLabelsCreator = YLabelsCreatorAndPositioner(
-      // todo-00-last-last-last axisY: Interval(pixelsMin, pixelsMax), was passed, not needed, scaling separately
       startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
       // only 'as ChartBehavior' mixin needed
       valueToLabel: newDataModel.chartOptions.yContainerOptions.valueToLabel,
@@ -2100,12 +2095,22 @@ class StackableValuePoint {
     double axisPixelsYMax = chartRootContainer!.yContainer.yContainerAxisPixelsYMax;
 
     scaledFrom = ui.Offset(
-        scaledX,
-        yLabelsCreator.scaleY(value: fromY, axisPixelsYMin: axisPixelsYMin, axisPixelsYMax: axisPixelsYMax)
+      scaledX,
+      yLabelsCreator.scaleY(
+        value: fromY,
+        axisPixelsYMin: axisPixelsYMin,
+        axisPixelsYMax: axisPixelsYMax,
+        isInverse: yLabelsCreator.isAxisAndLabelsInverse,
+      ),
     );
     scaledTo = ui.Offset(
-        scaledX,
-        yLabelsCreator.scaleY(value: toY, axisPixelsYMin: axisPixelsYMin, axisPixelsYMax: axisPixelsYMax)
+      scaledX,
+      yLabelsCreator.scaleY(
+        value: toY,
+        axisPixelsYMin: axisPixelsYMin,
+        axisPixelsYMax: axisPixelsYMax,
+        isInverse: yLabelsCreator.isAxisAndLabelsInverse,
+      ),
     );
 
     return this;
@@ -2346,7 +2351,10 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = layoutDependency.xTickXs[col];
-        point.scale(scaledX: scaledX, yLabelsCreator: chartRootContainer.yContainer.yLabelsCreator);
+        point.scale(
+          scaledX: scaledX,
+          yLabelsCreator: chartRootContainer.yContainer.yLabelsCreator,
+        );
       });
       col++;
     }

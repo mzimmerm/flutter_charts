@@ -50,6 +50,7 @@ class YLabelsCreatorAndPositioner {
   /// [YContainer.labelInfos] are created from them first, and scaled to pixel values during [ChartRootContainer.layout].
   /// todo-00-last-last-last : make private
   late final List<double> yLabelPositions;
+  final bool isAxisAndLabelsInverse = false; // On Y axis, positions go up, but axis down. Will scale inverse.
 
   /// The function converts value to label.
   ///
@@ -123,7 +124,10 @@ class YLabelsCreatorAndPositioner {
               parentYScaler: this,
             ))
         .toList();
-    return LabelInfos(from: labelInfos);
+    return LabelInfos(
+      from: labelInfos,
+      isAxisAndLabelsInverse: isAxisAndLabelsInverse,
+    );
   }
 
 /*
@@ -159,6 +163,7 @@ class YLabelsCreatorAndPositioner {
     required double value,
     required double axisPixelsYMin,
     required double axisPixelsYMax,
+    required bool isInverse,
   }) {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
     // todo-00-last-last-last : pull out of this class
@@ -168,8 +173,8 @@ class YLabelsCreatorAndPositioner {
       fromDomainMax: mergedIntervalsFromLabelsAndValues.max,
       // todo-00-last-last-last toDomainNewMax: _axisY.max,
       // todo-00-last-last-last toDomainNewMin: _axisY.min,
-      toDomainNewMax: axisPixelsYMin,
-      toDomainNewMin: axisPixelsYMax,
+      toDomainNewMin: isInverse ? axisPixelsYMax : axisPixelsYMin,
+      toDomainNewMax: isInverse ? axisPixelsYMin : axisPixelsYMax,
     );
   }
 
@@ -278,6 +283,7 @@ class LabelInfo {
   void _scaleLabelValue({
     required double axisPixelsYMin,
     required double axisPixelsYMax,
+    required bool isInverse,
   }) {
     // todo-02 consider what to do about the toDouble() - ensure higher up so if parent scaler not set by now, scaledLabelValue remains null.
     // todo-00-last-last
@@ -285,7 +291,8 @@ class LabelInfo {
     _pixelPositionOnAxis = _parentYScaler.scaleY(
         value: _dataValue.toDouble(),
         axisPixelsYMin: axisPixelsYMin,
-        axisPixelsYMax: axisPixelsYMax
+        axisPixelsYMax: axisPixelsYMax,
+        isInverse: isInverse,
     );
   }
 
@@ -299,19 +306,24 @@ class LabelInfo {
   }
 }
 
-/// A wrapper for the [LabelInfo] which define the Y axis points where labels are placed, and their values.
+/// A wrapper for list of [LabelInfo]s.
+///
+/// Represents list of label values always in increasing order
+/// because of the [YLabelsCreatorAndPositioner] implementation which creates instances of this class.
 class LabelInfos {
-
-  LabelInfos({required List<LabelInfo> from}) : _labelInfoList = from;
+  LabelInfos({
+    required List<LabelInfo> from,
+    required bool isAxisAndLabelsInverse,
+  })  : _labelInfoList = from,
+        _isAxisAndLabelsInverse = isAxisAndLabelsInverse;
 
   final List<LabelInfo> _labelInfoList;
   Iterable<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
+  final bool _isAxisAndLabelsInverse;
 
   // todo-00-last-last-last rename to : layoutGeneratedLabelPointsAndFormatLabels
   // todo-00-last-last : merge to constructor
   void formatLabels({
-    //required double axisPixelsYMin,
-    //required double axisPixelsYMax,
     required YLabelsCreatorAndPositioner yLabelsCreatorAndPositioner
   }) {
     for (int i = 0; i < _labelInfoList.length; i++) {
@@ -328,13 +340,17 @@ class LabelInfos {
   void scaleLabels({
     required double axisPixelsYMin,
     required double axisPixelsYMax,
-    // required YLabelsCreatorAndPositioner yLabelsCreatorAndPositioner
   }) {
     for (int i = 0; i < _labelInfoList.length; i++) {
       LabelInfo labelInfo = _labelInfoList[i];
       // Scale labels
       // todo-00-last-last-last-last : We cannot do this until we know Y axis pixels!!!
-      labelInfo._scaleLabelValue(axisPixelsYMin: axisPixelsYMin, axisPixelsYMax: axisPixelsYMax, ); // This sets labelInfo._axisValue = YScaler.scaleY(labelInfo.transformedDataValue)
+      // This sets labelInfo._axisValue = YScaler.scaleY(labelInfo.transformedDataValue)
+      labelInfo._scaleLabelValue(
+        axisPixelsYMin: axisPixelsYMin,
+        axisPixelsYMax: axisPixelsYMax,
+        isInverse: _isAxisAndLabelsInverse,
+      );
     }
   }
   List<double> get dataYsOfLabels => labelInfoList.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
