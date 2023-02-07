@@ -24,9 +24,10 @@ class LineChartAnchor extends ChartAnchor {
 
   /// Concrete implementation returns the root for line chart.
   @override
-  LineChartRootContainer createRootContainer() {
+  LineChartRootContainer createRootContainer({required ChartAnchor chartAnchor}) {
 
     return LineChartRootContainer(
+      chartAnchor: chartAnchor,
       chartData: chartData,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -43,10 +44,12 @@ class LineChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
+    required ChartAnchor chartAnchor,
     required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
+          chartAnchor: chartAnchor,
           chartData: chartData,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

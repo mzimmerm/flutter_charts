@@ -60,6 +60,7 @@ class NewDataModel {
         ),
       );
     }
+
   }
 
   // NEW CODE =============================================================
@@ -67,9 +68,14 @@ class NewDataModel {
   // todo-done-last-1 : added NewDataModel.chartRootContainer and : this is needed because model constructs containers, and containers need the root container.
   // Must be public, as it must be set after creation of this [NewDataModel],
   //   in the root container constructor which is in turn, constructed from this model.
-  late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
+  // todo-00-last-last-last : removed direct link. Can reach via Anchor : late ChartRootContainer chartRootContainer; // todo-00 : this cannot be final. By hitting + this was already initialized. Why??? I think we need to always reconstruct everything in chart
+  late final ChartAnchor chartAnchor;
 
-  // todo-00 move to util and generacise
+  /// Scaler of data values to values on the Y axis.
+  // todo-00-last-last-last : moved here from ChartRootContainer
+  // todo-00-last-last-last : MOVED TO ANCHOR late YLabelsCreatorAndPositioner yLabelsCreator;
+
+  // todo-00 move to util and make generic
   /// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
   /// the [_dataRows] 2D array List<List<Object>>, so that
   /// for each row and column index in valid range,
@@ -109,12 +115,9 @@ class NewDataModel {
   /// List of data sameXValues in the model.
   final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-2 : added for the NewDataModel
 
-  // todo-00-last-last-progress
-  //       - after, add on NewDataModel method _newMergedLabelYsIntervalWithDataYsEnvelope:
-  //          - for stacked, returns (still legacy) interval LabelYsInterval merged with envelope of columnStackedDataValue
-  //       - then the _newMergedLabelYsIntervalWithDataYsEnvelope will be used to set fromDomainMin and fromDomainMax for extrapolation
-
-  /// Returns the minimum and maximum non-scaled, non-transformed (todo-01 : this may be needed) values min and max
+  /// Returns the minimum and maximum non-scaled, non-transformed date values.
+  ///
+  /// Calculated from [NewDataModel].
   Interval dataValuesInterval({
     required bool isStacked,
   }) {
@@ -152,7 +155,7 @@ class NewDataModel {
     );
   }
 
-  List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList() {
+  List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList(ChartRootContainer chartRootContainer) {
     List<NewValuesColumnContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
 
@@ -163,7 +166,7 @@ class NewDataModel {
           chartRootContainer: chartRootContainer,
           backingDataModelSameXValues: sameXValues,
           children: [Column(
-              children: sameXValues.generateViewChildrenAsNewValueContainersList().reversed.toList(growable: false),
+              children: sameXValues.generateViewChildrenAsNewValueContainersList(chartRootContainer).reversed.toList(growable: false),
           )],
           // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
@@ -172,7 +175,6 @@ class NewDataModel {
     }
     return chartColumns;
   }
-
 
 
   // OLD CODE =============================================================
@@ -394,15 +396,18 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
 
   /// Generates [NewValueContainer] view from each [NewDataModelPoint]
   /// and collects the views in a list which is returned.
-  List<NewValueContainer> generateViewChildrenAsNewValueContainersList() {
+  List<NewValueContainer> generateViewChildrenAsNewValueContainersList(ChartRootContainer chartRootContainer) {
     List<NewValueContainer> columnPointContainers = [];
 
     // Generates [NewValueContainer] view from each [NewDataModelPoint]
     // and collect the views in a list which is returned.
     applyOnAllElements(
-      (NewDataModelPoint element, dynamic columnPointContainers) =>
-          columnPointContainers.add(element.generateViewChildrenAsNewValueContainer()),
-      columnPointContainers,
+      (NewDataModelPoint element, dynamic passedList) {
+        var columnPointContainers = passedList[0];
+        var chartRootContainer = passedList[1];
+        columnPointContainers.add(element.generateViewChildrenAsNewValueContainer(chartRootContainer));
+      },
+      [columnPointContainers, chartRootContainer],
     );
 
     return columnPointContainers;
@@ -468,10 +473,12 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// References the data column (sameXValues list) this point belongs to
   NewDataModelSameXValues ownerSameXValuesList;
 
-  NewValueContainer generateViewChildrenAsNewValueContainer() {
+  NewValueContainer generateViewChildrenAsNewValueContainer(ChartRootContainer chartRootContainer) {
     return NewValueHBarContainer(
         dataModelPoint: this,
-        chartRootContainer: ownerSameXValuesList._dataModel.chartRootContainer);
+        // todo-00-last-last : chartRootContainer: ownerSameXValuesList._dataModel.chartRootContainer
+        chartRootContainer: chartRootContainer,
+    );
   }
 
   ui.Color get color => ownerSameXValuesList._dataModel._dataRowsColors[_rowIndex];

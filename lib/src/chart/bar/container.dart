@@ -21,9 +21,10 @@ class VerticalBarChartAnchor extends ChartAnchor {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  VerticalBarChartRootContainer createRootContainer() {
+  VerticalBarChartRootContainer createRootContainer({required ChartAnchor chartAnchor}) {
 
     return VerticalBarChartRootContainer(
+      chartAnchor: chartAnchor,
       chartData: chartData,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -38,10 +39,12 @@ class VerticalBarChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
+    required ChartAnchor chartAnchor,
     required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
+          chartAnchor: chartAnchor,
           chartData: chartData,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

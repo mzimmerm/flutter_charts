@@ -24,7 +24,7 @@ class NewDataContainer extends DataContainer {
 
    NewDataModel dataModel = chartRootContainer.data;
 
-   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildrenAsNewValuesColumnContainerList();
+   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildrenAsNewValuesColumnContainerList(chartRootContainer);
 
     addChildren([
       Row(
@@ -107,14 +107,13 @@ class NewValueHBarContainer extends NewValueContainer {
 
   @override
   void layout() {
-
     // Calculate [_indicatorSize], the width and height of the Rectangle that represents data:
 
     // Rectangle width is from constraints
     double width = constraints.width;
 
     // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
-    YLabelsCreatorAndPositioner scaler = dataModelPoint.ownerSameXValuesList.dataModel.chartRootContainer.yLabelsCreator;
+    YLabelsCreatorAndPositioner scaler = chartRootContainer.yContainer.yLabelsCreator; // todo-00-last-last-last-last : dataModelPoint.ownerSameXValuesList.dataModel.yLabelsCreator;
     // double height = scaler.scaleY(value: dataModelPoint.dataValue);
 
     // todo-00-last-last : in new layout,
@@ -139,12 +138,15 @@ class NewValueHBarContainer extends NewValueContainer {
     //   double get toDomainMin => 0.0;
     //   double get toDomainMax => _axisY.max - _axisY.min;
 
-    // todo-00-last-last : remove dependence on scaler
+    YContainer yContainer = chartRootContainer.yContainer;
+
+    // todo-00-last-last : remove dependence on pixels (toDomain)
     var transform = DomainExtrapolation1D.valuesToPixels(
-      fromValuesStart: scaler.fromDomainMin,
-      fromValuesEnd: scaler.fromDomainMax,
-      toPixelsStart: scaler.toDomainMin,
-      toPixelsEnd: scaler.toDomainMax,);
+      fromValuesStart: scaler.mergedIntervalsFromLabelsAndValues.min, // scaler.fromDomainMin,
+      fromValuesEnd: scaler.mergedIntervalsFromLabelsAndValues.max, // scaler.fromDomainMax,
+      toPixelsStart: yContainer.yContainerAxisPixelsYMin, // scaler.toDomainMin,
+      toPixelsEnd: yContainer.yContainerAxisPixelsYMin,
+    ); // scaler.toDomainMax,);
     double height = transform.apply(dataModelPoint.dataValue);
 
     _rectangleSize = ui.Size(width, height);
