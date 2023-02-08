@@ -118,11 +118,11 @@ class NewValueHBarContainer extends NewValueContainer {
     YContainer yContainer = chartRootContainer.yContainer;
 
     // todo-00-last : remove dependence on pixels (toDomain). Review where yLabelsCreator comes from and if needed
-    var transform = DomainExtrapolation1D.valuesToPixels(
-      fromValuesStart: yLabelsCreator.mergedIntervalsFromLabelsAndValues.min,
-      fromValuesEnd: yLabelsCreator.mergedIntervalsFromLabelsAndValues.max,
-      toPixelsStart: yContainer.yContainerAxisPixelsYMin,
-      toPixelsEnd: yContainer.yContainerAxisPixelsYMax,
+    var transform = ToPixelsExtrapolation1D(
+      fromValuesMin: yLabelsCreator.mergedIntervalsFromLabelsAndValues.min,
+      fromValuesMax: yLabelsCreator.mergedIntervalsFromLabelsAndValues.max,
+      toPixelsMin: yContainer.yContainerAxisPixelsYMin,
+      toPixelsMax: yContainer.yContainerAxisPixelsYMax,
     );
     double height = transform.apply(dataModelPoint.dataValue);
 

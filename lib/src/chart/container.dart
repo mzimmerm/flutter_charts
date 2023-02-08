@@ -548,7 +548,6 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       isStacked: chartRootContainer.isStacked,
     );
     labelInfos = yLabelsCreator.createLabelInfos();
-    // labelInfos.formatLabels(yLabelsCreatorAndPositioner: yLabelsCreator);
   }
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
@@ -2009,7 +2008,7 @@ class StackableValuePoint {
         value: fromY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: yLabelsCreator.isAxisAndLabelsSameDirection,
+        isAxisAndLabelsSameDirection: yLabelsCreator.isAxisAndLabelsSameDirection,
       ),
     );
     scaledTo = ui.Offset(
@@ -2018,7 +2017,7 @@ class StackableValuePoint {
         value: toY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: yLabelsCreator.isAxisAndLabelsSameDirection,
+        isAxisAndLabelsSameDirection: yLabelsCreator.isAxisAndLabelsSameDirection,
       ),
     );
 

@@ -129,21 +129,30 @@ class YLabelsCreatorAndPositioner {
   /// - From own scale, given be the merged data and label intervals
   ///   calculated in [_mergedLabelYsIntervalWithDataYsEnvelope]
   /// - To the Y axis scale defined by [_axisYMin], [_axisYMax].
-  double scaleY({
+  double scaleY({ // todo-00-last-last : remove method, call the called extrapolation in place
     required double value,
     required double axisPixelsYMin,
     required double axisPixelsYMax,
-    required bool isInverse,
+    required bool isAxisAndLabelsSameDirection,
   }) {
     // Use linear scaling utility to scale from data Y interval to axis Y interval
     // todo-00-last : Use the new scaling utility
+/*
     return util_dart.scaleValue(
       value: value.toDouble(),
       fromDomainMin: mergedIntervalsFromLabelsAndValues.min,
       fromDomainMax: mergedIntervalsFromLabelsAndValues.max,
-      toDomainNewMin: isInverse ? axisPixelsYMax : axisPixelsYMin,
-      toDomainNewMax: isInverse ? axisPixelsYMin : axisPixelsYMax,
+      toDomainNewMin: isAxisAndLabelsSameDirection ? axisPixelsYMax : axisPixelsYMin,
+      toDomainNewMax: isAxisAndLabelsSameDirection ? axisPixelsYMin : axisPixelsYMax,
     );
+*/
+    return util_dart.ToPixelsExtrapolation1D(
+            fromValuesMin: mergedIntervalsFromLabelsAndValues.min,
+            fromValuesMax: mergedIntervalsFromLabelsAndValues.max,
+            toPixelsMin: axisPixelsYMin,
+            toPixelsMax: axisPixelsYMax,
+            doInvertToDomain: !isAxisAndLabelsSameDirection)
+        .apply(value);
   }
 }
 
@@ -236,16 +245,16 @@ class LabelInfo {
   }
 
   /// Scales this [LabelInfo] to the position on the Y axis.
-  void _scaleLabelValue({
+  void _scaleLabelValue({ // todo-00-last-last-last : remove, just place the called scaleY in place
     required double axisPixelsYMin,
     required double axisPixelsYMax,
-    required bool isInverse,
+    required bool isAxisAndLabelsSameDirection,
   }) {
     _pixelPositionOnAxis = _parentYScaler.scaleY(
         value: _dataValue.toDouble(),
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: isInverse,
+      isAxisAndLabelsSameDirection: isAxisAndLabelsSameDirection,
     );
   }
 
@@ -300,7 +309,7 @@ class LabelInfos {
       labelInfo._scaleLabelValue(
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isInverse: _yLabelsCreatorAndPositioner.isAxisAndLabelsSameDirection,
+        isAxisAndLabelsSameDirection: _yLabelsCreatorAndPositioner.isAxisAndLabelsSameDirection,
       );
     }
   }

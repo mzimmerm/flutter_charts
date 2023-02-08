@@ -11,6 +11,7 @@
 
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart' as decimal;
+import 'package:flutter_charts/flutter_charts.dart';
 
 import 'test/generate_test_data_from_app_runs.dart';
 
@@ -181,7 +182,7 @@ class LineSegment extends Interval {
 ///
 /// The unnamed generative constructor [LinearTransform1D] creates a transformation which,
 /// applied on a value, first scales the value by the scaling factor is [_scaleBy],
-/// then translates by the translation amount is [_translateBy].
+/// then translates by the translation amount is [_moveOriginBy].
 ///
 /// The application of the transform on a double value is performed by the [apply] method.
 ///
@@ -190,7 +191,7 @@ class LineSegment extends Interval {
 ///     The scaling factor is [_scaleBy]. Note that scaling by [_scaleBy] = -1.0 is equivalent to
 ///     reversing direction.
 ///   - Additive translation (moving along) (no fixed point).
-///     The translation amount is [_translateBy].
+///     The translation amount is [_moveOriginBy].
 ///   - Multiplicative reversing direction (flipping around origin), with origin the fixed point.
 ///     This is the same as scaling by -1 (as noted above).
 ///
@@ -201,26 +202,26 @@ class LineSegment extends Interval {
 
 class LinearTransform1D {
   final double _scaleBy;
-  final double _translateBy;
+  final double _moveOriginBy;
 
   const LinearTransform1D({
     required scaleBy,
-    required translateBy,
-  }) : _scaleBy = scaleBy, _translateBy = translateBy;
+    required moveOriginBy,
+  }) : _scaleBy = scaleBy, _moveOriginBy = moveOriginBy;
 
   /// Constructs transformation which scales (stretches or compresses),
   /// all points on the axis with origin as the fixed point, by the multiplying [_scaleBy] factor.
   const LinearTransform1D.scaleAtOrigin({
     required scaleBy,
-  }) : this(scaleBy: scaleBy, translateBy: 0.0,);
+  }) : this(scaleBy: scaleBy, moveOriginBy: 0.0,);
 
   /// Constructs transformation which transforms (moves)
-  /// all points on the axis with origin as the fixed point by the additive [_translateBy] value.
+  /// all points on the axis with origin as the fixed point by the additive [_moveOriginBy] value.
   ///
   /// This transform has no fixed point (so no 'origin' in the name).
-  const LinearTransform1D.translateAtOrigin({
-    required translateBy,
-  }) : this(scaleBy: 1.0, translateBy: translateBy,);
+  const LinearTransform1D.moveOriginBy({
+    required moveAmount,
+  }) : this(scaleBy: 1.0, moveOriginBy: moveAmount,);
 
   /// Constructs transformation which inverts (flips, reverses),
   /// all points on the axis with origin as the fixed point.
@@ -229,64 +230,69 @@ class LinearTransform1D {
   /// ```
   ///    LinearTransform1D.scaleAtOrigin(-1.0)
   /// ```
-  const LinearTransform1D.inverse() : this(scaleBy: -1.0, translateBy: 0.0,);
+  const LinearTransform1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
 
 
   /// Default transformation first scales, then translates all points.
   ///
   /// Note that scaling may include inversion.
   double apply(double fromValue) {
-    return _scaleBy * fromValue - _translateBy;
+    return _scaleBy * fromValue - _moveOriginBy;
   }
 }
 
-/// A transformation between domains which [apply] method, invoked on a double value
-/// assumed to be on the 'from' domain, answers the linearly extrapolated value in the 'to' domain.
+/// A linear transformation in 1D that linearly extrapolates a value in the 'from' domain to
+/// a value in the 'to' domain.
 ///
-/// The start and end points on both domains define uniquely (up to a ratio of domain sizes) a linear transform and it's
-/// scaleBy and translateBy factors.
+/// The extrapolation is a combination of
+///   - translation (move) of origin in the 'from' domain by [_fromMoveOriginBy]
+///   - followed by linear stretching by [_domainStretch]
+///   - followed by translation (move) of origin in the in the 'to' domain by  [_toMoveOriginBy]
 ///
-/// Transforms a value in 'from' domain into a 'linearly correspondent' value in the 'to' domain, assuming
-/// the two domains are linearly scaled using a scaling that transforms
-/// the [_fromDomainStart] to [_toDomainStart] and [_fromDomainEnd] to [_toDomainEnd]. This defines the
-/// scaling factor to be
-/// ```
-///   (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart); // this may include inversion if negative
-/// ```
-/// and the following translation factor to be
-/// ```
-///   toDomainStart
-/// ```
+/// Both the stretching factor and move factors are determined
+/// by the starts and ends of the 'from' and 'to' domains,
+///   - [_fromDomainStart]
+///   - [_fromDomainEnd]
+///   - [_toDomainStart]
+///   - [_toDomainEnd]
+/// as follows:
+///   - [_domainStretch] = ([_toDomainEnd] - [_toDomainStart]) / ([_fromDomainEnd] - [_fromDomainStart])
+///   - [_fromMoveOriginBy] = [_fromDomainStart]
+///   - [_toMoveOriginBy] = -1 * [_toDomainStart]
+///
+/// Note that the stretching includes inversion of axis if  [_domainStretch] is negative.
+/// Also note how the move factors are inverse signs of the start points in the 'from' and 'to' domains.
+///
+/// The [apply] method, invoked on a double value in the 'from' domain,
+/// performs the extrapolation, and answers a the linearly extrapolated value
+/// in the 'to' domain which is stretched by the [_domainStretch].
+///
+/// Preconditions:
+///   - ```dart
+///      (fromDomainStart != fromDomainEnd && toDomainStart != toDomainEnd) == true;
+///      ```
+///
+/// Notes:
+///   - This does not extend [LinearTransform1D]; however, any [DomainExtrapolation1D]
+///     can be replaced with two suitably chosen [LinearTransform1D] applied consequently.
 ///
 class DomainExtrapolation1D {
-  const DomainExtrapolation1D({
+  DomainExtrapolation1D({
     required double fromDomainStart,
     required double fromDomainEnd,
     required double toDomainStart,
     required double toDomainEnd,
-  }) :
-    _fromDomainStart = fromDomainStart ,
-    _fromDomainEnd   = fromDomainEnd   ,
-    _toDomainStart   = toDomainStart   ,
-    _toDomainEnd     = toDomainEnd     ,
-    _domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart);
-
-  /// Constructs a new [DomainExtrapolation1D] instance using different argument names from the
-  /// unnamed [DomainExtrapolation1D] constructor.
-  ///
-  /// Exists solely for reading clarity when used in an application that needs to extrapolate values to pixels,
-  /// to clear which parameters ore values and which are pixels.
-  const DomainExtrapolation1D.valuesToPixels({
-    required double fromValuesStart,
-    required double fromValuesEnd,
-    required double toPixelsStart,
-    required double toPixelsEnd,
-  }) : this(
-        fromDomainStart: fromValuesStart ,
-        fromDomainEnd  : fromValuesEnd   ,
-        toDomainStart  : toPixelsStart   ,
-        toDomainEnd    : toPixelsEnd     ,
-  );
+  })
+      :
+        _fromDomainStart = fromDomainStart,
+        _fromDomainEnd = fromDomainEnd,
+        _toDomainStart = toDomainStart,
+        _toDomainEnd = toDomainEnd,
+        _domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart),
+        _fromMoveOriginBy = fromDomainStart,
+        _toMoveOriginBy = -1 * toDomainStart {
+    assert (fromDomainStart != fromDomainEnd && toDomainStart != toDomainEnd);
+  }
 
   /// First point of the 'from' domain. If larger than [_fromDomainEnd], represents reversed direction.
   final double _fromDomainStart;
@@ -294,9 +300,15 @@ class DomainExtrapolation1D {
   final double _toDomainStart;
   final double _toDomainEnd;
 
+  ///
   final double _domainStretch;
+  /// 'from' domain is translated by moving origin by this number;
+  /// this causes `value` in 'from' domain to be `value - _fromMoveOriginBy` in 'to' domain.
+  final double _fromMoveOriginBy;
+  final double _toMoveOriginBy;
 
-  /// Transform [fromValue] from the 'from' domain to it's corresponding linear transform value it the 'to' domain.
+  /// Transform [fromValue] from the 'from' domain to it's corresponding linearly
+  /// extrapolated value it the 'to' domain.
   ///
   /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [_fromDomainStart]
   /// and [_fromDomainEnd] are at a certain ratio, call it R.
@@ -315,17 +327,17 @@ class DomainExtrapolation1D {
   ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
   ///
   double apply(double fromValue) {
-    double moved1 = LinearTransform1D.translateAtOrigin(translateBy: _fromDomainStart).apply(fromValue);
-    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(moved1);
-    double scaledAndMoved = LinearTransform1D.translateAtOrigin(translateBy: -_toDomainStart).apply(scaled);
+    double movedInFrom = LinearTransform1D.moveOriginBy(moveAmount: _fromDomainStart).apply(fromValue);
+    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(movedInFrom);
+    double scaledAndMovedInTo = LinearTransform1D.moveOriginBy(moveAmount: -1 * _toDomainStart).apply(scaled);
 
     double result = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
 
     assertDoubleResultsSame(
-        scaledAndMoved,
-        result,
-        'in caller: fromValue=$fromValue, _domainStretch=$_domainStretch, '
-            'scaled=$scaled, scaledAndMoved=$scaledAndMoved',
+      scaledAndMovedInTo,
+      result,
+      'in caller $this: fromValue=$fromValue, _domainStretch=$_domainStretch, '
+          'scaled=$scaled, scaledAndMoved=$scaledAndMovedInTo',
     );
 
     return result;
@@ -337,9 +349,60 @@ class DomainExtrapolation1D {
         '_fromDomainEnd = $_fromDomainEnd,'
         '_toDomainStart   = $_toDomainStart,'
         '_toDomainEnd   = $_toDomainEnd, '
-        'domainStretch = $_domainStretch';
+        '_domainStretch = $_domainStretch'
+        '_fromDomainTranslateBy = $_fromMoveOriginBy'
+        '_tomDomainTranslateBy = $_toMoveOriginBy'
+    ;
   }
 }
+
+/// Extension of [DomainExtrapolation1D] which makes the assumption that both 'from' domain
+/// and 'to' domain are in the same direction, in the sense that
+///
+///   ```dart
+///    (fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax) == true;
+///   ```
+/// which is also the precondition.
+///
+/// Exists solely for reading clarity when used in an application that needs to
+/// extrapolate data values to pixels, to clear which parameters ore values and which are pixels.
+///
+/// However, it also provides ability to invert the extrapolation, by setting [doInvertToDomain] to true,
+/// which causes the extrapolation to behave as if
+///   ```dart
+///    (toPixelsMin > toPixelsMax) == true; // Note min is GREATER than max
+///   ```
+///  [doInvertToDomain] default is [false].
+///  Setting [doInvertToDomain] to [true] is useful if the 'to' domain represents the Y axis and
+///  we are *extrapolating data values*, as smaller data values end up showing on larger pixel values.
+///  However, when we are *extrapolating sizes*, generally stay with the [doInvertToDomain] default [false],
+///  as we normally want sizes positive after extrapolation.
+///
+///
+class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
+  ToPixelsExtrapolation1D({
+    required double fromValuesMin,
+    required double fromValuesMax,
+    required double toPixelsMin,
+    required double toPixelsMax,
+    bool doInvertToDomain = false,
+  }) : _doInvertToDomain = doInvertToDomain, super(
+    fromDomainStart: fromValuesMin,
+    fromDomainEnd: fromValuesMax,
+    toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
+    toDomainEnd: doInvertToDomain ? toPixelsMin : toPixelsMax,
+  ) {
+    assert (fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax);
+  }
+
+  final bool _doInvertToDomain;
+
+  @override
+  String toString() {
+    return super.toString() + ', _doInvertToDomain=$_doInvertToDomain';
+  }
+}
+
 
 // ################ Functions ########################
 
