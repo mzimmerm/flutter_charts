@@ -1,6 +1,5 @@
 import 'dart:math' as math show Random;
 import '../chart/options.dart';
-// import '../chart/data.dart';
 
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 

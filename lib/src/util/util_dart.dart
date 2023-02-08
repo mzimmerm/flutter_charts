@@ -11,7 +11,6 @@
 
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart' as decimal;
-import 'package:flutter_charts/flutter_charts.dart';
 
 import 'test/generate_test_data_from_app_runs.dart';
 
@@ -436,6 +435,7 @@ Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
 /// The calculations are rather pig headed and should be made more terse;
 /// also could be separated by caching the scales which do not change
 /// unless data change.
+// todo-00-last-last : replace in tests with [DomainExtrapolation1D], then remove this method. It is obsolete.
 double scaleValue({
   required double value,
   required double fromDomainMin,
@@ -552,7 +552,7 @@ List<double> evenlySpacedValuesIn({
 ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
 ///
 /// Further notes and related topics:
-///   - Labels are encapsulated in the [YLabelsCreatorAndPositioner],
+///   - Labels are encapsulated in the [DataRangeLabelsGenerator],
 ///     which creates [LabelInfo]s for all generated labels.
 ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
 ///

@@ -21,8 +21,6 @@ import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 
-// import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
-
 /// Example of simple line chart usage in an application.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must

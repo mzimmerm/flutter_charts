@@ -112,19 +112,20 @@ class NewValueHBarContainer extends NewValueContainer {
     // Rectangle width is from constraints
     double width = constraints.width;
 
-    // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsCreator
-    YLabelsCreatorAndPositioner yLabelsCreator = chartRootContainer.yContainer.yLabelsCreator;
+    // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsGenerator
+    DataRangeLabelsGenerator yLabelsGenerator = chartRootContainer.yContainer.yLabelsGenerator;
 
     YContainer yContainer = chartRootContainer.yContainer;
 
-    // todo-00-last : remove dependence on pixels (toDomain). Review where yLabelsCreator comes from and if needed
-    var transform = ToPixelsExtrapolation1D(
-      fromValuesMin: yLabelsCreator.mergedIntervalsFromLabelsAndValues.min,
-      fromValuesMax: yLabelsCreator.mergedIntervalsFromLabelsAndValues.max,
-      toPixelsMin: yContainer.yContainerAxisPixelsYMin,
-      toPixelsMax: yContainer.yContainerAxisPixelsYMax,
+    var lerp = ToPixelsExtrapolation1D(
+      fromValuesMin: yLabelsGenerator.dataRange.min,
+      fromValuesMax: yLabelsGenerator.dataRange.max,
+      toPixelsMin: yContainer.axisPixelsRange.min,
+      toPixelsMax: yContainer.axisPixelsRange.max,
     );
-    double height = transform.apply(dataModelPoint.dataValue);
+
+    // Extrapolate the absolute value. We need positive size, the direction is defined by layouters.
+    double height = lerp.apply(dataModelPoint.dataValue.abs());
 
     _rectangleSize = ui.Size(width, height);
 

@@ -1,7 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
-import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/options.dart' show ChartOptions;
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
@@ -9,6 +7,8 @@ import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
+
+import 'package:flutter_charts/src/util/y_labels.dart' show LabelInfo;
 
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
@@ -45,7 +45,7 @@ class LabelContainer extends BoxContainer {
 
   /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
-  Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
+  ui.Offset offsetOfPotentiallyRotatedLabel = ui.Offset.zero;
 
   /// Rotation matrix representing the angle by which the label is tilted.
   /// 
@@ -73,9 +73,9 @@ class LabelContainer extends BoxContainer {
   /// needed to reach the point where the text in the [_textPainter]
   /// should start painting the tilted or non-tilted situation. 
   /// In the non-tilted situation, the returned value is always Offset.zero. 
-  Offset get tiltedLabelEnvelopeTopLeft {
+  ui.Offset get tiltedLabelEnvelopeTopLeft {
     if (_labelTiltMatrix == vector_math.Matrix2.identity()) {
-      assert (_tiltedLabelEnvelope.topLeft == Offset.zero);
+      assert (_tiltedLabelEnvelope.topLeft == ui.Offset.zero);
     }
     return _tiltedLabelEnvelope.topLeft;
   }
@@ -255,12 +255,12 @@ class LabelContainer extends BoxContainer {
   ///     the subsequent `textPainter.paint(canvas)` call paints the label
   ///     **as always cropped to it's allocated size [_labelMaxWidth]**.
   /// - [_isOverflowingInLabelDirection] can be asked but this is information only.
-  Tuple2<Size, bool> _layoutAndCheckOverflowInTextDirection() {
+  Tuple2<ui.Size, bool> _layoutAndCheckOverflowInTextDirection() {
     _textPainter.layout();
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
-    Size layoutSize = _tiltedLabelEnvelope.size;
+    ui.Size layoutSize = _tiltedLabelEnvelope.size;
 
     if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;

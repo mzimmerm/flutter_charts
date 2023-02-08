@@ -1,5 +1,5 @@
 import 'package:test/test.dart'; // Dart test package
-import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/util/util_flutter.dart';
 import 'dart:ui' as ui show Rect;
 
 void main() {

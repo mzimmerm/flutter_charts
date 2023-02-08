@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/chart/new_data_container.dart';
 import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 
 // todo-done-last-2  Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
-//                   and various holders of Y data values, including some parts of [YLabelsCreatorAndPositioner]
+//                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
 /// Notes:
 ///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
 ///     - SCALING OF MODEL VALUES (does not)
@@ -19,7 +19,7 @@ import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
 /// Important lifecycle notes:
 ///   - When [NewDataModel] is constructed, the [ChartRootContainer] is not available.
 ///     So in constructor, [NewDataModel] cannot be given access to the root container, and it's needed members
-///     such as [ChartRootContainer.yLabelsCreator].
+///     such as [ChartRootContainer.yLabelsGenerator].
 // todo-011 make immutable, probably impossible to make const.
 class NewDataModel {
 
@@ -589,10 +589,10 @@ class NewDataModelPoint extends Object with DoubleLinked {
   ///
   NewDataModelPoint scale({
     required double scaledX,
-    required YLabelsCreatorAndPositioner yLabelsCreator,
+    required DataRangeLabelsGenerator yLabelsGenerator,
   }) {
-    scaledFrom = ui.Offset(scaledX, yLabelsCreator.scaleY(value: fromY));
-    scaledTo = ui.Offset(scaledX, yLabelsCreator.scaleY(value: toY));
+    scaledFrom = ui.Offset(scaledX, yLabelsGenerator.scaleY(value: fromY));
+    scaledTo = ui.Offset(scaledX, yLabelsGenerator.scaleY(value: toY));
 
     return this;
   }

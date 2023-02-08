@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import '../container/container_key.dart';
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/collection.dart' as custom_collection show CustomList;
-import '../util/geometry.dart' as geometry;
 import '../chart/layouter_one_dimensional.dart';
 import 'bar/presenter.dart' as bar_presenters; // or import 'package:flutter_charts/src/chart/bar/presenter.dart';
 import 'iterative_layout_strategy.dart' as strategy;
@@ -83,7 +82,7 @@ abstract class ChartAnchor {
     // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor].
     // After this invocation, the created root container is populated with children
     // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example YContainer is populated with YLabelsCreatorAndPositioner.
+    // depending on the concrete container. For example YContainer is populated with DataRangeLabelsGenerator.
     chartRootContainer = createRootContainer(chartAnchor: this); // also link from this Anchor to ChartRootContainer.
 
     // Only set `chartData.chartAnchor = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
@@ -425,9 +424,9 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
-            yContainer.yContainerAxisPixelsYMax - yContainer.yContainerAxisPixelsYMin,
+            yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
-      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.yContainerAxisPixelsYMin);
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
@@ -501,29 +500,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
 class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
 
-  /// Late calculated minimum and maximum pixels available for the Y axis when a half-label height
-  /// and a vertical tick height is excluded.
-  ///
-  /// At the same time, the difference between [yContainerAxisPixelsYMin] and max is a height constraint
-  /// on [NewDataContainer]. The difference is also the interval to which the [DomainExtrapolation1D] should
-  /// extrapolate the Y values.
-  ///
-  late final double yContainerAxisPixelsYMin;
-  late final double yContainerAxisPixelsYMax;
-
-  // todo-00-document
-  late YLabelsCreatorAndPositioner yLabelsCreator;
-
-  // Describes layout pixel positions, so included in this view [YContainer], rather than model or controller.
-  late LabelInfos labelInfos;
-
-  /// Containers of Y labels.
-  late List<YAxisLabelContainer> _yLabelContainers;
-
-  /// Maximum label height found by the first layout (pre-layout),
-  /// is ONLY used to 'shorten' YContainer constraints on top. todo-01-last : We should get rid of.
-  double _yLabelsMaxHeightFromFirstLayout = 0.0;
-
   /// Constructs the container that holds Y labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
@@ -532,14 +508,14 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     required ChartRootContainer chartRootContainer,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
-          chartRootContainer: chartRootContainer,
-        ) {
+    chartRootContainer: chartRootContainer,
+  ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
 
-    // The earliest we can create the member [yLabelsCreator], which depends on both NewDataModel and ChartRootContainer.
+    // The earliest we can create the member [yLabelsGenerator], which depends on both NewDataModel and ChartRootContainer.
     // Only when both ChartRootContainer and NewDataModel are created, we can make Creator
     // as it depends on both
-    yLabelsCreator = YLabelsCreatorAndPositioner(
+    yLabelsGenerator = DataRangeLabelsGenerator(
       startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
       yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
@@ -547,8 +523,39 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       newDataModelForFunction: chartRootContainer.data,
       isStacked: chartRootContainer.isStacked,
     );
-    labelInfos = yLabelsCreator.createLabelInfos();
+    labelInfos = yLabelsGenerator.createLabelInfos();
   }
+
+  /// Late calculated minimum and maximum pixels for the Y axis.
+  ///
+  /// [axisPixelsRange] does NOT start at zero, it contains the pixels from Y container top
+  /// available to Y axis, after a half-label height is excluded on the top,
+  /// and a vertical tick height is excluded on the bottom.
+  ///
+  /// At the same time, the difference between [axisPixelsRange] min and max is the height constraint
+  /// on [NewDataContainer].
+  ///
+  /// Also [axisPixelsRange] is the interval to which the Y data values,
+  /// stored in [yLabelsGenerator]'s member [DataRangeLabelsGenerator.dataRange]
+  /// should be extrapolated.
+  ///
+  late final Interval axisPixelsRange;
+
+  /// The generator and holder of labels and range of the Y axis.
+  ///
+  /// The [yLabelsGenerator]'s interval [DataRangeLabelsGenerator.dataRange]
+  /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
+  late DataRangeLabelsGenerator yLabelsGenerator;
+
+  // Describes layout pixel positions, so included in this view [YContainer], rather than model or controller.
+  late FormattedLabelInfos labelInfos;
+
+  /// Containers of Y labels.
+  late List<YAxisLabelContainer> _yLabelContainers;
+
+  /// Maximum label height found by the first layout (pre-layout),
+  /// is ONLY used to 'shorten' YContainer constraints on top. todo-01-last : We should get rid of.
+  double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
   /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
@@ -569,32 +576,30 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the YContainer coordinates.
     // The [_axisYMin] does not start at 0, but leaves space for half label height
-    yContainerAxisPixelsYMin = _yLabelsMaxHeightFromFirstLayout / 2;
+    double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
-    yContainerAxisPixelsYMax =
+    double axisPixelsMax =
         constraints.size.height - (chartRootContainer.data.chartOptions.xContainerOptions.xBottomMinTicksHeight);
 
+    axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
+
     // We now know how long the Y axis will be in pixels, so we can calculate pixel positions on labels in LabeInfos
-    labelInfos.layoutByScalingToPixels(
-      axisPixelsYMin: yContainerAxisPixelsYMin,
-      axisPixelsYMax: yContainerAxisPixelsYMax,
-      // yLabelsCreatorAndPositioner: chartRootContainer.yContainer.yLabelsCreator,
+    labelInfos.layoutByLerpToPixels(
+      axisPixelsYMin: axisPixelsRange.min,
+      axisPixelsYMax: axisPixelsRange.max,
+      // labelsGenerator: chartRootContainer.yContainer.yLabelsGenerator,
     );
 
 
-    // The code in _labelsCreatorForRange MUST run for the side-effect of setting the chartRootContainer.yLabelsCreator
-    //    and side-effect of creating scaled values in LabelInfo which are still needed to manage data values
-    //    in PointsColumns.scale()!
-    // So let the above run, then check if labels are shown, if not, set empty _yLabelContainers and return
-    // without creating _yLabelContainers.
-
+    // Code above MUST run for the side-effects of setting [axisPixels] and scaling the [labelInfos].
+    // Now can check if labels are shown, set empty children and return.
     if (!chartRootContainer.data.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       addChildren(_yLabelContainers);
       return;
     }
 
-    // Uses the prepared [chartRootContainer.yLabelsCreator.labelInfos]
+    // Uses the prepared [chartRootContainer.yLabelsGenerator.labelInfos]
     // to create scaled Y labels from data or from user defined labels,
     // scales their position on the Y axis range [_axisYMin] to [_axisYMax].
     //
@@ -1144,7 +1149,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // Scale the [pointsColumns] to the [YContainer]'s scale.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
-    scalePointsColumns(layoutDependency);
+    lerpPointsColumns(layoutDependency);
   }
 
   @override
@@ -1216,8 +1221,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute scaled [chartRootContainer.pointsColumns].
-  void scalePointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
-    chartRootContainer.pointsColumns.scale(layoutDependency);
+  void lerpPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+    chartRootContainer.pointsColumns.lerpPointsColumns(layoutDependency);
   }
 
   /// Optionally paint series in reverse order (first to last,
@@ -1903,7 +1908,7 @@ class StackableValuePoint {
   // ################## Members ###################
   // ### Group 0: Structural
 
-  /// Root container added to access yContainer._yAxisPixelsMin / Max
+  /// Root container added to access yContainer.axisPixels min / max
   /// todo-done-last
   late final ChartRootContainer? chartRootContainer;
 
@@ -1992,32 +1997,32 @@ class StackableValuePoint {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  StackableValuePoint scale({
+  StackableValuePoint lerpToPixels({
     required double scaledX,
-    required YLabelsCreatorAndPositioner yLabelsCreator,
+    required DataRangeLabelsGenerator yLabelsGenerator,
   }) {
-    // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsCreator
+    // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsGenerator
     // were calculated using the NEW [NewDataModel]
 
-    double axisPixelsYMin = chartRootContainer!.yContainer.yContainerAxisPixelsYMin;
-    double axisPixelsYMax = chartRootContainer!.yContainer.yContainerAxisPixelsYMax;
+    double axisPixelsYMin = chartRootContainer!.yContainer.axisPixelsRange.min;
+    double axisPixelsYMax = chartRootContainer!.yContainer.axisPixelsRange.max;
 
     scaledFrom = ui.Offset(
       scaledX,
-      yLabelsCreator.scaleY(
+      yLabelsGenerator.lerpValueToPixels(
         value: fromY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: yLabelsCreator.isAxisAndLabelsSameDirection,
+        isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
       ),
     );
     scaledTo = ui.Offset(
       scaledX,
-      yLabelsCreator.scaleY(
+      yLabelsGenerator.lerpValueToPixels(
         value: toY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: yLabelsCreator.isAxisAndLabelsSameDirection,
+        isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
       ),
     );
 
@@ -2250,17 +2255,17 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Notes:
   /// - Iterates this object's internal list of [PointsColumn], then the contained
   ///   [PointsColumn.stackableValuePoints], and scales each point by
-  ///   applying its [StackableValuePoint.scale] method.
+  ///   applying its [StackableValuePoint.lerpToPixels] method.
   /// - No scaling of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void scale(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+  void lerpPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = layoutDependency.xTickXs[col];
-        point.scale(
+        point.lerpToPixels(
           scaledX: scaledX,
-          yLabelsCreator: chartRootContainer.yContainer.yLabelsCreator,
+          yLabelsGenerator: chartRootContainer.yContainer.yLabelsGenerator,
         );
       });
       col++;
