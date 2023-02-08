@@ -77,10 +77,10 @@ class LineChartRootContainer extends ChartRootContainer {
   ///
   /// This is the method used in code logic when building the Y labels and axis.
   ///
-  /// The related variable [DataContainerOptions.startYAxisAtDataMinRequested],
+  /// The related variable [DataContainerOptions.extendAxisToOriginRequested],
   /// is merely a request that may not be granted in some situations.
   ///
   /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
-  bool get startYAxisAtDataMinAllowed => data.chartOptions.dataContainerOptions.startYAxisAtDataMinRequested;
+  bool get extendAxisToOrigin => data.chartOptions.dataContainerOptions.extendAxisToOriginRequested;
 }

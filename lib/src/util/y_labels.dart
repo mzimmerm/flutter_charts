@@ -72,7 +72,7 @@ class DataRangeLabelsGenerator {
   /// highest order of numeric values in the passed [dataYs].
   /// See the class comment for examples of how auto labels are created.
   DataRangeLabelsGenerator({
-    required bool axisStartAtDataMinAllowed,
+    required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
     this.userLabels,
@@ -97,16 +97,20 @@ class DataRangeLabelsGenerator {
       dataEnvelope = _dataModel!.dataValuesInterval(isStacked: _isStacked!);
       _labelPositions = util_dart.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
     } else {
-      dataEnvelope = _dataModel!.extendedDataValuesInterval(axisStartAtDataMinAllowed: axisStartAtDataMinAllowed, isStacked: _isStacked!);
-      _labelPositions = util_dart.generateValuesForLabelsIn(interval: dataEnvelope, startYAxisAtDataMinAllowed: axisStartAtDataMinAllowed);
+      dataEnvelope = _dataModel!.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: _isStacked!);
+      _labelPositions = util_dart.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
     }
 
     // Store the merged interval of values and label envelope for [LabelInfos] creation
     // that can be created immediately after by invoking [createLabelInfos].
-    dataRange = util_dart.Interval(
-      _labelPositions.reduce(math.min),
-      _labelPositions.reduce(math.max),
-    ).merge(dataEnvelope);
+    //if (_labelPositions.isNotEmpty) {
+      dataRange = util_dart.Interval(
+        _labelPositions.reduce(math.min),
+        _labelPositions.reduce(math.max),
+      ).merge(dataEnvelope);
+    //} else {
+    //  dataRange = dataEnvelope;
+    //}
   }
 
   // todo-00-document
@@ -214,7 +218,6 @@ class DataRangeLabelsGenerator {
 /// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
 class LabelInfo {
-  // todo-00-last : review places and names of DataRangeLabelsGenerator _labelsGenerator and organize better
   final DataRangeLabelsGenerator _labelsGenerator;
 
   /// Not-scaled and not-transformed label value.

@@ -62,16 +62,16 @@ void main() {
 
     DataRangeLabelsGenerator yScaler;
     
-    var startYAxisAtDataMinAllowed = false;
+    var extendAxisToOrigin = false;
     var xUserLabels = ['1', '2', '3'];
 
     var dataYs = [1.0, 22.0, 333.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // Interval dataYEnvelop = yScaler.dataYsEnvelope;
     List<num> labels = yScaler.dataYsOfLabels;
@@ -88,10 +88,10 @@ void main() {
     dataYs = [-1.0, -22.0, -333.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -106,10 +106,10 @@ void main() {
     dataYs = [22.0, 10.0, -333.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -125,10 +125,10 @@ void main() {
     dataYs = [-22.0, -10.0, 333.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -144,10 +144,10 @@ void main() {
     dataYs = [-1000.0, 0.0, 1000.0, 2000.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -162,10 +162,10 @@ void main() {
     dataYs = [-1000.0, 0.0, 1000.0];
     yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMin, axisYMax),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, startYAxisAtDataMinAllowed),
+      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
     labels = yScaler.dataYsOfLabels;
@@ -182,7 +182,7 @@ void main() {
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
   //   ChartOptions options = const ChartOptions();
   //   // The requested option (default) must be confirmed with behavior (this mimicks asking for 0 start on any TopChartContainer)
-  //   bool startYAxisAtDataMinAllowed = false;
+  //   bool extendAxisToOrigin = false;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
   //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
@@ -196,7 +196,7 @@ void main() {
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelsGenerator'],
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelsGenerator'],
   //   ];
-  //   rangeTestCore(data, options, startYAxisAtDataMinAllowed);
+  //   rangeTestCore(data, options, extendAxisToOrigin);
   // });
   //
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -205,7 +205,7 @@ void main() {
   //     dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
   //   );
   //   // The requested option must be confirmed with behavior (this mimicks asking for above 0 start on LineChartContainer)
-  //   bool startYAxisAtDataMinAllowed = true;
+  //   bool extendAxisToOrigin = true;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
   //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
@@ -217,13 +217,13 @@ void main() {
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelsGenerator'],
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelsGenerator'],
   //   ];
-  //   rangeTestCore(data, options, startYAxisAtDataMinAllowed);
+  //   rangeTestCore(data, options, extendAxisToOrigin);
   // });
 
 
 }
 /*
-MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> dataYs, List<String> xUserLabels, bool startYAxisAtDataMinAllowed) {
+MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> dataYs, List<String> xUserLabels, bool extendAxisToOrigin) {
   return MockNewDataModel(
       chartOptions: options,
       dataRowsLegends: ['Legend'],
@@ -234,7 +234,7 @@ MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> d
     );
 }
 
-void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxisAtDataMinAllowed) {
+void rangeTestCore(List<List<Object>> data, ChartOptions options, bool extendAxisToOrigin) {
   for (var dataRow in data) {
     // List<double> dataYsForRange = dataRow[0] as List<double>;
     // double axisYMin = dataRow[1] as double;
@@ -248,7 +248,7 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxi
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelsGenerator yScaler = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMax, axisYMin),
-      startYAxisAtDataMinAllowed: startYAxisAtDataMinAllowed, // start Y axis at 0
+      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       yInverseTransform: options.dataContainerOptions.yInverseTransform,
     );
@@ -270,12 +270,12 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, bool startYAxi
 
 class StartYAxisAtDataMinAllowedChartBehavior extends Object with ChartBehavior {
   @override
-  bool get startYAxisAtDataMinAllowed => true;
+  bool get extendAxisToOrigin => true;
 }
 
 class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavior {
   @override
-  bool get startYAxisAtDataMinAllowed => false;
+  bool get extendAxisToOrigin => false;
 }
 
 class MockNewDataModel extends NewDataModel {

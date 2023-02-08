@@ -540,7 +540,7 @@ class _ExampleWidgetCreator {
         //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
-            startYAxisAtDataMinRequested: true,
+            extendAxisToOriginRequested: false,
           ),
         );
         chartData = NewDataModel(
@@ -564,7 +564,7 @@ class _ExampleWidgetCreator {
         //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
-            startYAxisAtDataMinRequested: true,
+            extendAxisToOriginRequested: false,
           ),
         );
         chartData = NewDataModel(

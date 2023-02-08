@@ -259,7 +259,7 @@ class DataContainerOptions {
 
   /// The request to start Y axis and it's labels at data minimum.
   ///
-  /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
+  /// When [extendAxisToOriginRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
   /// Y data value (transformed with the [yTransform] method).
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
@@ -267,15 +267,15 @@ class DataContainerOptions {
   /// - On the [VerticalBarChart]
   /// - For some [yTransform]s for example logarithm transform,
   ///   where both data and logarithm must start above y value of 0.
-  /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed];
+  /// The implementation of this 'ban' is governed by [ChartBehavior.extendAxisToOrigin];
   /// If not allowed, the request is rejected, and data start at 0.
-  final bool startYAxisAtDataMinRequested;
+  final bool extendAxisToOriginRequested;
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
     this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
-    this.startYAxisAtDataMinRequested = false,
+    this.extendAxisToOriginRequested = true,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,
   });

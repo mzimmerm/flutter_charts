@@ -72,5 +72,5 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
   /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
   ///
   @override
-  bool get startYAxisAtDataMinAllowed => false;
+  bool get extendAxisToOrigin => true;
 }

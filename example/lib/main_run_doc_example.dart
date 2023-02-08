@@ -28,7 +28,7 @@ Widget chartToRun() {
   // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
   chartOptions = const ChartOptions(
     dataContainerOptions: DataContainerOptions(
-      startYAxisAtDataMinRequested: true,
+      extendAxisToOriginRequested: false, // should have no effect on Stacked charts!
     ),
   );
   chartData = NewDataModel( // todo-done-last-1 ChartData(

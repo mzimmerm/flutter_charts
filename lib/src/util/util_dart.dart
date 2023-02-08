@@ -407,12 +407,11 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
 
 // ################ Functions ########################
 
-Interval extendToOrigin(Interval interval, bool axisStartAtDataMinAllowed) {
+Interval extendToOrigin(Interval interval, bool extendAxisToOrigin) {
   if (interval.min - epsilon > interval.max) {
     throw StateError('Min < max on interval $interval');
   }
-  // todo-00-last : If not allowed, always forces to extend to 0. This seems wrong. Need to check requested && ! stacked, then extend.
-  if (!axisStartAtDataMinAllowed) {
+  if (extendAxisToOrigin) {
     return Interval(
       interval.min >= 0.0 ? math.min(0.0, interval.min) : interval.min,
       interval.max >= 0.0 ? math.max(0.0, interval.max) : 0.0,
@@ -488,7 +487,7 @@ List<double> evenlySpacedValuesIn({
 ///
 List<double> generateValuesForLabelsIn({
   required Interval interval,
-  required bool startYAxisAtDataMinAllowed,
+  required bool extendAxisToOrigin,
 }) {
   var polyMin = Poly(from: interval.min);
   var polyMax = Poly(from: interval.max);
@@ -510,7 +509,7 @@ List<double> generateValuesForLabelsIn({
     if (signMax <= 0) {
       double startCoeff = 1.0 * signMin * coeffMin;
       int endCoeff = 0;
-      if (startYAxisAtDataMinAllowed) {
+      if (!extendAxisToOrigin) {
         endCoeff = signMax * coeffMax;
       }
       for (double l = startCoeff; l <= endCoeff; l++) {
@@ -520,7 +519,9 @@ List<double> generateValuesForLabelsIn({
       // signMax >= 0
       double startCoeff = 1.0 * 0;
       int endCoeff = signMax * coeffMax;
-      if (startYAxisAtDataMinAllowed) {
+      if (!extendAxisToOrigin) {
+        // todo-00-last-last : startCoeff = 1.0 * coeffMin;
+        // startCoeff = 1.0 * coeffMax;
         startCoeff = 1.0 * coeffMin;
       }
       for (double l = startCoeff; l <= endCoeff; l++) {

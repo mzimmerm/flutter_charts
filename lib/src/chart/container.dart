@@ -129,7 +129,7 @@ abstract class ChartAnchor {
 abstract class ChartBehavior {
   /// Behavior allows to start Y axis at data minimum (rather than 0).
   ///
-  /// The request is asked by [DataContainerOptions.startYAxisAtDataMinRequested],
+  /// The request is asked by [DataContainerOptions.extendAxisToOriginRequested],
   /// but the implementation of this behavior must confirm it.
   /// See the extensions of this class for overrides of this method.
   ///
@@ -137,12 +137,12 @@ abstract class ChartBehavior {
   /// is implemented by concrete [LineChartRootContainer] and [VerticalBarChartRootContainer].
   /// - In the stacked containers, such as [VerticalBarChartRootContainer], it should return [false],
   ///   as stacked values should always start at zero, because stacked charts must show absolute values.
-  ///   See [VerticalBarChartRootContainer.startYAxisAtDataMinAllowed].
+  ///   See [VerticalBarChartRootContainer.extendAxisToOrigin].
   /// - In the unstacked containers such as  [LineChartRootContainer], this is usually implemented to
-  ///   return the option [DataContainerOptions.startYAxisAtDataMinRequested],
-  ///   see [LineChartRootContainer.startYAxisAtDataMinAllowed].
+  ///   return the option [DataContainerOptions.extendAxisToOriginRequested],
+  ///   see [LineChartRootContainer.extendAxisToOrigin].
   ///
-  bool get startYAxisAtDataMinAllowed;
+  bool get extendAxisToOrigin;
 }
 
 /// Abstract class representing the root [BoxContainer] of the whole chart.
@@ -516,7 +516,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // anywhere in [ChartRootContainer] constructor or later.
     // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
     yLabelsGenerator = DataRangeLabelsGenerator(
-      axisStartAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
+      extendAxisToOrigin: chartRootContainer.extendAxisToOrigin,
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
       userLabels: chartRootContainer.data.yUserLabels,
