@@ -583,11 +583,11 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
-    // We now know how long the Y axis will be in pixels, so we can calculate pixel positions on labels in LabeInfos
+    // We now know how long the Y axis is in pixels,
+    // so we can calculate pixel positions on labels in LabeInfos
     labelInfos.layoutByLerpToPixels(
       axisPixelsYMin: axisPixelsRange.min,
       axisPixelsYMax: axisPixelsRange.max,
-      // labelsGenerator: chartRootContainer.yContainer.yLabelsGenerator,
     );
 
 

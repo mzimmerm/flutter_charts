@@ -391,7 +391,9 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
     toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
     toDomainEnd: doInvertToDomain ? toPixelsMin : toPixelsMax,
   ) {
-    assert (fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax);
+    if (!(fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax)) {
+      throw StateError('$runtimeType: fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax is NOT true on $this.');
+    }
   }
 
   final bool _doInvertToDomain;
@@ -405,12 +407,12 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
 
 // ################ Functions ########################
 
-Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
+Interval extendToOrigin(Interval interval, bool axisStartAtDataMinAllowed) {
   if (interval.min - epsilon > interval.max) {
     throw StateError('Min < max on interval $interval');
   }
   // todo-00-last : If not allowed, always forces to extend to 0. This seems wrong. Need to check requested && ! stacked, then extend.
-  if (!startYAxisAtDataMinAllowed) {
+  if (!axisStartAtDataMinAllowed) {
     return Interval(
       interval.min >= 0.0 ? math.min(0.0, interval.min) : interval.min,
       interval.max >= 0.0 ? math.max(0.0, interval.max) : 0.0,
@@ -425,79 +427,6 @@ Interval extendToOrigin(Interval interval, bool startYAxisAtDataMinAllowed) {
 /// The user defined string labels are then distributed in the returned interval.
 Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
   return Interval(allDataValues.reduce(math.min), allDataValues.reduce(math.max));
-}
-
-// todo-02 Refactor scaling
-/// Scale the [value] that must be from the scale
-/// given by [fromDomainMin] - [fromDomainMax]
-/// to the "to scale" given by  [toDomainNewMax] - [toDomainNewMin].
-///
-/// The calculations are rather pig headed and should be made more terse;
-/// also could be separated by caching the scales which do not change
-/// unless data change.
-// todo-00-last-last : replace in tests with [DomainExtrapolation1D], then remove this method. It is obsolete.
-double scaleValue({
-  required double value,
-  required double fromDomainMin,
-  required double fromDomainMax,
-  required double toDomainNewMax,
-  required double toDomainNewMin,
-}) {
-  var fromDomainLength = fromDomainMax - fromDomainMin;
-  var toDomainLength = toDomainNewMin - toDomainNewMax;
-
-  // Handle degenerate cases:
-  // 1. If exactly one of the scales is zero length, exception.
-  if (exactlyOneHasValue(
-    one: fromDomainLength,
-    two: toDomainLength,
-    value: 0.0,
-  )) {
-    if (fromDomainLength == 0.0 && value == fromDomainMin) {
-      // OK to have own scale degenerate, if value is the same as the degenerate min/max
-      return toDomainNewMax;
-      // all other cases (it is the axisY which is degenerate, or value is outside dataYsEnvelope
-    } else {
-      throw StateError(
-          'Cannot convert value $value between scales $fromDomainMin, $fromDomainMax and $toDomainNewMax $toDomainNewMin');
-    }
-    // 2. If both scales are zero length:
-  } else if (bothHaveValue(
-    one: fromDomainLength,
-    two: toDomainLength,
-    value: 0.0,
-  )) {
-    // if value != dataYsEnvelopeMin (same as dataYsEnvelopeMax), exception
-    if (value != fromDomainMin) {
-      throw StateError('Value is not on own scale: $fromDomainMin, $fromDomainMax and $toDomainNewMax $toDomainNewMin');
-      //  else return axisYMin (same as axisYMax)
-    } else {
-      return toDomainNewMax;
-    }
-  }
-  // first move scales to be both starting at 0; also move value equivalently.
-  // Naming the 0 based coordinates ending with 0
-  double value0 = value - fromDomainMin;
-  /*
-  double dataYsEnvelopeMin0 = 0.0;
-  double dataYsEnvelopeMax0 = fromDomainLength;
-  double axisYMin0 = 0.0;
-  double axisYMax0 = toDomainLength;
-  */
-
-  // Next scale the value to the 0 - 1 segment
-  double value0ScaledTo01 = value0 / fromDomainLength;
-
-  // Then scale value0Scaled01 to the 0 based axisY0
-  double valueOnAxisY0 = value0ScaledTo01 * toDomainLength;
-
-  // And finally shift the valueOnAxisY0 to a non-0 start on "to scale"
-
-  double scaled = valueOnAxisY0 + toDomainNewMax;
-
-  collectTestData('for_scaleValue_test', [value, fromDomainMin, fromDomainMax, toDomainNewMax, toDomainNewMin], scaled);
-
-  return scaled;
 }
 
 /// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
@@ -531,6 +460,7 @@ List<double> evenlySpacedValuesIn({
   return pointsPositions;
 }
 
+// todo-00-last : move to label utils OR NewDataModel where the other utils for labels and axis extensions are.
 /// Automatically generates values (anywhere from zero to nine values) intended to
 /// be displayed as label in [interval], which represents a domain
 ///
@@ -623,26 +553,6 @@ List<double> generateValuesForLabelsIn({
 }
 
 
-/// Returns [true] if exactly one of the passed values [one], [two] hase the passed [value],
-/// [false] otherwise.
-bool exactlyOneHasValue({
-  required double one,
-  required double two,
-  required double value,
-}) {
-  return (math.min(one, two) != math.max(one, two) && (one == value || two == value));
-}
-
-/// Returns [true] if both of the passed values [one], [two] hase the passed [value],
-/// [false] otherwise.
-bool bothHaveValue({
-  required double one,
-  required double two,
-  required double value,
-}) {
-  return math.min(one, two) == value && value == math.max(one, two) && math.min(one, two) == value;
-}
-
 double get epsilon => 0.000001;
 
 bool isCloserThanEpsilon(double d1, double d2) {
@@ -658,7 +568,6 @@ void assertDoubleResultsSame(double result, double otherResult, [String callerMe
         'Other result was $otherResult. Caller message=$callerMessage');
   }
 }
-
 
 String enumName(Enum e) {
   return e.toString().split('.')[1];

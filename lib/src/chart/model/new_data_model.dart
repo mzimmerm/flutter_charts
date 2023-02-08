@@ -135,16 +135,16 @@ class NewDataModel {
   /// [NewDataModelPoint._stackedNegativeDataValue]
   ///
   /// Whether the resulting Interval is extended from the simple min/max of all data values
-  /// is controlled by [startYAxisAtDataMinAllowed]. If [true] the interval is extended to zero
+  /// is controlled by [axisStartAtDataMinAllowed]. If [true] the interval is extended to zero
   /// if all values are positive or all are negative.
   ///
   Interval extendedDataValuesInterval({
     required bool isStacked,
-    required bool startYAxisAtDataMinAllowed,
+    required bool axisStartAtDataMinAllowed,
   }) {
     return util_dart.extendToOrigin(
       dataValuesInterval(isStacked: isStacked),
-      startYAxisAtDataMinAllowed,
+      axisStartAtDataMinAllowed,
     );
   }
 

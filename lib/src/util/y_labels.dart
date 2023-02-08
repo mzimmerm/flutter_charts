@@ -97,7 +97,7 @@ class DataRangeLabelsGenerator {
       dataEnvelope = _dataModel!.dataValuesInterval(isStacked: _isStacked!);
       _labelPositions = util_dart.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
     } else {
-      dataEnvelope = _dataModel!.extendedDataValuesInterval(startYAxisAtDataMinAllowed: axisStartAtDataMinAllowed, isStacked: _isStacked!);
+      dataEnvelope = _dataModel!.extendedDataValuesInterval(axisStartAtDataMinAllowed: axisStartAtDataMinAllowed, isStacked: _isStacked!);
       _labelPositions = util_dart.generateValuesForLabelsIn(interval: dataEnvelope, startYAxisAtDataMinAllowed: axisStartAtDataMinAllowed);
     }
 
