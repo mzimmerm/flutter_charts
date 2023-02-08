@@ -512,15 +512,15 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
 
-    // The earliest we can create the member [yLabelsGenerator], which depends on both NewDataModel and ChartRootContainer.
-    // Only when both ChartRootContainer and NewDataModel are created, we can make Creator
-    // as it depends on both
+    // [yLabelsGenerator] instance depends on both NewDataModel and ChartRootContainer. We can construct the generator
+    // anywhere in [ChartRootContainer] constructor or later.
+    // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
     yLabelsGenerator = DataRangeLabelsGenerator(
-      startYAxisAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
+      axisStartAtDataMinAllowed: chartRootContainer.startYAxisAtDataMinAllowed,
       valueToLabel: chartRootContainer.data.chartOptions.yContainerOptions.valueToLabel,
-      yInverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
-      yUserLabels: chartRootContainer.data.yUserLabels,
-      newDataModelForFunction: chartRootContainer.data,
+      inverseTransform: chartRootContainer.data.chartOptions.dataContainerOptions.yInverseTransform,
+      userLabels: chartRootContainer.data.yUserLabels,
+      dataModel: chartRootContainer.data,
       isStacked: chartRootContainer.isStacked,
     );
     labelInfos = yLabelsGenerator.createLabelInfos();
