@@ -53,8 +53,6 @@ void main() {
     // todo 1 test pure fractions and negatives
   });
 
-  // todo-00-last : get some of this test back.
-/*
   test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
     // double axisYMin = 100.0;
@@ -62,19 +60,18 @@ void main() {
 
     DataRangeLabelsGenerator yScaler;
     
-    var extendAxisToOrigin = false;
+    var extendAxisToOrigin = true;
     var xUserLabels = ['1', '2', '3'];
 
     var dataYs = [1.0, 22.0, 333.0];
     yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // Interval dataYEnvelop = yScaler.dataYsEnvelope;
-    List<num> labels = yScaler.dataYsOfLabels;
+    List<num> labels = yScaler.labelPositions;
     // expect(dataYEnvelop.min, 0.0);
     // expect(dataYEnvelop.max, 333.0);
     expect(labels.length, 4);
@@ -90,11 +87,11 @@ void main() {
       // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.dataYsOfLabels;
+    labels = yScaler.labelPositions;
     // expect(dataYEnvelop.min, -333.0);
     // expect(dataYEnvelop.max, 0.0);
     expect(labels.length, 4);
@@ -108,11 +105,11 @@ void main() {
       // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.dataYsOfLabels;
+    labels = yScaler.labelPositions;
     // expect(dataYEnvelop.min, -333.0);
     // expect(dataYEnvelop.max, 22.0);
     expect(labels.length, 5);
@@ -127,11 +124,11 @@ void main() {
       // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.dataYsOfLabels;
+    labels = yScaler.labelPositions;
     // expect(dataYEnvelop.min, -22.0);
     // expect(dataYEnvelop.max, 333.0);
     expect(labels.length, 5);
@@ -146,11 +143,11 @@ void main() {
       // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.dataYsOfLabels;
+    labels = yScaler.labelPositions;
     // expect(dataYEnvelop.min, -1000.0);
     // expect(dataYEnvelop.max, 2000.0);
     expect(labels.length, 4);
@@ -161,14 +158,13 @@ void main() {
 
     dataYs = [-1000.0, 0.0, 1000.0];
     yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
-      newDataModelForFunction: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
+      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
     );
     // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.dataYsOfLabels;
+    labels = yScaler. labelPositions;
     // expect(dataYEnvelop.min, -1000.0);
     // expect(dataYEnvelop.max, 1000.0);
     expect(labels.length, 3);
@@ -177,7 +173,7 @@ void main() {
     expect(labels[2], 1000.0);
 
   });
-*/
+
 
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - default ChartOptions forces labels start at 0', () {
   //   ChartOptions options = const ChartOptions();
@@ -222,7 +218,7 @@ void main() {
 
 
 }
-/*
+
 MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> dataYs, List<String> xUserLabels, bool extendAxisToOrigin) {
   return MockNewDataModel(
       chartOptions: options,
@@ -250,22 +246,22 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, bool extendAxi
       // axisY: Interval(axisYMax, axisYMin),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
-      yInverseTransform: options.dataContainerOptions.yInverseTransform,
+      inverseTransform: options.dataContainerOptions.yInverseTransform,
     );
 
 
     // expect(yScaler.dataYsEnvelope.min, expectedDataEnvelopMin);
     // expect(yScaler.dataYsEnvelope.max, expectedDataEnvelopMax);
-    expect(yScaler.dataYsOfLabels.length, expectedLabels.length);
-    for (int i = 0; i < yScaler.dataYsOfLabels.length; i++) {
+    expect(yScaler.labelPositions.length, expectedLabels.length);
+    for (int i = 0; i < yScaler.labelPositions.length; i++) {
       expect(
-        yScaler.dataYsOfLabels[i],
+        yScaler.labelPositions[i],
         expectedLabels[i],
       );
     }
   }
 }
-*/
+
 
 
 class StartYAxisAtDataMinAllowedChartBehavior extends Object with ChartBehavior {

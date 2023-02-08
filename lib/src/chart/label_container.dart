@@ -8,7 +8,7 @@ import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 
-import 'package:flutter_charts/src/util/y_labels.dart' show LabelInfo;
+import 'package:flutter_charts/src/util/util_labels.dart' show LabelInfo;
 
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.

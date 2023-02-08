@@ -27,7 +27,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///     2. Or using a path scheme, for example
 ///       ```dart
 ///         import 'src/chart/data.dart'; // absolute path
-///         import '../util/y_labels.dart'; // relative path
+///         import '../util/util_labels.dart'; // relative path
 ///       ```
 ///
 /// Any dart file (any client application) located outside
@@ -130,7 +130,7 @@ export 'src/util/random_chart_data.dart';
 
 export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
-export 'src/util/y_labels.dart';
+export 'src/util/util_labels.dart';
 
 export 'src/chart/data.dart';
 export 'src/chart/container.dart';

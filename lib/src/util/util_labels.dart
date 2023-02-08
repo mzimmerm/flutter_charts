@@ -1,8 +1,9 @@
-import 'dart:math' as math show min, max;
+import 'dart:math' as math show min, max, pow;
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import 'util_dart.dart' as util_dart;
+import 'util_labels.dart' as util_labels;
 
 // todo-00 : not specific to Y labels, although only used there. Generalize.
 /// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
@@ -51,6 +52,10 @@ class DataRangeLabelsGenerator {
   /// Keeps the transformed, non-scaled data values at which labels are shown.
   /// [YContainer.labelInfos] are created from them first, and scaled to pixel values during [ChartRootContainer.layout].
   late final List<double> _labelPositions;
+
+  /// Public getter is for tests only!
+  List<double> get labelPositions => _labelPositions;
+
   // On Y axis, label values go up, but axis down. true scale inverses that.
   final bool isAxisAndLabelsSameDirection = false;
 
@@ -95,22 +100,18 @@ class DataRangeLabelsGenerator {
     // are  not-scaled && transformed data from [NewDataModelPoint].
     if (isUsingUserLabels) {
       dataEnvelope = _dataModel!.dataValuesInterval(isStacked: _isStacked!);
-      _labelPositions = util_dart.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
+      _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
     } else {
       dataEnvelope = _dataModel!.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: _isStacked!);
-      _labelPositions = util_dart.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
+      _labelPositions = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
     }
 
     // Store the merged interval of values and label envelope for [LabelInfos] creation
     // that can be created immediately after by invoking [createLabelInfos].
-    //if (_labelPositions.isNotEmpty) {
-      dataRange = util_dart.Interval(
-        _labelPositions.reduce(math.min),
-        _labelPositions.reduce(math.max),
-      ).merge(dataEnvelope);
-    //} else {
-    //  dataRange = dataEnvelope;
-    //}
+    dataRange = util_dart.Interval(
+      _labelPositions.reduce(math.min),
+      _labelPositions.reduce(math.max),
+    ).merge(dataEnvelope);
   }
 
   // todo-00-document
@@ -273,8 +274,9 @@ class FormattedLabelInfos {
   FormattedLabelInfos({
     required List<LabelInfo> from,
     required DataRangeLabelsGenerator labelsGenerator,
-  })  : _labelInfoList = from,
-        _labelsGenerator = labelsGenerator {
+  })  : _labelInfoList = from
+         // todo-00-last-last  unused : , _labelsGenerator = labelsGenerator {
+  {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
       LabelInfo labelInfo = _labelInfoList[i];
@@ -287,7 +289,9 @@ class FormattedLabelInfos {
     }
   }
 
-  late final DataRangeLabelsGenerator _labelsGenerator;
+   // todo-00-last-last  unused : late final DataRangeLabelsGenerator _labelsGenerator;
+
+  /// List that manages the list of labels information for all generated or user labels.
   final List<LabelInfo> _labelInfoList;
   Iterable<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
 
@@ -315,4 +319,149 @@ class FormattedLabelInfos {
   }
   List<double> get dataYsOfLabels => labelInfoList.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
 
+}
+
+// ########################## Functions ##########################
+
+util_dart.Interval extendToOrigin(util_dart.Interval interval, bool extendAxisToOrigin) {
+  if (interval.min - util_dart.epsilon > interval.max) {
+    throw StateError('Min < max on interval $interval');
+  }
+  if (extendAxisToOrigin) {
+    return util_dart.Interval(
+      interval.min >= 0.0 ? math.min(0.0, interval.min) : interval.min,
+      interval.max >= 0.0 ? math.max(0.0, interval.max) : 0.0,
+    );
+  }
+  return interval;
+}
+
+/// Derive the interval of [dataY] values for user defined labels.
+///
+/// This is simply the closure of the [_dataYs] numeric values.
+/// The user defined string labels are then distributed in the returned interval.
+util_dart.Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
+  return util_dart.Interval(allDataValues.reduce(math.min), allDataValues.reduce(math.max));
+}
+
+/// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
+/// ending at [interval.max], and returns the positions list.
+///
+/// The positions include both ends, unless [pointsCount] is one, then the positions at ends
+/// are not included, list with center position is returned.
+///
+/// As this method simply divides the available interval into [pointsCount],
+/// it is not relevant whether the interval is translated or scaled or not, as long as it is linear
+/// (which it would be even for logarithmic scale). But usually the interval represents
+/// scaled, non-transformed values.
+List<double> evenlySpacedValuesIn({
+  required util_dart.Interval interval,
+  required int pointsCount,
+}) {
+  if (pointsCount <= 0) {
+    throw StateError('Cannot distribute 0 or negative number of positions');
+  }
+
+  if (pointsCount == 1) {
+    return [(interval.max - interval.min) / 2.0];
+  }
+  double dataStepHeight = (interval.max - interval.min) / (pointsCount - 1);
+
+  // Evenly distribute labels in [interval]
+  List<double> pointsPositions = List.empty(growable: true);
+  for (int yIndex = 0; yIndex < pointsCount; yIndex++) {
+    pointsPositions.add(interval.min + dataStepHeight * yIndex);
+  }
+  return pointsPositions;
+}
+
+/// Automatically generates values (anywhere from zero to nine values) intended to
+/// be displayed as label in [interval], which represents a domain
+///
+/// More precisely, all generated label values are inside, or slightly protruding from,
+/// the passed [interval], which was created as tight envelope of all data values.
+///
+/// As the values are generated from [interval], the values us whatever is the
+/// [interval]'s values scale and transform. Likely, the [interval] represents
+/// transformed but non-scaled values.
+///
+/// The label values power is the same as the greatest power
+/// of the passed number [interval.end], when expanded to 10 based power series.
+///
+/// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
+///
+/// Examples:
+///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
+///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
+///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
+///
+/// Further notes and related topics:
+///   - Labels are encapsulated in the [DataRangeLabelsGenerator],
+///     which creates [LabelInfo]s for all generated labels.
+///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
+///
+List<double> generateValuesForLabelsIn({
+  required util_dart.Interval interval,
+  required bool extendAxisToOrigin,
+}) {
+  var polyMin = util_dart.Poly(from: interval.min);
+  var polyMax = util_dart.Poly(from: interval.max);
+
+  int powerMax = polyMax.maxPower;
+  int coeffMax = polyMax.coefficientAtMaxPower;
+  int signMax = polyMax.signum;
+
+  // using Min makes sense if one or both (min, max) are negative
+  int powerMin = polyMin.maxPower;
+  int coeffMin = polyMin.coefficientAtMaxPower;
+  int signMin = polyMin.signum;
+
+  List<double> labels = [];
+  int power = math.max(powerMin, powerMax);
+
+  if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+    // both negative or positive
+    if (signMax <= 0) {
+      double startCoeff = 1.0 * signMin * coeffMin;
+      int endCoeff = 0;
+      if (!extendAxisToOrigin) {
+        endCoeff = signMax * coeffMax;
+      }
+      for (double l = startCoeff; l <= endCoeff; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    } else {
+      // signMax >= 0
+      double startCoeff = 1.0 * 0;
+      int endCoeff = signMax * coeffMax;
+      if (!extendAxisToOrigin) {
+        startCoeff = 1.0 * coeffMin;
+      }
+      for (double l = startCoeff; l <= endCoeff; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    }
+  } else {
+    // min is negative, max is positive - need added logic
+    if (powerMax == powerMin) {
+      for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+        labels.add(l * math.pow(10, power));
+      }
+    } else if (powerMax < powerMin) {
+      for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+        // just one over 0
+        labels.add(l * math.pow(10, power));
+      }
+    } else if (powerMax > powerMin) {
+      for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+        // just one under 0
+        labels.add(l * math.pow(10, power));
+      }
+    } else {
+      throw Exception('Unexpected power: $powerMin, $powerMax ');
+    }
+  }
+
+  // Check if positions are fully inside interval - probably not, which is fine
+  return labels;
 }

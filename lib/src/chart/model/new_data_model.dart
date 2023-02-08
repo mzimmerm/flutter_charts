@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart;
+import 'package:flutter_charts/src/util/util_labels.dart' as util_labels;
 
 // todo-done-last-2  Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
 //                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
@@ -142,7 +142,7 @@ class NewDataModel {
     required bool isStacked,
     required bool extendAxisToOrigin,
   }) {
-    return util_dart.extendToOrigin(
+    return util_labels.extendToOrigin(
       dataValuesInterval(isStacked: isStacked),
       extendAxisToOrigin,
     );
