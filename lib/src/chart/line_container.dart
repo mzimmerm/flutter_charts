@@ -8,7 +8,7 @@ class LineContainer extends BoxContainer {
   ui.Offset lineTo;
   ui.Paint linePaint;
 
-  // todo-01-full-autolayout : manualLayedOutFromX and friends ADDED TEMPORARILY to be set during construction
+  // todo-02-full-autolayout : manualLayedOutFromX and friends ADDED TEMPORARILY to be set during construction
   //                         : of [LineContainer] in [GridLinesContainer.buildAndAddChildren_DuringParentLayout]
   //                         : where these layout values are calculated, held on,
   //                         : and used later in self [layout], to set [lineFrom] and [lineTo]

@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
 import '../container/container_key.dart';
 
-// todo-01-switch-from-command-arg class NewDataContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+// todo-done-last-3 : replaces PointsColumns
 class NewDataContainer extends DataContainer {
   // constructor:
   // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
@@ -24,7 +24,7 @@ class NewDataContainer extends DataContainer {
 
    NewDataModel dataModel = chartRootContainer.data;
 
-   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildrenAsNewValuesColumnContainerList(chartRootContainer);
+   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildren_Of_NewDataContainer_As_NewValuesColumnContainer_List(chartRootContainer);
 
     addChildren([
       Row(

@@ -6,8 +6,6 @@ import 'package:flutter_charts/src/util/util_dart.dart';
 import 'dart:ui' as ui show Rect, Size;
 
 /// Returns the outer bound of the passed [Offset]s as [Size].
-/// todo-01 test
-
 ui.Rect boundingRectOfRects(List<ui.Rect> rectangles) {
   return ui.Rect.fromLTRB(
     rectangles.map((ui.Rect rectangle) => rectangle.left).reduce(math.min), // left

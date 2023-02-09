@@ -3,7 +3,7 @@ import 'dart:math' as math show Rectangle;
 
 import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show ContainerConstraints;
 
-// todo-01: Container core rules: 
+// todo-05: Container core rules: 
 //           1) I do not expose position, offset, or layoutSize.
 //               I stay put until someone calls transform on me, OR it's special case applyParentOffset.
 //               Is that possible?
@@ -11,12 +11,11 @@ import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show Cont
 //              The paint() method must NOT paint beyond the size of any Container
 
 
-// todo-01 : Shape and extensions (Box, Pie), Container and extensions, Layout, Painter -------------------------------
+// todo-05 : Shape and extensions (Box, Pie), Container and extensions, Layout, Painter -------------------------------
 
 /// Shape is the set of points in a Container.
 /// 
 /// Returned from [layout].
-/// todo-01
 class Shape {
   Object? get surface => null; // represents non positioned surface after getting size in layout
   Object? get positionedSurface => null;  // represents surface after positioning during layout
@@ -32,7 +31,7 @@ class BoxShape extends Shape {
 /// Represents non-positioned pie shape. Internal coordinates are polar, but can ask for containing rectangle.
 /// Equivalent to Size in Box shapes (internally in cartesian coordinates)
 class Pie {
-  // todo-03 add distance and angle, and implement
+  // todo-05 add distance and angle, and implement
   double angle = 0.0; // radians
   double radius = 0.0; // pixels ?
 }
@@ -43,7 +42,7 @@ class PositionedPie extends Pie {
   ui.Offset offset = const ui.Offset(0.0, 0.0);
 }
 
-// todo-03 implement
+// todo-05 implement
 class PieShape extends Shape {
   @override
   Pie get surface => Pie();
@@ -51,18 +50,18 @@ class PieShape extends Shape {
   PositionedPie get positionedSurface => PositionedPie();
 }
 
-// todo-01 : Constraints and extensions -------------------------------------------------------------------------------
+// todo-05 : Constraints and extensions -------------------------------------------------------------------------------
 
 class PieContainerConstraints extends ContainerConstraints {
 }
 
-// todo-01 : BoxContainerConstraints - see constraints.dart ------------------------------------------------------------
+// todo-05 : BoxContainerConstraints - see constraints.dart ------------------------------------------------------------
 
-// todo-01 : split:
+// todo-05 : split:
 //           - Container to BoxContainer and PieContainer
 //           - Shape to BoxShape (wraps Size) and PieShape
 //           - ContainerConstraint to BoxContainerConstraint and PieContainerConstraint 
-// todo-01 : Change Container.layout to 
+// todo-05 : Change Container.layout to 
 //               Shape layout({required covariant ContainerConstraints constraints}); // Must set Shape (Size for now) on layoutableBoxParentSandbox 
 //           This base layout maybe eventually configures some constraints caching and debugging.
 //           Extensions of Container: BoxContainer, PieContainer override layout as

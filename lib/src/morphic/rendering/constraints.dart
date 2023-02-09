@@ -37,7 +37,6 @@ abstract class BoundingBoxesBase {
   BoundingBoxesBase.exactBox({required Size size}) : this(minSize: size, maxSize: size);
   BoundingBoxesBase.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
   BoundingBoxesBase.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
-  // todo-01-last : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoundingBoxesBase.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoundingBoxesBase.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
@@ -104,7 +103,6 @@ abstract class BoundingBoxesBase {
     if (minWidth > maxWidth) {
       throw StateError('minWidth > maxWidth : minWidth=$minWidth, maxWidth=$maxWidth');
     }
-    // todo-done-last : fixed bug : if (minWidth > maxWidth) {
     if (minHeight > maxHeight) {
       throw StateError('minHeight > minHeight : minHeight=$minHeight, minHeight=$minHeight');
     }
@@ -481,8 +479,8 @@ class BoundingBoxes extends BoundingBoxesBase {
 ///   where we want to put the data container to the right of the Y labels.
 /// - If direction style is [Unused], the [layout] should fail on attempted
 ///   looking at such
-///   todo-01-document this documentation is not correct
-///   todo-01 : can we make this immutable? Or even make const constructors?
+///   todo-doc-01 this documentation is not correct
+///   todo-04 : can we make this immutable? Or even make const constructors?
 class BoxContainerConstraints extends BoundingBoxesBase {
 
   /// Expresses if it was created for the very top [Row] or [ColumnLayoter].
@@ -502,7 +500,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   BoxContainerConstraints.exactBox({required Size size}) : this(minSize: size, maxSize: size);
   BoxContainerConstraints.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
   BoxContainerConstraints.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
-  // todo-01-last : Add a singleton member unused(), initialized with this and set as const. Then this constructor can be private ?
+  // todo-04 : Add a singleton member unusedConstraints, initialized with this and set as const. Then this constructor can be private ?
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));

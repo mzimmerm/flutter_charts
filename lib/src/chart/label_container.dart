@@ -86,7 +86,7 @@ class LabelContainer extends BoxContainer {
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// todo-01 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
+  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     required String label,
@@ -120,7 +120,7 @@ class LabelContainer extends BoxContainer {
     //   textAlign: _labelStyle.textAlign,
     //   // center in available space
     //   textScaleFactor: _labelStyle.textScaleFactor,
-    //   // todo-02 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+    //   // todo-04 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     // ); //  textScaleFactor does nothing ??
   }
 
@@ -150,7 +150,7 @@ class LabelContainer extends BoxContainer {
   /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
   /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
   /// 
-  // todo-02-morph : this implementation only works for tilting in [XContainer] because first call to it is
+  // todo-04-morph : this implementation only works for tilting in [XContainer] because first call to it is
   //                 made in [XContainer.layout], after label container is created, as 
   //                    `xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
@@ -347,7 +347,7 @@ class AxisLabelContainer extends LabelContainer {
   /// but both x and y label containers can be skipped
   /// (tick dashes should not?).
   ///
-  // todo-03 how is this used?
+  // todo-04 how is this used?
   double parentOffsetTick = 0.0;
 
   AxisLabelContainer({

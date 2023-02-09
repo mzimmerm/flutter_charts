@@ -12,7 +12,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class LineChartAnchor extends ChartAnchor {
 
   LineChartAnchor({
-    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
+    required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -44,7 +44,7 @@ class LineChartAnchor extends ChartAnchor {
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required ChartAnchor chartAnchor,
-    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
+    required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(

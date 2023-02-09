@@ -18,7 +18,7 @@ import '../chart.dart' as chart;
 ///       can be seen in the [LineChart] constructor.
 class LineChart extends chart.FlutterChart {
   /// Default constructor accepts size
-  const LineChart({
+  LineChart({
     widgets.Key? key,
     required line_painter.LineChartPainter painter,
     widgets.CustomPainter? foregroundPainter,

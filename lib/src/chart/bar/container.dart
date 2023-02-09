@@ -10,14 +10,16 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class VerticalBarChartAnchor extends ChartAnchor {
 
   VerticalBarChartAnchor({
-    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
+    required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
     chartData: chartData,
     isStacked: true, // only supported for now
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  );
+  ) {
+    print('$runtimeType created');
+  }
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
@@ -40,7 +42,7 @@ class VerticalBarChartAnchor extends ChartAnchor {
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
     required ChartAnchor chartAnchor,
-    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
+    required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(

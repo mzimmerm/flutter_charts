@@ -11,7 +11,7 @@ import '../chart.dart' as chart;
 /// it's [ChartContainer.isStacked] setting.
 class VerticalBarChart extends chart.FlutterChart {
   /// Default constructor accepts size
-  const VerticalBarChart({
+  VerticalBarChart({
     widgets.Key? key,
     required bar_painter.VerticalBarChartPainter painter,
     widgets.CustomPainter? foregroundPainter,

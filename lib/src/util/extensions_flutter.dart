@@ -67,7 +67,7 @@ extension RectExtension on ui.Rect {
   ///
   /// Used to show overlapping / protruding portion of the layout.
   ui.Rect closestIntersectWith(ui.Rect other) {
-    // todo-02 : if other contains this, and is just bigger,
+    // todo-04 : if other contains this, and is just bigger,
     //           we want to return only some piece in the direction where other overflows this.
     //           currently we essentially return this overlap other, which spans the full width of this.
     if (overlaps(other)) {

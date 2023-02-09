@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;
 
-// todo-01 documentation fix
+// todo-doc-01 documentation fix, this is old
 /// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
 ///
 /// During it's construction, decides how many Y labels will be created, and generates points on which the Y labels
@@ -111,11 +111,10 @@ class DataRangeLabelsGenerator {
     ).merge(dataEnvelope);
   }
 
-  // todo-01-document
   /// Format and scale the labels from [_labelPositions] created and stored by this instance.
   ///
   /// This method should be invoked in a constructor of a container,
-  /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels
+  /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels.
   FormattedLabelInfos createLabelInfos() {
     List<LabelInfo> labelInfos = _labelPositions
         .map((transformedLabelValue) => LabelInfo(
@@ -273,7 +272,6 @@ class FormattedLabelInfos {
     required List<LabelInfo> from,
     required DataRangeLabelsGenerator labelsGenerator,
   })  : _labelInfoList = from
-         // todo-00-last-last  unused : , _labelsGenerator = labelsGenerator {
   {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
@@ -286,8 +284,6 @@ class FormattedLabelInfos {
       }
     }
   }
-
-   // todo-00-last-last  unused : late final DataRangeLabelsGenerator _labelsGenerator;
 
   /// List that manages the list of labels information for all generated or user labels.
   final List<LabelInfo> _labelInfoList;

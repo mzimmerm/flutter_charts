@@ -456,7 +456,7 @@ class _ExampleWidgetCreator {
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
     // Declare chartData; the data object will be different in every examples.
-    NewDataModel chartData; // todo-done-last-1 : ChartData chartData;
+    NewDataModel chartData;
 
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
@@ -494,7 +494,7 @@ class _ExampleWidgetCreator {
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = NewDataModel( // todo-done-last-1 was : " = ChartData(" : changed everywhere in this file
+        chartData = NewDataModel(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -694,7 +694,7 @@ class _ExampleWidgetCreator {
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
         // In each column, adding it's absolute values should add to same number:
-        // todo-04-examples 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
+        // todo-04 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
 
         chartData = NewDataModel(
           // each column should add to same number. everything else is relative.

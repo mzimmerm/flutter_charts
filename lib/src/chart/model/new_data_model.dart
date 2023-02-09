@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/chart/container_layouter_base.dart';
 import 'package:flutter_charts/src/chart/new_data_container.dart';
 import 'package:flutter_charts/src/util/util_labels.dart' as util_labels;
 
-// todo-done-last-2  Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
+// todo-doc-01 document Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
 //                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
 /// Notes:
 ///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
@@ -20,14 +20,10 @@ import 'package:flutter_charts/src/util/util_labels.dart' as util_labels;
 ///   - When [NewDataModel] is constructed, the [ChartRootContainer] is not available.
 ///     So in constructor, [NewDataModel] cannot be given access to the root container, and it's needed members
 ///     such as [ChartRootContainer.yLabelsGenerator].
-// todo-011 make immutable, probably impossible to make const.
 class NewDataModel {
 
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
-  /// todo-011 : Default constructor only assumes [_dataRows] is set,
-  /// and assigns default values of [_dataRowsLegends], [_dataRowsColors], [xUserLabels], [yUserLabels].
-  ///
   NewDataModel({
     required dataRows,
     required this.xUserLabels,
@@ -43,6 +39,7 @@ class NewDataModel {
         _dataRowsLegends = dataRowsLegends,
         _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
   {
+    print('Constructing NewDataModel');
     validate();
 
     _dataColumns = transposeRowsToColumns(_dataRows);
@@ -69,7 +66,7 @@ class NewDataModel {
   late final ChartAnchor chartAnchor;
 
   /// List of data sameXValues in the model.
-  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-2 : added for the NewDataModel
+  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-3 : added for the NewDataModel
 
   /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewDataModel],
   /// specific for the passed [isStacked].
@@ -122,7 +119,7 @@ class NewDataModel {
     );
   }
 
-  List<NewValuesColumnContainer> generateViewChildrenAsNewValuesColumnContainerList(ChartRootContainer chartRootContainer) {
+  List<NewValuesColumnContainer> generateViewChildren_Of_NewDataContainer_As_NewValuesColumnContainer_List(ChartRootContainer chartRootContainer) {
     List<NewValuesColumnContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
 
@@ -133,9 +130,10 @@ class NewDataModel {
           chartRootContainer: chartRootContainer,
           backingDataModelSameXValues: sameXValues,
           children: [Column(
-              children: sameXValues.generateViewChildrenAsNewValueContainersList(chartRootContainer).reversed.toList(growable: false),
+              children: sameXValues.generateViewChildren_Of_NewValuesColumnContainer_As_NewValueContainer_List(chartRootContainer).reversed.toList(growable: false),
           )],
-          // Give all view columns the same weight - same width if owner will be Row (main axis is horizontal)
+          // Give all view columns the same weight along main axis -
+          //   results in same width of each [NewValuesColumnContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
         ),
       );
@@ -221,7 +219,7 @@ class NewDataModel {
 
 }
 
-/// todo-done-last-2 : Replaces PointsColumn
+/// todo-done-last-3 : Replaces PointsColumn
 /// Represents a list of data values, in the [NewDataModel].
 ///
 /// As we consider the [NewDataModel] to represent a 2D array 'rows first', rows oriented
@@ -232,7 +230,7 @@ class NewDataModel {
 /// looking at one row in the transpose, left-to-right.
 class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModelPoint> {
 
-  /// Constructor. todo-011 document
+  /// Constructor. todo-doc-01
   NewDataModelSameXValues({
     required List<double> dataColumn,
     required NewDataModel dataModel,
@@ -362,8 +360,8 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   }
 
   /// Generates [NewValueContainer] view from each [NewDataModelPoint]
-  /// and collects the views in a list which is returned.
-  List<NewValueContainer> generateViewChildrenAsNewValueContainersList(ChartRootContainer chartRootContainer) {
+  /// and collects the views in a list of [NewValueContainer]s which is returned.
+  List<NewValueContainer> generateViewChildren_Of_NewValuesColumnContainer_As_NewValueContainer_List(ChartRootContainer chartRootContainer) {
     List<NewValueContainer> columnPointContainers = [];
 
     // Generates [NewValueContainer] view from each [NewDataModelPoint]
@@ -372,7 +370,7 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
       (NewDataModelPoint element, dynamic passedList) {
         var columnPointContainers = passedList[0];
         var chartRootContainer = passedList[1];
-        columnPointContainers.add(element.generateViewChildrenAsNewValueContainer(chartRootContainer));
+        columnPointContainers.add(element.generateViewChildLeaf_Of_NewValuesColumnContainer_As_NewValueContainer(chartRootContainer));
       },
       [columnPointContainers, chartRootContainer],
     );
@@ -395,7 +393,7 @@ class _DoubleValue {
 class NewDataModelPoint extends Object with DoubleLinked {
 
   // ===================== CONSTRUCTOR ============================================
-  // todo-011 document
+  // todo-doc-01
   NewDataModelPoint({
     required double dataValue,
     required this.ownerSameXValuesList,
@@ -440,7 +438,10 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// References the data column (sameXValues list) this point belongs to
   NewDataModelSameXValues ownerSameXValuesList;
 
-  NewValueContainer generateViewChildrenAsNewValueContainer(ChartRootContainer chartRootContainer) {
+  /// Generate view for this single leaf [NewDataModelPoint] - a single [NewValueHBarContainer].
+  ///
+  /// Note: On the leaf, we return single element by agreement, higher ups return lists.
+  NewValueContainer generateViewChildLeaf_Of_NewValuesColumnContainer_As_NewValueContainer(ChartRootContainer chartRootContainer) {
     return NewValueHBarContainer(
         dataModelPoint: this,
         chartRootContainer: chartRootContainer,

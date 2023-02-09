@@ -48,7 +48,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///
   /// All children are a siblings linked list.
   /// The next sibling can be accessed by invoking [next].
-  final List<BoxContainer> __children = []; // todo-01 KEEP NullLikeListSingleton();
+  final List<BoxContainer> __children = [];
 
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
@@ -262,7 +262,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = firstLinked(); ; element = element.next) {
-        // e.g. columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        // e.g. columnPointContainers.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasNext) {
           break;
@@ -279,7 +279,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = lastLinked(); ; element = element.previous) {
-        // e.g.  columnPointContainers.add(element.generateViewChildrenAsNewValueContainer());
+        // e.g. columnPointContainers.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasPrevious) {
           break;
@@ -289,8 +289,7 @@ mixin DoubleLinkedOwner<E> {
   }
 }
 
-// todo-01-document : added
-/// When used on a child [BoxLayouter], defines how constraints should be distributed among it's siblings.
+/// On a child [BoxLayouter], defines how constraints should be distributed among it's siblings.
 /// 
 /// Definition: Weights with value of 0 [defaultWeight] or negative values are all classified as *undefined weight*
 ///             [BoxLayouter] with [BoxLayouter.constraintsWeight] set to [defaultWeight] or negative value
@@ -363,8 +362,6 @@ class ConstraintsWeights {
 ///
 /// Implementations will likely add setters to the above described getters.
 ///
-/// todo-01-document-finish documentation about the apply methods.
-///
 /// Used in methods that operate on [BoxLayouter] or [BoxContainer], but only require
 /// a narrower interface which exposes query for [layoutSize] and [offset],
 /// and applying several properties by parent. The apply methods in their names
@@ -386,7 +383,7 @@ abstract class LayoutableBox {
   ///                So maybe setter could be here, getter also here
   ui.Size get layoutSize;
 
-  // todo-01 : should this be private as changes are performed by the 'apply' method?
+  // todo-013 : should this be private as changes are performed by the 'apply' method?
   ui.Offset get offset;
 
   /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [_parent] in the [BoxContainerHierarchy].
@@ -419,16 +416,15 @@ abstract class LayoutableBox {
   ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
-  /// todo-011-document fully, also write : Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  /// todo-doc-01 fully, also write : Important override notes and rules for [applyParentOrderedSkip] on extensions:
   /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
   /// the [layout] and [paint] processing.
   ///
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
-  /// todo-011-document
+  /// Set constraints from parent of this [LayoutableBox].
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
-  /// todo-011-document fully
   ///
   /// Assumptions:
   ///   1. Before calling this method, [constraints] must be set at least on the root of the [BoxContainerHierarchy].
@@ -464,7 +460,7 @@ abstract class LayoutableBox {
   ///
   /// Misc less important notes:
   ///   1. Can we make layoutSize result of layout (INSTEAD OF VOID)  and not store on layout?
-  ///     - NO, because ??? todo-01 : layoutSize member: Make still available as late final on BoxLayouter,
+  ///     - NO, because ??? todo-013 : layoutSize member: Make still available as late final on BoxLayouter,
   ///           set it after return in case it is needed later. Always set just after return from layout.
   void layout();
 }
@@ -525,7 +521,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Set late in [layout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   ///
-  /// todo-01 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
+  /// todo-03 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
   @override
   late final ui.Size layoutSize;
 
@@ -571,7 +567,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Override of method on [LayoutableBox], uses the private member [_orderedSkip]
   /// with assert that caller is parent.
   ///
-  /// todo-011-document   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
+  /// todo-doc-01   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
     assertCallerIsParent(caller);
@@ -638,7 +634,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// Terminology:
   ///   - A leaf in documentation and method names of this algorithm is a [BoxContainer] with empty [__children].
-  ///     todo-01 : we may consider explicitly set another property such as [alwaysLeaf]. Reason: in dynamic layouts,
+  ///     Note: we may consider explicitly set another property such as [alwaysLeaf]. Reason: in dynamic layouts,
   ///               we may get a node that is normally not a leaf become a leaf using this definition,
   ///               causing that the default implementation of [post_Leaf_SetSize_FromInternals]
   ///               (which throws if called on no-children) stops the layout.
@@ -687,7 +683,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   void _layout_IfRoot_DefaultTreePreprocessing() {
     if (isRoot) {
-      // todo-01 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe there is one already?
+      // todo-04 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe there is one already?
       assert(constraints.size != const ui.Size(-1.0, -1.0));
       // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
       // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
@@ -953,12 +949,12 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 /// to make clear that both [BoxContainer] and [BoxLayouter]
 /// have the same [BoxContainerHierarchy] role (capability).
 ///
-/// todo-01-document : children are either passed, or created in constructor body. Show example.
+/// Children are either passed, or created in constructor body. Show example.
 ///
 abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
   /// Default generative constructor.
   BoxContainer({
-    // todo-01-last : can key and children be required, final, and non nullable?
+    // todo-013 : can key and children be required, final, and non nullable?
     ContainerKey? key,
     List<BoxContainer>? children,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
@@ -983,7 +979,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
       __children.clear();
       __children.addAll(children);
       // Establish a 'nextSibling' linked list between __children
-      linkAll(); // todo-last-done _linkChildrenOrAddedChildren(null);
+      linkAll();
     }
 
     // Having added children, ensure key uniqueness
@@ -1011,41 +1007,14 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     }
   }
 
-  /* todo-last-done
-  /// Set the [_nextSibling] on [_children].
-  ///
-  /// After invoking this method, [nextSibling] can be called on any child in [_children].
-  ///
-  /// By contract, there are two ways to invoke this method:
-  ///   - invoked with a [null] parameter, it is assumed this method is invoked
-  ///     from the [BoxContainer] constructor. 
-  ///   - Invoked with a non-null list, it is assumed this method is invoked from [addChildren].
-  /// This invocation contract is assumed in the implementation.
-  void _linkChildrenOrAddedChildren(List<BoxContainer>? addedChildren) {
-    BoxContainer? previous;
-    if (addedChildren == null) {
-      for (var child in __children) {
-        previous = createLink(previous, child);
-      }
-    } else {
-      if (__children.isNotEmpty) {
-        previous = __children.last;
-      }
-      for (var child in addedChildren) {
-        previous = createLink(previous, child);
-      }
-    }
-  }
-  */
-
   /// Appends all children passed in [addedChildren] to existing [_children],
   /// changes all [addedChildren] member [_parent] to self, and ensures unique
   /// keys among all [_children].
-  /// todo-01 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
+  /// todo-03 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
   void addChildren(List<BoxContainer> addedChildren) {
     // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
     // are added to [__children];
-    linkAllWith(addedChildren); // todo-last-done : _linkChildrenOrAddedChildren(addedChildren);
+    linkAllWith(addedChildren);
     __children.addAll(addedChildren);
     _makeSelfParentOf(addedChildren);
     ensureKeyedMembersHaveUniqueKeys();
@@ -1181,13 +1150,14 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 /// ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
 /// create an 'appropriate', 'non-overlapping' children of itself.
 ///
-/// Example: todo-011 maybe remove or improve.
+/// todo-doc-01 maybe remove or improve all below
+/// Example:
 ///   - An example is the Y axis ([YContainer] instance), which creates only as many labels
 ///     ([YAxisLabelContainer]s instances) as they fit, given how many pixels
 ///     the Y axis has available. Such pixel availability is applied on  [YContainer]
 ///
 ///
-/// Important note:  todo-011 maybe remove or improve.
+/// Important note:
 ///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
 ///     likely in parent's [layout] that calls first [layout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
@@ -1350,7 +1320,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   // isLayout should be implemented differently on layouter and container. But it's not really needed
   // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
 
-  // todo-011 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
+  // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
   /// Properties of layout on main axis.
   ///
@@ -1730,7 +1700,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
       layoutAxis: crossLayoutAxis,
       axisLayoutProperties: crossAxisLayoutProperties,
-      // todo-011 : Investigate : If we use, instead of 0.0,
+      // todo-02 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
@@ -1756,7 +1726,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
 }
 
-// todo-01-document
+/// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
 class Row extends RollingPositioningBoxLayouter {
   Row({
     required List<BoxContainer> children,
@@ -1790,7 +1760,8 @@ class Row extends RollingPositioningBoxLayouter {
 }
 
 
-// todo-01-document
+/// Layouter lays out children in a column that keeps extending,
+/// which may overflow if there are too many or too large children.
 class Column extends RollingPositioningBoxLayouter {
   Column({
     required List<BoxContainer> children,
@@ -2081,7 +2052,6 @@ class Aligner extends PositioningBoxLayouter {
 
 // Helper classes ------------------------------------------------------------------------------------------------------
 
-/// todo-01-document
 enum LayoutAxis {
   horizontal,
   vertical,
@@ -2163,7 +2133,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
   for (var child in boxLayouter._children) {
     // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
     // so that only the top layouter can have non-start and non-tight/matrjoska
-    // todo-02 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
+    // todo-04 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
     //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
     //           but this is not simple.
     if (child is Row && foundFirstRowFromTop) {
@@ -2190,7 +2160,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* END of BoxContainer: KEEP
-  // todo-02 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
+  // todo-04 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
   //           ParentTiltTransform, ParentSheerTransform etc.
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs
   /// passed in subsequent calls to [applyParentTransformMatrix] during object

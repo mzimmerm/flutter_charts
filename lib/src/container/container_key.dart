@@ -69,7 +69,7 @@ class SiblingsValueKey<T> extends SiblingsKey {
   int get hashCode => value.hashCode * 17;
 }
 
-// todo-01-document
+// todo-doc-01
 abstract class Keyed {
   ContainerKey get key;
 }
@@ -97,22 +97,6 @@ abstract class UniqueKeyedObjectsManager {
   /// Implementors need to override this
   /// method to start holding uniquely [Keyed] objects.
   List<Keyed> get keyedMembers;
-
-  /* todo-01-remove ??
-  /// Returns, among this holder's managed [Keyed] members, the member with the passed [containerKey].
-  ///
-  /// Throws exception if the passed [containerKey] is not found, or multiple are found.
-  Keyed memberForKey(ContainerKey containerKey) {
-    Iterable<Keyed> matchingMembers = keyedMembers.where((Keyed keyed) => keyed.key == containerKey);
-    if (matchingMembers.length > 1) {
-      throw StateError('Internal error: Multiple matching members $matchingMembers for key $containerKey');
-    }
-    if (matchingMembers.isEmpty) {
-      throw StateError('No matching member for key $containerKey in _keyedMembers $keyedMembers');
-    }
-    return matchingMembers.first;
-  }
- */
 
   Iterable<ContainerKey> get _memberKeys => keyedMembers.map((Keyed keyed) => keyed.key);
 

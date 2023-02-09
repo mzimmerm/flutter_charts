@@ -45,14 +45,15 @@ abstract class ChartAnchor {
     required this.chartData,
     this.isStacked = false,
     this.xContainerLabelLayoutStrategy,
-  });
+  }) {
+    print('Constructing ChartAnchor');
+  }
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
   /// After [chartRootContainer] is created and set, This [NewDataModel] type member [chartData]
   /// should be placed on the member [ChartRootContainer.data].
-  // todo-00 : NewDataModel is member on both [ChartAnchor] and [ChartRootContainer]??? Only use one
-  NewDataModel chartData; // todo-done-last-2 : ChartData chartData;
+  NewDataModel chartData;
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   bool isStacked = false;
   late ChartRootContainer chartRootContainer;
@@ -83,13 +84,14 @@ abstract class ChartAnchor {
     // After this invocation, the created root container is populated with children
     // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
     // depending on the concrete container. For example YContainer is populated with DataRangeLabelsGenerator.
+    String isFirstStr = _debugPrintBegin();
     chartRootContainer = createRootContainer(chartAnchor: this); // also link from this Anchor to ChartRootContainer.
 
     // Only set `chartData.chartAnchor = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
     // To have chartData late final, we have to keep track to only initialize chartData.chartAnchor = this on first run.
     if (_isFirst) {
-      chartData.chartAnchor = this; // Because Data is created first ATM, set Anchor late
       _isFirst = false;
+      chartData.chartAnchor = this; // Because Data is created first, set self anchor late
     }
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
@@ -112,12 +114,18 @@ abstract class ChartAnchor {
 
     chartRootContainer.paint(canvas);
 
-    // clip canvas to size - this does nothing
-    // todo-1: THIS canvas.clipRect VVVV CAUSES THE PAINT() TO BE CALLED AGAIN. WHY??
-    // canvas.clipRect(ui.Offset.zero & size); // Offset & Size => Rect
+    _debugPrintEnd(isFirstStr);
   }
 
+  String _debugPrintBegin() {
+    String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
+    print('    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint BEGIN BEGIN BEGIN, $isFirstStr');
+    return isFirstStr;
+  }
 
+  void _debugPrintEnd(String isFirstStr) {
+    print('    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint END END END, $isFirstStr');
+  }
 
 }
 
@@ -156,7 +164,7 @@ abstract class ChartBehavior {
 ///
 /// The lifecycle of [ChartRootContainer] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
-///   - todo-011 : document here and in [BoxContainer]
+///   - todo-doc-01 : document here and in [BoxContainer]
 
 abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
@@ -177,13 +185,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// required to paint half of the topmost label.
   ChartRootContainer({
     required this.chartAnchor,
-    required NewDataModel chartData, // todo-done-last-2 ChartData chartData,
+    required NewDataModel chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : data = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
+    print('    Constructing ChartRootContainer');
     isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
 
     // Create children and attach to self
@@ -191,7 +200,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   }
 
-  // todo-01 document
   final ChartAnchor chartAnchor;
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
@@ -222,7 +230,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PointPresenterCreator] and [PointPresenter] for more details.
-  /// todo-01 : There may be a question "why does a container need to know about PointPresenter, even indirectly"?
+  /// todo-04 : There may be a question "why does a container which is a view, need to know about PointPresenter, which is a model, even indirectly"?
   late PointPresenterCreator pointPresenterCreator;
 
   /// ##### Subclasses - aware members.
@@ -238,7 +246,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  NewDataModel data; // todo-last-done : ChartData data;
+  NewDataModel data;
 
   /// Creates child containers for the chart root.
   ///
@@ -315,9 +323,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        First [YContainer] is first to need it, to display and scale y values and
     //        create labels from the stacked points (if chart is stacked).
     /// Create member [pointsColumns] from [data.dataRows].
-    // todo-01 : PointsColumns needs to be separated into  PointsColumns BoxContainer
-    //           1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout.
-    //           But FIRST, can this be moved at the end? can this be moved to DataContainer.layout?
+    // todo-04 : can this be moved to DataContainer.layout?
     pointsColumns = PointsColumns(
       chartRootContainer: this,
       pointPresenterCreator: pointPresenterCreator,
@@ -554,7 +560,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   late List<YAxisLabelContainer> _yLabelContainers;
 
   /// Maximum label height found by the first layout (pre-layout),
-  /// is ONLY used to 'shorten' YContainer constraints on top. todo-01-last : We should get rid of.
+  /// is ONLY used to 'shorten' YContainer constraints on top.
   double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
@@ -707,7 +713,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   }
 
   double get yLabelsMaxHeight {
-    // todo-04-replace-this-pattern-with-fold - look for '? 0.0'
+    // todo-04 replace-this-pattern-with-fold - look for '? 0.0'
     return _yLabelContainers.isEmpty
         ? 0.0
         : _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.height).reduce(math.max);
@@ -1182,7 +1188,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     /// Painters use the created leaf pointPresenters directly to draw lines, points,
     /// and bars from the pointPresenters' prepared ui elements:
     /// lines, points, bars, etc.
-    // todo-01 : What is the difference between this PointPresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
+    // todo-04 : What is the difference between this PointPresentersColumns and constructing PointsColumns() which is called earlier in ChartRootContainer.layout?
     //                  PointsColumns is DATA, PointPresentersColumns should be converted to BoxContainer
     //                  Also : problem : this constructor actually creates absolute values on PointPresenters, no offsetting !!
     pointPresentersColumns = PointPresentersColumns(
@@ -1236,14 +1242,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     }
     return pointPresenters;
   }
-
-// todo-01 not-referenced, why : void _drawDataPointPresentersColumns(ui.Canvas canvas);
 }
 
 
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
-// todo-02-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+// todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
 //          in AdjustableLabelsChartAreaContainer
 //          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
 //          But Dart bug #25742 does not allow mixins with named parameters.
@@ -1468,7 +1472,7 @@ class GridLinesContainer extends BoxContainer {
 ///    - [LabelContainerOriginalKeep] labelContainer for the series label
 
 
-// todo-01-document
+/// Container of one item in the chart legend; each instance corresponds to one row (series) of data.
 class LegendItemContainer extends BoxContainer {
 
   /// Rectangle of the legend color square series indicator
@@ -1843,7 +1847,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
-    // todo-011 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    // todo-021 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip) {
@@ -1855,7 +1859,6 @@ class LegendContainer extends ChartAreaContainer {
   }
 }
 
-// todo-01 Try to make members final and private and class immutable
 /// Represents one Y numeric value in the [DeprecatedChartData.dataRows],
 /// with added information about the X coordinate (display coordinate).
 ///
@@ -1992,8 +1995,8 @@ class StackableValuePoint {
     // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsGenerator
     // were calculated using the NEW [NewDataModel]
 
-    double axisPixelsYMin = chartRootContainer!.yContainer.axisPixelsRange.min;
-    double axisPixelsYMax = chartRootContainer!.yContainer.axisPixelsRange.max;
+    double axisPixelsYMin = chartRootContainer.yContainer.axisPixelsRange.min;
+    double axisPixelsYMax = chartRootContainer.yContainer.axisPixelsRange.max;
 
     scaledFrom = ui.Offset(
       scaledX,
@@ -2017,7 +2020,6 @@ class StackableValuePoint {
     return this;
   }
 
-  // todo-01 : This applies offset on this StackableValuePoint
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
@@ -2145,7 +2147,7 @@ class PointsColumn {
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
 /// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainer].
-// todo-01-note : PointsColumns IS A MODEL, NOT PRESENTER :
+// todo-04-note : PointsColumns IS A MODEL, NOT PRESENTER :
 //                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
 //                 Each PointsColumn is a child in children.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
@@ -2180,9 +2182,9 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(NewDataModel chartData) { // todo-done-last-2 ChartData chartData) {
+  void _createStackableValuePointsFromChartData(NewDataModel chartData) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
-        List.filled(chartData.dataRows[0].length, null); // todo 0 deal with no data rows
+        List.filled(chartData.dataRows[0].length, null);
     for (int col = 0; col < chartData.dataRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }

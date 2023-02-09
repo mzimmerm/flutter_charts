@@ -25,13 +25,19 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// [FlutterChartPainter.paint] invocation.
   containers.ChartAnchor chartAnchor;
 
+  /// Keep track of re-paints
+  bool _isFirstPaint = true;
+
   /// Constructs this chart painter, giving it [chartAnchor], which
   /// holds on [chartData] and other members needed for
   /// the late creation of [containers.ChartAnchor.chartRootContainer].
 
   FlutterChartPainter({
     required this.chartAnchor,
-  });
+  }) {
+    print('Constructing $runtimeType');
+  }
+
 
   /// Paints the chart on the passed [canvas], limited to the [size] area.
   ///
@@ -47,18 +53,36 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
+    _debugPrintBegin(size);
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
     if (size == ui.Size.zero) {
-      print(' ### Size: paint(): passed size 0 to CustomPainter $this! Nothing can be painted here, returning.');
+      print(' ### $runtimeType.PAINT: passed size 0 to this CustomPainter! Nothing can be painted here, RETURNING.');
       return;
     }
 
     chartAnchor.chartRootContainerCreateBuildLayoutPaint(canvas, size);
 
+    _debugPrintEnd();
+  }
+
+  void _debugPrintBegin(ui.Size size) {
+    print('=================== $runtimeType.PAINT BEGIN BEGIN BEGIN at ${DateTime.now()} =================== ');
+    if (_isFirstPaint) {
+      print('    invoked === FIRST TIME === with size=$size');
+      _isFirstPaint = false;
+    } else {
+      print('    invoked === SECOND TIME === with size=$size');
+    }
+  }
+
+  void _debugPrintEnd() {
     // clip canvas to size - this does nothing
-    // todo-02: canvas.clipRect vvvv causes the paint() to be called again. why??
-    // canvas.clipRect(ui.Offset.zero & size); // Offset & Size => Rect
+    // canvas.clipRect  causes the paint() to be called again. why??
+    // canvas.clipRect(ui.Offset.zero & size);
+    print('=================== $runtimeType.PAINT END END END at ${DateTime.now()} =================== ');
+    print('');
+    print('');
   }
 
   /// Implementing abstract in super.
@@ -67,6 +91,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// with a new instance of the custom painter delegate class.
   @override
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
+    print(' ###### $runtimeType.shouldRepaint being CALLED');
     return true;
   }
 }

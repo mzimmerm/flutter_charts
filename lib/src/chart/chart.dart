@@ -6,7 +6,7 @@ import 'painter.dart' as painter;
 ///
 abstract class FlutterChart extends widgets.CustomPaint {
   /// Default constructor accepts size
-  const FlutterChart({
+  FlutterChart({
     widgets.Key? key,
     required painter.FlutterChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
@@ -18,5 +18,7 @@ abstract class FlutterChart extends widgets.CustomPaint {
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
-        );
+        ) {
+    print('Constructing $runtimeType');
+  }
 }

@@ -60,31 +60,28 @@ enum Packing {
   ///   as padding at the beginning, and between elements. Last element end is at the boundary.
   /// - For [Align.center] : Same proportions of [LayedoutLengthsPositioner._freePadding]
   ///   are distributed as padding at the beginning, between elements, and at the end.
-  /// - todo-01 implement and test : For [Align.centerExpand] : Same proportions of [LayedoutLengthsPositioner._freePadding]
+  /// - todo-04 implement and test : For [Align.centerExpand] : Same proportions of [LayedoutLengthsPositioner._freePadding]
   ///   are distributed as padding between elements; no padding at the beginning or at the end.
   ///
   loose,
 }
 
-/// todo-01-document
-/// This is alignment.
+/// Represents alignment of children during layouts.
 enum Align {
   start,
   center,
-  // todo-01 : added but not tested or used. Originally intended for chart GridContainer layout.
-  //           maybe replaced with RowWithUnevenChildrenConstraints
+  // todo-04 : added centerExpand but not tested or used. Originally intended for chart GridContainer layout. Maybe not needed?
   centerExpand,
   end,
 }
 
-/// todo-011 document
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
 ///
 /// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
 /// describes that a given constraint should create multiple constraints that are the same.
 enum ConstraintsDistribution {
-  evenly, // todo-010 : deprecate and remove. Rely on children to all set intWeights=1 instead
+  evenly, // todo-013 : deprecate and remove. Rely on children to all set intWeights=1 instead
   intWeights,
   noDivide,
 }
