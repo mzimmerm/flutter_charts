@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;
 
-// todo-00 : not specific to Y labels, although only used there. Generalize.
+// todo-01 documentation fix
 /// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
 ///
 /// During it's construction, decides how many Y labels will be created, and generates points on which the Y labels
@@ -33,7 +33,6 @@ import 'util_labels.dart' as util_labels;
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelsGenerator {
 
-  // todo-done-last : hack to get code access to ChartRootContainer, but can be null in tests
   late final NewDataModel? _dataModel;
   bool? _isStacked;
 
@@ -81,15 +80,13 @@ class DataRangeLabelsGenerator {
     required Function valueToLabel,
     required Function inverseTransform,
     this.userLabels,
+    required bool isStacked,
     NewDataModel? dataModel,
-    bool? isStacked,
   })  :
         _valueToLabel = valueToLabel,
         _inverseTransform = inverseTransform,
         _dataModel = dataModel,
         _isStacked = isStacked {
-    // hack for tests to not have to change. todo-00 : fix in tests
-    _isStacked ??= false;
 
     // List<double> yLabelPositions;
     util_dart.Interval dataEnvelope;
@@ -114,10 +111,11 @@ class DataRangeLabelsGenerator {
     ).merge(dataEnvelope);
   }
 
-  // todo-00-document
+  // todo-01-document
   /// Format and scale the labels from [_labelPositions] created and stored by this instance.
+  ///
   /// This method should be invoked in a constructor of a container,
-  /// such as [YContainer]. [BoxContainer.layout], where we know axis pixel size.
+  /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels
   FormattedLabelInfos createLabelInfos() {
     List<LabelInfo> labelInfos = _labelPositions
         .map((transformedLabelValue) => LabelInfo(

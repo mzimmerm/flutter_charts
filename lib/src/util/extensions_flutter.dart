@@ -1,6 +1,6 @@
 /// Library for extensions that need flutter test , namely Rect, Offset, Size;
 import 'dart:math' as math;
-import 'dart:ui' as ui show Rect, Offset, Size;
+import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter package
 
 import 'package:flutter_charts/src/chart/container_edge_padding.dart' show EdgePadding;
 
@@ -13,9 +13,10 @@ extension SizeExtension on ui.Size {
   }
 
   /// Returns a Size with [width] and [height] being self [width] and [height]
-  /// decreased with [other] width and height.
+  /// decreased with [other] width and height, but not becoming negative.
+  ///
+  /// If any returned size would become negative, it is collapsed to 0.0 instead.
   ui.Size deflateWithSize(ui.Size other) {
-    // todo-00 : size may become negative. What to do ?
     return ui.Size(math.max(width - other.width, 0.0), math.max(height - other.height, 0.0));
   }
 

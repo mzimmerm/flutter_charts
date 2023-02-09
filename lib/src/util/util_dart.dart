@@ -407,6 +407,42 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
 
 // ################ Functions ########################
 
+/// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
+/// the [_dataRows] 2D array List<List<Object>>, so that
+/// for each row and column index in valid range,
+/// ```dart
+///   _dataRows[row][column] = transposed[column][row];
+/// ```
+/// The original and transposed example
+/// ```
+///  // original
+///  [
+///    [ 1, A ],
+///    [ 2, B ],
+///    [ 3, C ],
+///  ]
+///  // transposed
+///  [
+///    [ 1, 2, 3 ],
+///    [ A, B, C ],
+///  ]
+/// ```
+List<List<T>> transposeRowsToColumns<T>(List<List<T>> rows) {
+  List<List<T>> columns = [];
+  // Walk length of first row (if exists) and fill all columns assuming fixed size of _dataRows
+  if (rows.isNotEmpty) {
+    for (int column = 0; column < rows[0].length; column++) {
+      List<T> dataColumn = [];
+      for (int row = 0; row < rows.length; row++) {
+        // Add a row value on the row where dataColumn stands
+        dataColumn.add(rows[row][column]);
+      }
+      columns.add(dataColumn);
+    }
+  }
+  return columns;
+}
+
 double get epsilon => 0.000001;
 
 bool isCloserThanEpsilon(double d1, double d2) {

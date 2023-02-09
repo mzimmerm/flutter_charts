@@ -16,7 +16,7 @@
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 import '../../../../lib/src/util/util_dart.dart' show enumName;
-import '../../../../lib/src/util/extension_string.dart' show StringExtension;
+import '../../../../lib/src/util/extensions_dart.dart' show StringExtension;
 
 import 'package:tuple/tuple.dart' show Tuple2;
 

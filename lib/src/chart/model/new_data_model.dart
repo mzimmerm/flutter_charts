@@ -45,7 +45,7 @@ class NewDataModel {
   {
     validate();
 
-    _dataColumns = _transposeRowsToColumns();
+    _dataColumns = transposeRowsToColumns(_dataRows);
 
     // Construct the full [NewDataModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
@@ -68,49 +68,23 @@ class NewDataModel {
   // [NewDataModel] is created first. So Anchor must be set publicly late.
   late final ChartAnchor chartAnchor;
 
-  // todo-00 move to util and make generic
-  /// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
-  /// the [_dataRows] 2D array List<List<Object>>, so that
-  /// for each row and column index in valid range,
-  /// ```dart
-  ///   _dataRows[row][column] = transposed[column][row];
-  /// ```
-  /// The original and transposed example
-  /// ```
-  ///  // original
-  ///  [
-  ///    [ 1, A ],
-  ///    [ 2, B ],
-  ///    [ 3, C ],
-  ///  ]
-  ///  // transposed
-  ///  [
-  ///    [ 1, 2, 3 ],
-  ///    [ A, B, C ],
-  ///  ]
-  /// ```
-  List<List<double>> _transposeRowsToColumns() {
-    List<List<double>> dataColumns = [];
-    // Walk length of first row (if exists) and fill all dataColumns assuming fixed size of _dataRows
-    if (_dataRows.isNotEmpty) {
-      for (int column = 0; column < _dataRows[0].length; column++) {
-        List<double> dataColumn = [];
-        for (int row = 0; row < _dataRows.length; row++) {
-          // Add a row value on the row where dataColumn stands
-          dataColumn.add(_dataRows[row][column]);
-        }
-        dataColumns.add(dataColumn);
-      }
-    }
-    return dataColumns;
-  }
-
   /// List of data sameXValues in the model.
   final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-2 : added for the NewDataModel
 
-  /// Returns the minimum and maximum non-scaled, non-transformed date values.
+  /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewDataModel],
+  /// specific for the passed [isStacked].
   ///
-  /// Calculated from [NewDataModel].
+  /// The returned value is calculated from [NewDataModel] by finding maximum and minimum of data values
+  /// in [NewDataModelPoint] instances.
+  ///
+  /// The source data of the returned interval differs in stacked and non-stacked data, determined by argument [isStacked] :
+  ///   - For [isStacked] true, the min and max is taken from [NewDataModelPoint._stackedPositiveDataValue] and
+  ///     [NewDataModelPoint._stackedNegativeDataValue] is used.
+  ///   - For  [isStacked] false, the min and max is taken from [NewDataModelPoint._dataValue] is used.
+  ///
+  /// Implementation detail: maximum and minimum is calculated column-wise [NewDataModelSameXValues] first, but could go
+  /// directly to the flattened list of [NewDataModelPoint] (max and min over partitions is same as over whole set).
+  ///
   Interval dataValuesInterval({
     required bool isStacked,
   }) {

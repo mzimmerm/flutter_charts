@@ -1893,36 +1893,24 @@ class StackableValuePoint {
         fromY = 0.0,
         toY = dataY;
 
-  /// Initial instance of a [StackableValuePoint].
-  /// Forwarded to the generative constructor.
-  /// This should fail if it undergoes any processing such as layout
-  StackableValuePoint.initial()
-      : this(
-    chartRootContainer: null,
-    xLabel: 'initial',
-    dataY: -1,
-    dataRowIndex: -1,
-    predecessorPoint: null,
-  );
-
   // ################## Members ###################
   // ### Group 0: Structural
 
   /// Root container added to access yContainer.axisPixels min / max
-  /// todo-done-last
-  late final ChartRootContainer? chartRootContainer;
+  late final ChartRootContainer chartRootContainer;
 
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
 
-  String xLabel;
+  late final String xLabel;
 
   /// The transformed but NOT stacked Y data value.
   /// **ANY [dataYs] are 1. transformed, then 2. potentially stacked IN PLACE, then 3. potentially scaled IN A COPY!!**
-  double dataY;
+  late final double dataY;
 
   /// The index of this point in the [PointsColumn] containing this point in it's
   /// [PointsColumn.stackableValuePoints] list.
-  int dataRowIndex; // series index
+  late final int dataRowIndex; // series index
+
   /// The predecessor point in the [PointsColumn] containing this point in it's [PointsColumn.stackableValuePoints] list.
   StackableValuePoint? predecessorPoint;
 
@@ -2048,10 +2036,10 @@ class StackableValuePoint {
   /// type members.
   StackableValuePoint unstackedClone() {
     if (isStacked) {
-      throw Exception('Cannot clone if already stacked');
+      throw Exception('Cannot unstackedClone if already stacked');
     }
 
-    StackableValuePoint clone = StackableValuePoint(
+    StackableValuePoint unstackedClone = StackableValuePoint(
       chartRootContainer: chartRootContainer,
       xLabel: xLabel,
       dataY: dataY,
@@ -2059,20 +2047,14 @@ class StackableValuePoint {
       predecessorPoint: predecessorPoint,
     );
 
-    // todo-00 : Why are we setting all those values when must have been set during clone construction????
-    // numbers and Strings, being immutable, can be just assigned.
-    // rest of objects (ui.Offset) must be created from immutable leafs.
-    clone.xLabel = xLabel;
-    clone.dataY = dataY;
-    clone.predecessorPoint = null;
-    clone.dataRowIndex = dataRowIndex;
-    clone.isStacked = false;
-    clone.fromY = fromY;
-    clone.toY = toY;
-    clone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
-    clone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
+    // nullify the predecessor Anything that we change here must not be final
+    unstackedClone.predecessorPoint = null;
+    unstackedClone.fromY = fromY;
+    unstackedClone.toY = toY;
+    unstackedClone.scaledFrom = ui.Offset(scaledFrom.dx, scaledFrom.dy);
+    unstackedClone.scaledTo = ui.Offset(scaledTo.dx, scaledTo.dy);
 
-    return clone;
+    return unstackedClone;
   }
 }
 
@@ -2232,7 +2214,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     valuePointArrInRows.toList();
 
     // Data points managed column. Internal only, should be refactored away.
-    List<List<StackableValuePoint>> valuePointArrInColumns = transpose(valuePointArrInRows);
+    List<List<StackableValuePoint>> valuePointArrInColumns = transposeRowsToColumns(valuePointArrInRows);
 
     // convert "column oriented" _valuePointArrInColumns
     // to a column, and add the columns to this instance
@@ -2315,53 +2297,4 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
     return flat;
   }
-}
-
-// todo-01: In null safety, I had to replace T with a concrete StackableValuePoint.
-/* todo-02-make-transpose-generics : original version before nullability
-List<List<T>> transpose<T>(List<List<T>> colsInRows) {
-  int nRows = colsInRows.length;
-  if (colsInRows.length == 0) return colsInRows;
-
-  int nCols = colsInRows[0].length;
-  if (nCols == 0) throw new StateError("Degenerate matrix");
-
-  // Init the transpose to make sure the size is right
-  List<List<T>> rowsInCols = new List(nCols);
-  for (int col = 0; col < nCols; col++) {
-    rowsInCols[col] = new List(nRows);
-  }
-
-  // Transpose
-  for (int row = 0; row < nRows; row++) {
-    for (int col = 0; col < nCols; col++) {
-      rowsInCols[col][row] = colsInRows[row][col];
-    }
-  }
-  return rowsInCols;
-}
-*/
-
-//               can this be improved? This need may be a typing bug in Dart - See above.
-/// Assuming even length 2D matrix [colsRows], return it's transpose copy.
-List<List<StackableValuePoint>> transpose(List<List<StackableValuePoint>> colsInRows) {
-  int nRows = colsInRows.length;
-  if (colsInRows.isEmpty) return colsInRows;
-
-  int nCols = colsInRows[0].length;
-  if (nCols == 0) throw StateError('Degenerate matrix');
-
-  // Init the transpose to make sure the size is right
-  List<List<StackableValuePoint>> rowsInCols = List.filled(nCols, []);
-  for (int col = 0; col < nCols; col++) {
-    rowsInCols[col] = List.filled(nRows, StackableValuePoint.initial());
-  }
-
-  // Transpose
-  for (int row = 0; row < nRows; row++) {
-    for (int col = 0; col < nCols; col++) {
-      rowsInCols[col][row] = colsInRows[row][col];
-    }
-  }
-  return rowsInCols;
 }

@@ -12,7 +12,7 @@ import 'dart:io' as io show exit;
 
 // provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/extension_string.dart' show StringExtension;
+import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 
 import 'src/util/examples_descriptor.dart';
 

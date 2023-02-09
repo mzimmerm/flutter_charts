@@ -183,21 +183,24 @@ mixin DoubleLinked<E> {
 ///
 /// Client using a set of [DoubleLinked] objects need to hold on to [DoubleLinkedOwner] instance to
 /// be able to make use of the set of  [DoubleLinked] objects by two lifecycle actions:
-///   - First client needs to define the set of [DoubleLinked] that should be linked using [DoubleLinked.linkAll].
-///     This set is defined by [DoubleLinkedOwner.allElements].
-///   - Next, to start walking through the set of [DoubleLinked] objects, client needs to
-///     access one object from the set of [DoubleLinked] objects.
-///     This access can be done by invoking [DoubleLinkedOwner.firstLinked].
-///
-/// todo-01 : Describe a lifecycle of creating, linking, and using [DoubleLinked] from a client code example
+///   1. First client needs to define the set of [DoubleLinked] that should be linked using [DoubleLinked.linkAll].
+///      This set is defined by [DoubleLinkedOwner.allElements].
+///   2. Next, to apply some function on the [DoubleLinked] objects,
+///      start walking through the set of [DoubleLinked] objects, client needs to
+///      access one object from the set of [DoubleLinked] objects.
+///      This access can be done by invoking [DoubleLinkedOwner.firstLinked].
+///   2b)  Alternatively, and better,  to apply some function on the [DoubleLinked] objects,
+///        client would invoke
+///        ```dart
+///          doubleLinkedOwner.applyOnAllElements(useElementWith, object);
+///        ```
 ///
 /// It's [hasLinkedElements] method must be called before the [firstLinked].
 ///
 /// Assuming [DoubleLinked.linkAll] has been called on the first  nce [hasLinkedElements] returns true,
 ///
-/// A typical use:
+/// A typical manual use:
 /// ```dart
-///   // todo-00 : introduce a form that allows to iterate and apply
 ///   if (doubleLinkedOwner.hasLinkedElements) {
 ///     E element = doubleLinkedOwner.firstLinked();
 ///     while (true) {
@@ -217,6 +220,12 @@ mixin DoubleLinked<E> {
 ///          break;
 ///        }
 ///     }
+/// ```
+///
+/// Prefer to use the 'all in one' form [applyOnAllElements] or [applyOnAllElementsReversed]
+/// which iterates and applies:
+/// ```dart
+///     doubleLinkedOwner.applyOnAllElements(useElementWith, object);
 /// ```
 mixin DoubleLinkedOwner<E> {
 
@@ -1780,34 +1789,6 @@ class Row extends RollingPositioningBoxLayouter {
   }
 }
 
-// todo-00 : probably remove. Served by ConstraintsWeight on children
-// todo-01 : Implement by overriding the constraint definer - distribute constraints
-/// Intended use : Layout LineContainers as follows
-/// ```dart
-///   RowWithUnevenChildrenConstraints(
-///     Center(LineContainer),
-///     //...
-///     Center(LineContainer),)
-/// ```
-/*
-class RowWithUnevenChildrenConstraints extends Row {
-
-  RowWithUnevenChildrenConstraints({
-    required List<BoxContainer> children,
-    required List<double> childConstraintsRatios, // todo-01 added, no implemented
-    Align mainAxisAlign = Align.start,
-    Packing mainAxisPacking = Packing.tight,
-    Align crossAxisAlign = Align.center,
-    Packing crossAxisPacking = Packing.matrjoska,
-  }) : super(
-    children: children,
-    mainAxisAlign: mainAxisAlign,
-    mainAxisPacking: mainAxisPacking,
-    crossAxisAlign: crossAxisAlign,
-    crossAxisPacking: crossAxisPacking,
-  );
-}
-*/
 
 // todo-01-document
 class Column extends RollingPositioningBoxLayouter {
@@ -1851,7 +1832,6 @@ class Column extends RollingPositioningBoxLayouter {
 /// layoutSize is set to the calculated [_greedySizeAlongGreedyAxis].
 ///
 class Greedy extends NonPositioningBoxLayouter {
-  // todo-00 : replace with ConstraintsWeight
   final int greed;
 
   Greedy({

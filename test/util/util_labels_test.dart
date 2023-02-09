@@ -55,63 +55,35 @@ void main() {
 
   test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
-    // double axisYMin = 100.0;
-    // double axisYMax = 500.0;
 
-    DataRangeLabelsGenerator yScaler;
+    DataRangeLabelsGenerator yLabelsGenerator;
     
     var extendAxisToOrigin = true;
     var xUserLabels = ['1', '2', '3'];
+    var dataRowsLegends = ['Legend of row 1'];
 
-    var dataYs = [1.0, 22.0, 333.0];
-    yScaler = DataRangeLabelsGenerator(
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
-    );
-    // Interval dataYEnvelop = yScaler.dataYsEnvelope;
-    List<num> labels = yScaler.labelPositions;
-    // expect(dataYEnvelop.min, 0.0);
-    // expect(dataYEnvelop.max, 333.0);
+    var dataRows = [[1.0, 22.0, 333.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    List<num> labels = yLabelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], 0.0);
     expect(labels[1], 100.0);
     expect(labels[2], 200.0);
     expect(labels[3], 300.0);
-    
 
 
-    dataYs = [-1.0, -22.0, -333.0];
-    yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
-    );
-    // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.labelPositions;
-    // expect(dataYEnvelop.min, -333.0);
-    // expect(dataYEnvelop.max, 0.0);
+    dataRows = [[-1.0, -22.0, -333.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = yLabelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
     expect(labels[2], -100.0);
     expect(labels[3], 0.0);
 
-    dataYs = [22.0, 10.0, -333.0];
-    yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
-    );
-    // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.labelPositions;
-    // expect(dataYEnvelop.min, -333.0);
-    // expect(dataYEnvelop.max, 22.0);
+    dataRows = [[22.0, 10.0, -333.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = yLabelsGenerator.labelPositions;
     expect(labels.length, 5);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -119,18 +91,9 @@ void main() {
     expect(labels[3], 0.0);
     expect(labels[4], 100.0);
 
-    dataYs = [-22.0, -10.0, 333.0];
-    yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
-    );
-    // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.labelPositions;
-    // expect(dataYEnvelop.min, -22.0);
-    // expect(dataYEnvelop.max, 333.0);
+    dataRows = [[-22.0, -10.0, 333.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = yLabelsGenerator.labelPositions;
     expect(labels.length, 5);
     expect(labels[0], -100.0);
     expect(labels[1], 0.0);
@@ -138,35 +101,18 @@ void main() {
     expect(labels[3], 200.0);
     expect(labels[4], 300.0);
 
-    dataYs = [-1000.0, 0.0, 1000.0, 2000.0];
-    yScaler = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMin, axisYMax),
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, ['1', '2', '3', '4'], extendAxisToOrigin),
-    );
-    // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler.labelPositions;
-    // expect(dataYEnvelop.min, -1000.0);
-    // expect(dataYEnvelop.max, 2000.0);
+    dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
+    labels = yLabelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
     expect(labels[2], 1000.0);
     expect(labels[3], 2000.0);
 
-    dataYs = [-1000.0, 0.0, 1000.0];
-    yScaler = DataRangeLabelsGenerator(
-      extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
-      inverseTransform: options.dataContainerOptions.yInverseTransform,
-      dataModel: _constructMockNewDataModel(options, dataYs, xUserLabels, extendAxisToOrigin),
-    );
-    // dataYEnvelop = yScaler.dataYsEnvelope;
-    labels = yScaler. labelPositions;
-    // expect(dataYEnvelop.min, -1000.0);
-    // expect(dataYEnvelop.max, 1000.0);
+    dataRows = [[-1000.0, 0.0, 1000.0]];
+    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = yLabelsGenerator. labelPositions;
     expect(labels.length, 3);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -181,7 +127,7 @@ void main() {
   //   bool extendAxisToOrigin = false;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yLabelsGenerator] - yLabelsGenerator is unused, will recreate
   //   var data = [
   //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
   //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
@@ -192,7 +138,7 @@ void main() {
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelsGenerator'],
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelsGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin);
+  //   rangeTestCore(data, options, extendAxisToOrigin, dataRowsLegends, xUserLabels);
   // });
   //
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -204,7 +150,7 @@ void main() {
   //   bool extendAxisToOrigin = true;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yScaler] - yScaler is unused, will recreate
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yLabelsGenerator] - yLabelsGenerator is unused, will recreate
   //   var data = [
   //     // ex32 linear
   //     [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of DataRangeLabelsGenerator'],
@@ -213,24 +159,45 @@ void main() {
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelsGenerator'],
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelsGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin);
+  //   rangeTestCore(data, options, extendAxisToOrigin, dataRowsLegends, xUserLabels);
   // });
 
 
 }
 
-MockNewDataModel _constructMockNewDataModel(ChartOptions options, List<double> dataYs, List<String> xUserLabels, bool extendAxisToOrigin) {
+DataRangeLabelsGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> xUserLabels, List<String> dataRowsLegends) {
+  return DataRangeLabelsGenerator(
+    extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
+    valueToLabel: options.yContainerOptions.valueToLabel,
+    inverseTransform: options.dataContainerOptions.yInverseTransform,
+    dataModel: _constructMockNewDataModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends),
+    isStacked: false,
+  );
+}
+
+MockNewDataModel _constructMockNewDataModel(
+  ChartOptions options,
+  List<List<double>> dataRows,
+  List<String> xUserLabels,
+  bool extendAxisToOrigin,
+  List<String> dataRowsLegends,
+) {
   return MockNewDataModel(
       chartOptions: options,
-      dataRowsLegends: ['Legend'],
-      dataRows: [dataYs],
+      dataRowsLegends: dataRowsLegends,
+      dataRows: dataRows,
       xUserLabels: xUserLabels,
       dataRowsColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
-
     );
 }
 
-void rangeTestCore(List<List<Object>> data, ChartOptions options, bool extendAxisToOrigin) {
+void rangeTestCore(
+  List<List<Object>> data,
+  ChartOptions options,
+  bool extendAxisToOrigin,
+  List<String> dataRowsLegends,
+  List<String> xUserLabels,
+) {
   for (var dataRow in data) {
     // List<double> dataYsForRange = dataRow[0] as List<double>;
     // double axisYMin = dataRow[1] as double;
@@ -242,20 +209,21 @@ void rangeTestCore(List<List<Object>> data, ChartOptions options, bool extendAxi
     // Reversing min max in makeLabelsGeneratorWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
-    DataRangeLabelsGenerator yScaler = DataRangeLabelsGenerator(
+    DataRangeLabelsGenerator yLabelsGenerator = DataRangeLabelsGenerator(
       // axisY: Interval(axisYMax, axisYMin),
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
+      isStacked: false,
     );
 
 
-    // expect(yScaler.dataYsEnvelope.min, expectedDataEnvelopMin);
-    // expect(yScaler.dataYsEnvelope.max, expectedDataEnvelopMax);
-    expect(yScaler.labelPositions.length, expectedLabels.length);
-    for (int i = 0; i < yScaler.labelPositions.length; i++) {
+    // expect(yLabelsGenerator.dataYsEnvelope.min, expectedDataEnvelopMin);
+    // expect(yLabelsGenerator.dataYsEnvelope.max, expectedDataEnvelopMax);
+    expect(yLabelsGenerator.labelPositions.length, expectedLabels.length);
+    for (int i = 0; i < yLabelsGenerator.labelPositions.length; i++) {
       expect(
-        yScaler.labelPositions[i],
+        yLabelsGenerator.labelPositions[i],
         expectedLabels[i],
       );
     }
