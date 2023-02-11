@@ -52,7 +52,7 @@ abstract class ChartViewMaker {
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
   /// After [chartRootContainer] is created and set, This [NewDataModel] type member [chartData]
-  /// should be placed on the member [ChartRootContainer.data].
+  /// should be placed on the member [chartRootContainer.chartViewMaker.chartData].
   // todo-00 : document those, and try make all of them late final.
 
   NewDataModel chartData;
@@ -72,7 +72,7 @@ abstract class ChartViewMaker {
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
   /// [ChartRootContainer.legendContainer],  [ChartRootContainer.yContainer],
-  ///  [ChartRootContainer.xContainer], and  [ChartRootContainer.dataContainer].
+  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartViewMaker.chartDataContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
@@ -533,8 +533,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       extendAxisToOrigin: chartRootContainer.extendAxisToOrigin,
       valueToLabel: chartRootContainer.chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartRootContainer.chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartRootContainer.data.yUserLabels,
-      dataModel: chartRootContainer.data,
+      userLabels: chartRootContainer.chartViewMaker.chartData.yUserLabels,
+      dataModel: chartRootContainer.chartViewMaker.chartData,
       isStacked: chartRootContainer.isStacked,
     );
     labelInfos = yLabelsGenerator.createLabelInfos();
@@ -773,7 +773,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     _xLabelContainers = List.empty(growable: true);
 
     ChartOptions options = chartRootContainer.chartOptions;
-    List<String> xUserLabels = chartRootContainer.data.xUserLabels;
+    List<String> xUserLabels = chartRootContainer.chartViewMaker.chartData.xUserLabels;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -804,7 +804,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
     ChartOptions options = chartRootContainer.chartOptions;
 
-    List<String> xUserLabels = chartRootContainer.data.xUserLabels;
+    List<String> xUserLabels = chartRootContainer.chartViewMaker.chartData.xUserLabels;
     double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
     double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
@@ -1752,7 +1752,7 @@ class LegendContainer extends ChartAreaContainer {
   List<BoxContainer> _createChildrenOfLegendContainer() {
     ChartOptions options = chartRootContainer.chartOptions;
 
-    List<String> dataRowsLegends = chartRootContainer.data.dataRowsLegends;
+    List<String> dataRowsLegends = chartRootContainer.chartViewMaker.chartData.dataRowsLegends;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -1837,14 +1837,14 @@ class LegendContainer extends ChartAreaContainer {
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < dataRowsLegends.length; index++)
         // ui.Paint indicatorPaint = ui.Paint();
-        // List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+        // List<ui.Color> dataRowsColors = chartRootContainer.chartViewMaker.chartData.dataRowsColors; //!;
         // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
         LegendItemContainer(
           label: dataRowsLegends[index],
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartRootContainer.data.dataRowsColors
-                .elementAt(index % chartRootContainer.data.dataRowsColors.length)), //
+            ..color = chartRootContainer.chartViewMaker.chartData.dataRowsColors
+                .elementAt(index % chartRootContainer.chartViewMaker.chartData.dataRowsColors.length)), //
           options: options,
         ),
     ];
@@ -2168,7 +2168,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.dataRows] values in
-  /// the passed [ChartRootContainer.data].
+  /// the passed [chartRootContainer.chartViewMaker.chartData].
   PointsColumns({
     required this.chartRootContainer,
     required PointPresenterCreator pointPresenterCreator,
@@ -2177,7 +2177,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   })  : _isStacked = isStacked,
         _caller = caller,
         super(growable: true) {
-    _createStackableValuePointsFromChartData(chartRootContainer.data);
+    _createStackableValuePointsFromChartData(chartRootContainer.chartViewMaker.chartData);
   }
 
   /// Constructs internals of this object, the [PointsColumns].

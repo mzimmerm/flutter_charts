@@ -27,8 +27,6 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// .
   containers.ChartViewMaker chartViewMaker;
 
-  // todo-00-last : added and removed. Options not passed thru Painter : ChartOptions chartOptions;
-
   /// Keep track of re-paints
   bool _isFirstPaint = true;
 
@@ -38,9 +36,8 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
 
   FlutterChartPainter({
     required this.chartViewMaker,
-    // todo-00-last : required this.chartOptions,
   }) {
-    // todo-00-last : Copy options also on ViewMaker from model
+    // Copy options also on ViewMaker from Model.options
     chartViewMaker.chartOptions = chartViewMaker.chartData.chartOptions;
     print('Constructing $runtimeType');
   }

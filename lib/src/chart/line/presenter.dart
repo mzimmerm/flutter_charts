@@ -36,7 +36,7 @@ class LineAndHotspotPointPresenter extends PointPresenter {
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartRootContainer.data.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartRootContainer.chartViewMaker.chartData.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;

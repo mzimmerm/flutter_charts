@@ -22,7 +22,7 @@ class NewDataContainer extends DataContainer {
   @override
   void buildAndAddChildren_DuringParentLayout() {
 
-   NewDataModel dataModel = chartRootContainer.data;
+   NewDataModel dataModel = chartRootContainer.chartViewMaker.chartData;
 
    List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildren_Of_NewDataContainer_As_NewValuesColumnContainer_List(chartRootContainer);
 
@@ -38,7 +38,7 @@ class NewDataContainer extends DataContainer {
   @override
   _NewSourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
     return _NewSourceYContainerAndYContainerToSinkDataContainer(
-      dataColumnsCount: chartRootContainer.dataColumnsCount,
+      dataColumnsCount: chartRootContainer.chartViewMaker.chartDataColumnsCount,
     );
   }
   */
