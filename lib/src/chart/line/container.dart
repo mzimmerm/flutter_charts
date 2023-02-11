@@ -28,6 +28,7 @@ class LineChartViewMaker extends ChartViewMaker {
     return LineChartRootContainer(
       chartViewMaker: chartViewMaker,
       chartData: chartData,
+      chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
@@ -46,10 +47,12 @@ class LineChartRootContainer extends ChartRootContainer {
     required ChartViewMaker chartViewMaker,
     required NewDataModel chartData,
     required bool isStacked,
+    required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartViewMaker: chartViewMaker,
           chartData: chartData,
+          chartOptions: chartOptions,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {

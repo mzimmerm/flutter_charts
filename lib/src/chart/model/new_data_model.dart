@@ -63,7 +63,7 @@ class NewDataModel {
   // NEW CODE =============================================================
 
   // [NewDataModel] is created first. So ViewMaker must be set publicly late.
-  late final ChartViewMaker chartViewMaker;
+  late final ChartViewMaker chartViewMaker; // todo-00-remove. I think it is only here to get at options, we we access directly
 
   /// List of data sameXValues in the model.
   final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-3 : added for the NewDataModel

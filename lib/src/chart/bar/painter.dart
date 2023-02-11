@@ -13,5 +13,7 @@ class VerticalBarChartPainter extends FlutterChartPainter {
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
     required bar_containers.VerticalBarChartViewMaker verticalBarChartViewMaker,
-  }) : super(chartViewMaker: verticalBarChartViewMaker);
+  }) : super(
+          chartViewMaker: verticalBarChartViewMaker,
+        );
 }

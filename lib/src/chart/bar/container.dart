@@ -28,6 +28,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
     return VerticalBarChartRootContainer(
       chartViewMaker: chartViewMaker,
       chartData: chartData,
+      chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
@@ -43,11 +44,13 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
     required ChartViewMaker chartViewMaker,
     required NewDataModel chartData,
+    required ChartOptions chartOptions,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartViewMaker: chartViewMaker,
           chartData: chartData,
+          chartOptions: chartOptions,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {

@@ -12,5 +12,7 @@ class LineChartPainter extends FlutterChartPainter {
   /// the [LineChartContainer]
   LineChartPainter({
     required line_containers.LineChartViewMaker lineChartViewMaker,
-  }) : super(chartViewMaker: lineChartViewMaker);
+  }) : super(
+          chartViewMaker: lineChartViewMaker,
+        );
 }

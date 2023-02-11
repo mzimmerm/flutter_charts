@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
-
+import 'package:flutter_charts/src/chart/options.dart';
 import 'container.dart' as containers;
 import 'bar/chart.dart';
 import 'line/chart.dart';
@@ -27,6 +27,8 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// .
   containers.ChartViewMaker chartViewMaker;
 
+  // todo-00-last : added and removed. Options not passed thru Painter : ChartOptions chartOptions;
+
   /// Keep track of re-paints
   bool _isFirstPaint = true;
 
@@ -36,7 +38,10 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
 
   FlutterChartPainter({
     required this.chartViewMaker,
+    // todo-00-last : required this.chartOptions,
   }) {
+    // todo-00-last : Copy options also on ViewMaker from model
+    chartViewMaker.chartOptions = chartViewMaker.chartData.chartOptions;
     print('Constructing $runtimeType');
   }
 
@@ -56,11 +61,23 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
     _debugPrintBegin(size);
+
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
     if (size == ui.Size.zero) {
       print(' ### $runtimeType.PAINT: passed size 0 to this CustomPainter! Nothing can be painted here, RETURNING.');
       return;
+    }
+
+    // At this point:
+    //   - [ViewMaker] has access to [Model] as it was created with [Model] argument.
+    //   - On Chart creation, [Model] instance has access to [ChartOptions] directly,
+    //     During [ViewMaker] construction, we copy from [Model.ChartOptions] -> [ViewMaker.ChartOptions]
+    //   - So here, [Options] are on [Model] and [ViewMaker].
+    //   - In the invocation below, when [ViewMaker] creates the [ChartRootContainer] aka View, [ViewMaker]
+    //     will also copy [Options] to the [View], so View has access to Options as well.
+    if (_isFirstPaint) {
+      _isFirstPaint = false;
     }
 
     chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
@@ -72,7 +89,6 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     print('=================== $runtimeType.PAINT BEGIN BEGIN BEGIN at ${DateTime.now()} =================== ');
     if (_isFirstPaint) {
       print('    invoked === FIRST TIME === with size=$size');
-      _isFirstPaint = false;
     } else {
       print('    invoked === SECOND TIME === with size=$size');
     }

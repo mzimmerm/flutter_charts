@@ -34,6 +34,7 @@ import 'util_labels.dart' as util_labels;
 class DataRangeLabelsGenerator {
 
   late final NewDataModel? _dataModel;
+  // todo-00 : make this non nullable. There was some problem with test without it?
   bool? _isStacked;
 
   /// Stores the merged outer interval of generated labels and point values.
