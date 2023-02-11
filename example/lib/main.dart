@@ -946,7 +946,7 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartAnchor lineChartAnchor = LineChartAnchor(
+        LineChartViewMaker lineChartViewMaker = LineChartViewMaker(
           chartData: chartData,
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -954,13 +954,13 @@ class _ExampleWidgetCreator {
 
         LineChart lineChart = LineChart(
           painter: LineChartPainter(
-            lineChartAnchor: lineChartAnchor,
+            lineChartViewMaker: lineChartViewMaker,
           ),
         );
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartAnchor verticalBarChartAnchor = VerticalBarChartAnchor(
+        VerticalBarChartViewMaker verticalBarChartViewMaker = VerticalBarChartViewMaker(
           chartData: chartData,
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -968,7 +968,7 @@ class _ExampleWidgetCreator {
 
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
-            verticalBarChartAnchor: verticalBarChartAnchor,
+            verticalBarChartViewMaker: verticalBarChartViewMaker,
           ),
         );
 

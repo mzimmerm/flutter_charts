@@ -43,7 +43,7 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var lineChartAnchor = LineChartAnchor(
+  var lineChartViewMaker = LineChartViewMaker(
     chartData: chartData,
     isStacked: false,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -51,7 +51,7 @@ Widget chartToRun() {
 
   var lineChart = LineChart(
     painter: LineChartPainter(
-      lineChartAnchor: lineChartAnchor,
+      lineChartViewMaker: lineChartViewMaker,
     ),
   );
   return lineChart;

@@ -6,12 +6,12 @@ import 'presenter.dart';
 
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
-/// Concrete [ChartAnchor] for [LineChart].
+/// Concrete [ChartViewMaker] for [LineChart].
 ///
-/// See [ChartAnchor] for help.
-class LineChartAnchor extends ChartAnchor {
+/// See [ChartViewMaker] for help.
+class LineChartViewMaker extends ChartViewMaker {
 
-  LineChartAnchor({
+  LineChartViewMaker({
     required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -23,10 +23,10 @@ class LineChartAnchor extends ChartAnchor {
 
   /// Concrete implementation returns the root for line chart.
   @override
-  LineChartRootContainer createRootContainer({required ChartAnchor chartAnchor}) {
+  LineChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker}) {
 
     return LineChartRootContainer(
-      chartAnchor: chartAnchor,
+      chartViewMaker: chartViewMaker,
       chartData: chartData,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -43,12 +43,12 @@ class LineChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
-    required ChartAnchor chartAnchor,
+    required ChartViewMaker chartViewMaker,
     required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-          chartAnchor: chartAnchor,
+          chartViewMaker: chartViewMaker,
           chartData: chartData,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

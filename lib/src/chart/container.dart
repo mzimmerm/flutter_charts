@@ -30,23 +30,23 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 /// Base class for classes that hold [chartData], [xContainerLabelLayoutStrategy], [isStacked],
 /// members needed for late creation of the root of the chart container hierarchy, the [chartRootContainer].
 ///
-/// [ChartAnchor] is not a [BoxContainer], it provides a 'link' between [FlutterChartPainter] which [paint] method
+/// [ChartViewMaker] is not a [BoxContainer], it provides a 'link' between [FlutterChartPainter] which [paint] method
 /// is called by the Flutter framework, and the root of the chart container hierarchy, the [chartRootContainer].
 ///
-/// Core methods of [ChartAnchor] are
+/// Core methods of [ChartViewMaker] are
 ///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];
 ///     this method creates, builds, lays out, and paints
 ///     the root of the chart container hierarchy, the [chartRootContainer].
-///   - abstract [createRootContainer]; extensions of [ChartAnchor] (for example, [LineChartAnchor]) should create
+///   - abstract [createRootContainer]; extensions of [ChartViewMaker] (for example, [LineChartViewMaker]) should create
 ///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
-abstract class ChartAnchor {
+abstract class ChartViewMaker {
 
-  ChartAnchor({
+  ChartViewMaker({
     required this.chartData,
     this.isStacked = false,
     this.xContainerLabelLayoutStrategy,
   }) {
-    print('Constructing ChartAnchor');
+    print('Constructing ChartViewMaker');
   }
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
@@ -60,7 +60,7 @@ abstract class ChartAnchor {
   // Keep track of first run.
   bool _isFirst = true;
 
-  /// Extensions of this [ChartAnchor] (for example, [LineChartAnchor]) should
+  /// Extensions of this [ChartViewMaker] (for example, [LineChartViewMaker]) should
   /// create and return an instance of the concrete [chartRootContainer]
   /// (for example [LineChartRootContainer]), populated with it's children, but not
   /// children's children. The children's children hierarchy is assumed to
@@ -75,23 +75,23 @@ abstract class ChartAnchor {
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
   /// Important notes:
-  ///   - This controller (Anchor) can access both on ChartRootContainer and NewDataModel.
+  ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewDataModel.
   //    - NewDataModel has ChartOptions
-  ChartRootContainer createRootContainer({required ChartAnchor chartAnchor});
+  ChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker});
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
-    // Create the concrete [ChartRootContainer] for this concrete [ChartAnchor].
+    // Create the concrete [ChartRootContainer] for this concrete [ChartViewMaker].
     // After this invocation, the created root container is populated with children
     // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
     // depending on the concrete container. For example YContainer is populated with DataRangeLabelsGenerator.
     String isFirstStr = _debugPrintBegin();
-    chartRootContainer = createRootContainer(chartAnchor: this); // also link from this Anchor to ChartRootContainer.
+    chartRootContainer = createRootContainer(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
 
-    // Only set `chartData.chartAnchor = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
-    // To have chartData late final, we have to keep track to only initialize chartData.chartAnchor = this on first run.
+    // Only set `chartData.chartViewMaker = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
+    // To have chartData late final, we have to keep track to only initialize chartData.chartViewMaker = this on first run.
     if (_isFirst) {
       _isFirst = false;
-      chartData.chartAnchor = this; // Because Data is created first, set self anchor late
+      chartData.chartViewMaker = this; // Because Data is created first, set self ViewMaker on chartData late
     }
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);
@@ -156,7 +156,7 @@ abstract class ChartBehavior {
 /// Abstract class representing the root [BoxContainer] of the whole chart.
 ///
 /// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation
-/// in the [ChartAnchor.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartAnchor]
+/// in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewMaker]
 /// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
 ///
 /// Child containers calculate coordinates of chart points
@@ -184,7 +184,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainer({
-    required this.chartAnchor,
+    required this.chartViewMaker,
     required NewDataModel chartData,
     required this.isStacked,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
@@ -200,7 +200,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   }
 
-  final ChartAnchor chartAnchor;
+  final ChartViewMaker chartViewMaker;
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
   late final bool isUseOldDataContainer;
@@ -589,13 +589,13 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
+    // todo-00 : can this be moved to layout? can everything here be moved to layout?
     // We now know how long the Y axis is in pixels,
     // so we can calculate pixel positions on labels in LabeInfos
     labelInfos.layoutByLerpToPixels(
       axisPixelsYMin: axisPixelsRange.min,
       axisPixelsYMax: axisPixelsRange.max,
     );
-
 
     // Code above MUST run for the side-effects of setting [axisPixels] and scaling the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
@@ -1847,7 +1847,7 @@ class LegendContainer extends ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
-    // todo-021 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    // todo-013 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip) {

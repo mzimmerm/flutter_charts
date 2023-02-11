@@ -18,22 +18,24 @@ import 'line/chart.dart';
 /// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on Canvas.
 abstract class FlutterChartPainter extends widgets.CustomPainter {
-  /// The anchor holder of the root of the chart container hierarchy, the [chartRootContainer].
+  /// The maker (generator) of the root of the chart view (container) hierarchy, the [ChartRootContainer].
   ///
-  /// This object is created once per chart, and is NOT recreated on each [FlutterChartPainter.paint] invocation.
-  /// That behavior is in contrast to concrete [containers.ChartRootContainer], which is created anew on every
-  /// [FlutterChartPainter.paint] invocation.
-  containers.ChartAnchor chartAnchor;
+  /// This object is created once per chart, on the FIRST invocation OF  [FlutterChartPainter.paint] ,
+  /// BUT it is NOT recreated on each repaint - the follow up repaint [FlutterChartPainter.paint] invocation.
+  /// That behavior is in contrast to concrete view, the [containers.ChartRootContainer], which is created anew on every
+  /// [FlutterChartPainter.paint] invocation, including the repaint invocation
+  /// .
+  containers.ChartViewMaker chartViewMaker;
 
   /// Keep track of re-paints
   bool _isFirstPaint = true;
 
-  /// Constructs this chart painter, giving it [chartAnchor], which
+  /// Constructs this chart painter, giving it [chartViewMaker], which
   /// holds on [chartData] and other members needed for
-  /// the late creation of [containers.ChartAnchor.chartRootContainer].
+  /// the late creation of [containers.ChartViewMaker.chartRootContainer].
 
   FlutterChartPainter({
-    required this.chartAnchor,
+    required this.chartViewMaker,
   }) {
     print('Constructing $runtimeType');
   }
@@ -46,10 +48,10 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// (see class comment), hence it provides a "hook" into the chart
   /// being able to paint and draw itself.
   ///
-  /// A core role of this [paint] method is to call [chartAnchor.chartRootContainerCreateBuildLayoutPaint],
+  /// A core role of this [paint] method is to call [chartViewMaker.chartRootContainerCreateBuildLayoutPaint],
   /// which creates, builds, lays out and paints the concrete [containers.ChartRootContainer].
   ///
-  /// The [chartRootContainer] created in the [chartAnchor.chartRootContainerCreateBuildLayoutPaint]
+  /// The [chartRootContainer] created in the [chartViewMaker.chartRootContainerCreateBuildLayoutPaint]
   /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
@@ -61,7 +63,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
       return;
     }
 
-    chartAnchor.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+    chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
 
     _debugPrintEnd();
   }

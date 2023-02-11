@@ -62,8 +62,8 @@ class NewDataModel {
 
   // NEW CODE =============================================================
 
-  // [NewDataModel] is created first. So Anchor must be set publicly late.
-  late final ChartAnchor chartAnchor;
+  // [NewDataModel] is created first. So ViewMaker must be set publicly late.
+  late final ChartViewMaker chartViewMaker;
 
   /// List of data sameXValues in the model.
   final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-3 : added for the NewDataModel

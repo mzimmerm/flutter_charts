@@ -4,12 +4,12 @@ import 'presenter.dart';
 
 import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 
-/// Concrete [ChartAnchor] for [VerticalBarChart].
+/// Concrete [ChartViewMaker] for [VerticalBarChart].
 ///
-/// See [ChartAnchor] for help.
-class VerticalBarChartAnchor extends ChartAnchor {
+/// See [ChartViewMaker] for help.
+class VerticalBarChartViewMaker extends ChartViewMaker {
 
-  VerticalBarChartAnchor({
+  VerticalBarChartViewMaker({
     required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -23,10 +23,10 @@ class VerticalBarChartAnchor extends ChartAnchor {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  VerticalBarChartRootContainer createRootContainer({required ChartAnchor chartAnchor}) {
+  VerticalBarChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker}) {
 
     return VerticalBarChartRootContainer(
-      chartAnchor: chartAnchor,
+      chartViewMaker: chartViewMaker,
       chartData: chartData,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -41,12 +41,12 @@ class VerticalBarChartAnchor extends ChartAnchor {
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
-    required ChartAnchor chartAnchor,
+    required ChartViewMaker chartViewMaker,
     required NewDataModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-          chartAnchor: chartAnchor,
+          chartViewMaker: chartViewMaker,
           chartData: chartData,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
