@@ -10,7 +10,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class VerticalBarChartViewMaker extends ChartViewMaker {
 
   VerticalBarChartViewMaker({
-    required NewDataModel chartData,
+    required NewModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -43,7 +43,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
     required ChartViewMaker chartViewMaker,
-    required NewDataModel chartData,
+    required NewModel chartData,
     required ChartOptions chartOptions,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,

@@ -11,7 +11,7 @@ import 'util_labels.dart' as util_labels;
 /// During it's construction, decides how many Y labels will be created, and generates points on which the Y labels
 /// will be placed (these points are also values of the labels).
 ///
-/// All values are calculated using [NewDataModel].
+/// All values are calculated using [NewModel].
 ///
 /// From there, Y [LabelInfo]s are created/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
@@ -33,12 +33,12 @@ import 'util_labels.dart' as util_labels;
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelsGenerator {
 
-  late final NewDataModel? _dataModel;
+  late final NewModel? _dataModel;
   // todo-00 : make this non nullable. There was some problem with test without it?
   bool? _isStacked;
 
   /// Stores the merged outer interval of generated labels and point values.
-  /// It's values are all calculated from [NewDataModelPoint]s.
+  /// It's values are all calculated from [NewModelPoint]s.
   ///
   /// This is the data domain corresponding to the axis pixel domain
   /// such as [YContainer.axisPixelsRange]. Extrapolation is done between those intervals.
@@ -82,7 +82,7 @@ class DataRangeLabelsGenerator {
     required Function inverseTransform,
     this.userLabels,
     required bool isStacked,
-    NewDataModel? dataModel,
+    NewModel? dataModel,
   })  :
         _valueToLabel = valueToLabel,
         _inverseTransform = inverseTransform,
@@ -95,7 +95,7 @@ class DataRangeLabelsGenerator {
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
     //   then create labels evenly distributed in the Y values interval.
     // Both [dataEnvelope] and member [_yLabelPositions] ,
-    // are  not-scaled && transformed data from [NewDataModelPoint].
+    // are  not-scaled && transformed data from [NewModelPoint].
     if (isUsingUserLabels) {
       dataEnvelope = _dataModel!.dataValuesInterval(isStacked: _isStacked!);
       _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);

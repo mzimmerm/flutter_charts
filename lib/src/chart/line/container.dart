@@ -12,7 +12,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 class LineChartViewMaker extends ChartViewMaker {
 
   LineChartViewMaker({
-    required NewDataModel chartData,
+    required NewModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -45,7 +45,7 @@ class LineChartViewMaker extends ChartViewMaker {
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required ChartViewMaker chartViewMaker,
-    required NewDataModel chartData,
+    required NewModel chartData,
     required bool isStacked,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,

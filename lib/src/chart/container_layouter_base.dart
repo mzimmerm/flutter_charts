@@ -262,7 +262,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = firstLinked(); ; element = element.next) {
-        // e.g. columnPointContainers.add(element.generateViewChildrenEtc());
+        // e.g. newPointContainerList.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasNext) {
           break;
@@ -279,7 +279,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = lastLinked(); ; element = element.previous) {
-        // e.g. columnPointContainers.add(element.generateViewChildrenEtc());
+        // e.g. newPointContainerList.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasPrevious) {
           break;

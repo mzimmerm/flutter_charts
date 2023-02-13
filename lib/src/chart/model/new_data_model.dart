@@ -17,14 +17,14 @@ import 'package:flutter_charts/src/util/util_labels.dart' as util_labels;
 ///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR SCALING, OFFSET AND PAINTING.
 ///
 /// Important lifecycle notes:
-///   - When [NewDataModel] is constructed, the [ChartRootContainer] is not available.
-///     So in constructor, [NewDataModel] cannot be given access to the root container, and it's needed members
+///   - When [NewModel] is constructed, the [ChartRootContainer] is not available.
+///     So in constructor, [NewModel] cannot be given access to the root container, and it's needed members
 ///     such as [ChartRootContainer.yLabelsGenerator].
-class NewDataModel {
+class NewModel {
 
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
-  NewDataModel({
+  NewModel({
     required dataRows,
     required this.xUserLabels,
     required dataRowsLegends,
@@ -39,19 +39,19 @@ class NewDataModel {
         _dataRowsLegends = dataRowsLegends,
         _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
   {
-    print('Constructing NewDataModel');
+    print('Constructing NewModel');
     validate();
 
-    _dataColumns = transposeRowsToColumns(_dataRows);
+    _dataBars = transposeRowsToColumns(_dataRows);
 
-    // Construct the full [NewDataModel] as well, so we can use it, and also gradually
+    // Construct the full [NewModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
-    // Here, create one [NewDataModelSeries] for each data row, and add to member [sameXValuesList]
+    // Here, create one [NewModelSeries] for each data row, and add to member [barOfPointsList]
     int columnIndex = 0;
-    for (List<double> dataColumn in _dataColumns) {
-      sameXValuesList.add(
-        NewDataModelSameXValues(
-          dataColumn: dataColumn,
+    for (List<double> dataBar in _dataBars) {
+      barOfPointsList.add(
+        NewBarOfPointsModel(
+          dataBar: dataBar,
           dataModel: this,
           columnIndex: columnIndex++,
         ),
@@ -62,48 +62,48 @@ class NewDataModel {
 
   // NEW CODE =============================================================
 
-  // [NewDataModel] is created first. So ViewMaker must be set publicly late.
+  // [NewModel] is created first. So ViewMaker must be set publicly late.
   late final ChartViewMaker chartViewMaker; // todo-00-remove. I think it is only here to get at options, we we access directly
 
-  /// List of data sameXValues in the model.
-  final List<NewDataModelSameXValues> sameXValuesList = []; // todo-done-last-3 : added for the NewDataModel
+  /// List of data barOfPoints in the model.
+  final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel
 
-  /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewDataModel],
+  /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewModel],
   /// specific for the passed [isStacked].
   ///
-  /// The returned value is calculated from [NewDataModel] by finding maximum and minimum of data values
-  /// in [NewDataModelPoint] instances.
+  /// The returned value is calculated from [NewModel] by finding maximum and minimum of data values
+  /// in [NewPointModel] instances.
   ///
   /// The source data of the returned interval differs in stacked and non-stacked data, determined by argument [isStacked] :
-  ///   - For [isStacked] true, the min and max is taken from [NewDataModelPoint._stackedPositiveDataValue] and
-  ///     [NewDataModelPoint._stackedNegativeDataValue] is used.
-  ///   - For  [isStacked] false, the min and max is taken from [NewDataModelPoint._dataValue] is used.
+  ///   - For [isStacked] true, the min and max is taken from [NewPointModel._stackedPositiveDataValue] and
+  ///     [NewPointModel._stackedNegativeDataValue] is used.
+  ///   - For  [isStacked] false, the min and max is taken from [NewPointModel._dataValue] is used.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [NewDataModelSameXValues] first, but could go
-  /// directly to the flattened list of [NewDataModelPoint] (max and min over partitions is same as over whole set).
+  /// Implementation detail: maximum and minimum is calculated column-wise [NewBarOfPointsModel] first, but could go
+  /// directly to the flattened list of [NewPointModel] (max and min over partitions is same as over whole set).
   ///
   Interval dataValuesInterval({
     required bool isStacked,
   }) {
     if (isStacked) {
       return Interval(
-        // reduce, not fold: sameXValuesList.fold(0.0, ((double previous, NewDataModelSameXValues pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        sameXValuesList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
-        sameXValuesList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
+        // reduce, not fold: barOfPointsList.fold(0.0, ((double previous, NewBarOfPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        barOfPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
+        barOfPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );
     } else {
       return Interval(
-        sameXValuesList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
-        sameXValuesList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
+        barOfPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
+        barOfPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
       );
     }
   }
 
-  /// Returns the interval that envelopes all data values in [NewDataModel.dataRows], possibly extended to 0.
+  /// Returns the interval that envelopes all data values in [NewModel.dataRows], possibly extended to 0.
   ///
-  /// The [isStacked] controls whether the interval is created from values in [NewDataModelPoint._dataValue]
-  /// or the stacked values [NewDataModelPoint._stackedPositiveDataValue] and
-  /// [NewDataModelPoint._stackedNegativeDataValue]
+  /// The [isStacked] controls whether the interval is created from values in [NewPointModel._dataValue]
+  /// or the stacked values [NewPointModel._stackedPositiveDataValue] and
+  /// [NewPointModel._stackedNegativeDataValue]
   ///
   /// Whether the resulting Interval is extended from the simple min/max of all data values
   /// is controlled by [extendAxisToOrigin]. If [true] the interval is extended to zero
@@ -119,21 +119,21 @@ class NewDataModel {
     );
   }
 
-  List<NewValuesColumnContainer> generateViewChildren_Of_NewDataContainer_As_NewValuesColumnContainer_List(ChartRootContainer chartRootContainer) {
-    List<NewValuesColumnContainer> chartColumns = [];
-    // Iterate the dataModel down, creating NewValuesColumnContainer, then NewValueContainer and return
+  List<NewBarOfPointsContainer> generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(ChartRootContainer chartRootContainer) {
+    List<NewBarOfPointsContainer> chartColumns = [];
+    // Iterate the dataModel down, creating NewBarOfPointsContainer, then NewPointContainer and return
 
-    for (NewDataModelSameXValues sameXValues in sameXValuesList) {
-      // NewValuesColumnContainer valuesColumnContainer =
+    for (NewBarOfPointsModel barOfPoints in barOfPointsList) {
+      // NewBarOfPointsContainer barOfPointsContainer =
       chartColumns.add(
-        NewValuesColumnContainer(
+        NewBarOfPointsContainer(
           chartRootContainer: chartRootContainer,
-          backingDataModelSameXValues: sameXValues,
+          backingDataBarOfPointsModel: barOfPoints,
           children: [Column(
-              children: sameXValues.generateViewChildren_Of_NewValuesColumnContainer_As_NewValueContainer_List(chartRootContainer).reversed.toList(growable: false),
+              children: barOfPoints.generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(chartRootContainer).reversed.toList(growable: false),
           )],
           // Give all view columns the same weight along main axis -
-          //   results in same width of each [NewValuesColumnContainer] as owner will be Row (main axis is horizontal)
+          //   results in same width of each [NewBarOfPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const ConstraintsWeight(weight: 1),
         ),
       );
@@ -155,8 +155,8 @@ class NewDataModel {
   List<List<double>> get dataRows => _dataRows;
 
   /// Data reorganized from rows to columns.
-  late final List<List<double>> _dataColumns;
-  List<List<double>> get dataColumns => _dataColumns;
+  late final List<List<double>> _dataBars;
+  List<List<double>> get dataBars => _dataBars;
 
   /// Labels on independent (X) axis.
   ///
@@ -180,7 +180,7 @@ class NewDataModel {
   ///
   final List<String>? yUserLabels;
 
-  /// Colors corresponding to each data row (series) in [NewDataModel].
+  /// Colors corresponding to each data row (series) in [NewModel].
   final List<ui.Color> _dataRowsColors;
   List<ui.Color> get dataRowsColors => _dataRowsColors;
 
@@ -194,7 +194,7 @@ class NewDataModel {
   double get dataYMin => flatten.reduce(math.min);
 
   void validate() {
-    //                      But that would require ChartOptions available in NewDataModel.
+    //                      But that would require ChartOptions available in NewModel.
     if (!(_dataRows.length == _dataRowsLegends.length && _dataRows.length == _dataRowsColors.length)) {
       throw StateError('If row legends are defined, their '
           'number must be the same as number of data rows. '
@@ -220,32 +220,32 @@ class NewDataModel {
 }
 
 /// todo-done-last-3 : Replaces PointsColumn
-/// Represents a list of data values, in the [NewDataModel].
+/// Represents a list of data values, in the [NewModel].
 ///
-/// As we consider the [NewDataModel] to represent a 2D array 'rows first', rows oriented
+/// As we consider the [NewModel] to represent a 2D array 'rows first', rows oriented
 /// 'top-to-bottom', columns oriented left-to-right, then:
 /// The list of data values in this object represent one column in the 2D array,
 /// oriented 'top-to-bottom'. We can also consider the list of data values represented by
-/// this object to be created by diagonal transpose of the [NewDataModel._dataRows] and
+/// this object to be created by diagonal transpose of the [NewModel._dataRows] and
 /// looking at one row in the transpose, left-to-right.
-class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModelPoint> {
+class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
 
   /// Constructor. todo-doc-01
-  NewDataModelSameXValues({
-    required List<double> dataColumn,
-    required NewDataModel dataModel,
+  NewBarOfPointsModel({
+    required List<double> dataBar,
+    required NewModel dataModel,
     required int columnIndex,
   })
       : _dataModel = dataModel,
         _columnIndex = columnIndex {
     // Construct data points from the passed [dataRow] and add each point to member _points
     int rowIndex = 0;
-    for (double dataValue in dataColumn) {
-      var point = NewDataModelPoint(dataValue: dataValue, ownerSameXValuesList: this, rowIndex: rowIndex);
+    for (double dataValue in dataBar) {
+      var point = NewPointModel(dataValue: dataValue, ownerBarOfPointsList: this, rowIndex: rowIndex);
       _points.add(point);
       rowIndex++;
     }
-    // When all points in this sameXValues are constructed and added to [_points], we can double-link the points.
+    // When all points in this barOfPoints are constructed and added to [_points], we can double-link the points.
     // We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
     if (_points.isNotEmpty) {
       firstLinked().linkAll();
@@ -260,7 +260,7 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
   }
 
   /// Calculates and initializes the final stacked positive and negative values on points.
-  _stackPoints(NewDataModelPoint point, unused) {
+  _stackPoints(NewPointModel point, unused) {
       if (point.hasPrevious) {
         if (point._dataValue < 0.0) {
           point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue + point._dataValue;
@@ -283,70 +283,70 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
 
   /// Get the stacked value of this column of points - the sum of all
 
-  /// Owner [NewDataModel] to which this [NewDataModelSameXValues] belongs by existence in
-  /// [NewDataModel.sameXValuesList].
+  /// Owner [NewModel] to which this [NewBarOfPointsModel] belongs by existence in
+  /// [NewModel.barOfPointsList].
   ///
-  final NewDataModel _dataModel;
-  NewDataModel get dataModel => _dataModel;
+  final NewModel _dataModel;
+  NewModel get dataModel => _dataModel;
 
-  /// Index of this column (sameXValues list) in the [NewDataModel.sameXValuesList].
+  /// Index of this column (barOfPoints list) in the [NewModel.barOfPointsList].
   ///
-  /// Also indexes one column, top-to-bottom, in the two dimensional [NewDataModel.dataRows].
-  /// Also indexes one row, left-to-right, in the `transpose(NewDataModel.dataRows)`.
+  /// Also indexes one column, top-to-bottom, in the two dimensional [NewModel.dataRows].
+  /// Also indexes one row, left-to-right, in the `transpose(NewModel.dataRows)`.
   ///
   /// The data values of this column are stored in the [_points] list,
-  /// values and order as in top-to-bottom column in [NewDataModel.dataRows].
+  /// values and order as in top-to-bottom column in [NewModel.dataRows].
   ///
   /// This is needed to access the legacy arrays such as:
-  ///   -  [NewDataModel.dataRowsLegends]
-  ///   -  [NewDataModel.dataRowsColors]
+  ///   -  [NewModel.dataRowsLegends]
+  ///   -  [NewModel.dataRowsColors]
   final int _columnIndex;
 
-  /// Points of this column (sameXValues.
+  /// Points of this column (barOfPoints).
   ///
   /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
   /// owned by this [DoubleLinkedOwner]. 
-  /// At the same time, the points are all [NewDataModelPoint] in this column (sameXValues list).
-  final List<NewDataModelPoint> _points = [];
+  /// At the same time, the points are all [NewPointModel] in this column (barOfPoints list).
+  final List<NewPointModel> _points = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
-  /// the owned [DoubleLinked] instances of [NewDataModelPoint].
+  /// the owned [DoubleLinked] instances of [NewPointModel].
   @override
-  Iterable<NewDataModelPoint> allElements() => _points;
+  Iterable<NewPointModel> allElements() => _points;
 
   /// Returns height of this column in terms of data values on points, separately for positive and negative.
   ///
   /// Getters always recalculates, should be cached in new member on column
-  double get _stackedPositiveValue => __maxOnPoints((NewDataModelPoint point) => point._stackedPositiveDataValue);
-  double get _stackedNegativeValue => __minOnPoints((NewDataModelPoint point) => point._stackedNegativeDataValue);
+  double get _stackedPositiveValue => __maxOnPoints((NewPointModel point) => point._stackedPositiveDataValue);
+  double get _stackedNegativeValue => __minOnPoints((NewPointModel point) => point._stackedNegativeDataValue);
 
-  double get _minPointValue         => __minOnPoints((NewDataModelPoint point) => point._dataValue);
-  double get _maxPointValue         => __maxOnPoints((NewDataModelPoint point) => point._dataValue);
+  double get _minPointValue         => __minOnPoints((NewPointModel point) => point._dataValue);
+  double get _maxPointValue         => __maxOnPoints((NewPointModel point) => point._dataValue);
 
-  //double __stackedPositive(NewDataModelPoint point) => point._stackedPositiveDataValue;
-  //double __stackedNegative(NewDataModelPoint point) => point._stackedNegativeDataValue;
+  //double __stackedPositive(NewPointModel point) => point._stackedPositiveDataValue;
+  //double __stackedNegative(NewPointModel point) => point._stackedNegativeDataValue;
 
-  double __maxOnPoints(double Function(NewDataModelPoint) getNumFromPoint) {
+  double __maxOnPoints(double Function(NewPointModel) getNumFromPoint) {
     return __applyFoldableOnPoints(getNumFromPoint, math.max);
   }
 
-  double __minOnPoints(double Function(NewDataModelPoint) getNumFromPoint) {
+  double __minOnPoints(double Function(NewPointModel) getNumFromPoint) {
     return __applyFoldableOnPoints(getNumFromPoint, math.min);
   }
 
   /// Apply the fold performed by [foldable] (double, double) => double function,
-  /// on some double values from the owned [allElements] which are [DoubleLinked] and [NewDataModelPoint]s.
+  /// on some double values from the owned [allElements] which are [DoubleLinked] and [NewPointModel]s.
   ///
-  /// The double values are pulled from each [NewDataModelPoint]
-  /// using the [getNumFromPoint] (NewDataModelPoint) => double function.
+  /// The double values are pulled from each [NewPointModel]
+  /// using the [getNumFromPoint] (NewPointModel) => double function.
   ///
   double __applyFoldableOnPoints(
-    double Function(NewDataModelPoint) getNumFromPoint,
+    double Function(NewPointModel) getNumFromPoint,
     double Function(double, double) foldable,
   ) {
     _DoubleValue result = _DoubleValue();
     applyOnAllElements(
-      (NewDataModelPoint point, result) {
+      (NewPointModel point, result) {
         if (!point.hasPrevious) {
           result.value = getNumFromPoint(point);
         } else {
@@ -359,23 +359,23 @@ class NewDataModelSameXValues extends Object with DoubleLinkedOwner<NewDataModel
     return result.value;
   }
 
-  /// Generates [NewValueContainer] view from each [NewDataModelPoint]
-  /// and collects the views in a list of [NewValueContainer]s which is returned.
-  List<NewValueContainer> generateViewChildren_Of_NewValuesColumnContainer_As_NewValueContainer_List(ChartRootContainer chartRootContainer) {
-    List<NewValueContainer> columnPointContainers = [];
+  /// Generates [NewPointContainer] view from each [NewPointModel]
+  /// and collects the views in a list of [NewPointContainer]s which is returned.
+  List<NewPointContainer> generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(ChartRootContainer chartRootContainer) {
+    List<NewPointContainer> newPointContainerList = [];
 
-    // Generates [NewValueContainer] view from each [NewDataModelPoint]
+    // Generates [NewPointContainer] view from each [NewPointModel]
     // and collect the views in a list which is returned.
     applyOnAllElements(
-      (NewDataModelPoint element, dynamic passedList) {
-        var columnPointContainers = passedList[0];
+      (NewPointModel element, dynamic passedList) {
+        var newPointContainerList = passedList[0];
         var chartRootContainer = passedList[1];
-        columnPointContainers.add(element.generateViewChildLeaf_Of_NewValuesColumnContainer_As_NewValueContainer(chartRootContainer));
+        newPointContainerList.add(element.generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(chartRootContainer));
       },
-      [columnPointContainers, chartRootContainer],
+      [newPointContainerList, chartRootContainer],
     );
 
-    return columnPointContainers;
+    return newPointContainerList;
   }
 }
 
@@ -386,27 +386,27 @@ class _DoubleValue {
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
 ///
 /// Notes:
-///   - Has private access to the owner [NewDataModel] to which it belongs through it's member [ownerSameXValuesList]
-///     which in turn has access to [NewDataModel] through it's member [NewDataModelSameXValues._dataModel].
+///   - Has private access to the owner [NewModel] to which it belongs through it's member [ownerBarOfPointsList]
+///     which in turn has access to [NewModel] through it's member [NewBarOfPointsModel._dataModel].
 ///     THIS ACCESS IS CURRENTLY UNUSED
 ///
-class NewDataModelPoint extends Object with DoubleLinked {
+class NewPointModel extends Object with DoubleLinked {
 
   // ===================== CONSTRUCTOR ============================================
   // todo-doc-01
-  NewDataModelPoint({
+  NewPointModel({
     required double dataValue,
-    required this.ownerSameXValuesList,
+    required this.ownerBarOfPointsList,
     required int rowIndex,
-  })  : _dataValue = ownerSameXValuesList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
+  })  : _dataValue = ownerBarOfPointsList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
         _rowIndex = rowIndex {
-    // The ownerSeries is NewDataModelSeries which is DoubleLinkedOwner
-    // of all [NewDataModelPoint]s, managed by [DoubleLinkedOwner.allElements]
-    doubleLinkedOwner = ownerSameXValuesList;
-    // By the time a NewDataModelPoint is constructed, DataModel and it's ownerSameXValuesList INDEXES are configured
+    // The ownerSeries is NewModelSeries which is DoubleLinkedOwner
+    // of all [NewPointModel]s, managed by [DoubleLinkedOwner.allElements]
+    doubleLinkedOwner = ownerBarOfPointsList;
+    // By the time a NewPointModel is constructed, DataModel and it's ownerBarOfPointsList INDEXES are configured
     assertDoubleResultsSame(
-      ownerSameXValuesList._dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerSameXValuesList.dataModel._dataRows[_rowIndex][ownerSameXValuesList._columnIndex])
+      ownerBarOfPointsList._dataModel.chartOptions.dataContainerOptions
+          .yTransform(ownerBarOfPointsList.dataModel._dataRows[_rowIndex][ownerBarOfPointsList._columnIndex])
           .toDouble(),
       _dataValue,
     );
@@ -415,11 +415,11 @@ class NewDataModelPoint extends Object with DoubleLinked {
   // ===================== NEW CODE ============================================
 
   /// The original (transformed, not-scaled) data value from one data item
-  /// in the two dimensional, rows first, [NewDataModel.dataRows].
+  /// in the two dimensional, rows first, [NewModel.dataRows].
   ///
-  /// This [_dataValue] point is created from the [NewDataModel.dataRows] using the indexes:
+  /// This [_dataValue] point is created from the [NewModel.dataRows] using the indexes:
   ///   - row at index [_rowIndex]
-  ///   - column at the [ownerSameXValuesList] index [NewDataModelSameXValues._columnIndex].
+  ///   - column at the [ownerBarOfPointsList] index [NewBarOfPointsModel._columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double _dataValue;
 
@@ -428,27 +428,27 @@ class NewDataModelPoint extends Object with DoubleLinked {
   late final double _stackedPositiveDataValue;
   late final double _stackedNegativeDataValue;
 
-  /// Refers to the row index in [NewDataModel.dataRows] from which this point was created.
+  /// Refers to the row index in [NewModel.dataRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [NewDataModelSameXValues._points] index [_rowIndex].
+  /// Also, this point object is kept in [NewBarOfPointsModel._points] index [_rowIndex].
   ///
   /// See [_dataValue] for details of the column index from which this point was created.
   final int _rowIndex;
 
-  /// References the data column (sameXValues list) this point belongs to
-  NewDataModelSameXValues ownerSameXValuesList;
+  /// References the data column (barOfPoints list) this point belongs to
+  NewBarOfPointsModel ownerBarOfPointsList;
 
-  /// Generate view for this single leaf [NewDataModelPoint] - a single [NewValueHBarContainer].
+  /// Generate view for this single leaf [NewPointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  NewValueContainer generateViewChildLeaf_Of_NewValuesColumnContainer_As_NewValueContainer(ChartRootContainer chartRootContainer) {
-    return NewValueHBarContainer(
-        dataModelPoint: this,
+  NewPointContainer generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(ChartRootContainer chartRootContainer) {
+    return NewHBarPointContainer(
+        newPointModel: this,
         chartRootContainer: chartRootContainer,
     );
   }
 
-  ui.Color get color => ownerSameXValuesList._dataModel._dataRowsColors[_rowIndex];
+  ui.Color get color => ownerBarOfPointsList._dataModel._dataRowsColors[_rowIndex];
 
   // ====================== LEGACY CODE ====================================
 
@@ -462,12 +462,12 @@ class NewDataModelPoint extends Object with DoubleLinked {
   double dataY;
 
   /// The index of this point in the [PointsColumn] containing this point in it's
-  /// [PointsColumn.newDataModelPoints] list.
+  /// [PointsColumn.newPointModels] list.
   int dataRowIndex; // series index
 
   /// The predecessor point in the [PointsColumn] containing this point in it's
-  /// [PointsColumn.newDataModelPoints] list.
-  NewDataModelPoint? predecessorPoint;
+  /// [PointsColumn.newPointModels] list.
+  NewPointModel? predecessorPoint;
 
   /// True if data are stacked.
   bool isStacked = false;
@@ -509,7 +509,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   ui.Offset scaledTo = ui.Offset.zero;
 
   /// The generative constructor of objects for this class.
-  NewDataModelPoint({
+  NewPointModel({
     required this.xLabel,
     required this.dataY,
     required this.dataRowIndex,
@@ -518,10 +518,10 @@ class NewDataModelPoint extends Object with DoubleLinked {
         fromY = 0.0,
         toY = dataY;
 
-  /// Initial instance of a [NewDataModelPoint].
+  /// Initial instance of a [NewPointModel].
   /// Forwarded to the generative constructor.
   /// This should fail if it undergoes any processing such as layout
-  NewDataModelPoint.initial()
+  NewPointModel.initial()
       : this(
     xLabel: 'initial',
     dataY: -1,
@@ -529,7 +529,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
     predecessorPoint: null,
   );
 
-  NewDataModelPoint stack() {
+  NewPointModel stack() {
     isStacked = true;
 
     // todo-1 validate: check if both points y have the same sign or both zero
@@ -544,7 +544,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// Points are constructed unstacked. Depending on chart type,
   /// a later processing can stack points using this method
   /// (if chart type is [ChartRootContainer.isStacked].
-  NewDataModelPoint stackOnAnother(NewDataModelPoint? predecessorPoint) {
+  NewPointModel stackOnAnother(NewPointModel? predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
     return stack();
   }
@@ -562,7 +562,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  NewDataModelPoint scale({
+  NewPointModel scale({
     required double scaledX,
     required DataRangeLabelsGenerator yLabelsGenerator,
   }) {
@@ -575,7 +575,7 @@ class NewDataModelPoint extends Object with DoubleLinked {
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // only apply  offset on scaled values, those have chart coordinates that are painted.
 
-    // not needed to offset : NewDataModelPoint predecessorPoint;
+    // not needed to offset : NewPointModel predecessorPoint;
 
     /// Scaled values represent screen coordinates, apply offset to all.
     scaledFrom += offset;
@@ -586,15 +586,15 @@ class NewDataModelPoint extends Object with DoubleLinked {
   /// Copy - clone of this object unstacked. Does not allow to clone if
   /// already stacked.
   ///
-  /// Returns a new [NewDataModelPoint] which is a full deep copy of this
+  /// Returns a new [NewPointModel] which is a full deep copy of this
   /// object. This includes cloning of [double] type members and [ui.Offset]
   /// type members.
-  NewDataModelPoint unstackedClone() {
+  NewPointModel unstackedClone() {
     if (isStacked) {
       throw Exception('Cannot clone if already stacked');
     }
 
-    NewDataModelPoint clone = NewDataModelPoint(
+    NewPointModel clone = NewPointModel(
         xLabel: xLabel, dataY: dataY, dataRowIndex: dataRowIndex, predecessorPoint: predecessorPoint);
 
     // numbers and Strings, being immutable, can be just assigned.

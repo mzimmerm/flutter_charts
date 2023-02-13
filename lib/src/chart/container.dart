@@ -51,11 +51,11 @@ abstract class ChartViewMaker {
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
-  /// After [chartRootContainer] is created and set, This [NewDataModel] type member [chartData]
+  /// After [chartRootContainer] is created and set, This [NewModel] type member [chartData]
   /// should be placed on the member [chartRootContainer.chartViewMaker.chartData].
   // todo-00 : document those, and try make all of them late final.
 
-  NewDataModel chartData;
+  NewModel chartData;
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   bool isStacked = false;
   late ChartRootContainer chartRootContainer;
@@ -78,8 +78,8 @@ abstract class ChartViewMaker {
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
   /// Important notes:
-  ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewDataModel.
-  //    - NewDataModel has ChartOptions
+  ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
+  //    - NewModel has ChartOptions
   ChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker});
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
@@ -188,7 +188,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// required to paint half of the topmost label.
   ChartRootContainer({
     required this.chartViewMaker,
-    required NewDataModel chartData,
+    required NewModel chartData,
     required this.isStacked,
     required this.chartOptions, // todo-00 added
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
@@ -254,7 +254,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  NewDataModel data;
+  NewModel data;
 
   /// Creates child containers for the chart root.
   ///
@@ -529,7 +529,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
 
-    // [yLabelsGenerator] instance depends on both NewDataModel and ChartRootContainer. We can construct the generator
+    // [yLabelsGenerator] instance depends on both NewModel and ChartRootContainer. We can construct the generator
     // anywhere in [ChartRootContainer] constructor or later.
     // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
     yLabelsGenerator = DataRangeLabelsGenerator(
@@ -2004,7 +2004,7 @@ class StackableValuePoint {
     required DataRangeLabelsGenerator yLabelsGenerator,
   }) {
     // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsGenerator
-    // were calculated using the NEW [NewDataModel]
+    // were calculated using the NEW [NewModel]
 
     double axisPixelsYMin = chartRootContainer.yContainer.axisPixelsRange.min;
     double axisPixelsYMax = chartRootContainer.yContainer.axisPixelsRange.max;
@@ -2193,7 +2193,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(NewDataModel chartData) {
+  void _createStackableValuePointsFromChartData(NewModel chartData) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartData.dataRows[0].length, null);
     for (int col = 0; col < chartData.dataRows[0].length; col++) {

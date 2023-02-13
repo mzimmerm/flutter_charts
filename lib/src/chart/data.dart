@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter_charts/flutter_charts.dart';
 
 /// Manages Chart Data.
-@Deprecated('Use NewDataModel instead.')
+@Deprecated('Use NewModel instead.')
 class ChartData {
   /// Data in rows.
   ///

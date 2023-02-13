@@ -9,7 +9,7 @@ import '../container/container_key.dart';
 // todo-done-last-3 : replaces PointsColumns
 class NewDataContainer extends DataContainer {
   // constructor:
-  // create with all children: List<NewValuesColumnContainer> + ChartRootContainer
+  // create with all children: List<NewBarOfPointsContainer> + ChartRootContainer
 
   NewDataContainer({
     required ChartRootContainer chartRootContainer,
@@ -22,9 +22,9 @@ class NewDataContainer extends DataContainer {
   @override
   void buildAndAddChildren_DuringParentLayout() {
 
-   NewDataModel dataModel = chartRootContainer.chartViewMaker.chartData;
+   NewModel dataModel = chartRootContainer.chartViewMaker.chartData;
 
-   List<NewValuesColumnContainer>  viewColumnList = dataModel.generateViewChildren_Of_NewDataContainer_As_NewValuesColumnContainer_List(chartRootContainer);
+   List<NewBarOfPointsContainer>  viewColumnList = dataModel.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(chartRootContainer);
 
     addChildren([
       Row(
@@ -38,7 +38,7 @@ class NewDataContainer extends DataContainer {
   @override
   _NewSourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
     return _NewSourceYContainerAndYContainerToSinkDataContainer(
-      dataColumnsCount: chartRootContainer.chartViewMaker.chartDataColumnsCount,
+      dataBarsCount: chartRootContainer.chartViewMaker.chartDataBarsCount,
     );
   }
   */
@@ -49,12 +49,12 @@ class NewDataContainer extends DataContainer {
 // void paint(Canvas convas) - default
 }
 
-class NewValuesColumnContainer extends ChartAreaContainer {
-  NewDataModelSameXValues backingDataModelSameXValues;
+class NewBarOfPointsContainer extends ChartAreaContainer {
+  NewBarOfPointsModel backingDataBarOfPointsModel;
 
-  NewValuesColumnContainer({
+  NewBarOfPointsContainer({
     required ChartRootContainer chartRootContainer,
-    required this.backingDataModelSameXValues,
+    required this.backingDataBarOfPointsModel,
     List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
@@ -67,12 +67,12 @@ class NewValuesColumnContainer extends ChartAreaContainer {
   );
 }
 
-class NewValueContainer extends ChartAreaContainer {
-  NewDataModelPoint dataModelPoint;
+class NewPointContainer extends ChartAreaContainer {
+  NewPointModel newPointModel;
 
-  NewValueContainer({
+  NewPointContainer({
     required ChartRootContainer chartRootContainer,
-    required this.dataModelPoint,
+    required this.newPointModel,
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
@@ -83,23 +83,23 @@ class NewValueContainer extends ChartAreaContainer {
 }
 
 /// See [LegendIndicatorRectContainer] for similar implementaion
-class NewValueHBarContainer extends NewValueContainer {
+class NewHBarPointContainer extends NewPointContainer {
 
   /// The rectangle representing the value.
   ///
-  /// It's height represents [dataModelPoint.dataValue] scaled from the value range to the
+  /// It's height represents [newPointModel.dataValue] scaled from the value range to the
   /// pixel height available for data in the vertical direction.
   ///
   /// It's size should be calculated in [layout], and used in [paint];
   late final ui.Size _rectangleSize;
 
-  NewValueHBarContainer({
+  NewHBarPointContainer({
     required ChartRootContainer chartRootContainer,
-    required NewDataModelPoint dataModelPoint,
+    required NewPointModel newPointModel,
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
-    dataModelPoint: dataModelPoint,
+    newPointModel: newPointModel,
     chartRootContainer: chartRootContainer,
     children: children,
     key: key,
@@ -112,7 +112,7 @@ class NewValueHBarContainer extends NewValueContainer {
     // Rectangle width is from constraints
     double width = constraints.width;
 
-    // Rectangle height is Y scaled from dataModelPoint.dataValue using chartRootContainer.yLabelsGenerator
+    // Rectangle height is Y scaled from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     DataRangeLabelsGenerator yLabelsGenerator = chartRootContainer.yContainer.yLabelsGenerator;
 
     YContainer yContainer = chartRootContainer.yContainer;
@@ -126,9 +126,9 @@ class NewValueHBarContainer extends NewValueContainer {
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
     // We convert data to positive positive size, the direction above/below axis is determined by layouters.
-    double height = lerp.applyAsLength(dataModelPoint.dataValue.abs());
+    double height = lerp.applyAsLength(newPointModel.dataValue.abs());
 
-    // print('height=$height, value=${dataModelPoint.dataValue.abs()}, '
+    // print('height=$height, value=${newPointModel.dataValue.abs()}, '
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
     //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
@@ -141,9 +141,9 @@ class NewValueHBarContainer extends NewValueContainer {
 
     ui.Rect rect = offset & _rectangleSize;
 
-    // Rectangle color should be from dataModelPoint's color.
+    // Rectangle color should be from newPointModel's color.
     ui.Paint paint = ui.Paint();
-    paint.color = dataModelPoint.color;
+    paint.color = newPointModel.color;
 
     canvas.drawRect(rect, paint);
   }
@@ -151,10 +151,10 @@ class NewValueHBarContainer extends NewValueContainer {
 
 /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
 class _NewSourceYContainerAndYContainerToSinkDataContainer {
-  final int dataColumnsCount;
+  final int dataBarsCount;
 
   _NewSourceYContainerAndYContainerToSinkDataContainer({
-    required this.dataColumnsCount,
+    required this.dataBarsCount,
   });
 }
 */

@@ -170,19 +170,19 @@ DataRangeLabelsGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, Chart
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: options.yContainerOptions.valueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
-    dataModel: _constructMockNewDataModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends),
+    dataModel: _constructMockNewModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends),
     isStacked: false,
   );
 }
 
-MockNewDataModel _constructMockNewDataModel(
+MockNewModel _constructMockNewModel(
   ChartOptions options,
   List<List<double>> dataRows,
   List<String> xUserLabels,
   bool extendAxisToOrigin,
   List<String> dataRowsLegends,
 ) {
-  return MockNewDataModel(
+  return MockNewModel(
       chartOptions: options,
       dataRowsLegends: dataRowsLegends,
       dataRows: dataRows,
@@ -242,8 +242,8 @@ class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavi
   bool get extendAxisToOrigin => false;
 }
 
-class MockNewDataModel extends NewDataModel {
-  MockNewDataModel({
+class MockNewModel extends NewModel {
+  MockNewModel({
     required dataRows,
     required xUserLabels,
     required dataRowsLegends,

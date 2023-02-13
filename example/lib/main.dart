@@ -456,7 +456,7 @@ class _ExampleWidgetCreator {
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
     // Declare chartData; the data object will be different in every examples.
-    NewDataModel chartData;
+    NewModel chartData;
 
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
@@ -494,7 +494,7 @@ class _ExampleWidgetCreator {
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -515,7 +515,7 @@ class _ExampleWidgetCreator {
 
       case ExamplesEnum.ex31SomeNegativeValues:
         // Example shows a mix of positive and negative data values.
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
             [1100.0, 1000.0, 1200.0, 800.0, 700.0, 800.0],
@@ -543,7 +543,7 @@ class _ExampleWidgetCreator {
             extendAxisToOriginRequested: false,
           ),
         );
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -567,7 +567,7 @@ class _ExampleWidgetCreator {
             extendAxisToOriginRequested: false,
           ),
         );
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],
             [-35.0, -40.0, -20.0, -25.0, -30.0, -20.0],
@@ -617,7 +617,7 @@ class _ExampleWidgetCreator {
           labelCommonOptions: MyLabelCommonOptions(),
           );
         // Then proceed as usual
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -634,7 +634,7 @@ class _ExampleWidgetCreator {
         // Set chart options to show no labels
         chartOptions = const ChartOptions.noLabels();
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -664,7 +664,7 @@ class _ExampleWidgetCreator {
         //     on the level of the first Y Label ("Low" in this example),
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [9.0, 4.0, 3.0, 9.0],
             [7.0, 6.0, 7.0, 6.0],
@@ -696,7 +696,7 @@ class _ExampleWidgetCreator {
         // In each column, adding it's absolute values should add to same number:
         // todo-04 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           // each column should add to same number. everything else is relative.
           dataRows: const [
             [-9.0, -8.0, -8.0, -5.0, -8.0],
@@ -728,7 +728,7 @@ class _ExampleWidgetCreator {
             yInverseTransform: inverseLog10,
           ),
         );
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [10.0, 600.0, 1000000.0],
             [20.0, 1000.0, 1500000.0],
@@ -745,7 +745,7 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex60LabelsIteration1:
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -764,7 +764,7 @@ class _ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -783,7 +783,7 @@ class _ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -802,7 +802,7 @@ class _ExampleWidgetCreator {
       // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
       // This example shows the result with sufficient space to show all labels, not even tilted;
       // The iterative layout strategy causes more labels to be skipped.
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -823,7 +823,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -837,7 +837,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -851,7 +851,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -865,7 +865,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -879,7 +879,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -894,7 +894,7 @@ class _ExampleWidgetCreator {
                   LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -909,7 +909,7 @@ class _ExampleWidgetCreator {
               LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
         );
 
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
           dataRowsLegends: animalsDataRowsLegends,
@@ -922,7 +922,7 @@ class _ExampleWidgetCreator {
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
         /// [chartData.xUserLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
         // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
-        chartData = NewDataModel(
+        chartData = NewModel(
           dataRows: const [
             [0.0, 0.0, 0.0],
           ],

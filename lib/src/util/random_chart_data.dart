@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/chart/model/new_data_model.dart';
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
 ///
-class RandomChartData extends NewDataModel {
+class RandomChartData extends NewModel {
   RandomChartData({
     required dataRows,
     required xUserLabels,
