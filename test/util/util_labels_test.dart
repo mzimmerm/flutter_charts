@@ -1,14 +1,9 @@
 import 'package:test/test.dart'; // test package
 import 'dart:ui' as ui show Color;
 
-import '../../lib/src/chart/container.dart' show ChartBehavior;
-
-import '../../lib/src/util/util_dart.dart';
-import '../../lib/src/util/util_labels.dart';
-import '../../lib/src/chart/model/new_data_model.dart';
-import '../../lib/src/chart/options.dart';
-
-
+// Tested package
+// import 'package:flutter_charts/src/util/util_labels.dart';
+import 'package:flutter_charts/flutter_charts.dart';
 
 void main() {
   // todo 1 add tests for scaling . Add more tests in general

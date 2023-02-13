@@ -24,10 +24,13 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///       ```dart
 ///         import 'package:flutter_charts/flutter_charts.dart';
 ///       ```
-///       Note: Only libraries (dart files) listed as `export` in `flutter_charts.dart`
-///             are made available to the file with this import clause! 
-///             For libraries NOT-EXPORTED in `flutter_charts.dart`, 
-///             we have to use one of the 'code local' schemes in the item below.
+///       Note 1: Only libraries (dart files) listed as `export` in `flutter_charts.dart`
+///               are made available to the file with this import clause!
+///               For libraries NOT-EXPORTED in `flutter_charts.dart`,
+///               we have to use one of the 'code local' schemes in the item below.
+///       Note 2: THIS FORMAT MUST BE USED IN a) example/lib  b) in tests.
+///               Both appear to be able to import relative, crossing the 'lib' boundary,
+///               but THEN FLUTTER THINGS THOSE ARE DIFFERENT LIBRARIES!
 ///     2. Or using a RELATIVE PATH SCHEME, for example from a .dart file located 
 ///        in flutter_charts/(lib)/src/chart/bar, CAN REACH EXPORTED OR NON-EXPORTED LIBRARY
 ///       ```dart
@@ -150,6 +153,8 @@ export 'src/chart/data.dart';
 export 'src/chart/container.dart';
 export 'src/chart/view_maker.dart';
 export 'src/chart/new_data_container.dart';
+
+export 'src/chart/model/new_data_model.dart';
 
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';

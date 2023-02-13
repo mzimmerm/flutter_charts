@@ -57,5 +57,5 @@ class LineChartRootContainer extends ChartRootContainer {
   ///
   /// On this line chart container, allow the y axis start from 0 if requested by options.
   @override
-  bool get extendAxisToOrigin => data.chartOptions.dataContainerOptions.extendAxisToOriginRequested;
+  bool get extendAxisToOrigin => chartNewModelOnContainer.chartOptions.dataContainerOptions.extendAxisToOriginRequested;
 }
