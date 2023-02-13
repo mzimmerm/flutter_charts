@@ -20,6 +20,7 @@ set -e
 
 echo
 echo -------------------------------------
+echo -------------------------------------
 echo Running Dart files testing, which is still run with Flutter
 flutter test test/util/util_labels_test.dart
 flutter test test/util/extensions_dart_test.dart
@@ -28,18 +29,21 @@ flutter test test/chart/layouter_one_dimensional_test.dart
 
 echo
 echo -------------------------------------
+echo -------------------------------------
 echo Running Flutter widget tests
 flutter test test/widget_test.dart
 
 echo
+echo -------------------------------------
 echo -------------------------------------
 echo RERUNNING All Flutter tests, showing all names
 flutter test --reporter expanded
 
 echo
 echo -------------------------------------
-echo Running a wrapper around Flutter integration tests for representative screenshots
-echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
+echo -------------------------------------
+echo Running screenshot differences tests representative screenshots validation
+echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
 tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
 tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsShown
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
@@ -52,3 +56,8 @@ tool/test/integration_test_validate_screenshots.sh ex74AnimalsBySeasonLegendIsRo
 tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
 tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
 
+echo
+echo -------------------------------------
+echo -------------------------------------
+echo Running screenshot actual/expected test for NEW LAYOUT
+USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

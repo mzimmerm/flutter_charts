@@ -124,8 +124,13 @@ class NewValueHBarContainer extends NewValueContainer {
       toPixelsMax: yContainer.axisPixelsRange.max,
     );
 
-    // Extrapolate the absolute value. We need positive size, the direction is defined by layouters.
-    double height = lerp.apply(dataModelPoint.dataValue.abs());
+    // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
+    // We convert data to positive positive size, the direction above/below axis is determined by layouters.
+    double height = lerp.applyAsLength(dataModelPoint.dataValue.abs());
+
+    // print('height=$height, value=${dataModelPoint.dataValue.abs()}, '
+    //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
+    //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
     _rectangleSize = ui.Size(width, height);
 

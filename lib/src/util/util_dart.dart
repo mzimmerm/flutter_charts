@@ -342,6 +342,15 @@ class DomainExtrapolation1D {
     return result;
   }
 
+  /// If we consider value is a segment length in the 'from' domain,
+  /// returns the length os such segment in the 'to' domain.
+  ///
+  /// Negative lengths are supported. Direction matters - that means, a segment of a positive length can
+  /// turn into a negative length.
+  double applyAsLength(double length) {
+    return length * _domainStretch;
+  }
+
   @override
   String toString() {
     return '_fromDomainStart = $_fromDomainStart, '

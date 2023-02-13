@@ -354,10 +354,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // ### 3. Layout [yContainerFirst] to get Y container width
     //        that moves [XContainer] and [DataContainer].
-    double yContainerHeight = constraints.height - legendContainerSize.height;
+    double yContainerFirstHeight = constraints.height - legendContainerSize.height;
     var yContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
-      yContainerHeight,
+      yContainerFirstHeight,
     ));
 
     var yContainerFirst = YContainer(
@@ -402,7 +402,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     // yContainer layout height depends on xContainer layout result.  But this dependency can be expressed
     // as a constraint on yContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
-    var yConstraintsHeight = yContainerHeight - xContainerSize.height;
+    var yConstraintsHeight = constraints.height - legendContainerSize.height - xContainerSize.height;
     var yContainerBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
       yConstraintsHeight,
@@ -431,13 +431,14 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
-            constraints.height - (legendContainerSize.height + xContainerSize.height),
+            yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - xContainerSize.height,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
     } else {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
+            // todo-00-last : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
             yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
@@ -445,6 +446,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00-last : moving before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
+    //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
@@ -540,7 +543,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     labelInfos = yLabelsGenerator.createLabelInfos();
   }
 
-  /// Late calculated minimum and maximum pixels for the Y axis.
+  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [YContainer].
   ///
   /// [axisPixelsRange] does NOT start at zero, it contains the pixels from Y container top
   /// available to Y axis, after a half-label height is excluded on the top,

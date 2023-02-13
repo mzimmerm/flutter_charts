@@ -16,6 +16,7 @@ set -e
 
 echo
 echo -------------------------------------
+echo -------------------------------------
 echo Running Dart files testing, which is still run with Flutter
 flutter test test/util/util_labels_test.dart
 flutter test test/util/extensions_dart_test.dart
@@ -24,16 +25,25 @@ flutter test test/chart/layouter_one_dimensional_test.dart
 
 echo
 echo -------------------------------------
+echo -------------------------------------
 echo Running Flutter widget tests
 flutter test test/widget_test.dart
 
 echo
+echo -------------------------------------
 echo -------------------------------------
 echo RERUNNING All Flutter tests, showing all names. The option --reporter expanded is showing names.
 flutter test --reporter expanded
 
 echo
 echo -------------------------------------
-echo Running a wrapper around Flutter integration tests for screenshots
-echo This runs an integration [drive] screenshot create test first, followed by widget screenshot check test
+echo -------------------------------------
+echo Running screenshot differences tests screenshots validation
+echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
 tool/test/integration_test_validate_screenshots.sh $1
+
+echo
+echo -------------------------------------
+echo -------------------------------------
+echo Running screenshot actual/expected test for NEW LAYOUT
+USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
