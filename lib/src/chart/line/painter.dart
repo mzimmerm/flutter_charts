@@ -1,4 +1,4 @@
-import '../line/container.dart' as line_containers;
+import 'view_maker.dart';
 
 import '../painter.dart';
 
@@ -11,7 +11,7 @@ class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
   LineChartPainter({
-    required line_containers.LineChartViewMaker lineChartViewMaker,
+    required LineChartViewMaker lineChartViewMaker,
   }) : super(
           chartViewMaker: lineChartViewMaker,
         );

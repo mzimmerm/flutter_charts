@@ -1,5 +1,6 @@
 import 'package:test/test.dart'; // Dart test package
-import 'package:flutter_charts/flutter_charts.dart';
+
+import '../../lib/src/util/util_dart.dart';
 
 void main() {
   test('scaleValue - test linear scaling utility', () {

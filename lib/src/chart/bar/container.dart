@@ -1,39 +1,13 @@
-import 'package:flutter_charts/flutter_charts.dart';
+// import 'new_data_container.dart';
+import '../container.dart';
+import '../model/new_data_model.dart';
+import '../view_maker.dart';
+
+import '../options.dart';
+
+import 'presenter.dart'; // OLD
+
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import 'presenter.dart';
-
-import 'package:flutter_charts/src/chart/model/new_data_model.dart';
-
-/// Concrete [ChartViewMaker] for [VerticalBarChart].
-///
-/// See [ChartViewMaker] for help.
-class VerticalBarChartViewMaker extends ChartViewMaker {
-
-  VerticalBarChartViewMaker({
-    required NewModel chartData,
-    required bool isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  }) : super(
-    chartData: chartData,
-    isStacked: true, // only supported for now
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  ) {
-    print('$runtimeType created');
-  }
-
-  /// Concrete implementation returns the root for vertical bar chart.
-  @override
-  VerticalBarChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker}) {
-
-    return VerticalBarChartRootContainer(
-      chartViewMaker: chartViewMaker,
-      chartData: chartData,
-      chartOptions: chartViewMaker.chartOptions,
-      isStacked: isStacked,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
-  }
-}
 
 /// Container of the vertical bar chart.
 ///

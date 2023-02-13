@@ -19,15 +19,29 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///         import 'package:flutter_charts/flutter_charts.dart';
 ///       ```
 ///
-/// Code in this project, under [root/lib] directory can import this package's code two ways:
+/// Code in this project, under [root/lib] directory can import this package's code IN 3 WAYS:
 ///     1. Either using the same package: scheme, as above external code, for example
 ///       ```dart
 ///         import 'package:flutter_charts/flutter_charts.dart';
 ///       ```
-///     2. Or using a path scheme, for example
+///       Note: Only libraries (dart files) listed as `export` in `flutter_charts.dart`
+///             are made available to the file with this import clause! 
+///             For libraries NOT-EXPORTED in `flutter_charts.dart`, 
+///             we have to use one of the 'code local' schemes in the item below.
+///     2. Or using a RELATIVE PATH SCHEME, for example from a .dart file located 
+///        in flutter_charts/(lib)/src/chart/bar, CAN REACH EXPORTED OR NON-EXPORTED LIBRARY
 ///       ```dart
-///         import 'src/chart/data.dart'; // absolute path
-///         import '../util/util_labels.dart'; // relative path
+///          // Note: Below, we have to ascend on the 'src' level as in the first line. 
+///                   We can ascend above 'src', but that is not needed. So use the first form  
+///          import '../../chart/container.dart'; // relative path
+///          import '../../../src/chart/container.dart'; // relative path
+///          // Note: THE ABOVE IS PROBABLY THE PREFERRED FORM AS IT MAKES HIERARCHY CLEAR
+///          import 'src/util/examples_descriptor.dart'; // relative path ONLY FROM example/src/main.dart
+///       ```
+///     3. Or using an ABSOLUTE PATH SCHEME, WHICH STARTS WITH THE PACKAGE NAME, AND PROVIDES FULL PATH
+///        TO EXPORTED OR NON-EXPORTED LIBRARY, for example
+///       ```dart
+///         import 'package:flutter_charts/src/chart/container.dart';
 ///       ```
 ///
 /// Any dart file (any client application) located outside
@@ -134,6 +148,8 @@ export 'src/util/util_labels.dart';
 
 export 'src/chart/data.dart';
 export 'src/chart/container.dart';
+export 'src/chart/view_maker.dart';
+export 'src/chart/new_data_container.dart';
 
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';
@@ -142,10 +158,14 @@ export 'src/chart/line/chart.dart';
 export 'src/chart/line/painter.dart';
 export 'src/chart/line/container.dart';
 export 'src/chart/line/options.dart';
+export 'src/chart/line/view_maker.dart';
+export 'src/chart/line/new_data_container.dart';
 
 export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
 export 'src/chart/bar/container.dart';
 export 'src/chart/bar/options.dart';
+export 'src/chart/bar/view_maker.dart';
+export 'src/chart/bar/new_data_container.dart';
 
 export 'src/util/random_chart_data.dart';

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
-import 'package:flutter_charts/src/chart/options.dart';
 import 'container.dart' as containers;
+import 'view_maker.dart' as view_maker;
 import 'bar/chart.dart';
 import 'line/chart.dart';
 
@@ -25,7 +25,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// That behavior is in contrast to concrete view, the [containers.ChartRootContainer], which is created anew on every
   /// [FlutterChartPainter.paint] invocation, including the repaint invocation
   /// .
-  containers.ChartViewMaker chartViewMaker;
+  view_maker.ChartViewMaker chartViewMaker;
 
   /// Keep track of re-paints
   bool _isFirstPaint = true;

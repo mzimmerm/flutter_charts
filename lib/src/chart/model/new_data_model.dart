@@ -1,9 +1,15 @@
 import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/new_data_container.dart';
-import 'package:flutter_charts/src/util/util_labels.dart' as util_labels;
+
+import '../data.dart' show dataRowsDefaultColors;
+import '../container.dart';
+import '../new_data_container.dart';
+import '../container_layouter_base.dart';
+
+import '../../util/util_labels.dart' as util_labels;
+import '../../util/util_dart.dart';
+
+import '../options.dart';
 
 // todo-doc-01 document Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
 //                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
@@ -63,7 +69,7 @@ class NewModel {
   // NEW CODE =============================================================
 
   // [NewModel] is created first. So ViewMaker must be set publicly late.
-  late final ChartViewMaker chartViewMaker; // todo-00-remove. I think it is only here to get at options, we we access directly
+  // todo-00-last-done : late final ChartViewMaker chartViewMaker; // todo-00-remove. I think it is only here to get at options, we we access directly
 
   /// List of data barOfPoints in the model.
   final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel

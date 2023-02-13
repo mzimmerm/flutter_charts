@@ -3,9 +3,8 @@ import 'dart:math' as math show Random;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
 
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/chart/container_edge_padding.dart' show EdgePadding;
-import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
+import 'container_edge_padding.dart' show EdgePadding;
+import 'layouter_one_dimensional.dart'
     show
     Align,
     Packing,
@@ -13,13 +12,13 @@ import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     LayedoutLengthsPositioner,
     PositionedLineSegments,
     ConstraintsDistribution;
-import 'package:flutter_charts/src/chart/container_alignment.dart' show Alignment;
-import 'package:flutter_charts/src/morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
-import 'package:flutter_charts/src/util/util_flutter.dart' as util_flutter show boundingRectOfRects;
-import 'package:flutter_charts/src/util/collection.dart' as custom_collection show CustomList;
-import 'package:flutter_charts/src/container/container_key.dart'
+import 'container_alignment.dart' show Alignment;
+import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
+import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
+import '../util/util_dart.dart' as util_dart show LineSegment;
+import '../util/util_flutter.dart' as util_flutter show boundingRectOfRects, assertSizeResultsSame;
+import '../util/collection.dart' as custom_collection show CustomList;
+import '../container/container_key.dart'
     show
     ContainerKey,
     Keyed,
@@ -878,7 +877,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
         .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
+    util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
 
     layoutSize = positionedChildrenOuterRects.size;
   }
@@ -1466,7 +1465,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
       // in the Column/Row direction. This is effectively a pre-positioning of children is self
       List<ui.Rect> positionedRectsInMe = post_NotLeaf_PositionChildren(_nonGreedyChildren);
-      ui.Rect nonGreedyBoundingRect = boundingRectOfRects(positionedRectsInMe);
+      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
       assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
 
       // After pre-positioning to obtain children sizes without any spacing, put back axis properties

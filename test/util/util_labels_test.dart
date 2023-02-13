@@ -1,9 +1,14 @@
-import 'package:flutter_charts/src/chart/model/new_data_model.dart';
-import 'package:test/test.dart';
-
-import 'package:flutter_charts/flutter_charts.dart';
-
+import 'package:test/test.dart'; // test package
 import 'dart:ui' as ui show Color;
+
+import '../../lib/src/chart/container.dart' show ChartBehavior;
+
+import '../../lib/src/util/util_dart.dart';
+import '../../lib/src/util/util_labels.dart';
+import '../../lib/src/chart/model/new_data_model.dart';
+import '../../lib/src/chart/options.dart';
+
+
 
 void main() {
   // todo 1 add tests for scaling . Add more tests in general
@@ -229,8 +234,6 @@ void rangeTestCore(
     }
   }
 }
-
-
 
 class StartYAxisAtDataMinAllowedChartBehavior extends Object with ChartBehavior {
   @override
