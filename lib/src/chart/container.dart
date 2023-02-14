@@ -95,8 +95,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     required this.chartOptions,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : // todo-00-last-done : chartNewModelOnContainer = chartData,
-        _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
+  })  : _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
     print('    Constructing ChartRootContainer');
     isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
@@ -165,8 +164,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   late PointsColumns pointsColumns;
 
   late bool isStacked;
-
-  // todo-00-last-done : removed : NewModel chartNewModelOnContainer; // todo-00-last : can we get rid of this?
 
   /// Creates child containers for the chart root.
   ///
@@ -350,8 +347,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
-            // todo-00-last : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
-            //                Reason: bug in PositionedLineSegments layoutLengths()
+            // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
+            //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _tightOrLooseLayoutLineSegmentFor
             yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
@@ -359,7 +356,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildAndAddChildren_DuringParentLayout();
-    // todo-00-last : moving before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00 : moving before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
     //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);

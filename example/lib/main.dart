@@ -28,7 +28,6 @@ import 'package:logger/logger.dart';
 ///    import 'package:flutter_charts/flutter_charts.dart';
 /// ```
 void main() {
-  // todo-00-last-done
   // Set logging level. There should be some kind of configuration for this.
   Logger.level = Level.debug;
 

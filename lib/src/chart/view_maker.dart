@@ -2,6 +2,7 @@ import '../chart/container.dart';
 import '../chart/model/new_data_model.dart';
 
 import '../chart/options.dart';
+import '../chart/painter.dart';
 import '../morphic/rendering/constraints.dart';
 
 import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -36,14 +37,25 @@ abstract class ChartViewMaker {
   ///
   /// After [chartRootContainer] is created and set, This [NewModel] type member [chartData]
   /// should be placed on the member [chartRootContainer.chartViewMaker.chartData].
-  // todo-00 : document those, and try make all of them late final.
 
-  NewModel chartData;
-  strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-  bool isStacked = false;
+  /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
+  final NewModel chartData;
+
+  final bool isStacked;
+
+  /// Access the view [chartRootContainer] from this maker [ChartViewMaker].
+  /// NOT final, recreated even on repaint, survived by this maker.
   late ChartRootContainer chartRootContainer;
+
+  /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
+  /// [ChartViewMaker.chartData]'s [ChartOptions].
   late final ChartOptions chartOptions;
-  // Keep track of first run.
+
+  /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
+  strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+
+  /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
+  /// this can be used to initialize 'late final' members on first paint.
   bool _isFirst = true;
 
   /// Extensions of this [ChartViewMaker] (for example, [LineChartViewMaker]) should
@@ -73,6 +85,8 @@ abstract class ChartViewMaker {
 
     String isFirstStr = _debugPrintBegin();
 
+    // Create the view [chartRootContainer] and set on member on this maker [ChartViewMaker].
+    // This happens even on re-paint, so can be done multiple times after state changes in the + button.
     chartRootContainer = createRootContainer(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
 
     // Only set `chartData.chartViewMaker = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.

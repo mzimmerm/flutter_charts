@@ -1,9 +1,8 @@
 import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
+
 import 'container.dart' as containers;
 import 'view_maker.dart' as view_maker;
-import 'bar/chart.dart';
-import 'line/chart.dart';
 
 import 'dart:developer' as dart_developer;
 import 'package:logger/logger.dart' as logger;
