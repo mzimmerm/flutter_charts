@@ -122,7 +122,11 @@ class NewModel {
     );
   }
 
-  List<NewBarOfPointsContainer> generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(ChartRootContainer chartRootContainer) {
+/* todo-00-last : moved to ViewMaker
+  List<NewBarOfPointsContainer> generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
+      ChartRootContainer chartRootContainer,
+      List<NewBarOfPointsModel> barOfPointsList,
+      ) {
     List<NewBarOfPointsContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewBarOfPointsContainer, then NewPointContainer and return
 
@@ -133,7 +137,7 @@ class NewModel {
           chartRootContainer: chartRootContainer,
           backingDataBarOfPointsModel: barOfPoints,
           children: [Column(
-              children: barOfPoints.generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(chartRootContainer).reversed.toList(growable: false),
+              children: barOfPoints.generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(chartRootContainer, barOfPoints).reversed.toList(growable: false),
           )],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [NewBarOfPointsContainer] as owner will be Row (main axis is horizontal)
@@ -143,6 +147,7 @@ class NewModel {
     }
     return chartColumns;
   }
+*/
 
 
   // OLD CODE =============================================================
@@ -362,9 +367,13 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
     return result.value;
   }
 
+  /* todo-00-last : moved to ViewMaker
   /// Generates [NewPointContainer] view from each [NewPointModel]
   /// and collects the views in a list of [NewPointContainer]s which is returned.
-  List<NewPointContainer> generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(ChartRootContainer chartRootContainer) {
+  List<NewPointContainer> generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(
+      ChartRootContainer chartRootContainer,
+      NewBarOfPointsModel barOfPoints,
+      ) {
     List<NewPointContainer> newPointContainerList = [];
 
     // Generates [NewPointContainer] view from each [NewPointModel]
@@ -373,13 +382,14 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
       (NewPointModel element, dynamic passedList) {
         var newPointContainerList = passedList[0];
         var chartRootContainer = passedList[1];
-        newPointContainerList.add(element.generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(chartRootContainer));
+        newPointContainerList.add(element.generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(chartRootContainer, element));
       },
       [newPointContainerList, chartRootContainer],
     );
 
     return newPointContainerList;
   }
+*/
 }
 
 class _DoubleValue {
@@ -444,12 +454,17 @@ class NewPointModel extends Object with DoubleLinked {
   /// Generate view for this single leaf [NewPointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  NewPointContainer generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(ChartRootContainer chartRootContainer) {
+  /* todo-00-last : moved to maker
+  NewPointContainer generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(
+      ChartRootContainer chartRootContainer,
+      NewPointModel element,
+  ) {
     return NewHBarPointContainer(
         newPointModel: this,
         chartRootContainer: chartRootContainer,
     );
   }
+*/
 
   ui.Color get color => ownerBarOfPointsList._dataModel._dataRowsColors[_rowIndex];
 

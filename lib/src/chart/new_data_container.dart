@@ -1,21 +1,22 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
-import 'container.dart';
-import 'container_layouter_base.dart';
-import 'layouter_one_dimensional.dart';
-import 'model/new_data_model.dart';
+import 'container.dart' as container;
+import 'container_layouter_base.dart' as container_base;
+import 'model/new_data_model.dart' as model;
+import 'view_maker.dart' as view_maker;
 
+import 'layouter_one_dimensional.dart';
 import '../container/container_key.dart';
 import '../util/util_dart.dart';
 import '../util/util_labels.dart' show DataRangeLabelsGenerator;
 
 // todo-done-last-3 : replaces PointsColumns
-class NewDataContainer extends DataContainer {
+class NewDataContainer extends container.DataContainer {
   // constructor:
   // create with all children: List<NewBarOfPointsContainer> + ChartRootContainer
 
   NewDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required container.ChartRootContainer chartRootContainer,
     // required List<BoxContainer> children,
   }) : super(
     chartRootContainer: chartRootContainer,
@@ -25,12 +26,19 @@ class NewDataContainer extends DataContainer {
   @override
   void buildAndAddChildren_DuringParentLayout() {
 
-   NewModel dataModel = chartRootContainer.chartViewMaker.chartData;
+    // Get at my maker thru my root container.
+    // The makes starts it's work on me down. todo-00 : The maker should start it's work on ChartRootContainer
+    view_maker.ChartViewMaker chartViewMaker = chartRootContainer.chartViewMaker;
 
-   List<NewBarOfPointsContainer>  viewColumnList = dataModel.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(chartRootContainer);
+   // todo-00-last : this WAS HERE, IT IS ENTRY TO CONTAINER STARTING PRESENTING ITSELF. TODO - MOVE TO MAKER??? This is a start of
+    //               view maker generating view. It's in the middle of the chart, but that is fine. Just generates the hierarchy segment.
+   List<NewBarOfPointsContainer> viewColumnList = chartViewMaker.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
+       chartRootContainer,
+       chartRootContainer.chartViewMaker.chartData.barOfPointsList,
+   );
 
     addChildren([
-      Row(
+      container_base.Row(
         children: viewColumnList,
         crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
       )
@@ -52,16 +60,16 @@ class NewDataContainer extends DataContainer {
 // void paint(Canvas convas) - default
 }
 
-class NewBarOfPointsContainer extends ChartAreaContainer {
-  NewBarOfPointsModel backingDataBarOfPointsModel;
+class NewBarOfPointsContainer extends container.ChartAreaContainer {
+  model.NewBarOfPointsModel backingDataBarOfPointsModel;
 
   NewBarOfPointsContainer({
-    required ChartRootContainer chartRootContainer,
+    required container.ChartRootContainer chartRootContainer,
     required this.backingDataBarOfPointsModel,
-    List<BoxContainer>? children,
+    List<container_base.BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
-    required ConstraintsWeight constraintsWeight,
+    required container_base.ConstraintsWeight constraintsWeight,
   }) : super(
     chartRootContainer: chartRootContainer,
     children: children,
@@ -70,13 +78,13 @@ class NewBarOfPointsContainer extends ChartAreaContainer {
   );
 }
 
-class NewPointContainer extends ChartAreaContainer {
-  NewPointModel newPointModel;
+class NewPointContainer extends container.ChartAreaContainer {
+  model.NewPointModel newPointModel;
 
   NewPointContainer({
-    required ChartRootContainer chartRootContainer,
+    required container.ChartRootContainer chartRootContainer,
     required this.newPointModel,
-    List<BoxContainer>? children,
+    List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     chartRootContainer: chartRootContainer,
@@ -97,9 +105,9 @@ class NewHBarPointContainer extends NewPointContainer {
   late final ui.Size _rectangleSize;
 
   NewHBarPointContainer({
-    required ChartRootContainer chartRootContainer,
-    required NewPointModel newPointModel,
-    List<BoxContainer>? children,
+    required container.ChartRootContainer chartRootContainer,
+    required model.NewPointModel newPointModel,
+    List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     newPointModel: newPointModel,
@@ -118,7 +126,7 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y scaled from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     DataRangeLabelsGenerator yLabelsGenerator = chartRootContainer.yContainer.yLabelsGenerator;
 
-    YContainer yContainer = chartRootContainer.yContainer;
+    container.YContainer yContainer = chartRootContainer.yContainer;
 
     var lerp = ToPixelsExtrapolation1D(
       fromValuesMin: yLabelsGenerator.dataRange.min,
