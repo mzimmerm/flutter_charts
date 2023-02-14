@@ -8,6 +8,7 @@ import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStr
 
 import 'dart:ui' as ui show Canvas, Size;
 
+import 'dart:developer' as dart_developer;
 
 /// Base class for classes that hold [chartData], [xContainerLabelLayoutStrategy], [isStacked],
 /// members needed for late creation of the root of the chart container hierarchy, the [chartRootContainer].
@@ -69,7 +70,9 @@ abstract class ChartViewMaker {
     // After this invocation, the created root container is populated with children
     // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
     // depending on the concrete container. For example YContainer is populated with DataRangeLabelsGenerator.
+
     String isFirstStr = _debugPrintBegin();
+
     chartRootContainer = createRootContainer(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
 
     // Only set `chartData.chartViewMaker = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
@@ -103,12 +106,21 @@ abstract class ChartViewMaker {
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
-    print('    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint BEGIN BEGIN BEGIN, $isFirstStr');
+
+    /*
+    dart_developer.log(
+        '    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint BEGIN BEGIN BEGIN, $isFirstStr',
+        name: 'charts.debug.log');
+    */
+
     return isFirstStr;
   }
 
   void _debugPrintEnd(String isFirstStr) {
-    print('    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint END END END, $isFirstStr');
+    /*
+    dart_developer.log(
+        '    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint END END END, $isFirstStr',
+        name: 'charts.debug.log');
+    */
   }
-
 }

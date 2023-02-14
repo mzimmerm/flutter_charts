@@ -39,6 +39,7 @@ dependencies:
   tuple: ^2.0.0
   # 2022-02-05 : Fix issue *Error: No named parameter with the name 'displayLarge'.* google_fonts: ^2.2.0
   google_fonts: 2.2.0
+  logger: ^1.1.0
 
 # Example of dependency on another project: local, GitHub, locally hosted on own pub server on 8080,
 #

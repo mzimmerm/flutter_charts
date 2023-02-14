@@ -95,7 +95,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     required this.chartOptions,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : chartNewModelOnContainer = chartData,
+  })  : // todo-00-last-done : chartNewModelOnContainer = chartData,
         _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
     print('    Constructing ChartRootContainer');
@@ -166,7 +166,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  NewModel chartNewModelOnContainer; // todo-00-last : can we get rid of this?
+  // todo-00-last-done : removed : NewModel chartNewModelOnContainer; // todo-00-last : can we get rid of this?
 
   /// Creates child containers for the chart root.
   ///
@@ -1632,9 +1632,6 @@ class LegendContainer extends ChartAreaContainer {
 
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
-  ///
-  /// The passed [chartRootContainer] can be used to get both [ChartData] [chartNewModelOnContainer]
-  /// and [ChartOptions] [options].
   LegendContainer({
     required ChartRootContainer chartRootContainer,
     // List<BoxContainer>? children, // could add for extensibility by e.g. add legend comment

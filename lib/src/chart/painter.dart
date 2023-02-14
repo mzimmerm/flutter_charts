@@ -5,6 +5,9 @@ import 'view_maker.dart' as view_maker;
 import 'bar/chart.dart';
 import 'line/chart.dart';
 
+import 'dart:developer' as dart_developer;
+import 'package:logger/logger.dart' as logger;
+
 /// Base class of the chart painters; it's core role is to paint the
 /// charts (the extensions of [CustomPaint]).
 ///
@@ -62,7 +65,9 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
     if (size == ui.Size.zero) {
-      print(' ### $runtimeType.PAINT: passed size 0 to this CustomPainter! Nothing can be painted here, RETURNING.');
+      String msg = ' ### $runtimeType. PAINT: passed size 0 to this CustomPainter! Nothing painted here, RETURNING.';
+      print(msg);
+      dart_developer.log(msg, name: 'charts.debug.log');
       return;
     }
 
@@ -83,21 +88,33 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   }
 
   void _debugPrintBegin(ui.Size size) {
-    print('=================== $runtimeType.PAINT BEGIN BEGIN BEGIN at ${DateTime.now()} =================== ');
+    /*
+    var log = logger.Logger();
+    log.d('in debug log');
+
+    dart_developer.log(
+        '=================== $runtimeType.PAINT BEGIN BEGIN BEGIN at ${DateTime.now()} =================== ',
+        name: 'charts.debug.log'
+    );
     if (_isFirstPaint) {
-      print('    invoked === FIRST TIME === with size=$size');
+      dart_developer.log('    invoked === FIRST TIME === with size=$size', name: 'charts.debug.log');
     } else {
-      print('    invoked === SECOND TIME === with size=$size');
+      dart_developer.log('    invoked === SECOND TIME === with size=$size', name: 'charts.debug.log');
     }
+    */
   }
 
   void _debugPrintEnd() {
+    /*
     // clip canvas to size - this does nothing
     // canvas.clipRect  causes the paint() to be called again. why??
     // canvas.clipRect(ui.Offset.zero & size);
-    print('=================== $runtimeType.PAINT END END END at ${DateTime.now()} =================== ');
-    print('');
-    print('');
+
+    dart_developer.log('=================== $runtimeType.PAINT END END END at ${DateTime.now()} =================== ',
+        name: 'charts.debug.log');
+    dart_developer.log('', name: 'charts.debug.log');
+    dart_developer.log('', name: 'charts.debug.log');
+    */
   }
 
   /// Implementing abstract in super.
@@ -106,7 +123,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// with a new instance of the custom painter delegate class.
   @override
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
-    print(' ###### $runtimeType.shouldRepaint being CALLED');
+    dart_developer.log(' ###### $runtimeType.shouldRepaint being CALLED', name: 'charts.debug.log');
     return true;
   }
 }

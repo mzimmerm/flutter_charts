@@ -335,6 +335,11 @@ class LayedoutLengthsPositioner {
       previousSegment = const util_dart.LineSegment(0.0, 0.0);
     }
     Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
+    // todo-010 : The processing of result startOffsetAndRightPad MUST be different for Align.end, so there must be some
+    //             switch .. case added for all Alignments. This is the reason of a bug where Align.end does not work correctly,
+    //             although it is hidden, as the result now is satisfactory, despite setting isOverflow true on the result.
+    //             ALSO A QUESTION: ALIGN.END, DOES IT MEAN FIRST LENGTH IS AT THE END? SHOULD NOT BE - START AND END SHOULD BE THE SAME ORDER.!!
+    //               PERHAPS THERE SHOULD BE ENUM START_TO_END (DEFAULT, DOES NOT REVERT ORDER), AND END_TO_START WHICH REVERSES ORDED.
     double startOffset = startOffsetAndRightPad.item1;
     double rightPad = startOffsetAndRightPad.item2;
     double start = startOffset + previousSegment.max;

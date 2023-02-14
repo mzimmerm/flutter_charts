@@ -18,6 +18,8 @@ import 'src/util/examples_descriptor.dart';
 
 import 'dart:ui' as ui show Color;
 
+import 'package:logger/logger.dart';
+
 /// Example of simple line chart usage in an application.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
@@ -26,6 +28,10 @@ import 'dart:ui' as ui show Color;
 ///    import 'package:flutter_charts/flutter_charts.dart';
 /// ```
 void main() {
+  // todo-00-last-done
+  // Set logging level. There should be some kind of configuration for this.
+  Logger.level = Level.debug;
+
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
   // Why we do not have to import binding.dart?
