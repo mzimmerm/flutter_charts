@@ -92,7 +92,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     required this.chartViewMaker,
     required NewModel chartData,
     required this.isStacked,
-    required this.chartOptions, // todo-00 added
+    required this.chartOptions,
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : chartNewModelOnContainer = chartData,
@@ -106,10 +106,20 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   }
 
-  // todo-00-document. Also document as needed, this View uses ViewMaker to access Model from which ViewMaker creates View
+  /// The instance of [ChartViewMaker] which makes (produces) instances of
+  /// this view root, the [ChartRootContainer].
+  ///
+  /// Instances of this view root need access to the instance of it's maker, the [ChartViewMaker]; although
+  /// the view making generally starts with the maker creating this view instance,
+  /// this view instance is then passed to a lifecycle of processing,
+  /// which involves invoking methods on this view, which, in turn, invoke methods
+  /// on the maker (which in has access to model, and in turn, asks the model to provide
+  /// information that create segments of this view.
+  ///
+  /// To reiterate, this [ChartRootContainer] view, uses the [ChartViewMaker] maked
+  /// to access the [NewModel] model from which segments of this view are created.
   final ChartViewMaker chartViewMaker;
 
-  // todo-00 : added access to options
   final ChartOptions chartOptions;
 
   // switch-from-command-arg : find usages to see where old/new DataContainer differs
@@ -156,7 +166,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   late bool isStacked;
 
-  NewModel chartNewModelOnContainer;
+  NewModel chartNewModelOnContainer; // todo-00-last : can we get rid of this?
 
   /// Creates child containers for the chart root.
   ///
@@ -341,6 +351,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
           size: ui.Size(
             constraints.width - yContainerSize.width,
             // todo-00-last : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
+            //                Reason: bug in PositionedLineSegments layoutLengths()
             yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);

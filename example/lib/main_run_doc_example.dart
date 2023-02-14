@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 
-import 'package:flutter_charts/src/chart/model/new_data_model.dart' show NewModel;
-
 /// Example app for flutter_charts.
 ///
 /// Intended as a simple app that runs example code from README.md,

@@ -33,9 +33,8 @@ import 'util_labels.dart' as util_labels;
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelsGenerator {
 
-  late final NewModel? _dataModel;
-  // todo-00 : make this non nullable. There was some problem with test without it?
-  bool? _isStacked;
+  late final NewModel _dataModel;
+  final bool _isStacked;
 
   /// Stores the merged outer interval of generated labels and point values.
   /// It's values are all calculated from [NewModelPoint]s.
@@ -77,12 +76,12 @@ class DataRangeLabelsGenerator {
   /// highest order of numeric values in the passed [dataYs].
   /// See the class comment for examples of how auto labels are created.
   DataRangeLabelsGenerator({
+    required NewModel dataModel,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
     this.userLabels,
     required bool isStacked,
-    NewModel? dataModel,
   })  :
         _valueToLabel = valueToLabel,
         _inverseTransform = inverseTransform,
@@ -97,10 +96,10 @@ class DataRangeLabelsGenerator {
     // Both [dataEnvelope] and member [_yLabelPositions] ,
     // are  not-scaled && transformed data from [NewModelPoint].
     if (isUsingUserLabels) {
-      dataEnvelope = _dataModel!.dataValuesInterval(isStacked: _isStacked!);
+      dataEnvelope = _dataModel.dataValuesInterval(isStacked: _isStacked);
       _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
     } else {
-      dataEnvelope = _dataModel!.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: _isStacked!);
+      dataEnvelope = _dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: _isStacked);
       _labelPositions = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
     }
 

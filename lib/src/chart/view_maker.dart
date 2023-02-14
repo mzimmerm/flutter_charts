@@ -76,7 +76,6 @@ abstract class ChartViewMaker {
     // To have chartData late final, we have to keep track to only initialize chartData.chartViewMaker = this on first run.
     if (_isFirst) {
       _isFirst = false;
-      // todo-00-last-done : removed : chartData.chartViewMaker = this; // Because Data is created first, set self ViewMaker on chartData late
     }
 
     // e.g. set background: canvas.drawPaint(ui.Paint()..color = material.Colors.green);

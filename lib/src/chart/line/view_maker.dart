@@ -15,7 +15,7 @@ class LineChartViewMaker extends ChartViewMaker {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
     chartData: chartData,
-    isStacked: false, // only supported for now
+    isStacked: false, // line chart only supports non-stacked for now
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 

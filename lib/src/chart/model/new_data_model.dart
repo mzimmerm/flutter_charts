@@ -68,9 +68,6 @@ class NewModel {
 
   // NEW CODE =============================================================
 
-  // [NewModel] is created first. So ViewMaker must be set publicly late.
-  // todo-00-last-done : late final ChartViewMaker chartViewMaker; // todo-00-remove. I think it is only here to get at options, we we access directly
-
   /// List of data barOfPoints in the model.
   final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel
 

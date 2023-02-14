@@ -192,6 +192,7 @@ MockNewModel _constructMockNewModel(
 }
 
 void rangeTestCore(
+  NewModel dataModel,
   List<List<Object>> data,
   ChartOptions options,
   bool extendAxisToOrigin,
@@ -210,7 +211,7 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelsGenerator yLabelsGenerator = DataRangeLabelsGenerator(
-      // axisY: Interval(axisYMax, axisYMin),
+      dataModel: dataModel,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,

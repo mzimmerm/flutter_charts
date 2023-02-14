@@ -18,9 +18,6 @@ import 'src/util/examples_descriptor.dart';
 
 import 'dart:ui' as ui show Color;
 
-import 'package:flutter_charts/src/chart/model/new_data_model.dart';
-
-
 /// Example of simple line chart usage in an application.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
