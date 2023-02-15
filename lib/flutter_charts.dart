@@ -152,9 +152,9 @@ export 'src/util/util_labels.dart';
 export 'src/chart/data.dart';
 export 'src/chart/container.dart';
 export 'src/chart/view_maker.dart';
-export 'src/chart/new_data_container.dart';
+export 'src/chart/container_new.dart';
 
-export 'src/chart/model/new_data_model.dart';
+export 'src/chart/model/data_model_new.dart';
 
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';
@@ -164,13 +164,13 @@ export 'src/chart/line/painter.dart';
 export 'src/chart/line/container.dart';
 export 'src/chart/line/options.dart';
 export 'src/chart/line/view_maker.dart';
-export 'src/chart/line/new_data_container.dart';
+export 'src/chart/line/container_new.dart';
 
 export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
 export 'src/chart/bar/container.dart';
 export 'src/chart/bar/options.dart';
 export 'src/chart/bar/view_maker.dart';
-export 'src/chart/bar/new_data_container.dart';
+export 'src/chart/bar/container_new.dart';
 
 export 'src/util/random_chart_data.dart';

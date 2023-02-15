@@ -1,8 +1,11 @@
-// import 'container.dart';
-import 'model/new_data_model.dart';
-import 'view_maker.dart';
-import 'new_data_container.dart' as new_data_container;
+import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
+import 'dart:math' as math show max;
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
+import 'package:flutter/widgets.dart' as widgets show TextStyle;
 
+// this level or equivalent
+import 'model/data_model_new.dart';
+import 'view_maker.dart';
 import 'painter.dart';
 import 'label_container.dart';
 import 'container_layouter_base.dart'
@@ -10,30 +13,22 @@ import 'container_layouter_base.dart'
     BuilderOfChildrenDuringParentLayout,
     LayoutableBox, Column, Row, Greedy, Padder, Aligner,
     ConstraintsWeight;
+import 'container_alignment.dart';
+import 'container_edge_padding.dart';
 import 'line_container.dart';
 import 'presenter.dart';
-import 'line/presenter.dart' as line_presenters;
-import 'bar/presenter.dart' as bar_presenters;
-
 import 'options.dart';
 import '../util/util_dart.dart';
 import '../util/util_labels.dart';
 import '../util/collection.dart' as custom_collection show CustomList;
-
-import 'container_alignment.dart';
-import 'container_edge_padding.dart';
-
 import '../container/container_key.dart';
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../chart/layouter_one_dimensional.dart';
 import 'iterative_layout_strategy.dart' as strategy;
 
-import 'dart:ui' as ui show Size, Offset, Rect, Paint, Canvas;
-import 'dart:math' as math show max;
-
-import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'package:flutter/widgets.dart' as widgets show TextStyle;
-
+// extension libraries
+import 'line/presenter.dart' as line_presenters;
+import 'bar/presenter.dart' as bar_presenters;
 
 /// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
@@ -1287,14 +1282,6 @@ class VerticalBarChartDataContainer extends DataContainer {
       }
     }
   }
-}
-
-class VerticalBarChartNewDataContainer extends new_data_container.NewDataContainer {
-  VerticalBarChartNewDataContainer({
-    required ChartRootContainer chartRootContainer,
-  }) : super(
-    chartRootContainer: chartRootContainer,
-  );
 }
 
 /// Provides the data area container for the line chart.

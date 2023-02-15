@@ -1,9 +1,10 @@
 import 'dart:math' as math show max;
-import 'package:flutter_charts/src/chart/container_layouter_base.dart' show BoxLayouter;
 import 'package:tuple/tuple.dart';
 import 'dart:ui' as ui;
 
-import 'package:flutter_charts/src/util/util_dart.dart' as util_dart show LineSegment;
+// this level or equivalent
+import 'container_layouter_base.dart' show BoxLayouter;
+import '../util/util_dart.dart' as util_dart show LineSegment;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
 /// (imagined as ordered line segments) on a line.

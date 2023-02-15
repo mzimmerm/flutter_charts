@@ -2,6 +2,7 @@ import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
 import 'package:flutter/material.dart' as material show Colors;
 
+// this level or equivalent
 import 'options.dart';
 
 /// Manages Chart Data.

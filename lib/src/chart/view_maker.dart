@@ -1,18 +1,18 @@
-import '../chart/container.dart' as container;
-import '../chart/new_data_container.dart' as new_data_container;
-import '../chart/model/new_data_model.dart' as model;
+import 'dart:ui' as ui show Canvas, Size;
+import 'dart:developer' as dart_developer;
 
-import '../chart/container_layouter_base.dart' as container_base;
+// this level or equivalent
+import 'container.dart' as container;
+import 'container_new.dart' as container_new;
+import 'model/data_model_new.dart' as model;
 
-import '../chart/options.dart' as options;
-import '../chart/painter.dart' as painter;
+import 'container_layouter_base.dart' as container_base;
+
+import 'options.dart' as options;
+import 'painter.dart' as painter;
 import '../morphic/rendering/constraints.dart' as constraints;
 
-import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-
-import 'dart:ui' as ui show Canvas, Size;
-
-import 'dart:developer' as dart_developer;
+import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// Base class for classes that hold [chartData], [xContainerLabelLayoutStrategy], [isStacked],
 /// members needed for late creation of the root of the chart container hierarchy, the [chartRootContainer].
@@ -130,7 +130,7 @@ abstract class ChartViewMaker {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
   }
-  new_data_container.NewDataContainer generateViewDataContainer({required container.ChartRootContainer chartRootContainerParent}) {
+  container_new.NewDataContainer generateViewDataContainer({required container.ChartRootContainer chartRootContainerParent}) {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
   }
@@ -140,22 +140,20 @@ abstract class ChartViewMaker {
   }
 
 
-  // todo-00-last : moved here from model, but move to BarViewMaker!
-  List<new_data_container.NewBarOfPointsContainer> generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
+  List<container_new.NewBarOfPointsContainer> generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
         container.ChartRootContainer chartRootContainer,
         List<model.NewBarOfPointsModel> barOfPointsList,
   ) {
-    List<new_data_container.NewBarOfPointsContainer> chartColumns = [];
+    List<container_new.NewBarOfPointsContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewBarOfPointsContainer, then NewPointContainer and return
 
     for (model.NewBarOfPointsModel barOfPoints in chartData.barOfPointsList) {
       // NewBarOfPointsContainer barOfPointsContainer =
       chartColumns.add(
-        new_data_container.NewBarOfPointsContainer(
+        container_new.NewBarOfPointsContainer(
           chartRootContainer: chartRootContainer,
           backingDataBarOfPointsModel: barOfPoints,
           children: [container_base.Column(
-            // todo-00-last : done during move from model to maker: children: barOfPoints.generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(chartRootContainer).reversed.toList(growable: false),
             children: generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(chartRootContainer, barOfPoints).reversed.toList(growable: false),
           )],
           // Give all view columns the same weight along main axis -
@@ -169,11 +167,11 @@ abstract class ChartViewMaker {
 
   /// Generates [NewPointContainer] view from each [NewPointModel]
   /// and collects the views in a list of [NewPointContainer]s which is returned.
-  List<new_data_container.NewPointContainer> generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(
+  List<container_new.NewPointContainer> generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List(
         container.ChartRootContainer chartRootContainer,
         model.NewBarOfPointsModel barOfPoints,
     ) {
-      List<new_data_container.NewPointContainer> newPointContainerList = [];
+      List<container_new.NewPointContainer> newPointContainerList = [];
 
     // Generates [NewPointContainer] view from each [NewPointModel]
     // and collect the views in a list which is returned.
@@ -181,7 +179,6 @@ abstract class ChartViewMaker {
           (model.NewPointModel element, dynamic passedList) {
         var newPointContainerList = passedList[0];
         var chartRootContainer = passedList[1];
-        // todo-00-last : done during move from model to maker: children:  newPointContainerList.add(element.generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(chartRootContainer, element));
         newPointContainerList.add(generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(chartRootContainer, element));
       },
       [newPointContainerList, chartRootContainer],
@@ -190,12 +187,15 @@ abstract class ChartViewMaker {
     return newPointContainerList;
   }
 
-  new_data_container.NewPointContainer generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(
+  /// Generate view for this single leaf [NewPointModel] - a single [NewHBarPointContainer].
+  ///
+  /// Note: On the leaf, we return single element by agreement, higher ups return lists.
+  container_new.NewPointContainer generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer(
       container.ChartRootContainer chartRootContainer,
-      model.NewPointModel element,
+      model.NewPointModel pointModel,
       ) {
-    return new_data_container.NewHBarPointContainer(
-      newPointModel: element, // todo-00-last : was : this
+    return container_new.NewHBarPointContainer(
+      newPointModel: pointModel,
       chartRootContainer: chartRootContainer,
     );
   }
@@ -206,7 +206,7 @@ abstract class ChartViewMaker {
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
 
-    /*
+    /* KEEP
     dart_developer.log(
         '    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint BEGIN BEGIN BEGIN, $isFirstStr',
         name: 'charts.debug.log');
@@ -216,7 +216,7 @@ abstract class ChartViewMaker {
   }
 
   void _debugPrintEnd(String isFirstStr) {
-    /*
+    /* KEEP
     dart_developer.log(
         '    ========== In $runtimeType.chartRootContainerCreateBuildLayoutPaint END END END, $isFirstStr',
         name: 'charts.debug.log');

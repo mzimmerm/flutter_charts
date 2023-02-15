@@ -1,6 +1,6 @@
 import 'dart:math' as math show min, max, pow;
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/model/new_data_model.dart';
+import 'package:flutter_charts/src/chart/model/data_model_new.dart';
 
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;

@@ -1,6 +1,9 @@
+// base libraries
+import '../painter.dart';
+
+// this level
 import 'view_maker.dart';
 
-import '../painter.dart';
 
 /// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
 /// requiring [line_containers.LineChartViewMaker]which generates (makes)

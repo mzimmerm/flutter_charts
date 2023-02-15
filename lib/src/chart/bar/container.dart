@@ -1,13 +1,15 @@
-// import 'new_data_container.dart';
+// base libraries
 import '../container.dart';
-import '../model/new_data_model.dart';
+import '../model/data_model_new.dart';
 import '../view_maker.dart';
 
 import '../options.dart';
+import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
+// this level
+import 'container_new.dart';
 import 'presenter.dart'; // OLD
 
-import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// Container of the vertical bar chart.
 ///

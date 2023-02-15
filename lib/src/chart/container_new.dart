@@ -1,10 +1,10 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
+// this level or equivalent
 import 'container.dart' as container;
 import 'container_layouter_base.dart' as container_base;
-import 'model/new_data_model.dart' as model;
+import 'model/data_model_new.dart' as model;
 import 'view_maker.dart' as view_maker;
-
 import 'layouter_one_dimensional.dart';
 import '../container/container_key.dart';
 import '../util/util_dart.dart';
@@ -25,21 +25,21 @@ class NewDataContainer extends container.DataContainer {
 
   @override
   void buildAndAddChildren_DuringParentLayout() {
-
     // Get at my maker thru my root container.
     // The makes starts it's work on me down. todo-00 : The maker should start it's work on ChartRootContainer
     view_maker.ChartViewMaker chartViewMaker = chartRootContainer.chartViewMaker;
 
-   // todo-00-last : this WAS HERE, IT IS ENTRY TO CONTAINER STARTING PRESENTING ITSELF. TODO - MOVE TO MAKER??? This is a start of
-    //               view maker generating view. It's in the middle of the chart, but that is fine. Just generates the hierarchy segment.
-   List<NewBarOfPointsContainer> viewColumnList = chartViewMaker.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
-       chartRootContainer,
-       chartRootContainer.chartViewMaker.chartData.barOfPointsList,
-   );
+    // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
+    // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
+    List<NewBarOfPointsContainer> barOfPointsContainerList =
+        chartViewMaker.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
+      chartRootContainer,
+      chartRootContainer.chartViewMaker.chartData.barOfPointsList,
+    );
 
     addChildren([
       container_base.Row(
-        children: viewColumnList,
+        children: barOfPointsContainerList,
         crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
       )
     ]);

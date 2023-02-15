@@ -1,7 +1,10 @@
 import 'package:flutter/widgets.dart' as widgets;
 
-import '../bar/painter.dart' as bar_painter;
+// base libraries
 import '../chart.dart' as chart;
+
+// this level
+import 'painter.dart' as bar_painter;
 
 /// Provides paint for the vertical bar chart.
 ///

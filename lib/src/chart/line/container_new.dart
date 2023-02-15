@@ -1,4 +1,5 @@
-import '../new_data_container.dart';
+// base libraries
+import '../container_new.dart';
 import '../container.dart';
 
 class LineChartNewDataContainer extends NewDataContainer {

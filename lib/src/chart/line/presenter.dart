@@ -1,8 +1,9 @@
 import 'dart:ui' as ui show Offset, Paint, Color;
 
+// base libraries
 import '../presenter.dart';
 import '../container.dart';
-import '../../chart/line_container.dart';
+import '../line_container.dart';
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,

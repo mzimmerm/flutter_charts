@@ -1,11 +1,12 @@
 import 'dart:ui' as ui;
+import 'dart:developer' as dart_developer;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
+import 'package:logger/logger.dart' as logger;
 
+// this level or equivalent
 import 'container.dart' as containers;
 import 'view_maker.dart' as view_maker;
 
-import 'dart:developer' as dart_developer;
-import 'package:logger/logger.dart' as logger;
 
 /// Base class of the chart painters; it's core role is to paint the
 /// charts (the extensions of [CustomPaint]).
@@ -87,7 +88,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   }
 
   void _debugPrintBegin(ui.Size size) {
-    /*
+    /* KEEP
     var log = logger.Logger();
     log.d('in debug log');
 
@@ -104,7 +105,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   }
 
   void _debugPrintEnd() {
-    /*
+    /* KEEP
     // clip canvas to size - this does nothing
     // canvas.clipRect  causes the paint() to be called again. why??
     // canvas.clipRect(ui.Offset.zero & size);
