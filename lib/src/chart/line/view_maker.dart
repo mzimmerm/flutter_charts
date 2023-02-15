@@ -24,7 +24,7 @@ class LineChartViewMaker extends ChartViewMaker {
 
   /// Concrete implementation returns the root for line chart.
   @override
-  LineChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker}) {
+  LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
     return LineChartRootContainer(
       chartViewMaker: chartViewMaker,

@@ -2,7 +2,7 @@ import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
 
 // this level or equivalent
-import '../data.dart' show dataRowsDefaultColors;
+import '../data_model.dart' show dataRowsDefaultColors;
 import '../container.dart';
 import '../container_layouter_base.dart';
 
@@ -68,7 +68,7 @@ class NewModel {
 
   // NEW CODE =============================================================
 
-  /// List of data barOfPoints in the model.
+  /// List of barOfPoints in the model .
   final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel
 
   /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewModel],
@@ -200,14 +200,17 @@ class NewModel {
 }
 
 /// todo-done-last-3 : Replaces PointsColumn
-/// Represents a list of data values, in the [NewModel].
 ///
-/// As we consider the [NewModel] to represent a 2D array 'rows first', rows oriented
-/// 'top-to-bottom', columns oriented left-to-right, then:
-/// The list of data values in this object represent one column in the 2D array,
-/// oriented 'top-to-bottom'. We can also consider the list of data values represented by
-/// this object to be created by diagonal transpose of the [NewModel._dataRows] and
-/// looking at one row in the transpose, left-to-right.
+/// Represents a list of cross-series data values, in the [NewModel].
+///
+/// As we consider the [NewModel] to represent a 2D array 'rows first', in other words,
+/// 'one data series is a row', with rows (each-series) ordered 'top-to-bottom',
+/// columns (cross-series) oriented 'left-to-right', then:
+///   - The list of data values in this object represent one column in the 2D array (cross-series values),
+///     oriented 'top-to-bottom'.
+///   - We can also consider the list of data values represented by
+///     this object to be created by diagonal transpose of the [NewModel._dataRows] and
+///     looking at one row in the transpose, left-to-right.
 class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
 
   /// Constructor. todo-doc-01
@@ -339,10 +342,6 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
     return result.value;
   }
 
-}
-
-class _DoubleValue {
-  double value = 0.0;
 }
 
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
@@ -564,6 +563,12 @@ class NewPointModel extends Object with DoubleLinked {
     return clone;
   }
   */
+}
+
+// -------------------- Helper classes
+
+class _DoubleValue {
+  double value = 0.0;
 }
 
 // -------------------- Functions

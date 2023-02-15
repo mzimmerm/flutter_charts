@@ -27,7 +27,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  VerticalBarChartRootContainer createRootContainer({required ChartViewMaker chartViewMaker}) {
+  VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
     return VerticalBarChartRootContainer(
       chartViewMaker: chartViewMaker,

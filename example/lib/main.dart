@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'dart:io' as io show exit;
 
-// provides: data.dart, random_chart_data.dart, line_chart_options.dart
+// provides: data_model.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 

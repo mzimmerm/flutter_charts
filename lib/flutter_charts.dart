@@ -8,7 +8,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///
 ///   A. Files _exported_ in this file, should be exported as
 ///       ```dart
-///         export 'src/chart/data.dart';
+///         export 'src/chart/data_model.dart';
 ///       ```
 ///      are visible to external applications.
 ///
@@ -100,12 +100,12 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///  3. We can say that **files below the _lib/src_ directory in Dart,
 ///     are by convention, private, and invisible above the _lib_ directory.
 ///     ```dart
-///        export 'package:flutter_charts/src/chart/data.dart';
+///        export 'package:flutter_charts/src/chart/data_model.dart';
 ///     ```
 ///  5. In each of the export lines, we could control exported classes
 ///     by name using the `show` syntax, for example:
 ///     ```dart
-///        export 'package:flutter_charts/src/chart/data.dart' show ChartData;
+///        export 'package:flutter_charts/src/chart/data_model.dart' show ChartData;
 ///     ```
 
 /// Important:
@@ -149,7 +149,7 @@ export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
 export 'src/util/util_labels.dart';
 
-export 'src/chart/data.dart';
+export 'src/chart/data_model.dart';
 export 'src/chart/container.dart';
 export 'src/chart/view_maker.dart';
 export 'src/chart/container_new.dart';

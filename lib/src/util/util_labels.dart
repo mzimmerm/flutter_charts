@@ -134,7 +134,8 @@ class DataRangeLabelsGenerator {
   /// to the pixels domain passed in the passed [axisPixelsYMin], [axisPixelsYMax],
   /// in the direction defined by [isAxisAndLabelsSameDirection].
   ///
-  /// This must be called in layout, after the axis size is known.
+  /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
+  ///            after the axis size is calculated.
   double lerpValueToPixels({
     required double value,
     required double axisPixelsYMin,
@@ -152,7 +153,8 @@ class DataRangeLabelsGenerator {
       }
       return pixels;
     }
-    // lerp the data value on this LabelInfo to the pixel range.
+    // lerp the data value range [dataRange] on this [DataRangeLabelsGenerator] to the pixel range.
+    // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
     return util_dart.ToPixelsExtrapolation1D(
       fromValuesMin: dataRange.min,
       fromValuesMax: dataRange.max,
@@ -230,6 +232,7 @@ class LabelInfo {
   /// Scaled label value.
   ///
   /// [_pixelPositionOnAxis]s are on the scale of y axis length.
+  // todo-00 separate pixels, and make LabelInfo and any owners part of [NewModel].
   late final num _pixelPositionOnAxis;
   num get pixelPositionOnAxis => _pixelPositionOnAxis;
 

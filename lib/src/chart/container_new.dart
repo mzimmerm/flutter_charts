@@ -31,16 +31,14 @@ class NewDataContainer extends container.DataContainer {
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
-    List<NewBarOfPointsContainer> barOfPointsContainerList =
-        chartViewMaker.generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List(
-      chartRootContainer,
-      chartRootContainer.chartViewMaker.chartData.barOfPointsList,
-    );
-
+    // todo-00 move this up when higher containers converted to new.
     addChildren([
       container_base.Row(
-        children: barOfPointsContainerList,
         crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+        children: chartViewMaker.makeViewsForDataAreaBars_As_BarOfPoints_List(
+          chartRootContainer,
+          chartRootContainer.chartViewMaker.chartData.barOfPointsList,
+        ),
       )
     ]);
   }

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'dart:developer' as dart_developer;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
-import 'package:logger/logger.dart' as logger;
+// import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
 import 'container.dart' as containers;
