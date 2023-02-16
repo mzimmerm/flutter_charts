@@ -28,7 +28,6 @@ class LineChartViewMaker extends ChartViewMaker {
   @override
   LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
-    // todo-00-last-last
     // Side-effect: Common place for creation of [legendContainer] [xContainer] [yContainer] [dataContainer]
     super.makeViewRootChildren(chartViewMaker: chartViewMaker);
 
@@ -46,24 +45,21 @@ class LineChartViewMaker extends ChartViewMaker {
 
   }
 
-  // todo-00-last-last-last : moved from ChartRootContainer and extensions
   @override
-  DataContainer createDataContainer({
-    required ChartViewMaker chartViewMakerOnChartArea,
+  DataContainer makeViewForDataContainer({
+    required ChartViewMaker chartViewMaker,
   }) {
-    if (chartViewMakerOnChartArea.isUseOldDataContainer) {
+    if (chartViewMaker.isUseOldDataContainer) {
       return LineChartDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+        chartViewMaker: chartViewMaker,
       );
     } else {
       return LineChartNewDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+        chartViewMaker: chartViewMaker,
       );
     }
   }
 
-
-  // todo-00-last-last : moved from LineChartRootContainer, as it controls view creation
   /// Implements [ChartBehavior] mixin abstract method.
   ///
   /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].

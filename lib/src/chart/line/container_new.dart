@@ -4,9 +4,9 @@ import '../view_maker.dart';
 
 class LineChartNewDataContainer extends NewDataContainer {
   LineChartNewDataContainer({
-    required ChartViewMaker chartViewMakerOnChartArea,
+    required ChartViewMaker chartViewMaker,
   }) : super(
-    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+    chartViewMaker: chartViewMaker,
   );
 }
 

@@ -7,7 +7,7 @@ import '../options.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-import 'container_new.dart';
+// import 'container_new.dart';
 import 'presenter.dart'; // OLD
 
 
@@ -41,30 +41,4 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
     chartViewMaker.pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
-  /* todo-00-last-last-last : moved to ChartViewMaker and extensions
-  @override
-  DataContainer createDataContainer({
-    required ChartViewMaker chartViewMakerOnChartArea,
-  }) {
-    if (chartViewMakerOnChartArea.isUseOldDataContainer) {
-      return VerticalBarChartDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
-      );
-    } else {
-      return VerticalBarChartNewDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
-      );
-    }
-  }
-  */
-
-
-/* todo-00-last-last : moved to VerticalBarChartViewMaker, as it controls view creation
-  /// Implements [ChartBehavior] mixin abstract method.
-  ///
-  /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
-  ///
-  @override
-  bool get extendAxisToOrigin => true;
-  */
 }

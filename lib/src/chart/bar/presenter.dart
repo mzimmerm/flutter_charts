@@ -17,21 +17,21 @@ class VerticalBarPointPresenter extends PointPresenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMakerOnChartArea,
+    required ChartViewMaker chartViewMaker,
   }) : super(
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+          chartViewMaker: chartViewMaker,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartViewMakerOnChartArea.chartData.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartViewMaker.chartData.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    double barWidth = chartViewMakerOnChartArea.xContainer.xGridStep *
-        chartViewMakerOnChartArea.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
+    double barWidth = chartViewMaker.xContainer.xGridStep *
+        chartViewMaker.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -52,13 +52,13 @@ class VerticalBarLeafPointPresenterCreator extends PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMakerOnChartArea,
+    required ChartViewMaker chartViewMaker,
   }) {
     return VerticalBarPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+      chartViewMaker: chartViewMaker,
     );
   }
 }

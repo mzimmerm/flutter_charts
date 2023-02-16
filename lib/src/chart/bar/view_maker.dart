@@ -28,15 +28,11 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   }
 
   /// Concrete implementation returns the root for vertical bar chart.
-  // todo-00-last : to super, move creation on XContainer, YContainer, etc, call super here explicitly
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
-    // todo-00-last-last
     // Side-effect: Common place for creation of [legendContainer] [xContainer] [yContainer] [dataContainer]
     super.makeViewRootChildren(chartViewMaker: chartViewMaker);
-
-    // todo-00-last : add args XContainer, YContainer, etc, values from chartViewMaker.makeViewForDomainAxis etc.
 
     return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
@@ -51,23 +47,21 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
     );
   }
 
-  // todo-00-last-last-last : moved to ChartViewMaker and extensions
   @override
-  DataContainer createDataContainer({
-    required ChartViewMaker chartViewMakerOnChartArea,
+  DataContainer makeViewForDataContainer({
+    required ChartViewMaker chartViewMaker,
   }) {
-    if (chartViewMakerOnChartArea.isUseOldDataContainer) {
+    if (chartViewMaker.isUseOldDataContainer) {
       return VerticalBarChartDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+        chartViewMaker: chartViewMaker,
       );
     } else {
       return VerticalBarChartNewDataContainer(
-        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+        chartViewMaker: chartViewMaker,
       );
     }
   }
 
-  // todo-00-last-last : moved from ChartRootContainer, as it controls view creation
   /// Implements [ChartBehavior] mixin abstract method.
   ///
   /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
