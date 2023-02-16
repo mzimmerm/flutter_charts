@@ -69,11 +69,24 @@ class ChartData {
 
   void validate() {
     //                      But that would require ChartOptions available in ChartData.
-    if (!(dataRows.length == dataRowsLegends.length && dataRows.length == dataRowsColors.length)) {
-      throw StateError('If row legends are defined, their '
-          'number must be the same as number of data rows. '
-          ' [dataRows length: ${dataRows.length}] '
-          '!= [dataRowsLegends length: ${dataRowsLegends.length}]. ');
+    if (!(dataRows.length == dataRowsLegends.length)) {
+      throw StateError('The number of legend labels provided in parameter "dataRowsLegends", '
+          'does not equal the number of data rows provided in parameter "dataRows":\n'
+          'Detail reason: Row legend labels must be provided in parameter "dataRowsLegends", '
+          'and their number must be the same as number of data rows. '
+          'However, in your data definition, that is not the case:\n'
+          '   [number of dataRows: ${dataRows.length}] != [number of dataRowsLegends: ${dataRowsLegends.length}].\n'
+          'To fix this: provide ${dataRows.length} "dataRowsLegends".');
+    }
+    if (!(dataRows.length == dataRowsColors.length)) {
+      throw StateError('The number of legend colors provided in parameter "dataRowsColors", '
+          'does not equal the number of data rows provided in parameter "dataRows":\n'
+          'Detail reason: If not provided in "dataRowsColors", legend colors are generated. '
+          'If the parameter "dataRowsColors" is provided, '
+          'the number of colors must be the same as number of data rows. '
+          'However, in your data definition, that is not the case:\n'
+          '   [number of dataRows: ${dataRows.length}] != [number of dataRowsColors: ${dataRowsColors.length}].\n'
+          'To fix this: provide ${dataRows.length} "dataRowsColors".');
     }
     for (List<double> dataRow in dataRows) {
       if (!(dataRow.length == xUserLabels.length)) {
