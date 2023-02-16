@@ -65,7 +65,6 @@ abstract class ChartBehavior {
 /// The lifecycle of [ChartRootContainer] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-// todo-00-last-done : abstract class ChartRootContainer extends BoxContainer {
 abstract class ChartRootContainer extends ChartAreaContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
@@ -100,20 +99,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     addChildren([legendContainer, xContainer, yContainer, dataContainer]);
   }
 
-  /// The instance of [ChartViewMaker] which makes (produces) instances of
-  /// this view root, the [ChartRootContainer].
-  ///
-  /// Instances of this view root need access to the instance of it's maker, the [ChartViewMaker]; although
-  /// the view making generally starts with the maker creating this view instance,
-  /// this view instance is then passed to a lifecycle of processing,
-  /// which involves invoking methods on this view, which, in turn, invoke methods
-  /// on the maker (which in has access to model, and in turn, asks the model to provide
-  /// information that create segments of this view.
-  ///
-  /// To reiterate, this [ChartRootContainer] view, uses the [ChartViewMaker] maked
-  /// to access the [NewModel] model from which segments of this view are created.
-  // todo-00-last-last-last-last : removes, already on ChartAreaContainer hierarchy parent : final ChartViewMaker chartViewMaker;
-
+  // todo-00! Maybe can be removed. Options should let options to be accessed via chartViewMaker!!
   final ChartOptions chartOptions;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
@@ -128,11 +114,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   late XContainer xContainer;
   late YContainer yContainer;
   late DataContainer dataContainer;
-
-  /// Layout strategy for XContainer labels.
-  ///
-  /// Cached from constructor here, until the late [xContainer] is created.
-  // todo-00-last-done : final strategy.LabelLayoutStrategy? _cachedXContainerLabelLayoutStrategy;
 
   /// ##### Subclasses - aware members.
 
@@ -284,7 +265,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildAndAddChildren_DuringParentLayout();
-    // todo-00 : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00! : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
     //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
@@ -421,7 +402,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
-    // todo-00 : can this be moved to layout? can everything here be moved to layout?
+    // todo-00! : can this be moved to layout? can everything here be moved to layout?
     // We now know how long the Y axis is in pixels,
     // so we can calculate pixel positions on labels in LabeInfos
     labelInfos.layoutByLerpToPixels(

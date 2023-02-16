@@ -60,6 +60,10 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
   final model.NewModel chartData;
 
+  /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
+  /// [ChartViewMaker.chartData]'s [ChartOptions].
+  late final options.ChartOptions chartOptions;
+
   final bool isStacked;
 
   /// Access the view [chartRootContainer] from this maker [ChartViewMaker].
@@ -68,6 +72,8 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// It's children, [legendContainer], etc are also not final.
   late container.ChartRootContainer chartRootContainer;
 
+  // todo-010 : THE ONLY REASON THESE MEMBERS MUST BE KEPT IS THEIR USE ON _SourceYContainerAndYContainerToSinkDataContainer.
+  //            REMOVE THAT NEED, AND THESE MEMBERS.
   /// Holder of inner container this maker is making for it's [chartRootContainer].
   ///
   /// Only exists so there is a single place the creation of [_legendContainer].
@@ -83,10 +89,6 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// See [legendContainer]
   late container.DataContainer   dataContainer;
   
-
-  /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
-  /// [ChartViewMaker.chartData]'s [ChartOptions].
-  late final options.ChartOptions chartOptions;
 
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
@@ -159,61 +161,33 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
   container.ChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker});
 
-  /// Creates child views (containers) of [ChartRootContainer] ([legendContainer] etc),
-  /// before [ChartRootContainer] is created.
-  ///
-  /// Places the created instances on members  of this class.
-  ///
-  /// This exists purely for the above side-effect, so we have one place
-  /// where children of root container are created.
-  ///
-  void makeViewRootChildren({required ChartViewMaker chartViewMaker}) {
-    legendContainer = isUseOldDataContainer
-        ? container.LegendContainer(chartViewMaker: this)
-        : container.LegendContainer(chartViewMaker: this);
-
-    xContainer = isUseOldDataContainer
-        ? container.XContainer(chartViewMaker: this)
-        : container.XContainer(chartViewMaker: this);
-
-    yContainer = isUseOldDataContainer
-        ? container.YContainer(chartViewMaker: this)
-        : container.YContainer(chartViewMaker: this);
-
-    dataContainer = isUseOldDataContainer
-        ? makeViewForDataContainer(chartViewMaker: this)
-        : makeViewForDataContainer(chartViewMaker: this);
-  }
-
-  // vvvvvvvvvv Abstract methods to create views (containers) for individual chart areas
+  // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels] or [container.YContainer.labelInfos].
-  // todo-00! : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.XContainer makeViewForDomainAxis() {
-    // Responsibility: pass this.chartRootContainer
-    throw UnimplementedError('generateViewYContainer');
+    return isUseOldDataContainer
+        ? container.XContainer(chartViewMaker: this)
+        : container.XContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels] or labels in [container.YContainer.labelInfos].
-  // todo-00! : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.YContainer makeViewForRangeAxis() {
-    // Responsibility: pass this.chartRootContainer
-    throw UnimplementedError('generateViewYContainer');
+    return isUseOldDataContainer
+        ? container.YContainer(chartViewMaker: this)
+        : container.YContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].
-  // todo-00! : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.LegendContainer makeViewForLegendContainer() {
-    // Responsibility: pass this.chartRootContainer
-    throw UnimplementedError('generateViewYContainer');
+    return  isUseOldDataContainer
+        ? container.LegendContainer(chartViewMaker: this)
+        : container.LegendContainer(chartViewMaker: this);
   }
 
+  /// Abstract method constructs and returns the concrete [DataContainer] instance,
+  /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
   /// Assumed made from [model.NewModel.barOfPointsList], presents all data in the data area.
-  // todo-00! : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
-  container_new.NewDataContainer makeViewForDataArea() {
-    // Responsibility: pass this.chartRootContainer
-    throw UnimplementedError('generateViewYContainer');
-  }
+  container.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
@@ -291,13 +265,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     );
   }
 
-  /// Abstract method constructs and returns the concrete [DataContainer] instance,
-  /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  container.DataContainer makeViewForDataContainer({
-    required ChartViewMaker chartViewMaker,
-  });
-
-  // todo-00! : This is an opportunity for several extension fo ChartViewMaker, for example, CartesianChartViewMaker, which needs all the above.
+  // todo-010 : This is an opportunity for several extension fo ChartViewMaker, for example, CartesianChartViewMaker, which needs all the above.
   // ^^^^^^^^^^^ Abstract methods to create views (containers) for individual chart areas
 
   /// Makes pointPresenters, the visuals painted on each chart column that

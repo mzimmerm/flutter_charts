@@ -28,8 +28,10 @@ class LineChartViewMaker extends ChartViewMaker {
   @override
   LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
-    // Side-effect: Common place for creation of [legendContainer] [xContainer] [yContainer] [dataContainer]
-    super.makeViewRootChildren(chartViewMaker: chartViewMaker);
+    legendContainer = makeViewForLegendContainer();
+    xContainer      = makeViewForDomainAxis();
+    yContainer      = makeViewForRangeAxis();
+    dataContainer   = makeViewForDataContainer();
 
     return LineChartRootContainer(
       legendContainer: legendContainer,
@@ -46,16 +48,14 @@ class LineChartViewMaker extends ChartViewMaker {
   }
 
   @override
-  DataContainer makeViewForDataContainer({
-    required ChartViewMaker chartViewMaker,
-  }) {
-    if (chartViewMaker.isUseOldDataContainer) {
+  DataContainer makeViewForDataContainer() {
+    if (isUseOldDataContainer) {
       return LineChartDataContainer(
-        chartViewMaker: chartViewMaker,
+        chartViewMaker: this,
       );
     } else {
       return LineChartNewDataContainer(
-        chartViewMaker: chartViewMaker,
+        chartViewMaker: this,
       );
     }
   }

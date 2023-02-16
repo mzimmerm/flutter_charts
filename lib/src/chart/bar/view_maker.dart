@@ -31,8 +31,10 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
 
-    // Side-effect: Common place for creation of [legendContainer] [xContainer] [yContainer] [dataContainer]
-    super.makeViewRootChildren(chartViewMaker: chartViewMaker);
+    legendContainer = makeViewForLegendContainer();
+    xContainer      = makeViewForDomainAxis();
+    yContainer      = makeViewForRangeAxis();
+    dataContainer   = makeViewForDataContainer();
 
     return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
@@ -48,16 +50,14 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   }
 
   @override
-  DataContainer makeViewForDataContainer({
-    required ChartViewMaker chartViewMaker,
-  }) {
-    if (chartViewMaker.isUseOldDataContainer) {
+  DataContainer makeViewForDataContainer() {
+    if (isUseOldDataContainer) {
       return VerticalBarChartDataContainer(
-        chartViewMaker: chartViewMaker,
+        chartViewMaker: this,
       );
     } else {
       return VerticalBarChartNewDataContainer(
-        chartViewMaker: chartViewMaker,
+        chartViewMaker: this,
       );
     }
   }
