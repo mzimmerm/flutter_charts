@@ -169,6 +169,17 @@ class NewModel {
 
   bool get isUsingUserLabels => yUserLabels != null;
 
+  /// Keeps data values grouped in columns.
+  ///
+  /// This column grouped data instance is managed here in the [ChartRootContainer],
+  /// (immediate owner of [YContainer] and [DataContainer])
+  /// as their data points are needed both during [YContainer.layout]
+  /// to calculate scaling, and also in [DataContainer.layout] to create
+  /// [PointPresentersColumns] instance.
+  // todo-00-last-last : moved here from ChartRootContainer, as it is model
+  late PointsColumns pointsColumns;
+
+
   List<double> get flatten => _dataRows.expand((element) => element).toList();
   double get dataYMax => flatten.reduce(math.max);
   double get dataYMin => flatten.reduce(math.min);

@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Rect, Offset, Paint, Color;
 // base libraries
 import '../presenter.dart';
 import '../container.dart';
+import '../view_maker.dart';
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
@@ -16,21 +17,21 @@ class VerticalBarPointPresenter extends PointPresenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) : super(
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartRootContainer.chartViewMaker.chartData.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartViewMakerOnChartArea.chartData.dataRowsColors; //!;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    double barWidth = chartRootContainer.xContainer.xGridStep *
-        chartRootContainer.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
+    double barWidth = chartViewMakerOnChartArea.xContainer.xGridStep *
+        chartViewMakerOnChartArea.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -51,13 +52,13 @@ class VerticalBarLeafPointPresenterCreator extends PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) {
     return VerticalBarPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartRootContainer: chartRootContainer,
+      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     );
   }
 }

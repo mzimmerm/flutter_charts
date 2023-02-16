@@ -18,48 +18,53 @@ import 'presenter.dart'; // OLD
 /// which are, in turn, used to present each data value.
 class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
-    // todo-00-last-last-last : put back : required LegendContainer legendContainer,
-    // todo-00-last-last-last : put back : required XContainer      xContainer,
-    // todo-00-last-last-last : put back : required YContainer      yContainer,
-    // todo-00-last-last-last : put back : required DataContainer   dataContainer,
+    required LegendContainer legendContainer,
+    required XContainer      xContainer,
+    required YContainer      yContainer,
+    required DataContainer   dataContainer,
     required ChartViewMaker  chartViewMaker,
     required NewModel        chartData,
     required ChartOptions    chartOptions,
     required bool            isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-          // todo-00-last-last-last : put back : legendContainer: legendContainer,
-          // todo-00-last-last-last : put back : xContainer: xContainer,
-          // todo-00-last-last-last : put back : yContainer: yContainer,
-          // todo-00-last-last-last : put back : dataContainer: dataContainer,
-          chartViewMaker: chartViewMaker,
+    legendContainer: legendContainer,
+    xContainer: xContainer,
+    yContainer: yContainer,
+    dataContainer: dataContainer,
+    chartViewMaker: chartViewMaker,
           chartData: chartData,
           chartOptions: chartOptions,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    chartViewMaker.pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
+  /* todo-00-last-last-last : moved to ChartViewMaker and extensions
   @override
   DataContainer createDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) {
-    if (chartRootContainer.chartViewMaker.isUseOldDataContainer) {
+    if (chartViewMakerOnChartArea.isUseOldDataContainer) {
       return VerticalBarChartDataContainer(
-        chartRootContainer: chartRootContainer,
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
       );
     } else {
       return VerticalBarChartNewDataContainer(
-        chartRootContainer: chartRootContainer,
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
       );
     }
   }
+  */
 
+
+/* todo-00-last-last : moved to VerticalBarChartViewMaker, as it controls view creation
   /// Implements [ChartBehavior] mixin abstract method.
   ///
   /// Overridden to [false] on this bar chart container, where the y axis must start from 0.
   ///
   @override
   bool get extendAxisToOrigin => true;
+  */
 }

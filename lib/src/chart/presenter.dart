@@ -1,8 +1,9 @@
 import 'dart:ui' as ui show Paint, PaintingStyle;
 
 // this level or equivalent
-import 'options.dart';
 import 'container.dart';
+import 'view_maker.dart';
+import 'options.dart';
 import '../util/collection.dart' as custom_collection show CustomList;
 
 // todo-1 refactor - can this be a behavior?
@@ -32,7 +33,7 @@ class PointPresenter {
   PointPresenter({
     this.nextRightColumnValuePoint,
     required this.rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   });
 }
 
@@ -50,7 +51,7 @@ class PointPresentersColumn {
 
   PointPresentersColumn({
     required PointsColumn pointsColumn,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     required PointPresenterCreator pointPresenterCreator,
   }) {
     // setup the contained pointPresenters from points
@@ -59,19 +60,19 @@ class PointPresentersColumn {
         toPointPresenters: pointPresenters,
         pointsColumn: pointsColumn,
         pointPresenterCreator: pointPresenterCreator,
-        chartRootContainer: chartRootContainer);
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea);
     _createPointPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
         toPointPresenters: positivePointPresenters,
         pointsColumn: pointsColumn,
         pointPresenterCreator: pointPresenterCreator,
-        chartRootContainer: chartRootContainer);
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea);
     _createPointPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
         toPointPresenters: negativePointPresenters,
         pointsColumn: pointsColumn,
         pointPresenterCreator: pointPresenterCreator,
-        chartRootContainer: chartRootContainer);
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea);
   }
 
   void _createPointPresentersInColumn({
@@ -79,7 +80,7 @@ class PointPresentersColumn {
     required List toPointPresenters,
     required PointsColumn pointsColumn,
     required PointPresenterCreator pointPresenterCreator,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
@@ -92,7 +93,7 @@ class PointPresentersColumn {
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: point.dataRowIndex,
-        chartRootContainer: chartRootContainer,
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
       );
       toPointPresenters.add(pointPresenter);
       rowIndex++;
@@ -126,7 +127,7 @@ class PointPresentersColumn {
 class PointPresentersColumns extends custom_collection.CustomList<PointPresentersColumn> {
   PointPresentersColumns({
     required PointsColumns pointsColumns,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     required PointPresenterCreator pointPresenterCreator,
   }) : super(growable: true)
   {
@@ -135,7 +136,7 @@ class PointPresentersColumns extends custom_collection.CustomList<PointPresenter
     for (PointsColumn pointsColumn in pointsColumns) {
       var pointPresentersColumn = PointPresentersColumn(
         pointsColumn: pointsColumn,
-        chartRootContainer: chartRootContainer,
+        chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         pointPresenterCreator: pointPresenterCreator,
       );
       add(pointPresentersColumn);
@@ -164,6 +165,6 @@ abstract class PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   });
 }

@@ -85,7 +85,7 @@ class LabelContainer extends BoxContainer {
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartRootContainer].
+  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMakerOnChartArea].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
     required String label,

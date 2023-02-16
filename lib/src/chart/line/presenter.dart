@@ -1,9 +1,10 @@
 import 'dart:ui' as ui show Offset, Paint, Color;
 
 // base libraries
-import '../presenter.dart';
 import '../container.dart';
+import '../view_maker.dart';
 import '../line_container.dart';
+import '../presenter.dart'; // OLD
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
@@ -27,17 +28,17 @@ class LineAndHotspotPointPresenter extends PointPresenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) : super(
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         ) {
-    var options = chartRootContainer.chartOptions;
+    var options = chartViewMakerOnChartArea.chartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartRootContainer.chartViewMaker.chartData.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartViewMakerOnChartArea.chartData.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
@@ -67,13 +68,13 @@ class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) {
     return LineAndHotspotPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartRootContainer: chartRootContainer,
+      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     );
   }
 }

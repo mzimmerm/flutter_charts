@@ -4,8 +4,10 @@ import 'dart:ui' as ui show Canvas, Size;
 // this level or equivalent
 import 'container.dart' as container;
 import 'container_new.dart' as container_new;
+import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
+import 'presenter.dart' as presenter; // OLD
 
 import 'options.dart' as options;
 import '../morphic/rendering/constraints.dart' as constraints;
@@ -37,7 +39,8 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 ///     the root of the chart container hierarchy, the [chartRootContainer].
 ///   - abstract [makeViewRoot]; extensions of [ChartViewMaker] (for example, [LineChartViewMaker]) should create
 ///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
-abstract class ChartViewMaker {
+///    todo-00-last-last : added ChartBehavior from ChartRootContainer, as it controls view making
+abstract class ChartViewMaker extends Object with container.ChartBehavior {
 
   ChartViewMaker({
     required this.chartData,
@@ -51,7 +54,7 @@ abstract class ChartViewMaker {
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
   /// After [chartRootContainer] is created and set, This [NewModel] type member [chartData]
-  /// should be placed on the member [chartRootContainer.chartViewMaker.chartData].
+  /// should be placed on the member [chartRootContainer.chartData].
 
   /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
   final model.NewModel chartData;
@@ -60,22 +63,24 @@ abstract class ChartViewMaker {
 
   /// Access the view [chartRootContainer] from this maker [ChartViewMaker].
   /// NOT final, recreated even on repaint, survived by this maker.
+  ///
+  /// It's children, [legendContainer], etc are also not final.
   late container.ChartRootContainer chartRootContainer;
 
-  // todo-00-last-last-last : put back : /// Holder of inner container this maker is making for it's [chartRootContainer].
-  // todo-00-last-last-last : put back : ///
-  // todo-00-last-last-last : put back : /// Only exists so there is a single place the creation of [_legendContainer].
-  // todo-00-last-last-last : put back : ///
-  // todo-00-last-last-last : put back : /// Lifecycle: Its useful lifecycle is the time between this top-class maker [makeViewRoot] is invoked,
-  // todo-00-last-last-last : put back : /// where [_legendContainer] is created, and when the concrete [makeViewRoot] is invoked,
-  // todo-00-last-last-last : put back : /// which creates the concrete [chartRootContainer], and [_legendContainer] is passed to it.
-  // todo-00-last-last-last : put back : late final container.LegendContainer _legendContainer;
-  // todo-00-last-last-last : put back : /// See [legendContainer]
-  // todo-00-last-last-last : put back : late final container.XContainer      _xContainer;
-  // todo-00-last-last-last : put back : /// See [legendContainer]
-  // todo-00-last-last-last : put back : late final container.YContainer      _yContainer;
-  // todo-00-last-last-last : put back : /// See [legendContainer]
-  // todo-00-last-last-last : put back : late final container.DataContainer   _dataContainer;
+  /// Holder of inner container this maker is making for it's [chartRootContainer].
+  ///
+  /// Only exists so there is a single place the creation of [_legendContainer].
+  ///
+  /// Lifecycle: Its useful lifecycle is the time between this top-class maker [makeViewRoot] is invoked,
+  /// where [_legendContainer] is created, and when the concrete [makeViewRoot] is invoked,
+  /// which creates the concrete [chartRootContainer], and [_legendContainer] is passed to it.
+  late container.LegendContainer legendContainer;
+  /// See [legendContainer]
+  late container.XContainer      xContainer;
+  /// See [legendContainer]
+  late container.YContainer      yContainer;
+  /// See [legendContainer]
+  late container.DataContainer   dataContainer;
   
 
   /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
@@ -144,46 +149,63 @@ abstract class ChartViewMaker {
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
   /// [ChartRootContainer.legendContainer],  [ChartRootContainer.yContainer],
-  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartViewMaker.chartDataContainer].
+  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartDataContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
-  // todo-00-last-last : move creation on XContainer, YContainer, etc, to implementations of this method.
+  // todo-00-last : move creation on XContainer, YContainer, etc, to implementations of this method.
   //              to create the new/old
   container.ChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker});
-  /*{
-    // todo-00-last-last : why and how do we need to pass chartViewMaker?
-    _legendContainer = isUseOldDataContainer ? 
-        container.LegendContainer() : container.LegendContainer(chartRootContainer: chartRootContainer)
-  }*/
 
-  // todo-00-last vvvvvvvvvvv : add abstract methods to create views (containers) for individual chart areas:
+  // todo-00-last-last-last :   ONLY EXISTS TO HAVE ONE PLACE TO CREATE CHILDREN OF ROOT CONTAINER.
+  //                            MAYBE WE SHOULD JUST REPEAT IN EXTENSIONS.
+  /// SIDE-EFFECT : MAKE THE NAMED MEMBER CONTAINERS.
+  void makeViewRootChildren({required ChartViewMaker chartViewMaker}) {
+    legendContainer = isUseOldDataContainer
+        ? container.LegendContainer(chartViewMakerOnChartArea: this)
+        : container.LegendContainer(chartViewMakerOnChartArea: this);
+
+    xContainer = isUseOldDataContainer
+        ? container.XContainer(chartViewMakerOnChartArea: this)
+        : container.XContainer(chartViewMakerOnChartArea: this);
+
+    yContainer = isUseOldDataContainer
+        ? container.YContainer(chartViewMakerOnChartArea: this)
+        : container.YContainer(chartViewMakerOnChartArea: this);
+
+    dataContainer = isUseOldDataContainer
+        ? createDataContainer(chartViewMakerOnChartArea: this)
+        : createDataContainer(chartViewMakerOnChartArea: this);
+  }
+
+  // vvvvvvvvvv Abstract methods to create views (containers) for individual chart areas
+
   /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels] or [container.YContainer.labelInfos].
-  // todo-00-last-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
+  // todo-00-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.XContainer makeViewForDomainAxis() {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels] or labels in [container.YContainer.labelInfos].
-  // todo-00-last-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
+  // todo-00-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.YContainer makeViewForRangeAxis() {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].
-  // todo-00-last-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
+  // todo-00-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container.LegendContainer makeViewForLegendContainer() {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
   }
 
   /// Assumed made from [model.NewModel.barOfPointsList], presents all data in the data area.
-  // todo-00-last-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
+  // todo-00-last : implement, use the isUseOldDataContainer to create new/old - old in both branches for now
   container_new.NewDataContainer makeViewForDataArea() {
     // Responsibility: pass this.chartRootContainer
     throw UnimplementedError('generateViewYContainer');
@@ -199,7 +221,7 @@ abstract class ChartViewMaker {
   ///
   /// Original name: generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List
   List<container_new.NewBarOfPointsContainer> makeViewsForDataAreaBars_As_BarOfPoints_List(
-        container.ChartRootContainer chartRootContainer,
+        view_maker.ChartViewMaker chartViewMakerOnChartArea,
         List<model.NewBarOfPointsModel> barOfPointsList,
   ) {
     List<container_new.NewBarOfPointsContainer> chartColumns = [];
@@ -209,9 +231,9 @@ abstract class ChartViewMaker {
       // NewBarOfPointsContainer barOfPointsContainer =
       chartColumns.add(
         container_new.NewBarOfPointsContainer(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
           backingDataBarOfPointsModel: barOfPoints,
-          children: [makeViewForDataAreaBarOfPoints_Layouter(chartRootContainer, barOfPoints)],
+          children: [makeViewForDataAreaBarOfPoints_Layouter(chartViewMakerOnChartArea, barOfPoints)],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [NewBarOfPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -221,9 +243,9 @@ abstract class ChartViewMaker {
     return chartColumns;
   }
 
-  container_base.BoxContainer makeViewForDataAreaBarOfPoints_Layouter(container.ChartRootContainer chartRootContainer, model.NewBarOfPointsModel barOfPoints) {
+  container_base.BoxContainer makeViewForDataAreaBarOfPoints_Layouter(view_maker.ChartViewMaker chartViewMakerOnChartArea, model.NewBarOfPointsModel barOfPoints) {
     return container_base.Column(
-          children: makeViewsForDataAreaBarOfPoints_As_PointList(chartRootContainer, barOfPoints).reversed.toList(growable: false),
+          children: makeViewsForDataAreaBarOfPoints_As_PointList(chartViewMakerOnChartArea, barOfPoints).reversed.toList(growable: false),
         );
   }
 
@@ -232,7 +254,7 @@ abstract class ChartViewMaker {
   ///
   /// Original name: generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List
   List<container_new.NewPointContainer> makeViewsForDataAreaBarOfPoints_As_PointList(
-        container.ChartRootContainer chartRootContainer,
+        view_maker.ChartViewMaker chartViewMakerOnChartArea,
         model.NewBarOfPointsModel barOfPoints,
     ) {
       List<container_new.NewPointContainer> newPointContainerList = [];
@@ -245,7 +267,7 @@ abstract class ChartViewMaker {
         var chartRootContainer = passedList[1];
         newPointContainerList.add(makeViewForDataAreaPoint(chartRootContainer, element));
       },
-      [newPointContainerList, chartRootContainer],
+      [newPointContainerList, chartViewMakerOnChartArea],
     );
 
     return newPointContainerList;
@@ -256,17 +278,34 @@ abstract class ChartViewMaker {
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   /// Original name: generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer
   container_new.NewPointContainer makeViewForDataAreaPoint(
-      container.ChartRootContainer chartRootContainer,
+      view_maker.ChartViewMaker chartViewMakerOnChartArea,
       model.NewPointModel pointModel,
       ) {
     return container_new.NewHBarPointContainer(
       newPointModel: pointModel,
-      chartRootContainer: chartRootContainer,
+      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     );
   }
 
-  // todo-00-last : This is an opportunity for several extension fo ChartViewMaker, for example, CartesianChartViewMaker, which needs all the above.
-  // todo-00-last ^^^^^^^^^^^ :  add abstract methods to create views (containers) for individual chart areas
+  // todo-00-last-last-last : moved from ChartRootContainer and extensions
+  /// Abstract method constructs and returns the concrete [DataContainer] instance,
+  /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
+  container.DataContainer createDataContainer({
+    required ChartViewMaker chartViewMakerOnChartArea,
+  });
+
+  // todo-00! : This is an opportunity for several extension fo ChartViewMaker, for example, CartesianChartViewMaker, which needs all the above.
+  // ^^^^^^^^^^^ Abstract methods to create views (containers) for individual chart areas
+
+  /// Makes pointPresenters, the visuals painted on each chart column that
+  /// represent data, (points and lines for the line chart,
+  /// rectangles for the bar chart, and so on).
+  ///
+  /// See [PointPresenterCreator] and [PointPresenter] for more details.
+  // todo-00-last-last : moved from ChartRootContainer, as it affects view creation
+  late presenter.PointPresenterCreator pointPresenterCreator; // equivalent of NEW ChartViewMaker in OLD layout
+
+  // todo-00-last-last ?????? something I missed? : moved from ChartRootContainer, as it controls view creation
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';

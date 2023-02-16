@@ -1,12 +1,12 @@
 // base libraries
 import '../container_new.dart';
-import '../container.dart';
+import '../view_maker.dart';
 
 class VerticalBarChartNewDataContainer extends NewDataContainer {
   VerticalBarChartNewDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
   );
 }
 

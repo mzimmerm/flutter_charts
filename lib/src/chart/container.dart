@@ -65,8 +65,8 @@ abstract class ChartBehavior {
 /// The lifecycle of [ChartRootContainer] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-
-abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
+// todo-00-last-last : moved 'with ChartBehavior' to ChartViewMaker,
+abstract class ChartRootContainer extends BoxContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
@@ -83,12 +83,12 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// In the Y direction, takes
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
-  // todo-00-last-last : add on XContainer, YContainer, arguments etc, also in extensions
+  // todo-00-last : add on XContainer, YContainer, arguments etc, also in extensions
   ChartRootContainer({
-    // todo-00-last-last-last : put back : required this.legendContainer,
-    // todo-00-last-last-last : put back : required this.xContainer,
-    // todo-00-last-last-last : put back : required this.yContainer,
-    // todo-00-last-last-last : put back : required this.dataContainer,
+    required this.legendContainer,
+    required this.xContainer,
+    required this.yContainer,
+    required this.dataContainer,
     required this.chartViewMaker,
     required NewModel chartData,
     required this.isStacked,
@@ -99,7 +99,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
         super() {
     print('    Constructing ChartRootContainer');
     // Create children and attach to self
-    addChildren(_createChildrenOfRootContainer());
+    // todo-00-last-last-last : addChildren(_createChildrenOfRootContainer());
+    addChildren([legendContainer, xContainer, yContainer, dataContainer]);
   }
 
   /// The instance of [ChartViewMaker] which makes (produces) instances of
@@ -114,7 +115,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   ///
   /// To reiterate, this [ChartRootContainer] view, uses the [ChartViewMaker] maked
   /// to access the [NewModel] model from which segments of this view are created.
-  final ChartViewMaker chartViewMaker;
+  final ChartViewMaker chartViewMaker; // todo-00-last-last-last-last : remove, already on ChartAreaContainer hierarchy parent
 
   final ChartOptions chartOptions;
 
@@ -138,16 +139,18 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// ##### Abstract methods or subclasses-implemented getters
 
+  /* todo-00-last-last : moved to ChartViewMaker, as it affects view creation
   /// Makes pointPresenters, the visuals painted on each chart column that
   /// represent data, (points and lines for the line chart,
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PointPresenterCreator] and [PointPresenter] for more details.
-  /// todo-04 : There may be a question "why does a container which is a view, need to know about PointPresenter, which is a model, even indirectly"?
-  late PointPresenterCreator pointPresenterCreator;
+  late PointPresenterCreator pointPresenterCreator; // equivalent of NEW ChartViewMaker in OLD layout
+  */
 
   /// ##### Subclasses - aware members.
 
+  /* todo-00-last-last : moved to NewModel OLD section, as it is model
   /// Keeps data values grouped in columns.
   ///
   /// This column grouped data instance is managed here in the [ChartRootContainer],
@@ -156,9 +159,11 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// to calculate scaling, and also in [DataContainer.layout] to create
   /// [PointPresentersColumns] instance.
   late PointsColumns pointsColumns;
+  */
 
   late bool isStacked;
 
+/* todo-00-last-last-last : the children of root are now created by the ViewMaker.
   /// Creates child containers for the chart root.
   ///
   /// It creates four chart areas container instances,
@@ -177,7 +182,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 1. construct [PointsColumns] later in [layout]
     // ### 2. Build the LegendContainer where series legend is shown
     legendContainer = LegendContainer(
-      chartRootContainer: this,
+      chartViewMakerOnChartArea: chartViewMaker,
     );
 
     // ### 3. No [yContainerFirst] creation or setup needed. All done in [layout]
@@ -185,25 +190,26 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // ### 4. XContainer: Create and add
 
     xContainer = XContainer(
-      chartRootContainer: this,
+      chartViewMakerOnChartArea: chartViewMaker,
       xContainerLabelLayoutStrategy: _cachedXContainerLabelLayoutStrategy,
     );
 
     // ### 5. [YContainer]: YContainer create and add.
 
     yContainer = YContainer(
-      chartRootContainer: this,
+      chartViewMakerOnChartArea: chartViewMaker,
     );
 
     // ### 6. [DataContainer]: Construct a concrete (Line, Bar) DataContainer.
 
     dataContainer = createDataContainer(
-      chartRootContainer: this,
+      chartViewMakerOnChartArea: chartViewMaker,
     );
 
     // return the members which will also become [children].
     return [legendContainer, xContainer, yContainer, dataContainer];
   }
+*/
 
   /// Overrides [BoxLayouter.layout] for the chart as a whole.
   ///
@@ -234,10 +240,10 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     //        First [YContainer] is first to need it, to display and scale y values and
     //        create labels from the stacked points (if chart is stacked).
     /// Create member [pointsColumns] from [data.dataRows].
-    // todo-04 : can this be moved to DataContainer.layout?
-    pointsColumns = PointsColumns(
-      chartRootContainer: this,
-      pointPresenterCreator: pointPresenterCreator,
+    // todo-01 : can this be moved to DataContainer.layout?
+    chartViewMaker.chartData.pointsColumns = PointsColumns(
+      chartViewMakerOnChartArea: chartViewMaker,
+      pointPresenterCreator: chartViewMaker.pointPresenterCreator,
       isStacked: isStacked,
       caller: this,
     );
@@ -264,7 +270,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     ));
 
     var yContainerFirst = YContainer(
-      chartRootContainer: this,
+      chartViewMakerOnChartArea: chartViewMaker,
       yLabelsMaxHeightFromFirstLayout: 0.0, // not relevant in this first layout
     );
 
@@ -402,13 +408,13 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   // BoxContainerConstraints get constraints => _beforeNewLayoutConstraints!;
 
 
+  /* todo-00-last-last-last : moved to ChartViewMaker and extensions
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /// todo-00-last : should this be in the view maker?
   DataContainer createDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   });
-
+  */
 }
 
 /// Container of the Y axis labels.
@@ -427,10 +433,10 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
   YContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
   ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
 
@@ -438,12 +444,12 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // anywhere in [ChartRootContainer] constructor or later.
     // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
     yLabelsGenerator = DataRangeLabelsGenerator(
-      extendAxisToOrigin: chartRootContainer.extendAxisToOrigin,
-      valueToLabel: chartRootContainer.chartOptions.yContainerOptions.valueToLabel,
-      inverseTransform: chartRootContainer.chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartRootContainer.chartViewMaker.chartData.yUserLabels,
-      dataModel: chartRootContainer.chartViewMaker.chartData,
-      isStacked: chartRootContainer.isStacked,
+      extendAxisToOrigin: chartViewMakerOnChartArea.extendAxisToOrigin,
+      valueToLabel: chartViewMakerOnChartArea.chartOptions.yContainerOptions.valueToLabel,
+      inverseTransform: chartViewMakerOnChartArea.chartOptions.dataContainerOptions.yInverseTransform,
+      userLabels: chartViewMakerOnChartArea.chartData.yUserLabels,
+      dataModel: chartViewMakerOnChartArea.chartData,
+      isStacked: chartViewMakerOnChartArea.isStacked,
     );
     labelInfos = yLabelsGenerator.createLabelInfos();
   }
@@ -484,7 +490,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndAddChildren_DuringParentLayout] is that we do not know until the parent
-  /// [chartRootContainer] is being layed out, how much Y-space there is, therefore,
+  /// [chartViewMakerOnChartArea] is being layed out, how much Y-space there is, therefore,
   /// how many Y labels would fit.
   ///
   /// The created Y labels should be layed out by invoking [layout]
@@ -501,7 +507,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
     double axisPixelsMax =
-        constraints.size.height - (chartRootContainer.chartOptions.xContainerOptions.xBottomMinTicksHeight);
+        constraints.size.height - (chartViewMakerOnChartArea.chartOptions.xContainerOptions.xBottomMinTicksHeight);
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
@@ -515,7 +521,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     // Code above MUST run for the side-effects of setting [axisPixels] and scaling the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
-    if (!chartRootContainer.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       addChildren(_yLabelContainers);
       return;
@@ -528,7 +534,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // The data-generated label implementation smartly creates
     // a limited number of Y labels from data, so that Y labels do not
     // crowd, and little Y space is wasted on top.
-    ChartOptions options = chartRootContainer.chartOptions;
+    ChartOptions options = chartViewMakerOnChartArea.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -573,7 +579,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
   void layout() {
-    if (!chartRootContainer.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.yContainerOptions.isYContainerShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
       return;
@@ -596,21 +602,21 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(this,
-        ui.Offset(chartRootContainer.chartOptions.yContainerOptions.yLabelsPadLR, labelTopY),
+        ui.Offset(chartViewMakerOnChartArea.chartOptions.yContainerOptions.yLabelsPadLR, labelTopY),
       );
     }
 
     // Set the [layoutSize]
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * chartRootContainer.chartOptions.yContainerOptions.yLabelsPadLR;
+            2 * chartViewMakerOnChartArea.chartOptions.yContainerOptions.yLabelsPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartRootContainer.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
@@ -620,7 +626,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartRootContainer.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
     for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
@@ -667,10 +673,10 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
@@ -680,8 +686,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
-    ChartOptions options = chartRootContainer.chartOptions;
-    List<String> xUserLabels = chartRootContainer.chartViewMaker.chartData.xUserLabels;
+    ChartOptions options = chartViewMakerOnChartArea.chartOptions;
+    List<String> xUserLabels = chartViewMakerOnChartArea.chartData.xUserLabels;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -710,9 +716,9 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
   void layout() {
 
-    ChartOptions options = chartRootContainer.chartOptions;
+    ChartOptions options = chartViewMakerOnChartArea.chartOptions;
 
-    List<String> xUserLabels = chartRootContainer.chartViewMaker.chartData.xUserLabels;
+    List<String> xUserLabels = chartViewMakerOnChartArea.chartData.xUserLabels;
     double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
     double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
@@ -757,7 +763,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
     );
 
-    if (!chartRootContainer.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.xContainerOptions.isXContainerShown) {
       // If not showing this container, no layout needed, just set size to 0.
       lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
@@ -796,7 +802,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartRootContainer.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.xContainerOptions.isXContainerShown) {
       return;
     }
     // super.applyParentOffset(caller, offset); // super did double-offset as xLabelContainer are on 2 places
@@ -823,7 +829,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   /// which end up in the intended position but rotated counterclockwise.
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartRootContainer.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMakerOnChartArea.chartOptions.xContainerOptions.isXContainerShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
@@ -933,9 +939,9 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// todo 0 replace with getters; see if members can be made private,  manipulated via YLabelContainer.
   late PointPresentersColumns pointPresentersColumns;
 
-  DataContainer({required ChartRootContainer chartRootContainer})
+  DataContainer({required ChartViewMaker chartViewMakerOnChartArea})
       : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
   );
 
   @override
@@ -943,8 +949,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
     // This object moves the required information for the above into the DataContainer build.
     return _SourceYContainerAndYContainerToSinkDataContainer(
-      xContainer: chartRootContainer.xContainer,
-      yContainer: chartRootContainer.yContainer,
+      xContainer: chartViewMakerOnChartArea.xContainer,
+      yContainer: chartViewMakerOnChartArea.yContainer,
     );
 
   }
@@ -959,8 +965,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
         findSourceContainersReturnLayoutResultsToBuildSelf();
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
-    ChartOptions chartOptions = chartRootContainer.chartOptions;
-    bool isStacked = chartRootContainer.isStacked;
+    ChartOptions chartOptions = chartViewMakerOnChartArea.chartOptions;
+    bool isStacked = chartViewMakerOnChartArea.isStacked;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -1045,7 +1051,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// based on the available size.
   @override
   void layout() {
-    if (!chartRootContainer.chartViewMaker.isUseOldDataContainer) {
+    if (!chartViewMakerOnChartArea.isUseOldDataContainer) {
       super.layout();
       return;
     }
@@ -1076,7 +1082,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartRootContainer.chartViewMaker.isUseOldDataContainer) {
+    if (!chartViewMakerOnChartArea.isUseOldDataContainer) {
       super.applyParentOffset(caller, offset);
       return;
     }
@@ -1088,7 +1094,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     _yGridLinesContainer.applyParentOffset(this, offset);
 
     // Apply offset to lines and bars.
-    chartRootContainer.pointsColumns.applyParentOffset(this, offset);
+    chartViewMakerOnChartArea.chartData.pointsColumns.applyParentOffset(this, offset);
 
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
@@ -1108,9 +1114,9 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     //                  PointsColumns is DATA, PointPresentersColumns should be converted to BoxContainer
     //                  Also : problem : this constructor actually creates absolute values on PointPresenters, no offsetting !!
     pointPresentersColumns = PointPresentersColumns(
-      pointsColumns: chartRootContainer.pointsColumns,
-      chartRootContainer: chartRootContainer,
-      pointPresenterCreator: chartRootContainer.pointPresenterCreator,
+      pointsColumns: chartViewMakerOnChartArea.chartData.pointsColumns,
+      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
+      pointPresenterCreator: chartViewMakerOnChartArea.pointPresenterCreator,
     );
   }
 
@@ -1126,7 +1132,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     _xGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartRootContainer.chartOptions.yContainerOptions.isYGridlinesShown) {
+    if (chartViewMakerOnChartArea.chartOptions.yContainerOptions.isYGridlinesShown) {
       _yGridLinesContainer.paint(canvas);
     }
   }
@@ -1142,9 +1148,9 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// values.
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
-  /// uses the  absolute scaled [chartRootContainer.pointsColumns].
+  /// uses the  absolute scaled [chartViewMakerOnChartArea.pointsColumns].
   void lerpPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
-    chartRootContainer.pointsColumns.lerpPointsColumns(layoutDependency);
+    chartViewMakerOnChartArea.chartData.pointsColumns.lerpPointsColumns(layoutDependency);
   }
 
   /// Optionally paint series in reverse order (first to last,
@@ -1152,7 +1158,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   ///
   /// See [DataContainerOptions.dataRowsPaintingOrder].
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
-    var options = chartRootContainer.chartOptions;
+    var options = chartViewMakerOnChartArea.chartOptions;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       pointPresenters = pointPresenters.reversed.toList();
     }
@@ -1182,12 +1188,12 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
-            strategy.DefaultIterativeLabelLayoutStrategy(options: chartRootContainer.chartOptions),
+            strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMakerOnChartArea.chartOptions),
         super(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         ) {
     _labelLayoutStrategy.onContainer(this);
   }
@@ -1211,17 +1217,17 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 /// See [BoxContainer] for discussion of roles of this class.
 /// This extension of  [BoxContainer] has the added ability
 /// to access the container's parent, which is handled by
-/// [chartRootContainer].
+/// [chartViewMakerOnChartArea].
 abstract class ChartAreaContainer extends BoxContainer {
   /// The chart top level.
   ///
   /// Departure from a top down approach, this allows to
   /// access the parent [ChartRootContainer], which has (currently)
   /// members needed by children.
-  final ChartRootContainer chartRootContainer;
+  final ChartViewMaker chartViewMakerOnChartArea;
 
   ChartAreaContainer({
-    required this.chartRootContainer,
+    required this.chartViewMakerOnChartArea,
     List<BoxContainer>? children,
     ContainerKey? key,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
@@ -1238,9 +1244,9 @@ abstract class ChartAreaContainer extends BoxContainer {
 /// [paint] and [_drawDataPointPresentersColumns].
 class VerticalBarChartDataContainer extends DataContainer {
   VerticalBarChartDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) : super(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         );
 
   @override
@@ -1288,9 +1294,9 @@ class VerticalBarChartDataContainer extends DataContainer {
 /// [paint] and [drawDataPointPresentersColumns].
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
   }) : super(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         );
 
   @override
@@ -1615,10 +1621,10 @@ class LegendContainer extends ChartAreaContainer {
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   LegendContainer({
-    required ChartRootContainer chartRootContainer,
+    required ChartViewMaker chartViewMakerOnChartArea,
     // List<BoxContainer>? children, // could add for extensibility by e.g. add legend comment
   }) : super(
-          chartRootContainer: chartRootContainer,
+          chartViewMakerOnChartArea: chartViewMakerOnChartArea,
         ) {
     // Create children and attach to self
      addChildren(_createChildrenOfLegendContainer());
@@ -1626,8 +1632,9 @@ class LegendContainer extends ChartAreaContainer {
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
-    if (!chartRootContainer.chartOptions.legendOptions.isLegendContainerShown) {
-      applyParentOrderedSkip(chartRootContainer, true);
+    if (!chartViewMakerOnChartArea.chartOptions.legendOptions.isLegendContainerShown) {
+      // todo-00-last-last : not sure if this change is right : applyParentOrderedSkip(chartViewMakerOnChartArea, true);
+      applyParentOrderedSkip(this, true);
     }
   }
 
@@ -1636,9 +1643,9 @@ class LegendContainer extends ChartAreaContainer {
   /// which contains a list of [LegendItemContainer]s,
   /// created separately in [_legendItems].
   List<BoxContainer> _createChildrenOfLegendContainer() {
-    ChartOptions options = chartRootContainer.chartOptions;
+    ChartOptions options = chartViewMakerOnChartArea.chartOptions;
 
-    List<String> dataRowsLegends = chartRootContainer.chartViewMaker.chartData.dataRowsLegends;
+    List<String> dataRowsLegends = chartViewMakerOnChartArea.chartData.dataRowsLegends;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -1722,15 +1729,12 @@ class LegendContainer extends ChartAreaContainer {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < dataRowsLegends.length; index++)
-        // ui.Paint indicatorPaint = ui.Paint();
-        // List<ui.Color> dataRowsColors = chartRootContainer.chartViewMaker.chartData.dataRowsColors; //!;
-        // indicatorPaint.color = dataRowsColors[index % dataRowsColors.length];
         LegendItemContainer(
           label: dataRowsLegends[index],
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartRootContainer.chartViewMaker.chartData.dataRowsColors
-                .elementAt(index % chartRootContainer.chartViewMaker.chartData.dataRowsColors.length)), //
+            ..color = chartViewMakerOnChartArea.chartData.dataRowsColors
+                .elementAt(index % chartViewMakerOnChartArea.chartData.dataRowsColors.length)), //
           options: options,
         ),
     ];
@@ -1784,7 +1788,7 @@ class StackableValuePoint {
     required this.xLabel,
     required this.dataY,
     required this.dataRowIndex,
-    required this.chartRootContainer,
+    required this.chartViewMakerOnChartArea,
     this.predecessorPoint,
   })  : isStacked = false,
         fromY = 0.0,
@@ -1794,7 +1798,7 @@ class StackableValuePoint {
   // ### Group 0: Structural
 
   /// Root container added to access yContainer.axisPixels min / max
-  late final ChartRootContainer chartRootContainer;
+  late final ChartViewMaker chartViewMakerOnChartArea;
 
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
 
@@ -1889,8 +1893,8 @@ class StackableValuePoint {
     // Scales fromY of from the OLD [ChartData] BUT all the scaling domains in yLabelsGenerator
     // were calculated using the NEW [NewModel]
 
-    double axisPixelsYMin = chartRootContainer.yContainer.axisPixelsRange.min;
-    double axisPixelsYMax = chartRootContainer.yContainer.axisPixelsRange.max;
+    double axisPixelsYMin = chartViewMakerOnChartArea.yContainer.axisPixelsRange.min;
+    double axisPixelsYMax = chartViewMakerOnChartArea.yContainer.axisPixelsRange.max;
 
     scaledFrom = ui.Offset(
       scaledX,
@@ -1936,7 +1940,7 @@ class StackableValuePoint {
     }
 
     StackableValuePoint unstackedClone = StackableValuePoint(
-      chartRootContainer: chartRootContainer,
+      chartViewMakerOnChartArea: chartViewMakerOnChartArea,
       xLabel: xLabel,
       dataY: dataY,
       dataRowIndex: dataRowIndex,
@@ -2046,7 +2050,7 @@ class PointsColumn {
 //                 Each PointsColumn is a child in children.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.
-  final ChartRootContainer chartRootContainer;
+  final ChartViewMaker chartViewMakerOnChartArea;
 
   /// True if chart type presents values stacked.
   final bool _isStacked;
@@ -2054,16 +2058,16 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.dataRows] values in
-  /// the passed [chartRootContainer.chartViewMaker.chartData].
+  /// the passed [chartViewMakerOnChartArea.chartData].
   PointsColumns({
-    required this.chartRootContainer,
+    required this.chartViewMakerOnChartArea,
     required PointPresenterCreator pointPresenterCreator,
     required bool isStacked,
     required LayoutableBox caller,
   })  : _isStacked = isStacked,
         _caller = caller,
         super(growable: true) {
-    _createStackableValuePointsFromChartData(chartRootContainer.chartViewMaker.chartData);
+    _createStackableValuePointsFromChartData(chartViewMakerOnChartArea.chartData);
   }
 
   /// Constructs internals of this object, the [PointsColumns].
@@ -2092,12 +2096,12 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < dataRow.length; col++) {
         // yTransform data before placing data point on StackableValuePoint.
-        num colValue = chartRootContainer.chartOptions.dataContainerOptions.yTransform(dataRow[col]);
+        num colValue = chartViewMakerOnChartArea.chartOptions.dataContainerOptions.yTransform(dataRow[col]);
 
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
-            chartRootContainer: chartRootContainer,
+            chartViewMakerOnChartArea: chartViewMakerOnChartArea,
             xLabel: 'initial',
             dataY: colValue.toDouble(),
             dataRowIndex: row,
@@ -2143,7 +2147,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         double scaledX = layoutDependency.xTickXs[col];
         point.lerpToPixels(
           scaledX: scaledX,
-          yLabelsGenerator: chartRootContainer.yContainer.yLabelsGenerator,
+          yLabelsGenerator: chartViewMakerOnChartArea.yContainer.yLabelsGenerator,
         );
       });
       col++;

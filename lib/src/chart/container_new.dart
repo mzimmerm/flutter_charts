@@ -16,10 +16,10 @@ class NewDataContainer extends container.DataContainer {
   // create with all children: List<NewBarOfPointsContainer> + ChartRootContainer
 
   NewDataContainer({
-    required container.ChartRootContainer chartRootContainer,
+    required view_maker.ChartViewMaker chartViewMakerOnChartArea,
     // required List<BoxContainer> children,
   }) : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     //children: children,
   );
 
@@ -27,7 +27,7 @@ class NewDataContainer extends container.DataContainer {
   void buildAndAddChildren_DuringParentLayout() {
     // Get at my maker thru my root container.
     // The makes starts it's work on me down. todo-00 : The maker should start it's work on ChartRootContainer
-    view_maker.ChartViewMaker chartViewMaker = chartRootContainer.chartViewMaker;
+    view_maker.ChartViewMaker chartViewMaker = chartViewMakerOnChartArea;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -36,8 +36,8 @@ class NewDataContainer extends container.DataContainer {
       container_base.Row(
         crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
         children: chartViewMaker.makeViewsForDataAreaBars_As_BarOfPoints_List(
-          chartRootContainer,
-          chartRootContainer.chartViewMaker.chartData.barOfPointsList,
+          chartViewMakerOnChartArea,
+          chartViewMakerOnChartArea.chartData.barOfPointsList,
         ),
       )
     ]);
@@ -62,14 +62,14 @@ class NewBarOfPointsContainer extends container.ChartAreaContainer {
   model.NewBarOfPointsModel backingDataBarOfPointsModel;
 
   NewBarOfPointsContainer({
-    required container.ChartRootContainer chartRootContainer,
+    required view_maker.ChartViewMaker chartViewMakerOnChartArea,
     required this.backingDataBarOfPointsModel,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
     required container_base.ConstraintsWeight constraintsWeight,
   }) : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     children: children,
     key: key,
     constraintsWeight: constraintsWeight,
@@ -80,12 +80,12 @@ class NewPointContainer extends container.ChartAreaContainer {
   model.NewPointModel newPointModel;
 
   NewPointContainer({
-    required container.ChartRootContainer chartRootContainer,
+    required view_maker.ChartViewMaker chartViewMakerOnChartArea,
     required this.newPointModel,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     children: children,
     key: key,
   );
@@ -103,13 +103,13 @@ class NewHBarPointContainer extends NewPointContainer {
   late final ui.Size _rectangleSize;
 
   NewHBarPointContainer({
-    required container.ChartRootContainer chartRootContainer,
+    required view_maker.ChartViewMaker chartViewMakerOnChartArea,
     required model.NewPointModel newPointModel,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     newPointModel: newPointModel,
-    chartRootContainer: chartRootContainer,
+    chartViewMakerOnChartArea: chartViewMakerOnChartArea,
     children: children,
     key: key,
   );
@@ -122,9 +122,9 @@ class NewHBarPointContainer extends NewPointContainer {
     double width = constraints.width;
 
     // Rectangle height is Y scaled from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
-    DataRangeLabelsGenerator yLabelsGenerator = chartRootContainer.yContainer.yLabelsGenerator;
+    DataRangeLabelsGenerator yLabelsGenerator = chartViewMakerOnChartArea.yContainer.yLabelsGenerator;
 
-    container.YContainer yContainer = chartRootContainer.yContainer;
+    container.YContainer yContainer = chartViewMakerOnChartArea.yContainer;
 
     var lerp = ToPixelsExtrapolation1D(
       fromValuesMin: yLabelsGenerator.dataRange.min,

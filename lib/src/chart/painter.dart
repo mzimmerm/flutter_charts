@@ -35,7 +35,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
 
   /// Constructs this chart painter, giving it [chartViewMaker], which
   /// holds on [chartData] and other members needed for
-  /// the late creation of [containers.ChartViewMaker.chartRootContainer].
+  /// the late creation of [containers.ChartViewMaker.chartViewMakerOnChartArea].
 
   FlutterChartPainter({
     required this.chartViewMaker,
@@ -56,7 +56,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// A core role of this [paint] method is to call [chartViewMaker.chartRootContainerCreateBuildLayoutPaint],
   /// which creates, builds, lays out and paints the concrete [containers.ChartRootContainer].
   ///
-  /// The [chartRootContainer] created in the [chartViewMaker.chartRootContainerCreateBuildLayoutPaint]
+  /// The [chartViewMakerOnChartArea] created in the [chartViewMaker.chartRootContainerCreateBuildLayoutPaint]
   /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
