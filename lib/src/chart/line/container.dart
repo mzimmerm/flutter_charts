@@ -18,12 +18,20 @@ import 'presenter.dart'; // OLD
 /// which are, in turn, used to present each data value.
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
-    required ChartViewMaker chartViewMaker,
-    required NewModel chartData,
-    required bool isStacked,
-    required ChartOptions chartOptions,
+    // todo-00-last-last-last : put back : required LegendContainer legendContainer,
+    // todo-00-last-last-last : put back : required XContainer      xContainer,
+    // todo-00-last-last-last : put back : required YContainer      yContainer,
+    // todo-00-last-last-last : put back : required DataContainer   dataContainer,
+    required ChartViewMaker  chartViewMaker,
+    required NewModel        chartData,
+    required bool            isStacked,
+    required ChartOptions   chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
+          // todo-00-last-last-last : put back : legendContainer: legendContainer,
+          // todo-00-last-last-last : put back : xContainer: xContainer,
+          // todo-00-last-last-last : put back : yContainer: yContainer,
+          // todo-00-last-last-last : put back : dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
           chartData: chartData,
           chartOptions: chartOptions,
@@ -37,7 +45,7 @@ class LineChartRootContainer extends ChartRootContainer {
   DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   }) {
-    if (chartRootContainer.isUseOldDataContainer) {
+    if (chartRootContainer.chartViewMaker.isUseOldDataContainer) {
       return LineChartDataContainer(
         chartRootContainer: chartRootContainer,
       );

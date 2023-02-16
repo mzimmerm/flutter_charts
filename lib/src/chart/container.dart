@@ -83,7 +83,12 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   /// In the Y direction, takes
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
+  // todo-00-last-last : add on XContainer, YContainer, arguments etc, also in extensions
   ChartRootContainer({
+    // todo-00-last-last-last : put back : required this.legendContainer,
+    // todo-00-last-last-last : put back : required this.xContainer,
+    // todo-00-last-last-last : put back : required this.yContainer,
+    // todo-00-last-last-last : put back : required this.dataContainer,
     required this.chartViewMaker,
     required NewModel chartData,
     required this.isStacked,
@@ -93,11 +98,8 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   })  : _cachedXContainerLabelLayoutStrategy = xContainerLabelLayoutStrategy,
         super() {
     print('    Constructing ChartRootContainer');
-    isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
-
     // Create children and attach to self
     addChildren(_createChildrenOfRootContainer());
-
   }
 
   /// The instance of [ChartViewMaker] which makes (produces) instances of
@@ -115,9 +117,6 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
   final ChartViewMaker chartViewMaker;
 
   final ChartOptions chartOptions;
-
-  // switch-from-command-arg : find usages to see where old/new DataContainer differs
-  late final bool isUseOldDataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
   /// which is never set on instances of this [ChartRootContainer].
@@ -331,7 +330,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
     // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
     BoxContainerConstraints dataContainerBoxConstraints;
-    if (isUseOldDataContainer) {
+    if (chartViewMaker.isUseOldDataContainer) {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
@@ -351,7 +350,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.buildAndAddChildren_DuringParentLayout();
-    // todo-00 : moving before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00 : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
     //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
@@ -405,6 +404,7 @@ abstract class ChartRootContainer extends BoxContainer with ChartBehavior {
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
+  /// todo-00-last : should this be in the view maker?
   DataContainer createDataContainer({
     required ChartRootContainer chartRootContainer,
   });
@@ -1045,7 +1045,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// based on the available size.
   @override
   void layout() {
-    if (!chartRootContainer.isUseOldDataContainer) {
+    if (!chartRootContainer.chartViewMaker.isUseOldDataContainer) {
       super.layout();
       return;
     }
@@ -1076,7 +1076,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartRootContainer.isUseOldDataContainer) {
+    if (!chartRootContainer.chartViewMaker.isUseOldDataContainer) {
       super.applyParentOffset(caller, offset);
       return;
     }
@@ -1189,8 +1189,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
         super(
           chartRootContainer: chartRootContainer,
         ) {
-    // Must initialize in body, as access to 'this' not available in initializer.
-    // parent = chartRootContainer;
     _labelLayoutStrategy.onContainer(this);
   }
 }
@@ -1625,7 +1623,6 @@ class LegendContainer extends ChartAreaContainer {
     // Create children and attach to self
      addChildren(_createChildrenOfLegendContainer());
 
-    // parent = null; We set isRoot to true, so this is not needed.
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].

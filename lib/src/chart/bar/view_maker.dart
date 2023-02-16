@@ -26,8 +26,11 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   }
 
   /// Concrete implementation returns the root for vertical bar chart.
+  // todo-00-last-last : to super, move creation on XContainer, YContainer, etc, call super here explicitly
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
+
+    // todo-00-last-last : add args XContainer, YContainer, etc, values from chartViewMaker.makeViewForDomainAxis etc.
 
     return VerticalBarChartRootContainer(
       chartViewMaker: chartViewMaker,

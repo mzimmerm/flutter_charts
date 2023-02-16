@@ -91,7 +91,7 @@ class NewPointContainer extends container.ChartAreaContainer {
   );
 }
 
-/// See [LegendIndicatorRectContainer] for similar implementaion
+/// See [LegendIndicatorRectContainer] for similar implementation
 class NewHBarPointContainer extends NewPointContainer {
 
   /// The rectangle representing the value.
