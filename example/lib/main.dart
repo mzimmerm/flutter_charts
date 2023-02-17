@@ -29,7 +29,7 @@ import 'package:logger/logger.dart';
 /// ```
 void main() {
   // Set logging level. There should be some kind of configuration for this.
-  Logger.level = Level.debug;
+  Logger.level = Level.warning;
 
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //

@@ -123,7 +123,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   /// with a new instance of the custom painter delegate class.
   @override
   bool shouldRepaint(widgets.CustomPainter oldDelegate) {
-    dart_developer.log(' ###### $runtimeType.shouldRepaint being CALLED', name: 'charts.debug.log');
+    // dart_developer.log(' ###### $runtimeType.shouldRepaint being CALLED', name: 'charts.debug.log');
     return true;
   }
 }

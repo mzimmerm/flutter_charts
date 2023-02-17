@@ -2,7 +2,8 @@ import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level base libraries or equivalent
-import '../container.dart' as container;
+import 'container_common_new.dart' as container_common_new;
+//import '../container.dart' as container;
 import '../label_container.dart' as label_container;
 import '../container_edge_padding.dart' as container_edge_padding;
 import '../container_alignment.dart' as container_alignment;
@@ -30,7 +31,7 @@ import '../layouter_one_dimensional.dart';
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-class LegendContainer extends container.ChartAreaContainer {
+class LegendContainer extends container_common_new.ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and

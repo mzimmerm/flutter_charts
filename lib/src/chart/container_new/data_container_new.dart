@@ -1,6 +1,7 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
+import 'container_common_new.dart' as container_common_new;
 import '../container.dart' as container;
 import '../container_layouter_base.dart' as container_base;
 import '../model/data_model_new.dart' as model;
@@ -56,7 +57,7 @@ class NewDataContainer extends container.DataContainer {
 // void paint(Canvas convas) - default
 }
 
-class NewBarOfPointsContainer extends container.ChartAreaContainer {
+class NewBarOfPointsContainer extends container_common_new.ChartAreaContainer {
   model.NewBarOfPointsModel backingDataBarOfPointsModel;
 
   NewBarOfPointsContainer({
@@ -74,7 +75,7 @@ class NewBarOfPointsContainer extends container.ChartAreaContainer {
   );
 }
 
-class NewPointContainer extends container.ChartAreaContainer {
+class NewPointContainer extends container_common_new.ChartAreaContainer {
   model.NewPointModel newPointModel;
 
   NewPointContainer({

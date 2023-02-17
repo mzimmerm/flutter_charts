@@ -5,6 +5,7 @@ import 'dart:ui' as ui show Canvas, Size;
 import 'container.dart' as container;
 import 'container_new/data_container_new.dart' as data_container_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
+import 'container_new/axis_container_new.dart' as axis_container_new;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
@@ -168,14 +169,14 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   container.XContainer makeViewForDomainAxis() {
     return isUseOldDataContainer
         ? container.XContainer(chartViewMaker: this)
-        : container.XContainer(chartViewMaker: this);
+        : axis_container_new.NewXContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels] or labels in [container.YContainer.labelInfos].
   container.YContainer makeViewForRangeAxis() {
     return isUseOldDataContainer
         ? container.YContainer(chartViewMaker: this)
-        : container.YContainer(chartViewMaker: this);
+        : axis_container_new.NewYContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].

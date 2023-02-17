@@ -2,8 +2,10 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'dart:math' as math show max;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
+import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
+import 'container_new/container_common_new.dart';
 import 'model/data_model_new.dart';
 import 'view_maker.dart';
 import 'painter.dart';
@@ -11,8 +13,7 @@ import 'label_container.dart';
 import 'container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     BuilderOfChildrenDuringParentLayout,
-    LayoutableBox,
-    ConstraintsWeight;
+    LayoutableBox;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
@@ -21,7 +22,7 @@ import 'options.dart';
 import '../util/util_dart.dart';
 import '../util/util_labels.dart';
 import '../util/collection.dart' as custom_collection show CustomList;
-import '../container/container_key.dart';
+//import '../container/container_key.dart';
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 //import '../chart/layouter_one_dimensional.dart';
 import 'iterative_layout_strategy.dart' as strategy;
@@ -94,7 +95,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
-    print('    Constructing ChartRootContainer');
+    logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
     addChildren([legendContainer, xContainer, yContainer, dataContainer]);
   }
@@ -543,6 +544,19 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
 class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+
+  /// Constructs the container that holds X labels.
+  ///
+  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
+  XContainer({
+    required ChartViewMaker chartViewMaker,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  }) : super(
+    chartViewMaker: chartViewMaker,
+    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+  );
+
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
 
@@ -558,18 +572,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   /// Because [layoutSize] is late final, we cannot keep setting it during relayout.
   /// Instead, we set this member, and when relayouting is done, we use it to late-set [layoutSize] once.
   ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
-
-  /// Constructs the container that holds X labels.
-  ///
-  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
-  XContainer({
-    required ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  }) : super(
-          chartViewMaker: chartViewMaker,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        );
 
   @override
   /// Builds the label containers for this [XContainer].
@@ -1088,46 +1090,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
         ) {
     _labelLayoutStrategy.onContainer(this);
   }
-}
-
-/// Base class which manages, lays out, moves, and paints
-/// each top level block on the chart. The basic top level chart blocks are:
-/// - [ChartRootContainer] - the whole chart
-/// - [LegendContainer] - manages the legend
-/// - [YContainer] - manages the Y labels layout, which defines:
-///   - Y axis label sizes
-///   - Y positions of Y axis labels, defined as yTickY.
-///     yTicksY s are the Y points of scaled data values
-///     and also Y points on which the Y labels are centered.
-/// - [XContainer] - Equivalent to YContainer, but manages X direction
-///   layout and labels.
-/// - [DataContainer] and extensions - manages the area which displays:
-///   - Data as bar chart, line chart, or other chart type.
-///   - Grid (this includes the X and Y axis).
-///
-/// See [BoxContainer] for discussion of roles of this class.
-/// This extension of  [BoxContainer] has the added ability
-/// to access the container's parent, which is handled by
-/// [chartViewMaker].
-abstract class ChartAreaContainer extends BoxContainer {
-
-  /// The instance of [ChartViewMaker] which makes (produces) instances of
-  /// the view root for all [ChartAreaContainer]s, the [ChartRootContainer].
-  ///
-  /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
-  /// to reach data model, as well as the view.
-  final ChartViewMaker chartViewMaker;
-
-  ChartAreaContainer({
-    required this.chartViewMaker,
-    List<BoxContainer>? children,
-    ContainerKey? key,
-    ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
-  }) : super(
-          children: children,
-          key: key,
-          constraintsWeight: constraintsWeight,
-        );
 }
 
 /// Provides the data area container for the bar chart.
