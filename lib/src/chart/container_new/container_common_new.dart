@@ -46,5 +46,10 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
     key: key,
     constraintsWeight: constraintsWeight,
   );
+
+  @override
+  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
 }
 

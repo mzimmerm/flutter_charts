@@ -53,6 +53,90 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// Get children list and protect with copy
   List<BoxContainer> get _children => List.from(__children);
 
+  void _ensureKeySet(BoxContainer thisContainer, ContainerKey? key) {
+    if (key != null) {
+      thisContainer.key = key;
+    }  else {
+      // A hacky thing may fail uniqueness among siblings on rare occasions.
+      // This is temporary until we require key non-nullable.
+      thisContainer.key = ContainerKey(math.Random().nextInt(10000000).toString());
+    }
+  }
+
+  void _makeSelfParentOf(BoxContainerHierarchy thisContainer, List<BoxContainer> parentedChildren) {
+    for (var child in parentedChildren) {
+      child._parent = thisContainer as BoxContainer;
+    }
+  }
+
+  /// Appends all children passed in [addedChildren] to existing [_children],
+  /// changes all [addedChildren] member [_parent] to self, and ensures unique
+  /// keys among all [_children].
+  /// todo-03 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
+  void addChildren(List<BoxContainer> addedChildren) {
+    // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
+    // are added to [__children];
+    linkAllWith(addedChildren);
+    __children.addAll(addedChildren);
+    _makeSelfParentOf(this, addedChildren);
+    ensureKeyedMembersHaveUniqueKeys();
+  }
+
+
+  void replaceChildrenWith(List<BoxContainer> newChildren) {
+    // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
+    // are added to [__children];
+    __children.clear();
+    addChildren(newChildren);
+  }
+
+  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [layout]
+  /// of their parent.
+  ///
+  /// Implementations use this as follows:
+  ///   - Implementations can assume that [BoxLayouter.constraints] are set,
+  ///     likely by a hierarchy-parent during layout.
+  ///   - Implementations can assume this method is called in parent's [layout].
+  ///   - Implementations should add code that creates children and adds them to self.
+  ///     The number of children or some of their properties are assumed to depend
+  ///     on results of previously layed out siblings in parent's [layout] - otherwise,
+  ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
+  ///     and build it's children in it's [BoxContainer] constructor.
+  ///
+  /// Important note - lifecycle:
+  ///   For instances of [BoxContainer] mixed in with this [BuilderOfChildrenDuringParentLayout], \
+  ///   the sequence of method invocations of such object should be as follows
+  ///   ``` dart
+  ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
+  ///     2.  instance.buildAndReplaceChildren(LayoutContext.unused); // or a concrete LayoutContext
+  ///     3.  instance.layout();
+  ///     4.  instance.applyParentOffset(this, instanceParentOffset);
+  ///   ```
+  ///   The reason is, there are legitimite reasons for the [buildAndReplaceChildren]
+  ///   to need the instance's [constraints].
+  ///
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext);
+
+  /// Default implementation of [buildAndReplaceChildren] is a no-op,
+  /// does not modify this node's children, does not modify container's internal state,
+  /// does not modify the passed [LayoutContext] and returns.
+  ///
+  /// Default should be called from [buildAndReplaceChildren] by any container
+  /// that creates it's whole child hierarchy in its constructor.
+  ///
+  /// Containers that wish to only set *immediate children* in their constructor
+  /// (while intending that the hierarchy will be built deeper down),
+  /// should not call this default method in [buildAndReplaceChildren], but use
+  /// [buildAndReplaceChildren] to do the intended deeper hierarchy building.
+  ///
+  void buildAndReplaceChildrenDefault(covariant LayoutContext layoutContext) {
+    // throw UnimplementedError('$runtimeType.buildAndReplaceChildren must be implemented in $this');
+    // return;
+    // todo-00-last : as a test, replace children with self. Remove later when this proves to work
+    replaceChildrenWith(_children);
+  }
+
+
   /// Set children list
   // set _children(List<BoxContainer> children) { __children = children; }
 
@@ -667,6 +751,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
@@ -968,7 +1053,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     //if (parent != null) {
     //  this.parent = parent;
     //}
-    _ensureKeySet(key);
+    _ensureKeySet(this, key);
 
     // Initialize children list to empty
     // __children = [];
@@ -986,40 +1071,10 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     ensureKeyedMembersHaveUniqueKeys();
 
     // Make self a parent of all immediate children
-    _makeSelfParentOf(__children);
+    _makeSelfParentOf(this, __children);
 
     // NAMED GENERATIVE super() called implicitly here.
   }
-
-  void _ensureKeySet(ContainerKey? key) {
-    if (key != null) {
-      this.key = key;
-    }  else {
-      // A hacky thing may fail uniqueness among siblings on rare occasions.
-      // This is temporary until we require key non-nullable.
-      this.key = ContainerKey(math.Random().nextInt(10000000).toString());
-    }
-  }
-
-  void _makeSelfParentOf(List<BoxContainer> parentedChildren) {
-    for (var child in parentedChildren) {
-      child._parent = this;
-    }
-  }
-
-  /// Appends all children passed in [addedChildren] to existing [_children],
-  /// changes all [addedChildren] member [_parent] to self, and ensures unique
-  /// keys among all [_children].
-  /// todo-03 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
-  void addChildren(List<BoxContainer> addedChildren) {
-    // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
-    // are added to [__children];
-    linkAllWith(addedChildren);
-    __children.addAll(addedChildren);
-    _makeSelfParentOf(addedChildren);
-    ensureKeyedMembersHaveUniqueKeys();
-  }
-
 
   /// Override of the abstract [post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
@@ -1117,6 +1172,15 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 }
 
+/// no-op class that should handle passing information during hierarchy building.
+///
+/// Allows siblings which were layed out before this element, to pass information
+/// that control layout of this element.
+class LayoutContext {
+  LayoutContext._forUnused();
+  static final LayoutContext unused = LayoutContext._forUnused();
+}
+
 /// Mixin marks implementations as able to create and add [_children] *late*,
 /// during [layout] of their parent.
 ///
@@ -1138,7 +1202,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 /// dependency for drawing dotted lines above the labels. As the dotted lines are part
 /// of 'data container', a sibling container to the 'x axis container',
 /// we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
-/// and call it's [buildAndAddChildren_DuringParentLayout] during the 'root container' [layout].
+/// and call it's [buildAndReplaceChildren] during the 'root container' [layout].
 ///
 /// This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
 /// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
@@ -1162,54 +1226,27 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 ///     likely in parent's [layout] that calls first [layout] on
 ///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
 ///   - Implementations MUST also call [layout] immediately after calling
-///     the [buildAndAddChildren_DuringParentLayout].
+///     the [buildAndReplaceChildren].
 
 mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 
-  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [layout]
-  /// of their parent.
-  ///
-  /// Implementations use this as follows:
-  ///   - Implementations can assume that [BoxLayouter.constraints] are set,
-  ///     likely by a hierarchy-parent during layout.
-  ///   - Implementations can assume this method is called in parent's [layout].
-  ///   - Implementations should add code that creates children and adds them to self.
-  ///     The number of children or some of their properties are assumed to depend
-  ///     on results of previously layed out siblings in parent's [layout] - otherwise,
-  ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
-  ///     and build it's children in it's [BoxContainer] constructor.
-  ///     
-  /// Important note - lifecycle:
-  ///   For instances of [BoxContainer] mixed in with this [BuilderOfChildrenDuringParentLayout], \
-  ///   the sequence of method invocations of such object should be as follows
-  ///   ``` dart
-  ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
-  ///     2.  instance.buildAndAddChildren_DuringParentLayout();
-  ///     3.  instance.layout();
-  ///     4.  instance.applyParentOffset(this, instanceParentOffset);
-  ///   ```
-  ///   The reason is, there are legitimite reasons for the [buildAndAddChildren_DuringParentLayout]
-  ///   to need the instance's [constraints].
-  ///
-  void buildAndAddChildren_DuringParentLayout();
-
   /// Intended implementation is to find sibling 'source' [BoxContainer]s which [layout] results 'drive'
-  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildAndAddChildren_DuringParentLayout]).
+  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildAndReplaceChildren]).
   ///
-  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildAndAddChildren_DuringParentLayout], which
+  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildAndReplaceChildren], which
   /// builds and adds it's children, based on the information in the object returned from this method.
   ///
   /// All information regarding
   ///   - what sibling [BoxContainer]s are 'sources' which [layout] 'drives' the build of this [BoxContainer]
   ///   - how to find such siblings
   ///   - what is the returned object that serves as a message between the 'source' [BoxContainer]s [layout] results
-  ///     and this 'sink' [buildAndAddChildren_DuringParentLayout]
+  ///     and this 'sink' [buildAndReplaceChildren]
   ///  must be available to this [BoxContainer].
   ///
   /// The finding may be done using [ContainerKey] or simply hardcoded reaching to the siblings.
   ///
   /// Returns the object that serves as a message from the 'source' [BoxContainer]s to this 'sink' [BoxContainer],
-  /// during the sink's [buildAndAddChildren_DuringParentLayout].
+  /// during the sink's [buildAndReplaceChildren].
   Object findSourceContainersReturnLayoutResultsToBuildSelf() {
     throw UnimplementedError(
         '$this.findSourceContainersReturnLayoutResultsToBuildSelf: '
@@ -1244,6 +1281,11 @@ abstract class PositioningBoxLayouter extends BoxContainer {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
   }
+
+  @override
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
 }
 
 // Positioning classes, rolling positioning classes, Row and Column, Greedy vvv ----------------------------------------
@@ -1270,6 +1312,12 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
     // (which would fail, unless replaced with looking at children offsets)
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
+
+  @override
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
+
 }
 
 /// Base class for [Row] and [Column] layouters, which allow to process [Greedy] children.
@@ -1342,6 +1390,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
+
     _layout_IfRoot_DefaultTreePreprocessing();
 
     // if (_hasGreedy) {
@@ -1861,6 +1911,12 @@ class Greedy extends NonPositioningBoxLayouter {
     }
     return ui.Size(width, height);
   }
+
+  @override
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
+
 }
 
 /// Default non positioning layouter does not position it's children, but it is concrete, unlike [BoxContainer].

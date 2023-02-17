@@ -14,19 +14,15 @@ import '../../util/util_labels.dart' show DataRangeLabelsGenerator;
 
 // todo-done-last-3 : replaces PointsColumns
 class NewDataContainer extends container.DataContainer {
-  // constructor:
-  // create with all children: List<NewBarOfPointsContainer> + ChartRootContainer
 
   NewDataContainer({
     required view_maker.ChartViewMaker chartViewMaker,
-    // required List<BoxContainer> children,
   }) : super(
     chartViewMaker: chartViewMaker,
-    //children: children,
   );
 
   @override
-  void buildAndAddChildren_DuringParentLayout() {
+  void buildAndReplaceChildren(container_base.LayoutContext layoutContext) {
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -115,6 +111,7 @@ class NewHBarPointContainer extends NewPointContainer {
 
   @override
   void layout() {
+    buildAndReplaceChildren(container_base.LayoutContext.unused);
     // Calculate [_indicatorSize], the width and height of the Rectangle that represents data:
 
     // Rectangle width is from constraints

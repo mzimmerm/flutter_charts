@@ -13,7 +13,7 @@ import 'label_container.dart';
 import 'container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     BuilderOfChildrenDuringParentLayout,
-    LayoutableBox;
+    LayoutableBox, LayoutContext;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
@@ -95,7 +95,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     // List<BoxContainer>? children, // could add for extensibility by e.g. chart description
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
-    logger.Logger().d('    Constructing ChartRootContainer');
+    logger.Logger().d('    Constructing ChartRootContainer'); // todo-00!! replace any println with logger debug like this
     // Attach children passed in constructor, previously created in Maker, to self
     addChildren([legendContainer, xContainer, yContainer, dataContainer]);
   }
@@ -144,6 +144,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   ///
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
 
     // ### 1. Construct early, from dataRows, the [PointsColumns] object, managed
     //        in [ChartRootContainer.pointsColumns], representing list of columns on chart.
@@ -188,7 +189,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
-    yContainerFirst.buildAndAddChildren_DuringParentLayout(); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
+    // todo-00-last : yContainerFirst.buildAndReplaceChildren(LayoutContext.unused); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
     yContainerFirst.layout();
 
     yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -205,7 +206,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
-    xContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00-last : xContainer.buildAndReplaceChildren(LayoutContext.unused);
     xContainer.layout();
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
@@ -228,7 +229,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     ));
 
     yContainer.applyParentConstraints(this, yContainerBoxConstraints);
-    yContainer.buildAndAddChildren_DuringParentLayout(); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
+    // todo-00-last : yContainer.buildAndReplaceChildren(LayoutContext.unused); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
     yContainer.layout();
 
     var yContainerSize = yContainer.layoutSize;
@@ -265,8 +266,8 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
-    dataContainer.buildAndAddChildren_DuringParentLayout();
-    // todo-00! : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndAddChildren_DuringParentLayout();
+    // todo-00-last : dataContainer.buildAndReplaceChildren(LayoutContext.unused);
+    // todo-00! : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndReplaceChildren();
     //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
@@ -381,15 +382,15 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
-  /// method [buildAndAddChildren_DuringParentLayout] is that we do not know until the parent
+  /// method [buildAndReplaceChildren] is that we do not know until the parent
   /// [chartViewMaker] is being layed out, how much Y-space there is, therefore,
   /// how many Y labels would fit.
   ///
   /// The created Y labels should be layed out by invoking [layout]
-  /// immediately after this method [buildAndAddChildren_DuringParentLayout]
+  /// immediately after this method [buildAndReplaceChildren]
   /// is invoked.
   @override
-  void buildAndAddChildren_DuringParentLayout() {
+  void buildAndReplaceChildren(LayoutContext layoutContext) {
 
     // Init the list of y label containers
     _yLabelContainers = [];
@@ -455,10 +456,10 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   }
 
   /// Lays out this [YContainer] - the area containing the Y axis labels -
-  /// which children were build during [buildAndAddChildren_DuringParentLayout].
+  /// which children were build during [buildAndReplaceChildren].
   ///
   /// As this [YContainer] is [BuilderOfChildrenDuringParentLayout],
-  /// this method should be called just after [buildAndAddChildren_DuringParentLayout]
+  /// this method should be called just after [buildAndReplaceChildren]
   /// which builds hierarchy-children of this container.
   ///
   /// In the hierarchy-parent [ChartRootContainer.layout],
@@ -471,6 +472,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
     if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
@@ -575,7 +577,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
   @override
   /// Builds the label containers for this [XContainer].
-  void buildAndAddChildren_DuringParentLayout() {
+  void buildAndReplaceChildren(LayoutContext layoutContext) {
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -608,6 +610,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   ///   in the sense that all tilting logic is in
   ///   [LabelContainer], and queried by [LabelContainer.layoutSize].
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
 
     ChartOptions options = chartViewMaker.chartOptions;
 
@@ -851,7 +854,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// Overridden builds children of self [DataContainer], the [_yGridLinesContainer] and [_xGridLinesContainer]
   /// and adds them as self children.
   @override
-  void buildAndAddChildren_DuringParentLayout() {
+  void buildAndReplaceChildren(LayoutContext layoutContext) {
 
     // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
@@ -937,13 +940,14 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
   /// Overrides [BoxLayouter.layout] for data area.
   ///
-  /// Uses all available space in the [constraints] set in parent [buildAndAddChildren_DuringParentLayout],
+  /// Uses all available space in the [constraints] set in parent [buildAndReplaceChildren],
   /// which it divides evenly between it's children.
   ///
   /// First lays out the Grid, then, scales the columns to the [YContainer]'s scale
   /// based on the available size.
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
     if (!chartViewMaker.isUseOldDataContainer) {
       super.layout();
       return;
@@ -1220,6 +1224,10 @@ class GridLinesContainer extends BoxContainer {
     layoutSize = constraints.size;
   }
 
+  @override
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
 }
 
 
@@ -1512,7 +1520,7 @@ class PointsColumn {
 ///
 /// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainer].
 // todo-04-note : PointsColumns IS A MODEL, NOT PRESENTER :
-//                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndAddChildren_DuringParentLayout 3) layout
+//                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndReplaceChildren 3) layout
 //                 Each PointsColumn is a child in children.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.

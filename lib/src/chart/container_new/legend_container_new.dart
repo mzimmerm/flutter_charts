@@ -160,6 +160,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
+    buildAndReplaceChildren(container_base.LayoutContext.unused);
     // todo-013 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
@@ -348,6 +349,11 @@ class LegendItemContainer extends container_base.BoxContainer {
       ];
     }
   }
+
+  @override
+  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
+  }
 }
 
 /// Represents the series color indicator square in the legend.
@@ -401,5 +407,9 @@ class LegendIndicatorRectContainer extends container_base.BoxContainer {
       indicatorRect,
       _indicatorPaint,
     );
+  }
+  @override
+  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
   }
 }

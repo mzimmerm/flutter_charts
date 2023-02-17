@@ -1,7 +1,8 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 // this level
-import 'container_layouter_base.dart' show BoxContainer, LayoutableBox;
+import 'container_layouter_base.dart'
+    show BoxContainer, LayoutableBox, LayoutContext;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends BoxContainer {
@@ -11,14 +12,14 @@ class LineContainer extends BoxContainer {
   ui.Paint linePaint;
 
   // todo-02-full-autolayout : manualLayedOutFromX and friends ADDED TEMPORARILY to be set during construction
-  //                         : of [LineContainer] in [GridLinesContainer.buildAndAddChildren_DuringParentLayout]
+  //                         : of [LineContainer] in [GridLinesContainer.buildAndReplaceChildren]
   //                         : where these layout values are calculated, held on,
   //                         : and used later in self [layout], to set [lineFrom] and [lineTo]
   //                         : THIS IS TEMPORARY FOR MANUAL LAYOUT TO SHUFFLE VALUES FROM PARENT LAYOUT
   //                         : (GridLinesContainer, something else??) TO LineContainer.layout()
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
   /// between the lifecycle events of [LineContainer]
-  /// creation in parent [buildAndAddChildren_DuringParentLayout]
+  /// creation in parent [buildAndReplaceChildren]
   /// and it's layout in parent [layout].
   ///
   /// ONLY used on horizontal xLineContainer or vertical yLineContainer, maintains the
@@ -48,6 +49,7 @@ class LineContainer extends BoxContainer {
   /// it does not need to override [post_Leaf_SetSize_FromInternals].
   @override
   void layout() {
+    buildAndReplaceChildren(LayoutContext.unused);
     // Use the coordinates manually layed out during creation in [GridLinesContainer] by
     lineFrom = ui.Offset(manualLayedOutFromX, manualLayedOutFromY);
     lineTo = ui.Offset(manualLayedOutToX, manualLayedOutToY);
@@ -66,5 +68,10 @@ class LineContainer extends BoxContainer {
   @override
   void paint(ui.Canvas canvas) {
     canvas.drawLine(lineFrom, lineTo, linePaint);
+  }
+
+  @override
+  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
+    buildAndReplaceChildrenDefault(layoutContext);
   }
 }
