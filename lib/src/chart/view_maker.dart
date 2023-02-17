@@ -3,7 +3,8 @@ import 'dart:ui' as ui show Canvas, Size;
 
 // this level or equivalent
 import 'container.dart' as container;
-import 'container_new.dart' as container_new;
+import 'container_new/data_container_new.dart' as data_container_new;
+import 'container_new/legend_container_new.dart' as legend_container_new;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
@@ -81,7 +82,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// Lifecycle: Its useful lifecycle is the time between this top-class maker [makeViewRoot] is invoked,
   /// where [_legendContainer] is created, and when the concrete [makeViewRoot] is invoked,
   /// which creates the concrete [chartRootContainer], and [_legendContainer] is passed to it.
-  late container.LegendContainer legendContainer;
+  late legend_container_new.LegendContainer legendContainer;
   /// See [legendContainer]
   late container.XContainer      xContainer;
   /// See [legendContainer]
@@ -178,10 +179,10 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].
-  container.LegendContainer makeViewForLegendContainer() {
+  legend_container_new.LegendContainer makeViewForLegendContainer() {
     return  isUseOldDataContainer
-        ? container.LegendContainer(chartViewMaker: this)
-        : container.LegendContainer(chartViewMaker: this);
+        ? legend_container_new.LegendContainer(chartViewMaker: this)
+        : legend_container_new.LegendContainer(chartViewMaker: this);
   }
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
@@ -198,17 +199,17 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// which is instance of [model.NewBarOfPointsModel].
   ///
   /// Original name: generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List
-  List<container_new.NewBarOfPointsContainer> makeViewsForDataAreaBars_As_BarOfPoints_List(
+  List<data_container_new.NewBarOfPointsContainer> makeViewsForDataAreaBars_As_BarOfPoints_List(
         view_maker.ChartViewMaker chartViewMaker,
         List<model.NewBarOfPointsModel> barOfPointsList,
   ) {
-    List<container_new.NewBarOfPointsContainer> chartColumns = [];
+    List<data_container_new.NewBarOfPointsContainer> chartColumns = [];
     // Iterate the dataModel down, creating NewBarOfPointsContainer, then NewPointContainer and return
 
     for (model.NewBarOfPointsModel barOfPoints in chartData.barOfPointsList) {
       // NewBarOfPointsContainer barOfPointsContainer =
       chartColumns.add(
-        container_new.NewBarOfPointsContainer(
+        data_container_new.NewBarOfPointsContainer(
           chartViewMaker: chartViewMaker,
           backingDataBarOfPointsModel: barOfPoints,
           children: [makeViewForDataAreaBarOfPoints_Layouter(chartViewMaker, barOfPoints)],
@@ -231,11 +232,11 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// and collects the views in a list of [NewPointContainer]s which is returned.
   ///
   /// Original name: generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List
-  List<container_new.NewPointContainer> makeViewsForDataAreaBarOfPoints_As_PointList(
+  List<data_container_new.NewPointContainer> makeViewsForDataAreaBarOfPoints_As_PointList(
         view_maker.ChartViewMaker chartViewMaker,
         model.NewBarOfPointsModel barOfPoints,
     ) {
-      List<container_new.NewPointContainer> newPointContainerList = [];
+      List<data_container_new.NewPointContainer> newPointContainerList = [];
 
     // Generates [NewPointContainer] view from each [NewPointModel]
     // and collect the views in a list which is returned.
@@ -255,11 +256,11 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   /// Original name: generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer
-  container_new.NewPointContainer makeViewForDataAreaPoint(
+  data_container_new.NewPointContainer makeViewForDataAreaPoint(
       view_maker.ChartViewMaker chartViewMaker,
       model.NewPointModel pointModel,
       ) {
-    return container_new.NewHBarPointContainer(
+    return data_container_new.NewHBarPointContainer(
       newPointModel: pointModel,
       chartViewMaker: chartViewMaker,
     );

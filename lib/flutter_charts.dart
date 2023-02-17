@@ -152,7 +152,7 @@ export 'src/util/util_labels.dart';
 export 'src/chart/data_model.dart';
 export 'src/chart/container.dart';
 export 'src/chart/view_maker.dart';
-export 'src/chart/container_new.dart';
+export 'src/chart/container_new/data_container_new.dart';
 
 export 'src/chart/model/data_model_new.dart';
 

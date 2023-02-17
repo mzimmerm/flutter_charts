@@ -1,5 +1,6 @@
 // base libraries
 import '../container.dart';
+import '../container_new/legend_container_new.dart';
 import '../model/data_model_new.dart';
 import '../view_maker.dart';
 
@@ -7,7 +8,7 @@ import '../options.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-// import 'container_new.dart';
+// import 'data_container_new.dart';
 import 'presenter.dart'; // OLD
 
 
