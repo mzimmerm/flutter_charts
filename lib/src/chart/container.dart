@@ -189,7 +189,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
-    // todo-00-last : yContainerFirst.buildAndReplaceChildren(LayoutContext.unused); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
+    // todo-00-last : check if contained buildAndReplaceChildren does any layout in YContainer
     yContainerFirst.layout();
 
     yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -206,7 +206,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
-    // todo-00-last : xContainer.buildAndReplaceChildren(LayoutContext.unused);
+    // todo-00-last : check if contained buildAndReplaceChildren does any layout in XContainer
     xContainer.layout();
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
@@ -229,7 +229,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     ));
 
     yContainer.applyParentConstraints(this, yContainerBoxConstraints);
-    // todo-00-last : yContainer.buildAndReplaceChildren(LayoutContext.unused); // sets yContainerAxisPixelsYMin/Max, layout needs to scale labels
     yContainer.layout();
 
     var yContainerSize = yContainer.layoutSize;
@@ -266,9 +265,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
-    // todo-00-last : dataContainer.buildAndReplaceChildren(LayoutContext.unused);
-    // todo-00! : moving build before applyParentConstraints FAILS IN OLD, AS build NEEDS CONSTRAINTS : dataContainer.buildAndReplaceChildren();
-    //                BUT THIS IS A MID-TERM PROBLEM: WE NEED TO REBUILD CHILDREN BEFORE CONSTRAINTS. MAYBE THE SOLUTION IS THIS BUILD SHOULD ALMOST NEVER BE USED.
+    // todo-00-last : check if contained buildAndReplaceChildren does any layout in (old) DataContainer
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
@@ -310,6 +307,68 @@ abstract class ChartRootContainer extends ChartAreaContainer {
 
 }
 
+// todo-00-done : Added own class for AxisContainer
+abstract class AxisContainer extends ChartAreaContainer {
+  AxisContainer({
+    required ChartViewMaker chartViewMaker,
+  }) : super(
+    chartViewMaker: chartViewMaker,
+  );
+
+  // vvvvvvvvvvvvvv todo-00-done : moved up here to AxisContainer from YContainer. BECAUSE IT SHOULD NOT BE -YET- USED ON XCONTAINER, KEEP THE MEMBER NAMES AS IF Y AXIS
+  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [YContainer].
+  ///
+  /// [axisPixelsRange] does NOT start at zero, it contains the pixels from Y container top
+  /// available to Y axis, after a half-label height is excluded on the top,
+  /// and a vertical tick height is excluded on the bottom.
+  ///
+  /// At the same time, the difference between [axisPixelsRange] min and max is the height constraint
+  /// on [NewDataContainer].
+  ///
+  /// Also [axisPixelsRange] is the interval to which the Y data values,
+  /// stored in [yLabelsGenerator]'s member [DataRangeLabelsGenerator.dataRange]
+  /// should be extrapolated.
+  ///
+  /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
+  ///                 this is set may be called multiple times.
+  late Interval axisPixelsRange;
+
+  /// The generator and holder of labels and range of the Y axis.
+  ///
+  /// The [yLabelsGenerator]'s interval [DataRangeLabelsGenerator.dataRange]
+  /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
+  // todo-00-last : can this be moved to NewModel ? This is all data
+  late DataRangeLabelsGenerator yLabelsGenerator;
+
+  // Describes layout pixel positions, so included in this view [YContainer], rather than model or controller.
+  // todo-00-last : remove any pixel fields from LabelInfo, and move this to NewModel
+  late FormattedLabelInfos labelInfos;
+// ^^^^^^^^^^^^^^ todo-00-done : moved up here to AxisContainer from YContainer. BECAUSE IT SHOULD NOT BE -YET- USED ON XCONTAINER, KEEP THE MEMBER NAMES AS IF Y AXIS
+
+}
+
+/// Provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
+/// (actually currently the [ChartAreaContainer].
+///
+/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
+// todo-00-done : Added own class for AxisContainer abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
+abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
+  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
+
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+
+  AdjustableLabelsChartAreaContainer({
+    required ChartViewMaker chartViewMaker,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
+      strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
+        super(
+        chartViewMaker: chartViewMaker,
+      ) {
+    _labelLayoutStrategy.onContainer(this);
+  }
+}
+
 /// Container of the Y axis labels.
 ///
 /// This [ChartAreaContainer] operates as follows:
@@ -319,7 +378,8 @@ abstract class ChartRootContainer extends ChartAreaContainer {
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
 
-class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+// todo-00-done : added own AxisContainer class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLayout {
+class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -333,6 +393,9 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
 
+    // todo-00-last : can this section be moved to NewModel constructor or some early method there? This seems all model related.
+
+    // todo-00-done : doing the same in XContainer for symmetry
     // [yLabelsGenerator] instance depends on both NewModel and ChartRootContainer. We can construct the generator
     // anywhere in [ChartRootContainer] constructor or later.
     // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
@@ -347,6 +410,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     labelInfos = yLabelsGenerator.createLabelInfos();
   }
 
+/* todo-00-done : moved up to AxisContainer
   /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [YContainer].
   ///
   /// [axisPixelsRange] does NOT start at zero, it contains the pixels from Y container top
@@ -366,10 +430,13 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   ///
   /// The [yLabelsGenerator]'s interval [DataRangeLabelsGenerator.dataRange]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
+  // todo-00-last : can this be moved to NewModel ? This is all data
   late DataRangeLabelsGenerator yLabelsGenerator;
 
   // Describes layout pixel positions, so included in this view [YContainer], rather than model or controller.
+  // todo-00-last : remove any pixel fields from LabelInfo, and move this to NewModel
   late FormattedLabelInfos labelInfos;
+*/
 
   /// Containers of Y labels.
   late List<YAxisLabelContainer> _yLabelContainers;
@@ -395,6 +462,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
     // Init the list of y label containers
     _yLabelContainers = [];
 
+    // todo-00-last-last done : can this section be moved to layout? vvvvvvvvvvvv - if so, there is no layout or pixel usage here, good!
+    /*
     // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the YContainer coordinates.
     // The [_axisYMin] does not start at 0, but leaves space for half label height
     double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
@@ -404,13 +473,14 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
-    // todo-00! : can this be moved to layout? can everything here be moved to layout?
     // We now know how long the Y axis is in pixels,
     // so we can calculate pixel positions on labels in LabeInfos
     labelInfos.layoutByLerpToPixels(
       axisPixelsYMin: axisPixelsRange.min,
       axisPixelsYMax: axisPixelsRange.max,
     );
+    */
+    // todo-00-last-last : can this section be moved to layout? ^^^^^^^^^^^^^^
 
     // Code above MUST run for the side-effects of setting [axisPixels] and scaling the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
@@ -447,6 +517,7 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
         labelStyle: labelStyle,
         options: options,
         labelInfo: labelInfo,
+        ownerAxisContainer: this,
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -473,6 +544,26 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
   @override
   void layout() {
     buildAndReplaceChildren(LayoutContext.unused);
+
+    // todo-00-last-last done : moved from buildAndReplaceChildren vvvvvvvvvvvv - if so, there is no layout or pixel usage here, good!
+    // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the YContainer coordinates.
+    // The [_axisYMin] does not start at 0, but leaves space for half label height
+    double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
+    // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
+    double axisPixelsMax =
+        constraints.size.height - (chartViewMaker.chartOptions.xContainerOptions.xBottomMinTicksHeight);
+
+    axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
+
+    // We now know how long the Y axis is in pixels,
+    // so we can calculate pixel positions on labels in LabeInfos
+    // todo-00-last-last-done : performed in AxisLabelContainer.postEtc method : labelInfos.layoutByLerpToPixels(
+    // todo-00-last-last-done : performed in AxisLabelContainer.postEtc method :   axisPixelsYMin: axisPixelsRange.min,
+    // todo-00-last-last-done : performed in AxisLabelContainer.postEtc method :   axisPixelsYMax: axisPixelsRange.max,
+    // todo-00-last-last-done : performed in AxisLabelContainer.postEtc method : );
+    // todo-00-last : can this section be moved to layout? ^^^^^^^^^^^^^^
+
+    // todo-00-last-last-last : The code above must be performed for axisPixelsRange to initialize
     if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
@@ -488,7 +579,8 @@ class YContainer extends ChartAreaContainer with BuilderOfChildrenDuringParentLa
       yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       yLabelContainer.layout();
 
-      double yTickY = yLabelContainer.labelInfo.pixelPositionOnAxis.toDouble();
+       // todo-00-done : moved pixelPositionOnAxis to AxisLabelContainer : double yTickY = yLabelContainer.labelInfo.pixelPositionOnAxis.toDouble();
+      double yTickY = yLabelContainer.pixelPositionOnAxis.toDouble();
 
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
@@ -557,7 +649,23 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   }) : super(
     chartViewMaker: chartViewMaker,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  );
+  ) {
+    // todo-00-done vvvvv : moved here, so both X and YContainer can use generators and LabelInfos - although unused in XContainer so far
+    // [yLabelsGenerator] instance depends on both NewModel and ChartRootContainer. We can construct the generator
+    // anywhere in [ChartRootContainer] constructor or later.
+    // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
+    // todo-00-last : can this section be moved to NewModel constructor or some early method there? This seems all model related.
+    yLabelsGenerator = DataRangeLabelsGenerator(
+      extendAxisToOrigin: chartViewMaker.extendAxisToOrigin,
+      valueToLabel: chartViewMaker.chartOptions.xContainerOptions.valueToLabel,
+      inverseTransform: chartViewMaker.chartOptions.dataContainerOptions.xInverseTransform,
+      userLabels: chartViewMaker.chartData.xUserLabels,
+      dataModel: chartViewMaker.chartData,
+      isStacked: chartViewMaker.isStacked,
+    );
+    labelInfos = yLabelsGenerator.createLabelInfos();
+    // ^^^^^^^^^^
+  }
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
@@ -589,11 +697,14 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
 
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
-      var xLabelContainer = AxisLabelContainer(
+      // todo-00-done : Added concrete class for XAxisLabelContainer : var xLabelContainer = AxisLabelContainer(
+      var xLabelContainer = XAxisLabelContainer(
         label: xUserLabels[xIndex],
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
+        labelInfo: labelInfos.labelInfoList[xIndex], // todo-00-last-last: added, // In XContainer, we can for now force to null, as we do not create LabelInfo for XAxis
+        ownerAxisContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
     }
@@ -613,6 +724,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     buildAndReplaceChildren(LayoutContext.unused);
 
     ChartOptions options = chartViewMaker.chartOptions;
+
+    axisPixelsRange = const Interval(0.0, 200.0); // todo-00-last-last-last : added. Purely artificial on XAxis
 
     List<String> xUserLabels = chartViewMaker.chartData.xUserLabels;
     double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
@@ -1075,26 +1188,6 @@ abstract class AdjustableLabels {
   bool labelsOverlap();
 }
 
-/// Provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
-/// (actually currently the [ChartAreaContainer].
-///
-/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
-  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
-
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
-
-  AdjustableLabelsChartAreaContainer({
-    required ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
-            strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
-        super(
-          chartViewMaker: chartViewMaker,
-        ) {
-    _labelLayoutStrategy.onContainer(this);
-  }
-}
 
 /// Provides the data area container for the bar chart.
 ///

@@ -155,6 +155,22 @@ class XContainerOptions {
     this.xLabelsPadTB = 6.0,
     this.xLabelsPadLR = 40.0,
   });
+
+  // todo-00-done : also provide for X labels, but should NOT be used yet
+  String valueToLabel(num value) {
+    /*
+    // if there are >= 3 < 6 decimal digits, replace with K (etc)
+    // todo 1 add an option for how to format; a method or a formatter.
+    String val = value.toString();
+    if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
+    if (val.endsWith('000000')) val = val.substring(0, val.length - 6) + 'M';
+    if (val.endsWith('000')) val = val.substring(0, val.length - 3) + 'K';
+
+    return val + yLabelUnits;
+   */
+    throw StateError('XContainerOptions.valueToLabel should not be used YET');
+  }
+
 }
 
 @immutable
@@ -259,6 +275,10 @@ class DataContainerOptions {
   /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
+  // todo-00-done added for symmetry with Y axis
+  final num Function(num y) xTransform;
+  final num Function(num y) xInverseTransform;
+
   /// The request to start Y axis and it's labels at data minimum.
   ///
   /// When [extendAxisToOriginRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
@@ -280,6 +300,8 @@ class DataContainerOptions {
     this.extendAxisToOriginRequested = true,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,
+    this.xTransform = identity<num>,
+    this.xInverseTransform = identity<num>,
   });
 }
 

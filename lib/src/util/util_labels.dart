@@ -218,29 +218,6 @@ class DataRangeLabelsGenerator {
 /// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
 class LabelInfo {
-  final DataRangeLabelsGenerator _labelsGenerator;
-
-  /// Not-scaled and not-transformed label value.
-  ///
-  /// This is only used in labels display, never to calculate or display data values.
-  /// All data values calculations are using the [_dataValue].
-  late final num _rawDataValue;
-
-  /// The transformed [_rawDataValue].
-  final num _dataValue;
-
-  /// Scaled label value.
-  ///
-  /// [_pixelPositionOnAxis]s are on the scale of y axis length.
-  // todo-00 separate pixels, and make LabelInfo and any owners part of [NewModel].
-  late final num _pixelPositionOnAxis;
-  num get pixelPositionOnAxis => _pixelPositionOnAxis;
-
-  /// Label showing on the Y axis; typically a value with unit.
-  ///
-  /// Formatted label is just formatted [_pixelPositionOnAxis].
-  late final String _formattedLabel;
-  String get formattedLabel => _formattedLabel;
 
   /// Constructs from value at the label, holding on the owner [labelsGenerator],
   /// which provides data range corresponding to axis range.
@@ -253,12 +230,39 @@ class LabelInfo {
     _rawDataValue = yInverseTransform(_dataValue);
   }
 
+  final DataRangeLabelsGenerator _labelsGenerator;
+
+  /// Not-scaled and not-transformed label value.
+  ///
+  /// This is only used in labels display, never to calculate or display data values.
+  /// All data values calculations are using the [_dataValue].
+  late final num _rawDataValue;
+
+  /// The transformed [_rawDataValue].
+  final num _dataValue;
+  double get dataValue => _dataValue.toDouble(); // todo-00-done : added
+
+/* todo-00-done : moved from this LabelInfo to AxisLabelContainer
+  /// Scaled label value.
+  ///
+  /// [_pixelPositionOnAxis]s are on the scale of y axis length.
+  // todo-00 separate pixels, and make LabelInfo and any owners part of [NewModel].
+  late final num _pixelPositionOnAxis;
+  num get pixelPositionOnAxis => _pixelPositionOnAxis;
+*/
+
+  /// Label showing on the Y axis; typically a value with unit.
+  ///
+  /// Formatted label is just formatted [_pixelPositionOnAxis].
+  late final String _formattedLabel;
+  String get formattedLabel => _formattedLabel;
+
   @override
   String toString() {
     return super.toString() +
         ' dataValue=$_rawDataValue,' +
         ' transformedDataValue=$_dataValue,' +
-        ' _axisValue=$_pixelPositionOnAxis,' +
+        // todo-00-done : ' _axisValue=$_pixelPositionOnAxis,' +
         ' _formattedLabel=$_formattedLabel,';
   }
 }
@@ -290,13 +294,17 @@ class FormattedLabelInfos {
 
   /// List that manages the list of labels information for all generated or user labels.
   final List<LabelInfo> _labelInfoList;
-  Iterable<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
+  List<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
 
+/*
   /// For each [LabelInfo] use it's [DataRangeLabelsGenerator] to
   /// lerp it's [_dataValue] and place the result on [_pixelPositionOnAxis].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
+  // todo-00-done pulled this method out of this FormattedLabelInfos, and place it on AxisLabelContainer as private, let it manipulate / layout this: List<YAxisLabelContainer> _yLabelContainers
+  //      VERSION ON AxisLabelContainer MUST PASS LABEL INFO
+  // that way, LabelInfos are free of pixels and can be on NewModel
   void layoutByLerpToPixels({
     required double axisPixelsYMin,
     required double axisPixelsYMax,
@@ -314,6 +322,7 @@ class FormattedLabelInfos {
       );
     }
   }
+*/
   List<double> get dataYsOfLabels => labelInfoList.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
 
 }

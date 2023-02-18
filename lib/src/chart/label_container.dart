@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
+// import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
+import 'container.dart' show AxisContainer;
 import 'container_layouter_base.dart' show BoxContainer, LayoutableBox, LayoutContext;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
@@ -34,6 +36,50 @@ import '../util/util_labels.dart' show LabelInfo;
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
 class LabelContainer extends BoxContainer {
+
+  // Allows to configure certain sizes, colors, and layout.
+  // final LabelStyle _labelStyle;
+
+  /// Constructs an instance for a label, it's text style, and label's
+  /// maximum width.
+  ///
+  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMaker].
+  /// It is currently assumed clients will not call any methods using them.
+  LabelContainer({
+    required String label,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required LabelStyle labelStyle,
+    required ChartOptions options,
+  })  :
+        _options = options,
+        _labelTiltMatrix = labelTiltMatrix,
+        // _labelStyle = labelStyle,
+        _textPainter = widgets.TextPainter(
+          text: widgets.TextSpan(
+            text: label,
+            style: labelStyle.textStyle, // All labels share one style object
+          ),
+          textDirection: labelStyle.textDirection,
+          textAlign: labelStyle.textAlign,
+          // center in available space todo-01 textScaleFactor does nothing ??
+          textScaleFactor: labelStyle.textScaleFactor,
+          // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+        ),
+        super() {
+    // var text = new widgets.TextSpan(
+    //   text: label,
+    //   style: _labelStyle.textStyle, // All labels share one style object
+    // );
+    // _textPainter = new widgets.TextPainter(
+    //   text: text,
+    //   textDirection: _labelStyle.textDirection,
+    //   textAlign: _labelStyle.textAlign,
+    //   // center in available space
+    //   textScaleFactor: _labelStyle.textScaleFactor,
+    //   // todo-04 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+    // ); //  textScaleFactor does nothing ??
+  }
+
   /// Max width of label (outside constraint).
   ///
   /// Late initialized in layout.
@@ -79,49 +125,6 @@ class LabelContainer extends BoxContainer {
     return _tiltedLabelEnvelope.topLeft;
   }
 
-  // Allows to configure certain sizes, colors, and layout.
-  // final LabelStyle _labelStyle;
-
-  /// Constructs an instance for a label, it's text style, and label's
-  /// maximum width.
-  ///
-  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMaker].
-  /// It is currently assumed clients will not call any methods using them.
-  LabelContainer({
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-    required ChartOptions options,
-  })  :
-      _options = options,
-        _labelTiltMatrix = labelTiltMatrix,
-  // _labelStyle = labelStyle,
-        _textPainter = widgets.TextPainter(
-          text: widgets.TextSpan(
-            text: label,
-            style: labelStyle.textStyle, // All labels share one style object
-          ),
-          textDirection: labelStyle.textDirection,
-          textAlign: labelStyle.textAlign,
-          // center in available space
-          textScaleFactor: labelStyle.textScaleFactor,
-          // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-        ),
-  //  textScaleFactor does nothing ??
-        super() {
-    // var text = new widgets.TextSpan(
-    //   text: label,
-    //   style: _labelStyle.textStyle, // All labels share one style object
-    // );
-    // _textPainter = new widgets.TextPainter(
-    //   text: text,
-    //   textDirection: _labelStyle.textDirection,
-    //   textAlign: _labelStyle.textAlign,
-    //   // center in available space
-    //   textScaleFactor: _labelStyle.textScaleFactor,
-    //   // todo-04 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-    // ); //  textScaleFactor does nothing ??
-  }
 
   // #####  Implementors of method in superclass [Container].
 
@@ -202,7 +205,7 @@ class LabelContainer extends BoxContainer {
   ///        witch exactly same code, and things would work, except missing check if 
   ///        layout size is within constraints.
   @override
-  post_Leaf_SetSize_FromInternals() {
+  void post_Leaf_SetSize_FromInternals() {
     _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
@@ -327,7 +330,34 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-class AxisLabelContainer extends LabelContainer {
+abstract class AxisLabelContainer extends LabelContainer {
+  AxisLabelContainer({
+    required String label,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required LabelStyle labelStyle,
+    required ChartOptions options,
+    required LabelInfo labelInfo,
+    required AxisContainer ownerAxisContainer,
+  })  : _labelInfo = labelInfo,
+        _ownerAxisContainer = ownerAxisContainer,
+        super(
+          label: label,
+          labelTiltMatrix: labelTiltMatrix,
+          labelStyle: labelStyle,
+          options: options,
+        );
+
+  //////////////////////////// vvvvvvvvvvvvvvv todo-00-done : Moved here to top LabelContainer from AxisLabelContainer, YLabelContainer etc.
+  final AxisContainer _ownerAxisContainer;
+
+  // todo-00-done : moved _labelInfo here from sub YLabelContainer
+  /// Maintains the LabelInfo from which this [LabelContainer] was created,
+  /// for use during [layout] of self or parents.
+  final LabelInfo _labelInfo;
+
+  /// Getter of [LabelInfo] which created this Y label.
+  LabelInfo get labelInfo => _labelInfo;
+
   /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
@@ -353,17 +383,68 @@ class AxisLabelContainer extends LabelContainer {
   // todo-04 how is this used?
   double parentOffsetTick = 0.0;
 
-  AxisLabelContainer({
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-    required ChartOptions options,
-  }) : super(
-          label: label,
-          labelTiltMatrix: labelTiltMatrix,
-          labelStyle: labelStyle,
-           options: options,
-        );
+  /// Scaled label value.
+  ///
+  /// [_pixelPositionOnAxis]s are on the scale of y axis length.
+  /// Important Note: The only role this plays, is setting
+  ///    ```dart
+  ///    yLabelContainer.parentOffsetTick = yTickY;
+  ///    ```
+  ///  That code is in [YContainer.layout], so this late final must be set before that.
+  ///  Should be fine to set anywhere in this [LabelContainer.layout]
+  // todo-00-done : moved from LabelInfo to this AxisLabelContainer
+  // todo-00-last-last separate pixels, and make LabelInfo and any owners part of [NewModel].
+  late final num _pixelPositionOnAxis;
+  num get pixelPositionOnAxis => _pixelPositionOnAxis;
+
+
+  /// For each [LabelInfo] use it's [DataRangeLabelsGenerator] to
+  /// lerp it's [_dataValue] and place the result on [_pixelPositionOnAxis].
+  ///
+  /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
+  /// is determined.
+  /*
+  // todo-00-done pulled this method out of LabelInfos, BUT NOT USED DIRECTLY, THE _pixelPositionOnAxis IS SET IN AxisLabelContainer
+  //      VERSION ON AxisLabelContainer MUST PASS LABEL INFO
+  // that way, LabelInfos are free of pixels and can be on NewModel
+
+  void layoutByLerpToPixels({
+    required double axisPixelsYMin,
+    required double axisPixelsYMax,
+    required LabelInfo labelInfo,
+  }) {
+    for (int i = 0; i < _labelInfoList.length; i++) {
+      LabelInfo labelInfo = _labelInfoList[i];
+      var generator = labelInfo._labelsGenerator;
+      // Scale labels
+      // This sets labelInfo._axisValue = LabelsGenerator.scaleY(labelInfo.transformedDataValue)
+      labelInfo._pixelPositionOnAxis = generator.lerpValueToPixels(
+        value: labelInfo._dataValue.toDouble(),
+        axisPixelsYMin: axisPixelsYMin,
+        axisPixelsYMax: axisPixelsYMax,
+        isAxisAndLabelsSameDirection: !generator.isAxisAndLabelsSameDirection,
+      );
+    }
+  }
+  */
+
+// vvvvvvvvvv todo-00-done: added logic to set pixels. ONLY used on Y axis for now
+  @override
+  void post_Leaf_SetSize_FromInternals() {
+    // Scale labels
+    // This sets labelInfo._axisValue = LabelsGenerator.scaleY(labelInfo.transformedDataValue)
+    _pixelPositionOnAxis = _ownerAxisContainer.yLabelsGenerator.lerpValueToPixels(
+      value: labelInfo.dataValue.toDouble(),
+      axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
+      axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
+      isAxisAndLabelsSameDirection: !_ownerAxisContainer.yLabelsGenerator.isAxisAndLabelsSameDirection,
+    );
+
+    super.post_Leaf_SetSize_FromInternals();
+  }
+// ^^^^^^^^^
+
+//////////////////////////// ^^^^^^^^^^^^^^^^ todo-00-done
 }
 
 /// Label container for Y labels, which maintain, in addition to
@@ -371,12 +452,14 @@ class AxisLabelContainer extends LabelContainer {
 /// from which each Y label is created.
 class YAxisLabelContainer extends AxisLabelContainer {
 
+/*  todo-00-done : moved higher to AxisLabelContainer
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
   final LabelInfo _labelInfo;
 
   /// Getter of [LabelInfo] which created this Y label.
   LabelInfo get labelInfo => _labelInfo;
+*/
 
   YAxisLabelContainer({
     required String label,
@@ -384,10 +467,33 @@ class YAxisLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required LabelInfo labelInfo,
-  }) : _labelInfo = labelInfo, super(
+    required AxisContainer ownerAxisContainer,
+  }) : super(
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,
     options:         options,
+    labelInfo:       labelInfo,
+    ownerAxisContainer: ownerAxisContainer,
+  );
+}
+
+// todo-00-done : added
+class XAxisLabelContainer extends AxisLabelContainer {
+
+  XAxisLabelContainer({
+    required String label,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required LabelStyle labelStyle,
+    required ChartOptions options,
+    required LabelInfo labelInfo,
+    required AxisContainer ownerAxisContainer,
+  }) : super(
+    label:           label,
+    labelTiltMatrix: labelTiltMatrix,
+    labelStyle:      labelStyle,
+    options:         options,
+    labelInfo:       labelInfo,
+    ownerAxisContainer: ownerAxisContainer,
   );
 }
