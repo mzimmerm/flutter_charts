@@ -156,11 +156,10 @@ class XContainerOptions {
     this.xLabelsPadLR = 40.0,
   });
 
-  // todo-00-done : also provide for X labels, but should NOT be used yet
+  /// Also providing a method to format X labels, but should NOT be used YET
   String valueToLabel(num value) {
     /*
     // if there are >= 3 < 6 decimal digits, replace with K (etc)
-    // todo 1 add an option for how to format; a method or a formatter.
     String val = value.toString();
     if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
     if (val.endsWith('000000')) val = val.substring(0, val.length - 6) + 'M';
@@ -275,7 +274,7 @@ class DataContainerOptions {
   /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
-  // todo-00-done added for symmetry with Y axis
+  // Added for symmetry with Y axis. Unused YET.
   final num Function(num y) xTransform;
   final num Function(num y) xInverseTransform;
 

@@ -347,10 +347,9 @@ abstract class AxisLabelContainer extends LabelContainer {
           options: options,
         );
 
-  //////////////////////////// vvvvvvvvvvvvvvv todo-00-done : Moved here to top LabelContainer from AxisLabelContainer, YLabelContainer etc.
+  /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
   final AxisContainer _ownerAxisContainer;
 
-  // todo-00-done : moved _labelInfo here from sub YLabelContainer
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
   final LabelInfo _labelInfo;
@@ -392,74 +391,36 @@ abstract class AxisLabelContainer extends LabelContainer {
   ///    ```
   ///  That code is in [YContainer.layout], so this late final must be set before that.
   ///  Should be fine to set anywhere in this [LabelContainer.layout]
-  // todo-00-done : moved from LabelInfo to this AxisLabelContainer
-  // todo-00-last-last separate pixels, and make LabelInfo and any owners part of [NewModel].
   late final num _pixelPositionOnAxis;
   num get pixelPositionOnAxis => _pixelPositionOnAxis;
 
-
-  /// For each [LabelInfo] use it's [DataRangeLabelsGenerator] to
-  /// lerp it's [_dataValue] and place the result on [_pixelPositionOnAxis].
+  /// Overridden from [LabelContainer.post_Leaf_SetSize_FromInternals]
+  /// added logic to set pixels. ONLY used on Y axis labels for now.
+  ///
+  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
+  /// lerp the label [_dataValue] and places the result on [_pixelPositionOnAxis].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
-  /*
-  // todo-00-done pulled this method out of LabelInfos, BUT NOT USED DIRECTLY, THE _pixelPositionOnAxis IS SET IN AxisLabelContainer
-  //      VERSION ON AxisLabelContainer MUST PASS LABEL INFO
-  // that way, LabelInfos are free of pixels and can be on NewModel
-
-  void layoutByLerpToPixels({
-    required double axisPixelsYMin,
-    required double axisPixelsYMax,
-    required LabelInfo labelInfo,
-  }) {
-    for (int i = 0; i < _labelInfoList.length; i++) {
-      LabelInfo labelInfo = _labelInfoList[i];
-      var generator = labelInfo._labelsGenerator;
-      // Scale labels
-      // This sets labelInfo._axisValue = LabelsGenerator.scaleY(labelInfo.transformedDataValue)
-      labelInfo._pixelPositionOnAxis = generator.lerpValueToPixels(
-        value: labelInfo._dataValue.toDouble(),
-        axisPixelsYMin: axisPixelsYMin,
-        axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: !generator.isAxisAndLabelsSameDirection,
-      );
-    }
-  }
-  */
-
-// vvvvvvvvvv todo-00-done: added logic to set pixels. ONLY used on Y axis for now
   @override
   void post_Leaf_SetSize_FromInternals() {
-    // Scale labels
-    // This sets labelInfo._axisValue = LabelsGenerator.scaleY(labelInfo.transformedDataValue)
-    _pixelPositionOnAxis = _ownerAxisContainer.yLabelsGenerator.lerpValueToPixels(
+    // We now know how long the Y axis is in pixels,
+    // so we can calculate this label pixel position IN THE XContainer / YContainer.
+    _pixelPositionOnAxis = _ownerAxisContainer.labelsGenerator.lerpValueToPixels(
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
-      isAxisAndLabelsSameDirection: !_ownerAxisContainer.yLabelsGenerator.isAxisAndLabelsSameDirection,
+      isAxisAndLabelsSameDirection: !_ownerAxisContainer.labelsGenerator.isAxisAndLabelsSameDirection,
     );
 
     super.post_Leaf_SetSize_FromInternals();
   }
-// ^^^^^^^^^
-
-//////////////////////////// ^^^^^^^^^^^^^^^^ todo-00-done
 }
 
 /// Label container for Y labels, which maintain, in addition to
 /// the superclass [YAxisLabelContainer] also [LabelInfo] - the object
 /// from which each Y label is created.
 class YAxisLabelContainer extends AxisLabelContainer {
-
-/*  todo-00-done : moved higher to AxisLabelContainer
-  /// Maintains the LabelInfo from which this [LabelContainer] was created,
-  /// for use during [layout] of self or parents.
-  final LabelInfo _labelInfo;
-
-  /// Getter of [LabelInfo] which created this Y label.
-  LabelInfo get labelInfo => _labelInfo;
-*/
 
   YAxisLabelContainer({
     required String label,
@@ -478,7 +439,7 @@ class YAxisLabelContainer extends AxisLabelContainer {
   );
 }
 
-// todo-00-done : added
+/// [AxisLabelContainer] used in the [XContainer].
 class XAxisLabelContainer extends AxisLabelContainer {
 
   XAxisLabelContainer({

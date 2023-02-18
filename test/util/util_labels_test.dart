@@ -56,15 +56,15 @@ void main() {
   test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
 
-    DataRangeLabelsGenerator yLabelsGenerator;
+    DataRangeLabelsGenerator labelsGenerator;
     
     var extendAxisToOrigin = true;
     var xUserLabels = ['1', '2', '3'];
     var dataRowsLegends = ['Legend of row 1'];
 
     var dataRows = [[1.0, 22.0, 333.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    List<num> labels = yLabelsGenerator.labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    List<num> labels = labelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], 0.0);
     expect(labels[1], 100.0);
@@ -73,8 +73,8 @@ void main() {
 
 
     dataRows = [[-1.0, -22.0, -333.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = yLabelsGenerator.labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = labelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -82,8 +82,8 @@ void main() {
     expect(labels[3], 0.0);
 
     dataRows = [[22.0, 10.0, -333.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = yLabelsGenerator.labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = labelsGenerator.labelPositions;
     expect(labels.length, 5);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -92,8 +92,8 @@ void main() {
     expect(labels[4], 100.0);
 
     dataRows = [[-22.0, -10.0, 333.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = yLabelsGenerator.labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = labelsGenerator.labelPositions;
     expect(labels.length, 5);
     expect(labels[0], -100.0);
     expect(labels[1], 0.0);
@@ -102,8 +102,8 @@ void main() {
     expect(labels[4], 300.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
-    labels = yLabelsGenerator.labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
+    labels = labelsGenerator.labelPositions;
     expect(labels.length, 4);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -111,8 +111,8 @@ void main() {
     expect(labels[3], 2000.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
-    yLabelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = yLabelsGenerator. labelPositions;
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    labels = labelsGenerator. labelPositions;
     expect(labels.length, 3);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -127,7 +127,7 @@ void main() {
   //   bool extendAxisToOrigin = false;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yLabelsGenerator] - yLabelsGenerator is unused, will recreate
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, labelsGenerator] - labelsGenerator is unused, will recreate
   //   var data = [
   //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
   //     [[1.0, 22.0, 333.0], 500.0, 100.0, [0.0, 100.0, 200.0, 300.0], 0.0, 333.0, 'ignore'],
@@ -150,7 +150,7 @@ void main() {
   //   bool extendAxisToOrigin = true;
   //
   //   // The only independent things are: _dataYs, axisYMin, axisYMax. The rest (distributedLabelYs) are derived
-  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, yLabelsGenerator] - yLabelsGenerator is unused, will recreate
+  //   // [List _dataYs for Range constructor, axisYMin, axisYMax, distributedLabelYs, dataYEnvelop, labelsGenerator] - labelsGenerator is unused, will recreate
   //   var data = [
   //     // ex32 linear
   //     [[20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 35.0, 25.0, 40.0, 30.0, 20.0, 20.0], 413.42857142857144, 8.0, [20.0, 30.0, 40.0], 20.0, 40.0, 'Instance of DataRangeLabelsGenerator'],
@@ -210,7 +210,7 @@ void rangeTestCore(
     // Reversing min max in makeLabelsGeneratorWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
-    DataRangeLabelsGenerator yLabelsGenerator = DataRangeLabelsGenerator(
+    DataRangeLabelsGenerator labelsGenerator = DataRangeLabelsGenerator(
       dataModel: dataModel,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
@@ -219,12 +219,12 @@ void rangeTestCore(
     );
 
 
-    // expect(yLabelsGenerator.dataYsEnvelope.min, expectedDataEnvelopMin);
-    // expect(yLabelsGenerator.dataYsEnvelope.max, expectedDataEnvelopMax);
-    expect(yLabelsGenerator.labelPositions.length, expectedLabels.length);
-    for (int i = 0; i < yLabelsGenerator.labelPositions.length; i++) {
+    // expect(labelsGenerator.dataYsEnvelope.min, expectedDataEnvelopMin);
+    // expect(labelsGenerator.dataYsEnvelope.max, expectedDataEnvelopMax);
+    expect(labelsGenerator.labelPositions.length, expectedLabels.length);
+    for (int i = 0; i < labelsGenerator.labelPositions.length; i++) {
       expect(
-        yLabelsGenerator.labelPositions[i],
+        labelsGenerator.labelPositions[i],
         expectedLabels[i],
       );
     }

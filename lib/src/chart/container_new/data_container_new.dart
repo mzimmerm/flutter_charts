@@ -118,7 +118,7 @@ class NewHBarPointContainer extends NewPointContainer {
     double width = constraints.width;
 
     // Rectangle height is Y scaled from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
-    DataRangeLabelsGenerator yLabelsGenerator = chartViewMaker.yContainer.yLabelsGenerator;
+    DataRangeLabelsGenerator yLabelsGenerator = chartViewMaker.yContainer.labelsGenerator;
 
     container.YContainer yContainer = chartViewMaker.yContainer;
 

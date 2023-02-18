@@ -140,6 +140,7 @@ class DataRangeLabelsGenerator {
     required double value,
     required double axisPixelsYMin,
     required double axisPixelsYMax,
+    // todo-00-last-last-last : We should NOT need this, it is always using this member so just use this.isAxisAndLabelsSameDirection ??
     required bool isAxisAndLabelsSameDirection,
   }) {
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
@@ -240,16 +241,7 @@ class LabelInfo {
 
   /// The transformed [_rawDataValue].
   final num _dataValue;
-  double get dataValue => _dataValue.toDouble(); // todo-00-done : added
-
-/* todo-00-done : moved from this LabelInfo to AxisLabelContainer
-  /// Scaled label value.
-  ///
-  /// [_pixelPositionOnAxis]s are on the scale of y axis length.
-  // todo-00 separate pixels, and make LabelInfo and any owners part of [NewModel].
-  late final num _pixelPositionOnAxis;
-  num get pixelPositionOnAxis => _pixelPositionOnAxis;
-*/
+  double get dataValue => _dataValue.toDouble();
 
   /// Label showing on the Y axis; typically a value with unit.
   ///
@@ -262,7 +254,6 @@ class LabelInfo {
     return super.toString() +
         ' dataValue=$_rawDataValue,' +
         ' transformedDataValue=$_dataValue,' +
-        // todo-00-done : ' _axisValue=$_pixelPositionOnAxis,' +
         ' _formattedLabel=$_formattedLabel,';
   }
 }
@@ -296,33 +287,6 @@ class FormattedLabelInfos {
   final List<LabelInfo> _labelInfoList;
   List<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
 
-/*
-  /// For each [LabelInfo] use it's [DataRangeLabelsGenerator] to
-  /// lerp it's [_dataValue] and place the result on [_pixelPositionOnAxis].
-  ///
-  /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
-  /// is determined.
-  // todo-00-done pulled this method out of this FormattedLabelInfos, and place it on AxisLabelContainer as private, let it manipulate / layout this: List<YAxisLabelContainer> _yLabelContainers
-  //      VERSION ON AxisLabelContainer MUST PASS LABEL INFO
-  // that way, LabelInfos are free of pixels and can be on NewModel
-  void layoutByLerpToPixels({
-    required double axisPixelsYMin,
-    required double axisPixelsYMax,
-  }) {
-    for (int i = 0; i < _labelInfoList.length; i++) {
-      LabelInfo labelInfo = _labelInfoList[i];
-      var generator = labelInfo._labelsGenerator;
-      // Scale labels
-      // This sets labelInfo._axisValue = LabelsGenerator.scaleY(labelInfo.transformedDataValue)
-      labelInfo._pixelPositionOnAxis = generator.lerpValueToPixels(
-        value: labelInfo._dataValue.toDouble(),
-        axisPixelsYMin: axisPixelsYMin,
-        axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: !generator.isAxisAndLabelsSameDirection,
-      );
-    }
-  }
-*/
   List<double> get dataYsOfLabels => labelInfoList.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
 
 }
