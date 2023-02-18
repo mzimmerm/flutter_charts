@@ -521,12 +521,12 @@ abstract class LayoutableBox {
   ///
   ///      1) Generally, leafs do not need to override [layout],
   ///         as their only role in the layout process is to set their [layoutSize], which parents can later get.
-  ///         The standard place for leafs to set their [layoutSize] is [post_Leaf_SetSize_FromInternals]
+  ///         The standard place for leafs to set their [layoutSize] is [layout_Post_Leaf_SetSize_FromInternals]
   ///         which MUST be overridden on classes which do NOT override [layout].
   ///         Alternatively, it is sufficient for leafs to override [layout] and only set [layoutSize] there.
   ///      2) Non-leafs do often need to override some methods invoked from [layout],
   ///         or the whole [layout]. Some details on Non-Leafs
-  ///         - Non-positioning Non-leafs: Generally only need to override [post_NotLeaf_PositionChildren] to return .
+  ///         - Non-positioning Non-leafs: Generally only need to override [layout_Post_NotLeaf_PositionChildren] to return .
   ///           If mostly do not need to override [layout] at all,
   ///           unless they wish to distribute constraints to children differently from the default,
   ///           passing the full constraint to all children.
@@ -554,8 +554,8 @@ abstract class LayoutableBox {
 /// Mixin provides role of a generic layouter for a one [LayoutableBox] or a list of [LayoutableBox]es.
 ///
 /// The core functions of this class is to position their children
-/// using [post_NotLeaf_PositionChildren] in self,
-/// then apply the positions as offsets onto children in [_post_NotLeaf_OffsetChildren].
+/// using [layout_Post_NotLeaf_PositionChildren] in self,
+/// then apply the positions as offsets onto children in [_layout_Post_NotLeaf_OffsetChildren].
 ///
 /// Layouter classes with this mixin can be divided into two categories,
 /// if they use the default [layout] :
@@ -564,7 +564,7 @@ abstract class LayoutableBox {
 ///     This also implies that during layout, the position is converted into offsets , applied to it's children.
 ///     As a result, we consider extensions being *positioning* is equivalent to being *offsetting*.
 ///     Implementation-wise, *positioning* (and so *offsetting*)
-///     extensions must implement both [post_NotLeaf_PositionChildren] and [_post_NotLeaf_OffsetChildren].
+///     extensions must implement both [layout_Post_NotLeaf_PositionChildren] and [_layout_Post_NotLeaf_OffsetChildren].
 ///     Often, the offset method can use the default, but the positioning method should be overriden.
 ///
 ///   - *non-positioning* (equivalent to *non-offsetting*) should implement both positioning
@@ -720,17 +720,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - A leaf in documentation and method names of this algorithm is a [BoxContainer] with empty [__children].
   ///     Note: we may consider explicitly set another property such as [alwaysLeaf]. Reason: in dynamic layouts,
   ///               we may get a node that is normally not a leaf become a leaf using this definition,
-  ///               causing that the default implementation of [post_Leaf_SetSize_FromInternals]
+  ///               causing that the default implementation of [layout_Post_Leaf_SetSize_FromInternals]
   ///               (which throws if called on no-children) stops the layout.
-  ///               So in principle current approach forces us to always override [post_Leaf_SetSize_FromInternals].
+  ///               So in principle current approach forces us to always override [layout_Post_Leaf_SetSize_FromInternals].
   ///
   /// Implementation:
   ///   - The layouter order of processing of [_children] always starts with the first child
   ///     in the [_children] list, proceeds in it's [Iterator.moveNext] sequence.
-  ///     This is also true for [_preDescend_DistributeConstraintsToImmediateChildren],
+  ///     This is also true for [_layout_Pre_DistributeConstraintsToImmediateChildren],
   ///     which, if overridden without overriding [layout], must distribute constraints in the same order.
-  ///   - For a leaf, the only method called is [post_Leaf_SetSize_FromInternals]!
-  ///     As a consequence, for a leaf, overriding [layout] and overriding [post_Leaf_SetSize_FromInternals]
+  ///   - For a leaf, the only method called is [layout_Post_Leaf_SetSize_FromInternals]!
+  ///     As a consequence, for a leaf, overriding [layout] and overriding [layout_Post_Leaf_SetSize_FromInternals]
   ///     achieves the same result, as long as either override has the same code.
   ///
   /// Important notes about this default implementation, overrides, terms, and conditions:
@@ -747,7 +747,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   ///   - For an extension overriding SOME OF THE PUBLIC METHODS CALLED IN [layout] BUT NOT [layout],
   ///     to function in a [BoxContainerHierarchy] the requirements are:
-  ///     - On leaf, override [post_Leaf_SetSize_FromInternals] and set [layoutSize].
+  ///     - On leaf, override [layout_Post_Leaf_SetSize_FromInternals] and set [layoutSize].
   ///
   @override
   void layout() {
@@ -782,7 +782,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 
   void _layout_DefaultRecurse() {
     // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
-    _preDescend_DistributeConstraintsToImmediateChildren(_children);
+    _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
 
     // B. node-descend
     for (var child in _children) {
@@ -793,7 +793,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
     // C. node-post-descend.
     //    Here, children have layoutSizes, which are used to lay them out in me, then offset them in me
-    _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
+    _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
   }
 
   /// This [BoxLayouter]'s default implementation distributes this layouter 's unchanged
@@ -810,7 +810,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///     may 'divide' it's constraints evenly or unevenly to children, passing each
   ///     a fraction of it's constraint.
   ///
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     for (var child in children) {
       child.applyParentConstraints(this, constraints);
     }
@@ -820,7 +820,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// Preconditions:
   ///   - all [constraints] are distributed in
-  ///     pre-descend [_preDescend_DistributeConstraintsToImmediateChildren].
+  ///     pre-descend [_layout_Pre_DistributeConstraintsToImmediateChildren].
   ///
   /// Results:
   /// On leaf:
@@ -832,61 +832,61 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - The current container [layoutSizes] is asserted to be within [constraint]
   ///
   void
-  _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
+  _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints() {
     if (isLeaf) {
-      post_Leaf_SetSize_FromInternals();
+      layout_Post_Leaf_SetSize_FromInternals();
     } else {
-      _post_NotLeaf_PositionThenOffsetChildren_ThenSetSize();
+      _layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize();
     }
-    _post_AssertSizeInsideConstraints();
+    _layout_Post_AssertSizeInsideConstraints();
   }
 
   /// Performs the CORE of the 'layouter specific processing',
   /// by finding all children positions in self,
   /// then using the positions to set children [offset]s and [layoutSize]s.
   ///
-  /// Assumes that [constraints] have been set in [_preDescend_DistributeConstraintsToImmediateChildren].
+  /// Assumes that [constraints] have been set in [_layout_Pre_DistributeConstraintsToImmediateChildren].
   ///
   /// Final side effect result must always be setting the [layoutSize] on this node.
   ///
-  /// Important override notes and rules for [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] on extensions:
+  /// Important override notes and rules for [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] on extensions:
   ///   - On Non-positioning extensions using the default [layout],
   ///     best performance with non-positioning is when extensions override
-  ///     this method and perform the role of  [_post_NotLeaf_SetSize_FromPositionedChildren],
+  ///     this method and perform the role of  [_layout_Post_NotLeaf_SetSize_FromPositionedChildren],
   ///     setting the [layoutSize].
-  ///     Then the default invoked [post_NotLeaf_PositionChildren], [_post_NotLeaf_OffsetChildren],
-  ///     and [_post_NotLeaf_SetSize_FromPositionedChildren] would be bypassed and take no cycles.
+  ///     Then the default invoked [layout_Post_NotLeaf_PositionChildren], [_layout_Post_NotLeaf_OffsetChildren],
+  ///     and [_layout_Post_NotLeaf_SetSize_FromPositionedChildren] would be bypassed and take no cycles.
   ///   - On positioning extensions of [BoxLayouter] using the default [layout],
   ///     the desired extension positioning effect is usually achieved by
-  ///     overriding only the [post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
+  ///     overriding only the [layout_Post_NotLeaf_PositionChildren]. But extensions which [layoutSize]
   ///     is something else than [_children]'s bounding rectangle ([Greedy], [Padder])
-  ///     also need to override [_post_NotLeaf_SetSize_FromPositionedChildren].
-  void _post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
+  ///     also need to override [_layout_Post_NotLeaf_SetSize_FromPositionedChildren].
+  void _layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize() {
     // Common processing for greedy and non-greedy:
     // First, calculate children offsets within self.
     // Note: - When the greedy child is re-layed out, it has a final size (remainder after non greedy sizes added up),
     //         we can deal with the greedy child as if non greedy child.
     //       - no-op on baseclass [BoxLayouter].
-    List<ui.Rect> positionedRectsInMe = post_NotLeaf_PositionChildren(_children);
+    List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_children);
 
     // Apply the calculated positionedRectsInMe as offsets on children.
-    _post_NotLeaf_OffsetChildren(positionedRectsInMe, _children);
+    _layout_Post_NotLeaf_OffsetChildren(positionedRectsInMe, _children);
     // Finally, when all children are at the right offsets within me, invoke
-    // [_post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
+    // [_layout_Post_NotLeaf_SetSize_FromPositionedChildren] to set the [layoutSize] on me.
     //
     // My [layoutSize] CAN be calculated using one of two equivalent methods:
     //   1. Query all my children for offsets and sizes, create each child rectangle,
     //      then create bounding rectangle from them.
     //   2. Use the previously created [positionedRectsInMe], which is each child rectangle,
     //      then create bounding rectangle of [positionedRectsInMe].
-    // In [_post_NotLeaf_SetSize_FromPositionedChildren] we use method 2, but assert sameness between them
-    _post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
+    // In [_layout_Post_NotLeaf_SetSize_FromPositionedChildren] we use method 2, but assert sameness between them
+    _layout_Post_NotLeaf_SetSize_FromPositionedChildren(positionedRectsInMe);
   }
 
-  /// [post_NotLeaf_PositionChildren] is a core method of the default [layout]
+  /// [layout_Post_NotLeaf_PositionChildren] is a core method of the default [layout]
   /// which positions the invoker's children in self.
   ///
-  /// [post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op in [BoxContainer] (returning empty list,
+  /// [layout_Post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op in [BoxContainer] (returning empty list,
   /// which causes no positioning of children.
   ///
   /// Implementations should lay out children of self [BoxLayouter],
@@ -898,7 +898,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// *Important*: When invoked on a [BoxLayouter] instance, it is assumed it's children were already layed out;
   ///              so this should be invoked in any layout algorithm in the children-post-descend section.
   ///
-  /// In the default [layout] implementation, this message [post_NotLeaf_PositionChildren]
+  /// In the default [layout] implementation, this message [layout_Post_NotLeaf_PositionChildren]
   /// is send by the invoking [BoxLayouter] to self, during the children-past-descend.
   ///
   /// Important Definition:
@@ -911,23 +911,23 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///        to calculate (but NOT set) children positions (offsets) in itself
   ///        returning a list of rectangles, one for each child
   ///
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children);
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children);
 
   /// An abstract method of the default [layout] which role is to
   /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
   ///
-  /// Important override notes and rules for [_post_NotLeaf_OffsetChildren] on extensions:
+  /// Important override notes and rules for [_layout_Post_NotLeaf_OffsetChildren] on extensions:
   ///
   ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset]
   ///     for all children in argument [children] and apply the [Rect.topLeft]
   ///     offset from the passed [positionedRectsInMe].
   ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op.
   ///
-  /// First argument should be the result of [post_NotLeaf_PositionChildren],
+  /// First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
   /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
-  void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
 
-  /// The responsibility of [_post_NotLeaf_SetSize_FromPositionedChildren]
+  /// The responsibility of [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
   /// is to set the [layoutSize] of self.
   ///
   /// In the default [layout], when this method is invoked,
@@ -936,7 +936,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// The [layoutSize] in this default implementation is set
   /// to the size of "bounding rectangle of all positioned children".
   /// This "bounding rectangle of all positioned children" is calculated from the passed [positionedChildrenRects],
-  /// which is the result of preceding invocation of [post_NotLeaf_PositionChildren].
+  /// which is the result of preceding invocation of [layout_Post_NotLeaf_PositionChildren].
   ///
   /// The bounding rectangle of all positioned children, is calculated by [util_flutter.boundingRectOfRects].
   ///
@@ -952,11 +952,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///     Overriding extensions include layouts which do padding,
   ///     or otherwise increase their sizes, such as [Greedy], [Padder], [Aligner].
   ///   - [RollingPositioningBoxLayouter]s [Row] and [Column] use this
-  ///     - although they override [layout], the method [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
+  ///     - although they override [layout], the method [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
   ///     which invokes this is default. These classes rely on this default
   ///     "bounding rectangle of all positioned children" implementaion.
   ///
-  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
     ui.Rect positionedChildrenOuterRects = util_flutter
         .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
@@ -972,18 +972,18 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// Throws exception if sent to non-leaf, or sent to a leaf
   /// which did not override this method.
-  void post_Leaf_SetSize_FromInternals() {
+  void layout_Post_Leaf_SetSize_FromInternals() {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }
     throw UnimplementedError('On leaf [BoxLayouter] which does NOT override [layout], this method named '
-        '[post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
+        '[layout_Post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
   }
 
   /// Checks if [layoutSize] box is within the [constraints] box.
   ///
   /// Throws error otherwise.
-  void _post_AssertSizeInsideConstraints() {
+  void _layout_Post_AssertSizeInsideConstraints() {
     if (!constraints.containsFully(layoutSize)) {
       String errText = 'Warning: Layout size of this layouter $this is $layoutSize,'
           ' which does not fit inside it\'s constraints $constraints';
@@ -1076,33 +1076,33 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // NAMED GENERATIVE super() called implicitly here.
   }
 
-  /// Override of the abstract [post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
+  /// Override of the abstract [layout_Post_NotLeaf_PositionChildren] on instances of this base [BoxContainer].
   ///
-  /// [post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer].
+  /// [layout_Post_NotLeaf_PositionChildren] is abstract in [BoxLayouter] and no-op here in [BoxContainer].
   /// The no-op is achieved by returning, the existing children rectangles, without re-positioning children;
   /// the follow up methods use the returned value and apply this offset, without re-offsetting children.
   ///
   /// Returning an empty list here causes no offsets on children are applied,
   /// which is desired on this non-positioning base class [BoxContainer].
   ///
-  /// See the invoking [_post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] for more override posibilities.
+  /// See the invoking [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize] for more override posibilities.
   ///
   ///
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     // This is a no-op because it does not change children positions from where they are at their current offsets.
     // However, implementation is needed BoxContainer extensions which are positioning
     // - in other words, all, NOT NonPositioningBoxLayouter extensions.
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 
-  /// Implementation of the abstract default [_post_NotLeaf_OffsetChildren]
+  /// Implementation of the abstract default [_layout_Post_NotLeaf_OffsetChildren]
   /// invoked in the default [layout].
   ///
   /// This class, as a non-positioning container should make this a no-op,
   /// resulting in no offsets applied on children during layout.
   @override
-  void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     // No-op in this non-positioning base class
   }
 
@@ -1217,7 +1217,7 @@ class LayoutContext {
 /// todo-doc-01 maybe remove or improve all below
 /// Example:
 ///   - An example is the Y axis ([YContainer] instance), which creates only as many labels
-///     ([YAxisLabelContainer]s instances) as they fit, given how many pixels
+///     ([YLabelContainer]s instances) as they fit, given how many pixels
 ///     the Y axis has available. Such pixel availability is applied on  [YContainer]
 ///
 ///
@@ -1256,7 +1256,7 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
 ///
-/// The default implementation overrides [_post_NotLeaf_OffsetChildren] to position children.
+/// The default implementation overrides [_layout_Post_NotLeaf_OffsetChildren] to position children.
 abstract class PositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
   PositioningBoxLayouter({
@@ -1271,11 +1271,11 @@ abstract class PositioningBoxLayouter extends BoxContainer {
   /// on the passed [LayoutableBox]es [children].
   ///
   /// The [positionedRectsInMe] are obtained by this [Layouter]'s
-  /// extensions using [post_NotLeaf_PositionChildren].
+  /// extensions using [layout_Post_NotLeaf_PositionChildren].
   ///
   ///
   @override
-  void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == children.length);
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
@@ -1300,12 +1300,12 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// Override for non-positioning:
   /// Does not apply any offsets on the it's children (passed in [layout] internals.
   @override
-  void _post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {}
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {}
 
   /// Override for non-positioning:
   /// Does not need to calculate position of children in self, as it will not apply offsets anyway.
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     // This is a no-op because it does not change children positions from where they are at their current offsets.
     // Cannot just return [], as result is used in offsetting (which is empty, so OK there),
     // and setting layoutSize using the returned value
@@ -1380,10 +1380,10 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
   ///   obviously implementing the abstract functionality of the base layout:
-  ///   - Distributes constraints to children in [_preDescend_DistributeConstraintsToImmediateChildren];
+  ///   - Distributes constraints to children in [_layout_Pre_DistributeConstraintsToImmediateChildren];
   ///     constraints given to each child are full parent's constraints.
   /// - If [Greedy] children are     present, this implementation first processed non [Greedy] children:
-  ///   - Distributes constraints to non-greedy children in in [_preDescend_DistributeConstraintsToImmediateChildren];
+  ///   - Distributes constraints to non-greedy children in in [_layout_Pre_DistributeConstraintsToImmediateChildren];
   ///     (constraints on non-greedy are same as parent's, as if greedy were not present),
   ///   - Invokes child [layout] on non [Greedy] first
   ///   - Then uses the size unused by non-greedy [layoutSize] as constraint to the [Greedy] child which is layed out.
@@ -1400,7 +1400,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
       //                         using the constraints. Uses default constraints distribution method from [BoxLayouter],
       //                         All children obtain full self (parent) constraints.
-      _preDescend_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
+      _layout_Pre_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
       // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
       for (var child in _nonGreedyChildren) {
         // Non greedy should run full layout of children.
@@ -1410,25 +1410,25 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       //      which we can get and use to lay them out to find constraints left for greedy
       //    But positioning children in self, we need to run pre-position of children in self
       //      using left/tight to get sizes without spacing.
-      _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
+      _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
     } // same as current on Row and Column
 
     // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
     //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
-    //   set on non_Greedy. This will be done later in  _postDescend_IfLeaf_SetSize(etc).
+    //   set on non_Greedy. This will be done later in  _layout_Post_IfLeaf_SetSize(etc).
     //
     // So to fully layout self, there are 3 steps left:
     //   1. Need to recursively layout GREEDY children to get their size.
-    //      Their greedy constraints were set in previous postDescend,
-    //        the _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
+    //      Their greedy constraints were set in previous layout_Post,
+    //        the _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
     //      So we do NOT want to run a full [layout] on greedy children - we need to avoid setting
-    //      child constraints again in  _layout_DefaultRecurse() -> _preDescend_DistributeConstraintsToImmediateChildren(children);
-    //      We only want the descend part of _layout_DefaultRecurse(), even the postDescend must be different
+    //      child constraints again in  _layout_DefaultRecurse() -> _layout_Pre_DistributeConstraintsToImmediateChildren(children);
+    //      We only want the descend part of _layout_DefaultRecurse(), even the layout_Post must be different
     //        as it must apply to all children, not just GREEDY.
     //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
     //   3. Apply offsets from step 2 on children
     // Steps 2. and 3 already have a default method, the
-    //       _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
+    //       _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
     //       which must be applies on all children. (it is).
 
     // Step 1.
@@ -1436,7 +1436,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       child.layout();
     }
     // Step 2. and 3. is a base class method unchanged.
-    _postDescend_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
+    _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
     // } else {
     //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
     //   _layout_DefaultRecurse();
@@ -1465,7 +1465,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///     along the cross axis. Then distributes the divided constraints to children
   ///   - else method invokes super implementation equivalent, which distributes self constraints undivided to all children.
   @override
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     ConstraintsWeights childrenWeights = ConstraintsWeights.from(
         constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
             .toList());
@@ -1501,7 +1501,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///   - applies the smaller constraints on Greedy children.
   ///
   /// This is required before we can layout Greedy children.
-  void _postDescend_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
+  void _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
     // Note: non greedy children have layout size when we reach here
 
     if (_hasGreedy) {
@@ -1515,7 +1515,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
       // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
       // in the Column/Row direction. This is effectively a pre-positioning of children is self
-      List<ui.Rect> positionedRectsInMe = post_NotLeaf_PositionChildren(_nonGreedyChildren);
+      List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
       ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
       assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
 
@@ -1694,7 +1694,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// where children will be placed relative to the invoker,
   /// in the order of the passed [children].
   ///
-  /// See [BoxLayouter.post_NotLeaf_PositionChildren] for requirements and definitions.
+  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
   ///
   /// Implementation detail:
   ///   - The processing is calling the [LayedoutLengthsPositioner.layoutLengths], method.
@@ -1705,7 +1705,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
   ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     if (isLeaf) {
       return [];
     }
@@ -1866,7 +1866,7 @@ class Greedy extends NonPositioningBoxLayouter {
   /// instead, it is the full constraint side along the greedy axis,
   /// and children side along the cross-greedy axis
   @override
-  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
     // The Greedy layoutSize should be:
     //  - In the main axis direction (of it's parent), the constraint size of self,
@@ -1937,10 +1937,10 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 /// This governs implementation:
 ///   - [Padder] uses the default [layout].
 ///   - [Padder] changes the constraint before sending it to it's child, so
-///     the [_preDescend_DistributeConstraintsToImmediateChildren] must be overridden.
-///   - [Padder] is positioning, so the [post_NotLeaf_PositionChildren] is overridden,
-///     while the [_post_NotLeaf_OffsetChildren] uses the default super implementation, which
-///     applies the offsets returned by [post_NotLeaf_PositionChildren] onto the child.
+///     the [_layout_Pre_DistributeConstraintsToImmediateChildren] must be overridden.
+///   - [Padder] is positioning, so the [layout_Post_NotLeaf_PositionChildren] is overridden,
+///     while the [_layout_Post_NotLeaf_OffsetChildren] uses the default super implementation, which
+///     applies the offsets returned by [layout_Post_NotLeaf_PositionChildren] onto the child.
 class Padder extends PositioningBoxLayouter {
   Padder({
     required this.edgePadding,
@@ -1955,7 +1955,7 @@ class Padder extends PositioningBoxLayouter {
   /// (which will be added back onto self layoutSize).
   /// This ensures padded child will fit in self constraints.
   @override
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     children[0].applyParentConstraints(this, constraints.deflateWithPadding(edgePadding));
   }
 
@@ -1963,7 +1963,7 @@ class Padder extends PositioningBoxLayouter {
   /// Returns the future child position by offsetting child's layout size down and right
   /// by Offset created from Padding.
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     ui.Offset childOffset = ui.Offset(edgePadding.start, edgePadding.top);
     return [childOffset & children[0].layoutSize];
   }
@@ -1972,7 +1972,7 @@ class Padder extends PositioningBoxLayouter {
   ///
   /// This self [layoutSize] is guaranteed to fit into self constraints.
   @override
-  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     // Take the passed rectangle (which is same size as child, but offset from the self
     // origin right and down of padding start and top), and inflate it by padding
     // This will move the rectangle back to self origin (irrelevant), and it's inflated
@@ -2016,7 +2016,7 @@ class Aligner extends PositioningBoxLayouter {
   /// the constraints that are deflated from self constraints by the
   /// [childWidthBy] and [childHeightBy]
   @override
-  void _preDescend_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     LayoutableBox child = children[0];
     BoxContainerConstraints childConstraints = constraints.multiplySidesBy(ui.Size(1.0 / childWidthBy, 1.0 / childHeightBy));
     child.applyParentConstraints(this, childConstraints);
@@ -2028,7 +2028,7 @@ class Aligner extends PositioningBoxLayouter {
   /// The self size mandate is implemented in [_selfLayoutSizeFromChild],
   /// the child position in self mandate is implemented in [_positionChildInSelf].
   @override
-  List<ui.Rect> post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     LayoutableBox child = children[0];
 
     // Create and return the rectangle where the single child will be positioned.
@@ -2058,14 +2058,14 @@ class Aligner extends PositioningBoxLayouter {
     return childLayoutSize.multiplySidesBy(ui.Size(childWidthBy, childHeightBy));
   }
 
-  //_post_NotLeaf_OffsetChildren(positionedRectsInMe, children); using default implementation.
+  //_layout_Post_NotLeaf_OffsetChildren(positionedRectsInMe, children); using default implementation.
 
   /// Sets self [layoutSize] to the child layoutSize multiplied along axes
   /// by [childWidthBy], [childHeightBy], as mandated by this [Aligner].
   ///
   /// This multiplication is wrapped as [_selfLayoutSizeFromChild].
   @override
-  void _post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     layoutSize = _selfLayoutSizeFromChild(positionedChildrenRects[0].size);
   }
 
@@ -2073,7 +2073,7 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// See [_offsetChildInSelf] for details
   ///
-  /// Used in overridden [post_NotLeaf_PositionChildren] to position child in this [Aligner].
+  /// Used in overridden [layout_Post_NotLeaf_PositionChildren] to position child in this [Aligner].
   ui.Rect _positionChildInSelf({
     required ui.Size selfSize,
     required ui.Size childSize,

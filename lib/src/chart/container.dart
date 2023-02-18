@@ -341,7 +341,7 @@ abstract class AxisContainer extends ChartAreaContainer {
 
   // Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
   // todo-00-last :  can this be moved to NewModel ? This is all data. Make yLabelInfos and xLabelInfos
-  late FormattedLabelInfos labelInfos;
+  late FormattedLabelInfos formattedLabelInfos;
 }
 
 /// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
@@ -400,18 +400,18 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    labelInfos = labelsGenerator.createLabelInfos();
+    formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// Containers of Y labels.
-  late List<YAxisLabelContainer> _yLabelContainers;
+  late List<YLabelContainer> _yLabelContainers;
 
   /// Maximum label height found by the first layout (pre-layout),
   /// is ONLY used to 'shorten' YContainer constraints on top.
   double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
-  /// (instances of [YAxisLabelContainer]) which are managed in this [YContainer._yLabelContainers].
+  /// (instances of [YLabelContainer]) which are managed in this [YContainer._yLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndReplaceChildren] is that we do not know until the parent
@@ -445,11 +445,11 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (LabelInfo labelInfo in labelInfos.labelInfoList) {
+    for (AxisLabelInfo labelInfo in formattedLabelInfos.labelInfoList) {
       // yTickY is the vertical center of the label on the Y axis.
       // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
       // It is kept always relative to the immediate container - YContainer
-      var yLabelContainer = YAxisLabelContainer(
+      var yLabelContainer = YLabelContainer(
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
@@ -591,8 +591,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    labelInfos = labelsGenerator.createLabelInfos();
-    // ^^^^^^^^^^
+    formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
@@ -625,13 +624,13 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
 
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
-      var xLabelContainer = XAxisLabelContainer(
+      var xLabelContainer = XLabelContainer(
         label: xUserLabels[xIndex],
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
-        // In [XAxisLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: labelInfos.labelInfoList[xIndex],
+        // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
+        labelInfo: formattedLabelInfos.labelInfoList[xIndex],
         ownerAxisContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
@@ -1239,7 +1238,7 @@ class GridLinesContainer extends BoxContainer {
   /// Leaf containers which do not override [BoxLayouter.layout] must override this method,
   /// setting [layoutSize].
   @override
-  void post_Leaf_SetSize_FromInternals() {
+  void layout_Post_Leaf_SetSize_FromInternals() {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }

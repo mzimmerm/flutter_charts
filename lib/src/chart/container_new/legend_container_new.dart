@@ -389,7 +389,7 @@ class LegendIndicatorRectContainer extends container_base.BoxContainer {
   ///       );
   ///    ```
   @override
-  void post_Leaf_SetSize_FromInternals() {
+  void layout_Post_Leaf_SetSize_FromInternals() {
     if (!isLeaf) {
       throw StateError('Only a leaf can be sent this message.');
     }

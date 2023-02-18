@@ -13,7 +13,7 @@ import 'util_labels.dart' as util_labels;
 ///
 /// All values are calculated using [NewModel].
 ///
-/// From there, Y [LabelInfo]s are created/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
+/// From there, Y [AxisLabelInfo]s are created/// The Y labels are kept in the [formattedLabelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
 /// The following members are most relevant in the creating and formatting labels
 /// - [_dataYs] is a list of numeric Y values, passed to constructor.
@@ -23,14 +23,14 @@ import 'util_labels.dart' as util_labels;
 /// - [axisY] is the interval of the Y axis coordinates.
 ///      e.g. [8.0, 400.0]
 /// - [userLabels] may be set by user.
-/// - [labelInfos] are labels calculated to represent numeric Y values, ONLY in their highest order.
-///   1. Ex1. [labelInfos] ==> [-1000, 0, 1000, 2000] (NOT ending at 2200)
-///   2. Ex2. [labelInfos] ==> [0, 1000, 2000]
-/// From the members [dataYsEnvelope] and [labelInfos], the [_mergedLabelYsIntervalWithDataYsEnvelope]
+/// - [formattedLabelInfos] are labels calculated to represent numeric Y values, ONLY in their highest order.
+///   1. Ex1. [formattedLabelInfos] ==> [-1000, 0, 1000, 2000] (NOT ending at 2200)
+///   2. Ex2. [formattedLabelInfos] ==> [0, 1000, 2000]
+/// From the members [dataYsEnvelope] and [formattedLabelInfos], the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// are calculated. The result serves as the '(transformed) data range'.
 /// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
-/// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [labelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
-/// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
+/// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [formattedLabelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
+/// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [formattedLabelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelsGenerator {
 
   late final NewModel _dataModel;
@@ -49,7 +49,7 @@ class DataRangeLabelsGenerator {
   List<String>? userLabels;
 
   /// Keeps the transformed, non-scaled data values at which labels are shown.
-  /// [YContainer.labelInfos] are created from them first, and scaled to pixel values during [ChartRootContainer.layout].
+  /// [YContainer.formattedLabelInfos] are created from them first, and scaled to pixel values during [ChartRootContainer.layout].
   late final List<double> _labelPositions;
 
   /// Public getter is for tests only!
@@ -115,9 +115,9 @@ class DataRangeLabelsGenerator {
   ///
   /// This method should be invoked in a constructor of a container,
   /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels.
-  FormattedLabelInfos createLabelInfos() {
-    List<LabelInfo> labelInfos = _labelPositions
-        .map((transformedLabelValue) => LabelInfo(
+  FormattedLabelInfos createFormattedLabelInfos_From_LabelPositions() {
+    List<AxisLabelInfo> labelInfos = _labelPositions
+        .map((transformedLabelValue) => AxisLabelInfo(
               dataValue: transformedLabelValue,
               labelsGenerator: this,
             ))
@@ -166,7 +166,7 @@ class DataRangeLabelsGenerator {
   }
 }
 
-/// The [LabelInfo] is a holder for one label,
+/// The [AxisLabelInfo] is a holder for one label,
 /// it's numeric values (raw, transformed, transformed and scaled)
 /// and the displayed label.
 ///
@@ -179,21 +179,21 @@ class DataRangeLabelsGenerator {
 /// The last mapping is using either `toString` if [DataRangeLabelsGenerator.userLabels] are used,
 /// or [DataRangeLabelsGenerator._valueToLabel] for chart-generated labels.
 ///
-/// There are four values each [LabelInfo] manages:
+/// There are four values each [AxisLabelInfo] manages:
 /// 1. The [_rawDataValue] : The value of dependent (y) variable in data, given by
 ///   the [DataRangeLabelsGenerator._mergedLabelYsIntervalWithDataYsEnvelope].
 ///   - This value is **not-scaled && not-transformed**.
 ///   - This value is in the interval extended from the interval of minimum and maximum y in data
 ///     to the interval of the displayed labels. The reason is the chart may show axis lines and labels
 ///     beyond the strict interval between minimum and maximum y in data.
-///   - This value is created in the generative constructor's [LabelInfo]
+///   - This value is created in the generative constructor's [AxisLabelInfo]
 ///     initializer list from the [transformedDataValue].
 /// 2. The [_dataValue] : The [_rawDataValue] after transformation by the [DataContainerOptions.yTransform]
 ///   function.
 ///   - This value is **not-scaled && transformed**
 ///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
 ///     is an identity (this is the default behavior). See [lib/chart/options.dart].
-///   - This value is passed in the primary generative constructor [LabelInfo].
+///   - This value is passed in the primary generative constructor [AxisLabelInfo].
 /// 3. The [_pixelPositionOnAxis] :  Equals to the **scaled && transformed** dataValue, in other words
 ///   ```dart
 ///    _axisValue = labelsGenerator.scaleY(value: transformedDataValue.toDouble());
@@ -218,11 +218,11 @@ class DataRangeLabelsGenerator {
 ///
 /// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
-class LabelInfo {
+class AxisLabelInfo {
 
   /// Constructs from value at the label, holding on the owner [labelsGenerator],
   /// which provides data range corresponding to axis range.
-  LabelInfo({
+  AxisLabelInfo({
     required num dataValue,
     required DataRangeLabelsGenerator labelsGenerator,
   })  : _dataValue = dataValue,
@@ -258,22 +258,22 @@ class LabelInfo {
   }
 }
 
-/// A wrapper for list of [LabelInfo]s.
+/// A wrapper for list of [AxisLabelInfo]s.
 ///
 /// Represents list of label values always in increasing order
 /// because of the [DataRangeLabelsGenerator] implementation which creates instances of this class.
 ///
 /// During creation from the `List<LabelInfo>` argument [from] ,
-/// formats the labels using each [LabelInfo]'s own formatter.
+/// formats the labels using each [AxisLabelInfo]'s own formatter.
 class FormattedLabelInfos {
   FormattedLabelInfos({
-    required List<LabelInfo> from,
+    required List<AxisLabelInfo> from,
     required DataRangeLabelsGenerator labelsGenerator,
   })  : _labelInfoList = from
   {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
-      LabelInfo labelInfo = _labelInfoList[i];
+      AxisLabelInfo labelInfo = _labelInfoList[i];
       // Format labels takes a different form in user labels
       if (labelsGenerator.isUsingUserLabels) {
         labelInfo._formattedLabel = labelsGenerator.userLabels![i];
@@ -284,8 +284,8 @@ class FormattedLabelInfos {
   }
 
   /// List that manages the list of labels information for all generated or user labels.
-  final List<LabelInfo> _labelInfoList;
-  List<LabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
+  final List<AxisLabelInfo> _labelInfoList;
+  List<AxisLabelInfo> get labelInfoList => List.from(_labelInfoList, growable: false);
 
   List<double> get dataYsOfLabels => labelInfoList.map((labelInfo) => labelInfo._dataValue.toDouble()).toList();
 
@@ -367,7 +367,7 @@ List<double> evenlySpacedValuesIn({
 ///
 /// Further notes and related topics:
 ///   - Labels are encapsulated in the [DataRangeLabelsGenerator],
-///     which creates [LabelInfo]s for all generated labels.
+///     which creates [AxisLabelInfo]s for all generated labels.
 ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
 ///
 List<double> generateValuesForLabelsIn({

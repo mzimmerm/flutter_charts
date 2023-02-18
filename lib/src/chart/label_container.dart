@@ -10,7 +10,7 @@ import 'container_layouter_base.dart' show BoxContainer, LayoutableBox, LayoutCo
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
-import '../util/util_labels.dart' show LabelInfo;
+import '../util/util_labels.dart' show AxisLabelInfo;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -205,7 +205,7 @@ class LabelContainer extends BoxContainer {
   ///        witch exactly same code, and things would work, except missing check if 
   ///        layout size is within constraints.
   @override
-  void post_Leaf_SetSize_FromInternals() {
+  void layout_Post_Leaf_SetSize_FromInternals() {
     _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
@@ -336,7 +336,7 @@ abstract class AxisLabelContainer extends LabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
-    required LabelInfo labelInfo,
+    required AxisLabelInfo labelInfo,
     required AxisContainer ownerAxisContainer,
   })  : _labelInfo = labelInfo,
         _ownerAxisContainer = ownerAxisContainer,
@@ -352,10 +352,10 @@ abstract class AxisLabelContainer extends LabelContainer {
 
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
-  final LabelInfo _labelInfo;
+  final AxisLabelInfo _labelInfo;
 
-  /// Getter of [LabelInfo] which created this Y label.
-  LabelInfo get labelInfo => _labelInfo;
+  /// Getter of [AxisLabelInfo] which created this Y label.
+  AxisLabelInfo get labelInfo => _labelInfo;
 
   /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
@@ -394,7 +394,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   late final num _pixelPositionOnAxis;
   num get pixelPositionOnAxis => _pixelPositionOnAxis;
 
-  /// Overridden from [LabelContainer.post_Leaf_SetSize_FromInternals]
+  /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
   /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
@@ -403,7 +403,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
   @override
-  void post_Leaf_SetSize_FromInternals() {
+  void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
     _pixelPositionOnAxis = _ownerAxisContainer.labelsGenerator.lerpValueToPixels(
@@ -413,21 +413,21 @@ abstract class AxisLabelContainer extends LabelContainer {
       isAxisAndLabelsSameDirection: !_ownerAxisContainer.labelsGenerator.isAxisAndLabelsSameDirection,
     );
 
-    super.post_Leaf_SetSize_FromInternals();
+    super.layout_Post_Leaf_SetSize_FromInternals();
   }
 }
 
 /// Label container for Y labels, which maintain, in addition to
-/// the superclass [YAxisLabelContainer] also [LabelInfo] - the object
+/// the superclass [YLabelContainer] also [AxisLabelInfo] - the object
 /// from which each Y label is created.
-class YAxisLabelContainer extends AxisLabelContainer {
+class YLabelContainer extends AxisLabelContainer {
 
-  YAxisLabelContainer({
+  YLabelContainer({
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
-    required LabelInfo labelInfo,
+    required AxisLabelInfo labelInfo,
     required AxisContainer ownerAxisContainer,
   }) : super(
     label:           label,
@@ -440,14 +440,14 @@ class YAxisLabelContainer extends AxisLabelContainer {
 }
 
 /// [AxisLabelContainer] used in the [XContainer].
-class XAxisLabelContainer extends AxisLabelContainer {
+class XLabelContainer extends AxisLabelContainer {
 
-  XAxisLabelContainer({
+  XLabelContainer({
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required ChartOptions options,
-    required LabelInfo labelInfo,
+    required AxisLabelInfo labelInfo,
     required AxisContainer ownerAxisContainer,
   }) : super(
     label:           label,

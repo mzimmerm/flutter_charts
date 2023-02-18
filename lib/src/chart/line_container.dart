@@ -46,7 +46,7 @@ class LineContainer extends BoxContainer {
   ///
   /// Ensure [layoutSize] is set.
   /// Note that because this leaf container overrides [layout] here,
-  /// it does not need to override [post_Leaf_SetSize_FromInternals].
+  /// it does not need to override [layout_Post_Leaf_SetSize_FromInternals].
   @override
   void layout() {
     buildAndReplaceChildren(LayoutContext.unused);
