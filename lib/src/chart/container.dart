@@ -493,13 +493,10 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       yLabelContainer.layout();
 
-      // todo-00-last-last-last : simplify
-      double yTickY = yLabelContainer.pixelPositionOnAxis.toDouble();
-
+      double yTickY = yLabelContainer.parentOffsetTick;
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
-      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : yLabelContainer.parentOffsetTick = yTickY;
-      yLabelContainer.parentOffsetTick = yTickY;
+      // todo-00-last-last-done : removed the back and forth : yLabelContainer.parentOffsetTick = yTickY;
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(this,
@@ -679,7 +676,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
       double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
 
-      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : xLabelContainer.parentOffsetTick = xTickX;
       xLabelContainer.parentOffsetTick = xTickX;
 
       // tickX and label centers are same. labelLeftTop = label paint start.
@@ -844,19 +840,14 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get xTickXs =>
-      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.pixelPositionOnAxis).toList();
   xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
-
 
   /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
-  List<double> get yTickYs {
-    // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis :return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.pixelPositionOnAxis).toList();
- return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
-    }
+  List<double> get yTickYs => yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
 }
 
 
@@ -1660,7 +1651,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
-        // todo-00-last-last-last : this uses xTickXs
         double scaledX = layoutDependency.xTickXs[col];
         point.lerpToPixels(
           scaledX: scaledX,

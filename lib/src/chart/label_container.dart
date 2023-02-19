@@ -357,60 +357,41 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Getter of [AxisLabelInfo] which created this Y label.
   AxisLabelInfo get labelInfo => _labelInfo;
 
-  /// UI coordinate of the "axis tick mark", which represent the
+  /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
-  /// [parentOffsetTick]'s value is not affected by call to [applyParentOffset].
+  /// In more detail, it is the numerical value of a label, transformed, then scaled to axis pixels length,
+  /// so its value is in pixels relative to the immediate container - the [YContainer] or [XContainer]
+  ///
+  /// It's value is not affected by call to [applyParentOffset].
   /// It is calculated during parent's [YContainer] [layout] method,
-  /// as a result, it remains positioned in the [YContainer]'s coordinates.
+  /// as a result, it remains positioned in the [AxisContainer]'s coordinates.
   /// Any objects using [parentOffsetTick] as it's end point
   /// (for example grid line's end point), should apply
   /// the parent offset to themselves. The reason for this behavior is for
-  /// the [parentOffsetTick]'s value to live after [YContainer]'s layout,
+  /// the [parentOffsetTick]'s value to live after [AxisContainer]'s layout,
   /// so the  [parentOffsetTick]'s value can be used in the
   /// grid layout, without reversing any offsets.
   ///
-  /// Also the X or Y offset of the X or Y label middle point
-  /// (before label's parent offset).
+  /// [parentOffsetTick]  has multiple other roles:
+  ///   - The X or Y offset of the X or Y label middle point
+  ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
+  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelsGenerator]).
+  ///     ```dart
+  ///        double yTickY = yLabelContainer.parentOffsetTick;
+  ///        double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
+  ///     ```
+  ///   - The "tick dash" for the label center on the X or Y axis.
+  ///     First "tick dash" is on the first label, last on the last label,
+  ///     but both x and y label containers can be skipped.
   ///
-  /// Also the "tick dash" for the label center on the X or Y axis.
-  ///
-  /// First "tick dash" is on the first label, last on the last label,
-  /// but both x and y label containers can be skipped
-  /// (tick dashes should not?).
-  ///
-  // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : double parentOffsetTick = 0.0;
   double parentOffsetTick = 0.0;
-
-  ///  [_pixelPositionOnAxis] is the numerical value of label,
-  ///  transformed, then scaled to axis pixels length, so its value is in
-  ///  pixels relative to the immediate container - the [YContainer] or [XContainer]
-  ///
-  /// It is located at the vertical center of the label on the Y axis,
-  /// and becomes [yTickY] but NOT [xTickX] (currently, xTickX is from x value data position,
-  /// not from generated labels by [DataRangeLabelsGenerator].
-  ///
-  /// Important Note: The only role this plays, is setting [parentOffsetTick]
-  /// as follows:
-  ///    ```dart
-  ///       double yTickY = yLabelContainer.pixelPositionOnAxis.toDouble();
-  ///       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
-  ///       yLabelContainer.parentOffsetTick = yTickY;
-  ///    ```
-  ///  So the values of this [parentOffsetTick] and [_pixelPositionOnAxis] ARE THE SAME
-  ///
-  /// todo-00-last-last-last : can they be unified?
-  ///
-  ///  The above code is in [YContainer.layout], so this late final must be set before that.
-  ///  Should be fine to set anywhere in this [LabelContainer.layout]
-  late final num _pixelPositionOnAxis;
-  double get pixelPositionOnAxis => _pixelPositionOnAxis.toDouble();
 
   /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
   /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
-  /// lerp the label [_dataValue] and places the result on [_pixelPositionOnAxis].
+  /// lerp the label [_dataValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
@@ -418,7 +399,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    _pixelPositionOnAxis = _ownerAxisContainer.labelsGenerator.lerpValueToPixels(
+    parentOffsetTick = _ownerAxisContainer.labelsGenerator.lerpValueToPixels(
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,

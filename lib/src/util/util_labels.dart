@@ -173,7 +173,7 @@ class DataRangeLabelsGenerator {
 ///
 /// The values used and shown on the chart undergo the following processing:
 ///    [_rawDataValue] -- using [DataContainerOptions.yTransform]         --> [_dataValue] (transformed)
-///    [_dataValue]    -- using labelsGenerator.scaleY(value: _dataValue)   --> [_pixelPositionOnAxis] (transformed AND scaled)
+///    [_dataValue]    -- using labelsGenerator.scaleY(value: _dataValue)   --> [parentOffsetTick]
 ///    [_rawDataValue] -- using formatted String-value of [_rawDataValue] --> [_formattedLabel]
 /// The last mapping is using either `toString` if [DataRangeLabelsGenerator.userLabels] are used,
 /// or [DataRangeLabelsGenerator._valueToLabel] for chart-generated labels.
@@ -193,7 +193,7 @@ class DataRangeLabelsGenerator {
 ///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
 ///     is an identity (this is the default behavior). See [lib/chart/options.dart].
 ///   - This value is passed in the primary generative constructor [AxisLabelInfo].
-/// 3. The [_pixelPositionOnAxis] :  Equals to the **scaled && transformed** dataValue, in other words
+/// 3. The [parentOffsetTick] :  Equals to the **scaled && transformed** dataValue, in other words
 ///   ```dart
 ///    _axisValue = labelsGenerator.scaleY(value: transformedDataValue.toDouble());
 ///   ```
@@ -244,7 +244,7 @@ class AxisLabelInfo {
 
   /// Label showing on the Y axis; typically a value with unit.
   ///
-  /// Formatted label is just formatted [_pixelPositionOnAxis].
+  /// Formatted label is just formatted [parentOffsetTick].
   late final String _formattedLabel;
   String get formattedLabel => _formattedLabel;
 
