@@ -1,3 +1,5 @@
+import 'package:logger/logger.dart' as logger;
+
 // base libraries
 import '../view_maker.dart';
 import '../container.dart';
@@ -24,7 +26,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
     isStacked: true, // only supported for now
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   ) {
-    print('$runtimeType created');
+    logger.Logger().d('$runtimeType created');
   }
 
   /// Concrete implementation returns the root for vertical bar chart.

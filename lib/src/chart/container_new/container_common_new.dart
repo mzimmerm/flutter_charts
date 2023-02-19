@@ -15,7 +15,7 @@ import '../../container/container_key.dart';
 /// - [YContainer] - manages the Y labels layout, which defines:
 ///   - Y axis label sizes
 ///   - Y positions of Y axis labels, defined as yTickY.
-///     yTicksY s are the Y points of scaled data values
+///     yTicksY s are the Y points of extrapolated data values
 ///     and also Y points on which the Y labels are centered.
 /// - [XContainer] - Equivalent to YContainer, but manages X direction
 ///   layout and labels.

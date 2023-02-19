@@ -360,7 +360,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
-  /// In more detail, it is the numerical value of a label, transformed, then scaled to axis pixels length,
+  /// In more detail, it is the numerical value of a label, transformed, then extrapolated to axis pixels length,
   /// so its value is in pixels relative to the immediate container - the [YContainer] or [XContainer]
   ///
   /// It's value is not affected by call to [applyParentOffset].

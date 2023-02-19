@@ -1,4 +1,6 @@
 import 'dart:ui' as ui show Canvas, Size;
+import 'package:logger/logger.dart' as logger;
+
 // import 'dart:developer' as dart_developer;
 
 // this level or equivalent
@@ -50,7 +52,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     this.isStacked = false,
     this.xContainerLabelLayoutStrategy,
   }) {
-    print('Constructing ChartViewMaker');
+    logger.Logger().d('Constructing ChartViewMaker');
     isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
   }
 

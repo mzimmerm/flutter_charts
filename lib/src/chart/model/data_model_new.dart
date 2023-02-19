@@ -1,5 +1,6 @@
 import 'dart:math' as math show min, max;
 import 'dart:ui' as ui show Color;
+import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
 import '../data_model.dart' show dataRowsDefaultColors;
@@ -15,12 +16,12 @@ import '../options.dart';
 //                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
 /// Notes:
 ///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
-///     - SCALING OF MODEL VALUES (does not)
+///     - Extrapolating OF MODEL VALUES (does not)
 ///     - COLORS   (currently does)
 ///     - LABELS   (currently does)
 ///     - LEGENDS  (currently does)
 ///     - OPTIONS  (currently does)
-///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR SCALING, OFFSET AND PAINTING.
+///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR extrapolating, OFFSET AND PAINTING.
 ///
 /// Important lifecycle notes:
 ///   - When [NewModel] is constructed, the [ChartRootContainer] is not available.
@@ -45,7 +46,7 @@ class NewModel {
         _dataRowsLegends = dataRowsLegends,
         _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
   {
-    print('Constructing NewModel');
+    logger.Logger().d('Constructing NewModel');
     validate();
 
     _dataBars = transposeRowsToColumns(_dataRows);
@@ -71,7 +72,7 @@ class NewModel {
   /// List of barOfPoints in the model .
   final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel
 
-  /// Returns the minimum and maximum non-scaled, transformed data values calculated from [NewModel],
+  /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [NewModel],
   /// specific for the passed [isStacked].
   ///
   /// The returned value is calculated from [NewModel] by finding maximum and minimum of data values
@@ -174,7 +175,7 @@ class NewModel {
   /// This column grouped data instance is managed here in the [ChartRootContainer],
   /// (immediate owner of [YContainer] and [DataContainer])
   /// as their data points are needed both during [YContainer.layout]
-  /// to calculate scaling, and also in [DataContainer.layout] to create
+  /// to calculate extrapolating, and also in [DataContainer.layout] to create
   /// [PointPresentersColumns] instance.
   late PointsColumns pointsColumns;
 
@@ -389,7 +390,7 @@ class NewPointModel extends Object with DoubleLinked {
 
   // ===================== NEW CODE ============================================
 
-  /// The original (transformed, not-scaled) data value from one data item
+  /// The original (transformed, not-extrapolated) data value from one data item
   /// in the two dimensional, rows first, [NewModel.dataRows].
   ///
   /// This [_dataValue] point is created from the [NewModel.dataRows] using the indexes:

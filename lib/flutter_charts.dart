@@ -126,7 +126,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///   are always lifecycled in this order
 ///   1. transformed, then
 ///   2. potentially stacked IN PLACE, then
-///   3. potentially scaled IN A COPY!!
+///   3. potentially extrapolated IN A COPY!!
 ///   This is the sequence that always happens. The transform is by default an identity
 ///
 /// - 'chart area'  is the full size given to the [ChartPainter] by the application.
@@ -134,7 +134,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 /// - 'absolute positions' in 'Container' classes refer to the positions
 ///   "in the coordinates of the 'chart area'".
 ///
-/// - 'data', 'dataY' represents transformed, not-stacked not-scaled data.
+/// - 'data', 'dataY' represents transformed, not-stacked not-extrapolated data.
 ///
 /// - 'rawData' 'rawDataY' represents original not-transformed data.
 ///   - Most of the code deals with 'transformed data', named 'data', which is nice and short.

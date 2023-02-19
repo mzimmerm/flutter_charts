@@ -78,9 +78,9 @@
 /// ```
 ///
 /// *So for a generic [alignX], the formula can be derived by looking at the above and realizing*
-///  that the 'end value' is ```childWidth * (childWidthBy - 1)```, when we linearly scale it back to 0
+///  that the 'end value' is ```childWidth * (childWidthBy - 1)```, when we linearly extrapolate it back to 0
 ///  using values 0, 1/2, 1 for alignX = -1, 0, +1 we get the desired result.
-///  The linear scale that gives 0, 1/2, 1 for alignX = -1, 0, +1 can be constructed as ```(alignX + 1) / 2```.
+///  The linear extrapolate that gives 0, 1/2, 1 for alignX = -1, 0, +1 can be constructed as ```(alignX + 1) / 2```.
 ///
 /// ```
 ///     topLefOffsetX = (childWidth * (childWidthBy - 1)) * (alignX + 1) / 2

@@ -3,7 +3,7 @@ import 'package:test/test.dart'; // Dart test package
 import '../../lib/src/util/util_dart.dart';
 
 void main() {
-  test('scaleValue - test linear scaling utility', () {
+  test('extrapolateValue - test linear scaling utility', () {
     
     expect(ToPixelsExtrapolation1D(
       fromValuesMin: 1.0,
@@ -14,7 +14,7 @@ void main() {
       10.0,);
   });
 
-  test('scaleValue - test linear scaling utility, from generated data', () {
+  test('extrapolateValue - test linear scaling utility, from generated data', () {
     var data = [
       //[1.0, 1.0, 2.0, 10.0, 20.0, 12.0],
       //[2.0, 1.0, 2.0, 10.0, 20.0, 2.0],
@@ -108,10 +108,10 @@ void main() {
   });
 }
 
-/*
+/* todo-010 : Add this back using ToPixelsExtrapolation1D
 void main() {
-  test('scaleValue - test linear scaling utility', () {
-    expect(scaleValue(
+  test('extrapolateValue - test linear extrapolating utility', () {
+    expect(extrapolateValue(
       value: 1.0,
       fromDomainMin: 1.0,
       fromDomainMax: 2.0,
@@ -121,7 +121,7 @@ void main() {
       10.0,);
   });
 
-  test('scaleValue - test linear scaling utility, from generated data', () {
+  test('extrapolateValue - test linear extrapolating utility, from generated data', () {
     var data = [
       [1.0, 1.0, 2.0, 10.0, 20.0, 10.0],
       [2.0, 1.0, 2.0, 10.0, 20.0, 20.0],
@@ -205,7 +205,7 @@ void main() {
     ];
     for (var dataRow in data) {
       expect(
-        scaleValue(
+        extrapolateValue(
           value: dataRow[0],
           fromDomainMin: dataRow[1],
           fromDomainMax: dataRow[2],

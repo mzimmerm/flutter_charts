@@ -14,7 +14,7 @@ import 'package:decimal/decimal.dart' as decimal;
 
 // import 'test/generate_test_data_from_app_runs.dart';
 
-/// A minimal polynomial needed for Y label and axis scaling.
+/// A minimal polynomial needed for Y label and axis extrapolating.
 ///
 /// Not fully a polynomial. Uses the [decimal] package.
 class Poly {
@@ -180,13 +180,13 @@ class LineSegment extends Interval {
 /// Encapsulates the concept of linear transformations in 1D.
 ///
 /// The unnamed generative constructor [LinearTransform1D] creates a transformation which,
-/// applied on a value, first scales the value by the scaling factor is [_scaleBy],
+/// applied on a value, first extrapolates the value by the factor [_scaleBy],
 /// then translates by the translation amount is [_moveOriginBy].
 ///
 /// The application of the transform on a double value is performed by the [apply] method.
 ///
 /// Note: The atomic transformation actions we can do in 1D are:
-///   - Multiplicative scaling (stretching or compression) around origin, with origin the fixed point.
+///   - Multiplicative extrapolating (stretching or compression) around origin, with origin the fixed point.
 ///     The scaling factor is [_scaleBy]. Note that scaling by [_scaleBy] = -1.0 is equivalent to
 ///     reversing direction.
 ///   - Additive translation (moving along) (no fixed point).
@@ -234,7 +234,7 @@ class LinearTransform1D {
 
   /// Default transformation first scales, then translates all points.
   ///
-  /// Note that scaling may include inversion.
+  /// Note that extrapolating may include inversion during scaling.
   double apply(double fromValue) {
     return _scaleBy * fromValue - _moveOriginBy;
   }
@@ -383,9 +383,9 @@ class DomainExtrapolation1D {
 ///  [doInvertToDomain] default is [false].
 ///  Setting [doInvertToDomain] to [true] is useful if the 'to' domain represents the Y axis and
 ///  we are *extrapolating data values*, as smaller data values end up showing on larger pixel values.
-///  However, when we are *extrapolating sizes*, generally stay with the [doInvertToDomain] default [false],
+///  However, when we are *extrapolating sizes* (which is technically *scaling sizes*),
+///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
-///
 ///
 class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
   ToPixelsExtrapolation1D({

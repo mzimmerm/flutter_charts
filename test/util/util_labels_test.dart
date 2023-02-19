@@ -6,7 +6,7 @@ import 'dart:ui' as ui show Color;
 import 'package:flutter_charts/flutter_charts.dart';
 
 void main() {
-  // todo 1 add tests for scaling . Add more tests in general
+  // todo 1 add tests for extrapolating . Add more tests in general
 
   test('Poly power and coeff', () {
     Poly p = Poly(from: 123.04);

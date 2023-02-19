@@ -989,7 +989,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
           ' which does not fit inside it\'s constraints $constraints';
       // Print a red error, but continue and let the paint show black overflow rectangle
       print(errText);
-      //throw StateError(errText);
     }
   }
 

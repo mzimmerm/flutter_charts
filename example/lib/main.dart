@@ -657,7 +657,7 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
-        //   When setting Y labels by user, the dataRows value scale
+        //   When setting Y labels by user, the dataRows value extrapolate
         //   is irrelevant. User can use for example interval <0, 1>,
         //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
         //   The only thing that matters is  the relative values in the data Rows.
@@ -923,7 +923,7 @@ class _ExampleWidgetCreator {
 
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
         /// [chartData.xUserLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
-        // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
+        // Fix was: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
         chartData = NewModel(
           dataRows: const [
             [0.0, 0.0, 0.0],

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart' as widgets;
+import 'package:logger/logger.dart' as logger;
 
 import 'painter.dart' as painter;
 
@@ -19,6 +20,6 @@ abstract class FlutterChart extends widgets.CustomPaint {
           size: size,
           child: child,
         ) {
-    print('Constructing $runtimeType');
+    logger.Logger().d('Constructing $runtimeType');
   }
 }

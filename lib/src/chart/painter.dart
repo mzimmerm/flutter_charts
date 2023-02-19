@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'dart:developer' as dart_developer;
 import 'package:flutter/widgets.dart' as widgets; // note: external package
-// import 'package:logger/logger.dart' as logger;
+import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
 import 'container.dart' as containers;
@@ -42,7 +42,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   }) {
     // Copy options also on ViewMaker from Model.options
     chartViewMaker.chartOptions = chartViewMaker.chartData.chartOptions;
-    print('Constructing $runtimeType');
+    logger.Logger().d('Constructing $runtimeType');
   }
 
 

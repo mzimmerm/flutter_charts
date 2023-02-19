@@ -35,7 +35,6 @@ class LineChartRootContainer extends ChartRootContainer {
           dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
           chartData: chartData,
-          chartOptions: chartOptions,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
