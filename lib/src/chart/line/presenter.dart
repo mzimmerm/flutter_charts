@@ -24,7 +24,6 @@ class LineAndHotspotPointPresenter extends PointPresenter {
 
   late ui.Paint rowDataPaint;
 
-  // todo-00-last-last-last : the problem with this: uses absolute coordintes, should be relative to DataContainer
   LineAndHotspotPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,

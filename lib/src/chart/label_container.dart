@@ -379,7 +379,6 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// but both x and y label containers can be skipped
   /// (tick dashes should not?).
   ///
-  // todo-04 how is this used?
   // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : double parentOffsetTick = 0.0;
   double parentOffsetTick = 0.0;
 
@@ -423,7 +422,6 @@ abstract class AxisLabelContainer extends LabelContainer {
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
-      // todo-00-done : isAxisAndLabelsSameDirection: !_ownerAxisContainer.labelsGenerator.isAxisAndLabelsSameDirection,
     );
 
     super.layout_Post_Leaf_SetSize_FromInternals();
