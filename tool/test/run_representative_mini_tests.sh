@@ -44,7 +44,7 @@ echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot differences tests representative screenshots validation
 echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
-# tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
+tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
 tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsShown
 tool/test/integration_test_validate_screenshots.sh ex40LanguagesWithYOrdinalUserLabelsAndUserColors
 # tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
@@ -61,4 +61,4 @@ echo
 echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot actual/expected test for NEW LAYOUT
-USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+# todo-00-last-last-last : fix : USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

@@ -152,12 +152,15 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     //        create labels from the stacked points (if chart is stacked).
     /// Create member [pointsColumns] from [data.dataRows].
     // todo-01 : can this be moved to DataContainer.layout?
+    // todo-00-last-last-last : Move to DataContainer as a fake container : create (this), applyParentOffert(this) NO LAYOUT, then PAINT
+/*
     chartViewMaker.chartData.pointsColumns = PointsColumns(
       chartViewMaker: chartViewMaker,
       pointPresenterCreator: chartViewMaker.pointPresenterCreator,
       isStacked: isStacked,
       caller: this,
     );
+*/
 
     // ### 2. Layout the LegendContainer where series legend is shown
     var legendBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
@@ -189,7 +192,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
-    // todo-00-last : check if contained buildAndReplaceChildren does any layout in YContainer
     yContainerFirst.layout();
 
     yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
@@ -206,7 +208,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     ));
 
     xContainer.applyParentConstraints(this, xContainerBoxConstraints);
-    // todo-00-last : check if contained buildAndReplaceChildren does any layout in XContainer
     xContainer.layout();
 
     // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
@@ -265,7 +266,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
-    // todo-00-last : check if contained buildAndReplaceChildren does any layout in (old) DataContainer
     dataContainer.layout();
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
@@ -411,12 +411,13 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
   double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
   /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
-  /// (instances of [YLabelContainer]) which are managed in this [YContainer._yLabelContainers].
+  /// (instances of [YLabelContainer]) which are maintained in this [YContainer._yLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
-  /// method [buildAndReplaceChildren] is that we do not know until the parent
+  /// method [buildAndReplaceChildren] is that we MAY NOT know until the parent
   /// [chartViewMaker] is being layed out, how much Y-space there is, therefore,
-  /// how many Y labels would fit.
+  /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [YContainer],
+  /// only on [XContainer] re-layout.
   ///
   /// The created Y labels should be layed out by invoking [layout]
   /// immediately after this method [buildAndReplaceChildren]
@@ -431,7 +432,7 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
     // Now can check if labels are shown, set empty children and return.
     if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
-      addChildren(_yLabelContainers);
+      addChildren(_yLabelContainers);  // todo-00-last : We should replace
       return;
     }
 
@@ -446,9 +447,6 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
     );
 
     for (AxisLabelInfo labelInfo in formattedLabelInfos.labelInfoList) {
-      // yTickY is the vertical center of the label on the Y axis.
-      // It is equal to the Transformed and Scaled data value, calculated as LabelInfo.axisValue
-      // It is kept always relative to the immediate container - YContainer
       var yLabelContainer = YLabelContainer(
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
@@ -461,7 +459,7 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       _yLabelContainers.add(yLabelContainer);
     }
 
-    addChildren(_yLabelContainers);
+    addChildren(_yLabelContainers);  // todo-00-last : We should replace
   }
 
   /// Lays out this [YContainer] - the area containing the Y axis labels -
@@ -508,10 +506,12 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       yLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       yLabelContainer.layout();
 
+      // todo-00-last-last-last : simplify
       double yTickY = yLabelContainer.pixelPositionOnAxis.toDouble();
 
       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
 
+      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : yLabelContainer.parentOffsetTick = yTickY;
       yLabelContainer.parentOffsetTick = yTickY;
 
       // Move the contained LabelContainer to correct position
@@ -611,8 +611,21 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
 
   @override
-  /// Builds the label containers for this [XContainer].
+  /// Overridden method creates this [XContainer]'s hierarchy-children X labels
+  /// (instances of [XLabelContainer]) which are maintained in this [_xLabelContainers].
+  ///
+  /// The reason the hierarchy-children Y labels are created late in this
+  /// method [buildAndReplaceChildren], invoked as first message send in [layout],
+  /// is that we do not know until the [chartViewMaker] on this [ChartAreaContainer]
+  /// is being layed out, how much Y-space there is, therefore, how many X labels would fit.
+  /// During re-layout, this [buildAndReplaceChildren] is invoked again, and may build
+  /// less children labels in this [_xLabelContainers]
+  ///
+  /// The created X labels should be layed out by invoking [layout]
+  /// immediately after this method [buildAndReplaceChildren]
+  /// is invoked.
   void buildAndReplaceChildren(LayoutContext layoutContext) {
+
     // First clear any children that could be created on nested re-layout
     _xLabelContainers = List.empty(growable: true);
 
@@ -635,7 +648,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       );
       _xLabelContainers.add(xLabelContainer);
     }
-    addChildren(_xLabelContainers);
+    addChildren(_xLabelContainers); // todo-00-last : We should replace
   }
 
   @override
@@ -680,6 +693,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
       double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
 
+      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : xLabelContainer.parentOffsetTick = xTickX;
       xLabelContainer.parentOffsetTick = xTickX;
 
       // tickX and label centers are same. labelLeftTop = label paint start.
@@ -844,7 +858,9 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get xTickXs =>
-      xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
+      // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.pixelPositionOnAxis).toList();
+  xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
+
 
   /// Y coordinates of y ticks (y tick - scaled value of data, also middle of label).
   /// Once [XContainer.layout] and [YContainer.layout] are complete,
@@ -852,8 +868,9 @@ class _SourceYContainerAndYContainerToSinkDataContainer {
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get yTickYs {
-    return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
-  }
+    // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis :return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.pixelPositionOnAxis).toList();
+ return yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
+    }
 }
 
 
@@ -897,6 +914,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   @override
   void buildAndReplaceChildren(LayoutContext layoutContext) {
 
+    // todo-00-last-last : check if contained buildAndReplaceChildren does any layout in (old) DataContainer - IT DOES!!
+
     // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
         findSourceContainersReturnLayoutResultsToBuildSelf();
@@ -935,6 +954,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     if (isStacked && layoutDependency.xTickXs.isNotEmpty) {
       double lineX = layoutDependency.xTickXs.last + layoutDependency.xGridStep / 2;
 
+      // todo-00-last : We should replace
       _yGridLinesContainer.addChildren([
         LineContainer(
           lineFrom: initLineFrom,
@@ -950,7 +970,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
       ]);
     }
     // Add the constructed Y - parallel GridLinesContainer as child to self DataContainer
-    addChildren([_yGridLinesContainer]);
+    addChildren([_yGridLinesContainer]);  // todo-00-last : We should replace
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
@@ -988,18 +1008,23 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// based on the available size.
   @override
   void layout() {
-    buildAndReplaceChildren(LayoutContext.unused);
+    // todo-00-last-last-done : moved down, new data container does this in it's auto - layout : buildAndReplaceChildren(LayoutContext.unused);
     if (!chartViewMaker.isUseOldDataContainer) {
       super.layout();
       return;
     }
 
+    // OLD Manual layout build. NEW invokes this as part of auto-layout.
+    buildAndReplaceChildren(LayoutContext.unused);
+
     // DataContainer uses it's full constraints to lay out it's grid and presenters!
     layoutSize = ui.Size(constraints.size.width, constraints.size.height);
 
+/* todo-00-last-last-last moved to one place
     _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
       findSourceContainersReturnLayoutResultsToBuildSelf();
 
+*/
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Position the vertical yGrid in the middle of labels (line chart) or on label left edge (stacked bar)
@@ -1012,10 +1037,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     _xGridLinesContainer.applyParentConstraints(this, constraints);
     _xGridLinesContainer.layout();
 
+/* todo-00-last-last-last moved in one place
     // Scale the [pointsColumns] to the [YContainer]'s scale.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
     lerpPointsColumns(layoutDependency);
+*/
   }
 
   @override
@@ -1031,9 +1058,32 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // draw vertical grid
     _yGridLinesContainer.applyParentOffset(this, offset);
 
+    // todo-00-last-last-last vvvvvvv moved all to one place
+
+    chartViewMaker.chartData.pointsColumns = PointsColumns(
+      chartViewMaker: chartViewMaker,
+      pointPresenterCreator: chartViewMaker.pointPresenterCreator,
+      isStacked: chartViewMaker.isStacked,
+      caller: this,
+    );
+
+    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
+    findSourceContainersReturnLayoutResultsToBuildSelf();
+
+    // Scale the [pointsColumns] to the [YContainer]'s scale.
+    // This is effectively a [layout] of the lines and bars pointPresenters, currently
+    //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
+    lerpPointsColumns(layoutDependency);
+    // todo-00-last-last-last ^^^^^^ moved all to one place
+
     // Apply offset to lines and bars.
     chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
 
+    // THIS SHOULD BE IN LAYOUT BUT NEEDS TO WAIT FOR THE ABOVE LINE:
+    //    chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
+    // WHICH ADJUSTS THE ABSOLUTE OFFSET CREATED BY
+    //     chartViewMaker.chartData.pointsColumns = PointsColumns(ETC)
+    //
     // Any time offset of [_chartContainer.pointsColumns] has changed,
     //   we have to recreate the absolute positions
     //   of where to draw data points, data lines and data bars.
@@ -1075,7 +1125,18 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     }
   }
 
+  // todo-00-done : added abstract
+  void _drawDataPointPresentersColumns(ui.Canvas canvas);
+
   // paint(ui.Canvas canvas)  switch old and new DataContainer : super called in both
+  // todo-00-done : moved same code from both extensions Line/Bar
+  @override
+  void paint(ui.Canvas canvas) {
+    _paintGridLines(canvas);
+
+    _drawDataPointPresentersColumns(canvas);
+  }
+
 
   // ##### Scaling and layout methods of [_chartContainer.pointsColumns]
   //       and [pointPresentersColumns]
@@ -1128,16 +1189,19 @@ class VerticalBarChartDataContainer extends DataContainer {
           chartViewMaker: chartViewMaker,
         );
 
+/* todo-00-last : moved to super as code is same
   @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
     _drawDataPointPresentersColumns(canvas);
   }
+*/
 
   /// Draws the actual atomic visual elements representing data on the chart.
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
+  @override
   void _drawDataPointPresentersColumns(ui.Canvas canvas) {
     PointPresentersColumns pointPresentersColumns = this.pointPresentersColumns;
 
@@ -1178,16 +1242,19 @@ class LineChartDataContainer extends DataContainer {
           chartViewMaker: chartViewMaker,
         );
 
+/* todo-00-done : moved to suprt DataContainer as code same for Line/Bar
   @override
   void paint(ui.Canvas canvas) {
     _paintGridLines(canvas);
     _drawDataPointPresentersColumns(canvas);
   }
+*/
 
   /// Draws the actual atomic visual elements representing data on the chart.
   ///
   /// The atomic visual elements are either  lines with points (on the line chart),
   /// or bars/columns, stacked or grouped (on the bar/column charts).
+  @override
   void _drawDataPointPresentersColumns(ui.Canvas canvas) {
     var pointPresentersColumns = this.pointPresentersColumns;
     for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
@@ -1397,7 +1464,7 @@ class StackableValuePoint {
         value: fromY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
+        // todo-00-done : isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
       ),
     );
     scaledTo = ui.Offset(
@@ -1406,7 +1473,7 @@ class StackableValuePoint {
         value: toY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
-        isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
+        // todo-00-done : isAxisAndLabelsSameDirection: !yLabelsGenerator.isAxisAndLabelsSameDirection,
       ),
     );
 
@@ -1639,6 +1706,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
+        // todo-00-last-last-last : this uses xTickXs
         double scaledX = layoutDependency.xTickXs[col];
         point.lerpToPixels(
           scaledX: scaledX,
@@ -1649,6 +1717,10 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
     }
   }
 
+  // todo-00-last-last-last : this fixes the absolute coordinates of the chartViewMaker.chartData.pointsColumns
+  //                        When called in DataContainer.applyParentOffset with the offset of DataContainer
+  //             dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
+  //              it moves all points which were created X in the X axis coordinates and Ys in the coordinates
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {

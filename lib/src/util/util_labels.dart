@@ -140,14 +140,14 @@ class DataRangeLabelsGenerator {
     required double value,
     required double axisPixelsYMin,
     required double axisPixelsYMax,
-    // todo-00-last-last-last : We should NOT need this, it is always using this member so just use this.isAxisAndLabelsSameDirection ??
-    required bool isAxisAndLabelsSameDirection,
+    // todo-00-done : required bool isAxisAndLabelsSameDirection,
   }) {
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (isAxisAndLabelsSameDirection) {
+      // todo-00-done : if (isAxisAndLabelsSameDirection) {
+      if (!isAxisAndLabelsSameDirection) {
         pixels = axisPixelsYMax;
       } else {
         pixels = axisPixelsYMin;
@@ -161,7 +161,8 @@ class DataRangeLabelsGenerator {
       fromValuesMax: dataRange.max,
       toPixelsMin: axisPixelsYMin,
       toPixelsMax: axisPixelsYMax,
-      doInvertToDomain: isAxisAndLabelsSameDirection,
+      // todo-00-done : doInvertToDomain: isAxisAndLabelsSameDirection,
+      doInvertToDomain: !isAxisAndLabelsSameDirection,
     ).apply(value);
   }
 }

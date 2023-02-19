@@ -380,19 +380,32 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// (tick dashes should not?).
   ///
   // todo-04 how is this used?
+  // todo-00-last-last-last-last-last : replaced with pixelPositionOnAxis : double parentOffsetTick = 0.0;
   double parentOffsetTick = 0.0;
 
-  /// Scaled label value.
+  ///  [_pixelPositionOnAxis] is the numerical value of label,
+  ///  transformed, then scaled to axis pixels length, so its value is in
+  ///  pixels relative to the immediate container - the [YContainer] or [XContainer]
   ///
-  /// [_pixelPositionOnAxis]s are on the scale of y axis length.
-  /// Important Note: The only role this plays, is setting
+  /// It is located at the vertical center of the label on the Y axis,
+  /// and becomes [yTickY] but NOT [xTickX] (currently, xTickX is from x value data position,
+  /// not from generated labels by [DataRangeLabelsGenerator].
+  ///
+  /// Important Note: The only role this plays, is setting [parentOffsetTick]
+  /// as follows:
   ///    ```dart
-  ///    yLabelContainer.parentOffsetTick = yTickY;
+  ///       double yTickY = yLabelContainer.pixelPositionOnAxis.toDouble();
+  ///       double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
+  ///       yLabelContainer.parentOffsetTick = yTickY;
   ///    ```
-  ///  That code is in [YContainer.layout], so this late final must be set before that.
+  ///  So the values of this [parentOffsetTick] and [_pixelPositionOnAxis] ARE THE SAME
+  ///
+  /// todo-00-last-last-last : can they be unified?
+  ///
+  ///  The above code is in [YContainer.layout], so this late final must be set before that.
   ///  Should be fine to set anywhere in this [LabelContainer.layout]
   late final num _pixelPositionOnAxis;
-  num get pixelPositionOnAxis => _pixelPositionOnAxis;
+  double get pixelPositionOnAxis => _pixelPositionOnAxis.toDouble();
 
   /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
@@ -410,7 +423,7 @@ abstract class AxisLabelContainer extends LabelContainer {
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
-      isAxisAndLabelsSameDirection: !_ownerAxisContainer.labelsGenerator.isAxisAndLabelsSameDirection,
+      // todo-00-done : isAxisAndLabelsSameDirection: !_ownerAxisContainer.labelsGenerator.isAxisAndLabelsSameDirection,
     );
 
     super.layout_Post_Leaf_SetSize_FromInternals();
