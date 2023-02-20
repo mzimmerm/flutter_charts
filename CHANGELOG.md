@@ -1,7 +1,23 @@
 # Version 0.5.1 (2023-02-20)
 
-git branch --move release_0.5.0
+## Functional improvements
 
+Fixed issues #37 and #38 reported by Roar Gronmo (thanks)
+
+
+https://github.com/mzimmerm/flutter_charts/issues/37
+https://github.com/mzimmerm/flutter_charts/issues/38
+
+The first has to do with Google fonts not supporting latest version, the second with a misleading error message when invalid data color array length is provided in chart data.
+
+Upgraded to the current versions of dependencies (as of release date 2023-02-20).
+
+$ `flutter pub upgrade --major-versions`
+
+## Misc improvements
+
+- Renamed the directory 'examples1' to 'examples'. The old name 'examples1' for forced by a Flutter error, fixed since.
+- Ran `flutter doc` succesfully. Previously it was failing due to the presence of the 'examples1' directory.
 
 
 # Version 0.5.0 (2022-01-28)

@@ -17,7 +17,7 @@ publish_to: https://pub.dartlang.org # OR 'none' if no publishing.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.5.0
+version: 0.5.1
 
 # Without the "environment" section, we get message on
 #   `flutter packages pub publish`:
@@ -38,7 +38,7 @@ dependencies:
   vector_math: ^2.1.0
   tuple: ^2.0.0
   # 2022-02-05 : Fix issue *Error: No named parameter with the name 'displayLarge'.* google_fonts: ^2.2.0
-  google_fonts: 2.2.0
+  google_fonts: ^4.0.3
   logger: ^1.1.0
 
 # Example of dependency on another project: local, GitHub, locally hosted on own pub server on 8080,
@@ -74,8 +74,8 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
-  lints: ^1.0.1 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
+  flutter_lints: ^2.0.1
+  lints: ^2.0.1 # Note: lint rules == analyzer rules, define them in analysis_options.yaml
   # 2022-10-10-removed-as-flutter-pub-upgrade-fails analyzer: ^2.8.0
 
 # For information on the generic Dart part of this file, see the
