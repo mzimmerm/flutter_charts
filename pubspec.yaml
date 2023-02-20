@@ -4,8 +4,8 @@ description: Charts Library for Flutter, written in Dart with Flutter. Allows to
 homepage: https://github.com/mzimmerm/flutter_charts/
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: https://pub.dartlang.org # OR 'none' if no publishing. 
-# documentation: https://pub.dartlang.org/packages/flutter_charts/doc
+# publish_to: https://pub.dartlang.org # OR 'none' if no publishing.
+# documentation: https://pub.dev/packages/flutter_charts/doc
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

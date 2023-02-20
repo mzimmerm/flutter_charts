@@ -86,7 +86,7 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
 ** ~dart format --line-length=120 integration_test~
 ** ~NO dart format test~
 ** ~flutter analyze~ # Analyze and fix errors Must be clean to run dartdoc
-** ~dartdoc~ # Generate documentation in doc/api directory as static HTML files.
+** ~dart doc [--dry-run]~ # Generate documentation in doc/api directory as static HTML files.
 First install dartdoc latest compatible with SDK:
 
 ~flutter pub global activate dartdoc~
