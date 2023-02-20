@@ -13,7 +13,9 @@ import 'util_labels.dart' as util_labels;
 ///
 /// All values are calculated using [NewModel].
 ///
-/// From there, Y [AxisLabelInfo]s are created/// The Y labels are kept in the [formattedLabelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
+/// From there, Y [AxisLabelInfo]s are created.
+///
+/// The Y labels are kept in the [formattedLabelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
 /// The following members are most relevant in the creating and formatting labels
 /// - [_dataYs] is a list of numeric Y values, passed to constructor.
@@ -31,11 +33,66 @@ import 'util_labels.dart' as util_labels;
 /// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [formattedLabelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [formattedLabelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
-// todo-00-last : We should pull FormattedLabelInfos back to this DataRangeLabelsGenerator
+// todo-00-last-done : We should pull FormattedLabelInfos back to this DataRangeLabelsGenerator
 class DataRangeLabelsGenerator {
 
-  late final NewModel _dataModel; // todo-00-last : remove as member. It is ONLY needed in constructor
-  final bool _isStacked; // todo-00-last : remove as member. It is ONLY needed in constructor
+  /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
+  /// by this [DataRangeLabelsGenerator].
+  ///
+  /// If [userLabels] list of user labels is passed, user labels will be used and distributed linearly between the
+  /// passed [dataYs] minimum and maximum.
+  /// Otherwise, new labels are automatically generated with values of
+  /// highest order of numeric values in the passed [dataYs].
+  /// See the class comment for examples of how auto labels are created.
+  DataRangeLabelsGenerator({
+    required NewModel dataModel,
+    required bool extendAxisToOrigin,
+    required Function valueToLabel,
+    required Function inverseTransform,
+    required bool isStacked,
+    List<String>? userLabels,
+  })  :
+        _valueToLabel = valueToLabel,
+        _inverseTransform = inverseTransform
+  // todo-00-last-done : _dataModel = dataModel,
+  // todo-00-last-done : _isStacked = isStacked
+  {
+
+    // todo-00-last-done : isUsingUserLabels = userLabels != null;
+
+    // List<double> yLabelPositions;
+    util_dart.Interval dataEnvelope;
+
+    // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
+    //   then create labels evenly distributed in the Y values interval.
+    // Both [dataEnvelope] and member [_yLabelPositions] ,
+    // are  not-extrapolated && transformed data from [NewModelPoint].
+    if (userLabels != null) {
+      dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
+      _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels.length);
+    } else {
+      dataEnvelope = dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: isStacked);
+      _labelPositions = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
+    }
+
+    // Store the merged interval of values and label envelope for [LabelInfos] creation
+    // that can be created immediately after by invoking [createLabelInfos].
+    dataRange = util_dart.Interval(
+      _labelPositions.reduce(math.min),
+      _labelPositions.reduce(math.max),
+    ).merge(dataEnvelope);
+
+    _formattedLabelInfos = _createFormattedLabelInfos_From_LabelPositions(userLabels);
+  }
+
+  // todo-00-last-done : late final NewModel _dataModel; // todo-00-last : remove as member. It is ONLY needed in constructor
+  // todo-00-last-done : final bool _isStacked; // todo-00-last : remove as member. It is ONLY needed in constructor
+
+  /// Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
+  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
+  ///                 Reason: Different views may have different labels, esp. on the Y axis.
+  late final FormattedLabelInfos _formattedLabelInfos;
+  FormattedLabelInfos get formattedLabelInfos => _formattedLabelInfos;
 
   /// Stores the merged outer interval of generated labels and point values.
   /// It's values are all calculated from [NewModelPoint]s.
@@ -47,7 +104,9 @@ class DataRangeLabelsGenerator {
   /// User labels on the Y axis.
   ///
   /// If not null, user labels are used instead of generated labels.
-  List<String>? userLabels; // todo-00-last : remove as member. It is ONLY needed in constructor and in isUsingUserLabels which should be also removed after the FormattedLabelInfos are constructed
+  // todo-00-last-done : List<String>? userLabels; // todo-00-last : remove as member. It is ONLY needed in constructor and in isUsingUserLabels which should be also removed after the FormattedLabelInfos are constructed
+
+   // todo-00-last-done late final bool isUsingUserLabels;
 
   /// Keeps the transformed, non-extrapolated data values at which labels are shown.
   /// [YContainer.formattedLabelInfos] are created from them first, and extrapolated
@@ -70,54 +129,11 @@ class DataRangeLabelsGenerator {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Generative constructor allows to create labels.
-  ///
-  /// If [userLabels] list of user labels is passed, user labels will be used and distributed linearly between the
-  /// passed [dataYs] minimum and maximum.
-  /// Otherwise, new labels are automatically generated with values of
-  /// highest order of numeric values in the passed [dataYs].
-  /// See the class comment for examples of how auto labels are created.
-  DataRangeLabelsGenerator({
-    required NewModel dataModel,
-    required bool extendAxisToOrigin,
-    required Function valueToLabel,
-    required Function inverseTransform,
-    this.userLabels,
-    required bool isStacked,
-  })  :
-        _valueToLabel = valueToLabel,
-        _inverseTransform = inverseTransform,
-        _dataModel = dataModel,
-        _isStacked = isStacked {
-
-    // List<double> yLabelPositions;
-    util_dart.Interval dataEnvelope;
-
-    // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
-    //   then create labels evenly distributed in the Y values interval.
-    // Both [dataEnvelope] and member [_yLabelPositions] ,
-    // are  not-extrapolated && transformed data from [NewModelPoint].
-    if (isUsingUserLabels) {
-      dataEnvelope = _dataModel.dataValuesInterval(isStacked: _isStacked);
-      _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels!.length);
-    } else {
-      dataEnvelope = _dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: _isStacked);
-      _labelPositions = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
-    }
-
-    // Store the merged interval of values and label envelope for [LabelInfos] creation
-    // that can be created immediately after by invoking [createLabelInfos].
-    dataRange = util_dart.Interval(
-      _labelPositions.reduce(math.min),
-      _labelPositions.reduce(math.max),
-    ).merge(dataEnvelope);
-  }
-
   /// Format and extrapolate the labels from [_labelPositions] created and stored by this instance.
   ///
   /// This method should be invoked in a constructor of a container,
   /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels.
-  FormattedLabelInfos createFormattedLabelInfos_From_LabelPositions() {
+  FormattedLabelInfos _createFormattedLabelInfos_From_LabelPositions(List<String>? userLabels) {
     List<AxisLabelInfo> labelInfos = _labelPositions
         .map((transformedLabelValue) => AxisLabelInfo(
               dataValue: transformedLabelValue,
@@ -127,11 +143,12 @@ class DataRangeLabelsGenerator {
     return FormattedLabelInfos(
       from: labelInfos,
       labelsGenerator: this,
+      userLabels: userLabels,
     );
   }
 
-  // todo
-  bool get isUsingUserLabels => userLabels != null;
+  // todo-00-last : try remove
+  // todo-00-last-done bool get isUsingUserLabels => userLabels != null;
 
   /// Extrapolates [value] from extended data range kept in self [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsYMin], [axisPixelsYMax],
@@ -270,14 +287,15 @@ class FormattedLabelInfos {
   FormattedLabelInfos({
     required List<AxisLabelInfo> from,
     required DataRangeLabelsGenerator labelsGenerator,
+    List<String>? userLabels,
   })  : _labelInfoList = from
   {
     // Format labels during creation
     for (int i = 0; i < _labelInfoList.length; i++) {
       AxisLabelInfo labelInfo = _labelInfoList[i];
       // Format labels takes a different form in user labels
-      if (labelsGenerator.isUsingUserLabels) {
-        labelInfo._formattedLabel = labelsGenerator.userLabels![i];
+      if (userLabels != null) {
+        labelInfo._formattedLabel = userLabels[i];
       } else {
         labelInfo._formattedLabel = labelsGenerator._valueToLabel(labelInfo._rawDataValue);
       }

@@ -321,10 +321,12 @@ abstract class AxisContainer extends ChartAreaContainer {
   ///                 Reason: Different views may have different labels, esp. on the Y axis.
   late DataRangeLabelsGenerator labelsGenerator;
 
-  // Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
+/* todo-00-last-done
+  /// Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
   /// Important note: This should NOT be part of model, as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the Y axis.
   late FormattedLabelInfos formattedLabelInfos;
+*/
 }
 
 /// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
@@ -382,7 +384,8 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
+    // todo-00-last : Pull formattedLabelInfos back to DataRangeLabelsGenerator
+    // todo-00-last-done : formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// Containers of Y labels.
@@ -428,7 +431,7 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in formattedLabelInfos.labelInfoList) {
+    for (AxisLabelInfo labelInfo in labelsGenerator.formattedLabelInfos.labelInfoList) {
       var yLabelContainer = YLabelContainer(
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
@@ -567,7 +570,8 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
+    // todo-00-last : Pull formattedLabelInfos back to DataRangeLabelsGenerator
+    // todo-00-last-done : formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
@@ -619,7 +623,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
         labelStyle: labelStyle,
         options: options,
         // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: formattedLabelInfos.labelInfoList[xIndex],
+        labelInfo: labelsGenerator.formattedLabelInfos.labelInfoList[xIndex],
         ownerAxisContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
@@ -1100,8 +1104,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   /// Paints grid lines, then paints [PointPresentersColumns]
   @override
   void paint(ui.Canvas canvas) {
-    _paintGridLines(canvas);
+    if (!chartViewMaker.isUseOldDataContainer) {
+      super.paint(canvas);
+      return;
+    }
 
+    _paintGridLines(canvas);
     _drawPointPresentersColumns(canvas);
   }
 
