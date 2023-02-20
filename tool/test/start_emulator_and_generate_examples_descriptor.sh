@@ -25,7 +25,6 @@ exampleEnum=$1
 
 # This is the AVD emulator we request to exist
 emulator_used="Nexus_6_API_33"
-# old: emulator_used="Nexus_6_API_29_2"
 
 echo Check if emulator exists
 if ! flutter emulators  2>/dev/null | grep --quiet "$emulator_used "; then
@@ -39,8 +38,8 @@ echo Check if the emulator named $emulator_used is connected to a running device
 if ! ps -alef | grep "$emulator_used" | grep -v grep ; then
   echo No AVD devices running using the emulator $emulator_used. Launching the emulator.
   flutter emulators --launch "$emulator_used"
-  echo Sleep 22 on server to give the emulator time to start fully. Sleep 40 on laptop.
-  sleep 22
+  echo Sleep 20 to give the emulator time to start fully.
+  sleep 20
   echo The AVD emulator $emulator_used succesfully launched.
 else
   echo The emulator $emulator_used appears running and connected.
@@ -61,7 +60,7 @@ echo Emulator $emulator_used is running as device_id="$device_id".
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
-echo Running 'dart run example/lib/src/util/examples_descriptor.dart'
+echo Running dart run example/lib/src/util/examples_descriptor.dart
 echo   to create $examples_descriptor_generated_program
 dart run example/lib/src/util/examples_descriptor.dart "$exampleEnum" > $examples_descriptor_generated_program
 

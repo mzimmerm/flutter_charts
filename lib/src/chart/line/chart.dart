@@ -1,10 +1,7 @@
 import 'package:flutter/widgets.dart' as widgets;
 
-// base libraries
-import '../chart.dart' as chart;
-
-// this level
 import '../line/painter.dart' as line_painter show LineChartPainter;
+import '../chart.dart' as chart;
 
 /// Provides paint for the line chart.
 ///
@@ -21,7 +18,7 @@ import '../line/painter.dart' as line_painter show LineChartPainter;
 ///       can be seen in the [LineChart] constructor.
 class LineChart extends chart.FlutterChart {
   /// Default constructor accepts size
-  LineChart({
+  const LineChart({
     widgets.Key? key,
     required line_painter.LineChartPainter painter,
     widgets.CustomPainter? foregroundPainter,

@@ -1,21 +1,18 @@
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
-// import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
+import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset;
 
-// this level or equivalent
-import 'container.dart' show AxisContainer;
-import 'container_layouter_base.dart' show BoxContainer, LayoutableBox, LayoutContext;
-import 'options.dart' show ChartOptions;
-import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import 'container_base.dart' as container_base show Container;
+import '../morphic/rendering/constraints.dart' show LayoutExpansion;
 import '../util/geometry.dart' as geometry;
-import '../util/util_labels.dart' show AxisLabelInfo;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
 /// The [layoutSize] is exactly that of by the contained
-/// layed out [_textPainter] (this [LabelContainerOriginalKeep] has no margins, padding,
+/// layed out [_textPainter] (this [LabelContainer] has no margins, padding,
 /// or additional content in addition to the [_textPainter).
 ///
 /// However, if this object is tilted, as specified by [_labelTiltMatrix], the
@@ -35,62 +32,14 @@ import '../util/util_labels.dart' show AxisLabelInfo;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
-class LabelContainer extends BoxContainer {
 
-  // Allows to configure certain sizes, colors, and layout.
-  // final LabelStyle _labelStyle;
-
-  /// Constructs an instance for a label, it's text style, and label's
-  /// maximum width.
-  ///
-  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMaker].
-  /// It is currently assumed clients will not call any methods using them.
-  LabelContainer({
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-    required ChartOptions options,
-  })  :
-        _options = options,
-        _labelTiltMatrix = labelTiltMatrix,
-        // _labelStyle = labelStyle,
-        _textPainter = widgets.TextPainter(
-          text: widgets.TextSpan(
-            text: label,
-            style: labelStyle.textStyle, // All labels share one style object
-          ),
-          textDirection: labelStyle.textDirection,
-          textAlign: labelStyle.textAlign,
-          // center in available space todo-01 textScaleFactor does nothing ??
-          textScaleFactor: labelStyle.textScaleFactor,
-          // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-        ),
-        super() {
-    // var text = new widgets.TextSpan(
-    //   text: label,
-    //   style: _labelStyle.textStyle, // All labels share one style object
-    // );
-    // _textPainter = new widgets.TextPainter(
-    //   text: text,
-    //   textDirection: _labelStyle.textDirection,
-    //   textAlign: _labelStyle.textAlign,
-    //   // center in available space
-    //   textScaleFactor: _labelStyle.textScaleFactor,
-    //   // todo-04 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
-    // ); //  textScaleFactor does nothing ??
-  }
-
-  /// Max width of label (outside constraint).
-  ///
-  /// Late initialized in layout.
-  late final double _labelMaxWidth;
-  set labelMaxWidth(double width) {
-    _labelMaxWidth = width;
-  }
-
-  /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
+class LabelContainer extends container_base.Container {
+  /// Max width of label (outside constraint)
+  final double _labelMaxWidth;
+  
+  /// Offset of this [LabelContainer]'s label, created by the [_textPainter].
   /// 
-  ui.Offset offsetOfPotentiallyRotatedLabel = ui.Offset.zero;
+  Offset offsetOfPotentiallyRotatedLabel = Offset.zero;
 
   /// Rotation matrix representing the angle by which the label is tilted.
   /// 
@@ -107,9 +56,7 @@ class LabelContainer extends BoxContainer {
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
-
-  final ChartOptions _options;
-
+  
   /// Position where paint starts painting the label, expressed
   /// in the coordinate system in which this [_tiltedLabelEnvelope.envelopeRect] topLeft 
   /// (NOT the _tiltedLabelEnvelope.topLeft) is at the origin. 
@@ -118,13 +65,55 @@ class LabelContainer extends BoxContainer {
   /// needed to reach the point where the text in the [_textPainter]
   /// should start painting the tilted or non-tilted situation. 
   /// In the non-tilted situation, the returned value is always Offset.zero. 
-  ui.Offset get tiltedLabelEnvelopeTopLeft {
+  Offset get tiltedLabelEnvelopeTopLeft {
     if (_labelTiltMatrix == vector_math.Matrix2.identity()) {
-      assert (_tiltedLabelEnvelope.topLeft == ui.Offset.zero);
+      assert (_tiltedLabelEnvelope.topLeft == Offset.zero);
     }
     return _tiltedLabelEnvelope.topLeft;
   }
 
+  // Allows to configure certain sizes, colors, and layout.
+  // final LabelStyle _labelStyle;
+
+  /// Constructs an instance for a label, it's text style, and label's
+  /// maximum width.
+  ///
+  /// Does not set parent container's [_layoutExpansion] and [_chartTopContainer].
+  /// It is currently assumed clients will not call any methods using them.
+  LabelContainer({
+    required String label,
+    required double labelMaxWidth,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required LabelStyle labelStyle,
+  })  : _labelMaxWidth = labelMaxWidth,
+        _labelTiltMatrix = labelTiltMatrix,
+        // _labelStyle = labelStyle,
+        _textPainter = widgets.TextPainter(
+          text: widgets.TextSpan(
+            text: label,
+            style: labelStyle.textStyle, // All labels share one style object
+          ),
+          textDirection: labelStyle.textDirection,
+          textAlign: labelStyle.textAlign,
+          // center in available space
+          textScaleFactor: labelStyle.textScaleFactor,
+          // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+        ),
+        //  textScaleFactor does nothing ??
+        super() {
+    // var text = new widgets.TextSpan(
+    //   text: label,
+    //   style: _labelStyle.textStyle, // All labels share one style object
+    // );
+    // _textPainter = new widgets.TextPainter(
+    //   text: text,
+    //   textDirection: _labelStyle.textDirection,
+    //   textAlign: _labelStyle.textAlign,
+    //   // center in available space
+    //   textScaleFactor: _labelStyle.textScaleFactor,
+    //   // todo-02 add to test - was removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
+    // ); //  textScaleFactor does nothing ??
+  }
 
   // #####  Implementors of method in superclass [Container].
 
@@ -152,26 +141,27 @@ class LabelContainer extends BoxContainer {
   /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
   /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
   /// 
-  // todo-04-morph : this implementation only works for tilting in [XContainer] because first call to it is
+  // todo-01-morph : this implementation only works for tilting in [XContainer] because first call to it is 
   //                 made in [XContainer.layout], after label container is created, as 
-  //                    `xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
+  //                    `xLabelContainer.applyParentOffset(labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
   //                    value, which is OVERWRITTEN by the last call described below; 
   //                    also, the accumulated non-rotated this.offset is kept on super slot
   //                    This is what we want - we want to keep the non-rotated this.offset on super slot,
   //                    and only do the rotation on the last call (last before paint)
-  //                 The last call is made in [ChartRootContainer.layout] inside
-  //                     `xContainer.applyParentOffset(this, xContainerOffset)` as
+  //                 The last call is made in [ChartTopContainer.layout] inside
+  //                     `xContainer.applyParentOffset(xContainerOffset)` as
   //                 as
   //                    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-  //                      xLabelContainer.applyParentOffset(this, offset);
+  //                      xLabelContainer.applyParentOffset(offset);
   //                    }
   //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset 
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint. 
   @override
-  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    super.applyParentOffset(caller, offset);
-
+  void applyParentOffset(ui.Offset offset) {
+    super.applyParentOffset(offset);
+    
+    // todo-01-morph : This should be part of new method 'findPosition' in the layout process
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
     // Transform the point where label painting starts against the tilt of labels.
     // No-op for non-tilted labels, where _labelTiltMatrix is identity, 
@@ -184,56 +174,28 @@ class LabelContainer extends BoxContainer {
       offset: (this.offset),
     );
   }
-
+  
   /// Implementor of method in superclass [Container].
   @override
   void paint(ui.Canvas canvas) {
     _textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-  /// This override is essentially semi-manual layout for it's class [LabelContainer],
-  ///   which allows to calculate several layout related values.
-  ///
-  /// First, it calculates and sets the [_labelMaxWidth] member,
-  ///   in [_layoutLogicToSetMemberMaxSizeForTextLayout]. See [_layoutLogicToSetMemberMaxSizeForTextLayout] for details.
-  ///
-  /// Second, it calls [_textPainter.layout] in [_layoutLogicToSetMemberMaxSizeForTextLayout],
-  ///   which obtains the size of [_textPainter]. The resulting [layoutSize] of this [LabelContainer]
-  ///   is set from the bounding rectangle of potentially rotated [_textPainter].
-  ///   
-  /// Note: On this leaf, instead of overriding this internal method, we could override [layout]
-  ///        witch exactly same code, and things would work, except missing check if 
-  ///        layout size is within constraints.
+  /// Lays out this [LabelContainer].
+  /// 
+  /// The layout step 1 is calling the contained [_textPainter.layout];
+  /// step 2 is creating the [_tiltedLabelEnvelope] around the horizontally layed out [_textPainter]
+  /// by calling
+  /// ```dart
+  ///   _tiltedLabelEnvelope = _createLabelEnvelope();
+  /// ```
+  /// 
   @override
-  void layout_Post_Leaf_SetSize_FromInternals() {
-    _layoutLogicToSetMemberMaxSizeForTextLayout();
-
-    // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
+  void layout(LayoutExpansion parentLayoutExpansion) {
+    // todo-01-morph : cannot set _layoutExpansion here, as it is private in another src file
+    //                  it does not appear needed.
     Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
-    // Set the layout size for parent to know how big this manually layed out label is.
     layoutSize = sizeAndOverflow.item1;
-  }
-
-  ///  Calculated and sets [_labelMaxWidth] used to layout [_textPainter.layout].
-  ///
-  ///   [layoutableBoxParentSandbox.constraints] is needed to have been
-  ///   set on this object by parent in layout (before this [layout] is called,
-  ///   parent would have pushed constraints.
-  void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
-    double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
-    double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
-
-    BoxContainerConstraints boxConstraints = constraints;
-
-    double labelMaxWidth =
-        boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
-    _labelMaxWidth = labelMaxWidth;
-    if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      applyParentOrderedSkip(this, true);
-      layoutSize = ui.Size.zero;
-      return;
-    }
   }
 
   // ##### Internal methods
@@ -257,12 +219,12 @@ class LabelContainer extends BoxContainer {
   ///     the subsequent `textPainter.paint(canvas)` call paints the label
   ///     **as always cropped to it's allocated size [_labelMaxWidth]**.
   /// - [_isOverflowingInLabelDirection] can be asked but this is information only.
-  Tuple2<ui.Size, bool> _layoutAndCheckOverflowInTextDirection() {
+  Tuple2<Size, bool> _layoutAndCheckOverflowInTextDirection() {
     _textPainter.layout();
 
     bool isOverflowingHorizontally = false;
     _tiltedLabelEnvelope = _createLabelEnvelope();
-    ui.Size layoutSize = _tiltedLabelEnvelope.size;
+    Size layoutSize = _tiltedLabelEnvelope.size;
 
     if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
@@ -275,7 +237,7 @@ class LabelContainer extends BoxContainer {
   }
 
   /// Creates the envelope rectangle [EnvelopedRotatedRect], which [EnvelopedRotatedRect.topLeft] 
-  /// is used to position this [LabelContainerOriginalKeep] for painting with or without tilt.
+  /// is used to position this [LabelContainer] for painting with or without tilt.
   geometry.EnvelopedRotatedRect _createLabelEnvelope() {
     // Only after layout, we know the envelope of tilted label
     return geometry.EnvelopedRotatedRect.centerRotatedFrom(
@@ -284,14 +246,10 @@ class LabelContainer extends BoxContainer {
     );
   }
 
-  @override
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
-  }
 }
 
 /// Class for value objects which group the text styles that may affect
-/// [LabelContainerOriginalKeep]'s instances layout.
+/// [LabelContainer]'s instances layout.
 class LabelStyle {
   widgets.TextStyle textStyle;
   ui.TextDirection textDirection;
@@ -306,13 +264,14 @@ class LabelStyle {
   });
 }
 
-/// Container of axis label, this subclass of [LabelContainer] also stores
-/// this container's center [parentOffsetTick] in parent's coordinates.
+/// Subclass of [LabelContainer] is extended with member [parentOffsetTick],
+/// which maintains the container's center position in
+/// immediate parent's coordinates.
 ///
-/// **This violates independence of container parents not needing their contained children.
-/// Instances of this class are used in container parent [XContainer] (which is OK),
-/// but the parent is storing some of it's properties on children (which is not OK,
-/// effectively, this class uses it's children as sandboxes).**
+/// **This violates independence of parents not knowing
+/// and not needing their children;
+/// here, when used in parent [XContainer], the parent is storing
+/// some of it's properties on children.**
 ///
 /// [parentOffsetTick] can be thought of as position of the "tick" showing
 /// the label's value on axis - the immediate parent
@@ -330,123 +289,41 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-abstract class AxisLabelContainer extends LabelContainer {
-  AxisLabelContainer({
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-    required ChartOptions options,
-    required AxisLabelInfo labelInfo,
-    required AxisContainer ownerAxisContainer,
-  })  : _labelInfo = labelInfo,
-        _ownerAxisContainer = ownerAxisContainer,
-        super(
-          label: label,
-          labelTiltMatrix: labelTiltMatrix,
-          labelStyle: labelStyle,
-          options: options,
-        );
-
-  /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
-  final AxisContainer _ownerAxisContainer;
-
-  /// Maintains the LabelInfo from which this [LabelContainer] was created,
-  /// for use during [layout] of self or parents.
-  final AxisLabelInfo _labelInfo;
-
-  /// Getter of [AxisLabelInfo] which created this Y label.
-  AxisLabelInfo get labelInfo => _labelInfo;
-
-  /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
+class AxisLabelContainer extends LabelContainer {
+  /// UI coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
-  /// In more detail, it is the numerical value of a label, transformed, then extrapolated to axis pixels length,
-  /// so its value is in pixels relative to the immediate container - the [YContainer] or [XContainer]
-  ///
-  /// It's value is not affected by call to [applyParentOffset].
+  /// [parentOffsetTick]'s value is not affected by call to [applyParentOffset].
   /// It is calculated during parent's [YContainer] [layout] method,
-  /// as a result, it remains positioned in the [AxisContainer]'s coordinates.
+  /// as a result, it remains positioned in the [YContainer]'s coordinates.
   /// Any objects using [parentOffsetTick] as it's end point
   /// (for example grid line's end point), should apply
   /// the parent offset to themselves. The reason for this behavior is for
-  /// the [parentOffsetTick]'s value to live after [AxisContainer]'s layout,
+  /// the [parentOffsetTick]'s value to live after [YContainer]'s layout,
   /// so the  [parentOffsetTick]'s value can be used in the
   /// grid layout, without reversing any offsets.
   ///
-  /// [parentOffsetTick]  has multiple other roles:
-  ///   - The X or Y offset of the X or Y label middle point
-  ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
-  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelsGenerator]).
-  ///     ```dart
-  ///        double yTickY = yLabelContainer.parentOffsetTick;
-  ///        double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
-  ///     ```
-  ///   - The "tick dash" for the label center on the X or Y axis.
-  ///     First "tick dash" is on the first label, last on the last label,
-  ///     but both x and y label containers can be skipped.
+  /// Also the X or Y offset of the X or Y label middle point
+  /// (before label's parent offset).
   ///
+  /// Also the "tick dash" for the label center on the X or Y axis.
+  ///
+  /// First "tick dash" is on the first label, last on the last label,
+  /// but both x and y label containers can be skipped
+  /// (tick dashes should not?).
+  ///
+  // todo-03 how is this used?
   double parentOffsetTick = 0.0;
 
-  /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
-  /// added logic to set pixels. ONLY used on Y axis labels for now.
-  ///
-  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
-  /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
-  ///
-  /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
-  /// is determined.
-  @override
-  void layout_Post_Leaf_SetSize_FromInternals() {
-    // We now know how long the Y axis is in pixels,
-    // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    parentOffsetTick = _ownerAxisContainer.labelsGenerator.lextrValueToPixels(
-      value: labelInfo.dataValue.toDouble(),
-      axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
-      axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
-    );
-
-    super.layout_Post_Leaf_SetSize_FromInternals();
-  }
-}
-
-/// Label container for Y labels, which maintain, in addition to
-/// the superclass [YLabelContainer] also [AxisLabelInfo] - the object
-/// from which each Y label is created.
-class YLabelContainer extends AxisLabelContainer {
-
-  YLabelContainer({
+  AxisLabelContainer({
     required String label,
+    required double labelMaxWidth,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    required ChartOptions options,
-    required AxisLabelInfo labelInfo,
-    required AxisContainer ownerAxisContainer,
   }) : super(
-    label:           label,
-    labelTiltMatrix: labelTiltMatrix,
-    labelStyle:      labelStyle,
-    options:         options,
-    labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
-  );
-}
-
-/// [AxisLabelContainer] used in the [XContainer].
-class XLabelContainer extends AxisLabelContainer {
-
-  XLabelContainer({
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-    required ChartOptions options,
-    required AxisLabelInfo labelInfo,
-    required AxisContainer ownerAxisContainer,
-  }) : super(
-    label:           label,
-    labelTiltMatrix: labelTiltMatrix,
-    labelStyle:      labelStyle,
-    options:         options,
-    labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
-  );
+          label: label,
+          labelMaxWidth: labelMaxWidth,
+          labelTiltMatrix: labelTiltMatrix,
+          labelStyle: labelStyle,
+        );
 }

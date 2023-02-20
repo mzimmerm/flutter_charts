@@ -16,7 +16,7 @@
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 import '../../../../lib/src/util/util_dart.dart' show enumName;
-import '../../../../lib/src/util/extensions_dart.dart' show StringExtension;
+import '../../../../lib/src/util/string_extension.dart';
 
 import 'package:tuple/tuple.dart' show Tuple2;
 
@@ -48,41 +48,20 @@ enum ExamplesEnum {
   ex60LabelsIteration2,
   ex60LabelsIteration3,
   ex60LabelsIteration4,
-  ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
-  ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
-  ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
-  ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
-  ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
-  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
-  ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
-
   // Range 900 - 999 are error testing examples
   ex900ErrorFixUserDataAllZero,
 }
 
-/// Describes chart types shown in examples or integration tests.
+/// Describes chart types shown in examples or integration tests..
 enum ExamplesChartTypeEnum {
   lineChart,
   verticalBarChart,
 }
 
-/// Defines the list of the examples available to be tested or run interactively in scripts.
+/// Represents examples and tests to be run.
 ///
-/// Each example properties are the enums from [ExamplesEnum] (e.g. [ExamplesEnum.ex10RandomData])
-/// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart])
-///
-/// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests,
-/// and interactively running in [run_all_examples.sh].
-///
-/// The [_allowed] member is the list of allowed combinations of [ExamplesEnum] and [ExamplesChartTypeEnum].
 /// Each enumerate in the [_allowed] list represents one set of chart data, options and type
 ///   for the flutter_charts example app in [example/lib/main.dart].
-///
-/// Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example. The snippet may look like
-///    ```shell
-///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart $2
-///    ```
-/// and is used in the generated tmp file such as `examples_descriptor_generated_program_354.sh`.
 ///
 /// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartTypeToShow'.
 /// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
@@ -128,32 +107,10 @@ class ExamplesDescriptor {
     //
     const Tuple2(ExamplesEnum.ex60LabelsIteration4, ExamplesChartTypeEnum.verticalBarChart),
     //
-    const Tuple2(ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
-        ExamplesChartTypeEnum.verticalBarChart),
-    //
-    const Tuple2(ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
-        ExamplesChartTypeEnum.verticalBarChart),
-
-    //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
   ];
 
-  /// Check if the example described with the passed enums should run in a test.
+  /// Check if the example described by the passed enums should run in a test.
   ///
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
   ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only
@@ -163,7 +120,6 @@ class ExamplesDescriptor {
   }
 
   /// Present this descriptor is a format suitable to run as a test from command line.
-  ///
   void asCommandLine() {
     List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun =
         exampleRequested == null ? _allowed : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
@@ -183,7 +139,6 @@ class ExamplesDescriptor {
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
-          '--dart-define=USE_OLD_DATA_CONTAINER=\$USE_OLD_DATA_CONTAINER '
           '\$2' // ' example/lib/main.dart'
           );
     }

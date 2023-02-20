@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:logger/logger.dart' as logger;
 
 import 'painter.dart' as painter;
 
@@ -7,7 +6,7 @@ import 'painter.dart' as painter;
 ///
 abstract class FlutterChart extends widgets.CustomPaint {
   /// Default constructor accepts size
-  FlutterChart({
+  const FlutterChart({
     widgets.Key? key,
     required painter.FlutterChartPainter painter,
     widgets.CustomPainter? foregroundPainter,
@@ -19,7 +18,5 @@ abstract class FlutterChart extends widgets.CustomPaint {
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
-        ) {
-    logger.Logger().d('Constructing $runtimeType');
-  }
+        );
 }

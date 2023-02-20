@@ -10,15 +10,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'dart:io' as io show exit;
 
-// provides: data_model.dart, random_chart_data.dart, line_chart_options.dart
+// provides: data.dart, random_chart_data.dart, line_chart_options.dart
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+import 'package:flutter_charts/src/util/string_extension.dart' show StringExtension;
 
 import 'src/util/examples_descriptor.dart';
 
 import 'dart:ui' as ui show Color;
 
-import 'package:logger/logger.dart';
+
+// import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 
 /// Example of simple line chart usage in an application.
 ///
@@ -28,9 +29,6 @@ import 'package:logger/logger.dart';
 ///    import 'package:flutter_charts/flutter_charts.dart';
 /// ```
 void main() {
-  // Set logging level. There should be some kind of configuration for this.
-  Logger.level = Level.warning;
-
   // runApp is function (not method) in PROJ/packages/flutter/lib/src/widgets/binding.dart.
   //
   // Why we do not have to import binding.dart?
@@ -87,11 +85,6 @@ void main() {
   runApp(const MyApp());
 }
 
-/// From environment variables, returns the enum of the example to run
-/// *in the tests, integration tests, or main.dart*.
-///
-/// Used *in the tests, integration tests, or main.dart*.
-///
 /// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']
 ///   passed to the program by `--dart-define` options.
 ///
@@ -245,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //     "chartLogicalSize=$chartLogicalSize");
 
     // The [_ExampleDefiner] creates the instance of the example chart that will be displayed.
-    _ExampleWidgetCreator definer = _ExampleWidgetCreator(descriptorOfExampleToRun);
+    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
     Widget chartToRun = definer.createRequestedChart();
     _ExampleSideEffects exampleSpecific = definer.exampleSideEffects;
 
@@ -402,7 +395,7 @@ class MyLabelCommonOptions extends LabelCommonOptions {
   */
 }
 
-/// The enabler of widget changes in the main test app by the code in [_ExampleWidgetCreator].
+/// The enabler of widget changes in the main test app by the code in [_ExampleDefiner].
 /// 
 /// This enables support for each example ability to manipulate it's environment
 /// (by environment we mean the widgets in main.dart outside the chart).
@@ -411,33 +404,26 @@ class MyLabelCommonOptions extends LabelCommonOptions {
 /// For example, some test examples need to run in an increasingly 'squeezed' space available for the chart,
 /// to test label changes with available space.
 /// 
-/// This class allows to carry such changes from the [_ExampleWidgetCreator] to the widgets in the main app.
+/// This class allows to carry such changes from the [_ExampleDefiner] to the widgets in the main app.
 /// 
 class _ExampleSideEffects {
   String leftSqueezeText = '>>>';
   String rightSqueezeText = '<<';
 }
 
-/// Creates the chart [Widget] for the examples which will be tested and run in scripts.
-///
-/// The core method [createRequestedChart] creates the chart [Widget] for the examples which are tested
-/// in [run_all_tests.sh] and [run_representative_tests.sh] tests, and interactively running
-/// in [run_all_examples.sh].
+/// Defines which example to run.
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
 /// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
-class _ExampleWidgetCreator {
+class _ExampleDefiner {
 
   /// Construct the definer object for the example.
-  _ExampleWidgetCreator(this.descriptorOfExampleToRun);
+  _ExampleDefiner(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
 
   /// Support for each example manipulate it's environment - the widgets in main.dart outside the chart.
-  ///
-  /// [exampleSideEffects] contain simple text strings such as '>>' and '<<', which are when running examples,
-  /// placed to the left and right of the chart, to execute 'squeezing' the chart from the left and the right.
   _ExampleSideEffects exampleSideEffects = _ExampleSideEffects();
 
   /// Creates the example chart with name given in [exampleComboToRun] 
@@ -458,8 +444,8 @@ class _ExampleWidgetCreator {
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
 
     // Declare chartData; the data object will be different in every examples.
-    NewModel chartData;
-
+    ChartData chartData;
+    
     // Create chartOptions defaults here, so we do not repeat it in every example section,
     //   unless specific examples need to override this chartOptions default.
     ChartOptions chartOptions = const ChartOptions();
@@ -478,14 +464,7 @@ class _ExampleWidgetCreator {
     switch (exampleComboToRun) {
       case ExamplesEnum.ex10RandomData:
         // Example shows a demo-type data generated randomly in a range.
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum:
-                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
-        );
-        chartData = RandomChartData.generated(
-          chartOptions: chartOptions,
-        );
+        chartData = RandomChartData.generated(chartOptions: chartOptions);
         break;
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
@@ -496,7 +475,7 @@ class _ExampleWidgetCreator {
         xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -517,7 +496,7 @@ class _ExampleWidgetCreator {
 
       case ExamplesEnum.ex31SomeNegativeValues:
         // Example shows a mix of positive and negative data values.
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
             [1100.0, 1000.0, 1200.0, 800.0, 700.0, 800.0],
@@ -542,10 +521,10 @@ class _ExampleWidgetCreator {
         //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
-            extendAxisToOriginRequested: false,
+            startYAxisAtDataMinRequested: true,
           ),
         );
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -566,10 +545,10 @@ class _ExampleWidgetCreator {
         //   as it does not make sense there.
         chartOptions = const ChartOptions(
           dataContainerOptions: DataContainerOptions(
-            extendAxisToOriginRequested: false,
+            startYAxisAtDataMinRequested: true,
           ),
         );
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],
             [-35.0, -40.0, -20.0, -25.0, -30.0, -20.0],
@@ -619,7 +598,7 @@ class _ExampleWidgetCreator {
           labelCommonOptions: MyLabelCommonOptions(),
           );
         // Then proceed as usual
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -636,7 +615,7 @@ class _ExampleWidgetCreator {
         // Set chart options to show no labels
         chartOptions = const ChartOptions.noLabels();
 
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -657,7 +636,7 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
-        //   When setting Y labels by user, the dataRows value extrapolate
+        //   When setting Y labels by user, the dataRows value scale
         //   is irrelevant. User can use for example interval <0, 1>,
         //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
         //   The only thing that matters is  the relative values in the data Rows.
@@ -666,7 +645,7 @@ class _ExampleWidgetCreator {
         //     on the level of the first Y Label ("Low" in this example),
         //   and the maximum  of dataRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [9.0, 4.0, 3.0, 9.0],
             [7.0, 6.0, 7.0, 6.0],
@@ -696,9 +675,9 @@ class _ExampleWidgetCreator {
         //        This shows a bug where negatives go below X axis.
         // If we want the chart to show User-Provided textual Y labels with
         // In each column, adding it's absolute values should add to same number:
-        // todo-04 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
+        // todo-04-examples 100 would make more sense, to represent 100% of stocks in each category. Also columns should add to the same number?
 
-        chartData = NewModel(
+        chartData = ChartData(
           // each column should add to same number. everything else is relative.
           dataRows: const [
             [-9.0, -8.0, -8.0, -5.0, -8.0],
@@ -730,7 +709,7 @@ class _ExampleWidgetCreator {
             yInverseTransform: inverseLog10,
           ),
         );
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [10.0, 600.0, 1000000.0],
             [20.0, 1000.0, 1500000.0],
@@ -747,7 +726,7 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex60LabelsIteration1:
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -766,7 +745,7 @@ class _ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -785,7 +764,7 @@ class _ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -804,7 +783,7 @@ class _ExampleWidgetCreator {
       // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
       // This example shows the result with sufficient space to show all labels, not even tilted;
       // The iterative layout strategy causes more labels to be skipped.
-        chartData = NewModel(
+        chartData = ChartData(
           dataRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
@@ -819,112 +798,12 @@ class _ExampleWidgetCreator {
         exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
         break;
 
-      case ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsColumnStartTightItemIsRowStartTight),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowCenterLooseItemIsRowEndLoose),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum: LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightSecondGreedy),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum:
-                  LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
-      case ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned:
-        chartOptions = const ChartOptions(
-          legendOptions: LegendOptions(
-              legendAndItemLayoutEnum:
-              LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenAligned),
-        );
-
-        chartData = NewModel(
-          dataRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
-          chartOptions: chartOptions,
-        );
-        break;
-
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
         /// Currently, setting [ChartDate.dataRows] requires to also set all of
         /// [chartData.xUserLabels], [chartData.dataRowsLegends], [chartData.dataRowsColors]
-        // Fix was: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
-        chartData = NewModel(
+        // Fix was: Add default legend to ChartData constructor AND fix scaling util_dart.dart scaleValue.
+        chartData = ChartData(
           dataRows: const [
             [0.0, 0.0, 0.0],
           ],
@@ -948,29 +827,27 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartViewMaker lineChartViewMaker = LineChartViewMaker(
+        LineChartTopContainer lineChartContainer = LineChartTopContainer(
           chartData: chartData,
-          isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         LineChart lineChart = LineChart(
           painter: LineChartPainter(
-            lineChartViewMaker: lineChartViewMaker,
+            lineChartContainer: lineChartContainer,
           ),
         );
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartViewMaker verticalBarChartViewMaker = VerticalBarChartViewMaker(
+        VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
           chartData: chartData,
-          isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
 
         VerticalBarChart verticalBarChart = VerticalBarChart(
           painter: VerticalBarChartPainter(
-            verticalBarChartViewMaker: verticalBarChartViewMaker,
+            verticalBarChartContainer: verticalBarChartContainer,
           ),
         );
 
@@ -981,18 +858,4 @@ class _ExampleWidgetCreator {
     //   depending on the chart type requested by [requestedExampleToRun]
     return chartToRun;
   }
-
-  var animalsDefaultData = const [
-    [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-    [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-    [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-    [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-  ];
-  var animalsXUserLabels = const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-  var animalsDataRowsLegends = const [
-    'Spring',
-    'Summer',
-    'Fall',
-    'Winter',
-  ];
 }

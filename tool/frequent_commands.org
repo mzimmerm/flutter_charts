@@ -6,23 +6,7 @@ flutter emulator --launch "Nexus_6_API_33"
 flutter create --template=app flutter_charts_app
 flutter pub get
 flutter pub upgrade
-flutter clean; flutter pub get; 
-# Create screenshot - need drive and integration test
-flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart
-# Test screenshot for equality - only needs unit test (hmm, this is likely integration as well)
-flutter test  --dart-define=EXAMPLE_TO_RUN=ex10RandomData  --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart test/screenshot_check_test.dart
+flutter clean; flutter pub get; \
+flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshot_test.dart
+flutter test --dart-define=EXAMPLE_TO_RUN=ex50StocksWithNegativesWithUserColors --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart tool/screenshot_after_test_check.dart
 
-# No clean: Run mini set of flutter integration tests in bash using:
-d1=$(date +%s); tool/test/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
-
-# No clean: Run mini set of flutter integration tests in eshell using:
-setq d1 (string-to-number (format-time-string "%s")); tool/test/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-
-# Bash with clean: Run all tests of all examples:
-d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
-
-# Eshell with clean: Run all tests of all examples:
-setq d1 (string-to-number (format-time-string "%s")); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
-
-# No clean: Run one example:
-tool/test/run_all_tests.sh ex31SomeNegativeValues

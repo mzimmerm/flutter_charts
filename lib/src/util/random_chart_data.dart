@@ -1,12 +1,11 @@
 import 'dart:math' as math show Random;
-
 import '../chart/options.dart';
-import '../chart/model/data_model_new.dart';
+import '../chart/data.dart';
 
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
 ///
-class RandomChartData extends NewModel {
+class RandomChartData extends ChartData {
   RandomChartData({
     required dataRows,
     required xUserLabels,
@@ -56,7 +55,7 @@ List<String> randomDataRowsLegends(int dataRowsCount) {
   List<String> _defaultLegends = List.empty(growable: true);
 
   if (dataRowsCount >= 1) {
-    _defaultLegends.add('YELLOW' /*' with really long description'*/);
+    _defaultLegends.add('YELLOW');
   }
   if (dataRowsCount >= 2) {
     _defaultLegends.add('GREEN');

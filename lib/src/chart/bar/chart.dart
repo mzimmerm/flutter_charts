@@ -1,10 +1,7 @@
 import 'package:flutter/widgets.dart' as widgets;
 
-// base libraries
+import '../bar/painter.dart' as bar_painter;
 import '../chart.dart' as chart;
-
-// this level
-import 'painter.dart' as bar_painter;
 
 /// Provides paint for the vertical bar chart.
 ///
@@ -14,7 +11,7 @@ import 'painter.dart' as bar_painter;
 /// it's [ChartContainer.isStacked] setting.
 class VerticalBarChart extends chart.FlutterChart {
   /// Default constructor accepts size
-  VerticalBarChart({
+  const VerticalBarChart({
     widgets.Key? key,
     required bar_painter.VerticalBarChartPainter painter,
     widgets.CustomPainter? foregroundPainter,

@@ -1,9 +1,7 @@
 import 'dart:ui' as ui show Paint, PaintingStyle;
 
-// this level or equivalent
-import 'container.dart';
-import 'view_maker.dart';
 import 'options.dart';
+import 'container.dart';
 import '../util/collection.dart' as custom_collection show CustomList;
 
 // todo-1 refactor - can this be a behavior?
@@ -18,22 +16,23 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 
 /// The visual element representing one data value on the chart.
 ///
-/// PointPresenter of the atomic/leaf element of one data point on the chart.
+/// Presenter of the atomic/leaf element of one data point on the chart.
 ///
 /// For example, on a bar chart, this is one rectangle;
 /// on a line chart this is a point with line connecting to the next
 /// value point.
-class PointPresenter {
+class Presenter {
   // Not actually stored here, but could be
-  // todo-04 : SURPRISINGLY, PointPresenter DOES NOT HOLD ONTO [StackableValuePoint point]. WHERE DOES IT GET IT FROM??
-  // StackableValuePoint point;
+  // todo-01-morph-unused
+  StackableValuePoint point;
   StackableValuePoint? nextRightColumnValuePoint;
   int rowIndex;
 
-  PointPresenter({
+  Presenter({
+    required this.point,
     this.nextRightColumnValuePoint,
     required this.rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartTopContainer chartTopContainer,
   });
 }
 
@@ -41,61 +40,60 @@ class PointPresenter {
 ///
 /// By one "visual column" here we mean the area above one label, which
 /// shows all data value at that label, each value in one instance of
-/// [PointPresenter].
-// todo-03 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndReplaceChildren 3) layout
-class PointPresentersColumn {
-  List<PointPresenter> pointPresenters = List.empty(growable: true);
-  List<PointPresenter> positivePointPresenters = List.empty(growable: true);
-  List<PointPresenter> negativePointPresenters = List.empty(growable: true);
-  PointPresentersColumn? nextRightPointsColumn;
+/// [Presenter].
+class PresentersColumn {
+  List<Presenter> presenters = List.empty(growable: true);
+  List<Presenter> positivePresenters = List.empty(growable: true);
+  List<Presenter> negativePresenters = List.empty(growable: true);
+  PresentersColumn? nextRightPointsColumn;
 
-  PointPresentersColumn({
+  PresentersColumn({
     required PointsColumn pointsColumn,
-    required ChartViewMaker chartViewMaker,
-    required PointPresenterCreator pointPresenterCreator,
+    required ChartTopContainer chartTopContainer,
+    required PresenterCreator presenterCreator,
   }) {
-    // setup the contained pointPresenters from points
-    _createPointPresentersInColumn(
+    // setup the contained presenters from points
+    _createPresentersInColumn(
         fromPoints: pointsColumn.stackableValuePoints,
-        toPointPresenters: pointPresenters,
+        toPresenters: presenters,
         pointsColumn: pointsColumn,
-        pointPresenterCreator: pointPresenterCreator,
-        chartViewMaker: chartViewMaker);
-    _createPointPresentersInColumn(
+        presenterCreator: presenterCreator,
+        chartTopContainer: chartTopContainer);
+    _createPresentersInColumn(
         fromPoints: pointsColumn.stackedPositivePoints,
-        toPointPresenters: positivePointPresenters,
+        toPresenters: positivePresenters,
         pointsColumn: pointsColumn,
-        pointPresenterCreator: pointPresenterCreator,
-        chartViewMaker: chartViewMaker);
-    _createPointPresentersInColumn(
+        presenterCreator: presenterCreator,
+        chartTopContainer: chartTopContainer);
+    _createPresentersInColumn(
         fromPoints: pointsColumn.stackedNegativePoints,
-        toPointPresenters: negativePointPresenters,
+        toPresenters: negativePresenters,
         pointsColumn: pointsColumn,
-        pointPresenterCreator: pointPresenterCreator,
-        chartViewMaker: chartViewMaker);
+        presenterCreator: presenterCreator,
+        chartTopContainer: chartTopContainer);
   }
 
-  void _createPointPresentersInColumn({
+  void _createPresentersInColumn({
     required List<StackableValuePoint> fromPoints,
-    required List toPointPresenters,
+    required List toPresenters,
     required PointsColumn pointsColumn,
-    required PointPresenterCreator pointPresenterCreator,
-    required ChartViewMaker chartViewMaker,
+    required PresenterCreator presenterCreator,
+    required ChartTopContainer chartTopContainer,
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
-      // todo-03-last nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
+      // todo-01-last nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       StackableValuePoint? nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.stackableValuePoints[rowIndex]
           : null;
 
-      PointPresenter pointPresenter = pointPresenterCreator.createPointPresenter(
+      Presenter presenter = presenterCreator.createPointPresenter(
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
         rowIndex: point.dataRowIndex,
-        chartViewMaker: chartViewMaker,
+        chartTopContainer: chartTopContainer,
       );
-      toPointPresenters.add(pointPresenter);
+      toPresenters.add(presenter);
       rowIndex++;
     }
   }
@@ -109,62 +107,55 @@ class PointPresentersColumn {
 /// and is a "source" for creating this object.
 /// In addition to [PointsColumns.pointsColumns], a constructor
 /// of this object needs to be given a way to create each "visual atomic widget"
-/// to display each data value. This is provided with the passed
-/// [PointPresenterCreator], which "create" methods know how to create the concrete
+/// to display each data value. This is provided by the passed
+/// [PresenterCreator], which "create" methods know how to create the concrete
 /// instances of the "atomic stacked display widget of the data value" using
 ///
-///   [PointPresenterCreator.createPointPresenter]
+///   [PresenterCreator.createPointPresenter]
 ///
 /// Notes:
-///   - Each [PointPresentersColumn] element of [pointPresentersColumns]
-///     manages a link to the [PointPresentersColumn] on it's right, allowing
-///     walk without the [pointPresentersColumns] list.
-// todo-03 : Convert PointPresentersColumns to BoxContainer, add methods 1) _createChildrenOfPointsColumns 2) buildAndReplaceChildren 3) layout
-//                - each child is PointPresentersColumn
-//                - still use everything in it the same
-//                - find where to a) create this instance and b) where to call the newly added methods
-///
-class PointPresentersColumns extends custom_collection.CustomList<PointPresentersColumn> {
-  PointPresentersColumns({
+///   - Each [PresentersColumn] element of [presentersColumns]
+///     manages a link to the [PresentersColumn] on it's right, allowing
+///     walk without the [presentersColumns] list.
+class PresentersColumns extends custom_collection.CustomList<PresentersColumn> {
+  PresentersColumns({
     required PointsColumns pointsColumns,
-    required ChartViewMaker chartViewMaker,
-    required PointPresenterCreator pointPresenterCreator,
-  }) : super(growable: true)
-  {
+    required ChartTopContainer chartTopContainer,
+    required PresenterCreator presenterCreator,
+  }) {
     // iterate "column oriented", that is, over valuePointsColumns.
-    PointPresentersColumn? leftPointPresentersColumn;
+    PresentersColumn? leftPresentersColumn;
     for (PointsColumn pointsColumn in pointsColumns) {
-      var pointPresentersColumn = PointPresentersColumn(
+      var presentersColumn = PresentersColumn(
         pointsColumn: pointsColumn,
-        chartViewMaker: chartViewMaker,
-        pointPresenterCreator: pointPresenterCreator,
+        chartTopContainer: chartTopContainer,
+        presenterCreator: presenterCreator,
       );
-      add(pointPresentersColumn);
-      leftPointPresentersColumn?.nextRightPointsColumn = pointPresentersColumn;
-      leftPointPresentersColumn = pointPresentersColumn;
+      add(presentersColumn);
+      leftPresentersColumn?.nextRightPointsColumn = presentersColumn;
+      leftPresentersColumn = presentersColumn;
     }
   }
 }
 
-/// Maker of [PointPresenter] instances.
+/// Maker of [Presenter] instances.
 ///
-/// It's core method [createPointPresenter] creates [PointPresenter]s,
+/// It's core method [createPointPresenter] creates [Presenter]s,
 /// the visuals painted on each chart column that
 /// represent data, (points and lines for the line chart,
 /// rectangles for the bar chart, and so on).
 ///
-/// The concrete creators make [LineAndHotspotPointPresenter], [VerticalBarPointPresenter]
+/// The concrete creators make [LineAndHotspotPresenter], [VerticalBarPresenter]
 /// and other concrete instances, depending on the chart type.
-abstract class PointPresenterCreator {
-  /// The container is generally needed for the creation of PointPresenters, as
-  /// pointPresenters may need some layout values.
-  PointPresenterCreator(); // same as  {}
+abstract class PresenterCreator {
+  /// The container is generally needed for the creation of Presenters, as
+  /// presenters may need some layout values.
+  PresenterCreator(); // same as  {}
 
-  PointPresenter createPointPresenter({
-    // todo-03-note : point is needed for VerticalBarPointPresenter to obtain scaledFrom and scaledTo for stacking
+  Presenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartTopContainer chartTopContainer,
   });
 }

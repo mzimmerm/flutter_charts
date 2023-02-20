@@ -1,21 +1,19 @@
-// base libraries
+import '../line/container.dart' as line_containers;
+
 import '../painter.dart';
 
-// this level
-import 'view_maker.dart';
-
-
-/// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
-/// requiring [line_containers.LineChartViewMaker]which generates (makes)
-/// the view, the [ChartRootContainer] hierarchy.
+/// This concrete [CustomPainter] only provides a constructor,
+/// specifically requiring [line_containers.LineChartTopContainer],
+/// and setting [line_containers.LineChartContainer.isStacked] to false,
+/// as lines can never be stacked.
 ///
 /// See [FlutterChartPainter] for more information.
 class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
   LineChartPainter({
-    required LineChartViewMaker lineChartViewMaker,
-  }) : super(
-          chartViewMaker: lineChartViewMaker,
-        );
+    required line_containers.LineChartTopContainer lineChartContainer,
+  }) : super(chartTopContainer: lineChartContainer) {
+    lineChartContainer.isStacked = false;
+  }
 }

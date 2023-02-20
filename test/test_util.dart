@@ -14,17 +14,9 @@ String relativePath(String screenshotDirName, Tuple2<ExamplesEnum, ExamplesChart
 /// Path to screenshot file which this test generates.
 ///
 /// Generated from enum values.
-/// Examples:
-///   - 'ex10RandomData_lineChart.png'     (for old layout)
-///   - 'ex10RandomData_lineChart_NEW.png' (for new layout)
+/// Example: 'ex10RandomData-lineChart.png'.
 String screenshotFileName(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
-  bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
-  String newLayout = '';
-  if (!isUseOldDataContainer) {
-    newLayout = '_NEW';
-  }
-
-  return '${enumName(exampleComboToRun.item1)}_${enumName(exampleComboToRun.item2)}$newLayout.png';
+  return '${enumName(exampleComboToRun.item1)}_${enumName(exampleComboToRun.item2)}.png';
 }
 
 /// The name of the directory where screenshots are placed.

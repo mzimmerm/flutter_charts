@@ -32,7 +32,7 @@ fi
 echo
 echo -------------------------------------
 echo Source script starts emulator and generates program test/tmp/examples_descriptor_generated_program_1234.sh. 
-echo This generated program can run either integration test \(flutter drive\) or the app \(flutter run\), depending on parameters.
+echo This generated program can run either integration test \(flutter driver\) or the app \(flutter run\), depending on parameters.
 #   See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
 source tool/test/start_emulator_and_generate_examples_descriptor.sh "$exampleEnum"
 echo Will run "$examples_descriptor_generated_program".

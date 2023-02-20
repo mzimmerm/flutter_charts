@@ -20,16 +20,16 @@ void main() {
 /// ```
 Widget chartToRun() {
   LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-  NewModel chartData;
+  ChartData chartData;
   ChartOptions chartOptions = const ChartOptions();
   // Set option which will ask to start Y axis at data minimum.
   // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
   chartOptions = const ChartOptions(
     dataContainerOptions: DataContainerOptions(
-      extendAxisToOriginRequested: false, // should have no effect on Stacked charts!
+      startYAxisAtDataMinRequested: true,
     ),
   );
-  chartData = NewModel(
+  chartData = ChartData(
     dataRows: const [
       [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
       [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -41,15 +41,14 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var lineChartViewMaker = LineChartViewMaker(
+  var lineChartContainer = LineChartTopContainer(
     chartData: chartData,
-    isStacked: false,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 
   var lineChart = LineChart(
     painter: LineChartPainter(
-      lineChartViewMaker: lineChartViewMaker,
+      lineChartContainer: lineChartContainer,
     ),
   );
   return lineChart;

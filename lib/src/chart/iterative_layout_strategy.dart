@@ -1,12 +1,9 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
-// this level or equivalent
-import 'container_layouter_base.dart';
 import 'container.dart' show AdjustableLabelsChartAreaContainer;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart';
-
 
 enum LabelFitMethod {
   rotateLabels,
@@ -27,10 +24,11 @@ enum LabelFitMethod {
 /// If a "fit" is not achieved on last step, the last step is repeated
 /// until [maxLabelReLayouts] is reached.
 class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
+  // todo-2 try using Mixins
+
   /// Constructor uses default values from [ChartOptions]
-  // todo-04 : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
+  // todo-01 : Move all re-layout specific settings from options to DefaultIterativeLabelLayoutStrategy
   //                But they still need to default from options or somewhere?
-  //                Also try use as a mixin
   DefaultIterativeLabelLayoutStrategy({
     required ChartOptions options,
   })  : _decreaseLabelFontRatio = options.iterativeLayoutOptions.decreaseLabelFontRatio,
@@ -114,7 +112,7 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
   /// [LabelFitMethod] enum (DecreaseLabelFont, RotateLabels,  SkipLabels)
   ///
   @override
-  void reLayout(BoxContainerConstraints boxConstraints) {
+  void reLayout(LayoutExpansion parentLayoutExpansion) {
     if (!_adjustableLabelsContainer.labelsOverlap()) {
       // if there is no overlap, no (more) iterative calls
       //   to layout(). Exits from iterative layout.
@@ -140,19 +138,9 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
         _reLayoutSkipLabels();
         break;
     }
-
-    // A recursive [layout] is needed after the above code did some changes to the
-    //   [XContainer _adjustableLabelsContainer]. The changes might have been decreased font,
-    //   changed label tilt, or asking some labels not to be shown.
-    // The recursively called [layout] rebuilds all children of the [XContainer _adjustableLabelsContainer],
-    //   with the changed state above (font, tilt, or asking less labels to be shown).
-    // The rebuild must be the same build called on [XContainer] in [ChartRootContainer.layout].
-    // Because the _adjustableLabelsContainer is XContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
-    (_adjustableLabelsContainer as BuilderOfChildrenDuringParentLayout).buildAndReplaceChildren(LayoutContext.unused);
-    _adjustableLabelsContainer.layout();
-
-    // Return to caller, which is always [layout]. [layout] will call this [reLayout] iteratively
-    // if another [reLayout] is needed, up to [_atDepth] iterations.
+    
+    // The [layout] method will call this function back if another reLayout is needed, up to [_atDepth] iterations.
+    _adjustableLabelsContainer.layout(parentLayoutExpansion);
   }
 
   /// Prepares the rotation matrix [_labelTiltMatrix] for tilting labels.
@@ -215,7 +203,7 @@ abstract class LabelLayoutStrategy {
   /// it should set some values on [_adjustableLabelsContainer]'s labels to
   /// make them smaller, less dense, tilt, skip etc, and call
   /// the [Container.layout] iteratively.
-  void reLayout(BoxContainerConstraints boxConstraints);
+  void reLayout(LayoutExpansion parentLayoutExpansion);
 
   /// Should return true if the layout strategy rotates labels during the
   /// current reLayout.

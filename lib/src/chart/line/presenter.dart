@@ -1,44 +1,43 @@
 import 'dart:ui' as ui show Offset, Paint, Color;
 
-// base libraries
+import '../presenter.dart';
 import '../container.dart';
-import '../view_maker.dart';
-import '../line_container.dart';
-import '../presenter.dart'; // OLD
+import '../../chart/line_container.dart';
 
-/// PointPresenter of the atomic/leaf element of one data point on the
+/// Presenter of the atomic/leaf element of one data point on the
 /// line chart - the point at which data value is shown,
 /// and the line from this data value point to the next data value point
 /// on the right.
 ///
 /// The line leads from this [offsetPoint]
-/// to the [offsetPoint] of the [LineAndHotspotPointPresenter]
-/// which is next in the [PointPresentersColumn.pointPresenters] list.
-class LineAndHotspotPointPresenter extends PointPresenter {
+/// to the [offsetPoint] of the [LineAndHotspotPresenter]
+/// which is next in the [PresentersColumn.presenters] list.
+class LineAndHotspotPresenter extends Presenter {
   late LineContainer lineContainer;
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
   late ui.Paint outerPaint;
-  double innerRadius = 0.0;
-  double outerRadius = 0.0;
+  double innerRadius = 0.0; // todo-01-morph where-set-can-be-late?
+  double outerRadius = 0.0; // as above comment ^
 
   late ui.Paint rowDataPaint;
 
-  LineAndHotspotPointPresenter({
+  LineAndHotspotPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartTopContainer chartTopContainer,
   }) : super(
+          point: point,
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartViewMaker: chartViewMaker,
+          chartTopContainer: chartTopContainer,
         ) {
-    var options = chartViewMaker.chartOptions;
+    var options = chartTopContainer.data.chartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartViewMaker.chartData.dataRowsColors; //!;
+    List<ui.Color> dataRowsColors = chartTopContainer.data.dataRowsColors; //!;
     rowDataPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset fromPoint = point.scaledTo;
@@ -56,25 +55,25 @@ class LineAndHotspotPointPresenter extends PointPresenter {
   }
 }
 
-/// Creator of the [LineAndHotspotPointPresenter] instances - the leaf visual
+/// Creator of the [LineAndHotspotPresenter] instances - the leaf visual
 /// elements on the line chart (point and line showing one data value).
 ///
-/// See [PointPresenterCreator].
-class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreator {
-  LineAndHotspotLeafPointPresenterCreator() : super();
+/// See [PresenterCreator].
+class LineAndHotspotLeafCreator extends PresenterCreator {
+  LineAndHotspotLeafCreator() : super();
 
   @override
-  PointPresenter createPointPresenter({
+  Presenter createPointPresenter({
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartTopContainer chartTopContainer,
   }) {
-    return LineAndHotspotPointPresenter(
+    return LineAndHotspotPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartViewMaker: chartViewMaker,
+      chartTopContainer: chartTopContainer,
     );
   }
 }

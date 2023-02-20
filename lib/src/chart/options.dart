@@ -4,7 +4,6 @@ import 'dart:math' as math show pi, log, ln10, pow;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 
-// extension libraries
 import 'line/options.dart';
 import 'bar/options.dart';
 
@@ -99,10 +98,10 @@ class LegendOptions {
   // is the square that shows the color of each dataRow (color of lines or bars)
   // together with data series name (legend name).
 
-  /// Margin on the left/right of the [LegendContainer]
+  /// Margin on the left/right of the LegendContainer
   final double legendContainerMarginLR;
 
-  /// Margin on the top/bottom of the  [LegendContainer]
+  /// Margin on the top/bottom of the LegendContainer
   final double legendContainerMarginTB;
 
   /// Between each legend item pairs (indicator + label)
@@ -116,10 +115,6 @@ class LegendOptions {
 
   final ui.TextAlign legendTextAlign;
 
-  /// Controls (four) build-in layouts for legends that client can choose
-  /// without requiring code extensions.
-  final LegendAndItemLayoutEnum legendAndItemLayoutEnum;
-
   const LegendOptions({
     this.isLegendContainerShown = true,
     this.legendContainerMarginLR = 8.0,
@@ -128,7 +123,6 @@ class LegendOptions {
     this.legendColorIndicatorWidth = 20.0,
     this.legendItemIndicatorToLabelPad = 2.0,
     this.legendTextAlign = ui.TextAlign.left,
-    this.legendAndItemLayoutEnum = LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTight,
   });
 }
 
@@ -155,21 +149,6 @@ class XContainerOptions {
     this.xLabelsPadTB = 6.0,
     this.xLabelsPadLR = 40.0,
   });
-
-  /// Also providing a method to format X labels, but should NOT be used YET
-  String valueToLabel(num value) {
-    /*
-    // if there are >= 3 < 6 decimal digits, replace with K (etc)
-    String val = value.toString();
-    if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
-    if (val.endsWith('000000')) val = val.substring(0, val.length - 6) + 'M';
-    if (val.endsWith('000')) val = val.substring(0, val.length - 3) + 'K';
-
-    return val + yLabelUnits;
-   */
-    throw StateError('XContainerOptions.valueToLabel should not be used YET');
-  }
-
 }
 
 @immutable
@@ -245,13 +224,13 @@ num inverseLog10(num y) => math.pow(10, y); // 10^y;
 class DataContainerOptions {
   final ui.Color gridLinesColor;
 
-  /// Portion of horizontal (X) grid width, used to display [PointPresenter] leafs.
+  /// Portion of horizontal (X) grid width, used to display presenter leafs.
   ///
   /// For example, for the bar chart, this represents the portion of one
   /// label width along X axis, which displays the bars (grouped or stacked).
-  final double gridStepWidthPortionUsedByAtomicPointPresenter;
+  final double gridStepWidthPortionUsedByAtomicPresenter;
 
-  /// Controls the order in which the painter paints the [DeprecatedChartData.dataRows].
+  /// Controls the order in which the painter paints the [ChartData.dataRows].
   ///
   /// Motivation: On the line chart, if two data rows have same values,
   /// the "last painted value wins". This option helps to change the data rows
@@ -274,13 +253,9 @@ class DataContainerOptions {
   /// [flutter_charts]; See [log10] and [inverseLog10].
   final num Function(num y) yInverseTransform;
 
-  // Added for symmetry with Y axis. Unused YET.
-  final num Function(num y) xTransform;
-  final num Function(num y) xInverseTransform;
-
   /// The request to start Y axis and it's labels at data minimum.
   ///
-  /// When [extendAxisToOriginRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
+  /// When [startYAxisAtDataMinRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
   /// Y data value (transformed with the [yTransform] method).
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
@@ -288,19 +263,16 @@ class DataContainerOptions {
   /// - On the [VerticalBarChart]
   /// - For some [yTransform]s for example logarithm transform,
   ///   where both data and logarithm must start above y value of 0.
-  /// The implementation of this 'ban' is governed by [ChartBehavior.extendAxisToOrigin];
-  /// If not allowed, the request is rejected, and data start at 0.
-  final bool extendAxisToOriginRequested;
+  /// The implementation of this 'ban' is governed by [ChartBehavior.startYAxisAtDataMinAllowed].
+  final bool startYAxisAtDataMinRequested;
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
-    this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
+    this.gridStepWidthPortionUsedByAtomicPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
-    this.extendAxisToOriginRequested = true,
+    this.startYAxisAtDataMinRequested = false,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,
-    this.xTransform = identity<num>,
-    this.xInverseTransform = identity<num>,
   });
 }
 
@@ -350,14 +322,4 @@ class LabelCommonOptions {
 enum DataRowsPaintingOrder {
   firstToLast,
   lastToFirst,
-}
-
-enum LegendAndItemLayoutEnum {
-  legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartTightItemIsRowStartTight
-  legendIsColumnStartTightItemIsRowStartTight, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
-  legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'tight' , so noop
-  legendIsRowStartTightItemIsRowStartTight, // default for legend row : desired and tested
-  legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped
-  legendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
-  legendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
 }
