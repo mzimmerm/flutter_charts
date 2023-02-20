@@ -30,9 +30,9 @@ class NewDataContainer extends container.DataContainer {
     addChildren([
       container_base.Row(
         crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-        children: chartViewMaker.makeViewsForDataAreaBars_As_BarOfPoints_List(
+        children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
           chartViewMaker,
-          chartViewMaker.chartData.barOfPointsList,
+          chartViewMaker.chartData.crossSeriesPointsList,
         ),
       )
     ]);
@@ -53,12 +53,12 @@ class NewDataContainer extends container.DataContainer {
 // void paint(Canvas convas) - default
 }
 
-class NewBarOfPointsContainer extends container_common_new.ChartAreaContainer {
-  model.NewBarOfPointsModel backingDataBarOfPointsModel;
+class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {
+  model.NewCrossSeriesPointsModel backingDataCrossSeriesPointsModel;
 
-  NewBarOfPointsContainer({
+  NewCrossSeriesPointsContainer({
     required view_maker.ChartViewMaker chartViewMaker,
-    required this.backingDataBarOfPointsModel,
+    required this.backingDataCrossSeriesPointsModel,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
@@ -122,7 +122,7 @@ class NewHBarPointContainer extends NewPointContainer {
 
     container.YContainer yContainer = chartViewMaker.yContainer;
 
-    var lerp = ToPixelsExtrapolation1D(
+    var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yLabelsGenerator.dataRange.min,
       fromValuesMax: yLabelsGenerator.dataRange.max,
       toPixelsMin: yContainer.axisPixelsRange.min,
@@ -131,7 +131,7 @@ class NewHBarPointContainer extends NewPointContainer {
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
     // We convert data to positive positive size, the direction above/below axis is determined by layouters.
-    double height = lerp.applyAsLength(newPointModel.dataValue.abs());
+    double height = lextr.applyAsLength(newPointModel.dataValue.abs());
 
     // print('height=$height, value=${newPointModel.dataValue.abs()}, '
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'

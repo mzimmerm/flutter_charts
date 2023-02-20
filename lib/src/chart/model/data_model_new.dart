@@ -53,11 +53,11 @@ class NewModel {
 
     // Construct the full [NewModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
-    // Here, create one [NewModelSeries] for each data row, and add to member [barOfPointsList]
+    // Here, create one [NewModelSeries] for each data row, and add to member [crossSeriesPointsList]
     int columnIndex = 0;
     for (List<double> dataBar in _dataBars) {
-      barOfPointsList.add(
-        NewBarOfPointsModel(
+      crossSeriesPointsList.add(
+        NewCrossSeriesPointsModel(
           dataBar: dataBar,
           dataModel: this,
           columnIndex: columnIndex++,
@@ -69,8 +69,8 @@ class NewModel {
 
   // NEW CODE =============================================================
 
-  /// List of barOfPoints in the model .
-  final List<NewBarOfPointsModel> barOfPointsList = []; // todo-done-last-3 : added for the NewModel
+  /// List of crossSeriesPoints in the model .
+  final List<NewCrossSeriesPointsModel> crossSeriesPointsList = []; // todo-done-last-3 : added for the NewModel
 
   /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [NewModel],
   /// specific for the passed [isStacked].
@@ -83,7 +83,7 @@ class NewModel {
   ///     [NewPointModel._stackedNegativeDataValue] is used.
   ///   - For  [isStacked] false, the min and max is taken from [NewPointModel._dataValue] is used.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [NewBarOfPointsModel] first, but could go
+  /// Implementation detail: maximum and minimum is calculated column-wise [NewCrossSeriesPointsModel] first, but could go
   /// directly to the flattened list of [NewPointModel] (max and min over partitions is same as over whole set).
   ///
   Interval dataValuesInterval({
@@ -91,14 +91,14 @@ class NewModel {
   }) {
     if (isStacked) {
       return Interval(
-        // reduce, not fold: barOfPointsList.fold(0.0, ((double previous, NewBarOfPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        barOfPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
-        barOfPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
+        // reduce, not fold: crossSeriesPointsList.fold(0.0, ((double previous, NewCrossSeriesPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        crossSeriesPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
+        crossSeriesPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );
     } else {
       return Interval(
-        barOfPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
-        barOfPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
+        crossSeriesPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
+        crossSeriesPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
       );
     }
   }
@@ -226,10 +226,10 @@ class NewModel {
 ///   - We can also consider the list of data values represented by
 ///     this object to be created by diagonal transpose of the [NewModel._dataRows] and
 ///     looking at one row in the transpose, left-to-right.
-class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
+class NewCrossSeriesPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
 
   /// Constructor. todo-doc-01
-  NewBarOfPointsModel({
+  NewCrossSeriesPointsModel({
     required List<double> dataBar,
     required NewModel dataModel,
     required int columnIndex,
@@ -239,11 +239,11 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
     // Construct data points from the passed [dataRow] and add each point to member _points
     int rowIndex = 0;
     for (double dataValue in dataBar) {
-      var point = NewPointModel(dataValue: dataValue, ownerBarOfPointsList: this, rowIndex: rowIndex);
+      var point = NewPointModel(dataValue: dataValue, ownerCrossSeriesPointsList: this, rowIndex: rowIndex);
       _points.add(point);
       rowIndex++;
     }
-    // When all points in this barOfPoints are constructed and added to [_points], we can double-link the points.
+    // When all points in this crossSeriesPoints are constructed and added to [_points], we can double-link the points.
     // We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
     if (_points.isNotEmpty) {
       firstLinked().linkAll();
@@ -281,13 +281,13 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
 
   /// Get the stacked value of this column of points - the sum of all
 
-  /// Owner [NewModel] to which this [NewBarOfPointsModel] belongs by existence in
-  /// [NewModel.barOfPointsList].
+  /// Owner [NewModel] to which this [NewCrossSeriesPointsModel] belongs by existence in
+  /// [NewModel.crossSeriesPointsList].
   ///
   final NewModel _dataModel;
   NewModel get dataModel => _dataModel;
 
-  /// Index of this column (barOfPoints list) in the [NewModel.barOfPointsList].
+  /// Index of this column (crossSeriesPoints list) in the [NewModel.crossSeriesPointsList].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [NewModel.dataRows].
   /// Also indexes one row, left-to-right, in the `transpose(NewModel.dataRows)`.
@@ -300,11 +300,11 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
   ///   -  [NewModel.dataRowsColors]
   final int _columnIndex;
 
-  /// Points of this column (barOfPoints).
+  /// Points of this column (crossSeriesPoints).
   ///
   /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
   /// owned by this [DoubleLinkedOwner]. 
-  /// At the same time, the points are all [NewPointModel] in this column (barOfPoints list).
+  /// At the same time, the points are all [NewPointModel] in this column (crossSeriesPoints list).
   final List<NewPointModel> _points = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
@@ -362,8 +362,8 @@ class NewBarOfPointsModel extends Object with DoubleLinkedOwner<NewPointModel> {
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
 ///
 /// Notes:
-///   - Has private access to the owner [NewModel] to which it belongs through it's member [ownerBarOfPointsList]
-///     which in turn has access to [NewModel] through it's member [NewBarOfPointsModel._dataModel].
+///   - Has private access to the owner [NewModel] to which it belongs through it's member [ownerCrossSeriesPointsList]
+///     which in turn has access to [NewModel] through it's member [NewCrossSeriesPointsModel._dataModel].
 ///     THIS ACCESS IS CURRENTLY UNUSED
 ///
 class NewPointModel extends Object with DoubleLinked {
@@ -372,17 +372,17 @@ class NewPointModel extends Object with DoubleLinked {
   // todo-doc-01
   NewPointModel({
     required double dataValue,
-    required this.ownerBarOfPointsList,
+    required this.ownerCrossSeriesPointsList,
     required int rowIndex,
-  })  : _dataValue = ownerBarOfPointsList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
+  })  : _dataValue = ownerCrossSeriesPointsList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
         _rowIndex = rowIndex {
     // The ownerSeries is NewModelSeries which is DoubleLinkedOwner
     // of all [NewPointModel]s, managed by [DoubleLinkedOwner.allElements]
-    doubleLinkedOwner = ownerBarOfPointsList;
-    // By the time a NewPointModel is constructed, DataModel and it's ownerBarOfPointsList INDEXES are configured
+    doubleLinkedOwner = ownerCrossSeriesPointsList;
+    // By the time a NewPointModel is constructed, DataModel and it's ownerCrossSeriesPointsList INDEXES are configured
     assertDoubleResultsSame(
-      ownerBarOfPointsList._dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerBarOfPointsList.dataModel._dataRows[_rowIndex][ownerBarOfPointsList._columnIndex])
+      ownerCrossSeriesPointsList._dataModel.chartOptions.dataContainerOptions
+          .yTransform(ownerCrossSeriesPointsList.dataModel._dataRows[_rowIndex][ownerCrossSeriesPointsList._columnIndex])
           .toDouble(),
       _dataValue,
     );
@@ -395,7 +395,7 @@ class NewPointModel extends Object with DoubleLinked {
   ///
   /// This [_dataValue] point is created from the [NewModel.dataRows] using the indexes:
   ///   - row at index [_rowIndex]
-  ///   - column at the [ownerBarOfPointsList] index [NewBarOfPointsModel._columnIndex].
+  ///   - column at the [ownerCrossSeriesPointsList] index [NewCrossSeriesPointsModel._columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double _dataValue;
 
@@ -406,15 +406,15 @@ class NewPointModel extends Object with DoubleLinked {
 
   /// Refers to the row index in [NewModel.dataRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [NewBarOfPointsModel._points] index [_rowIndex].
+  /// Also, this point object is kept in [NewCrossSeriesPointsModel._points] index [_rowIndex].
   ///
   /// See [_dataValue] for details of the column index from which this point was created.
   final int _rowIndex;
 
-  /// References the data column (barOfPoints list) this point belongs to
-  NewBarOfPointsModel ownerBarOfPointsList;
+  /// References the data column (crossSeriesPoints list) this point belongs to
+  NewCrossSeriesPointsModel ownerCrossSeriesPointsList;
 
-  ui.Color get color => ownerBarOfPointsList._dataModel._dataRowsColors[_rowIndex];
+  ui.Color get color => ownerCrossSeriesPointsList._dataModel._dataRowsColors[_rowIndex];
 
 }
 

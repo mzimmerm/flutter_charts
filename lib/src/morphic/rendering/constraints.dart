@@ -1,10 +1,9 @@
 import 'dart:ui' show Offset, Rect, Size;
-
-import 'package:flutter_charts/src/chart/container_edge_padding.dart';
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/util/extensions_flutter.dart';
 import 'package:tuple/tuple.dart';
 
+import '../../chart/container_edge_padding.dart';
+import '../../chart/container_layouter_base.dart';
+import '../../util/extensions_flutter.dart';
 import '../../chart/layouter_one_dimensional.dart';
 
 class ContainerConstraints {}

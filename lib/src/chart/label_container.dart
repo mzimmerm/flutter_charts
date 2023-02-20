@@ -391,7 +391,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
   /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
-  /// lerp the label [_dataValue] and places the result on [parentOffsetTick].
+  /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
@@ -399,7 +399,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    parentOffsetTick = _ownerAxisContainer.labelsGenerator.lerpValueToPixels(
+    parentOffsetTick = _ownerAxisContainer.labelsGenerator.lextrValueToPixels(
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,

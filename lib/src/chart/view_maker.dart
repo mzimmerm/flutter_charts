@@ -192,34 +192,34 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /// Assumed made from [model.NewModel.barOfPointsList], presents all data in the data area.
+  /// Assumed made from [model.NewModel.crossSeriesPointsList], presents all data in the data area.
   container.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
-  /// Assumed made from [model.NewModel.barOfPointsList].
+  /// Assumed made from [model.NewModel.crossSeriesPointsList].
   ///
   /// Should be invoked inside [makeViewForDataArea], each child in the returned list
-  /// should be made from one element of [model.NewModel.barOfPointsList],
-  /// which is instance of [model.NewBarOfPointsModel].
+  /// should be made from one element of [model.NewModel.crossSeriesPointsList],
+  /// which is instance of [model.NewCrossSeriesPointsModel].
   ///
-  /// Original name: generateViewChildren_Of_NewDataContainer_As_NewBarOfPointsContainer_List
-  List<data_container_new.NewBarOfPointsContainer> makeViewsForDataAreaBars_As_BarOfPoints_List(
+  /// Original name: generateViewChildren_Of_NewDataContainer_As_NewCrossSeriesPointsContainer_List
+  List<data_container_new.NewCrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
         view_maker.ChartViewMaker chartViewMaker,
-        List<model.NewBarOfPointsModel> barOfPointsList,
+        List<model.NewCrossSeriesPointsModel> crossSeriesPointsList,
   ) {
-    List<data_container_new.NewBarOfPointsContainer> chartColumns = [];
-    // Iterate the dataModel down, creating NewBarOfPointsContainer, then NewPointContainer and return
+    List<data_container_new.NewCrossSeriesPointsContainer> chartColumns = [];
+    // Iterate the dataModel down, creating NewCrossSeriesPointsContainer, then NewPointContainer and return
 
-    for (model.NewBarOfPointsModel barOfPoints in chartData.barOfPointsList) {
-      // NewBarOfPointsContainer barOfPointsContainer =
+    for (model.NewCrossSeriesPointsModel crossSeriesPoints in chartData.crossSeriesPointsList) {
+      // NewCrossSeriesPointsContainer crossSeriesPointsContainer =
       chartColumns.add(
-        data_container_new.NewBarOfPointsContainer(
+        data_container_new.NewCrossSeriesPointsContainer(
           chartViewMaker: chartViewMaker,
-          backingDataBarOfPointsModel: barOfPoints,
-          children: [makeViewForDataAreaBarOfPoints_Layouter(chartViewMaker, barOfPoints)],
+          backingDataCrossSeriesPointsModel: crossSeriesPoints,
+          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(chartViewMaker, crossSeriesPoints)],
           // Give all view columns the same weight along main axis -
-          //   results in same width of each [NewBarOfPointsContainer] as owner will be Row (main axis is horizontal)
+          //   results in same width of each [NewCrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
         ),
       );
@@ -227,25 +227,25 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     return chartColumns;
   }
 
-  container_base.BoxContainer makeViewForDataAreaBarOfPoints_Layouter(view_maker.ChartViewMaker chartViewMaker, model.NewBarOfPointsModel barOfPoints) {
+  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(view_maker.ChartViewMaker chartViewMaker, model.NewCrossSeriesPointsModel crossSeriesPoints) {
     return container_base.Column(
-          children: makeViewsForDataAreaBarOfPoints_As_PointList(chartViewMaker, barOfPoints).reversed.toList(growable: false),
+          children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(chartViewMaker, crossSeriesPoints).reversed.toList(growable: false),
         );
   }
 
   /// Generates [NewPointContainer] view from each [NewPointModel]
   /// and collects the views in a list of [NewPointContainer]s which is returned.
   ///
-  /// Original name: generateViewChildren_Of_NewBarOfPointsContainer_As_NewPointContainer_List
-  List<data_container_new.NewPointContainer> makeViewsForDataAreaBarOfPoints_As_PointList(
+  /// Original name: generateViewChildren_Of_NewCrossSeriesPointsContainer_As_NewPointContainer_List
+  List<data_container_new.NewPointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
         view_maker.ChartViewMaker chartViewMaker,
-        model.NewBarOfPointsModel barOfPoints,
+        model.NewCrossSeriesPointsModel crossSeriesPoints,
     ) {
       List<data_container_new.NewPointContainer> newPointContainerList = [];
 
     // Generates [NewPointContainer] view from each [NewPointModel]
     // and collect the views in a list which is returned.
-      barOfPoints.applyOnAllElements(
+      crossSeriesPoints.applyOnAllElements(
           (model.NewPointModel element, dynamic passedList) {
         var newPointContainerList = passedList[0];
         var chartRootContainer = passedList[1];
@@ -260,7 +260,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// Generate view for this single leaf [NewPointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  /// Original name: generateViewChildLeaf_Of_NewBarOfPointsContainer_As_NewPointContainer
+  /// Original name: generateViewChildLeaf_Of_NewCrossSeriesPointsContainer_As_NewPointContainer
   data_container_new.NewPointContainer makeViewForDataAreaPoint(
       view_maker.ChartViewMaker chartViewMaker,
       model.NewPointModel pointModel,

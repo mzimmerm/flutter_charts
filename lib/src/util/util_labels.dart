@@ -1,6 +1,7 @@
 import 'dart:math' as math show min, max, pow;
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/model/data_model_new.dart';
+
+import '../chart/container_layouter_base.dart';
+import '../chart/model/data_model_new.dart';
 
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;
@@ -33,7 +34,6 @@ import 'util_labels.dart' as util_labels;
 /// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
 /// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [formattedLabelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [formattedLabelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
-// todo-00-last-done : We should pull FormattedLabelInfos back to this DataRangeLabelsGenerator
 class DataRangeLabelsGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -54,13 +54,7 @@ class DataRangeLabelsGenerator {
   })  :
         _valueToLabel = valueToLabel,
         _inverseTransform = inverseTransform
-  // todo-00-last-done : _dataModel = dataModel,
-  // todo-00-last-done : _isStacked = isStacked
   {
-
-    // todo-00-last-done : isUsingUserLabels = userLabels != null;
-
-    // List<double> yLabelPositions;
     util_dart.Interval dataEnvelope;
 
     // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
@@ -85,9 +79,6 @@ class DataRangeLabelsGenerator {
     _formattedLabelInfos = _createFormattedLabelInfos_From_LabelPositions(userLabels);
   }
 
-  // todo-00-last-done : late final NewModel _dataModel; // todo-00-last : remove as member. It is ONLY needed in constructor
-  // todo-00-last-done : final bool _isStacked; // todo-00-last : remove as member. It is ONLY needed in constructor
-
   /// Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
   /// Important note: This should NOT be part of model, as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the Y axis.
@@ -101,16 +92,9 @@ class DataRangeLabelsGenerator {
   /// such as [YContainer.axisPixelsRange]. Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
 
-  /// User labels on the Y axis.
-  ///
-  /// If not null, user labels are used instead of generated labels.
-  // todo-00-last-done : List<String>? userLabels; // todo-00-last : remove as member. It is ONLY needed in constructor and in isUsingUserLabels which should be also removed after the FormattedLabelInfos are constructed
-
-   // todo-00-last-done late final bool isUsingUserLabels;
-
-  /// Keeps the transformed, non-extrapolated data values at which labels are shown.
+  /// [_labelPositions] keep the transformed, non-extrapolated data values at which labels are shown.
   /// [YContainer.formattedLabelInfos] are created from them first, and extrapolated
-  /// to pixel values during [ChartRootContainer.layout].
+  /// to pixel values in [AxisContainer.axisPixelsRange] during [ChartRootContainer.layout].
   late final List<double> _labelPositions;
 
   /// Public getter is for tests only!
@@ -147,16 +131,13 @@ class DataRangeLabelsGenerator {
     );
   }
 
-  // todo-00-last : try remove
-  // todo-00-last-done bool get isUsingUserLabels => userLabels != null;
-
   /// Extrapolates [value] from extended data range kept in self [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsYMin], [axisPixelsYMax],
   /// in the direction defined by [isAxisAndLabelsSameDirection].
   ///
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
   ///            after the axis size is calculated.
-  double lerpValueToPixels({
+  double lextrValueToPixels({
     required double value,
     required double axisPixelsYMin,
     required double axisPixelsYMax,
@@ -172,7 +153,7 @@ class DataRangeLabelsGenerator {
       }
       return pixels;
     }
-    // lerp the data value range [dataRange] on this [DataRangeLabelsGenerator] to the pixel range.
+    // lextr the data value range [dataRange] on this [DataRangeLabelsGenerator] to the pixel range.
     // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
     return util_dart.ToPixelsExtrapolation1D(
       fromValuesMin: dataRange.min,

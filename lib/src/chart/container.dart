@@ -297,22 +297,27 @@ abstract class AxisContainer extends ChartAreaContainer {
 
   /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainer].
   ///
-  /// [axisPixelsRange] does NOT start at zero, it contains the pixels from Y container top
-  /// available to Y axis, after a half-label height is excluded on the top,
-  /// and a vertical tick height is excluded on the bottom.
+  /// The [axisPixelsRange] has several important properties and roles:
+  ///   1. It contains the pixels of this [AxisContainer]
+  ///      available to the axis. Because this [AxisContainer] is generally bigger than the axis pixels,
+  ///      this range generally does NOT generally start at zero and end below the pixels available
+  ///      to the [AxisContainer], as follows:
+  ///      - For the [YContainer], the [axisPixelsRange]  start after a half-label height is excluded on the top,
+  ///        and a vertical tick height is excluded on the bottom.
+  ///      - For the [XContainer], the [axisPixelsRange] is currently UNUSED.
   ///
-  /// At the same time, the difference between [axisPixelsRange] min and max is the height constraint
-  /// on [NewDataContainer].
+  ///  2. The difference between [axisPixelsRange] min and max is the height constraint
+  ///     on [NewDataContainer]!
   ///
-  /// Also [axisPixelsRange] is the interval to which the Y data values,
-  /// stored in [labelsGenerator]'s member [DataRangeLabelsGenerator.dataRange]
-  /// should be extrapolated.
+  ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
+  ///      member [DataRangeLabelsGenerator.dataRange] should be extrapolated.
   ///
   /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
   ///                 this is set may be called multiple times.
   late Interval axisPixelsRange;
 
-  /// The generator and holder of labels and range of the Y axis.
+  /// The generator and holder of labels in the form of [FormattedLabelInfos],
+  /// as well as and range of the axis values.
   ///
   /// The [labelsGenerator]'s interval [DataRangeLabelsGenerator.dataRange]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
@@ -320,13 +325,6 @@ abstract class AxisContainer extends ChartAreaContainer {
   /// Important note: This should NOT be part of model, as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the Y axis.
   late DataRangeLabelsGenerator labelsGenerator;
-
-/* todo-00-last-done
-  /// Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
-  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
-  ///                 Reason: Different views may have different labels, esp. on the Y axis.
-  late FormattedLabelInfos formattedLabelInfos;
-*/
 }
 
 /// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
@@ -384,8 +382,6 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    // todo-00-last : Pull formattedLabelInfos back to DataRangeLabelsGenerator
-    // todo-00-last-done : formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// Containers of Y labels.
@@ -570,8 +566,6 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
       dataModel: chartViewMaker.chartData,
       isStacked: chartViewMaker.isStacked,
     );
-    // todo-00-last : Pull formattedLabelInfos back to DataRangeLabelsGenerator
-    // todo-00-last-done : formattedLabelInfos = labelsGenerator.createFormattedLabelInfos_From_LabelPositions();
   }
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
@@ -1064,7 +1058,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     // Scale the [pointsColumns] to the [YContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
-    lerpPointsColumns(layoutDependency);
+    lextrPointsColumns(layoutDependency);
     
     // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
     chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
@@ -1124,8 +1118,8 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
-  void lerpPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
-    chartViewMaker.chartData.pointsColumns.lerpPointsColumns(layoutDependency);
+  void lextrPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+    chartViewMaker.chartData.pointsColumns.lextrPointsColumns(layoutDependency);
   }
 
   /// Optionally paint series in reverse order (first to last,
@@ -1408,7 +1402,7 @@ class StackableValuePoint {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  StackableValuePoint lerpToPixels({
+  StackableValuePoint lextrToPixels({
     required double scaledX,
     required DataRangeLabelsGenerator yLabelsGenerator,
   }) {
@@ -1420,7 +1414,7 @@ class StackableValuePoint {
 
     scaledFrom = ui.Offset(
       scaledX,
-      yLabelsGenerator.lerpValueToPixels(
+      yLabelsGenerator.lextrValueToPixels(
         value: fromY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
@@ -1428,7 +1422,7 @@ class StackableValuePoint {
     );
     scaledTo = ui.Offset(
       scaledX,
-      yLabelsGenerator.lerpValueToPixels(
+      yLabelsGenerator.lextrValueToPixels(
         value: toY,
         axisPixelsYMin: axisPixelsYMin,
         axisPixelsYMax: axisPixelsYMax,
@@ -1657,15 +1651,15 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Notes:
   /// - Iterates this object's internal list of [PointsColumn], then the contained
   ///   [PointsColumn.stackableValuePoints], and extrapolates each point by
-  ///   applying its [StackableValuePoint.lerpToPixels] method.
+  ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void lerpPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+  void lextrPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = layoutDependency.xTickXs[col];
-        point.lerpToPixels(
+        point.lextrToPixels(
           scaledX: scaledX,
           yLabelsGenerator: chartViewMaker.yContainer.labelsGenerator,
         );

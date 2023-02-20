@@ -1,7 +1,7 @@
 /// Utility that contain only Dart code BUT DOES import 'dart:ui' or anything Flutter.
 /// See util_dart.dart for reason.
 import 'dart:math' as math;
-import 'package:flutter_charts/src/util/util_dart.dart';
+import 'util_dart.dart';
 
 import 'dart:ui' as ui show Rect, Size;
 

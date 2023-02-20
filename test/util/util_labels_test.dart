@@ -2,7 +2,6 @@ import 'package:test/test.dart'; // test package
 import 'dart:ui' as ui show Color;
 
 // Tested package
-// import 'package:flutter_charts/src/util/util_labels.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 
 void main() {
