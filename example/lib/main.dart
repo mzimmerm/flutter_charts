@@ -20,7 +20,18 @@ import 'dart:ui' as ui show Color;
 
 import 'package:logger/logger.dart';
 
-/// Example of simple line chart usage in an application.
+/// A sample app which shows usage of this library `flutter_charts` in an application.
+///
+/// The application is very simple, includes several buttons and text fields surrounding
+/// a sample chart created by this library.
+///
+/// There are multiple sample [FlutterChart]s this app can show; the concrete [FlutterChart]
+/// that is shows is the widget returned from [MyHomePageState.build].
+/// The widget that is returned is determined from command line argument named 'EXAMPLE_TO_RUN' picked up in
+/// a global function [requestedExampleToRun], used in [_ExampleWidgetCreator.createRequestedChart].
+///
+/// Note that there is another example app [main_run_doc_example.dart](./main_run_doc_example.dart),
+/// which is intended to run only one sample, pasted from README.md.
 ///
 /// Library note: This file is on the same level as _lib_, so everything from _lib_ must
 /// be imported using the "package:" scheme, e.g.
@@ -145,7 +156,7 @@ class MyHomePage extends StatefulWidget {
   /// The [createState] method will typically return the
   /// new state of the widget.
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
 /// This state object is created in the stateful widget's [MyHomePage] call to
@@ -168,12 +179,12 @@ class MyHomePage extends StatefulWidget {
 ///
 /// Note: At the same time, because the this state's [build] calls
 ///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
-//     Widget chartToRun = definer.createRequestedChart();
+///     Widget chartToRun = definer.createRequestedChart();
 /// recreates lineChartOptions, verticalBarChartOptions, chartData,
 /// and xContainerLabelLayoutStrategy, the core of this state object (all members)
 /// is effectively recreated on each state's [build] call.
 ///
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   // Note (on null safety):
   //     To be able to have non-nullable types on members
   //     such as _lineChartOptions (and all others here), 2 things need be done:
@@ -188,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
-  _MyHomePageState();
+  MyHomePageState();
 
   void _chartStateChanger() {
     setState(() {

@@ -310,21 +310,12 @@ abstract class AxisContainer extends ChartAreaContainer {
   ///     on [NewDataContainer]!
   ///
   ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
-  ///      member [DataRangeLabelsGenerator.dataRange] should be extrapolated.
+  ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
   ///
   /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
   ///                 this is set may be called multiple times.
   late Interval axisPixelsRange;
 
-  /// The generator and holder of labels in the form of [FormattedLabelInfos],
-  /// as well as and range of the axis values.
-  ///
-  /// The [labelsGenerator]'s interval [DataRangeLabelsGenerator.dataRange]
-  /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
-  ///
-  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
-  ///                 Reason: Different views may have different labels, esp. on the Y axis.
-  late DataRangeLabelsGenerator labelsGenerator;
 }
 
 /// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
@@ -369,19 +360,6 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
     chartViewMaker: chartViewMaker,
   ) {
     _yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
-
-    // [labelsGenerator] instance depends on both NewModel and ChartRootContainer.
-    // We can construct the generator anywhere in [ChartRootContainer] constructor or later.
-    // As this [YContainer] constructor is invoked in [ChartRootContainer], this is a good place
-    // to create the [labelsGenerator] instance of [DataRangeLabelsGenerator]
-    labelsGenerator = DataRangeLabelsGenerator(
-      extendAxisToOrigin: chartViewMaker.extendAxisToOrigin,
-      valueToLabel: chartViewMaker.chartOptions.yContainerOptions.valueToLabel,
-      inverseTransform: chartViewMaker.chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartViewMaker.chartData.yUserLabels,
-      dataModel: chartViewMaker.chartData,
-      isStacked: chartViewMaker.isStacked,
-    );
   }
 
   /// Containers of Y labels.
@@ -427,7 +405,7 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in labelsGenerator.formattedLabelInfos.labelInfoList) {
+    for (AxisLabelInfo labelInfo in chartViewMaker.yLabelsGenerator.labelInfoList) {
       var yLabelContainer = YLabelContainer(
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
@@ -553,20 +531,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
   }) : super(
     chartViewMaker: chartViewMaker,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  ) {
-    // Moved here, so both X and YContainer can use generators and LabelInfos -
-    // although unused in XContainer so far!
-
-    // See comment in YContainer constructor
-    labelsGenerator = DataRangeLabelsGenerator(
-      extendAxisToOrigin: chartViewMaker.extendAxisToOrigin,
-      valueToLabel: chartViewMaker.chartOptions.xContainerOptions.valueToLabel,
-      inverseTransform: chartViewMaker.chartOptions.dataContainerOptions.xInverseTransform,
-      userLabels: chartViewMaker.chartData.xUserLabels,
-      dataModel: chartViewMaker.chartData,
-      isStacked: chartViewMaker.isStacked,
-    );
-  }
+  );
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
   List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
@@ -604,7 +569,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     _xLabelContainers = List.empty(growable: true);
 
     ChartOptions options = chartViewMaker.chartOptions;
-    List<String> xUserLabels = chartViewMaker.chartData.xUserLabels;
+    List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -612,12 +577,12 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
       var xLabelContainer = XLabelContainer(
-        label: xUserLabels[xIndex],
+        label: xUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
         options: options,
         // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: labelsGenerator.formattedLabelInfos.labelInfoList[xIndex],
+        labelInfo: chartViewMaker.xLabelsGenerator.labelInfoList[xIndex],
         ownerAxisContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
@@ -642,7 +607,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
     // Purely artificial on XContainer for now, we are taking labels from data, or user, NOT generating range.
     axisPixelsRange = const Interval(0.0, 200.0);
 
-    List<String> xUserLabels = chartViewMaker.chartData.xUserLabels;
+    List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
     double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
     double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
@@ -811,11 +776,12 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 ///
 /// Carries the layout state during the [ChartRootContainer.layout] from 'sources' to 'sinks',
 /// see the [BuilderOfChildrenDuringParentLayout.findSourceContainersReturnLayoutResultsToBuildSelf].
-class _SourceYContainerAndYContainerToSinkDataContainer {
+// todo-00! remove when source/sink is replaced
+class SourceYContainerAndYContainerToSinkDataContainer {
   final XContainer xContainer;
   final YContainer yContainer;
 
-  _SourceYContainerAndYContainerToSinkDataContainer({
+  SourceYContainerAndYContainerToSinkDataContainer({
     required this.xContainer,
     required this.yContainer,
   });
@@ -866,11 +832,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     chartViewMaker: chartViewMaker,
   );
 
+  // todo-00! remove when dependencies using source/sink are removed.
   @override
-  _SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
+  SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
     // DataContainer build (number of lines created) depends on XContainer and YContainer layout (number of labels),
     // This object moves the required information for the above into the DataContainer build.
-    return _SourceYContainerAndYContainerToSinkDataContainer(
+    return SourceYContainerAndYContainerToSinkDataContainer(
       xContainer: chartViewMaker.xContainer,
       yContainer: chartViewMaker.yContainer,
     );
@@ -887,7 +854,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     List<BoxContainer> dataContainerChildren = [];
 
     // Get information from layout of 'source siblings', which define this DataContainer xTickXs and yTickYs.
-    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
+    SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
         findSourceContainersReturnLayoutResultsToBuildSelf();
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
@@ -1052,7 +1019,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
     );
     
     // 2. Layout the data container by extrapolating.
-    _SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
+    SourceYContainerAndYContainerToSinkDataContainer layoutDependency =
     findSourceContainersReturnLayoutResultsToBuildSelf();
     
     // Scale the [pointsColumns] to the [YContainer]'s extrapolate.
@@ -1118,7 +1085,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
-  void lextrPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+  void lextrPointsColumns(SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     chartViewMaker.chartData.pointsColumns.lextrPointsColumns(layoutDependency);
   }
 
@@ -1404,7 +1371,7 @@ class StackableValuePoint {
   ///
   StackableValuePoint lextrToPixels({
     required double scaledX,
-    required DataRangeLabelsGenerator yLabelsGenerator,
+    required DataRangeLabelInfosGenerator yLabelsGenerator,
   }) {
     // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in yLabelsGenerator
     // were calculated using the NEW [NewModel]
@@ -1654,14 +1621,14 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void lextrPointsColumns(_SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+  void lextrPointsColumns(SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = layoutDependency.xTickXs[col];
         point.lextrToPixels(
           scaledX: scaledX,
-          yLabelsGenerator: chartViewMaker.yContainer.labelsGenerator,
+          yLabelsGenerator: chartViewMaker.yLabelsGenerator,
         );
       });
       col++;

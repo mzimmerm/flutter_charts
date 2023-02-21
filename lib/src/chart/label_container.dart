@@ -376,7 +376,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// [parentOffsetTick]  has multiple other roles:
   ///   - The X or Y offset of the X or Y label middle point
   ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
-  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelsGenerator]).
+  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelInfosGenerator]).
   ///     ```dart
   ///        double yTickY = yLabelContainer.parentOffsetTick;
   ///        double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
@@ -390,7 +390,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
-  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelsGenerator] to
+  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
   /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
@@ -399,7 +399,8 @@ abstract class AxisLabelContainer extends LabelContainer {
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    parentOffsetTick = _ownerAxisContainer.labelsGenerator.lextrValueToPixels(
+    // Important Note: This is NOT called for XAxisLabels
+    parentOffsetTick = _ownerAxisContainer.chartViewMaker.yLabelsGenerator.lextrValueToPixels(
       value: labelInfo.dataValue.toDouble(),
       axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
       axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,

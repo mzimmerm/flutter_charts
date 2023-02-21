@@ -13,7 +13,7 @@ import '../../util/util_dart.dart';
 import '../options.dart';
 
 // todo-doc-01 document Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
-//                   and various holders of Y data values, including some parts of [DataRangeLabelsGenerator]
+//                   and various holders of Y data values, including some parts of [DataRangeLabelInfosGenerator]
 /// Notes:
 ///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
 ///     - Extrapolating OF MODEL VALUES (does not)
@@ -167,8 +167,6 @@ class NewModel {
 
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
-
-  bool get isUsingUserLabels => yUserLabels != null;
 
   /// Keeps data values grouped in columns.
   ///
@@ -423,44 +421,4 @@ class NewPointModel extends Object with DoubleLinked {
 class _DoubleValue {
   double value = 0.0;
 }
-
-// -------------------- Functions
-
-/*
-// To initialize default colors with dynamic list that allows the colors NOT null, initialization must be done in
-//  initializer list (it is too late in constructor, by then, the colors list would have to be NULLABLE).
-/// Sets up colors for legends, first several explicitly, rest randomly.
-///
-/// This is used if user does not set colors.
-List<ui.Color> _dataRowsDefaultColors(int _dataRowsCount) {
-  List<ui.Color> _rowsColors = List.empty(growable: true);
-
-  if (_dataRowsCount >= 1) {
-    _rowsColors.add(material.Colors.yellow);
-  }
-  if (_dataRowsCount >= 2) {
-    _rowsColors.add(material.Colors.green);
-  }
-  if (_dataRowsCount >= 3) {
-    _rowsColors.add(material.Colors.blue);
-  }
-  if (_dataRowsCount >= 4) {
-    _rowsColors.add(material.Colors.black);
-  }
-  if (_dataRowsCount >= 5) {
-    _rowsColors.add(material.Colors.grey);
-  }
-  if (_dataRowsCount >= 6) {
-    _rowsColors.add(material.Colors.orange);
-  }
-  if (_dataRowsCount > 6) {
-    for (int i = 3; i < _dataRowsCount; i++) {
-      int colorHex = math.Random().nextInt(0xFFFFFF);
-      int opacityHex = 0xFF;
-      _rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
-    }
-  }
-  return _rowsColors;
-}
-*/
 

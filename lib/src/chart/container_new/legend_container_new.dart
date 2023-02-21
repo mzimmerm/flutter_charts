@@ -14,7 +14,7 @@ import '../options.dart' as chart_options;
 import '../layouter_one_dimensional.dart';
 //import '../../container/container_key.dart';
 //import '../../util/util_dart.dart';
-//import '../../util/util_labels.dart' show DataRangeLabelsGenerator;
+//import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 
 /// Lays out the legend area for the chart.
 ///

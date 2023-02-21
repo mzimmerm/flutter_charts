@@ -61,8 +61,6 @@ class ChartData {
     validate();
   }
 
-  bool get isUsingUserLabels => yUserLabels != null;
-
   List<double> get flatten => dataRows.expand((element) => element).toList();
   double get dataYMax => flatten.reduce(math.max);
   double get dataYMin => flatten.reduce(math.min);
@@ -111,32 +109,32 @@ class ChartData {
 ///
 /// This is used if user does not set colors.
 List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
-  List<ui.Color> _rowsColors = List.empty(growable: true);
+  List<ui.Color> rowsColors = List.empty(growable: true);
 
   if (dataRowsCount >= 1) {
-    _rowsColors.add(material.Colors.yellow);
+    rowsColors.add(material.Colors.yellow);
   }
   if (dataRowsCount >= 2) {
-    _rowsColors.add(material.Colors.green);
+    rowsColors.add(material.Colors.green);
   }
   if (dataRowsCount >= 3) {
-    _rowsColors.add(material.Colors.blue);
+    rowsColors.add(material.Colors.blue);
   }
   if (dataRowsCount >= 4) {
-    _rowsColors.add(material.Colors.black);
+    rowsColors.add(material.Colors.black);
   }
   if (dataRowsCount >= 5) {
-    _rowsColors.add(material.Colors.grey);
+    rowsColors.add(material.Colors.grey);
   }
   if (dataRowsCount >= 6) {
-    _rowsColors.add(material.Colors.orange);
+    rowsColors.add(material.Colors.orange);
   }
   if (dataRowsCount > 6) {
     for (int i = 3; i < dataRowsCount; i++) {
       int colorHex = math.Random().nextInt(0xFFFFFF);
       int opacityHex = 0xFF;
-      _rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
+      rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
     }
   }
-  return _rowsColors;
+  return rowsColors;
 }

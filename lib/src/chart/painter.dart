@@ -40,8 +40,6 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   FlutterChartPainter({
     required this.chartViewMaker,
   }) {
-    // Copy options also on ViewMaker from Model.options
-    chartViewMaker.chartOptions = chartViewMaker.chartData.chartOptions;
     logger.Logger().d('Constructing $runtimeType');
   }
 

@@ -172,5 +172,3 @@ export 'src/chart/bar/container.dart';
 export 'src/chart/bar/options.dart';
 export 'src/chart/bar/view_maker.dart';
 export 'src/chart/bar/container_new.dart';
-
-export 'src/util/random_chart_data.dart';

@@ -53,34 +53,34 @@ class RandomChartData extends NewModel {
 /// This is used if user does not set legends.
 /// This should be kept in sync with colors below.
 List<String> randomDataRowsLegends(int dataRowsCount) {
-  List<String> _defaultLegends = List.empty(growable: true);
+  List<String> defaultLegends = List.empty(growable: true);
 
   if (dataRowsCount >= 1) {
-    _defaultLegends.add('YELLOW' /*' with really long description'*/);
+    defaultLegends.add('YELLOW' /*' with really long description'*/);
   }
   if (dataRowsCount >= 2) {
-    _defaultLegends.add('GREEN');
+    defaultLegends.add('GREEN');
   }
   if (dataRowsCount >= 3) {
-    _defaultLegends.add('BLUE');
+    defaultLegends.add('BLUE');
   }
   if (dataRowsCount >= 4) {
-    _defaultLegends.add('BLACK');
+    defaultLegends.add('BLACK');
   }
   if (dataRowsCount >= 5) {
-    _defaultLegends.add('GREY');
+    defaultLegends.add('GREY');
   }
   if (dataRowsCount >= 6) {
-    _defaultLegends.add('ORANGE');
+    defaultLegends.add('ORANGE');
   }
   if (dataRowsCount > 6) {
     for (int i = 3; i < dataRowsCount; i++) {
       // todo-1 when large value is generated, it paints outside canvas, fix.
       int number = math.Random().nextInt(10000);
-      _defaultLegends.add('OTHER ' + number.toString());
+      defaultLegends.add('OTHER  ${number.toString()}');
     }
   }
-  return _defaultLegends;
+  return defaultLegends;
 }
 
 /// Generate list of "random" [xUserLabels] as monthNames or weekday names.
@@ -99,7 +99,7 @@ List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
   return yUserLabels;
 }
 
-List<List<double>> randomDataYs(int numXLabels, int _numDataRows, bool _overlapDataYs) {
+List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDataYs) {
   List<List<double>> dataRows = List.empty(growable: true);
 
   double scale = 200.0;
@@ -107,9 +107,9 @@ List<List<double>> randomDataYs(int numXLabels, int _numDataRows, bool _overlapD
   math.Random rgen = math.Random();
 
   int maxDataY = 4;
-  double pushUpStep = _overlapDataYs ? 0.0 : maxDataY.toDouble();
+  double pushUpStep = overlapDataYs ? 0.0 : maxDataY.toDouble();
 
-  for (int rowIndex = 0; rowIndex < _numDataRows; rowIndex++) {
+  for (int rowIndex = 0; rowIndex < numDataRows; rowIndex++) {
     dataRows.add(_randomDataOneRow(
       rgen: rgen,
       max: maxDataY,

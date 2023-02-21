@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 
-/// Example app for flutter_charts.
+/// Example app for flutter_charts, which shows one concrete chart,
+/// which is the widget returned from [chartToRun].
 ///
 /// Intended as a simple app that runs example code from README.md,
-/// by replacing the contents of [chartToRun] functions in README.md.
+/// by replacing the contents of [chartToRun] with example code pasted from README.md.
+///
+/// Note that there is another example app [main.dart](./main.dart) which is similar,
+/// but it's [chartToRun] allows to run multiple examples.
 ///
 void main() {
   runApp(const MyApp());
 }
 
-/// Returns a [FlutterChart] instance.
+/// Returns a [FlutterChart] widget that is plugged in the [MyHomePageState]
+/// of this sample app.
 ///
 /// This code can be replaced with any sample code snippets in README.md.
 /// See README.md headings named such as
@@ -79,11 +84,11 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  _MyHomePageState();
+class MyHomePageState extends State<MyHomePage> {
+  MyHomePageState();
 
   void _chartStateChanger() {
     setState(() {});

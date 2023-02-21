@@ -11,6 +11,7 @@ import 'container_new/axis_container_new.dart' as axis_container_new;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
+import '../util/util_labels.dart' as util_labels;
 import 'presenter.dart' as presenter; // OLD
 
 import 'options.dart' as options;
@@ -54,6 +55,37 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
     isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+    // Copy options also on this [ViewMaker] from Model.options
+    chartOptions = chartData.chartOptions;
+
+    // Create [yLabelsGenerator] which depends on both NewModel and ChartRootContainer.
+    // We can construct the generator here in [ChartViewMaker] constructor or later
+    // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
+    // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
+    // todo-00-last-last-last : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    //                         Although not purely a view-independent model, it should ONLY have this one private constructro
+    //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
+    //                         should be public, but the constructor of it private to the new_model.
+    yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+      extendAxisToOrigin: extendAxisToOrigin,
+      valueToLabel: chartOptions.yContainerOptions.valueToLabel,
+      inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
+      userLabels: chartData.yUserLabels,
+      dataModel: chartData,
+      isStacked: isStacked,
+    );
+
+    // See comment in YContainer constructor
+    xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+      extendAxisToOrigin: extendAxisToOrigin,
+      valueToLabel: chartOptions.xContainerOptions.valueToLabel,
+      inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
+      userLabels: chartData.xUserLabels,
+      dataModel: chartData,
+      isStacked: isStacked,
+    );
+
+
   }
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
@@ -75,6 +107,19 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   ///
   /// It's children, [legendContainer], etc are also not final.
   late container.ChartRootContainer chartRootContainer;
+
+  /// The generator and holder of labels in the form of [LabelInfos],
+  /// as well as the range of the axis values.
+  ///
+  /// The [labelsGenerator]'s interval [DataRangeLabelInfosGenerator.dataRange]
+  /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
+  ///
+  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
+  ///                 Reason: Different views may have different labels, esp. on the Y axis.
+  late util_labels.DataRangeLabelInfosGenerator yLabelsGenerator;
+
+  late util_labels.DataRangeLabelInfosGenerator xLabelsGenerator;
+
 
   // todo-010 : THE ONLY REASON THESE MEMBERS MUST BE KEPT IS THEIR USE ON _SourceYContainerAndYContainerToSinkDataContainer.
   //            REMOVE THAT NEED, AND THESE MEMBERS.
@@ -111,7 +156,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     // Create the concrete [ChartRootContainer] for this concrete [ChartViewMaker].
     // After this invocation, the created root container is populated with children
     // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example YContainer is populated with DataRangeLabelsGenerator.
+    // depending on the concrete container. For example YContainer is populated with DataRangeLabelInfosGenerator.
 
     String isFirstStr = _debugPrintBegin();
 
@@ -168,7 +213,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels]
-  /// or [container.YContainer.formattedLabelInfos].
+  /// or [container.YContainer.labelInfos].
   container.XContainer makeViewForDomainAxis() {
     return isUseOldDataContainer
         ? container.XContainer(chartViewMaker: this)
@@ -176,7 +221,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels]
-  /// or labels in [container.YContainer.formattedLabelInfos].
+  /// or labels in [container.YContainer.labelInfos].
   container.YContainer makeViewForRangeAxis() {
     return isUseOldDataContainer
         ? container.YContainer(chartViewMaker: this)

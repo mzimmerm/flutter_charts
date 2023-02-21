@@ -9,7 +9,6 @@ import '../view_maker.dart' as view_maker;
 import '../layouter_one_dimensional.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
-import '../../util/util_labels.dart' show DataRangeLabelsGenerator;
 
 
 // todo-done-last-3 : replaces PointsColumns
@@ -118,13 +117,13 @@ class NewHBarPointContainer extends NewPointContainer {
     double width = constraints.width;
 
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
-    DataRangeLabelsGenerator yLabelsGenerator = chartViewMaker.yContainer.labelsGenerator;
+    Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
     container.YContainer yContainer = chartViewMaker.yContainer;
 
     var lextr = ToPixelsExtrapolation1D(
-      fromValuesMin: yLabelsGenerator.dataRange.min,
-      fromValuesMax: yLabelsGenerator.dataRange.max,
+      fromValuesMin: yDataRange.min,
+      fromValuesMax: yDataRange.max,
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
     );

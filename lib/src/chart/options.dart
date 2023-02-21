@@ -222,9 +222,9 @@ class YContainerOptions {
     // if there are >= 3 < 6 decimal digits, replace with K (etc)
     // todo 1 add an option for how to format; a method or a formatter.
     String val = value.toString();
-    if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
-    if (val.endsWith('000000')) val = val.substring(0, val.length - 6) + 'M';
-    if (val.endsWith('000')) val = val.substring(0, val.length - 3) + 'K';
+    if (val.endsWith('000000000')) val = '{$val.substring(0, val.length - 9)} B';
+    if (val.endsWith('000000')) val = '{$val.substring(0, val.length - 6)} M';
+    if (val.endsWith('000')) val = '{$val.substring(0, val.length - 3)} K';
 
     return val + yLabelUnits;
   }

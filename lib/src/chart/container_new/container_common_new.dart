@@ -6,7 +6,7 @@ import '../view_maker.dart' as view_maker;
 //import '../layouter_one_dimensional.dart';
 import '../../container/container_key.dart';
 //import '../../util/util_dart.dart';
-//import '../../util/util_labels.dart' show DataRangeLabelsGenerator;
+//import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 
 /// Base class which manages, lays out, moves, and paints
 /// each top level block on the chart. The basic top level chart blocks are:

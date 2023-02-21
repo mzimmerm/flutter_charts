@@ -409,7 +409,7 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
 
   @override
   String toString() {
-    return super.toString() + ', _doInvertToDomain=$_doInvertToDomain';
+    return '${super.toString()}, _doInvertToDomain=$_doInvertToDomain';
   }
 }
 
