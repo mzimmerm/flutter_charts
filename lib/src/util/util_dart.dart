@@ -103,8 +103,11 @@ class Poly {
   }
 }
 
-// todo 0 add tests; also make constant; also add validation for min before max
-// todo-2: replaced num with double,  parametrize with T instead so it works for both
+// todo-010: multiple things:
+//    - replace num with double,  parametrize with T instead so it works for both
+//    - make const constructor
+//    - add tests
+//    - add (optional?) validation for min < max
 
 class Interval {
   const Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
@@ -137,6 +140,19 @@ class Interval {
   /// Outermost union of this interval with [other].
   Interval merge(Interval other) {
     return Interval(math.min(min, other.min), math.max(max, other.max));
+  }
+
+  Interval envelope(List<Interval> otherIntervals) => otherIntervals.isNotEmpty
+      ? otherIntervals.fold(this, (previousInterval, interval) => previousInterval.merge(interval))
+      : this;
+
+
+  double get length {
+
+    if ( min > max) {
+      throw StateError('Interval min is after max in $this');
+    }
+    return max - min;
   }
 
   @override

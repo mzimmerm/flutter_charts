@@ -109,7 +109,7 @@ class DataRangeLabelInfosGenerator {
   List<double> get labelPositions => _labelPositions;
 
   // On Y axis, label values go up, but axis down. true extrapolate inverses that.
-  final bool isAxisAndLabelsSameDirection = false;
+  final bool isAxisPixelsAndDisplayedValuesInSameDirection = false;
 
   /// The function converts value to label.
   ///
@@ -139,7 +139,7 @@ class DataRangeLabelInfosGenerator {
     );
   }
 
-  /// Extrapolates [value] from extended data range kept in self [dataRange],
+  /// Extrapolates [value] from extended data range [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsYMin], [axisPixelsYMax],
   /// in the direction defined by [isAxisAndLabelsSameDirection].
   ///
@@ -154,7 +154,7 @@ class DataRangeLabelInfosGenerator {
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (!isAxisAndLabelsSameDirection) {
+      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
         pixels = axisPixelsYMax;
       } else {
         pixels = axisPixelsYMin;
@@ -168,7 +168,7 @@ class DataRangeLabelInfosGenerator {
       fromValuesMax: dataRange.max,
       toPixelsMin: axisPixelsYMin,
       toPixelsMax: axisPixelsYMax,
-      doInvertToDomain: !isAxisAndLabelsSameDirection,
+      doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
     ).apply(value);
   }
 }

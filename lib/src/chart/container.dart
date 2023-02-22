@@ -239,7 +239,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
           size: ui.Size(
             constraints.width - yContainerSize.width,
             // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
-            //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _tightOrLooseLayoutLineSegmentFor
+            //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
             yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);

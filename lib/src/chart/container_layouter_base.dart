@@ -16,7 +16,7 @@ import 'layouter_one_dimensional.dart'
 import 'container_alignment.dart' show Alignment;
 import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import '../util/util_dart.dart' as util_dart show LineSegment;
+import '../util/util_dart.dart' as util_dart show LineSegment, Interval, ToPixelsExtrapolation1D;
 import '../util/util_flutter.dart' as util_flutter show boundingRectOfRects, assertSizeResultsSame;
 import '../util/collection.dart' as custom_collection show CustomList;
 import '../container/container_key.dart'
@@ -27,7 +27,11 @@ import '../container/container_key.dart'
 
 abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager, DoubleLinked<BoxContainer>, DoubleLinkedOwner<BoxContainer> {
 
-  /// Implements the sole abstract method of [UniqueKeyedObjectsManager]
+  /// Children that should define a key, for the purpose of checking uniqueness of key between them.
+  ///
+  /// In this default implementation, all children must define a key. Unlikely to be changed by derived classes.
+  ///
+  /// Implements the sole abstract method of [UniqueKeyedObjectsManager].
   @override
   List<Keyed> get keyedMembers => _children;
 
@@ -547,7 +551,7 @@ abstract class LayoutableBox {
   void layout();
 }
 
-// Non-positioning BoxLayouter and BoxContainer ------------------------------------------------------------------------
+// ---------- Non-positioning BoxLayouter and BoxContainer -------------------------------------------------------------
 
 /// Mixin provides role of a generic layouter for a one [LayoutableBox] or a list of [LayoutableBox]es.
 ///
@@ -1251,9 +1255,22 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
   }
 }
 
+// ---------- Positioning and non-positioning layouters, rolling positioning layouters, Row and Column, Greedy ---------
+
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
 ///
-/// The default implementation overrides [_layout_Post_NotLeaf_OffsetChildren] to position children.
+/// The default implementation overrides the [_layout_Post_NotLeaf_OffsetChildren] which changes children positions
+/// by applying the offset from each top left rectangle passed in [positionedRectsInMe]
+/// to each child in the same order.
+///
+/// The parameter[positionedRectsInMe] must be created by the layouter 's previous
+/// computations in [layout_Post_NotLeaf_PositionChildren] from all children in order.
+///
+/// Important note: Because of this dependency, there are a few rules:
+///   - [_layout_Post_NotLeaf_OffsetChildren] should generally not be overridden,
+///   - BUT, if a derived class overrides [layout_Post_NotLeaf_PositionChildren] in a way that changes the order
+///     in it's result, it must also override [_layout_Post_NotLeaf_OffsetChildren].
+///
 abstract class PositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
   PositioningBoxLayouter({
@@ -1285,8 +1302,6 @@ abstract class PositioningBoxLayouter extends BoxContainer {
   }
 }
 
-// Positioning classes, rolling positioning classes, Row and Column, Greedy vvv ----------------------------------------
-
 /// Layouter which is NOT allowed to offset it's children, or only offset with zero offset.
 abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
@@ -1317,12 +1332,11 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 
 }
 
-/// Base class for [Row] and [Column] layouters, which allow to process [Greedy] children.
+/// Base class for layouters which layout along two axes: the main axis, along which the layout
+/// children flow in the axis direction without wrapping (although can overlap),
+/// and the cross axis, along which the layout children can be positioned anywhere.
 ///
-/// The role of this class is to lay out their children along the main axis and the cross axis,
-/// in continuous flow without wrapping along the main axis.
-///
-/// [Row] and [Column] are the intended extensions.
+/// The intended derived layouters are [Row] and [Column], which both also allow to process [Greedy] children.
 ///
 /// This base layouter supports various alignment and packing of children,
 /// along both the main and the cross axes. The alignment and packing is set
@@ -1547,6 +1561,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
+  // todo-00-last-last-last-refactor : this should be moved, along with called methods, e.g. _convertMainAndCrossSegmentsToRect, from RollingPositioningBoxLayouter
+  //                      to the class _MainAndCrossPositionedSegments - it should do the work of converting it's members to List<Rect>
   List<ui.Rect> _convertPositionedSegmentsToRects({
     required LayoutAxis mainLayoutAxis,
     required _MainAndCrossPositionedSegments mainAndCrossPositionedSegments,
@@ -1606,6 +1622,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
   */
 
+  // todo-00-last-last-last-refactor : move to SizeExtension
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
   double _lengthAlong(LayoutAxis layoutAxis,
       ui.Size size,) {
@@ -1632,7 +1649,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// See [LayedoutLengthsPositioner] for details of how the returned layouter lays out the children's
   /// sides along the [layoutAxis].
   ///
-  LayedoutLengthsPositioner _layedoutLengthsPositionerAlongAxis({
+  LayedoutLengthsPositioner _constructLayedoutLengthsPositionerAlongAxis({
     required LayoutAxis layoutAxis,
     required LengthsPositionerProperties axisLayoutProperties,
     required double lengthsConstraintAlongLayoutAxis,
@@ -1647,6 +1664,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     return lengthsPositionerAlongAxis;
   }
 
+  // todo-00-last-last-last-refactor : this should be moved to LayoutableBox or similar
   /// Creates and returns a list of lengths of the [LayoutableBox]es [children]
   /// measured along the passed [layoutAxis].
   List<double> _layoutSizesOfChildrenAlong(LayoutAxis layoutAxis,
@@ -1738,13 +1756,15 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   _MainAndCrossPositionedSegments _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(List<LayoutableBox> children) {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
     var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
-    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
+
+    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = _constructLayedoutLengthsPositionerAlongAxis(
       layoutAxis: mainLayoutAxis,
       axisLayoutProperties: mainAxisLayoutProperties,
       lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(mainLayoutAxis),
       children: children,
     );
-    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _layedoutLengthsPositionerAlongAxis(
+
+    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _constructLayedoutLengthsPositionerAlongAxis(
       layoutAxis: crossLayoutAxis,
       axisLayoutProperties: crossAxisLayoutProperties,
       // todo-02 : Investigate : If we use, instead of 0.0,
@@ -1759,7 +1779,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     );
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
-    // This is layouter specific - each layouter does 'layout lengths' according it's rules.
+    // This is layouter specific - each layouter does 'layout the lengths' according to it's specific rules,
+    // controlled by [Packing] (tight, loose, center) and [Align] (start, end, matrjoska).
     // The [layoutLengths] method actually includes positioning the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
     //   which is the total length of children.
     PositionedLineSegments mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.layoutLengths();
@@ -1806,7 +1827,6 @@ class Row extends RollingPositioningBoxLayouter {
   }
 }
 
-
 /// Layouter lays out children in a column that keeps extending,
 /// which may overflow if there are too many or too large children.
 class Column extends RollingPositioningBoxLayouter {
@@ -1835,6 +1855,45 @@ class Column extends RollingPositioningBoxLayouter {
       packing: crossAxisPacking,
     );
   }
+}
+
+/// Mixin provides the role of a layouter which uses externally-defined positions (ticks) to position it's children.
+///
+/// The externally-defined positions (ticks) are brought in by the [ExternalTicksLayoutProvider].
+mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
+  // knows _ExternalTicksLayoutProvider
+  // overrides from RollingPositioningBoxLayouter:
+  //   - method which calculates positions with children rectangles from positioned
+}
+
+class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
+  ExternalTicksColumn({
+    required List<BoxContainer> children,
+    Align mainAxisAlign = Align.start,
+    // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+  }) : super(
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: Packing.externalTicksDefined,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+  ) {
+    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: Packing.externalTicksDefined, // mainAxisPacking,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+    );
+  }
+
 }
 
 /// Layouter which asks it's parent [RollingPositioningBoxLayouter] to allocate as much space
@@ -2104,6 +2163,134 @@ class Aligner extends PositioningBoxLayouter {
 }
 
 // Helper classes ------------------------------------------------------------------------------------------------------
+
+/// This class controls how layouters implementing the mixin [ExternalTicksRollingPositioning] position their children
+/// along their main axis.
+///
+/// It manages all the directives the [ExternalTicksRollingPositioning] need to position their children
+/// in their main axis direction.
+///
+/// It's useful role is provided by the method [lextrValuesToPixels], which,
+/// given the axis pixels range, (assumed in the pixel coordinate range), extrapolates the [tickValues]
+/// to layouter-relative positions on the axis, to which the layouter children will be positioned.
+///
+/// Specifically, this class provides the following directives for the layouters
+/// that are [ExternalTicksRollingPositioning]:
+///   - [tickValues] is the relative positions on which the children are placed
+///   - [tickValuesDomain] is the interval in which the relative positions [tickValues] are.
+///     [tickValuesDomain] must include all [tickValues];
+///     it's boundaries may be larger than the envelope of all [tickValues]
+///   - [isAxisPixelsAndDisplayedValuesInSameDirection] defines whether the axis pixel positions and [tickValues]
+///     are run in the same direction.
+///   - [externalTickAt] the information what point on the child should be placed at the tick value:
+///     child's start, center, or end. This is expressed by [ExternalTickAt.childStart] etc.
+///
+/// Note: The parameter names use the term 'value' not 'position', as they represent
+///        data values ('transformed' but NOT 'extrapolated to pixels').
+///
+/// Important note: Although not clear from this class, should ONLY position along the main axis.
+///                 This is reflected in one-dimensionality of [tickValues] and [externalTickAt]
+///
+class ExternalTicksLayoutProvider {
+
+  ExternalTicksLayoutProvider({
+    required this.tickValues,
+    required this.tickValuesDomain,
+    required this.isAxisPixelsAndDisplayedValuesInSameDirection,
+    required this.externalTickAt,
+});
+
+  /// Represent future positions of children of the layouter controlled
+  /// by this ticks provider [ExternalTicksLayoutProvider].
+  /// 
+  /// By 'future positions' we mean the [tickValues] after extrapolation to axis pixels, 
+  /// to be precise, [tickValues] extrapolated by [lextrValuesToPixels] when passed axis pixels range.
+  /// 
+  final List<double> tickValues;
+
+  final util_dart.Interval tickValuesDomain;
+
+  final bool isAxisPixelsAndDisplayedValuesInSameDirection;
+
+  final ExternalTickAt externalTickAt;
+
+  /// Returns tha [tickValues] Linearly extrapolated to the passed [axisPixelsRange].
+  ///
+  /// Important Note: [tickValues] are always in increasing order, and [axisPixelsRange]
+  ///                 minimum is less than maximum.
+  ///                 When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
+  ///                 the vertical pixels axis is always ordered top-to-bottom
+  ///                 The [isAxisPixelsAndDisplayedValuesInSameDirection] should be set as follows:
+  ///                   - On the horizontal axis:
+  ///                     - If we want the [tickValues] be displayed left-to-right, set it to [true] (default).
+  ///                     - Else set it to [false]
+  ///                   - On the vertical axis:
+  ///                     - If we want the [tickValues] be displayed bottom-to-tom, set it to [false] (default).
+  ///                     - Else set it to [false]
+  ///
+  List<double> lextrValuesToPixels(util_dart.Interval axisPixelsRange) {
+    /* todo-00-last Maybe something like this is needed
+    // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
+    // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
+    if (dataRange == const util_dart.Interval(0.0, 0.0)) {
+      double pixels;
+      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
+        pixels = axisPixelsMax;
+      } else {
+        pixels = axisPixelsMin;
+      }
+      return pixels;
+    }    
+    */
+    
+    return tickValues
+        .map((double value) => util_dart.ToPixelsExtrapolation1D(
+              fromValuesMin: tickValuesDomain.min,
+              fromValuesMax: tickValuesDomain.max,
+              toPixelsMin: axisPixelsRange.min,
+              toPixelsMax: axisPixelsRange.max,
+              doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
+            ).apply(value))
+        .toList();
+  }
+/*
+
+  double lextrValueToPixels({
+    required double value,
+    required double axisPixelsMin,
+    required double axisPixelsMax,
+  }) {
+    // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
+    // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
+    if (dataRange == const util_dart.Interval(0.0, 0.0)) {
+      double pixels;
+      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
+        pixels = axisPixelsMax;
+      } else {
+        pixels = axisPixelsMin;
+      }
+      return pixels;
+    }
+    // lextr the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
+    // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
+    return util_dart.ToPixelsExtrapolation1D(
+      fromValuesMin: dataRange.min,
+      fromValuesMax: dataRange.max,
+      toPixelsMin: axisPixelsYMin,
+      toPixelsMax: axisPixelsYMax,
+      doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
+    ).apply(value);
+  }
+*/
+
+
+}
+
+enum ExternalTickAt {
+  childStart,
+  childCenter,
+  childEnd,
+}
 
 enum LayoutAxis {
   horizontal,
