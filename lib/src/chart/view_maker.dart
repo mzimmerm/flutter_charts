@@ -62,7 +62,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-00-last-last-last : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-00!!-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.

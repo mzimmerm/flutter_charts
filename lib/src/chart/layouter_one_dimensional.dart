@@ -65,9 +65,9 @@ enum Packing {
   ///   are distributed as padding between elements; no padding at the beginning or at the end.
   ///
   loose,
-  // todo-00-last-last
-  // todo-00-last-last : with this Packing, ANY ALIGNMENT DOES NOT MAKE SENSE. MAYBE WE INTRODUCE Align.externalTicksDefined and add a validate method that only allows
-  externalTicksDefined,
+
+  // todo-00!! with this Packing, ANY ALIGNMENT DOES NOT MAKE SENSE. MAYBE WE INTRODUCE Align.externalTicksDefined and add a validate method that only allows
+  externalTicksProvided,
 }
 
 /// Represents alignment of children during layouts.
@@ -93,6 +93,9 @@ enum ConstraintsDistribution {
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along
 /// either a main axis or cross axis.
 ///
+/// For layouters with [packing] = [Packing.externalTicksProvided], that is, for layouters using external ticks,
+/// the optional [externalTicksLayoutProvider] must be also provided.
+///
 /// Instances are intended to be members on [RollingPositioningBoxLayouter]; they describe
 /// the properties of the layouter and it's extensions such as [Row] and [Column].
 /// In more detail: the members [align] and [packing] define alignment and packing of children
@@ -107,10 +110,12 @@ class LengthsPositionerProperties {
 
   final Align align;
   final Packing packing;
+  final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
 
   const LengthsPositionerProperties({
     required this.align,
     required this.packing,
+    this.externalTicksLayoutProvider,
   });
 }
 
@@ -147,16 +152,16 @@ class LayedoutLengthsPositioner {
   /// lengths of [children], along the axis we create the positioner for.
   ///
   /// The passed objects must all correspond to the axis for which the positioner is being created:
-  /// [layoutAxis] defines horizontal or vertical,
-  /// [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
-  /// [lengthsConstraint] is todo-00-last-doc
-  /// [externalTicksLayoutProvider] only applies for [Packing.externalTicksDefined]
+  /// - [layoutAxis] defines horizontal or vertical,
+  /// - [lengthsPositionerProperties] is the wrapper for [Align] and [Packing].
+  /// - [lengthsConstraint] is the double 1D positive length into which the [lengths] should fit after positioning
+  ///    by [layoutLengths].
+  /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
-    // todo-00-last-last optionally passing nullable ExternalTicksLayoutProvider
     ExternalTicksLayoutProvider? externalTicksLayoutProvider,
   }) {
     assert(lengthsConstraint != double.infinity);
@@ -172,7 +177,7 @@ class LayedoutLengthsPositioner {
         isOverflown = (_sumLengths > lengthsConstraint);
         _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths;
         break;
-      case Packing.externalTicksDefined:
+      case Packing.externalTicksProvided:
         assert(externalTicksLayoutProvider != null);
         assert(externalTicksLayoutProvider!.tickValues.length == lengths.length);
         // For external layout, isOverflown is calculated after positioning.
@@ -245,14 +250,14 @@ class LayedoutLengthsPositioner {
   ///     - max = first length + second length.
   ///
   ///
-  // todo-00-last-last-last refactor rename to positionLengths
+  // todo-00-last-last-refactor rename to positionLengths
   PositionedLineSegments layoutLengths() {
     PositionedLineSegments positionedLineSegments;
     switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:
         positionedLineSegments = PositionedLineSegments(
           lineSegments: _assertLengthsPositiveAndReturn(
-              // todo-00-last-last-last for consistency add method wrapper _matrjoskaLayoutAndMapLengthsToSegments(_positionMatrjoskaLineSegmentFor)
+              // todo-00-last-last-refactor for consistency add method wrapper _matrjoskaLayoutAndMapLengthsToSegments(_positionMatrjoskaLineSegmentFor)
               lengths.map((length) => _positionMatrjoskaLineSegmentFor(length)).toList(growable: false)),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
@@ -274,10 +279,9 @@ class LayedoutLengthsPositioner {
           isOverflown: isOverflown,
         );
         break;
-      case Packing.externalTicksDefined:
-        // todo-00-last-last
+      case Packing.externalTicksProvided:
         positionedLineSegments = PositionedLineSegments(
-          lineSegments: _assertLengthsPositiveAndReturn(_positionToExternalTicksAndMapLenghtsToSegments()),
+          lineSegments: _assertLengthsPositiveAndReturn(_positionToExternalTicksAndMapLengthsToSegments()),
           totalPositionedLengthIncludesPadding: totalPositionedLengthIncludesPadding,
           isOverflown: isOverflown,
         );
@@ -289,7 +293,7 @@ class LayedoutLengthsPositioner {
 
   double get _sumLengths => lengths.fold(0.0, (previousLength, length) => previousLength + length);
 
-  // todo-00-last-last-last : done : max cannot use fold!!!! : double get _maxLength => lengths.fold(0.0, (previousValue, length) => math.max(previousValue, length));
+  // todo-00!! max cannot use fold!!!! go over such places : double get _maxLength => lengths.fold(0.0, (previousValue, length) => math.max(previousValue, length));
   double get _maxLength => lengths.isNotEmpty ? lengths.reduce(math.max) : 0.0;
 
   List<util_dart.LineSegment> _positionTightOrLooseAndMapLengthsToSegments(
@@ -307,8 +311,11 @@ class LayedoutLengthsPositioner {
     return lineSegments;
   }
 
-  // todo-00-last-last-progress added
-  List<util_dart.LineSegment> _positionToExternalTicksAndMapLenghtsToSegments() {
+  /// Invoked for [Packing.externalTicksProvided], positions the member [lengths]
+  /// to the right, center, or left of the external ticks, defined by the member [externalTicksLayoutProvider].
+  ///
+  /// The member [externalTicksLayoutProvider] must be not null for [Packing.externalTicksProvided].
+  List<util_dart.LineSegment> _positionToExternalTicksAndMapLengthsToSegments() {
     // depending on externalTicksLayoutProvider.externalTickAt,
     // iterate externalTicksLayoutProvider.tickValues, and place each lenght in lengths to position given by the tickValue,
     // moved a bit depending on externalTickAt\

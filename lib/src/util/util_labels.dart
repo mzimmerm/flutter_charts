@@ -36,6 +36,9 @@ import 'util_labels.dart' as util_labels;
 /// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelInfosGenerator {
 
+  // todo-00-last-last-last : add method asExternalTicksLayoutProvider
+
+
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
   /// by this [DataRangeLabelInfosGenerator].
   ///

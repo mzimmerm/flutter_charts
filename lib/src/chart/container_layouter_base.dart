@@ -1561,7 +1561,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
-  // todo-00-last-last-last-refactor : this should be moved, along with called methods, e.g. _convertMainAndCrossSegmentsToRect, from RollingPositioningBoxLayouter
+  // todo-00-last-last-refactor : this should be moved, along with called methods, e.g. _convertMainAndCrossSegmentsToRect, from RollingPositioningBoxLayouter
   //                      to the class _MainAndCrossPositionedSegments - it should do the work of converting it's members to List<Rect>
   List<ui.Rect> _convertPositionedSegmentsToRects({
     required LayoutAxis mainLayoutAxis,
@@ -1622,7 +1622,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   }
   */
 
-  // todo-00-last-last-last-refactor : move to SizeExtension
+  // todo-00-last-last-refactor : move to SizeExtension
   /// Returns the passed [size]'s width or height along the passed [layoutAxis].
   double _lengthAlong(LayoutAxis layoutAxis,
       ui.Size size,) {
@@ -1634,37 +1634,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
-  /// Creates a [LayedoutLengthsPositioner] for the passed [children], and the axis
-  /// along which the [children] are layed out.
-  ///
-  /// The passed objects must all correspond to the axis for which the positioner is being created:
-  /// [layoutAxis] defines horizontal or vertical,
-  /// [axisLayoutProperties] defines alignment, packing, layout direction and whether the positioner is from main axes,
-  /// [lengthsConstraintAlongLayoutAxis] defines the number which is the constraint along the [layoutAxis].
-  ///
-  /// This layouter can layout children in the dimension along the passed [layoutAxis],
-  /// according the passed [axisLayoutProperties]. The passed [lengthsConstraintAlongLayoutAxis]
-  /// serves as a constraint along the layout axis.
-  ///
-  /// See [LayedoutLengthsPositioner] for details of how the returned layouter lays out the children's
-  /// sides along the [layoutAxis].
-  ///
-  LayedoutLengthsPositioner _constructLayedoutLengthsPositionerAlongAxis({
-    required LayoutAxis layoutAxis,
-    required LengthsPositionerProperties axisLayoutProperties,
-    required double lengthsConstraintAlongLayoutAxis,
-    required List<LayoutableBox> children,
-  }) {
-    List<double> lengthsAlongAxis = _layoutSizesOfChildrenAlong(layoutAxis, children);
-    LayedoutLengthsPositioner lengthsPositionerAlongAxis = LayedoutLengthsPositioner(
-      lengths: lengthsAlongAxis,
-      lengthsPositionerProperties: axisLayoutProperties,
-      lengthsConstraint: lengthsConstraintAlongLayoutAxis,
-    );
-    return lengthsPositionerAlongAxis;
-  }
 
-  // todo-00-last-last-last-refactor : this should be moved to LayoutableBox or similar
+  // todo-00-last-last-refactor : this should be moved to LayoutableBox or similar
   /// Creates and returns a list of lengths of the [LayoutableBox]es [children]
   /// measured along the passed [layoutAxis].
   List<double> _layoutSizesOfChildrenAlong(LayoutAxis layoutAxis,
@@ -1757,26 +1728,25 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
     var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
 
-    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = _constructLayedoutLengthsPositionerAlongAxis(
-      layoutAxis: mainLayoutAxis,
-      axisLayoutProperties: mainAxisLayoutProperties,
-      lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(mainLayoutAxis),
-      children: children,
+    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
+      lengths: _layoutSizesOfChildrenAlong(mainLayoutAxis, children),
+      lengthsPositionerProperties: mainAxisLayoutProperties,
+      lengthsConstraint: constraints.maxLengthAlongAxis(mainLayoutAxis),
     );
 
-    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = _constructLayedoutLengthsPositionerAlongAxis(
-      layoutAxis: crossLayoutAxis,
-      axisLayoutProperties: crossAxisLayoutProperties,
-      // todo-02 : Investigate : If we use, instead of 0.0,
+    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
+      lengths: _layoutSizesOfChildrenAlong(crossLayoutAxis, children),
+      lengthsPositionerProperties: crossAxisLayoutProperties,
+      // todo-010 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
       //                 Probably need to address when the whole chart is layed out using the new layouter.
       //                 The 0.0 forces that in the cross-direction (horizontal or vertical),
       //                 we provide zero length constraint, so no length padding.
-      lengthsConstraintAlongLayoutAxis:  0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis), // 0.0,
-      children: children,
+      lengthsConstraint: 0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis),
     );
+
 
     // Layout the lengths along each axis to line segments (offset-ed lengths).
     // This is layouter specific - each layouter does 'layout the lengths' according to it's specific rules,
@@ -1861,6 +1831,7 @@ class Column extends RollingPositioningBoxLayouter {
 ///
 /// The externally-defined positions (ticks) are brought in by the [ExternalTicksLayoutProvider].
 mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
+  // todo-00! DO WE EVEN NEED THIS?? PROBABLY NOT,
   // knows _ExternalTicksLayoutProvider
   // overrides from RollingPositioningBoxLayouter:
   //   - method which calculates positions with children rectangles from positioned
@@ -1869,7 +1840,7 @@ mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
 class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    Align mainAxisAlign = Align.start,
+    Align mainAxisAlign = Align.start, // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
     // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -1878,7 +1849,7 @@ class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
-    mainAxisPacking: Packing.externalTicksDefined,
+    mainAxisPacking: Packing.externalTicksProvided,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
@@ -1886,7 +1857,8 @@ class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
     // done in Column : mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
-      packing: Packing.externalTicksDefined, // mainAxisPacking,
+      packing: Packing.externalTicksProvided, // mainAxisPacking,
+      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
     );
     crossAxisLayoutProperties = LengthsPositionerProperties(
       align: crossAxisAlign,
@@ -2229,7 +2201,7 @@ class ExternalTicksLayoutProvider {
   ///                     - Else set it to [false]
   ///
   List<double> lextrValuesToPixels(util_dart.Interval axisPixelsRange) {
-    /* todo-00-last Maybe something like this is needed
+    /* todo-00! Maybe something like this is needed
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
