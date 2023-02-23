@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level base libraries or equivalent
-import 'container_common_new.dart' as container_common_new;
+import 'container_common_new.dart' as container_common_new show ChartAreaContainer;
 //import '../container.dart' as container;
 import '../label_container.dart' as label_container;
 import '../container_edge_padding.dart' as container_edge_padding;
@@ -145,6 +145,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
       for (int index = 0; index < dataRowsLegends.length; index++)
         LegendItemContainer(
+          chartViewMaker: chartViewMaker,
           label: dataRowsLegends[index],
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
@@ -182,7 +183,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
 
 
 /// Container of one item in the chart legend; each instance corresponds to one row (series) of data.
-class LegendItemContainer extends container_base.BoxContainer {
+class LegendItemContainer extends container_common_new.ChartAreaContainer {
 
   /// Rectangle of the legend color square series indicator
 
@@ -195,6 +196,7 @@ class LegendItemContainer extends container_base.BoxContainer {
   final String _label;
 
   LegendItemContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required label_container.LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
@@ -207,7 +209,9 @@ class LegendItemContainer extends container_base.BoxContainer {
         _labelStyle = labelStyle,
         _indicatorPaint = indicatorPaint,
         _options = options,
-        super() {
+        super(
+          chartViewMaker: chartViewMaker,
+      ) {
     // Create children and attach to self
     addChildren(_createChildrenOfLegendItemContainer());
   }
@@ -295,10 +299,12 @@ class LegendItemContainer extends container_base.BoxContainer {
   /// in [RowLayout].
   List<container_base.BoxContainer> _itemIndAndLabel({bool doPadIndAndLabel = false, bool doAlignIndAndLabel = false}) {
     var indRect = LegendIndicatorRectContainer(
+      chartViewMaker: chartViewMaker,
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
     var label = label_container.LabelContainer(
+      chartViewMaker: chartViewMaker,
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
@@ -357,7 +363,7 @@ class LegendItemContainer extends container_base.BoxContainer {
 }
 
 /// Represents the series color indicator square in the legend.
-class LegendIndicatorRectContainer extends container_base.BoxContainer {
+class LegendIndicatorRectContainer extends container_common_new.ChartAreaContainer {
 
   /// Rectangle of the legend color square series indicator.
   /// This is moved to offset then [paint]ed using rectangle paint primitive.
@@ -367,16 +373,18 @@ class LegendIndicatorRectContainer extends container_base.BoxContainer {
   final ui.Paint _indicatorPaint;
 
   LegendIndicatorRectContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required ui.Paint indicatorPaint,
     required chart_options.ChartOptions options,
-  })  :
-        _indicatorPaint = indicatorPaint,
-  // Create the indicator square, later offset in applyParentOffset
+  })  : _indicatorPaint = indicatorPaint,
+        // Create the indicator square, later offset in applyParentOffset
         _indicatorSize = ui.Size(
           options.legendOptions.legendColorIndicatorWidth,
           options.legendOptions.legendColorIndicatorWidth,
         ),
-        super(); // {} or colon
+        super(
+          chartViewMaker: chartViewMaker,
+        );
 
   /// Overridden to set the concrete layout size on this leaf.
   ///

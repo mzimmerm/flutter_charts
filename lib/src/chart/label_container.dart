@@ -6,12 +6,14 @@ import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
 import 'container.dart' show AxisContainer;
-import 'container_layouter_base.dart' show BoxContainer, LayoutableBox, LayoutContext;
+import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
+import 'view_maker.dart' as view_maker;
+import 'container_layouter_base.dart' show LayoutableBox, LayoutContext;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 import '../util/util_labels.dart' show AxisLabelInfo;
-import '../util/util_dart.dart' as util_dart;
+// import '../util/util_dart.dart' as util_dart;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -36,8 +38,7 @@ import '../util/util_dart.dart' as util_dart;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
-///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
-class LabelContainer extends BoxContainer {
+class LabelContainer extends container_common_new.ChartAreaContainer {
 
   // Allows to configure certain sizes, colors, and layout.
   // final LabelStyle _labelStyle;
@@ -48,6 +49,7 @@ class LabelContainer extends BoxContainer {
   /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMaker].
   /// It is currently assumed clients will not call any methods using them.
   LabelContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -67,7 +69,9 @@ class LabelContainer extends BoxContainer {
           textScaleFactor: labelStyle.textScaleFactor,
           // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
         ),
-        super() {
+        super(
+          chartViewMaker: chartViewMaker,
+      ) {
     // var text = new widgets.TextSpan(
     //   text: label,
     //   style: _labelStyle.textStyle, // All labels share one style object
@@ -332,9 +336,9 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-// todo-00-last-last-last : We should add ChartViewMaker
 abstract class AxisLabelContainer extends LabelContainer {
   AxisLabelContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -344,6 +348,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   })  : _labelInfo = labelInfo,
         _ownerAxisContainer = ownerAxisContainer,
         super(
+          chartViewMaker: chartViewMaker,
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
@@ -404,12 +409,8 @@ abstract class AxisLabelContainer extends LabelContainer {
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
     // Important Note: This is NOT called for XAxisLabels
     var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
-    // todo-00-last-last :
-    //      We should get chartViewMaker from base ChartAreaContainer
-    //      axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, UNUSED IN NEW - SO JUST COMMENT OUT
-    var chartViewMaker = _ownerAxisContainer.chartViewMaker;
-    // todo-00-last-done : We cannot use axisPixelsRange for NEW layout
-    // todo-00-later This seems called for XLabelContainer - why?
+    // todo-old-00 : axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, axisPixelsRange MUST BE UNUSED IN NEW - SO JUST COMMENT OUT
+    // todo-old-00 This seems called for XLabelContainer - why?
     if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) {
       parentOffsetTick = labelsGenerator.lextrValueToPixels(
         value: labelInfo.dataValue.toDouble(),
@@ -420,32 +421,6 @@ abstract class AxisLabelContainer extends LabelContainer {
 
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
-
-/* todo-00-done
-  void layout_Post_Leaf_SetSize_FromInternals() {
-    // We now know how long the Y axis is in pixels,
-    // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    // Important Note: This is NOT called for XAxisLabels
-    var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
-     util_dart.Interval axisPixelsRange;
-     var chartViewMaker = _ownerAxisContainer.chartViewMaker;
-     if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) {
-       axisPixelsRange = util_dart.Interval(_ownerAxisContainer.axisPixelsRange.min, _ownerAxisContainer.axisPixelsRange.max);
-       parentOffsetTick = labelsGenerator.lextrValueToPixels(
-         value: labelInfo.dataValue.toDouble(),
-         axisPixelsMin: axisPixelsRange.min,
-         axisPixelsMax: axisPixelsRange.max,
-       );
-     } else {
-       // todo-00-done :
-       //    1. axisPixelsRange  IS ONLY USED TO CALCULATE parentOffsetTick - axisPixelsRange SHOULD NEVER BE SET AND IS IRRELEVANT FOR NEW
-       // axisPixelsRange = const util_dart.Interval(0.0, 5000.0);
-     }
-
-    super.layout_Post_Leaf_SetSize_FromInternals();
-  }
-*/
-
 }
 
 /// Label container for Y labels, which maintain, in addition to
@@ -454,6 +429,7 @@ abstract class AxisLabelContainer extends LabelContainer {
 class YLabelContainer extends AxisLabelContainer {
 
   YLabelContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -461,6 +437,7 @@ class YLabelContainer extends AxisLabelContainer {
     required AxisLabelInfo labelInfo,
     required AxisContainer ownerAxisContainer,
   }) : super(
+    chartViewMaker: chartViewMaker,
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,
@@ -474,6 +451,7 @@ class YLabelContainer extends AxisLabelContainer {
 class XLabelContainer extends AxisLabelContainer {
 
   XLabelContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -481,6 +459,7 @@ class XLabelContainer extends AxisLabelContainer {
     required AxisLabelInfo labelInfo,
     required AxisContainer ownerAxisContainer,
   }) : super(
+    chartViewMaker:  chartViewMaker,
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,

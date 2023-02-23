@@ -45,6 +45,7 @@ class LineAndHotspotPointPresenter extends PointPresenter {
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = LineContainer(
+        chartViewMaker: chartViewMaker,
         lineFrom: fromPoint,
         lineTo: toPoint,
         linePaint: rowDataPaint..strokeWidth = options.lineChartOptions.lineStrokeWidth);

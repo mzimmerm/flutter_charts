@@ -294,7 +294,6 @@ class LayedoutLengthsPositioner {
 
   double get _sumLengths => lengths.fold(0.0, (previousLength, length) => previousLength + length);
 
-  // todo-00!! max cannot use fold!!!! go over such places : double get _maxLength => lengths.fold(0.0, (previousValue, length) => math.max(previousValue, length));
   double get _maxLength => lengths.isNotEmpty ? lengths.reduce(math.max) : 0.0;
 
   List<util_dart.LineSegment> _positionTightOrLooseAsSegments(

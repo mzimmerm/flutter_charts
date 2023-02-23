@@ -54,6 +54,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
           children: [
             for (var labelInfo in labelsGenerator.labelInfoList)
               label_container.YLabelContainer(
+                chartViewMaker: chartViewMaker,
                 label: labelInfo.formattedLabel,
                 labelTiltMatrix: vector_math.Matrix2.identity(),
                 // No tilted labels in YContainer

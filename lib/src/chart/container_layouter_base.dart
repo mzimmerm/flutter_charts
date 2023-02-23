@@ -1631,7 +1631,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
     List<ui.Rect> positionedRectsInMe = mainAndCrossPositionedSegments._convertPositionedSegmentsToRects(
       mainLayoutAxis: mainLayoutAxis,
-      mainAndCrossPositionedSegments: mainAndCrossPositionedSegments,
       children: children,
     );
     // print('positionedRectsInMe = $positionedRectsInMe');
@@ -1754,8 +1753,8 @@ class Column extends RollingPositioningBoxLayouter {
 /// Mixin provides the role of a layouter which uses externally-defined positions (ticks) to position it's children.
 ///
 /// The externally-defined positions (ticks) are brought in by the [ExternalTicksLayoutProvider].
+// todo-00! DO WE EVEN NEED THIS mixin?? PROBABLY NOT,
 mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
-  // todo-00! DO WE EVEN NEED THIS?? PROBABLY NOT,
   // knows _ExternalTicksLayoutProvider
   // overrides from RollingPositioningBoxLayouter:
   //   - method which calculates positions with children rectangles from positioned
@@ -1764,7 +1763,8 @@ mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
 class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    Align mainAxisAlign = Align.start, // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    Align mainAxisAlign = Align.start,
     // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -1794,7 +1794,7 @@ class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
 class ExternalTicksRow extends Row with ExternalRollingPositioningTicks {
   ExternalTicksRow({
     required List<BoxContainer> children,
-    Align mainAxisAlign = Align.start, // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    Align mainAxisAlign = Align.start,
     // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -2254,7 +2254,16 @@ class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
   }
 }
 
-// todo-00!!-document - also added _convertPositionedSegmentsToRects
+/// On behalf of [RollingPositioningBoxLayouter], holds on the results of 1Dimensional positions of children
+/// along the main and cross axis, calculated
+/// by [RollingPositioningBoxLayouter._positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments].
+///
+/// The 1Dimensional positions are held in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
+/// as [PositionedLineSegments.lineSegments].
+///
+/// The method [_convertPositionedSegmentsToRects] allows to convert such 1Dimensional positions along main and cross axis
+/// into rectangles [List<ui.Rect>], where children of self [BoxLayouter] node should be positioned.
+///
 class _MainAndCrossPositionedSegments {
   _MainAndCrossPositionedSegments({
     required this.mainAxisPositionedSegments,
@@ -2264,18 +2273,16 @@ class _MainAndCrossPositionedSegments {
   PositionedLineSegments mainAxisPositionedSegments;
   PositionedLineSegments crossAxisPositionedSegments;
 
-  /// Converts the line segments (which correspond to children widths and heights that have been layed out)
-  /// to [Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
+  /// Converts the line segments from [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
+  /// (they correspond to children widths and heights that have been layed out)
+  /// to [ui.Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
   ///
   /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
   List<ui.Rect> _convertPositionedSegmentsToRects({
     required LayoutAxis mainLayoutAxis,
-    required _MainAndCrossPositionedSegments mainAndCrossPositionedSegments,
     required List<LayoutableBox> children,
   }) {
-    PositionedLineSegments mainAxisPositionedSegments = mainAndCrossPositionedSegments.mainAxisPositionedSegments;
-    PositionedLineSegments crossAxisPositionedSegments = mainAndCrossPositionedSegments.crossAxisPositionedSegments;
 
     if (mainAxisPositionedSegments.lineSegments.length != crossAxisPositionedSegments.lineSegments.length) {
       throw StateError('Segments differ in lengths: main=$mainAxisPositionedSegments, cross=$crossAxisPositionedSegments');
@@ -2284,7 +2291,7 @@ class _MainAndCrossPositionedSegments {
     List<ui.Rect> positionedRects = [];
 
     for (int i = 0; i < mainAxisPositionedSegments.lineSegments.length; i++) {
-      ui.Rect rect = _convertMainAndCrossSegmentsToRect(
+      ui.Rect rect = __convertMainAndCrossSegmentsToRect(
         mainLayoutAxis: mainLayoutAxis,
         mainSegment: mainAxisPositionedSegments.lineSegments[i],
         crossSegment: crossAxisPositionedSegments.lineSegments[i],
@@ -2297,7 +2304,7 @@ class _MainAndCrossPositionedSegments {
   /// Converts two [util_dart.LineSegment] to [Rect] according to [mainLayoutAxis].
   ///
   /// The offset of the rectangle is [Rect.topLeft];
-  ui.Rect _convertMainAndCrossSegmentsToRect({
+  ui.Rect __convertMainAndCrossSegmentsToRect({
     required LayoutAxis mainLayoutAxis,
     required util_dart.LineSegment mainSegment,
     required util_dart.LineSegment crossSegment,

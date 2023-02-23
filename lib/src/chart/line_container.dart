@@ -1,12 +1,13 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 // this level
-import 'container_layouter_base.dart'
-    show BoxContainer, LayoutableBox, LayoutContext;
+import 'package:flutter_charts/flutter_charts.dart';
+
+import 'container_layouter_base.dart' show LayoutableBox, LayoutContext;
+import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
-class LineContainer extends BoxContainer {
+class LineContainer extends container_common_new.ChartAreaContainer {
   /// Points from which line starts and ends. NOT added to children ATM.
   ui.Offset lineFrom;
   ui.Offset lineTo;
@@ -32,6 +33,7 @@ class LineContainer extends BoxContainer {
   double manualLayedOutToY;
 
   LineContainer({
+    required ChartViewMaker chartViewMaker,
     required this.lineFrom,
     required this.lineTo,
     required this.linePaint,
@@ -39,7 +41,9 @@ class LineContainer extends BoxContainer {
     this.manualLayedOutFromY = 0.0,
     this.manualLayedOutToX = 0.0,
     this.manualLayedOutToY = 0.0,
-  });
+  }) : super(
+          chartViewMaker: chartViewMaker,
+        );
 
   // #####  Implementors of method in superclass [Container].
 

@@ -239,9 +239,9 @@ abstract class ChartRootContainer extends ChartAreaContainer {
             constraints.width - yContainerSize.width,
             // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
             //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-            yContainer.layoutSize.height,// todo-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+            yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
-      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
@@ -406,6 +406,7 @@ class YContainer extends AxisContainer with BuilderOfChildrenDuringParentLayout 
 
     for (AxisLabelInfo labelInfo in chartViewMaker.yLabelsGenerator.labelInfoList) {
       var yLabelContainer = YLabelContainer(
+        chartViewMaker: chartViewMaker,
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
@@ -576,6 +577,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with BuilderOfChildr
 
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
       var xLabelContainer = XLabelContainer(
+        chartViewMaker: chartViewMaker,
         label: xUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
@@ -871,10 +873,12 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // Construct the GridLinesContainer with children: [LineContainer]s
     _yGridLinesContainer = GridLinesContainer(
+      chartViewMaker: chartViewMaker,
       children: layoutDependency.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
         double lineX = isStacked ? xTickX - layoutDependency.xGridStep / 2 : xTickX;
         return LineContainer(
+          chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
           linePaint: gridLinesPaint(chartOptions),
@@ -892,6 +896,7 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
       _yGridLinesContainer.addChildren([
         LineContainer(
+          chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           // ui.Offset(lineX, 0.0),
           lineTo: initLineTo,
@@ -914,11 +919,13 @@ abstract class DataContainer extends ChartAreaContainer with BuilderOfChildrenDu
 
     // Construct the GridLinesContainer with children: [LineContainer]s
     _xGridLinesContainer = GridLinesContainer(
+      chartViewMaker: chartViewMaker,
       children:
           // yTickYs create vertical xLineContainers
           // Position the horizontal xGrid at mid-points of labels at yTickY.
           layoutDependency.yTickYs.map((double yTickY) {
         return LineContainer(
+          chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
           linePaint: gridLinesPaint(chartOptions),
@@ -1212,13 +1219,16 @@ class LineChartDataContainer extends DataContainer {
 ///
 /// Note: Methods [layout], [applyParentOffset], and [paint], use the default implementation.
 ///
-///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
-class GridLinesContainer extends BoxContainer {
+class GridLinesContainer extends ChartAreaContainer {
 
   /// Construct from children [LineContainer]s.
   GridLinesContainer({
+    required ChartViewMaker chartViewMaker,
     required List<LineContainer>? children,
-  }) : super(children: children);
+  }) : super(
+          children: children,
+          chartViewMaker: chartViewMaker,
+        );
 
   /// Override from base class sets the layout size.
   ///
