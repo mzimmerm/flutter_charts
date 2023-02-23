@@ -125,8 +125,12 @@ class NewHBarPointContainer extends NewPointContainer {
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
+      /* todo-00-last-last : cannot ask for axisPixelsRange
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
+       */
+      toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
+      toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.

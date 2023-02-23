@@ -21,6 +21,7 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
   VerticalBarChartRootContainer({
     required LegendContainer legendContainer,
     required XContainer      xContainer,
+    required YContainer      yContainerFirst,
     required YContainer      yContainer,
     required DataContainer   dataContainer,
     required ChartViewMaker  chartViewMaker,
@@ -31,6 +32,7 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
   }) : super(
     legendContainer: legendContainer,
     xContainer: xContainer,
+    yContainerFirst: yContainerFirst,
     yContainer: yContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,

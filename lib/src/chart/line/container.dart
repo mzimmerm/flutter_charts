@@ -11,7 +11,6 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 // import 'data_container_new.dart';
 import 'presenter.dart'; // OLD
 
-
 /// Container of the line chart.
 ///
 /// The core override is setting the [pointPresenterCreator] -
@@ -20,20 +19,22 @@ import 'presenter.dart'; // OLD
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required LegendContainer legendContainer,
-    required XContainer      xContainer,
-    required YContainer      yContainer,
-    required DataContainer   dataContainer,
-    required ChartViewMaker  chartViewMaker,
-    required NewModel        chartData,
-    required bool            isStacked,
-    required ChartOptions   chartOptions,
+    required XContainer xContainer,
+    required YContainer yContainerFirst,
+    required YContainer yContainer,
+    required DataContainer dataContainer,
+    required ChartViewMaker chartViewMaker,
+    required NewModel chartData,
+    required bool isStacked,
+    required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,
           xContainer: xContainer,
+          yContainerFirst: yContainerFirst,
           yContainer: yContainer,
           dataContainer: dataContainer,
-    chartViewMaker: chartViewMaker,
+          chartViewMaker: chartViewMaker,
           chartData: chartData,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

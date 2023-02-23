@@ -87,6 +87,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     required this.legendContainer,
     required this.xContainer,
     required this.yContainer,
+    required this.yContainerFirst,
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
     required NewModel chartData,
@@ -109,6 +110,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   late BoxContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;
+  late YContainer yContainerFirst;
   late DataContainer dataContainer;
 
   /// ##### Subclasses - aware members.
@@ -162,10 +164,12 @@ abstract class ChartRootContainer extends ChartAreaContainer {
       yContainerFirstHeight,
     ));
 
+    /* todo-00-done-last : made yContainerFirst a member
     var yContainerFirst = YContainer(
       chartViewMaker: chartViewMaker,
       yLabelsMaxHeightFromFirstLayout: 0.0, // not relevant in this first layout
     );
+    */
 
     // Note: yContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
     //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
@@ -173,8 +177,9 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.layout();
 
-    yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-
+    if (chartViewMaker.isUseOldDataContainer) {
+      yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
+    }
     // ####### 3. XContainer: Given width of YContainerFirst, constraint, then layout XContainer
 
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
@@ -240,9 +245,9 @@ abstract class ChartRootContainer extends ChartAreaContainer {
             constraints.width - yContainerSize.width,
             // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
             //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-            yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+            yContainer.layoutSize.height,// todo-00-last-last : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
-      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-00-last-last : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);

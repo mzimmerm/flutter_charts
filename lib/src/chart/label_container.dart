@@ -11,6 +11,7 @@ import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
 import '../util/util_labels.dart' show AxisLabelInfo;
+import '../util/util_dart.dart' as util_dart;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -35,6 +36,7 @@ import '../util/util_labels.dart' show AxisLabelInfo;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [_textPainter]
 ///   is always layed out, ready to be painted.
+///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
 class LabelContainer extends BoxContainer {
 
   // Allows to configure certain sizes, colors, and layout.
@@ -330,6 +332,7 @@ class LabelStyle {
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
+// todo-00-last-last-last : We should add ChartViewMaker
 abstract class AxisLabelContainer extends LabelContainer {
   AxisLabelContainer({
     required String label,
@@ -396,6 +399,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
   @override
+/* todo-00-last-done : We cannot ask AxisContainer for axisPixelsRange in the new Layout!!
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
@@ -408,6 +412,33 @@ abstract class AxisLabelContainer extends LabelContainer {
 
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
+ */
+  void layout_Post_Leaf_SetSize_FromInternals() {
+    // We now know how long the Y axis is in pixels,
+    // so we can calculate this label pixel position IN THE XContainer / YContainer.
+    // Important Note: This is NOT called for XAxisLabels
+    var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
+     util_dart.Interval axisPixelsRange;
+     var chartViewMaker = _ownerAxisContainer.chartViewMaker;
+     // todo-00-last-last : we should get chartViewMaker from base ChartAreaContainer
+     if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) { // todo-00-last-last :
+       axisPixelsRange = util_dart.Interval(_ownerAxisContainer.axisPixelsRange.min, _ownerAxisContainer.axisPixelsRange.max);
+     } else {
+       // todo-00-last-last : this is not quite right, in OLD it is offset a bit. ignore for now
+       axisPixelsRange = util_dart.Interval(0.0, constraints.height);
+        // todo-00-last-last : this is outrighnt weird but needed, as ChartRootContainer layout in yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+        // NOOO CANNOT ASK : _ownerAxisContainer.axisPixelsRange = axisPixelsRange;
+     }
+
+    parentOffsetTick = labelsGenerator.lextrValueToPixels(
+      value: labelInfo.dataValue.toDouble(),
+      axisPixelsMin: axisPixelsRange.min,
+      axisPixelsMax: axisPixelsRange.max,
+    );
+
+    super.layout_Post_Leaf_SetSize_FromInternals();
+  }
+
 }
 
 /// Label container for Y labels, which maintain, in addition to

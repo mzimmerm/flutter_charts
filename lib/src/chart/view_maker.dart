@@ -134,6 +134,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// See [legendContainer]
   late container.XContainer      xContainer;
   /// See [legendContainer]
+  late container.YContainer      yContainerFirst;
   late container.YContainer      yContainer;
   /// See [legendContainer]
   late container.DataContainer   dataContainer;
@@ -223,6 +224,12 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels]
   /// or labels in [container.YContainer.labelInfos].
   container.YContainer makeViewForRangeAxis() {
+    return isUseOldDataContainer
+        ? container.YContainer(chartViewMaker: this)
+        : axis_container_new.NewYContainer(chartViewMaker: this);
+  }
+
+  container.YContainer makeViewForYContainerFirst() {
     return isUseOldDataContainer
         ? container.YContainer(chartViewMaker: this)
         : axis_container_new.NewYContainer(chartViewMaker: this);

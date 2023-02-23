@@ -185,9 +185,9 @@ class DataRangeLabelInfosGenerator {
   /// As this [DataRangeLabelInfosGenerator] holds on everything about relative (data ranged)
   /// position of labels, it can be converted to a provider of these label positions
   /// for layouts that use externally defined positions to layout their children.
-  ExternalTicksLayoutProvider asExternalTicksLayoutProvider(
-      ExternalTickAt externalTickAt,
-      ) {
+  ExternalTicksLayoutProvider asExternalTicksLayoutProvider({
+    required ExternalTickAt externalTickAt,
+  }) {
     return ExternalTicksLayoutProvider(
       tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
       tickValuesDomain: dataRange,

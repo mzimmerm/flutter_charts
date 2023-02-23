@@ -162,7 +162,7 @@ class LayedoutLengthsPositioner {
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
-    ExternalTicksLayoutProvider? externalTicksLayoutProvider,
+    // todo-00-last-last : removed, use from properties : ExternalTicksLayoutProvider? externalTicksLayoutProvider,
   }) {
     assert(lengthsConstraint != double.infinity);
     switch (lengthsPositionerProperties.packing) {
@@ -178,8 +178,8 @@ class LayedoutLengthsPositioner {
         _freePadding =  isOverflown ? 0.0 : lengthsConstraint - _sumLengths;
         break;
       case Packing.externalTicksProvided:
-        assert(externalTicksLayoutProvider != null);
-        assert(externalTicksLayoutProvider!.tickValues.length == lengths.length);
+        assert(lengthsPositionerProperties.externalTicksLayoutProvider != null);
+        assert(lengthsPositionerProperties.externalTicksLayoutProvider!.tickValues.length == lengths.length);
         // For external layout, isOverflown is calculated after positioning.
         // For external layout, _freePadding is unused and unchanged, but late init it to 0.0 if it is used
         _freePadding = 0.0;
@@ -193,7 +193,7 @@ class LayedoutLengthsPositioner {
   late final double _freePadding;
   late final double lengthsConstraint;
   late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
-  late final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
+  // todo-00-last-last : removed, use from properties : late final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
   double totalPositionedLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties
@@ -323,7 +323,7 @@ class LayedoutLengthsPositioner {
     // iterate externalTicksLayoutProvider.tickValues, and place each lenght in lengths to position given by the tickValue,
     // moved a bit depending on externalTickAt\
 
-    ExternalTicksLayoutProvider ticksProvider = externalTicksLayoutProvider!;
+    ExternalTicksLayoutProvider ticksProvider = lengthsPositionerProperties.externalTicksLayoutProvider!;
 
     List<util_dart.LineSegment> positionedSegments = [];
 

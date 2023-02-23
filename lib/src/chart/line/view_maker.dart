@@ -13,29 +13,29 @@ import 'container_new.dart';
 ///
 /// See [ChartViewMaker] for help.
 class LineChartViewMaker extends ChartViewMaker {
-
   LineChartViewMaker({
     required NewModel chartData,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-    chartData: chartData,
-    isStacked: false, // line chart only supports non-stacked for now
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  );
+          chartData: chartData,
+          isStacked: false, // line chart only supports non-stacked for now
+          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        );
 
   /// Concrete implementation returns the root for line chart.
   @override
   LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
-
     legendContainer = makeViewForLegendContainer();
     xContainer      = makeViewForDomainAxis();
+    yContainerFirst = makeViewForYContainerFirst();
     yContainer      = makeViewForRangeAxis();
     dataContainer   = makeViewForDataContainer();
 
     return LineChartRootContainer(
       legendContainer: legendContainer,
       xContainer: xContainer,
+      yContainerFirst: yContainerFirst,
       yContainer: yContainer,
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
@@ -44,7 +44,6 @@ class LineChartViewMaker extends ChartViewMaker {
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
-
   }
 
   @override

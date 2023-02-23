@@ -1,8 +1,18 @@
+import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
+import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+
 import '../container.dart' as container;
+import '../label_container.dart' as label_container;
+import '../container_layouter_base.dart' as container_base;
 import '../view_maker.dart' as view_maker;
 import '../iterative_layout_strategy.dart' as strategy;
+
+// this level libraries
+// import '../container_new/axis_container_new.dart' as container_new;
+import '../container_new/container_common_new.dart' as container_common_new;
 
 class NewXContainer extends container.XContainer {
   /// Constructs the container that holds X labels.
@@ -18,6 +28,74 @@ class NewXContainer extends container.XContainer {
   );
 }
 
+// todo-00-last-last-last : put back
+class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainer {
+  NewYContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
+  }) : super(
+          chartViewMaker: chartViewMaker,
+        ) {
+    var options = chartViewMaker.chartOptions;
+    var labelsGenerator = chartViewMaker.yLabelsGenerator;
+    // todo-00-last : axisPixelsRange must come from constraints
+    // too early - constraints not set axisPixelsRange = Interval(0.0, constraints.height);
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+    List<BoxContainer> children = [
+      container_base.Row(children: [
+        container_base.ExternalTicksColumn(
+          mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
+            externalTickAt: ExternalTickAt.childCenter,
+          ),
+          children: [
+            for (var labelInfo in labelsGenerator.labelInfoList)
+              label_container.YLabelContainer(
+                label: labelInfo.formattedLabel,
+                labelTiltMatrix: vector_math.Matrix2.identity(),
+                // No tilted labels in YContainer
+                labelStyle: labelStyle,
+                options: options,
+                labelInfo: labelInfo,
+                ownerAxisContainer: this,
+              )
+          ],
+        )
+      ]),
+    ];
+
+    addChildren(children);
+  }
+
+  // todo-00-last-last : We MUST place this in the build, as
+
+  // --------------- overrides to implement legacy vvvvv
+  @override
+  Interval get axisPixelsRange => throw StateError('Should not be called for new layouters');
+
+  @override
+  set axisPixelsRange(Interval _) => throw StateError('Should not be called for new layouters');
+
+  @override
+  Object findSourceContainersReturnLayoutResultsToBuildSelf() {
+    // TODO: implement findSourceContainersReturnLayoutResultsToBuildSelf
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement yLabelsMaxHeight
+  double get yLabelsMaxHeight => throw UnimplementedError();
+// --------------- overrides to implement legacy ^^^^^^
+}
+
+
+/*
 class NewYContainer extends container.YContainer {
   /// Constructs the container that holds X labels.
   ///
@@ -30,3 +108,4 @@ class NewYContainer extends container.YContainer {
     chartViewMaker: chartViewMaker,
   );
 }
+*/
