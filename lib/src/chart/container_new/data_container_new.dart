@@ -125,7 +125,7 @@ class NewHBarPointContainer extends NewPointContainer {
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      /* todo-00-last-last : cannot ask for axisPixelsRange
+      /* todo-00-last-last : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
        */

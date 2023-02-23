@@ -343,17 +343,6 @@ util_dart.Interval extendToOrigin(util_dart.Interval interval, bool extendAxisTo
   return interval;
 }
 
-/* todo-00-done-unused
-/// Derives the interval data values from the passed list of [allDataValues].
-///
-/// The result is the envelope of the [allDataValues] numeric values.
-///
-/// The user defined string labels can be later distributed in the returned interval.
-util_dart.Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
-  return util_dart.Interval(allDataValues.reduce(math.min), allDataValues.reduce(math.max));
-}
-*/
-
 /// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
 /// ending at [interval.max], and returns the positions list.
 ///

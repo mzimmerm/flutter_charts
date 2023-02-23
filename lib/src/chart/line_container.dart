@@ -5,6 +5,7 @@ import 'container_layouter_base.dart'
     show BoxContainer, LayoutableBox, LayoutContext;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
+///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
 class LineContainer extends BoxContainer {
   /// Points from which line starts and ends. NOT added to children ATM.
   ui.Offset lineFrom;

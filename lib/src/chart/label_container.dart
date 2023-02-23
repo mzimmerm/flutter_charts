@@ -399,20 +399,29 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
   @override
-/* todo-00-last-done : We cannot ask AxisContainer for axisPixelsRange in the new Layout!!
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
     // Important Note: This is NOT called for XAxisLabels
-    parentOffsetTick = _ownerAxisContainer.chartViewMaker.yLabelsGenerator.lextrValueToPixels(
-      value: labelInfo.dataValue.toDouble(),
-      axisPixelsMin: _ownerAxisContainer.axisPixelsRange.min,
-      axisPixelsMax: _ownerAxisContainer.axisPixelsRange.max,
-    );
+    var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
+    // todo-00-last-last :
+    //      We should get chartViewMaker from base ChartAreaContainer
+    //      axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, UNUSED IN NEW - SO JUST COMMENT OUT
+    var chartViewMaker = _ownerAxisContainer.chartViewMaker;
+    // todo-00-last-done : We cannot use axisPixelsRange for NEW layout
+    // todo-00-later This seems called for XLabelContainer - why?
+    if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) {
+      parentOffsetTick = labelsGenerator.lextrValueToPixels(
+        value: labelInfo.dataValue.toDouble(),
+        axisPixelsMin: _ownerAxisContainer.axisPixelsRange.min,
+        axisPixelsMax: _ownerAxisContainer.axisPixelsRange.max,
+      );
+    }
 
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
- */
+
+/* todo-00-done
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
@@ -420,24 +429,22 @@ abstract class AxisLabelContainer extends LabelContainer {
     var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
      util_dart.Interval axisPixelsRange;
      var chartViewMaker = _ownerAxisContainer.chartViewMaker;
-     // todo-00-last-last : we should get chartViewMaker from base ChartAreaContainer
-     if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) { // todo-00-last-last :
+     if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) {
        axisPixelsRange = util_dart.Interval(_ownerAxisContainer.axisPixelsRange.min, _ownerAxisContainer.axisPixelsRange.max);
+       parentOffsetTick = labelsGenerator.lextrValueToPixels(
+         value: labelInfo.dataValue.toDouble(),
+         axisPixelsMin: axisPixelsRange.min,
+         axisPixelsMax: axisPixelsRange.max,
+       );
      } else {
-       // todo-00-last-last : this is not quite right, in OLD it is offset a bit. ignore for now
-       axisPixelsRange = util_dart.Interval(0.0, constraints.height);
-        // todo-00-last-last : this is outrighnt weird but needed, as ChartRootContainer layout in yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
-        // NOOO CANNOT ASK : _ownerAxisContainer.axisPixelsRange = axisPixelsRange;
+       // todo-00-done :
+       //    1. axisPixelsRange  IS ONLY USED TO CALCULATE parentOffsetTick - axisPixelsRange SHOULD NEVER BE SET AND IS IRRELEVANT FOR NEW
+       // axisPixelsRange = const util_dart.Interval(0.0, 5000.0);
      }
-
-    parentOffsetTick = labelsGenerator.lextrValueToPixels(
-      value: labelInfo.dataValue.toDouble(),
-      axisPixelsMin: axisPixelsRange.min,
-      axisPixelsMax: axisPixelsRange.max,
-    );
 
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
+*/
 
 }
 

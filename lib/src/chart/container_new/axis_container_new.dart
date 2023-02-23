@@ -28,7 +28,6 @@ class NewXContainer extends container.XContainer {
   );
 }
 
-// todo-00-last-last-last : put back
 class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainer {
   NewYContainer({
     required view_maker.ChartViewMaker chartViewMaker,
@@ -37,8 +36,6 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
         ) {
     var options = chartViewMaker.chartOptions;
     var labelsGenerator = chartViewMaker.yLabelsGenerator;
-    // todo-00-last : axisPixelsRange must come from constraints
-    // too early - constraints not set axisPixelsRange = Interval(0.0, constraints.height);
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -66,14 +63,12 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
                 ownerAxisContainer: this,
               )
           ],
-        )
+        ),
       ]),
     ];
 
     addChildren(children);
   }
-
-  // todo-00-last-last : We MUST place this in the build, as
 
   // --------------- overrides to implement legacy vvvvv
   @override
@@ -84,12 +79,10 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
 
   @override
   Object findSourceContainersReturnLayoutResultsToBuildSelf() {
-    // TODO: implement findSourceContainersReturnLayoutResultsToBuildSelf
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement yLabelsMaxHeight
   double get yLabelsMaxHeight => throw UnimplementedError();
 // --------------- overrides to implement legacy ^^^^^^
 }

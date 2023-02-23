@@ -162,7 +162,6 @@ class LayedoutLengthsPositioner {
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
-    // todo-00-last-last : removed, use from properties : ExternalTicksLayoutProvider? externalTicksLayoutProvider,
   }) {
     assert(lengthsConstraint != double.infinity);
     switch (lengthsPositionerProperties.packing) {
@@ -193,7 +192,6 @@ class LayedoutLengthsPositioner {
   late final double _freePadding;
   late final double lengthsConstraint;
   late final bool isOverflown; // calculated to true if lengthsConstraint < _maxLength or _sumLengths
-  // todo-00-last-last : removed, use from properties : late final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
   double totalPositionedLengthIncludesPadding = 0.0; // can change multiple times, set after each child length in lengths
 
   /// Lays out a list of imaginary sticks, with lengths in member [lengths], adhering to the layout properties

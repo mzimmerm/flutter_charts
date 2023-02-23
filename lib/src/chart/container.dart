@@ -164,14 +164,8 @@ abstract class ChartRootContainer extends ChartAreaContainer {
       yContainerFirstHeight,
     ));
 
-    /* todo-00-done-last : made yContainerFirst a member
-    var yContainerFirst = YContainer(
-      chartViewMaker: chartViewMaker,
-      yLabelsMaxHeightFromFirstLayout: 0.0, // not relevant in this first layout
-    );
-    */
-
-    // Note: yContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
+    // Note: yContainerFirst used to be created here as  YContainer( chartViewMaker: chartViewMaker, yLabelsMaxHeightFromFirstLayout: 0.0
+    //       yContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
     //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
@@ -245,9 +239,9 @@ abstract class ChartRootContainer extends ChartAreaContainer {
             constraints.width - yContainerSize.width,
             // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
             //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-            yContainer.layoutSize.height,// todo-00-last-last : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+            yContainer.layoutSize.height,// todo-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
           ));
-      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-00-last-last : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
     }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
@@ -1218,6 +1212,7 @@ class LineChartDataContainer extends DataContainer {
 ///
 /// Note: Methods [layout], [applyParentOffset], and [paint], use the default implementation.
 ///
+///   todo-00-last-last-last : We should extend ChartAreaContainer and gain chartViewMaker
 class GridLinesContainer extends BoxContainer {
 
   /// Construct from children [LineContainer]s.
