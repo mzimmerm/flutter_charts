@@ -118,7 +118,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///
 /// Terminology:
 /// - 'Envelope' always means an double interval which contains all items in a List<double>. Envelop can be:
-///   - A 'tight closure' - the smallest such interval
+///   - A 'tight envelope' - the smallest such interval
 ///   - An 'extension' of such interval. The extension typically starts at 0.0 if all values in List<double> are positive,
 ///     or ends at 0.0 if all values in List<double> are negative.
 ///

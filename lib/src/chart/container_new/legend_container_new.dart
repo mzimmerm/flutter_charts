@@ -62,7 +62,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
 
     List<String> dataRowsLegends = chartViewMaker.chartData.dataRowsLegends;
 
-    // Initially all [label_container.LabelContainer]s share same text style object from options.
+    // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
       textStyle: options.labelCommonOptions.labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,

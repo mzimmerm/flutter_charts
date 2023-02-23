@@ -2,51 +2,53 @@ import 'dart:math' as math show min, max, pow;
 
 import '../chart/container_layouter_base.dart';
 import '../chart/model/data_model_new.dart';
+import '../chart/container.dart';
+import '../chart/options.dart';
 
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;
 
 // todo-doc-01 documentation fix, this is old
-/// Creates, transforms (e.g. to log values), scales to Y axis pixels, and formats the Y labels.
+/// Generates label values from data values, and allows label manipulation: transform, format, extrapolate to axis pixels.
 ///
-/// During it's construction, decides how many Y labels will be created, and generates points on which the Y labels
+/// During construction, decides how many labels will be created, and generates points on which the labels
 /// will be placed (these points are also values of the labels).
 ///
-/// All values are calculated using [NewModel].
+/// All values, including the [AxisLabelInfo]s are calculated using [NewModel].
 ///
-/// From there, Y [AxisLabelInfo]s are created.
+/// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
-/// The Y labels are kept in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
-///
-/// The following members are most relevant in the creating and formatting labels
-/// - [_dataYs] is a list of numeric Y values, passed to constructor.
-///   An envelope is created from [_dataYs], possibly extending the closure interval to start or end at 0.
-///   1. Ex1. for [_dataYs] [-600.0 ....  2200.0] ==> [dataYsEnvelope] = [-600.0, 2200.0]
-///   2. Ex2. for [_dataYs] [600.0 ....  1800.0]  ==> [dataYsEnvelope] = [0.0, 1800.0]
-/// - [axisY] is the interval of the Y axis coordinates.
-///      e.g. [8.0, 400.0]
-/// - [userLabels] may be set by user.
-/// - [labelInfos] are labels calculated to represent numeric Y values, ONLY in their highest order.
-///   1. Ex1. [labelInfos] ==> [-1000, 0, 1000, 2000] (NOT ending at 2200)
-///   2. Ex2. [labelInfos] ==> [0, 1000, 2000]
-/// From the members [dataYsEnvelope] and [labelInfos], the [_mergedLabelYsIntervalWithDataYsEnvelope]
-/// are calculated. The result serves as the '(transformed) data range'.
-/// All (transformed) data and labels are located inside the [_mergedLabelYsIntervalWithDataYsEnvelope]
-/// 1. Ex1. for [dataYsEnvelope]=[-600.0, 2200.0] and [labelInfos]=[-1000, 0, 1000, 2000] ==> merged=[-1000, 0, 1000, 2200]
-/// 2. Ex2. for [dataYsEnvelope]= [0.0, 1800.0]   and [labelInfos]=[0, 1000, 2000]        ==> merged=[0, 1000, 2000]
 class DataRangeLabelInfosGenerator {
-
-  // todo-00-last-last-last : add method asExternalTicksLayoutProvider
-
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
   /// by this [DataRangeLabelInfosGenerator].
   ///
   /// If [userLabels] list of user labels is passed, user labels will be used and distributed linearly between the
-  /// passed [dataYs] minimum and maximum.
+  /// passed [dataModel] minimum and maximum.
   /// Otherwise, new labels are automatically generated with values of
-  /// highest order of numeric values in the passed [dataYs].
-  /// See the class comment for examples of how auto labels are created.
+  /// highest order of numeric values in the passed [dataModel].
+  ///
+  /// Parameters discussion:
+  ///
+  /// - [dataModel] contains the numeric data values, passed to constructor.
+  ///   An envelope is created from the [dataModel] values, possibly extending the envelope interval to start or end at 0.
+  ///   Whether the envelope interval starts or ends at 0.0, even if data are away from 0.0, is controlled by member
+  ///   [extendAxisToOrigin].
+  /// - [userLabels] may be set by user.
+  /// - [_labelInfos] and [dataRange] are created from [dataMode] for only the highest order of values
+  ///   in [dataModel], and can be both wider or narrower than extremes of the [dataModel].
+  ///     1. Ex1. for [dataModel] values [-600.0 .. 2200.0]
+  ///             ==> [labelInfos] =   [-1000, 0, 1000, 2000] (NARROWER THAN dataModel max 2200)
+  ///             ==> [dataRange] = [-600 .. 2200]
+  ///     2. Ex2. for [dataModel] values  [0.0 .. 1800.0]
+  ///             ==> [labelInfos]   = [0, 1000, 2000]
+  ///             ==> [dataRange] = [0 .. 2000] (WIDER than dataModel max 1800)
+  ///
+  /// Constructor calculates the following members:
+  ///   - [dataRange]
+  ///   - [_labelInfos]
+
+
   DataRangeLabelInfosGenerator({
     required NewModel dataModel,
     required bool extendAxisToOrigin,
@@ -60,58 +62,79 @@ class DataRangeLabelInfosGenerator {
   {
     util_dart.Interval dataEnvelope;
 
-    // Find the interval for Y values (may be an envelop around values, for example if we want Y to always start at 0),
-    //   then create labels evenly distributed in the Y values interval.
-    // Both [dataEnvelope] and member [_yLabelPositions] ,
-    // are  not-extrapolated && transformed data from [NewModelPoint].
+    // Finds the [dataRange] interval for data values
+    //   (which may be an envelop around values, for example if we want to always start at 0),
+    //   then creates [_labelInfos] labels evenly distributed in the [dataRange] interval.
+    // Both local [dataEnvelope] and member [dataRange]
+    //   are **not-extrapolated && transformed** data from [NewModelPoint].
     if (userLabels != null) {
       dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
-      _labelPositions = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels.length);
+      _transformedLabelValues = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels.length);
     } else {
       dataEnvelope = dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: isStacked);
-      _labelPositions = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
+      _transformedLabelValues = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
     }
 
     // Store the merged interval of values and label envelope for [AxisLabelInfos] creation
     // that can be created immediately after by invoking [createAxisLabelInfos].
     dataRange = util_dart.Interval(
-      _labelPositions.reduce(math.min),
-      _labelPositions.reduce(math.max),
+      _transformedLabelValues.reduce(math.min),
+      _transformedLabelValues.reduce(math.max),
     ).merge(dataEnvelope);
 
-    _labelInfos = _createAxisLabelInfos_From_LabelPositions(userLabels);
+    // Format and extrapolate labels from the [_labelPositions] local to the [_labelInfos] member.
+    List<AxisLabelInfo> labelInfos = _transformedLabelValues
+        .map((transformedLabelValue) =>
+        AxisLabelInfo(
+          dataValue: transformedLabelValue,
+          labelsGenerator: this,
+        ))
+        .toList();
+    _labelInfos = _AxisLabelInfos(
+      from: labelInfos,
+      labelsGenerator: this,
+      userLabels: userLabels,
+    );
+
   }
 
-  /// Describes layout pixel positions, so included in this view [AxisContainer], rather than model or controller.
-  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
-  ///                 Reason: Different views may have different labels, esp. on the Y axis.
+  /// Describes labels - their values and String values.
+  /// Important note: [_AxisLabelInfos] should NOT be part of model,
+  ///                 as different views would have a different instance of it.
+  ///                 Reason: Different views may have different labels, esp. on the axis.
   late final _AxisLabelInfos _labelInfos;
 
-  /// List that manages the labels information for all labels
-  /// generated by [DataRangeLabelInfosGenerator], or all user defined labels from [userLabels].
+  /// List describes the labels generated by [DataRangeLabelInfosGenerator],
+  /// or all user defined labels from [userLabels].
   ///
   /// User labels from [userLabels], if set, are used, otherwise, the generated labels are used.
   /// The labels are always ordered - numerically increasing by value for numerical
   /// labels, or in the order initialized by user in [userLabels].
+  ///
+  /// The labels are always in increasing order: For data labels, they are numerically increasing,
+  /// for user labels, their order given by user is considered ordered the same order as provided.
+  ///
   List<AxisLabelInfo> get labelInfoList => List.from(_labelInfos._labelInfoList, growable: false);
 
 
-  /// Stores the merged outer interval of generated labels and point values.
-  /// It's values are all calculated from [NewModelPoint]s.
+  /// The numerical range of data.
   ///
-  /// This is the data domain corresponding to the axis pixel domain
-  /// such as [YContainer.axisPixelsRange]. Extrapolation is done between those intervals.
+  /// Calculated in the constructor, from [NewModelPoint]s.
+  /// as the merged outer interval of generated labels and [NewModelPoint] values.
+  ///
+  /// This [Interval] is displayed on the axis pixel domain [AxisContainer.axisPixelsRange].
+  /// Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
 
-  /// [_labelPositions] keep the transformed, non-extrapolated data values at which labels are shown.
-  /// [YContainer.labelInfos] are created from them first, and extrapolated
-  /// to pixel values in [AxisContainer.axisPixelsRange] during [ChartRootContainer.layout].
-  late final List<double> _labelPositions;
+  /// [_transformedLabelValues] keep the transformed, non-extrapolated data values at which labels are shown.
+  // todo-00!!! Remove this member and getter entirely. Must address tests first, easy
+  late final List<double> _transformedLabelValues;
 
   /// Public getter is for tests only!
-  List<double> get labelPositions => _labelPositions;
+  List<double> get testTransformedLabelValues => _transformedLabelValues;
 
-  // On Y axis, label values go up, but axis down. true extrapolate inverses that.
+
+  // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
   final bool isAxisPixelsAndDisplayedValuesInSameDirection = false;
 
   /// The function converts value to label.
@@ -124,43 +147,25 @@ class DataRangeLabelInfosGenerator {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Format and extrapolate the labels from [_labelPositions] created and stored by this instance.
-  ///
-  /// This method should be invoked in a constructor of a container,
-  /// such as [YContainer]. [BoxContainer.layout]. Not dependent on pixels.
-  _AxisLabelInfos _createAxisLabelInfos_From_LabelPositions(List<String>? userLabels) {
-    List<AxisLabelInfo> labelInfos = _labelPositions
-        .map((transformedLabelValue) => AxisLabelInfo(
-              dataValue: transformedLabelValue,
-              labelsGenerator: this,
-            ))
-        .toList();
-    return _AxisLabelInfos(
-      from: labelInfos,
-      labelsGenerator: this,
-      userLabels: userLabels,
-    );
-  }
-
   /// Extrapolates [value] from extended data range [dataRange],
-  /// to the pixels domain passed in the passed [axisPixelsYMin], [axisPixelsYMax],
+  /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
   /// in the direction defined by [isAxisAndLabelsSameDirection].
   ///
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
   ///            after the axis size is calculated.
   double lextrValueToPixels({
     required double value,
-    required double axisPixelsYMin,
-    required double axisPixelsYMax,
+    required double axisPixelsMin,
+    required double axisPixelsMax,
   }) {
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
       if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
-        pixels = axisPixelsYMax;
+        pixels = axisPixelsMax;
       } else {
-        pixels = axisPixelsYMin;
+        pixels = axisPixelsMin;
       }
       return pixels;
     }
@@ -169,33 +174,54 @@ class DataRangeLabelInfosGenerator {
     return util_dart.ToPixelsExtrapolation1D(
       fromValuesMin: dataRange.min,
       fromValuesMax: dataRange.max,
-      toPixelsMin: axisPixelsYMin,
-      toPixelsMax: axisPixelsYMax,
+      toPixelsMin: axisPixelsMin,
+      toPixelsMax: axisPixelsMax,
       doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
     ).apply(value);
+  }
+
+  /// Creates an instance of [ExternalTicksLayoutProvider] from self.
+  ///
+  /// As this [DataRangeLabelInfosGenerator] holds on everything about relative (data ranged)
+  /// position of labels, it can be converted to a provider of these label positions
+  /// for layouts that use externally defined positions to layout their children.
+  ExternalTicksLayoutProvider asExternalTicksLayoutProvider(
+      ExternalTickAt externalTickAt,
+      ) {
+    return ExternalTicksLayoutProvider(
+      tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
+      tickValuesDomain: dataRange,
+      isAxisPixelsAndDisplayedValuesInSameDirection: isAxisPixelsAndDisplayedValuesInSameDirection,
+      externalTickAt: externalTickAt,
+    );
   }
 }
 
 /// The [AxisLabelInfo] is a holder for one label,
 /// it's numeric values (raw, transformed, transformed and extrapolated)
-/// and the displayed label.
+/// and the displayed label String.
 ///
 /// It does not hold anything at all to do with UI - no layout sizes of labels in particular.
 ///
 /// The values used and shown on the chart undergo the following processing:
-///    [_rawDataValue] -- using [DataContainerOptions.yTransform]         --> [_dataValue] (transformed)
-///    [_dataValue]    -- using labelsGenerator.scaleY(value: _dataValue)   --> [parentOffsetTick]
-///    [_rawDataValue] -- using formatted String-value of [_rawDataValue] --> [_formattedLabel]
-/// The last mapping is using either `toString` if [DataRangeLabelInfosGenerator.userLabels] are used,
+///    1. [_rawDataValue] -- using [DataContainerOptions.yTransform] (or [DataContainerOptions.xTransform])
+///       ==> [_dataValue] (transformed)
+///    2. [_dataValue]    -- using [DataRangeLabelInfosGenerator.lextrValueToPixels]
+///       ==> [parentOffsetTick]
+///    3. [_rawDataValue] -- using formatted String-value
+///       ==> [_formattedLabel]
+///
+/// todo-01-doc below finish documentation, this stuff is old, and simplify
+/// The last mapping in item 3. is using either `toString` if [DataRangeLabelInfosGenerator.userLabels] are used,
 /// or [DataRangeLabelInfosGenerator._valueToLabel] for chart-generated labels.
 ///
 /// There are four values each [AxisLabelInfo] manages:
 /// 1. The [_rawDataValue] : The value of dependent (y) variable in data, given by
-///   the [DataRangeLabelInfosGenerator._mergedLabelYsIntervalWithDataYsEnvelope].
-///   - This value is **not-extrapolated && not-transformed**.
-///   - This value is in the interval extended from the interval of minimum and maximum y in data
+///   the [DataRangeLabelInfosGenerator._mergedLabelYsIntervalWithdataEnvelope].
+///   - This value is **not-transformed && not-extrapolated**.
+///   - This value is in the interval extended from the interval of minimum and maximum data values (x or y)
 ///     to the interval of the displayed labels. The reason is the chart may show axis lines and labels
-///     beyond the strict interval between minimum and maximum y in data.
+///     beyond the strict interval between minimum and maximum in data.
 ///   - This value is created in the generative constructor's [AxisLabelInfo]
 ///     initializer list from the [transformedDataValue].
 /// 2. The [_dataValue] : The [_rawDataValue] after transformation by the [DataContainerOptions.yTransform]
@@ -204,7 +230,7 @@ class DataRangeLabelInfosGenerator {
 ///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
 ///     is an identity (this is the default behavior). See [lib/chart/options.dart].
 ///   - This value is passed in the primary generative constructor [AxisLabelInfo].
-/// 3. The [parentOffsetTick] :  Equals to the **extrapolated && transformed** dataValue, in other words
+/// 3. The [parentOffsetTick] :  Equals to the **transformed && extrapolated** dataValue, in other words
 ///   ```dart
 ///    _axisValue = labelsGenerator.scaleY(value: transformedDataValue.toDouble());
 ///   ```
@@ -224,7 +250,7 @@ class DataRangeLabelInfosGenerator {
 ///     ```
 /// 4. The [_formattedLabel] : The formatted String-value of [_rawDataValue].
 ///
-/// Note: The **extrapolated && not-transformed ** value is not maintained.
+/// Note: The **not-transformed && extrapolated** value is NOT used - does not make sense.
 ///
 /// Note:  **Data displayed inside the chart use transformed data values, displayed labels show raw data values.**
 ///
@@ -317,13 +343,16 @@ util_dart.Interval extendToOrigin(util_dart.Interval interval, bool extendAxisTo
   return interval;
 }
 
-/// Derive the interval of [dataY] values for user defined labels.
+/* todo-00-done-unused
+/// Derives the interval data values from the passed list of [allDataValues].
 ///
-/// This is simply the closure of the [_dataYs] numeric values.
-/// The user defined string labels are then distributed in the returned interval.
+/// The result is the envelope of the [allDataValues] numeric values.
+///
+/// The user defined string labels can be later distributed in the returned interval.
 util_dart.Interval deriveDataEnvelopeForUserLabels(List<double> allDataValues) {
   return util_dart.Interval(allDataValues.reduce(math.min), allDataValues.reduce(math.max));
 }
+*/
 
 /// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
 /// ending at [interval.max], and returns the positions list.

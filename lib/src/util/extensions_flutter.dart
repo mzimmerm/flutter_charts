@@ -2,7 +2,8 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter package
 
-import '../chart/container_edge_padding.dart' show EdgePadding;
+import '../chart/container_edge_padding.dart' as edge_padding show EdgePadding;
+import '../chart/container_layouter_base.dart' as container_base show LayoutAxis;
 
 extension SizeExtension on ui.Size {
 
@@ -25,6 +26,17 @@ extension SizeExtension on ui.Size {
   ui.Size multiplySidesBy(ui.Size other) {
     return ui.Size(width * other.width, height * other.height);
   }
+
+  /// Returns  width or height of this [Size] instance along the passed [layoutAxis].
+  double lengthAlong(container_base.LayoutAxis layoutAxis) {
+    switch (layoutAxis) {
+      case container_base.LayoutAxis.horizontal:
+        return width;
+      case container_base.LayoutAxis.vertical:
+        return height;
+    }
+  }
+
 }
 
 extension RectExtension on ui.Rect {
@@ -34,7 +46,7 @@ extension RectExtension on ui.Rect {
   /// That means, the Rectangle will both move (offset will change) and change size, unless padding
   /// values [padding.start] and [padding.top] are zero.
   ///
-  ui.Rect inflateWithPadding(EdgePadding padding) {
+  ui.Rect inflateWithPadding(edge_padding.EdgePadding padding) {
     ui.Rect translated = translate(-padding.start, -padding.top);
     ui.Rect translatedAndInflated = ui.Rect.fromLTWH(
       translated.left,
@@ -45,7 +57,7 @@ extension RectExtension on ui.Rect {
     return translatedAndInflated;
   }
 
-  ui.Rect deflateWithPadding(EdgePadding padding) {
+  ui.Rect deflateWithPadding(edge_padding.EdgePadding padding) {
     return inflateWithPadding(padding.negate());
   }
 

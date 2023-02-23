@@ -35,7 +35,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Left, no total length enforced', () {
-      PositionedLineSegments segments = matrjoskaLeftLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = matrjoskaLeftLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -47,7 +47,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Left, total length same as required', () {
-      PositionedLineSegments segments = matrjoskaLeftTotalLength15.layoutLengths();
+      PositionedLineSegments segments = matrjoskaLeftTotalLength15.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -73,7 +73,7 @@ main() {
     });
     */
     test('LayedoutLengthsPositioner.layout() Matrjoska Left, total length less than needed, uses 0 for free space', () {
-      PositionedLineSegments segments = matrjoskaLeftLengthConstraints10LessThanSizes.layoutLengths();
+      PositionedLineSegments segments = matrjoskaLeftLengthConstraints10LessThanSizes.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -85,7 +85,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Left, total length more than required', () {
-      PositionedLineSegments segments = matrjoskaLeftTotalLength27Added12.layoutLengths();
+      PositionedLineSegments segments = matrjoskaLeftTotalLength27Added12.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced. 
@@ -111,7 +111,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Center, no total length enforced', () {
-      PositionedLineSegments segments = matrjoskaCenterLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = matrjoskaCenterLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -123,7 +123,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Center, total length more than required', () {
-      PositionedLineSegments segments = matrjoskaCenterTotalLength27Added12.layoutLengths();
+      PositionedLineSegments segments = matrjoskaCenterTotalLength27Added12.positionLengths();
       const double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
@@ -150,7 +150,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Right, no total length enforced', () {
-      PositionedLineSegments segments = matrjoskaRightLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = matrjoskaRightLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -162,7 +162,7 @@ main() {
    });
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Right, total length more than required', () {
-      PositionedLineSegments segments = matrjoskaRightTotalLength27Added12.layoutLengths();
+      PositionedLineSegments segments = matrjoskaRightTotalLength27Added12.positionLengths();
       const double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
@@ -202,7 +202,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Tight Left, no total length enforced', () {
-      PositionedLineSegments segments = tightLeftLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = tightLeftLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -214,7 +214,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Tight Left, total length same as required', () {
-      PositionedLineSegments segments = tightLeftTotalLength30.layoutLengths();
+      PositionedLineSegments segments = tightLeftTotalLength30.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -226,7 +226,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Tight Left, total length less than needed, uses 0 for free space', () {
-       PositionedLineSegments segments = tightLeftTotalLengthsConstraint10LessThanSizes.layoutLengths();
+       PositionedLineSegments segments = tightLeftTotalLengthsConstraint10LessThanSizes.positionLengths();
        expect(segments.lineSegments.length, 3);
        // Result should be same as with no total length enforced
        expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
@@ -250,7 +250,7 @@ main() {
     */
 
     test('LayedoutLengthsPositioner.layout() Tight Left, total length more than required', () {
-      PositionedLineSegments segments = tightLeftTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = tightLeftTotalLength42Added12.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -275,7 +275,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Tight Center, no total length enforced', () {
-      PositionedLineSegments segments = tightCenterLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = tightCenterLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -288,7 +288,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Tight Center, total length more than required', () {
-      PositionedLineSegments segments = tightCenterTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = tightCenterTotalLength42Added12.positionLengths();
       const double halfOfFreePadding = 6.0;
 
       expect(segments.lineSegments.length, 3);
@@ -316,7 +316,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Tight Right, no total length enforced', () {
-      PositionedLineSegments segments = tightRightLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = tightRightLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -329,7 +329,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Tight Right, total length more than required', () {
-      PositionedLineSegments segments = tightRightTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = tightRightTotalLength42Added12.positionLengths();
       const double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
@@ -368,7 +368,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Loose Left, no total length enforced', () {
-      PositionedLineSegments segments = looseLeftLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = looseLeftLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -380,7 +380,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Loose Left, total length same as required', () {
-      PositionedLineSegments segments = looseLeftTotalLength30.layoutLengths();
+      PositionedLineSegments segments = looseLeftTotalLength30.positionLengths();
 
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
@@ -405,7 +405,7 @@ main() {
     */
 
     test('LayedoutLengthsPositioner.layout() Loose Left, total length less than needed, uses 0 for free space', () {
-      PositionedLineSegments segments = looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0.layoutLengths();
+      PositionedLineSegments segments = looseLeftTotalLength30MakesFreeSpaceNegativeForcingFreeSpaceTo0.positionLengths();
       expect(segments.lineSegments.length, 3);
       // Result should be same as with no total length enforced
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
@@ -416,7 +416,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Loose Left, total length more than required', () {
-      PositionedLineSegments segments = looseLeftTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = looseLeftTotalLength42Added12.positionLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / lengthsCount;
 
@@ -444,7 +444,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Loose Center, no total length enforced', () {
-      PositionedLineSegments segments = looseCenterLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = looseCenterLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -457,7 +457,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Loose Center, total length more than required', () {
-      PositionedLineSegments segments = looseCenterTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = looseCenterTotalLength42Added12.positionLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / (lengthsCount + 1); // 3.0
 
@@ -485,7 +485,7 @@ main() {
     );
 
     test('LayedoutLengthsPositioner.layout() Loose Right, no total length enforced', () {
-      PositionedLineSegments segments = looseRightLengthsConstraintLessThanSizes.layoutLengths();
+      PositionedLineSegments segments = looseRightLengthsConstraintLessThanSizes.positionLengths();
 
       // no padding added
       expect(segments.lineSegments.length, 3);
@@ -497,7 +497,7 @@ main() {
     });
 
     test('LayedoutLengthsPositioner.layout() Loose Right, total length more than required', () {
-      PositionedLineSegments segments = looseRightTotalLength42Added12.layoutLengths();
+      PositionedLineSegments segments = looseRightTotalLength42Added12.positionLengths();
       const int lengthsCount = 3;
       const double freePadding = 12.0 / lengthsCount; // 4.0
 

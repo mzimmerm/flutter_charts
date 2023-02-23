@@ -402,8 +402,8 @@ abstract class AxisLabelContainer extends LabelContainer {
     // Important Note: This is NOT called for XAxisLabels
     parentOffsetTick = _ownerAxisContainer.chartViewMaker.yLabelsGenerator.lextrValueToPixels(
       value: labelInfo.dataValue.toDouble(),
-      axisPixelsYMin: _ownerAxisContainer.axisPixelsRange.min,
-      axisPixelsYMax: _ownerAxisContainer.axisPixelsRange.max,
+      axisPixelsMin: _ownerAxisContainer.axisPixelsRange.min,
+      axisPixelsMax: _ownerAxisContainer.axisPixelsRange.max,
     );
 
     super.layout_Post_Leaf_SetSize_FromInternals();

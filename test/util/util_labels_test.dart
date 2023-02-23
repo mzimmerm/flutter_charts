@@ -63,7 +63,7 @@ void main() {
 
     var dataRows = [[1.0, 22.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    List<num> labels = labelsGenerator.labelPositions;
+    List<num> labels = labelsGenerator.testTransformedLabelValues;
     expect(labels.length, 4);
     expect(labels[0], 0.0);
     expect(labels[1], 100.0);
@@ -73,7 +73,7 @@ void main() {
 
     dataRows = [[-1.0, -22.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.labelPositions;
+    labels = labelsGenerator.testTransformedLabelValues;
     expect(labels.length, 4);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -82,7 +82,7 @@ void main() {
 
     dataRows = [[22.0, 10.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.labelPositions;
+    labels = labelsGenerator.testTransformedLabelValues;
     expect(labels.length, 5);
     expect(labels[0], -300.0);
     expect(labels[1], -200.0);
@@ -92,7 +92,7 @@ void main() {
 
     dataRows = [[-22.0, -10.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.labelPositions;
+    labels = labelsGenerator.testTransformedLabelValues;
     expect(labels.length, 5);
     expect(labels[0], -100.0);
     expect(labels[1], 0.0);
@@ -102,7 +102,7 @@ void main() {
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
-    labels = labelsGenerator.labelPositions;
+    labels = labelsGenerator.testTransformedLabelValues;
     expect(labels.length, 4);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -111,7 +111,7 @@ void main() {
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator. labelPositions;
+    labels = labelsGenerator. testTransformedLabelValues;
     expect(labels.length, 3);
     expect(labels[0], -1000.0);
     expect(labels[1], 0.0);
@@ -218,12 +218,10 @@ void rangeTestCore(
     );
 
 
-    // expect(labelsGenerator.dataYsEnvelope.min, expectedDataEnvelopMin);
-    // expect(labelsGenerator.dataYsEnvelope.max, expectedDataEnvelopMax);
-    expect(labelsGenerator.labelPositions.length, expectedLabels.length);
-    for (int i = 0; i < labelsGenerator.labelPositions.length; i++) {
+    expect(labelsGenerator.testTransformedLabelValues.length, expectedLabels.length);
+    for (int i = 0; i < labelsGenerator.testTransformedLabelValues.length; i++) {
       expect(
-        labelsGenerator.labelPositions[i],
+        labelsGenerator.testTransformedLabelValues[i],
         expectedLabels[i],
       );
     }

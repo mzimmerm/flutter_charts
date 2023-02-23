@@ -1383,16 +1383,16 @@ class StackableValuePoint {
       scaledX,
       yLabelsGenerator.lextrValueToPixels(
         value: fromY,
-        axisPixelsYMin: axisPixelsYMin,
-        axisPixelsYMax: axisPixelsYMax,
+        axisPixelsMin: axisPixelsYMin,
+        axisPixelsMax: axisPixelsYMax,
       ),
     );
     scaledTo = ui.Offset(
       scaledX,
       yLabelsGenerator.lextrValueToPixels(
         value: toY,
-        axisPixelsYMin: axisPixelsYMin,
-        axisPixelsYMax: axisPixelsYMax,
+        axisPixelsMin: axisPixelsYMin,
+        axisPixelsMax: axisPixelsYMax,
       ),
     );
 

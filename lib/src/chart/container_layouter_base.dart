@@ -585,11 +585,17 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   @override
   late final ContainerKey key;
 
-  /// When considered a child among siblings, [constraintsWeight] defines the relative size of constraints
-  /// this [BoxLayouter] should receive from parent relative to it's children.
+  /// Defines the relative size of constraints when considered as one child among siblings.
   ///
-  /// Only needs to be set to a different value (during construction), if parents want to proportionally layout
-  /// this instance as one of it's children.
+  /// The 'relative size' is referred to as 'weight' of this child constraint among all children constraints.
+  ///
+  /// The 'weight' is given to each child, and the 'relative size' is calculated as this child weight,
+  /// divided by sum of all siblings weight.
+  ///
+  /// [BoxContainer] derived classes should require this weight to be set
+  /// by parent [BoxLayouter] (during construction), ONLY if parents want to proportionally layout
+  /// instances of it's children. This is the situation for multi-children layouters, such as [Column] and [Row].
+  ///
   late final ConstraintsWeight constraintsWeight;
 
   ConstraintsWeights get childrenWeights =>
@@ -1000,6 +1006,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ui.Rect _boundingRectangle() {
     return offset & layoutSize;
   }
+
+  /// Returns a list of lengths of [children] measured along the passed [layoutAxis].
+  List<double> layoutSizesOfChildrenSubsetAlongAxis(
+    LayoutAxis layoutAxis,
+    List<LayoutableBox> children,
+  ) =>
+      children.map((layoutableBox) => layoutableBox.layoutSize.lengthAlong(layoutAxis)).toList();
 
   /// This top level function constructs a [BoundingBoxesBase] which this [BoxLayouter] would consider a
   /// minimum and maximum size of layed out passed [childrenBoxes].
@@ -1556,95 +1569,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
-  /// Converts the line segments (which correspond to children widths and heights that have been layed out)
-  /// to [Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
-  ///
-  /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
-  ///   this method does not change any offsets of self or children.
-  // todo-00-last-last-refactor : this should be moved, along with called methods, e.g. _convertMainAndCrossSegmentsToRect, from RollingPositioningBoxLayouter
-  //                      to the class _MainAndCrossPositionedSegments - it should do the work of converting it's members to List<Rect>
-  List<ui.Rect> _convertPositionedSegmentsToRects({
-    required LayoutAxis mainLayoutAxis,
-    required _MainAndCrossPositionedSegments mainAndCrossPositionedSegments,
-    required List<LayoutableBox> children,
-  }) {
-    PositionedLineSegments mainAxisPositionedSegments = mainAndCrossPositionedSegments.mainAxisPositionedSegments;
-    PositionedLineSegments crossAxisPositionedSegments = mainAndCrossPositionedSegments.crossAxisPositionedSegments;
-
-    if (mainAxisPositionedSegments.lineSegments.length != crossAxisPositionedSegments.lineSegments.length) {
-      throw StateError('Segments differ in lengths: main=$mainAxisPositionedSegments, cross=$crossAxisPositionedSegments');
-    }
-
-    List<ui.Rect> positionedRects = [];
-
-    for (int i = 0; i < mainAxisPositionedSegments.lineSegments.length; i++) {
-      ui.Rect rect = _convertMainAndCrossSegmentsToRect(
-        mainLayoutAxis: mainLayoutAxis,
-        mainSegment: mainAxisPositionedSegments.lineSegments[i],
-        crossSegment: crossAxisPositionedSegments.lineSegments[i],
-      );
-      positionedRects.add(rect);
-    }
-    return positionedRects;
-  }
-
-  /// Converts two [util_dart.LineSegment] to [Rect] according to [mainLayoutAxis].
-  ///
-  /// The offset of the rectangle is [Rect.topLeft];
-  ui.Rect _convertMainAndCrossSegmentsToRect({
-    required LayoutAxis mainLayoutAxis,
-    required util_dart.LineSegment mainSegment,
-    required util_dart.LineSegment crossSegment,
-  }) {
-    // Only the segments' beginnings are used for offset on BoxLayouter.
-    // The segments' ends are already taken into account in BoxLayouter.size.
-    switch (mainLayoutAxis) {
-      case LayoutAxis.horizontal:
-        return ui.Offset(mainSegment.min, crossSegment.min) &
-        ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
-      case LayoutAxis.vertical:
-        return ui.Offset(crossSegment.min, mainSegment.min) &
-        ui.Size(crossSegment.max - crossSegment.min, mainSegment.max - mainSegment.min);
-    }
-  }
-
-  /* Keep
-  /// Converts two [util_dart.LineSegment] to [Offset] according to the passed [LayoutAxis], [mainLayoutAxis].
-  ui.Size _convertLengthsToSize(LayoutAxis mainLayoutAxis,
-      double mainLength,
-      double crossLength,) {
-    switch (mainLayoutAxis) {
-      case LayoutAxis.horizontal:
-        return ui.Size(mainLength, crossLength);
-      case LayoutAxis.vertical:
-        return ui.Size(crossLength, mainLength);
-    }
-  }
-  */
-
-  // todo-00-last-last-refactor : move to SizeExtension
-  /// Returns the passed [size]'s width or height along the passed [layoutAxis].
-  double _lengthAlong(LayoutAxis layoutAxis,
-      ui.Size size,) {
-    switch (layoutAxis) {
-      case LayoutAxis.horizontal:
-        return size.width;
-      case LayoutAxis.vertical:
-        return size.height;
-    }
-  }
-
-
-  // todo-00-last-last-refactor : this should be moved to LayoutableBox or similar
-  /// Creates and returns a list of lengths of the [LayoutableBox]es [children]
-  /// measured along the passed [layoutAxis].
-  List<double> _layoutSizesOfChildrenAlong(LayoutAxis layoutAxis,
-      List<LayoutableBox> children,) =>
-      // This gets the layoutableBox.layoutSize
-  //     but when those lengths are calculated, we have to set the layoutSize on parent,
-  //     as envelope of all children offsets and sizes!
-  children.map((layoutableBox) => _lengthAlong(layoutAxis, layoutableBox.layoutSize)).toList();
-
   /// Support which allows to enforce non-positioning of nested extensions.
   ///
   /// To explain, in one-pass layout, if we want to keep the flexibility
@@ -1683,7 +1607,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
   ///
   /// Implementation detail:
-  ///   - The processing is calling the [LayedoutLengthsPositioner.layoutLengths], method.
+  ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
   ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
   ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
   ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
@@ -1705,7 +1629,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     //     'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
 
     // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
-    List<ui.Rect> positionedRectsInMe = _convertPositionedSegmentsToRects(
+    List<ui.Rect> positionedRectsInMe = mainAndCrossPositionedSegments._convertPositionedSegmentsToRects(
       mainLayoutAxis: mainLayoutAxis,
       mainAndCrossPositionedSegments: mainAndCrossPositionedSegments,
       children: children,
@@ -1729,13 +1653,13 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
 
     LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
-      lengths: _layoutSizesOfChildrenAlong(mainLayoutAxis, children),
+      lengths: layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
       lengthsPositionerProperties: mainAxisLayoutProperties,
       lengthsConstraint: constraints.maxLengthAlongAxis(mainLayoutAxis),
     );
 
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
-      lengths: _layoutSizesOfChildrenAlong(crossLayoutAxis, children),
+      lengths: layoutSizesOfChildrenSubsetAlongAxis(crossLayoutAxis, children),
       lengthsPositionerProperties: crossAxisLayoutProperties,
       // todo-010 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
@@ -1753,8 +1677,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // controlled by [Packing] (tight, loose, center) and [Align] (start, end, matrjoska).
     // The [layoutLengths] method actually includes positioning the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
     //   which is the total length of children.
-    PositionedLineSegments mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.layoutLengths();
-    PositionedLineSegments crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.layoutLengths();
+    PositionedLineSegments mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.positionLengths();
+    PositionedLineSegments crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.positionLengths();
 
     _MainAndCrossPositionedSegments mainAndCrossPositionedSegments = _MainAndCrossPositionedSegments(
       mainAxisPositionedSegments: mainAxisPositionedSegments,
@@ -1865,7 +1789,36 @@ class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
       packing: crossAxisPacking,
     );
   }
+}
 
+class ExternalTicksRow extends Row with ExternalRollingPositioningTicks {
+  ExternalTicksRow({
+    required List<BoxContainer> children,
+    Align mainAxisAlign = Align.start, // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+  }) : super(
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: Packing.externalTicksProvided,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+  ) {
+    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: Packing.externalTicksProvided, // mainAxisPacking,
+      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+    );
+  }
 }
 
 /// Layouter which asks it's parent [RollingPositioningBoxLayouter] to allocate as much space
@@ -2301,6 +2254,7 @@ class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
   }
 }
 
+// todo-00!!-document - also added _convertPositionedSegmentsToRects
 class _MainAndCrossPositionedSegments {
   _MainAndCrossPositionedSegments({
     required this.mainAxisPositionedSegments,
@@ -2309,6 +2263,57 @@ class _MainAndCrossPositionedSegments {
 
   PositionedLineSegments mainAxisPositionedSegments;
   PositionedLineSegments crossAxisPositionedSegments;
+
+  /// Converts the line segments (which correspond to children widths and heights that have been layed out)
+  /// to [Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
+  ///
+  /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
+  ///   this method does not change any offsets of self or children.
+  List<ui.Rect> _convertPositionedSegmentsToRects({
+    required LayoutAxis mainLayoutAxis,
+    required _MainAndCrossPositionedSegments mainAndCrossPositionedSegments,
+    required List<LayoutableBox> children,
+  }) {
+    PositionedLineSegments mainAxisPositionedSegments = mainAndCrossPositionedSegments.mainAxisPositionedSegments;
+    PositionedLineSegments crossAxisPositionedSegments = mainAndCrossPositionedSegments.crossAxisPositionedSegments;
+
+    if (mainAxisPositionedSegments.lineSegments.length != crossAxisPositionedSegments.lineSegments.length) {
+      throw StateError('Segments differ in lengths: main=$mainAxisPositionedSegments, cross=$crossAxisPositionedSegments');
+    }
+
+    List<ui.Rect> positionedRects = [];
+
+    for (int i = 0; i < mainAxisPositionedSegments.lineSegments.length; i++) {
+      ui.Rect rect = _convertMainAndCrossSegmentsToRect(
+        mainLayoutAxis: mainLayoutAxis,
+        mainSegment: mainAxisPositionedSegments.lineSegments[i],
+        crossSegment: crossAxisPositionedSegments.lineSegments[i],
+      );
+      positionedRects.add(rect);
+    }
+    return positionedRects;
+  }
+
+  /// Converts two [util_dart.LineSegment] to [Rect] according to [mainLayoutAxis].
+  ///
+  /// The offset of the rectangle is [Rect.topLeft];
+  ui.Rect _convertMainAndCrossSegmentsToRect({
+    required LayoutAxis mainLayoutAxis,
+    required util_dart.LineSegment mainSegment,
+    required util_dart.LineSegment crossSegment,
+  }) {
+    // Only the segments' beginnings are used for offset on BoxLayouter.
+    // The segments' ends are already taken into account in BoxLayouter.size.
+    switch (mainLayoutAxis) {
+      case LayoutAxis.horizontal:
+        return ui.Offset(mainSegment.min, crossSegment.min) &
+        ui.Size(mainSegment.max - mainSegment.min, crossSegment.max - crossSegment.min);
+      case LayoutAxis.vertical:
+        return ui.Offset(crossSegment.min, mainSegment.min) &
+        ui.Size(crossSegment.max - crossSegment.min, mainSegment.max - mainSegment.min);
+    }
+  }
+
 }
 
 // Functions----- ------------------------------------------------------------------------------------------------------

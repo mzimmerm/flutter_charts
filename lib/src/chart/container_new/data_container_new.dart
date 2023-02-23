@@ -74,8 +74,8 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
   model.NewPointModel newPointModel;
 
   NewPointContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
     required this.newPointModel,
+    required view_maker.ChartViewMaker chartViewMaker,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
@@ -97,8 +97,9 @@ class NewHBarPointContainer extends NewPointContainer {
   late final ui.Size _rectangleSize;
 
   NewHBarPointContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
     required model.NewPointModel newPointModel,
+    required view_maker.ChartViewMaker chartViewMaker,
+    // todo-00!!! Do we need children and key? LineSegmentContainer does not have it.
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(

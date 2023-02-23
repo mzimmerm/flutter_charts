@@ -8,8 +8,14 @@ import '../../container/container_key.dart';
 //import '../../util/util_dart.dart';
 //import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 
-/// Base class which manages, lays out, moves, and paints
-/// each top level block on the chart. The basic top level chart blocks are:
+/// Base class which manages, lays out, offsets, and paints
+/// each [container_base.BoxContainer] used on charts.
+///
+/// In addition to the [container_base.BoxContainer] roles,
+/// this class has access to [chartViewMaker], instance of [ChartViewMaker],
+/// which builds the whole [ChartRootContainer] container hierarchy.
+///
+/// The basic top level chart blocks are:
 /// - [ChartRootContainer] - the whole chart
 /// - [LegendContainer] - manages the legend
 /// - [YContainer] - manages the Y labels layout, which defines:
@@ -29,13 +35,10 @@ import '../../container/container_key.dart';
 /// [chartViewMaker].
 abstract class ChartAreaContainer extends container_base.BoxContainer {
 
-  /// The instance of [ChartViewMaker] which makes (produces) instances of
-  /// the view root for all [ChartAreaContainer]s, the [ChartRootContainer].
+  /// Constructs instance, by providing (this derived class required) [chartViewMaker].
   ///
-  /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
-  /// to reach data model, as well as the view.
-  final view_maker.ChartViewMaker chartViewMaker;
-
+  /// The instance of [ChartViewMaker] is needed on all instances of [ChartAreaContainer]s
+  /// tha
   ChartAreaContainer({
     required this.chartViewMaker,
     List<container_base.BoxContainer>? children,
@@ -46,6 +49,13 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
     key: key,
     constraintsWeight: constraintsWeight,
   );
+
+  /// The instance of [ChartViewMaker] which makes (produces) instances of
+  /// the view root for all [ChartAreaContainer]s, the [ChartRootContainer].
+  ///
+  /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
+  /// to reach data model, as well as the view.
+  final view_maker.ChartViewMaker chartViewMaker;
 
   @override
   void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
