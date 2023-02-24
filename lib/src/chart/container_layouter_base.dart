@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
-import 'dart:math' as math show Random;
+import 'dart:math' as math show Random, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
 
@@ -16,9 +16,10 @@ import 'layouter_one_dimensional.dart'
 import 'container_alignment.dart' show Alignment;
 import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import '../util/util_dart.dart' as util_dart show LineSegment, Interval, ToPixelsExtrapolation1D;
+import '../util/util_dart.dart' as util_dart show LineSegment, Interval, ToPixelsExtrapolation1D, transposeRowsToColumns;
 import '../util/util_flutter.dart' as util_flutter show boundingRectOfRects, assertSizeResultsSame;
 import '../util/collection.dart' as custom_collection show CustomList;
+import '../util/extensions_dart.dart';
 import '../container/container_key.dart'
     show
     ContainerKey,
@@ -1750,17 +1751,7 @@ class Column extends RollingPositioningBoxLayouter {
   }
 }
 
-/// Mixin provides the role of a layouter which uses externally-defined positions (ticks) to position it's children.
-///
-/// The externally-defined positions (ticks) are brought in by the [ExternalTicksLayoutProvider].
-// todo-00! DO WE EVEN NEED THIS mixin?? PROBABLY NOT,
-mixin ExternalRollingPositioningTicks on RollingPositioningBoxLayouter {
-  // knows _ExternalTicksLayoutProvider
-  // overrides from RollingPositioningBoxLayouter:
-  //   - method which calculates positions with children rectangles from positioned
-}
-
-class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
+class ExternalTicksColumn extends Column {
   ExternalTicksColumn({
     required List<BoxContainer> children,
     // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
@@ -1791,7 +1782,7 @@ class ExternalTicksColumn extends Column with ExternalRollingPositioningTicks {
   }
 }
 
-class ExternalTicksRow extends Row with ExternalRollingPositioningTicks {
+class ExternalTicksRow extends Row {
   ExternalTicksRow({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -1820,6 +1811,108 @@ class ExternalTicksRow extends Row with ExternalRollingPositioningTicks {
     );
   }
 }
+
+// --------------------------- vvvvvvvvvv Table
+/// Manages container and its constraints for one cell of TableLayouter during layout
+class TableLayouterCell {
+
+  TableLayouterCell({
+    required this.row,
+    required this.column,
+    required this.layoutSequence,
+});
+  // Late final, can be pre-set by client OR set during [layout],
+  // this is especially useful for the first layed out: e.g. YContainer,
+  // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
+  // THE NewChartRootContainer AND the TableLayouter must add children in build,
+  // because only then TableLayouter has constraints set!!!
+  /// Constraints set by user, if not, calculated and set during layout
+  late final BoxContainerConstraints constraints;
+
+  /// , set to true if cell.childForThisCell.layout is done.
+  bool isAlreadyLayedOut = false;
+  final int row;
+  final int column;
+  final int layoutSequence;
+  late final BoxContainer childForThisCell;
+  // null means last
+  late TableLayouterCell _nextCellInLayoutSequence;
+  set nextCellInLayoutSequence(TableLayouterCell nextCell) {
+    assert (nextCell.layoutSequence == layoutSequence + 1);
+    _nextCellInLayoutSequence = nextCell;
+  }
+  TableLayouterCell get nextCellInLayoutSequence => _nextCellInLayoutSequence;
+}
+
+/// Manages [TableLayouterCell]s for TableLayouter during layout.
+class TableLayouterCells {
+  TableLayouterCells({
+    required this.tableCellsRows,
+  }) {
+    // todo-00-last
+    // check if all rows in table are same length
+    // check if row, column are set correctly
+
+    numRows = tableCellsRows.length;
+    numColumns = tableCellsRows.isNotEmpty ? tableCellsRows[0].length : 0;
+    isEmpty = numRows == 0 || numColumns == 0;
+  }
+  // todo-00-last : need to create children in order
+  final List<List<TableLayouterCell>> tableCellsRows;
+
+  late final int numRows;
+  late final int numColumns;
+  late final bool isEmpty;
+
+  Iterable<TableLayouterCell> get flattenedCells => tableCellsRows.expand((element) => element);
+
+  /// Finds TableLayouterCell on row, column
+  TableLayouterCell find_cell_on(row, column) =>
+      flattenedCells.firstWhere(
+              (cell) => cell.row == row && cell.column == column, 
+          orElse: throw StateError('No cell in this $this matching row=$row, column=$column'));
+
+  /// Calculates width layed out so far for row and column
+  double calculate_layedout_used_width_except_column(int column) {
+    if (isEmpty) {
+      return 0.0;
+    }
+    // go over all columns except the passed, column-wise, only keep cells where cell.isAlreadyLayedOut
+    // and column-wise, calculate max layout width
+    // then sum for all columns.
+    return util_dart.transposeRowsToColumns(tableCellsRows) // columns list
+        .where((cellsColumn) => cellsColumn[0].column != column) // cut out current column
+        .map((cellsColumn) => cellsColumn.where((cell) => cell.isAlreadyLayedOut)) // shorten each column to only layed out cells
+        .map((cellsColumn) => cellsColumn.map((cell) => cell.childForThisCell.layoutSize.width)) // in each column, instead of cells, put cell layout width
+        .map((cellsColumn) => cellsColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
+        .fold(0.0, (value, element) => value + element);
+    }
+
+  // Method calculate_layedout_height_on_row(row, column)
+  // go over all icolumns in (row, icolumn) except icolumn=column, where cell.isAlreadyLayedOut, result = layoutSize.height max
+  double calculate_layedout_used_height_except_row(int row) {
+    if (isEmpty) {
+      return 0.0;
+    }
+    // go over all columns except the passed, column-wise, only keep cells where cell.isAlreadyLayedOut
+    // and column-wise, calculate max layout width
+    // then sum for all columns.
+    return tableCellsRows // rows list
+        .where((cellsRow) => cellsRow[0].row != row) // cut out current row
+        .map((cellsRow) => cellsRow.where((cell) => cell.isAlreadyLayedOut)) // shorten each row to only layed out cells
+        .map((cellsRow) => cellsRow.map((cell) => cell.childForThisCell.layoutSize.height)) // in each row, instead of cells, put cell layout height
+        .map((cellsRow) => cellsRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
+        .fold(0.0, (value, element) => value + element);
+  }
+
+  // Method calculate_cell_available_constraint_on_cell(row, column)
+  // if cell on row, column isAlreadyLayedOut, exception
+  // availableWidth  = constraints.width - sum(calculate_used_width_on_column(row, column)) sum over all columns
+  // availableHeight = constraints.height - sum(calculate_used_height_on_row(row, column)) sum over all rows
+  // return constraints from availableWidth availableHeight
+}
+
+// --------------------------- ^^^^^^^^^^ Table
 
 /// Layouter which asks it's parent [RollingPositioningBoxLayouter] to allocate as much space
 /// as possible for it's single child .
@@ -2178,36 +2271,6 @@ class ExternalTicksLayoutProvider {
             ).apply(value))
         .toList();
   }
-/*
-
-  double lextrValueToPixels({
-    required double value,
-    required double axisPixelsMin,
-    required double axisPixelsMax,
-  }) {
-    // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
-    // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
-    if (dataRange == const util_dart.Interval(0.0, 0.0)) {
-      double pixels;
-      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
-        pixels = axisPixelsMax;
-      } else {
-        pixels = axisPixelsMin;
-      }
-      return pixels;
-    }
-    // lextr the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
-    // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
-    return util_dart.ToPixelsExtrapolation1D(
-      fromValuesMin: dataRange.min,
-      fromValuesMax: dataRange.max,
-      toPixelsMin: axisPixelsYMin,
-      toPixelsMax: axisPixelsYMax,
-      doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
-    ).apply(value);
-  }
-*/
-
 
 }
 
