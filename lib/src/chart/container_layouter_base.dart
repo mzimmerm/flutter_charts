@@ -768,7 +768,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     //    - constraints on self are set from recursion
     //    - constraints on children are not set yet.
     //    - children to not have layoutSize yet
-    _layout_DefaultRecurse();
+    _layout_TopRecurse();
   }
 
   // BoxLayouter section 3: Non-override new methods on this class, starting with layout methods -----------------------
@@ -789,11 +789,11 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
-  void _layout_DefaultRecurse() {
+  void _layout_TopRecurse() {
     // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
     _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
 
-    // B. node-descend
+    // B. node-descend todo-00!!!! extract into method _layout_Descend
     for (var child in _children) {
       // b1. child-pre-descend (empty)
       // b2. child-descend
@@ -1390,9 +1390,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
 
-  // isLayout should be implemented differently on layouter and container. But it's not really needed
-  // bool get isLayout => mainLayoutAxis != LayoutAxis.defaultHorizontal;
-
   // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
   /// Properties of layout on main axis.
@@ -1419,23 +1416,21 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
-    // if (_hasGreedy) {
     // Process Non-Greedy children first, to find what size they use
     if (_hasNonGreedy) {
-      // A. Non-Greedy pre-descend : Distribute intended constraints only to nonGreedyChildren, which we will layout
-      //                         using the constraints. Uses default constraints distribution method from [BoxLayouter],
-      //                         All children obtain full self (parent) constraints.
+      // A. Non-Greedy pre-descend : Distribute and set constraints only to nonGreedyChildren, which will be layed out
+      //      using the set constraints. Constraints are distributed by children weight if used, else full constraints
+      //      from parent are used.
       _layout_Pre_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
-      // B. Non-Greedy node-descend : must layout non-greedy to get their sizes. But this will mess up finality of constraints, layoutSizes etc.
+      // B. Non-Greedy node-descend : layout non-greedy children first to get their [layoutSize]s.
       for (var child in _nonGreedyChildren) {
-        // Non greedy should run full layout of children.
         child.layout();
       }
       // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
-      //      which we can get and use to lay them out to find constraints left for greedy
-      //    But positioning children in self, we need to run pre-position of children in self
+      //      which we can get and use to lay them out to find constraints left for greedy children.
+      //    But to position children in self, we need to run pre-position of children in self
       //      using left/tight to get sizes without spacing.
-      _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
+      _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
     } // same as current on Row and Column
 
     // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
@@ -1447,8 +1442,8 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     //      Their greedy constraints were set in previous layout_Post,
     //        the _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
     //      So we do NOT want to run a full [layout] on greedy children - we need to avoid setting
-    //      child constraints again in  _layout_DefaultRecurse() -> _layout_Pre_DistributeConstraintsToImmediateChildren(children);
-    //      We only want the descend part of _layout_DefaultRecurse(), even the layout_Post must be different
+    //      child constraints again in  _layout_TopRecurse() -> _layout_Pre_DistributeConstraintsToImmediateChildren(children);
+    //      We only want the descend part of _layout_TopRecurse(), even the layout_Post must be different
     //        as it must apply to all children, not just GREEDY.
     //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
     //   3. Apply offsets from step 2 on children
@@ -1464,21 +1459,9 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
     // } else {
     //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
-    //   _layout_DefaultRecurse();
+    //   _layout_TopRecurse();
     // }
   }
-
-  List<Greedy> get _greedyChildren => _children.whereType<Greedy>().toList();
-
-  List<LayoutableBox> get _nonGreedyChildren {
-    List<BoxContainer> nonGreedy = List.from(_children);
-    nonGreedy.removeWhere((var child) => child is Greedy);
-    return nonGreedy;
-  }
-
-  bool get _hasGreedy => _greedyChildren.isNotEmpty;
-
-  bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
 
   /// Distributes constraints to the passed [children] specifically for this layout, the
   ///
@@ -1518,7 +1501,50 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
-  /// Post descend after NonGreedy children, finds and applies constraints on Greedy children.
+  /// Implementation of the abstract method which lays out the invoker's children.
+  ///
+  /// It lay out children of self [BoxLayouter],
+  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
+  /// where children will be placed relative to the invoker,
+  /// in the order of the passed [children].
+  ///
+  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
+  ///
+  /// Implementation detail:
+  ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
+  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
+  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
+  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
+  ///   - Both main and cross axis properties are members of this [RollingPositioningBoxLayouter].
+  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
+  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
+  @override
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+    if (isLeaf) {
+      return [];
+    }
+    // Create a LayedoutLengthsPositioner along each axis (main, cross), convert it to LayoutSegments,
+    // then package into a wrapper class.
+    _MainAndCrossPositionedSegments mainAndCrossPositionedSegments =
+    _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(children);
+    // print(
+    //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
+    // print(
+    //     'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
+
+    // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
+    List<ui.Rect> positionedRectsInMe = mainAndCrossPositionedSegments._convertPositionedSegmentsToRects(
+      mainLayoutAxis: mainLayoutAxis,
+      children: children,
+    );
+    // print('positionedRectsInMe = $positionedRectsInMe');
+    return positionedRectsInMe;
+  }
+
+  /// Specific for [RollingPositioningBoxLayouter.layout], finds constraints remaining for [Greedy] children,
+  /// and applies them on [Greedy] the children.
+  ///
+  /// This post descend is called after NonGreedy children, are layed out, and their [layoutSize]s known.
   ///
   /// In some detail,
   ///   - finds the constraint on self that remains after NonGreedy are given the (non greedy) space they want
@@ -1526,7 +1552,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///   - applies the smaller constraints on Greedy children.
   ///
   /// This is required before we can layout Greedy children.
-  void _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
+  void _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
     // Note: non greedy children have layout size when we reach here
 
     if (_hasGreedy) {
@@ -1570,6 +1596,18 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     }
   }
 
+  List<Greedy> get _greedyChildren => _children.whereType<Greedy>().toList();
+
+  List<LayoutableBox> get _nonGreedyChildren {
+    List<BoxContainer> nonGreedy = List.from(_children);
+    nonGreedy.removeWhere((var child) => child is Greedy);
+    return nonGreedy;
+  }
+
+  bool get _hasGreedy => _greedyChildren.isNotEmpty;
+
+  bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
+
   /// Support which allows to enforce non-positioning of nested extensions.
   ///
   /// To explain, in one-pass layout, if we want to keep the flexibility
@@ -1597,46 +1635,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     crossAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
   }
   */
-
-  /// Implementation of the abstract method which lays out the invoker's children.
-  ///
-  /// It lay out children of self [BoxLayouter],
-  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
-  /// where children will be placed relative to the invoker,
-  /// in the order of the passed [children].
-  ///
-  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
-  ///
-  /// Implementation detail:
-  ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
-  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
-  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
-  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
-  ///   - Both main and cross axis properties are members of this [RollingPositioningBoxLayouter].
-  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
-  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
-  @override
-  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    if (isLeaf) {
-      return [];
-    }
-    // Create a LayedoutLengthsPositioner along each axis (main, cross), convert it to LayoutSegments,
-    // then package into a wrapper class.
-    _MainAndCrossPositionedSegments mainAndCrossPositionedSegments =
-    _positionChildrenUsingOneDimAxisLayouter_As_PositionedLineSegments(children);
-    // print(
-    //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
-    // print(
-    //     'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
-
-    // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
-    List<ui.Rect> positionedRectsInMe = mainAndCrossPositionedSegments._convertPositionedSegmentsToRects(
-      mainLayoutAxis: mainLayoutAxis,
-      children: children,
-    );
-    // print('positionedRectsInMe = $positionedRectsInMe');
-    return positionedRectsInMe;
-  }
 
   /// Given the [children], which may be smaller than full children list,
   /// uses this [RollingPositioningBoxLayouter] [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
@@ -1813,10 +1811,15 @@ class ExternalTicksRow extends Row {
 }
 
 // --------------------------- vvvvvvvvvv Table
-/// Manages container and its constraints for one cell of TableLayouter during layout
-class TableLayouterCell {
+/// Manages one cell layed out by the [TableLayouter].
+///
+/// Exists for the benefit of the [TableLayouter], during it's [TableLayouter.layout],
+/// to allow child iteration in user-defined sequence [layoutSequence]
+/// and creation of constraints for the next cell in layout sequence.
+///
+class TableLayoutCellDefiner {
 
-  TableLayouterCell({
+  TableLayoutCellDefiner({
     required this.row,
     required this.column,
     required this.layoutSequence,
@@ -1829,87 +1832,256 @@ class TableLayouterCell {
   /// Constraints set by user, if not, calculated and set during layout
   late final BoxContainerConstraints constraints;
 
-  /// , set to true if cell.childForThisCell.layout is done.
+  /// , set to true if cell.cellForThisDefiner.layout is done.
   bool isAlreadyLayedOut = false;
   final int row;
   final int column;
   final int layoutSequence;
-  late final BoxContainer childForThisCell;
+  /// The 
+  late final BoxContainer cellForThisDefiner;
   // null means last
-  late TableLayouterCell _nextCellInLayoutSequence;
-  set nextCellInLayoutSequence(TableLayouterCell nextCell) {
-    assert (nextCell.layoutSequence == layoutSequence + 1);
-    _nextCellInLayoutSequence = nextCell;
-  }
-  TableLayouterCell get nextCellInLayoutSequence => _nextCellInLayoutSequence;
+  late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
 
-/// Manages [TableLayouterCell]s for TableLayouter during layout.
-class TableLayouterCells {
-  TableLayouterCells({
-    required this.tableCellsRows,
+/// Manages [TableLayoutCellDefiner]s for TableLayouter during layout.
+class TableLayoutDefiner {
+  
+  TableLayoutDefiner({
+    required this.cellDefinersRows,
   }) {
     // todo-00-last
     // check if all rows in table are same length
     // check if row, column are set correctly
 
-    numRows = tableCellsRows.length;
-    numColumns = tableCellsRows.isNotEmpty ? tableCellsRows[0].length : 0;
+    numRows = cellDefinersRows.length;
+    numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows[0].length : 0;
     isEmpty = numRows == 0 || numColumns == 0;
+    
+    if (isNotEmpty) _linkCellDefinersInLayoutSequence();
   }
-  // todo-00-last : need to create children in order
-  final List<List<TableLayouterCell>> tableCellsRows;
 
+  /// Holds the 2D table of [TableLayoutCellDefiner]s.
+  ///
+  /// Each item in this table corresponds to one cell in the table which is being layed out.
+  final List<List<TableLayoutCellDefiner>> cellDefinersRows;
+
+  /// Caches number of rows in [cellDefinersRows].
   late final int numRows;
+  /// Caches number of rows in [cellDefinersRows].
   late final int numColumns;
+  /// Answers [true] if this [TableLayoutDefiner] has no cell definers in []
   late final bool isEmpty;
+  late final bool isNotEmpty = !isEmpty;
 
-  Iterable<TableLayouterCell> get flattenedCells => tableCellsRows.expand((element) => element);
+  /// Should be set to the hierarchy-parent of the [TableLayouter], which this [TableLayoutDefiner] manages.
+  late final BoxContainer parentOfTableLayouter; // todo-00-last : must be set
 
-  /// Finds TableLayouterCell on row, column
-  TableLayouterCell find_cell_on(row, column) =>
-      flattenedCells.firstWhere(
-              (cell) => cell.row == row && cell.column == column, 
+  /// [_cachedFlatCellDefiners] and [_isFlatCellDefinersCached] supports 
+  /// fast access to [flatCellDefiners].
+  late final Iterable<TableLayoutCellDefiner> _cachedFlatCellDefiners;
+  bool _isFlatCellDefinersCached = false;
+
+  /// Returns an unordered Iterable of cell definers.
+  ///
+  /// The 1D iterable is derived from the cell definers 2D table [cellDefinersRows].
+  Iterable<TableLayoutCellDefiner> get flatCellDefiners {
+    if (_isFlatCellDefinersCached) return _cachedFlatCellDefiners;
+    _cachedFlatCellDefiners = cellDefinersRows.expand((element) => element);
+    _isFlatCellDefinersCached = true;
+    return _cachedFlatCellDefiners;
+  }
+
+  /// [_cachedFlatOrderedCellDefiners] and [_isFlatOrderedCellDefinersCached] supports 
+  /// fast access to [flatCellDefiners].
+  late final Iterable<TableLayoutCellDefiner> _cachedFlatOrderedCellDefiners;
+  bool _isFlatOrderedCellDefinersCached = false;
+
+  /// Returns an Iterable of cell definers, ordered by the user defined [TableLayoutCellDefiner.layoutSequence].
+  ///
+  /// The 1D iterable is derived from the cell definers 2D table [cellDefinersRows].
+  Iterable<TableLayoutCellDefiner> get flatOrderedCellDefiners {
+    if (_isFlatOrderedCellDefinersCached) return _cachedFlatOrderedCellDefiners;
+    _cachedFlatOrderedCellDefiners = flatCellDefiners.toList()..sort((a, b) => b.layoutSequence - a.layoutSequence);
+    _isFlatOrderedCellDefinersCached = true;
+    return _cachedFlatOrderedCellDefiners;
+  }
+  
+  /// Use the user-requested [TableLayoutCellDefiner.layoutSequence]s on cell definers,
+  /// to link cell definers in [cellDefinersRows] in order of layout.
+  void _linkCellDefinersInLayoutSequence() {
+
+   TableLayoutCellDefiner cellDefiner = flatOrderedCellDefiners.first;
+   TableLayoutCellDefiner? next;
+   while ((next = cellDefiner.nextCellDefinerInLayoutSequence) != null) {
+     cellDefiner.nextCellDefinerInLayoutSequence = next;
+   }
+   
+  }
+  
+  /// Finds TableLayoutCellDefiner on row, column
+  TableLayoutCellDefiner find_cell_on(row, column) =>
+      flatCellDefiners.firstWhere(
+              (cell) => cell.row == row && cell.column == column,
           orElse: throw StateError('No cell in this $this matching row=$row, column=$column'));
 
-  /// Calculates width layed out so far for row and column
+  /// Calculates the added width of all layed out columns except the passed [column].
+  ///
+  /// Motivation and reason for existence:
+  ///   - Exists for the benefit of the [TableLayouter] owned by [parentOfTableLayouter].
+  ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
+  ///     the constraints on the container which is next in layout order.
+  ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
+  ///     This method encapsulates the calculation, by looking at all already layed out cells,
+  ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
+
   double calculate_layedout_used_width_except_column(int column) {
     if (isEmpty) {
       return 0.0;
     }
-    // go over all columns except the passed, column-wise, only keep cells where cell.isAlreadyLayedOut
-    // and column-wise, calculate max layout width
-    // then sum for all columns.
-    return util_dart.transposeRowsToColumns(tableCellsRows) // columns list
-        .where((cellsColumn) => cellsColumn[0].column != column) // cut out current column
-        .map((cellsColumn) => cellsColumn.where((cell) => cell.isAlreadyLayedOut)) // shorten each column to only layed out cells
-        .map((cellsColumn) => cellsColumn.map((cell) => cell.childForThisCell.layoutSize.width)) // in each column, instead of cells, put cell layout width
-        .map((cellsColumn) => cellsColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
-        .fold(0.0, (value, element) => value + element);
-    }
 
-  // Method calculate_layedout_height_on_row(row, column)
-  // go over all icolumns in (row, icolumn) except icolumn=column, where cell.isAlreadyLayedOut, result = layoutSize.height max
+    return util_dart.transposeRowsToColumns(cellDefinersRows) // columns list
+        .where((definersColumn) => definersColumn[0].column != column) // cut out current column
+        .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each column keep only layed out cells
+        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.width)) // each column, instead of cells, put cellDefiner layout width
+        .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
+        .fold(0.0, (value, element) => value + element);
+  }
+
+  /// Calculates the added height of all layed out rows except the passed [row].
+  ///
+  /// See [calculate_layedout_used_width_except_column].
+  ///
   double calculate_layedout_used_height_except_row(int row) {
     if (isEmpty) {
       return 0.0;
     }
-    // go over all columns except the passed, column-wise, only keep cells where cell.isAlreadyLayedOut
+    // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
     // and column-wise, calculate max layout width
     // then sum for all columns.
-    return tableCellsRows // rows list
-        .where((cellsRow) => cellsRow[0].row != row) // cut out current row
-        .map((cellsRow) => cellsRow.where((cell) => cell.isAlreadyLayedOut)) // shorten each row to only layed out cells
-        .map((cellsRow) => cellsRow.map((cell) => cell.childForThisCell.layoutSize.height)) // in each row, instead of cells, put cell layout height
-        .map((cellsRow) => cellsRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
+    return cellDefinersRows // rows list
+        .where((definersRow) => definersRow[0].row != row) // cut out current row
+        .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each row keep only layed out cells
+        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.height)) // each row, instead of cells, put cellDefiner layout height
+        .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
         .fold(0.0, (value, element) => value + element);
   }
 
-  // Method calculate_cell_available_constraint_on_cell(row, column)
-  // if cell on row, column isAlreadyLayedOut, exception
-  // availableWidth  = constraints.width - sum(calculate_used_width_on_column(row, column)) sum over all columns
-  // availableHeight = constraints.height - sum(calculate_used_height_on_row(row, column)) sum over all rows
-  // return constraints from availableWidth availableHeight
+  BoxContainerConstraints calculate_available_constraint_on_cell(int row, int column) {
+    if (find_cell_on(row, column).isAlreadyLayedOut) {
+      StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
+    }
+    double availableWidth = parentOfTableLayouter.constraints.width -
+        calculate_layedout_used_width_except_column(column);
+    double availableHeight = parentOfTableLayouter.constraints.height - calculate_layedout_used_height_except_row(row);
+    return BoxContainerConstraints.insideBox(
+        size: Size(availableWidth, availableHeight));
+  }
+}
+
+/// Lays out [BoxContainer]s in the passed [cellsTable] as a table.
+///
+/// The layout order is specified by the passed [tableLayoutDefiner].
+class TableLayouter extends PositioningBoxLayouter {
+
+  TableLayouter({
+    required this.cellsTable,
+    required this.tableLayoutDefiner,
+  }) {
+    // Resequence children (cells) in order specified by the layout definer.
+    // todo-00-last : this may not be necessary at all. [layout] iterates over cell definers
+    List<BoxContainer> reorderedCells =
+      tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList();
+
+    replaceChildrenWith(reorderedCells);
+  }
+
+  /// Represents rows and columns of the children layed out by this [TableLayouter]
+  List<List<BoxContainer>> cellsTable;
+
+  /// Describes the layout directives (sequence) of cells in the [cellsTable].
+  ///
+  /// Dependency:
+  ///   1. [tableLayoutDefiner] depends on [cellsTable] in the sense that this [tableLayoutDefiner]
+  ///      must be the same size as [cellsTable],
+  ///   2. In addition, all [TableLayoutCellDefiner] in [TableLayoutDefiner.cellDefinersRows]
+  ///      must have their [TableLayoutCellDefiner.layoutSequence], [TableLayoutCellDefiner.row],
+  ///      [TableLayoutCellDefiner.column], set correctly to address all [BoxContainer] cells in the [cellsTable]
+  ///
+  TableLayoutDefiner tableLayoutDefiner;
+
+  // Member List<ContainerBox> childrenInLayoutSequence ????????
+
+  // build ??? What is done here? add all members in  childrenTable ???
+
+
+  @override
+  void _layout_TopRecurse() {
+    // A. node-pre-descend; Overridden to do nothing
+    _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
+
+    // B. node-descend: Overridden to each child first set constraints, then layout, then next child,
+    //                  rather than setting constraints for all children ahead of time
+    _layout_Descend();
+    
+    // C. node-post-descend.
+    //    Here, children have layoutSizes, which are used to lay them out in me, then offset them in me
+    _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
+  }
+
+  /// Overridden with a no-op implementation.
+  ///
+  /// Reason: This [TableLayouter] does not pre-distribute constraints [children].
+  @override
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+  }
+
+  /// Descends and iterates table children (cells).
+  ///
+  /// Overridden to not set constraints on all children all at once in
+  ///   [_layout_Pre_DistributeConstraintsToImmediateChildren],
+  ///   but to wait with calculating and setting constraints
+  ///   just before each child layout.
+  ///
+  /// Important note:
+  ///   - Children have been resequenced (ordered) in layout order requested by [TableLayoutDefiner].
+  ///
+  /// Implementation comment:
+  ///   - Iterates table children (cells) by iterating the cell definers in [tableLayoutDefiner].
+  ///     Because the [tableLayoutDefiner] was validated to define all cells, this guarantees
+  ///        all table cells are iterated. Further, the order of descend is in the layout sequence order
+  ///        [TableLayoutDefiner.cellDefinersRows].
+  void _layout_Descend() {
+
+    // Descends into children, not directly, but via the table's cell definers
+    // which methods are needed to create constraints for the next cell.
+    for (var cellDefiner in tableLayoutDefiner.flatOrderedCellDefiners) {
+
+      // b1. child-pre-descend (empty)
+      BoxContainerConstraints cellConstraints;
+      if (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.first) {
+        // First layedout cell gets full parent (this) constraints
+        cellConstraints = constraints;
+      } else {
+        // Further layedout cell get whatever constraints are left over from previously layed out cells
+        cellConstraints =
+            tableLayoutDefiner.calculate_available_constraint_on_cell(
+                cellDefiner.row,
+                cellDefiner.column,
+            );
+      }
+
+      var child = cellDefiner.cellForThisDefiner;
+
+      child.applyParentConstraints(this, cellConstraints);
+
+      // b2. child-descend
+      child.layout();
+
+      // b3. child-post-descend
+      cellDefiner.isAlreadyLayedOut = true;
+    }
+  }
+
 }
 
 // --------------------------- ^^^^^^^^^^ Table

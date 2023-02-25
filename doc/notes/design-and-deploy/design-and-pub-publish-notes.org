@@ -1807,40 +1807,40 @@ Todos and steps
   - [X] ~int layoutSequence~
   - [X] ~TableLayouterCell? nextCellInLayoutSequence~ null means end
   - [X] ~BoxContainer childForThisCell~
-- [ ] ~TableLayouterCells~
-  - [ ] Manages constraints for TableLayouter during layout
-  - [ ] ~constructor-todo~
-  - [ ] NOOO - we create ~TableLayouter.children~ in that order Member ~List<List<TableLayouterCell>> tableLayouterCellList~
-  - [ ] Method ~find_cell_on(row, column) => TableLayouterCell on row, column~
-  - [ ] Method ~calculate_used_width_on_column(row, column)~
-    - [ ] go over all irows in (irow, column) except irow=row, where cell.isAlreadyLayedOut, result = layoutSize.width max
-  - [ ] Method ~calculate_used_height_on_row(row, column)~
-    - [ ] go over all icolumns in (row, icolumn) except icolumn=column, where cell.isAlreadyLayedOut, result = layoutSize.height max
-  - [ ] Method ~calculate_cell_available_constraint_on_cell(row, column)~
-    - [ ] ~if cell on row, column isAlreadyLayedOut, exception~
-    - [ ] ~availableWidth  = constraints.width - sum(calculate_used_width_on_column(row, column)) sum over all columns~
-    - [ ] ~availableHeight = constraints.height - sum(calculate_used_height_on_row(row, column)) sum over all rows~
-    - [ ] ~return constraints from availableWidth availableHeight~
-- [ ] ~TableLayouter~ extends same class as RollingPositioning ?
-  - [ ] constructor
-    - [ ] passed ~required List<List<BoxContainers>> childrenTable~ representing rows and columns
-    - [ ] passed ~required TableLayouterCells tableLayouterCells~ which must be the same size, and have  ~layoutSequence~, ~row~, ~column~ set correctly and uniquely
-  - [ ] build ??? What is done here? ~add all members in  childrenTable~ ???
-  - [ ] Member ~TableLayouterCells tableLayouterCells~
-  - [ ] Member ~List<ContainerBox> childrenInLayoutSequence~ ????????
-  - [ ] Member ~childrenTable~
-  - [ ] ~layout~ (which method?)
-    - [ ] does not set constraints on all children
-    - [ ] iterates children NOT in children layoutSequence, but in ~layoutSequence~ HOW??
-      - [ ] child.layout
-      - [ ] after each child layout, update self, then calculate and set the next cell's constraints:
-        - [ ] ~child.isAlreadyLayedOut = true;~
-        - [ ] ~nextCell = child.nextCellInLayoutSequence~
-        - [ ] ~nextCell.constraints = calculate_cell_available_constraint_on_cell(nextCell.row, nextCell.column)~
-- [ ] ~NewChartRootContainer with constructor that accepts TableLayouter and LegendContainer~ 
-  - [ ] in build, NOT constructor, ~addChildren([Column(children: legendContainer, tableLayouter,])~
-  - [ ] ~member TableLayouter~
-  - [ ] ~member LegendContainer~
+- [X] ~TableLayouterCells~
+  - [X] Manages constraints for TableLayouter during layout
+  - [X] ~constructor-todo~
+  - [X] NOOO - we create ~TableLayouter.children~ in that order Member ~List<List<TableLayouterCell>> tableLayouterCellArray~
+  - [X] Method ~find_cell_on(row, column) => TableLayouterCell on row, column~
+  - [X] Method ~calculate_used_width_on_column(row, column)~
+    - [X] go over all irows in (irow, column) except irow=row, where cell.isAlreadyLayedOut, result = layoutSize.width max
+  - [X] Method ~calculate_used_height_on_row(row, column)~
+    - [X] go over all icolumns in (row, icolumn) except icolumn=column, where cell.isAlreadyLayedOut, result = layoutSize.height max
+  - [X] Method ~calculate_cell_available_constraint_on_cell(row, column)~
+    - [X] ~if cell on row, column isAlreadyLayedOut, exception~
+    - [X] ~availableWidth  = constraints.width - sum(calculate_used_width_on_column(row, column)) sum over all columns~
+    - [X] ~availableHeight = constraints.height - sum(calculate_used_height_on_row(row, column)) sum over all rows~
+    - [X] ~return constraints from availableWidth availableHeight~
+- [X] ~TableLayouter~ extends same class as RollingPositioning ?
+  - [X] constructor
+    - [X] passed ~required List<List<BoxContainers>> childrenTable~ representing rows and columns
+    - [X] passed ~required TableLayouterCells tableLayouterCells~ which must be the same size, and have  ~layoutSequence~, ~row~, ~column~ set correctly and uniquely
+  - [X] build ??? What is done here? ~add all members in  childrenTable~ ???
+  - [X] Member ~TableLayouterCells tableLayouterCells~
+  - [X] Member ~List<ContainerBox> childrenInLayoutSequence~ ????????
+  - [X] Member ~childrenTable~
+  - [X] ~layout~ (which method?)
+    - [X] does not set constraints on all children
+    - [X] iterates children NOT in children layoutSequence, but in ~layoutSequence~ HOW??
+      - [X] child.layout
+      - [X] after each child layout, update self, then calculate and set the next cell's constraints:
+        - [X] ~child.isAlreadyLayedOut = true;~
+        - [X] ~nextCell = child.nextCellInLayoutSequence~
+        - [X] ~nextCell.constraints = calculate_cell_available_constraint_on_cell(nextCell.row, nextCell.column)~
+- [X] ~NewChartRootContainer with constructor that accepts TableLayouter and LegendContainer~ 
+  - [X] in build, NOT constructor, ~addChildren([Column(children: legendContainer, tableLayouter,])~
+  - [X] ~member TableLayouter~
+  - [X] ~member LegendContainer~
 - [ ] in code
   - [ ] ~where? in makeChartRootContainer?~
   - [ ] 
