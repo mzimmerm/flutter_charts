@@ -1,8 +1,12 @@
 import 'package:logger/logger.dart' as logger;
 
+import '../container_new/data_container_new.dart';
+import '../container_new/axis_container_new.dart';
+
 // base libraries
 import '../view_maker.dart';
 import '../container.dart';
+import '../container_new/bar/root_container_new.dart';
 import '../model/data_model_new.dart';
 
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -31,23 +35,38 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     legendContainer = makeViewForLegendContainer();
-    xContainer      = makeViewForDomainAxis();
+    xContainer = makeViewForDomainAxis();
     yContainerFirst = makeViewForYContainerFirst();
-    yContainer      = makeViewForRangeAxis();
-    dataContainer   = makeViewForDataContainer();
+    yContainer = makeViewForRangeAxis();
+    dataContainer = makeViewForDataContainer();
 
-    return VerticalBarChartRootContainer(
-      legendContainer: legendContainer,
-      xContainer: xContainer,
-      yContainerFirst: yContainerFirst,
-      yContainer: yContainer,
-      dataContainer: dataContainer,
-      chartViewMaker: chartViewMaker,
-      chartData: chartData,
-      chartOptions: chartViewMaker.chartOptions,
-      isStacked: isStacked,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
+    if (isUseOldDataContainer) {
+      return VerticalBarChartRootContainer(
+        legendContainer: legendContainer,
+        xContainer: xContainer,
+        yContainerFirst: yContainerFirst,
+        yContainer: yContainer,
+        dataContainer: dataContainer,
+        chartViewMaker: chartViewMaker,
+        chartData: chartData,
+        chartOptions: chartViewMaker.chartOptions,
+        isStacked: isStacked,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    } else {
+      return NewVerticalBarChartRootContainer(
+        legendContainer: legendContainer,
+        xContainer: xContainer as NewXContainer,
+        yContainerFirst: yContainerFirst as NewYContainer,
+        yContainer: yContainer as NewYContainer,
+        dataContainer: dataContainer as NewDataContainer,
+        chartViewMaker: chartViewMaker,
+        chartData: chartData,
+        chartOptions: chartViewMaker.chartOptions,
+        isStacked: isStacked,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    }
   }
 
   @override
@@ -57,7 +76,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
         chartViewMaker: this,
       );
     } else {
-      return VerticalBarChartNewDataContainer(
+      return NewVerticalBarChartDataContainer(
         chartViewMaker: this,
       );
     }

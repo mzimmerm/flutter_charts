@@ -70,7 +70,7 @@ class NewModel {
   // NEW CODE =============================================================
 
   /// List of crossSeriesPoints in the model .
-  final List<NewCrossSeriesPointsModel> crossSeriesPointsList = []; // todo-done-last-3 : added for the NewModel
+  final List<NewCrossSeriesPointsModel> crossSeriesPointsList = [];
 
   /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [NewModel],
   /// specific for the passed [isStacked].
@@ -212,7 +212,7 @@ class NewModel {
 
 }
 
-/// todo-done-last-3 : Replaces PointsColumn
+/// todo-done-last-3 : NewCrossSeriesPointsModel replaces PointsColumn
 ///
 /// Represents a list of cross-series data values, in the [NewModel].
 ///

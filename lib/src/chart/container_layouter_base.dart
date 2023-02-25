@@ -1,5 +1,5 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
-import 'dart:math' as math show Random, max;
+import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
 
@@ -663,7 +663,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// todo-doc-01   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
-    assertCallerIsParent(caller);
+    // todo-00-last-last-last-last : DEFINITELY PUT BACK : assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
 
@@ -1820,8 +1820,8 @@ class ExternalTicksRow extends Row {
 class TableLayoutCellDefiner {
 
   TableLayoutCellDefiner({
-    required this.row,
-    required this.column,
+    // required this.row,
+    // required this.column,
     required this.layoutSequence,
 });
   // Late final, can be pre-set by client OR set during [layout],
@@ -1832,13 +1832,15 @@ class TableLayoutCellDefiner {
   /// Constraints set by user, if not, calculated and set during layout
   late final BoxContainerConstraints constraints;
 
-  /// , set to true if cell.cellForThisDefiner.layout is done.
-  bool isAlreadyLayedOut = false;
-  final int row;
-  final int column;
+  late final int row; // set in TableLayoutDefiner constructor
+  late final int column; // set in TableLayoutDefiner constructor
   final int layoutSequence;
-  /// The 
-  late final BoxContainer cellForThisDefiner;
+  /// Tracks if the cell corresponding to this definer invoked [layout];
+  /// set to true after the corresponding container cell, the [TableLayoutCellDefiner.cellForThisDefiner]
+  /// calls [BoxContainer.layout].
+  bool isAlreadyLayedOut = false;
+
+  late final BoxContainer cellForThisDefiner; // todo-00-last : this must be set
   // null means last
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
@@ -1849,15 +1851,22 @@ class TableLayoutDefiner {
   TableLayoutDefiner({
     required this.cellDefinersRows,
   }) {
-    // todo-00-last
-    // check if all rows in table are same length
-    // check if row, column are set correctly
 
+    // Set members used in validation
     numRows = cellDefinersRows.length;
     numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows[0].length : 0;
     isEmpty = numRows == 0 || numColumns == 0;
+
+    // Validate this object
+    // todo-00-last-last-last : validate late _validateAndLink();
+  }
+
+  void _validateAndLink() {
+    // Validate this object
+    _validateTableLayoutDefiner();
     
-    if (isNotEmpty) _linkCellDefinersInLayoutSequence();
+    // In the table [cellDefinersRows], link all cellDefiners in sequent of their [layoutSequence]
+    // todo-00-last-last-last : removing, do not think it is used : if (isNotEmpty) _linkCellDefinersInLayoutSequence();
   }
 
   /// Holds the 2D table of [TableLayoutCellDefiner]s.
@@ -1908,6 +1917,7 @@ class TableLayoutDefiner {
   
   /// Use the user-requested [TableLayoutCellDefiner.layoutSequence]s on cell definers,
   /// to link cell definers in [cellDefinersRows] in order of layout.
+/* todo-00-last-last-last : removing, do not think it is used
   void _linkCellDefinersInLayoutSequence() {
 
    TableLayoutCellDefiner cellDefiner = flatOrderedCellDefiners.first;
@@ -1917,12 +1927,63 @@ class TableLayoutDefiner {
    }
    
   }
-  
+*/
+
+ // todo-00-last-last-last rename lateValidate etc
+  void _validateTableLayoutDefiner() {
+    /*
+    // Method: Reducer iterates and gives access to previous result and element.
+    //         Set previous result to previous, so we have previous and element
+    cellDefinersRows.reduceOrElse((previousElement, thisElement) {
+      if (previousElement.length != thisElement.length) {
+        throw StateError('Lengths to not match: ${previousElement.length}, ${thisElement.length}');
+      }
+    },
+    orElse: () => []);
+    */
+
+    // Check if this object is configured correctly
+    Set<int> collectedSequences = {};
+
+    for (int row = 0; row < cellDefinersRows.length; row++){
+      if (cellDefinersRows[row].length != numRows) {
+        throw StateError('cellDefinersRows $cellDefinersRows not configured correctly');
+      }
+
+      List<TableLayoutCellDefiner> currentColumn = cellDefinersRows[row];
+      List<TableLayoutCellDefiner>? previousColumn;
+      for (int column = 0; column < currentColumn.length; column++){
+        // Validate current
+        TableLayoutCellDefiner currentCellDefiner = currentColumn[column];
+        if (currentCellDefiner.row != row || currentCellDefiner.column != column) {
+          throw StateError('Cell definer $currentCellDefiner not configured correctly');
+        }
+
+        // Collect layoutSequences and make sure they go from 0 to numColumns * numRows
+        collectedSequences.add(currentCellDefiner.layoutSequence);
+
+        // Validations previous and current
+        if (previousColumn != null) {
+          if (previousColumn.length != currentColumn.length || previousColumn.length != numColumns) {
+            throw StateError('Lengths to not match: ${previousColumn.length}, ${currentColumn.length}, $numColumns');
+          }
+        }
+
+        // this column is now previous
+        previousColumn = currentColumn;
+      }
+    }
+
+    assert(collectedSequences.length == numRows * numColumns);
+    assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
+    assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == numRows * numColumns - 1);
+  }
+
   /// Finds TableLayoutCellDefiner on row, column
   TableLayoutCellDefiner find_cell_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cell) => cell.row == row && cell.column == column,
-          orElse: throw StateError('No cell in this $this matching row=$row, column=$column'));
+          orElse: () => throw StateError('No cell in this $this matching row=$row, column=$column'));
 
   /// Calculates the added width of all layed out columns except the passed [column].
   ///
@@ -1987,13 +2048,27 @@ class TableLayouter extends PositioningBoxLayouter {
     required this.cellsTable,
     required this.tableLayoutDefiner,
   }) {
-    // Resequence children (cells) in order specified by the layout definer.
-    // todo-00-last : this may not be necessary at all. [layout] iterates over cell definers
+    /* Resequence children (cells) in order specified by the layout definer.
+    // not be necessary at all. [layout] iterates over cell definers
     List<BoxContainer> reorderedCells =
       tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList();
 
     replaceChildrenWith(reorderedCells);
+    */
+    tableLayoutDefiner.parentOfTableLayouter = this; // todo-00-last-last : this is wrong, should be parent
+
+    _validataAndSetCellsOnDefiner();
+
+    tableLayoutDefiner._validateAndLink();
+
+    // Still have to add children, even though TableLayouter cheats and uses cell definers instead of cells.
+    // The algorithm complains on isLeaf.
+    addChildren(
+        tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList());
   }
+
+  @override
+  bool get isLeaf => false; // todo-00-last-last-last : probably remove
 
   /// Represents rows and columns of the children layed out by this [TableLayouter]
   List<List<BoxContainer>> cellsTable;
@@ -2013,6 +2088,70 @@ class TableLayouter extends PositioningBoxLayouter {
 
   // build ??? What is done here? add all members in  childrenTable ???
 
+  /// - validate rows and column lengths on [cellsTable] internally
+  /// - cross validate numRows and numColumns (todo-00-last add them as members on TableLayouter) are the same on [cellsTable]  and [tableLayoutDefiner],
+  /// - set on tableLayoutDefiner [TableLayoutCellDefiner.cellForThisDefiner] from table cell on the same position.
+  void _validataAndSetCellsOnDefiner() {
+    // todo-00-last-last-last
+    // use the _validate code to do something similar. First validate cellsTable
+    // Check if this object is configured correctly
+
+    for (int row = 0; row < cellsTable.length; row++){
+
+      List<BoxContainer> currentColumn = cellsTable[row];
+      // List<BoxContainer>? previousColumn;
+      for (int column = 0; column < currentColumn.length; column++){
+        // Validate current
+        BoxContainer currentCell = currentColumn[column];
+
+        // Late here, initialize fields on each cell definer.
+        tableLayoutDefiner.cellDefinersRows[row][column].row = row;
+        tableLayoutDefiner.cellDefinersRows[row][column].column = column;
+        tableLayoutDefiner.cellDefinersRows[row][column].cellForThisDefiner = currentCell;
+
+        // this column is now previous
+        // previousColumn = currentColumn;
+      }
+    }
+
+/*
+    Set<int> collectedSequences = {};
+
+    for (int row = 0; row < cellDefinersRows.length; row++){
+      if (cellDefinersRows[row].length != numRows) {
+        throw StateError('cellDefinersRows $cellDefinersRows not configured correctly');
+      }
+
+      List<TableLayoutCellDefiner> currentColumn = cellDefinersRows[row];
+      List<TableLayoutCellDefiner>? previousColumn;
+      for (int column = 0; column < currentColumn.length; column++){
+        // Validate current
+        TableLayoutCellDefiner currentCellDefiner = currentColumn[column];
+        if (currentCellDefiner.row != row || currentCellDefiner.column != column) {
+          throw StateError('Cell definer $currentCellDefiner not configured correctly');
+        }
+
+        // Collect layoutSequences and make sure they go from 0 to numColumns * numRows
+        collectedSequences.add(currentCellDefiner.layoutSequence);
+
+        // Validations previous and current
+        if (previousColumn != null) {
+          if (previousColumn.length != currentColumn.length || previousColumn.length != numColumns) {
+            throw StateError('Lengths to not match: ${previousColumn.length}, ${currentColumn.length}, $numColumns');
+          }
+        }
+
+        // this column is now previous
+        previousColumn = currentColumn;
+      }
+    }
+
+    assert(collectedSequences.length == numRows * numColumns);
+    assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
+    assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == numRows * numColumns);
+*/
+
+  }
 
   @override
   void _layout_TopRecurse() {
@@ -2030,7 +2169,9 @@ class TableLayouter extends PositioningBoxLayouter {
 
   /// Overridden with a no-op implementation.
   ///
-  /// Reason: This [TableLayouter] does not pre-distribute constraints [children].
+  /// Reason: This [TableLayouter.layout] does not pre-distribute constraints to all [children], it sets them just
+  ///         just before each child [layout], calculating them using
+  ///         [TableLayoutDefiner.calculate_available_constraint_on_cell].
   @override
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
   }
@@ -2072,6 +2213,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
       var child = cellDefiner.cellForThisDefiner;
 
+      // Apply constraints on child just before layout
       child.applyParentConstraints(this, cellConstraints);
 
       // b2. child-descend

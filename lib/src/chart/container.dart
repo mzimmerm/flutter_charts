@@ -6,6 +6,7 @@ import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
 import 'container_new/container_common_new.dart';
+import 'container_new/legend_container_new.dart';
 import 'model/data_model_new.dart';
 import 'view_maker.dart';
 import 'painter.dart';
@@ -107,7 +108,8 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   /// Number of columns in the [DataContainer].
 
   /// Base Areas of chart.
-  late BoxContainer legendContainer;
+  // todo-00-last-last-last : done : late BoxContainer legendContainer;
+  late LegendContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;
   late YContainer yContainerFirst;

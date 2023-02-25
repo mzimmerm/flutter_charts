@@ -1,6 +1,12 @@
+// import 'package:logger/logger.dart' as logger;
+
+import '../container_new/data_container_new.dart';
+import '../container_new/axis_container_new.dart';
+
 // base libraries
 import '../view_maker.dart';
 import '../container.dart';
+import '../container_new/line/root_container_new.dart';
 import '../model/data_model_new.dart';
 
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -32,19 +38,37 @@ class LineChartViewMaker extends ChartViewMaker {
     yContainer      = makeViewForRangeAxis();
     dataContainer   = makeViewForDataContainer();
 
-    return LineChartRootContainer(
-      legendContainer: legendContainer,
-      xContainer: xContainer,
-      yContainerFirst: yContainerFirst,
-      yContainer: yContainer,
-      dataContainer: dataContainer,
-      chartViewMaker: chartViewMaker,
-      chartData: chartData,
-      chartOptions: chartViewMaker.chartOptions,
-      isStacked: isStacked,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-    );
+    if (isUseOldDataContainer) {
+      return LineChartRootContainer(
+        legendContainer: legendContainer,
+        xContainer: xContainer,
+        yContainerFirst: yContainerFirst,
+        yContainer: yContainer,
+        dataContainer: dataContainer,
+        chartViewMaker: chartViewMaker,
+        chartData: chartData,
+        chartOptions: chartViewMaker.chartOptions,
+        isStacked: isStacked,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    } else {
+      return NewLineChartRootContainer(
+        legendContainer: legendContainer,
+        xContainer: xContainer as NewXContainer,
+        yContainerFirst: yContainerFirst as NewYContainer,
+        yContainer: yContainer as NewYContainer,
+        dataContainer: dataContainer as NewDataContainer,
+        chartViewMaker: chartViewMaker,
+        chartData: chartData,
+        chartOptions: chartViewMaker.chartOptions,
+        isStacked: isStacked,
+        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      );
+    }
+
   }
+
+
 
   @override
   DataContainer makeViewForDataContainer() {
@@ -53,7 +77,7 @@ class LineChartViewMaker extends ChartViewMaker {
         chartViewMaker: this,
       );
     } else {
-      return LineChartNewDataContainer(
+      return NewLineChartDataContainer(
         chartViewMaker: this,
       );
     }

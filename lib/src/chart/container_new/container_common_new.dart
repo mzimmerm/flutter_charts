@@ -9,9 +9,9 @@ import '../../container/container_key.dart';
 //import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 
 /// Base class which manages, lays out, offsets, and paints
-/// each [container_base.BoxContainer] used on charts.
+/// all [container_base.BoxContainer] derived classes used on charts.
 ///
-/// In addition to the [container_base.BoxContainer] roles,
+/// In addition to the [container_base.BoxContainer] responsibilities,
 /// this class has access to [chartViewMaker], instance of [ChartViewMaker],
 /// which builds the whole [ChartRootContainer] container hierarchy.
 ///

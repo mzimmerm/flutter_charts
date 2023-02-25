@@ -2,8 +2,8 @@
 import '../container_new/data_container_new.dart';
 import '../view_maker.dart';
 
-class LineChartNewDataContainer extends NewDataContainer {
-  LineChartNewDataContainer({
+class NewLineChartDataContainer extends NewDataContainer {
+  NewLineChartDataContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,

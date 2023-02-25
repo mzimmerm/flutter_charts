@@ -20,13 +20,6 @@ extension StringExtension on String {
   }
 }
 
-/* todo-00-last-last
-extension ListExtension on List {
-  List<T> flatten<T>() => expand<T>((T element) => T element).toList();
-}
-*/
-
-
 extension IterableExtension<E> on Iterable<E> {
   E reduceOrElse(E Function(E value, E element) combine, {E Function()? orElse}) {
     if (isNotEmpty) {

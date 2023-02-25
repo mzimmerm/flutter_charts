@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
+import 'package:flutter_charts/src/chart/presenter.dart';
+
 import 'container_common_new.dart' as container_common_new;
 import '../container.dart' as container;
 import '../container_layouter_base.dart' as container_base;
@@ -11,8 +13,8 @@ import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
 
-// todo-done-last-3 : replaces PointsColumns
-class NewDataContainer extends container.DataContainer {
+// todo-00-last-last-last : just implement DataContainer class NewDataContainer extends container.DataContainer {
+class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainer {
 
   NewDataContainer({
     required view_maker.ChartViewMaker chartViewMaker,
@@ -36,6 +38,28 @@ class NewDataContainer extends container.DataContainer {
       )
     ]);
   }
+
+  // --------------- overrides to implement legacy vvvvv
+  @override
+  PointPresentersColumns get pointPresentersColumns => throw UnimplementedError();
+  @override
+  set pointPresentersColumns(PointPresentersColumns _) => throw UnimplementedError();
+
+  @override
+  container.SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
+    throw UnimplementedError();
+  }
+
+  @override
+  void lextrPointsColumns(container.SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
+    throw UnimplementedError();
+  }
+  // --------------- overrides to implement legacy ^^^^^
 
   /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
   @override
@@ -130,7 +154,8 @@ class NewHBarPointContainer extends NewPointContainer {
       toPixelsMax: yContainer.axisPixelsRange.max,
        */
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
-      toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
+      // todo-00-last-last-last-last-last DEFINITELY PUT BACK :  toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
+      toPixelsMax: 400, //  yContainer.axisPixelsRange.max,
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.

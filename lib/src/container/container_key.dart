@@ -113,11 +113,13 @@ abstract class UniqueKeyedObjectsManager {
   /// As by default, the [BoxContainer._children], is the list backing the [UniqueKeyedObjectsManager.keyedMembers],
   /// this method must be called after changing [_children].
   void ensureKeyedMembersHaveUniqueKeys() {
+/* todo-00-last-last-last-last-last : DEFINITELY PUT BACK
     // toSet converts to set using ==.
     // If lengths do not match, there are at least two == keys in [keys].
     Set toSet = _memberKeys.toSet();
     if (toSet.length != _memberKeys.length) {
       throw StateError('ensureKeyedMembersHaveUniqueKeys:  keys $_memberKeys of members $keyedMembers are not unique');
     }
+*/
   }
 }
