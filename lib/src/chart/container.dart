@@ -108,7 +108,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   /// Number of columns in the [DataContainer].
 
   /// Base Areas of chart.
-  // todo-00-last-last-last : done : late BoxContainer legendContainer;
   late LegendContainer legendContainer;
   late XContainer xContainer;
   late YContainer yContainer;

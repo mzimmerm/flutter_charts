@@ -12,8 +12,6 @@ import '../layouter_one_dimensional.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
-
-// todo-00-last-last-last : just implement DataContainer class NewDataContainer extends container.DataContainer {
 class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainer {
 
   NewDataContainer({
@@ -154,7 +152,7 @@ class NewHBarPointContainer extends NewPointContainer {
       toPixelsMax: yContainer.axisPixelsRange.max,
        */
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
-      // todo-00-last-last-last-last-last DEFINITELY PUT BACK :  toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
+      // todo-00-last-last DEFINITELY PUT BACK :  toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
       toPixelsMax: 400, //  yContainer.axisPixelsRange.max,
     );
 

@@ -28,13 +28,11 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   }) : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing NewChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
-    // todo-00-last-last-last
 
 
-    // todo-00-last-last-last : create YDEX_cellDefinersRows, cells list,
-    //     - [ ] with 4 cells, in 2x2 arrangement as follows~
-    //     - [ ] placing Y on 0,0 Data on 0,1  Empty on 1,0 and X on 1,1
-    //     - [ ] configure row, column, layoutSequence,  on each cell
+    // Create YDEX_cellDefinersRows, with definers arranged the same way as cells,
+    //   - with 4 cells, in 2x2 arrangement
+    //   - layoutSequence,  on each cell as we want
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersRows = [
       [TableLayoutCellDefiner(layoutSequence: 0), TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 2), TableLayoutCellDefiner(layoutSequence: 1)],
@@ -42,7 +40,8 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
 
     TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersRows: YDEX_cellDefinersRows);
 
-    // todo-00-last-last-last : create emptyContainer class and implementation - just a simple extension of ChartAreaContainer.
+    // todo-00-last-last : create emptyContainer class and implementation - just a simple extension of ChartAreaContainer.
+    // when done, put back use of ensureKeyedMembersHaveUniqueKeys.
     BoxContainer emptyContainer = xContainer;
 
     TableLayouter tableLayouter = TableLayouter(

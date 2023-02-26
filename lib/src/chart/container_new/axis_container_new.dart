@@ -16,7 +16,6 @@ import '../view_maker.dart' as view_maker;
 // import '../container_new/axis_container_new.dart' as container_new;
 import '../container_new/container_common_new.dart' as container_common_new;
 
-// todo-00-last-last-last : class NewXContainer extends container.XContainer {
   class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainer {
     /// Constructs the container that holds X labels.
     ///
@@ -56,7 +55,7 @@ import '../container_new/container_common_new.dart' as container_common_new;
             ),
             children: [
               for (var labelInfo in labelsGenerator.labelInfoList)
-                // todo-00-last-last-last : check how X labels are created. Maybe create none for now
+                // todo-00-last : check how X labels are created. Maybe create none for now
                 label_container.XLabelContainer(
                   chartViewMaker: chartViewMaker,
                   label: labelInfo.formattedLabel,

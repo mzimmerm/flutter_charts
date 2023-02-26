@@ -53,6 +53,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
+    // todo-00!!!! Take options from chartViewMaker - do this EVERYWHERE - LOOK FOR 'required ChartOptions' AND MORE
     required ChartOptions options,
   })  :
         _options = options,
@@ -236,7 +237,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
         boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      // todo-00-last-last-last-done : seems this was not right ?? never ?? applyParentOrderedSkip(this, true);
+      // todo-00-last : seems this was was /is never right  ?? applyParentOrderedSkip(this, true);
       applyParentOrderedSkip(this, true);
       layoutSize = ui.Size.zero;
       return;
@@ -412,7 +413,6 @@ abstract class AxisLabelContainer extends LabelContainer {
     var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
     // todo-old-00 : axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, axisPixelsRange MUST BE UNUSED IN NEW - SO JUST COMMENT OUT
     // todo-old-00 This seems called for XLabelContainer - why?
-    // todo-00-last-last : removed XLabelContainer, any new should not run this code : if (chartViewMaker.isUseOldDataContainer || this is XLabelContainer) {
     if (chartViewMaker.isUseOldDataContainer) {
       parentOffsetTick = labelsGenerator.lextrValueToPixels(
         value: labelInfo.dataValue.toDouble(),

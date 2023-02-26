@@ -663,7 +663,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// todo-doc-01   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
-    // todo-00-last-last-last-last : DEFINITELY PUT BACK : assertCallerIsParent(caller);
+    // todo-00-last-last : DEFINITELY PUT BACK : assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
 
@@ -1845,7 +1845,7 @@ class TableLayoutCellDefiner {
   /// calls [BoxContainer.layout].
   bool isAlreadyLayedOut = false;
 
-  late final BoxContainer cellForThisDefiner; // todo-00-last : this must be set
+  late final BoxContainer cellForThisDefiner;
   // null means last
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
@@ -1887,7 +1887,7 @@ class TableLayoutDefiner {
   late final bool isNotEmpty = !isEmpty;
 
   /// Should be set to the hierarchy-parent of the [TableLayouter], which this [TableLayoutDefiner] manages.
-  late final BoxContainer parentOfTableLayouter; // todo-00-last : must be set
+  late final BoxContainer tableLayouterContainer;
 
   final Align horizontalAlign;
   final Align verticalAlign;
@@ -1929,7 +1929,7 @@ class TableLayoutDefiner {
   /// Calculates the added width of all layed out columns except the passed [column].
   ///
   /// Motivation and reason for existence:
-  ///   - Exists for the benefit of the [TableLayouter] owned by [parentOfTableLayouter].
+  ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
   ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
   ///     the constraints on the container which is next in layout order.
   ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
@@ -1972,9 +1972,9 @@ class TableLayoutDefiner {
     if (find_cell_on(row, column).isAlreadyLayedOut) {
       StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
     }
-    double availableWidth = parentOfTableLayouter.constraints.width -
+    double availableWidth = tableLayouterContainer.constraints.width -
         calculate_layedout_used_width_except_column(column);
-    double availableHeight = parentOfTableLayouter.constraints.height - calculate_layedout_used_height_except_row(row);
+    double availableHeight = tableLayouterContainer.constraints.height - calculate_layedout_used_height_except_row(row);
     return BoxContainerConstraints.insideBox(
         size: Size(availableWidth, availableHeight));
   }
@@ -1990,7 +1990,7 @@ class TableLayouter extends PositioningBoxLayouter {
     required this.tableLayoutDefiner,
   }) {
 
-    tableLayoutDefiner.parentOfTableLayouter = this; // todo-00-last-last : this is wrong, should be parent
+    tableLayoutDefiner.tableLayouterContainer = this;
 
     // Validate sameness of structure of 2D [cellsTable] and [tableLayoutDefiner]'s
     // 2D [TableLayoutDefiner.cellDefinersRows], then late init the [tableLayoutDefiner] members
@@ -2001,9 +2001,6 @@ class TableLayouter extends PositioningBoxLayouter {
     addChildren(
         tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList());
   }
-
-  @override
-  bool get isLeaf => false; // todo-00-last : probably remove
 
   /// Represents rows and columns of the children layed out by this [TableLayouter]
   List<List<BoxContainer>> cellsTable;
@@ -2027,10 +2024,12 @@ class TableLayouter extends PositioningBoxLayouter {
   ///
   /// Also late initializes the members in the passed [tableLayoutDefiner].
   ///
-  /// In more detail, this method:
-  /// - cross validate numRows and numColumns (todo-00-last add them as members on TableLayouter) are the same on [cellsTable]  and [tableLayoutDefiner],
-  /// - validate rows and column lengths on [cellsTable] internally
+  /// In more detail, this method validates and/or sets on [cellsTable] and [tableLayoutDefiner] :
+  /// - cross validates numRows and numColumns on both 2D arrays:
+  ///   - Same numRows on both 2D arrays.
+  ///   - Each row has the same same numColumns on both 2D arrays.
   /// - late initializes the members in the passed [tableLayoutDefiner].
+  /// - late initializes [numRows] and [numColumns] on this [TableLayouter]
 
   _crossValidateDefinerWithCellsAndLateInitDefiner() {
 
