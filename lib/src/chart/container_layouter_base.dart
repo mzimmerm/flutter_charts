@@ -1827,6 +1827,8 @@ class TableLayoutCellDefiner {
     this.verticalAlign = Align.center,
 });
   final int layoutSequence;
+  late final int row;
+  late final int column;
   final Align horizontalAlign;
   final Align verticalAlign;
 
@@ -1838,8 +1840,6 @@ class TableLayoutCellDefiner {
   /// Constraints set by user, if not, calculated and set during layout
   late final BoxContainerConstraints constraints;
 
-  late final int row; // set in TableLayoutDefiner constructor
-  late final int column; // set in TableLayoutDefiner constructor
   /// Tracks if the cell corresponding to this definer invoked [layout];
   /// set to true after the corresponding container cell, the [TableLayoutCellDefiner.cellForThisDefiner]
   /// calls [BoxContainer.layout].
@@ -1988,6 +1988,8 @@ class TableLayouter extends PositioningBoxLayouter {
   TableLayouter({
     required this.cellsTable,
     required this.tableLayoutDefiner,
+    this.horizontalAlign = Align.center,
+    this.verticalAlign = Align.center,
   }) {
 
     tableLayoutDefiner.tableLayouterContainer = this;
@@ -2005,9 +2007,6 @@ class TableLayouter extends PositioningBoxLayouter {
   /// Represents rows and columns of the children layed out by this [TableLayouter]
   List<List<BoxContainer>> cellsTable;
 
-  late final int numRows;
-  late final int numColumns;
-
   /// Describes the layout directives (sequence) of cells in the [cellsTable].
   ///
   /// Dependency:
@@ -2018,6 +2017,11 @@ class TableLayouter extends PositioningBoxLayouter {
   ///      [TableLayoutCellDefiner.column], set correctly to address all [BoxContainer] cells in the [cellsTable]
   ///
   TableLayoutDefiner tableLayoutDefiner;
+
+  late final int numRows;
+  late final int numColumns;
+  final Align horizontalAlign;
+  final Align verticalAlign;
 
   /// Validates that the structure of 2D [cellsTable] and [tableLayoutDefiner]'s
   /// 2D [TableLayoutDefiner.cellDefinersRows] is the same.
