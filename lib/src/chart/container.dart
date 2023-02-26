@@ -119,7 +119,6 @@ abstract class ChartRootContainer extends ChartAreaContainer {
 
   late bool isStacked;
 
-
   /// Overrides [BoxLayouter.layout] for the chart as a whole.
   ///
   /// Uses this container's [chartArea] as available size
