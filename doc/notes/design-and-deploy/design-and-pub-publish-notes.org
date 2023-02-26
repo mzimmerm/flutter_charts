@@ -1794,6 +1794,39 @@ Classes:
   
 *** IN-PROGRESS-NOW Create a *completely new* BoxContainers for everything. For now, keep ~PointPresenter~ s and related.
 
+tomorrow - Sunday :
+
+In TableCellDefiner, add isOverflown (hmm, maybe separate width, height
+
+In TableDefiner, add two 1D Lists:
+rowHeights, columnWidths
+
+ Add layout methods around post, overriding the method that creates the rectangles. Instead, this section will create rectangles one by one for each cell
+
+for row in rows
+   rowHeights = row, find max height of layoutSize on cells not overflown. max constraint height on cells overflown
+   this will be the height of constraint on all rows 
+  same for Columns
+
+Now position all children within table
+internalHeigthOffset = 0
+internalWidthOffset = 0
+
+for row in  rows
+      
+   new column, internalWidthOffset = 0
+  for column in columns
+     get constraint from rowHeights columnWidths
+      call the _M class method to get the rectangle
+
+      offset the rectangle by (internalWidthOffset, internalHeigthOffset)
+
+   before next column, internalWidthOffset += thisRowWidth from columnsWidths
+  
+before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
+
+END SUNDAy
+
 Todos and steps
 
 - [X] ~SegmentContainer~
