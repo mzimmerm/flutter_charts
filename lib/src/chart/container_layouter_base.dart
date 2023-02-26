@@ -1001,13 +1001,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     }
   }
 
-
-  // #####################################
-  // todo-00-last-last-last-done : Moved _positionChildren_As_Rectangles_Using_OneDimLayouter and _positionChildren_As_PositionedSegments_Using_OneDimLayouter to BoxLayouter
-  // #####################################
-
-
-
   /// Bounding rectangle of this [BoxLayouter].
   ///
   /// It should only be called after [layout] has been performed on this layouter.
@@ -1527,15 +1520,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
   @override
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-/* todo-00-last-last-last done : moved to _MainAndCrossPositionedSegments
-    return _positionChildren_As_Rectangles_Using_OneDimLayouter(
-      this,
-      children,
-      mainLayoutAxis,
-      mainAxisLayoutProperties,
-      crossAxisLayoutProperties,
-    );
-*/
     if (isLeaf) {
       return [];
     }
@@ -2538,26 +2522,71 @@ class NullLikeListSingleton extends custom_collection.CustomList<BoxContainer> {
   }
 }
 
-/// On behalf of [RollingPositioningBoxLayouter], holds on the results of 1Dimensional positions of children
+/// On behalf of layouters which can layout their children using [Packing], and [Align],
+/// calculates holds on the results of 1Dimensional positions of children
 /// along the main and cross axis, calculated
-/// by [RollingPositioningBoxLayouter._positionChildren_As_PositionedSegments_Using_OneDimLayouter].
 ///
 /// The 1Dimensional positions are held in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
 /// as [PositionedLineSegments.lineSegments].
 ///
-/// The method [_convertPositionedSegmentsToRects] allows to convert such 1Dimensional positions along main and cross axis
+/// The method [_convertPositionedSegmentsToRects] allows to convert
+/// such 1Dimensional positions along main and cross axis
 /// into rectangles [List<ui.Rect>], where children of self [BoxLayouter] node should be positioned.
 ///
 class _MainAndCrossPositionedSegments {
-/* todo-00-last-last-last : changed constructor
+
+  /// Constructs an instance given the [children] which may be smaller than full children list,
+  /// and their [parentBoxLayouter].
+  ///
+  /// Uses the passed [mainAxisLayoutProperties], [crossAxisLayoutProperties] and the [mainLayoutAxis]
+  /// to find children positions in the [parentBoxLayouter].
+  ///
+  /// This method finds the children 1D positions using the [LayedoutLengthsPositioner],
+  /// and keeps the children positions on state in a 'primitive one-dimensional format',
+  /// in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
+  /// which contain the 1D [LayedOutLineSegments] along main and cross axis.
+  ///
+  /// [asRectangles] can convert the 1D positions into rectangles representing [children] positions in [parentBoxLayouter].
+  ///
   _MainAndCrossPositionedSegments({
-    required this.mainAxisPositionedSegments,
-    required this.crossAxisPositionedSegments,
     required this.parentBoxLayouter,
     required this.children,
     required this.mainLayoutAxis,
-  });
-*/
+    required this.mainAxisLayoutProperties,
+    required this.crossAxisLayoutProperties,
+  })
+  {
+    // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
+    var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
+
+    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
+      lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
+      lengthsPositionerProperties: mainAxisLayoutProperties,
+      lengthsConstraint: parentBoxLayouter.constraints.maxLengthAlongAxis(mainLayoutAxis),
+    );
+
+    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
+      lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(crossLayoutAxis, children),
+      lengthsPositionerProperties: crossAxisLayoutProperties,
+      // todo-010 : Investigate : If we use, instead of 0.0,
+      //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
+      //                 if legend starts with column, the legend column is on the left of the chart
+      //                 if legend starts with row   , the legend row    is on the bottom of the chart
+      //                 Probably need to address when the whole chart is layed out using the new layouter.
+      //                 The 0.0 forces that in the cross-direction (horizontal or vertical),
+      //                 we provide zero length constraint, so no length padding.
+      lengthsConstraint: 0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis),
+    );
+
+
+    // Layout the lengths along each axis to line segments (offset-ed lengths).
+    // This is layouter specific - each layouter does 'layout the lengths' according to it's specific rules,
+    // controlled by [Packing] (tight, loose, center) and [Align] (start, end, matrjoska).
+    // The [layoutLengths] method actually includes positioning the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
+    //   which is the total length of children.
+    mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.positionLengths();
+    crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.positionLengths();
+  }
 
   late final PositionedLineSegments mainAxisPositionedSegments;
   late final PositionedLineSegments crossAxisPositionedSegments;
@@ -2567,21 +2596,13 @@ class _MainAndCrossPositionedSegments {
   final LengthsPositionerProperties mainAxisLayoutProperties;
   final LengthsPositionerProperties crossAxisLayoutProperties;
 
-
   /// Converts the line segments from [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
   /// (they correspond to children widths and heights that have been layed out)
   /// to [ui.Rect]s, the rectangles where children of self [BoxLayouter] node should be positioned.
   ///
   /// Children should be offset later in [layout] by the obtained [Rect.topLeft] offsets;
   ///   this method does not change any offsets of self or children.
-  List<ui.Rect> _convertPositionedSegmentsToRects(
-  /* todo-00-last-last-last : using members
-   {
-    required LayoutAxis mainLayoutAxis,
-    required List<LayoutableBox> children,
-  }
-  */
-  ) {
+  List<ui.Rect> _convertPositionedSegmentsToRects() {
 
     if (mainAxisPositionedSegments.lineSegments.length != crossAxisPositionedSegments.lineSegments.length) {
       throw StateError('Segments differ in lengths: main=$mainAxisPositionedSegments, cross=$crossAxisPositionedSegments');
@@ -2620,49 +2641,7 @@ class _MainAndCrossPositionedSegments {
     }
   }
 
-/* todo-00-last-last-last remove
-  /// Utility method
-  List<ui.Rect> _positionChildren_As_Rectangles_Using_OneDimLayouter(
-      BoxLayouter parentBoxLayouter,
-      List<LayoutableBox> children,
-      LayoutAxis mainLayoutAxis,
-      LengthsPositionerProperties mainAxisLayoutProperties,
-      LengthsPositionerProperties crossAxisLayoutProperties,
-      ) {
-    if (parentBoxLayouter.isLeaf) {
-      return [];
-    }
-    // Create a LayedoutLengthsPositioner along each axis (main, cross), convert it to LayoutSegments,
-    // then package into a wrapper class.
-    _MainAndCrossPositionedSegments mainAndCrossPositionedSegments =
-    // todo-00-last-last : converted to constructor _positionChildren_As_PositionedSegments_Using_OneDimLayouter(
-    _MainAndCrossPositionedSegments(
-      parentBoxLayouter: parentBoxLayouter,
-      children: children,
-      mainLayoutAxis: mainLayoutAxis,
-      mainAxisLayoutProperties: mainAxisLayoutProperties,
-      crossAxisLayoutProperties: crossAxisLayoutProperties,
-    );
-    // print(
-    //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
-    // print(
-    //     'crossAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.crossAxisLayedOutSegments.lineSegments}');
-
-    // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
-    return asRectangles(
-    //  todo-00-last-last-last : using members
-    //     mainAndCrossPositionedSegments, mainLayoutAxis, children
-    );
-  }
-*/
-
-  List<ui.Rect> asRectangles(
-      /* todo-00-last-last-last : using members
-      _MainAndCrossPositionedSegments mainAndCrossPositionedSegments,
-      LayoutAxis mainLayoutAxis,
-      List<LayoutableBox> children,
-      */
-      ) {
+  List<ui.Rect> asRectangles() {
     // print(
     //     'mainAxisLayedOutSegments.lineSegments = ${mainAndCrossLayedOutSegments.mainAxisLayedOutSegments.lineSegments}');
     // print(
@@ -2672,89 +2651,9 @@ class _MainAndCrossPositionedSegments {
       return [];
     }
     // Convert the line segments to [Offset]s (in each axis). Children will be moved (offset) by the obtained [Offset]s.
-    List<ui.Rect> positionedRectsInMe = _convertPositionedSegmentsToRects(
-    /* todo-00-last-last-last : using members
-      mainLayoutAxis: mainLayoutAxis,
-      children: children,
-     */
-    );
+    List<ui.Rect> positionedRectsInMe = _convertPositionedSegmentsToRects();
     // print('positionedRectsInMe = $positionedRectsInMe');
     return positionedRectsInMe;
-  }
-
-  /// Given the [children], which may be smaller than full children list,
-  /// uses this [RollingPositioningBoxLayouter] [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
-  /// to find children positions in self.
-  ///
-  /// This method finds and returns the children positions in a 'primitive one-dimensional format',
-  /// using [LayedOutLineSegments] along main and cross axis, as [_MainAndCrossLayedOutSegments].
-  ///
-  /// Further methods convert the returned 'primitive one-dimensional format'
-  /// [_MainAndCrossLayedOutSegments], into rectangles representing children positions in self.
-  ///
-
-  /*
- _MainAndCrossPositionedSegments _positionChildren_As_PositionedSegments_Using_OneDimLayouter(
-      BoxLayouter parentBoxLayouter,
-      List<LayoutableBox> children,
-      LayoutAxis mainLayoutAxis,
-      LengthsPositionerProperties mainAxisLayoutProperties,
-      LengthsPositionerProperties crossAxisLayoutProperties,
-      ) {
-   */
-   // todo-00-last-last-last : converted to constructor  _MainAndCrossPositionedSegments _positionChildren_As_PositionedSegments_Using_OneDimLayouter(
-  _MainAndCrossPositionedSegments({
-    required this.parentBoxLayouter,
-    required this.children,
-    required this.mainLayoutAxis,
-    //required this.mainAxisPositionedSegments,
-    //required this.crossAxisPositionedSegments,
-    required this.mainAxisLayoutProperties,
-    required this.crossAxisLayoutProperties,
-  })
-  {
-    // From the sizes of the [children] create a LayedoutLengthsPositioner along each axis (main, cross).
-    var crossLayoutAxis = axisPerpendicularTo(mainLayoutAxis);
-
-    LayedoutLengthsPositioner mainAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
-      lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(mainLayoutAxis, children),
-      lengthsPositionerProperties: mainAxisLayoutProperties,
-      lengthsConstraint: parentBoxLayouter.constraints.maxLengthAlongAxis(mainLayoutAxis),
-    );
-
-    LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
-      lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(crossLayoutAxis, children),
-      lengthsPositionerProperties: crossAxisLayoutProperties,
-      // todo-010 : Investigate : If we use, instead of 0.0,
-      //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
-      //                 if legend starts with column, the legend column is on the left of the chart
-      //                 if legend starts with row   , the legend row    is on the bottom of the chart
-      //                 Probably need to address when the whole chart is layed out using the new layouter.
-      //                 The 0.0 forces that in the cross-direction (horizontal or vertical),
-      //                 we provide zero length constraint, so no length padding.
-      lengthsConstraint: 0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis),
-    );
-
-
-    // Layout the lengths along each axis to line segments (offset-ed lengths).
-    // This is layouter specific - each layouter does 'layout the lengths' according to it's specific rules,
-    // controlled by [Packing] (tight, loose, center) and [Align] (start, end, matrjoska).
-    // The [layoutLengths] method actually includes positioning the lengths, and also calculating the totalLayedOutLengthIncludesPadding,
-    //   which is the total length of children.
-/*
-    PositionedLineSegments mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.positionLengths();
-    PositionedLineSegments crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.positionLengths();
-*/
-    mainAxisPositionedSegments = mainAxisLayedoutLengthsPositioner.positionLengths();
-    crossAxisPositionedSegments = crossAxisLayedoutLengthsPositioner.positionLengths();
-
-/* todo-00-last-last-last : converted to constructor
-    _MainAndCrossPositionedSegments mainAndCrossPositionedSegments = _MainAndCrossPositionedSegments(
-      mainAxisPositionedSegments: mainAxisPositionedSegments,
-      crossAxisPositionedSegments: crossAxisPositionedSegments,
-    );
-    return mainAndCrossPositionedSegments;
-*/
   }
 
 }
