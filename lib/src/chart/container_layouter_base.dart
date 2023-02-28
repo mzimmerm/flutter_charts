@@ -1415,6 +1415,9 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
 
+  // todo-00-last-last-unused
+  bool isDeeperRollingAllowedToForceEvenWeights = false;
+
   /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
   /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
@@ -1485,10 +1488,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// Overridden from [BoxLayouter] to work like this:
   ///
   ///   - If all children have a weight defined
-  ///     (that is, not [ConstraintsWeight defaultWeight], checked by [ConstraintsWeights.allDefined])
-  ///     method divides the self constraints to smaller pieces along the main axis, keeping the self constraint size
+  ///     (that is, none have [ConstraintsWeight.defaultWeight], checked by [ConstraintsWeights.allDefined])
+  ///     this method divides the self constraints to smaller pieces along the main axis, keeping the self constraint size
   ///     along the cross axis. Then distributes the divided constraints to children
-  ///   - else method invokes super implementation equivalent, which distributes self constraints undivided to all children.
+  ///   - else if some children do not have weight defined (that is, some have [ConstraintsWeight.defaultWeight])
+  ///     this method invokes super implementation equivalent, which distributes self constraints undivided to all children.
   @override
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     ConstraintsWeights childrenWeights = ConstraintsWeights.from(
@@ -1568,12 +1572,14 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // Note: non greedy children have layout size when we reach here
 
     if (_hasGreedy) {
-      // Force Align=left, Packing=tight, no matter what the Row properties are. Rects
+      // todo-00-last-last : fix comments
+      // Force Align=left, Packing=tight, no matter what the Row properties are.
       // The reason we want to use tight left align, is that if there are greedy children, we want them to take
       //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
       LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
       _forceMainAxisLayoutProperties(
-        align: Align.start,
+        // todo-00-last-last : align: Align.start,
+        align: mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
         externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
         // rollingTracker is irrelevant here
@@ -2980,7 +2986,8 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     if (__is_Row_for_rewrite(currentContainer) && rollingTracker.firstRowFromTopFoundBefore) {
       (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
-        align: Align.start,
+        // todo-00-last-last : align: Align.start,
+        align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
         externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
@@ -2988,7 +2995,8 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     if (__is_Column_for_rewrite(currentContainer) && rollingTracker.firstColumnFromTopFoundBefore) {
       (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
-        align: Align.start,
+        // todo-00-last-last : align: Align.start,
+        align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.matrjoska,
         externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
