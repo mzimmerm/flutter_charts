@@ -151,9 +151,9 @@ class NewHBarPointContainer extends NewPointContainer {
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
        */
+      // todo-00-last-last-last : this works, but chart only occupies top half of screen
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
-      // todo-00-last-last DEFINITELY PUT BACK :  toPixelsMax: yContainer.layoutSize.height, //  yContainer.axisPixelsRange.max,
-      toPixelsMax: 400, //  yContainer.axisPixelsRange.max,
+      toPixelsMax: yContainer.layoutSize.height, //  600.0, // yContainer.axisPixelsRange.max,
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.

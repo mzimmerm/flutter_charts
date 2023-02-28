@@ -10,7 +10,7 @@ import '../container.dart' as container;
 import '../label_container.dart' as label_container;
 import '../container_layouter_base.dart' as container_base;
 import '../view_maker.dart' as view_maker;
-// import '../iterative_layout_strategy.dart' as strategy;
+import '../iterative_layout_strategy.dart' as strategy;
 
 // this level libraries
 // import '../container_new/axis_container_new.dart' as container_new;
@@ -21,18 +21,9 @@ import '../container_new/container_common_new.dart' as container_common_new;
     ///
     /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
     /// all available horizontal space, and only use necessary vertical space.
-    /*
-  NewXContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  }) : super(
-    chartViewMaker: chartViewMaker,
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  );
-  */
-
     NewXContainer({
       required view_maker.ChartViewMaker chartViewMaker,
+      strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
     }) : super(
       chartViewMaker: chartViewMaker,
     ) {
@@ -48,14 +39,14 @@ import '../container_new/container_common_new.dart' as container_common_new;
       );
 
       List<BoxContainer> children = [
-        container_base.Row(children: [
-          container_base.ExternalTicksColumn(
+        container_base.Column(children: [
+          container_base.ExternalTicksRow(
             mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
               externalTickAt: ExternalTickAt.childCenter,
             ),
             children: [
               for (var labelInfo in labelsGenerator.labelInfoList)
-                // todo-00-last : check how X labels are created. Maybe create none for now
+                // todo-00-last : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                 label_container.XLabelContainer(
                   chartViewMaker: chartViewMaker,
                   label: labelInfo.formattedLabel,
@@ -127,6 +118,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
     );
 
     List<BoxContainer> children = [
+      // Row contains Column of labels and vertical LineSegment for Y axis
       container_base.Row(children: [
         container_base.ExternalTicksColumn(
           mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(

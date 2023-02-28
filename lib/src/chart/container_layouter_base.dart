@@ -48,6 +48,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///      parent is set on all children as `child.parent = this`.
   ///   2. In [BoxContainer.addChildren], [_parent] is set on all passed children.
   BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this parent
+  BoxContainer? get parent => _parent; // todo-00-last-done: added to access parent, see usages KEEP FOR NOW ONLY.
 
   /// Manages children of this [BoxContainer].
   ///
@@ -117,7 +118,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///     3.  instance.layout();
   ///     4.  instance.applyParentOffset(this, instanceParentOffset);
   ///   ```
-  ///   The reason is, there are legitimite reasons for the [buildAndReplaceChildren]
+  ///   This was chosen because there are legitimate reasons for the [buildAndReplaceChildren]
   ///   to need the instance's [constraints].
   ///
   void buildAndReplaceChildren(covariant LayoutContext layoutContext);
@@ -663,7 +664,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// todo-doc-01   /// Important override notes and rules for [applyParentOrderedSkip] on extensions:
   @override
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip) {
-    // todo-00-last-last : DEFINITELY PUT BACK : assertCallerIsParent(caller);
+    assertCallerIsParent(caller);
     _orderedSkip = orderedSkip;
   }
 
@@ -743,15 +744,16 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///     achieves the same result, as long as either override has the same code.
   ///
   /// Important notes about this default implementation, overrides, terms, and conditions:
-  ///   - For an extension overriding [layout] to function in a [BoxContainerHierarchy] the requirements are:
-  ///     - The [layout] sets [layoutSize] (usually, just before return) which should contain the whole
-  ///       area to which [BoxContainer.paint] will draw graphics.
+  ///   - For an extension overriding [layout] to function in a [BoxContainerHierarchy] the requirements
+  ///     for the [layout] method are:
+  ///     - It sets [layoutSize] (usually, just before return). The [layoutSize]
+  ///       should be large enough to contain the whole area to which [BoxContainer.paint] will draw graphics.
   ///       This is the only requirement for leafs.
   ///     - On non-leafs only:
   ///       - On each child [__children] that need to be shown, invoke, in this order
   ///         - child.[applyParentConstraints]
   ///         - child.[layout]
-  ///         - store of child [layoutSize]
+  ///         - set child's [layoutSize]
   ///       - Calculate self [layoutSize] from children [layoutSize]s
   ///
   ///   - For an extension overriding SOME OF THE PUBLIC METHODS CALLED IN [layout] BUT NOT [layout],
@@ -1403,6 +1405,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// Properties of layout on main axis.
   ///
   /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize
+  ///
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
 
@@ -1528,7 +1531,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
   @override
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    // todo-00-last-last-last-done : commented out : this is clearly not leaf, why to process isLeaf?
     /*
       if (isLeaf) {
       return [];
@@ -1564,7 +1566,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // The reason we want to use tight left align, is that if there are greedy children, we want them to take
       //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
       LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
-      _forceMainAxisLayoutProperties(align: Align.start, packing: Packing.tight);
+      _forceMainAxisLayoutProperties(
+        align: Align.start,
+        packing: Packing.tight,
+        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+      );
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
       // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
@@ -1576,7 +1582,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
       // After pre-positioning to obtain children sizes without any spacing, put back axis properties
       //  - next time this layouter will layout children using the original properties
-      _forceMainAxisLayoutProperties(packing: storedLayout.packing, align: storedLayout.align);
+      _forceMainAxisLayoutProperties(
+        align: storedLayout.align,
+        packing: storedLayout.packing,
+        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+      );
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
       //   self original constraint, and  nonGreedyChildrenSize
@@ -1624,11 +1634,19 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   void _forceMainAxisLayoutProperties({
     required Packing packing,
     required Align align,
+    required externalTicksLayoutProvider,
   }) {
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: align,
-      packing: packing,
-    );
+    // If external ticks provided, we do NOT want to force, otherwise force
+    // todo-00-last-last-last : When is externalTicksProvided used? If we use this, NEW chart squeezes all the way to the top!!!
+
+    if (packing != Packing.externalTicksProvided) {
+      mainAxisLayoutProperties = LengthsPositionerProperties(
+        align: align,
+        packing: packing,
+        externalTicksLayoutProvider: externalTicksLayoutProvider,
+      );
+    }
+
   }
 
   /* Keep
@@ -1781,6 +1799,7 @@ class TableLayoutCellDefiner {
     required this.layoutSequence,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
+    this.cellConstraints,
 });
   final int layoutSequence;
   late final int row;
@@ -1789,13 +1808,17 @@ class TableLayoutCellDefiner {
   final Align verticalAlign;
   bool isLayoutOverflown = false;
 
-  // Late final, can be pre-set by client OR set during [layout],
+  // Late final constraints, can be pre-set by client OR set during [layout],
   // this is especially useful for the first layed out: e.g. YContainer,
   // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
   // THE NewChartRootContainer AND the TableLayouter must add children in build,
   // because only then TableLayouter has constraints set!!!
-  /// Constraints set by user, if not, calculated and set during layout
-  late final BoxContainerConstraints constraints;
+  /// Constraints on the member [cellForThisDefiner].
+  ///
+  /// To enforce a [BoxLayouter.layoutSize] constraint on the ember [cellForThisDefiner].
+  /// they should be set by the client on creation of this instance.
+  /// If not set by user, they should be calculated and set during layout
+  late final BoxContainerConstraints? cellConstraints;
 
   /// Tracks if the cell container [cellForThisDefiner] invoked [layout];
   /// should be set to true after the corresponding container cell, the [TableLayoutCellDefiner.cellForThisDefiner]
@@ -1879,7 +1902,7 @@ class TableLayoutDefiner {
   /// The 1D iterable is derived from the cell definers 2D table [cellDefinersRows].
   Iterable<TableLayoutCellDefiner> get flatOrderedCellDefiners {
     if (_isFlatOrderedCellDefinersCached) return _cachedFlatOrderedCellDefiners;
-    _cachedFlatOrderedCellDefiners = flatCellDefiners.toList()..sort((a, b) => b.layoutSequence - a.layoutSequence);
+    _cachedFlatOrderedCellDefiners = flatCellDefiners.toList()..sort((a, b) => a.layoutSequence - b.layoutSequence);
     _isFlatOrderedCellDefinersCached = true;
     return _cachedFlatOrderedCellDefiners;
   }
@@ -1967,39 +1990,6 @@ class TableLayouter extends PositioningBoxLayouter {
     addChildren(
         tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList());
   }
-
-  /*
-d In TableCellDefiner, add isOverflown (hmm, maybe separate width, height
-
-d In TableDefiner, add two 1D Lists: rowHeights, columnWidths
-
-d Add layout methods around post, overriding the method that creates the rectangles. Instead, this section will create rectangles one by one for each cell
-
-progress When all cell are layedout (where??), we can calculate the max row heights and max column widths, needed to offset children cell in this layoter.
-for row in rows
-   rowHeights = row, find max height of layoutSize on cells not overflown. max constraint height on cells overflown
-   this will be the height of constraint on all rows
-  same for Columns
-
-Once we calculated the max row heights and max column widths, needed to offset children cell in this layouter, we can actully calculate and apply offset in me (parent) of each cell.
-Now position all children within table
-internalHeigthOffset = 0
-internalWidthOffset = 0
-
-for row in  rows
-
-   new column, internalWidthOffset = 0
-  for column in columns
-     get constraint from rowHeights columnWidths
-      call the _M class method to get the rectangle
-
-      offset the rectangle by (internalWidthOffset, internalHeigthOffset)
-
-   before next column, internalWidthOffset += thisRowWidth from columnsWidths
-
-before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
-
-   */
 
   /// Represents rows and columns of the children layed out by this [TableLayouter]
   final List<List<BoxContainer>> cellsTable;
@@ -2097,6 +2087,7 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
     numRows = tableLayoutDefiner.numRows;
     numColumns = tableLayoutDefiner.numColumns;
 
+    // todo-00!!!!! : Replace asserts with exceptions, and add better messages.
     assert(collectedSequences.length == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns);
     assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
@@ -2120,14 +2111,22 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
 
   /// Overridden with a no-op implementation.
   ///
-  /// Reason: This [TableLayouter.layout] does not pre-distribute constraints to all [children], it sets them just
-  ///         just before each child [layout], calculating them using
-  ///         [TableLayoutDefiner.calculate_available_constraint_on_cell].
+  /// Reason: This [TableLayouter.layout] does not pre-distribute constraints to all [children],
+  ///         but it sets each child constraint just before the child's [layout] is invoked,
+  ///         by calculating constraints using [TableLayoutDefiner.calculate_available_constraint_on_cell].
   @override
-  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
-  }
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {}
 
-  /// Descends and iterates table children (cells).
+  /// Descends to children: iterates table children (container), in the layout order [TableLayoutCellDefiner.layoutSequence]
+  /// as defined by the cell definers in the [TableLayouter.tableLayoutDefiner].
+  ///
+  /// In each child iteration step, the algorithm:
+  ///   - first creates cellConstraints on the table cell, giving each cell
+  ///     the rest of available space (table constraints minus the space taken by children cells already layed out)
+  ///   - applies the cellConstraints as parent constraints on the child
+  ///   - invokes child [layout].
+  ///
+  /// The desired layout order sequence is achieved by iterating the [TableLayoutDefiner.flatOrderedCellDefiners]
   ///
   /// Overridden to not set constraints on all children all at once in
   ///   [_layout_Pre_DistributeConstraintsToImmediateChildren],
@@ -2140,8 +2139,11 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
   /// Implementation comment:
   ///   - Iterates table children (cells) by iterating the cell definers in [tableLayoutDefiner].
   ///     Because the [tableLayoutDefiner] was validated to define all cells, this guarantees
-  ///        all table cells are iterated. Further, the order of descend is in the layout sequence order
-  ///        [TableLayoutDefiner.cellDefinersRows].
+  ///       all table cells are iterated.
+  ///     Further, the order of the descend layout
+  ///       is in the order of the layout sequence order [TableLayoutDefiner.cellDefinersRows],
+  ///       from [TableLayoutDefiner.flatOrderedCellDefiners]
+  ///
   void _layout_Descend() {
 
     // Descends into children, not directly, but via the table's cell definers
@@ -2150,17 +2152,21 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
 
       // b1. child-pre-descend: calculate constraints left over by previously
       //     layed out children, and set the calculated constraints on the child
-      BoxContainerConstraints cellConstraints;
-      if (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.first) {
-        // First layedout cell gets full parent (this) constraints
-        cellConstraints = constraints;
-      } else {
-        // Further layedout cell get whatever constraints are left over from previously layed out cells
-        cellConstraints =
-            tableLayoutDefiner.calculate_available_constraint_on_cell(
-                cellDefiner.row,
-                cellDefiner.column,
-            );
+
+      // If cellConstraints were set (presumed from the cellDefiner), keep it,
+      // otherwise calculate from non-layout cells.
+      BoxContainerConstraints? cellConstraints = cellDefiner.cellConstraints;
+      if (cellConstraints == null) {
+        if (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.first) {
+          // First layedout cell gets full parent (this) constraints
+          cellConstraints = constraints;
+        } else {
+          // Further layedout cell get whatever constraints are left over from previously layed out cells
+          cellConstraints = tableLayoutDefiner.calculate_available_constraint_on_cell(
+            cellDefiner.row,
+            cellDefiner.column,
+          );
+        }
       }
 
       var child = cellDefiner.cellForThisDefiner;
@@ -2195,17 +2201,16 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
   ///   This method creates rectangles one by one for each cell container, then
   ///   table-positions the rectangles within this [TableLayouter]'s [constraints].
   ///
-  /// Important note: All the Post processing in this [TableLayouter] is from it's base
-  ///                 [BoxContainer], except this method [layout_Post_NotLeaf_PositionChildren]
-  ///                 that todo-00-last-last-last-progress still : get back to this method. something weird. If should somewhere,
-  ///                             take into account the constraint size .. but it does not!! think!
-  ///                             MAYBE THIS WHOLE POST MUST BE DIFFERENT ORDER:
-  /// Implementation note: Iterates all children not directly, but via the table's cell definers - that
-  /// is consistent with this class's [TableLayouter._layout_Descend].
-  //
+  /// Note: Both Post processing methods in this [TableLayouter],
+  ///       [layout_Post_NotLeaf_PositionChildren] and [_layout_Post_NotLeaf_OffsetChildren]
+  ///       are overridden from the base [BoxLayouter]
+  ///
+  /// Implementation note: Iterates rows and columns, rather than using
+  ///   [tableLayoutDefiner.flatOrderedCellDefiners] as in [_layout_Descend].
+  ///   Here, the order does not matter, so rows and columns are more clear.
   @override
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    /* todo-00-last : removed :
+    /* keep
       if (isLeaf) {
       return [];
     }
@@ -2221,12 +2226,14 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
     // Once we calculated the max row heights and max column widths,
     // needed to offset children in cell constraint,
     // position all children within table, cell by cell, row first (although order is not relevant)
-    double internalHeightOffset = 0;
-    double internalWidthOffset = 0;
+    double internalHeightOffset = 0.0;
+    double internalWidthOffset = 0.0;
     List<ui.Rect> positionedChildren = [];
 
     List<List<TableLayoutCellDefiner>> cellDefinersRows = tableLayoutDefiner.cellDefinersRows;
 
+    // Position containers (children) in each cell by finding container offset in cell,
+    // then offset the whole cell by moving it to the position for row and column
     for (int row = 0; row < cellDefinersRows.length; row++) {
 
       List<TableLayoutCellDefiner> definerRow = cellDefinersRows[row];
@@ -2273,7 +2280,7 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
             .first;
 
         // Now offset the rectangle by the left-top position of the (row, column) cell being layedout.
-        positionedRect.shift(ui.Offset(internalWidthOffset, internalHeightOffset));
+        positionedRect = positionedRect.shift(ui.Offset(internalWidthOffset, internalHeightOffset));
 
         // And add to the returned children, as one list, from concatenated rows in the table.
         positionedChildren.add(positionedRect);
@@ -2297,8 +2304,6 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
   /// calculated as max widths and heights in this method.
   __layout_Post_CalculateAndSetMaxRowsHeightsAndMaxColumnWidths() {
 
-    // todo-00-last-last-last progress
-
     // Calculate and set the member max row heights and max column widths,
     // needed to offset children cell in this layouter table cells.
     rowHeights = tableLayoutDefiner.cellDefinersRows
@@ -2320,12 +2325,14 @@ before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
   }
 
   /// This method which offsets children base on rectangles from
-  /// [layout_Post_NotLeaf_PositionChildren] must be overriden to ensure the order we apply
+  /// [layout_Post_NotLeaf_PositionChildren] must be overridden to ensure the order we apply
   /// the rectangles 1D list to 2D children is for corresponding rectangle and child
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == numRows * numColumns);
 
+    // todo-00-last-last : for clarity only, iterate same way as layout_Post_NotLeaf_PositionChildren
+    // but the table that we iterate is irrelevant as the tables have contain corresponding cells
     for (int row = 0; row < cellsTable.length; row++) {
       List<BoxContainer> cellsRow = cellsTable[row];
       for (int column = 0; column < cellsRow.length; column++) {
@@ -2816,7 +2823,11 @@ class _MainAndCrossPositionedSegments {
   /// [mainAxisPositionedSegments] or [crossAxisPositionedSegments] are marked as
   /// [PositionedLineSegments.isOverflown].
   final BoxLayouter parentBoxLayouter;
-  /// todo-00-last-last-last : may or may not be from parentBoxLayouter.constraints, so separate.
+  /// Constraints that the [children] should fit in.
+  ///
+  /// [PositionedLineSegments.isOverflown] is set to [true] if children do not fit.
+  /// Constraints are by default from [parentBoxLayouter.constraints], but not necessarily,
+  /// so it is passed separately.
   final BoxContainerConstraints parentConstraints;
   final List<LayoutableBox> children;
   final LayoutAxis mainLayoutAxis;
@@ -2928,12 +2939,14 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
       child._forceMainAxisLayoutProperties(
         align: Align.start,
         packing: Packing.tight,
+        externalTicksLayoutProvider: child.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
     }
     if (child is Column && foundFirstColumnFromTop) {
       child._forceMainAxisLayoutProperties(
         align: Align.start,
         packing: Packing.matrjoska,
+        externalTicksLayoutProvider: child.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
     }
 

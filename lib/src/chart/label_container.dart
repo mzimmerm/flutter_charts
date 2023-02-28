@@ -8,7 +8,7 @@ import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 import 'container.dart' show AxisContainer;
 import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
-import 'container_layouter_base.dart' show LayoutableBox, LayoutContext;
+import 'container_layouter_base.dart' show LayoutableBox, LayoutContext, BoxLayouter; // todo-00-last: added BoxLayouter
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
@@ -91,9 +91,11 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
   ///
   /// Late initialized in layout.
   late final double _labelMaxWidth;
-  set labelMaxWidth(double width) {
+/*
+  set labelMaxWidth(double width) { // todo-00-last-last-last this seems unused, validate and comment out
     _labelMaxWidth = width;
   }
+*/
 
   /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
@@ -227,6 +229,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
+    // todo-00-last : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -237,8 +240,8 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
         boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      // todo-00-last : seems this was was /is never right  ?? applyParentOrderedSkip(this, true);
-      applyParentOrderedSkip(this, true);
+      // todo-00-last-last-last : fix this as not dealing with width < 0 brings issues further : seems this was was /is never right  ?? applyParentOrderedSkip(this, true);
+      applyParentOrderedSkip(parent as BoxLayouter, true);
       layoutSize = ui.Size.zero;
       return;
     }
@@ -272,6 +275,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
     _tiltedLabelEnvelope = _createLabelEnvelope();
     ui.Size layoutSize = _tiltedLabelEnvelope.size;
 
+    // todo-00!!!!! : add exception if reached with _labelMaxWidth < 0.0
     if (layoutSize.width > _labelMaxWidth) {
       isOverflowingHorizontally = true;
       _textPainter.layout(maxWidth: _labelMaxWidth);

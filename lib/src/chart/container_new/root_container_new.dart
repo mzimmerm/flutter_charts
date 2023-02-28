@@ -1,5 +1,6 @@
 
 import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import 'package:flutter_charts/src/chart/container_new/axis_corner_container.dart';
 import 'package:logger/logger.dart' as logger;
 
 import '../container.dart' as old_container;
@@ -34,20 +35,18 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersRows = [
-      [TableLayoutCellDefiner(layoutSequence: 0), TableLayoutCellDefiner(layoutSequence: 3)],
-      [TableLayoutCellDefiner(layoutSequence: 2), TableLayoutCellDefiner(layoutSequence: 1)],
+      [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 3)],
+      [TableLayoutCellDefiner(layoutSequence: 0), TableLayoutCellDefiner(layoutSequence: 2)],
     ];
 
     TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersRows: YDEX_cellDefinersRows);
 
-    // todo-00-last-last-last : create emptyContainer class and implementation - just a simple extension of ChartAreaContainer.
-    // when done, put back use of ensureKeyedMembersHaveUniqueKeys.
-    BoxContainer emptyContainer = xContainer;
+    BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
     TableLayouter tableLayouter = TableLayouter(
         cellsTable: [
           [yContainer, dataContainer],
-          [emptyContainer, xContainer],
+          [axisCornerContainer, xContainer],
         ],
         tableLayoutDefiner: tableLayoutDefiner);
 
