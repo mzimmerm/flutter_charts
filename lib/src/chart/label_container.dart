@@ -8,7 +8,7 @@ import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 import 'container.dart' show AxisContainer;
 import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
-import 'container_layouter_base.dart' show LayoutableBox, LayoutContext, BoxLayouter; // todo-00-last: added BoxLayouter
+import 'container_layouter_base.dart' show LayoutableBox, LayoutContext, BoxLayouter;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;

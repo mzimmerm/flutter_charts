@@ -781,21 +781,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     if (isRoot) {
       // todo-04 : rethink, what this size is used for. Maybe create a singleton 'uninitialized constraint' - maybe there is one already?
       assert(constraints.size != const ui.Size(-1.0, -1.0));
-      // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
-      // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
-      /* todo-00-last-last : removed forced sizing entirely
-      _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
-        // todo-00-last-last
-        // foundFirstRowFromTop: false,
-        // foundFirstColumnFromTop: false,
-
-        rollingTracker: _FirstRollingLayouterTracker(
-          firstRowFromTopFoundBefore: false,
-          firstColumnFromTopFoundBefore: false,
-        ),
-        parentContainer: this,
-      );
-     */
+      // Removed forced Packing changes on deeper Row and Column
     }
   }
 
@@ -1417,9 +1403,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
 
-  // todo-00-last-last-unused
-  bool isDeeperRollingAllowedToForceEvenWeights = false;
-
   /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
   /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
@@ -1574,24 +1557,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // Note: non greedy children have layout size when we reach here
 
     if (_hasGreedy) {
-      // todo-00-last-last : fix comments
-      // Force Align=left, Packing=tight, no matter what the Row properties are.
-      // The reason we want to use tight left align, is that if there are greedy children, we want them to take
-      //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
-      LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
-      /*  todo-00-last-last-done : removed forced sizing
-      _forceMainAxisLayoutProperties(
-        // todo-00-last-last : align: Align.start,
-        align: mainAxisLayoutProperties.align, // Keep alignment
-        packing: Packing.tight,
-        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
-        // rollingTracker is irrelevant here
-        rollingTracker: _FirstRollingLayouterTracker(
-          firstRowFromTopFoundBefore: false,
-          firstColumnFromTopFoundBefore: false,
-        ),
-      );
-      */
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
       // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
@@ -1600,21 +1565,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
       ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
       assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
-
-      // After pre-positioning to obtain children sizes without any spacing, put back axis properties
-      //  - next time this layouter will layout children using the original properties
-       /* todo-00-last-last-done : removed forced sizing
-      _forceMainAxisLayoutProperties(
-        align: storedLayout.align,
-        packing: storedLayout.packing,
-        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
-        // rollingTracker is irrelevant here
-        rollingTracker: _FirstRollingLayouterTracker(
-          firstRowFromTopFoundBefore: false,
-          firstColumnFromTopFoundBefore: false,
-        ),
-      );
-      */
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
       //   self original constraint, and  nonGreedyChildrenSize
@@ -1649,34 +1599,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   bool get _hasGreedy => _greedyChildren.isNotEmpty;
 
   bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
-
-/* todo-00-last-last-done : removed forced sizing
-  /// Support which allows to enforce non-positioning of nested extensions.
-  ///
-  /// To explain, in one-pass layout, if we want to keep the flexibility
-  /// of children getting full constraint from their parents,
-  /// only the topmost [Row] can offset their children.
-  ///
-  /// Nested [Row]s must not offset, as for example right alignment on a nested
-  /// [Row] would make all children to take up the whole available constraint from parent,
-  /// and the next  [Row] up has no choice but to move it to the right.
-  void _forceMainAxisLayoutProperties({
-    required _FirstRollingLayouterTracker rollingTracker,
-    required Packing packing,
-    required Align align,
-    required externalTicksLayoutProvider,
-  }) {
-    // If external ticks provided, we do NOT want to force, otherwise force
-    // todo-00-last-last-last : When is externalTicksProvided used? If we use this, NEW chart squeezes all the way to the top!!!
-
-    // todo-00-last-last-last done : removed this entirely
-    // mainAxisLayoutProperties = LengthsPositionerProperties(
-    //   align: align,
-    //   packing: packing,
-    //   externalTicksLayoutProvider: externalTicksLayoutProvider,
-    // );
-  }
-*/
 
 }
 
@@ -2933,7 +2855,92 @@ class _MainAndCrossPositionedSegments {
 
 // Functions and Helper classes ----------------------------------------------------------------------------------------
 
-/* todo-00-last-last removed forced spacing entirely
+// ---------------------------------------------------------------------------------------------------------------------
+/* END of BoxContainer: KEEP
+  // todo-04 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
+  //           ParentTiltTransform, ParentSheerTransform etc.
+  /// Maintains current tiltMatrix, a sum of all tiltMatrixs
+  /// passed in subsequent calls to [applyParentTransformMatrix] during object
+  /// lifetime.
+  vector_math.Matrix2 _transformMatrix = vector_math.Matrix2.identity();
+
+  /// Provides access to tiltMatrix for extension's [paint] methods.
+  vector_math.Matrix2 get transformMatrix => _transformMatrix;
+
+  /// Tilt may apply to the whole [BoxContainer].
+  /// todo-2 unused? move to base class? similar to offset?
+  void applyParentTransformMatrix(vector_math.Matrix2 transformMatrix) {
+    if (transformMatrix == vector_math.Matrix2.identity()) return;
+    _transformMatrix = _transformMatrix * transformMatrix;
+  }
+  */
+
+
+/* --------------------------
+  Removed forced Packing changes on deeper Row and Column
+
+  1. was on : RollingPositioningBoxLayouter
+  void _forceMainAxisLayoutProperties({
+    required _FirstRollingLayouterTracker rollingTracker,
+    required Packing packing,
+    required Align align,
+    required externalTicksLayoutProvider,
+  }) {
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: align,
+      packing: packing,
+      externalTicksLayoutProvider: externalTicksLayoutProvider,
+    );
+  }
+
+  // 2. Was on: _layout_IfRoot_DefaultTreePreprocessing
+
+  // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
+  // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
+  _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
+    rollingTracker: _FirstRollingLayouterTracker(
+      firstRowFromTopFoundBefore: false,
+      firstColumnFromTopFoundBefore: false,
+    ),
+    parentContainer: this,
+  );
+
+
+  // 3. Was in : RollingPositioningBoxLayouter
+          method _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy
+          section if (_hasGreedy)
+  LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
+      _forceMainAxisLayoutProperties(
+        align: mainAxisLayoutProperties.align, // Keep alignment
+        packing: Packing.tight,
+        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        // rollingTracker is irrelevant here
+        rollingTracker: _FirstRollingLayouterTracker(
+          firstRowFromTopFoundBefore: false,
+          firstColumnFromTopFoundBefore: false,
+        ),
+      );
+
+      List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
+      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
+      assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
+
+  // After pre-positioning to obtain children sizes without any spacing, put back axis properties
+  //  - next time this layouter will layout children using the original properties
+      _forceMainAxisLayoutProperties(
+        align: storedLayout.align,
+        packing: storedLayout.packing,
+        externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        // rollingTracker is irrelevant here
+        rollingTracker: _FirstRollingLayouterTracker(
+          firstRowFromTopFoundBefore: false,
+          firstColumnFromTopFoundBefore: false,
+        ),
+      );
+
+
+  4. Was in: this file, top level at the end
+
 /// Tracks found rolling layouters on behalf of
 /// [_static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning].
 class _FirstRollingLayouterTracker {
@@ -2949,7 +2956,7 @@ class _FirstRollingLayouterTracker {
   /// Rolling layouters found along the way, first found is first.
   List<BoxLayouter> foundRows = [];
   List<BoxLayouter> foundColumns = [];
-  
+
 }
 
 /// Forces default non-positioning axis layout properties [LengthsPositionerProperties]
@@ -2971,11 +2978,6 @@ class _FirstRollingLayouterTracker {
 void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning({
   required _FirstRollingLayouterTracker rollingTracker,
   required BoxLayouter parentContainer,
-  // todo-00-last-last
-  // required bool foundFirstRowFromTop,
-  // required bool foundFirstColumnFromTop,
-  // required BoxLayouter rollingLayouter,
-
 }) {
   if (__is_Row_for_rewrite(parentContainer) && !rollingTracker.firstRowFromTopFoundBefore) {
     rollingTracker.firstRowFromTopFoundBefore = true;
@@ -2988,15 +2990,9 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
   }
 
   for (var currentContainer in parentContainer._children) {
-    // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
-    // so that only the top layouter can have non-start and non-tight/matrjoska
-    // todo-01 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
-    //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
-    //           but this is not simple.
     if (__is_Row_for_rewrite(currentContainer) && rollingTracker.firstRowFromTopFoundBefore) {
       (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
-        // todo-00-last-last : align: Align.start,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
         externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
@@ -3005,7 +3001,6 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     if (__is_Column_for_rewrite(currentContainer) && rollingTracker.firstColumnFromTopFoundBefore) {
       (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
-        // todo-00-last-last : align: Align.start,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.matrjoska,
         externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
@@ -3016,35 +3011,11 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
       rollingTracker: rollingTracker,
       parentContainer: currentContainer,
-
-      // todo-00-last-last
-      // foundFirstRowFromTop: foundFirstRowFromTop,
-      // foundFirstColumnFromTop: foundFirstColumnFromTop,
-      // parentContainer: currentContainer,
     );
   }
 }
-*/
 
-// todo-00-last-last removed forced spacing entirely : bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && container is! ExternalTicksRow;
-// todo-00-last-last removed forced spacing entirely : bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
+bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && container is! ExternalTicksRow;
+bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
 
-// ---------------------------------------------------------------------------------------------------------------------
-/* END of BoxContainer: KEEP
-  // todo-04 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
-  //           ParentTiltTransform, ParentSheerTransform etc.
-  /// Maintains current tiltMatrix, a sum of all tiltMatrixs
-  /// passed in subsequent calls to [applyParentTransformMatrix] during object
-  /// lifetime.
-  vector_math.Matrix2 _transformMatrix = vector_math.Matrix2.identity();
-
-  /// Provides access to tiltMatrix for extension's [paint] methods.
-  vector_math.Matrix2 get transformMatrix => _transformMatrix;
-
-  /// Tilt may apply to the whole [BoxContainer].
-  /// todo-2 unused? move to base class? similar to offset?
-  void applyParentTransformMatrix(vector_math.Matrix2 transformMatrix) {
-    if (transformMatrix == vector_math.Matrix2.identity()) return;
-    _transformMatrix = _transformMatrix * transformMatrix;
-  }
-  */
+ */
