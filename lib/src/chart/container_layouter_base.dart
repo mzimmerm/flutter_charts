@@ -783,17 +783,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
       assert(constraints.size != const ui.Size(-1.0, -1.0));
       // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
       // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
+      /* todo-00-last-last : removed forced sizing entirely
       _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
-/* todo-00-last-last
-        foundFirstRowFromTop: false,
-        foundFirstColumnFromTop: false,
-*/
+        // todo-00-last-last
+        // foundFirstRowFromTop: false,
+        // foundFirstColumnFromTop: false,
+
         rollingTracker: _FirstRollingLayouterTracker(
           firstRowFromTopFoundBefore: false,
           firstColumnFromTopFoundBefore: false,
         ),
         parentContainer: this,
       );
+     */
     }
   }
 
@@ -1577,6 +1579,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       // The reason we want to use tight left align, is that if there are greedy children, we want them to take
       //   all remaining space. So any non-tight packing, center or right align, does not make sense if Greedy are present.
       LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
+      /*  todo-00-last-last-done : removed forced sizing
       _forceMainAxisLayoutProperties(
         // todo-00-last-last : align: Align.start,
         align: mainAxisLayoutProperties.align, // Keep alignment
@@ -1588,6 +1591,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
           firstColumnFromTopFoundBefore: false,
         ),
       );
+      */
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
       // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
@@ -1599,6 +1603,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
       // After pre-positioning to obtain children sizes without any spacing, put back axis properties
       //  - next time this layouter will layout children using the original properties
+       /* todo-00-last-last-done : removed forced sizing
       _forceMainAxisLayoutProperties(
         align: storedLayout.align,
         packing: storedLayout.packing,
@@ -1609,6 +1614,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
           firstColumnFromTopFoundBefore: false,
         ),
       );
+      */
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
       //   self original constraint, and  nonGreedyChildrenSize
@@ -1644,6 +1650,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
   bool get _hasNonGreedy => _nonGreedyChildren.isNotEmpty;
 
+/* todo-00-last-last-done : removed forced sizing
   /// Support which allows to enforce non-positioning of nested extensions.
   ///
   /// To explain, in one-pass layout, if we want to keep the flexibility
@@ -1662,13 +1669,15 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // If external ticks provided, we do NOT want to force, otherwise force
     // todo-00-last-last-last : When is externalTicksProvided used? If we use this, NEW chart squeezes all the way to the top!!!
 
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: align,
-      packing: packing,
-      externalTicksLayoutProvider: externalTicksLayoutProvider,
-    );
+    // todo-00-last-last-last done : removed this entirely
+    // mainAxisLayoutProperties = LengthsPositionerProperties(
+    //   align: align,
+    //   packing: packing,
+    //   externalTicksLayoutProvider: externalTicksLayoutProvider,
+    // );
   }
-  
+*/
+
 }
 
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
@@ -2924,6 +2933,7 @@ class _MainAndCrossPositionedSegments {
 
 // Functions and Helper classes ----------------------------------------------------------------------------------------
 
+/* todo-00-last-last removed forced spacing entirely
 /// Tracks found rolling layouters on behalf of
 /// [_static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning].
 class _FirstRollingLayouterTracker {
@@ -2961,11 +2971,11 @@ class _FirstRollingLayouterTracker {
 void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning({
   required _FirstRollingLayouterTracker rollingTracker,
   required BoxLayouter parentContainer,
-/* todo-00-last-last
-  required bool foundFirstRowFromTop,
-  required bool foundFirstColumnFromTop,
-  required BoxLayouter rollingLayouter,
-*/
+  // todo-00-last-last
+  // required bool foundFirstRowFromTop,
+  // required bool foundFirstColumnFromTop,
+  // required BoxLayouter rollingLayouter,
+
 }) {
   if (__is_Row_for_rewrite(parentContainer) && !rollingTracker.firstRowFromTopFoundBefore) {
     rollingTracker.firstRowFromTopFoundBefore = true;
@@ -3006,17 +3016,18 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
     _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
       rollingTracker: rollingTracker,
       parentContainer: currentContainer,
-/* todo-00-last-last
-      foundFirstRowFromTop: foundFirstRowFromTop,
-      foundFirstColumnFromTop: foundFirstColumnFromTop,
-      parentContainer: currentContainer,
-*/
+
+      // todo-00-last-last
+      // foundFirstRowFromTop: foundFirstRowFromTop,
+      // foundFirstColumnFromTop: foundFirstColumnFromTop,
+      // parentContainer: currentContainer,
     );
   }
 }
+*/
 
-bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && container is! ExternalTicksRow;
-bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
+// todo-00-last-last removed forced spacing entirely : bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && container is! ExternalTicksRow;
+// todo-00-last-last removed forced spacing entirely : bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* END of BoxContainer: KEEP
