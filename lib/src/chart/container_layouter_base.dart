@@ -784,9 +784,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
       // On nested levels [Row]s OR [Column]s force non-positioning layout properties.
       // A hack makes this baseclass [BoxLayouter] depend on it's extensions [Column] and [Row]
       _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
+/* todo-00-last-last
         foundFirstRowFromTop: false,
         foundFirstColumnFromTop: false,
-        boxLayouter: this,
+*/
+        rollingTracker: _FirstRollingLayouterTracker(
+          firstRowFromTopFoundBefore: false,
+          firstColumnFromTopFoundBefore: false,
+        ),
+        parentContainer: this,
       );
     }
   }
@@ -1570,6 +1576,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
         align: Align.start,
         packing: Packing.tight,
         externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        // rollingTracker is irrelevant here
+        rollingTracker: _FirstRollingLayouterTracker(
+          firstRowFromTopFoundBefore: false,
+          firstColumnFromTopFoundBefore: false,
+        ),
       );
 
       // Get the NonGreedy [layoutSize](s), call this layouter layout method,
@@ -1586,6 +1597,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
         align: storedLayout.align,
         packing: storedLayout.packing,
         externalTicksLayoutProvider: mainAxisLayoutProperties.externalTicksLayoutProvider,
+        // rollingTracker is irrelevant here
+        rollingTracker: _FirstRollingLayouterTracker(
+          firstRowFromTopFoundBefore: false,
+          firstColumnFromTopFoundBefore: false,
+        ),
       );
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
@@ -1632,6 +1648,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   /// [Row] would make all children to take up the whole available constraint from parent,
   /// and the next  [Row] up has no choice but to move it to the right.
   void _forceMainAxisLayoutProperties({
+    required _FirstRollingLayouterTracker rollingTracker,
     required Packing packing,
     required Align align,
     required externalTicksLayoutProvider,
@@ -1639,25 +1656,13 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     // If external ticks provided, we do NOT want to force, otherwise force
     // todo-00-last-last-last : When is externalTicksProvided used? If we use this, NEW chart squeezes all the way to the top!!!
 
-    if (packing != Packing.externalTicksProvided) {
-      mainAxisLayoutProperties = LengthsPositionerProperties(
-        align: align,
-        packing: packing,
-        externalTicksLayoutProvider: externalTicksLayoutProvider,
-      );
-    }
-
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: align,
+      packing: packing,
+      externalTicksLayoutProvider: externalTicksLayoutProvider,
+    );
   }
-
-  /* Keep
-  void _forceCrossAxisLayoutProperties({
-    required Packing packing,
-    required Align align,
-  }) {
-    crossAxisLayoutProperties = LengthsPositionerProperties(packing: packing, align: align);
-  }
-  */
-
+  
 }
 
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
@@ -2911,7 +2916,25 @@ class _MainAndCrossPositionedSegments {
 
 }
 
-// Functions----- ------------------------------------------------------------------------------------------------------
+// Functions and Helper classes ----------------------------------------------------------------------------------------
+
+/// Tracks found rolling layouters on behalf of
+/// [_static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning].
+class _FirstRollingLayouterTracker {
+  _FirstRollingLayouterTracker({
+    required this.firstRowFromTopFoundBefore,
+    required this.firstColumnFromTopFoundBefore,
+    // List<BoxLayouter> foundRows = const [],
+    // List<BoxLayouter> foundColumns = const [],
+  });
+
+  bool firstRowFromTopFoundBefore;
+  bool firstColumnFromTopFoundBefore;
+  /// Rolling layouters found along the way, first found is first.
+  List<BoxLayouter> foundRows = [];
+  List<BoxLayouter> foundColumns = [];
+  
+}
 
 /// Forces default non-positioning axis layout properties [LengthsPositionerProperties]
 /// on the nested hierarchy nodes of type [Row] and [Column] nodes.
@@ -2930,47 +2953,62 @@ class _MainAndCrossPositionedSegments {
 ///
 /// This method forces the deeper level values to the non-offsetting.
 void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning({
+  required _FirstRollingLayouterTracker rollingTracker,
+  required BoxLayouter parentContainer,
+/* todo-00-last-last
   required bool foundFirstRowFromTop,
   required bool foundFirstColumnFromTop,
-  required BoxLayouter boxLayouter,
+  required BoxLayouter rollingLayouter,
+*/
 }) {
-  if (boxLayouter is Row && !foundFirstRowFromTop) {
-    foundFirstRowFromTop = true;
+  if (__is_Row_for_rewrite(parentContainer) && !rollingTracker.firstRowFromTopFoundBefore) {
+    rollingTracker.firstRowFromTopFoundBefore = true;
+    rollingTracker.foundRows.add(parentContainer);
   }
 
-  if (boxLayouter is Column && !foundFirstColumnFromTop) {
-    foundFirstColumnFromTop = true;
+  if (__is_Column_for_rewrite(parentContainer) && !rollingTracker.firstColumnFromTopFoundBefore) {
+    rollingTracker.firstColumnFromTopFoundBefore = true;
+    rollingTracker.foundColumns.add(parentContainer);
   }
 
-  for (var child in boxLayouter._children) {
+  for (var currentContainer in parentContainer._children) {
     // pre-child, if this node or nodes above did set 'foundFirst', rewrite the child values
     // so that only the top layouter can have non-start and non-tight/matrjoska
-    // todo-04 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
+    // todo-01 : Only push the force on children of child which are NOT Greedy - reason is, Greedy does
     //           obtain smaller constraint which should allow children further down to be rows with any align and packing.
     //           but this is not simple.
-    if (child is Row && foundFirstRowFromTop) {
-      child._forceMainAxisLayoutProperties(
+    if (__is_Row_for_rewrite(currentContainer) && rollingTracker.firstRowFromTopFoundBefore) {
+      (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
+        rollingTracker: rollingTracker,
         align: Align.start,
         packing: Packing.tight,
-        externalTicksLayoutProvider: child.mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
     }
-    if (child is Column && foundFirstColumnFromTop) {
-      child._forceMainAxisLayoutProperties(
+    if (__is_Column_for_rewrite(currentContainer) && rollingTracker.firstColumnFromTopFoundBefore) {
+      (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
+        rollingTracker: rollingTracker,
         align: Align.start,
         packing: Packing.matrjoska,
-        externalTicksLayoutProvider: child.mainAxisLayoutProperties.externalTicksLayoutProvider,
+        externalTicksLayoutProvider: currentContainer.mainAxisLayoutProperties.externalTicksLayoutProvider,
       );
     }
 
     // in-child continue to child's children with the potentially updated values 'foundFirst'
     _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioning(
+      rollingTracker: rollingTracker,
+      parentContainer: currentContainer,
+/* todo-00-last-last
       foundFirstRowFromTop: foundFirstRowFromTop,
       foundFirstColumnFromTop: foundFirstColumnFromTop,
-      boxLayouter: child,
+      parentContainer: currentContainer,
+*/
     );
   }
 }
+
+bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && container is! ExternalTicksRow;
+bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
 
 // ---------------------------------------------------------------------------------------------------------------------
 /* END of BoxContainer: KEEP

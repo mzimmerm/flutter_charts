@@ -40,6 +40,7 @@ import '../container_new/container_common_new.dart' as container_common_new;
 
       List<BoxContainer> children = [
         container_base.Column(children: [
+          // todo-00-!!!!! add LineSegment for axis line
           container_base.ExternalTicksRow(
             mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
               externalTickAt: ExternalTickAt.childCenter,
@@ -120,6 +121,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
     List<BoxContainer> children = [
       // Row contains Column of labels and vertical LineSegment for Y axis
       container_base.Row(children: [
+        // todo-00-!!!!! add LineSegment for axis line
         container_base.ExternalTicksColumn(
           mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
             externalTickAt: ExternalTickAt.childCenter,
