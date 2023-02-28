@@ -48,7 +48,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///      parent is set on all children as `child.parent = this`.
   ///   2. In [BoxContainer.addChildren], [_parent] is set on all passed children.
   BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this parent
-  BoxContainer? get parent => _parent; // todo-00-last-done: added to access parent, see usages KEEP FOR NOW ONLY.
+  BoxContainer? get parent => _parent; // todo-01 - only one use. See if needed long term.
 
   /// Manages children of this [BoxContainer].
   ///
@@ -2331,8 +2331,20 @@ class TableLayouter extends PositioningBoxLayouter {
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == numRows * numColumns);
 
-    // todo-00-last-last : for clarity only, iterate same way as layout_Post_NotLeaf_PositionChildren
-    // but the table that we iterate is irrelevant as the tables have contain corresponding cells
+    List<List<TableLayoutCellDefiner>> cellDefinersRows = tableLayoutDefiner.cellDefinersRows;
+
+    // Apply in-table offset, already calculated as rectangles on all table cells, to the cell.
+    // Implementation note: We iterate same way as layout_Post_NotLeaf_PositionChildren, same result if we
+    //    iterate cellsTable as the tables have contain corresponding cells
+    for (int row = 0; row < cellDefinersRows.length; row++) {
+      List<TableLayoutCellDefiner> definerRow = cellDefinersRows[row];
+      for (int column = 0; column < definerRow.length; column++) {
+        TableLayoutCellDefiner cellDefiner = definerRow[column];
+        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * numRows + column].topLeft);
+      }
+    }
+
+    /*
     for (int row = 0; row < cellsTable.length; row++) {
       List<BoxContainer> cellsRow = cellsTable[row];
       for (int column = 0; column < cellsRow.length; column++) {
@@ -2340,6 +2352,7 @@ class TableLayouter extends PositioningBoxLayouter {
         cell.applyParentOffset(this, positionedRectsInMe[row * numRows + column].topLeft);
       }
     }
+    */
   }
 
 }

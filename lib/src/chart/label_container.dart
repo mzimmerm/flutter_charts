@@ -91,11 +91,6 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
   ///
   /// Late initialized in layout.
   late final double _labelMaxWidth;
-/*
-  set labelMaxWidth(double width) { // todo-00-last-last-last this seems unused, validate and comment out
-    _labelMaxWidth = width;
-  }
-*/
 
   /// Offset of this [LabelContainerOriginalKeep]'s label, created by the [_textPainter].
   /// 
@@ -240,7 +235,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
         boxConstraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);
     _labelMaxWidth = labelMaxWidth;
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
-      // todo-00-last-last-last : fix this as not dealing with width < 0 brings issues further : seems this was was /is never right  ?? applyParentOrderedSkip(this, true);
+      // todo-01 : fix this as not dealing with width < 0 brings issues further
       applyParentOrderedSkip(parent as BoxLayouter, true);
       layoutSize = ui.Size.zero;
       return;
