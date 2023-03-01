@@ -32,11 +32,11 @@ class LineChartViewMaker extends ChartViewMaker {
   /// Concrete implementation returns the root for line chart.
   @override
   LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
-    legendContainer = makeViewForLegendContainer();
-    xContainer      = makeViewForDomainAxis();
-    yContainerFirst = makeViewForYContainerFirst();
-    yContainer      = makeViewForRangeAxis();
-    dataContainer   = makeViewForDataContainer();
+    var legendContainer = makeViewForLegendContainer();
+    var xContainer      = makeViewForDomainAxis();
+    var yContainerFirst = makeViewForYContainerFirst();
+    var yContainer      = makeViewForRangeAxis();
+    var dataContainer   = makeViewForDataContainer();
 
     if (isUseOldDataContainer) {
       return LineChartRootContainer(

@@ -61,29 +61,6 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     ]);
   }
 
-/*
-    super(
-    legendContainer:                 legendContainer,
-    xContainer:                      xContainer,
-    yContainer:                      yContainer,
-    yContainerFirst:                 yContainerFirst,
-    dataContainer:                   dataContainer,
-    ChartViewMaker chartViewMaker:   chartViewMaker,
-    NewModel chartData:              chartData,
-    isStacked:                       isStacked,
-    xContainerLabelLayoutStrategy:   xContainerLabelLayoutStrategy,
-    )
-   */
-
-
-/*
-      : super(chartViewMaker: chartViewMaker) {
-    logger.Logger().d('    Constructing ChartRootContainer');
-    // Attach children passed in constructor, previously created in Maker, to self
-    addChildren([legendContainer, xContainer, yContainer, dataContainer]);
-  }
-*/
-
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
   /// which is never set on instances of this [ChartRootContainer].
   @override
@@ -92,7 +69,7 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   /// Number of columns in the [DataContainer].
 
   /// Base Areas of chart.
-  /// todo-00!!!! All below declare the old containers. remove when completely separated, make this NewXContainer etc
+  /// todo-00-later : change those to new containers :  All below declare the old containers. remove when completely separated, make this NewXContainer etc
   @override
   late LegendContainer legendContainer;
   @override
@@ -106,8 +83,16 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
 
   /// ##### Subclasses - aware members.
 
+  // --------------- overrides to implement legacy vvvvv
   @override
   late bool isStacked;
+  @override
+  double get xGridStep => throw UnimplementedError();
+  @override
+  List<double> get xTickXs => throw UnimplementedError();
+  @override
+  List<double> get yTickYs => throw UnimplementedError();
+// --------------- overrides to implement legacy ^^^^^
 
 
 }

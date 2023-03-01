@@ -41,7 +41,7 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
   /// it does not need to override [layout_Post_Leaf_SetSize_FromInternals].
   @override
   void layout() {
-    buildAndReplaceChildren(container_base.LayoutContext.unused);
+    buildAndReplaceChildren();
 
     // The switch below takes care of the pixel positioning aka layout.
 
@@ -111,9 +111,8 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
     canvas.drawLine(_pixelPointFrom, _pixelPointTo, linePaint);
   }
 
-  // todo-00!!! remove the LayoutContext everywhere
   @override
-  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }

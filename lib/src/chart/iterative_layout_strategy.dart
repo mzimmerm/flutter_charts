@@ -2,7 +2,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:math' as math show pi;
 
 // this level or equivalent
-import 'container_layouter_base.dart';
+// import 'container_layouter_base.dart';
 import 'container.dart' show AdjustableLabelsChartAreaContainer;
 import 'options.dart' show ChartOptions;
 import '../morphic/rendering/constraints.dart';
@@ -148,8 +148,8 @@ class DefaultIterativeLabelLayoutStrategy extends LabelLayoutStrategy {
     //   with the changed state above (font, tilt, or asking less labels to be shown).
     // The rebuild must be the same build called on [XContainer] in [ChartRootContainer.layout].
     // Because the _adjustableLabelsContainer is XContainer, it is also the EnableBuildAndAddChildrenLateOnBoxContainer.
-    (_adjustableLabelsContainer as BuilderOfChildrenDuringParentLayout).buildAndReplaceChildren(LayoutContext.unused);
     _adjustableLabelsContainer.layout();
+
 
     // Return to caller, which is always [layout]. [layout] will call this [reLayout] iteratively
     // if another [reLayout] is needed, up to [_atDepth] iterations.

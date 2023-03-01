@@ -72,29 +72,16 @@ import '../container_new/container_common_new.dart' as container_common_new;
   Interval get axisPixelsRange => throw UnimplementedError();
   @override
   set axisPixelsRange(Interval _) => throw UnimplementedError();
-
   @override
   Size get lateReLayoutSize => throw UnimplementedError();
   @override
   set lateReLayoutSize(Size _) => throw UnimplementedError();
-
   @override
-  Object findSourceContainersReturnLayoutResultsToBuildSelf() {
-    throw UnimplementedError();
-  }
-
-  @override
-  // TODO: implement labelLayoutStrategy
   LabelLayoutStrategy get labelLayoutStrategy => throw UnimplementedError();
-
   @override
-  bool labelsOverlap() {
-    throw UnimplementedError();
-  }
-
+  bool labelsOverlap() => throw UnimplementedError();
   @override
   double get xGridStep => throw UnimplementedError();
-
   @override
   double get xLabelsMaxHeight => throw UnimplementedError();
   // --------------- overrides to implement legacy ^^^^^
@@ -149,31 +136,10 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
   // --------------- overrides to implement legacy vvvvv
   @override
   Interval get axisPixelsRange => throw StateError('Should not be called for new layouters');
-
   @override
   set axisPixelsRange(Interval _) => throw StateError('Should not be called for new layouters');
-
-  @override
-  Object findSourceContainersReturnLayoutResultsToBuildSelf() {
-    throw UnimplementedError();
-  }
-
   @override
   double get yLabelsMaxHeight => throw UnimplementedError();
 // --------------- overrides to implement legacy ^^^^^^
 }
 
-/*
-class NewYContainer extends container.YContainer {
-  /// Constructs the container that holds X labels.
-  ///
-  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
-  NewYContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  }) : super(
-    chartViewMaker: chartViewMaker,
-  );
-}
-*/

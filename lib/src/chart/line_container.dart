@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 // this level
 import 'package:flutter_charts/flutter_charts.dart';
 
-import 'container_layouter_base.dart' show LayoutableBox, LayoutContext;
+import 'container_layouter_base.dart' show LayoutableBox;
 import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
@@ -54,7 +54,7 @@ class LineContainer extends container_common_new.ChartAreaContainer {
   /// it does not need to override [layout_Post_Leaf_SetSize_FromInternals].
   @override
   void layout() {
-    buildAndReplaceChildren(LayoutContext.unused);
+    buildAndReplaceChildren();
     // Use the coordinates manually layed out during creation in [GridLinesContainer] by
     lineFrom = ui.Offset(manualLayedOutFromX, manualLayedOutFromY);
     lineTo = ui.Offset(manualLayedOutToX, manualLayedOutToY);
@@ -77,7 +77,7 @@ class LineContainer extends container_common_new.ChartAreaContainer {
 
   // todo-00!!! remove the LayoutContext everywhere
   @override
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }

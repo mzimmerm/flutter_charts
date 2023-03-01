@@ -96,10 +96,34 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     addChildren(newChildren);
   }
 
-  /// Method that allows [BoxContainer] children to be created and set (or replaced) during [layout]
-  /// of their parent.
+  /// Allows [BoxContainer]'s [_children] to be created and set (or replaced) late (after parent creation)
+  /// while the parent [layout] is descended into it's children [layout]s.
   ///
-  /// Implementations use this as follows:
+  /// Note: "Normally", the [_children] should created *early* in the [BoxContainer] constructor.
+  ///
+  /// Important note on motivation for this method's existence:
+  ///   - When constructing most UIs, when creating a parent [BoxContainer], the UI creator
+  ///     knows there is a fixed list of children; such fixed list can be created in the parent constructor,
+  ///     by adding children constructors inside the list in the `children: [..]` section. It is a judgment
+  ///     of the creator which layouter (if any!) the children will be wrapped in. It could be:
+  ///     - Using a rolling layouter such as Row, if the children fit on one line.
+  ///     - Using a wrapping layouter, such as WrapOnEnd if the children may not fit on one line
+  ///     - Using a horizontal scrollbar
+  ///     - or another approach.
+  ///   - Another situation is that, the UI creator knows there will be a list of children, but does not know how many,
+  ///     until runtime.
+  ///     - In this situation, it the UI creator intents for all children to be shown, they solution is, one of the above.
+  ///     - However, in charting:
+  ///       - Using a rolling layouter may cause labels to overlap or not fit
+  ///       - Using a wrapping layouter to continue chart on another line is not reasonably possible,
+  ///       - Using a horizontal scrollbar for the chart is often not desired,
+  ///     - In charting, a reasonable approach is to skip some labels. However, it is not known
+  ///       util runtime, how much space will be given to the chart, or how many labels would fit the width.
+  ///     - *The intended role, and reason of existence, of this method, is to build, or rebuild, the children
+  ///        at runtime during the [layout] process, when both the constraints left for the chart, as well
+  ///        as the number of children (labels) is known*
+  ///
+  /// Implementations should use this method as follows:
   ///   - Implementations can assume that [BoxLayouter.constraints] are set,
   ///     likely by a hierarchy-parent during layout.
   ///   - Implementations can assume this method is called in parent's [layout].
@@ -114,18 +138,42 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///   the sequence of method invocations of such object should be as follows
   ///   ``` dart
   ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
-  ///     2.  instance.buildAndReplaceChildren(LayoutContext.unused); // or a concrete LayoutContext
+  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-00-doc documentation is not right
   ///     3.  instance.layout();
   ///     4.  instance.applyParentOffset(this, instanceParentOffset);
   ///   ```
   ///   This was chosen because there are legitimate reasons for the [buildAndReplaceChildren]
   ///   to need the instance's [constraints].
   ///
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext);
+  /// An example: As an example, we have a chart with 'root container' which contains two hierarchy-sibling areas:
+  ///   - the 'x axis container', which shows data labels that must not wrap, but
+  ///     there may be too many labels to fit the width.
+  ///   - The 'data container' which shows, among others, a dotted vertical line
+  ///     in the center of each label.
+  ///
+  ///   - An acceptable solution to the problem where 'x axis container' labels that must not wrap, but
+  ///     there may be too many labels to fit the width, is for the chart to skip every N-th label.
+  ///     The N only becomes known during the 'x axis container' [layout],
+  ///     called from the 'root container' [layout].  But this situation creates a
+  ///     dependency for drawing dotted lines above the labels. As the dotted lines are part
+  ///     of 'data container', a sibling container to the 'x axis container',
+  ///     we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
+  ///     and call it's [buildAndReplaceChildren] during the 'root container' [layout].
+  ///
+  ///   - This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
+  ///     depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
+  ///     agree on the object to exchange the 'sink' create information - this is the object
+  ///     returned from [findSourceContainersReturnLayoutResultsToBuildSelf]
+  ///
+  ///   - In such situation, a hierarchy-parent during the [layout] would first call
+  ///     this mixin's siblings' [layout], establishing the remaining space
+  ///     ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
+  ///     create an 'appropriate', 'non-overlapping' children of itself.
+
+  void buildAndReplaceChildren();
 
   /// Default implementation of [buildAndReplaceChildren] is a no-op,
-  /// does not modify this node's children, does not modify container's internal state,
-  /// does not modify the passed [LayoutContext] and returns.
+  /// does not modify this node's children, does not modify container's internal state
   ///
   /// Default should be called from [buildAndReplaceChildren] by any container
   /// that creates it's whole child hierarchy in its constructor.
@@ -135,7 +183,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// should not call this default method in [buildAndReplaceChildren], but use
   /// [buildAndReplaceChildren] to do the intended deeper hierarchy building.
   ///
-  void buildAndReplaceChildrenDefault(covariant LayoutContext layoutContext) {
+  void buildAndReplaceChildrenDefault() {
     // As a test, replace children with self. Remove later when this proves to work
     // replaceChildrenWith(_children);
   }
@@ -762,7 +810,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   @override
   void layout() {
-    buildAndReplaceChildren(LayoutContext.unused);
+    buildAndReplaceChildren();
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
@@ -789,7 +837,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
     _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
 
-    // B. node-descend todo-00!!!! extract into method _layout_Descend
+    // B. node-descend todo-00-later extract into method _layout_Descend
     for (var child in _children) {
       // b1. child-pre-descend (empty)
       // b2. child-descend
@@ -1105,8 +1153,6 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   ///
   /// See the invoking [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize].
   ///
-  /// Note: todo-00!!! Is this right?? An alternative implementation could return an empty list here
-  ///       which would cause no offsets on children are applied, in the follow-up method.
   @override
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
     // This is a no-op because it does not change children positions from where they are at their current offsets.
@@ -1191,15 +1237,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
   }
 }
 
-/// no-op class that should handle passing information during hierarchy building.
-///
-/// Allows siblings which were layed out before this element, to pass information
-/// that control layout of this element.
-class LayoutContext {
-  LayoutContext._forUnused();
-  static final LayoutContext unused = LayoutContext._forUnused();
-}
-
+/*
 /// Mixin marks implementations as able to create and add [_children] *late*,
 /// during [layout] of their parent.
 ///
@@ -1272,7 +1310,7 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
             'Implementations invoking this method must implement it.');
   }
 }
-
+*/
 // ---------- Positioning and non-positioning layouters, rolling positioning layouters, Row and Column, Greedy ---------
 
 /// Abstract layouter which is allowed to offset it's children with non zero offset.
@@ -1315,8 +1353,8 @@ abstract class PositioningBoxLayouter extends BoxContainer {
   }
 
   @override
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }
 
@@ -1344,8 +1382,8 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   }
 
   @override
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 
 }
@@ -1417,7 +1455,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   @override
   void layout() {
-    buildAndReplaceChildren(LayoutContext.unused);
+    buildAndReplaceChildren();
 
     _layout_IfRoot_DefaultTreePreprocessing();
 
@@ -2029,7 +2067,7 @@ class TableLayouter extends PositioningBoxLayouter {
     numRows = tableLayoutDefiner.numRows;
     numColumns = tableLayoutDefiner.numColumns;
 
-    // todo-00!!!!! : Replace asserts with exceptions, and add better messages.
+    // todo-00-later : Replace asserts with exceptions, and add better messages.
     assert(collectedSequences.length == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns);
     assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
@@ -2199,7 +2237,7 @@ class TableLayouter extends PositioningBoxLayouter {
           // as long as we pass the Align on the corresponding axis
           var mainAxisLayoutProperties = LengthsPositionerProperties(
           align: cellDefiner.horizontalAlign,
-          packing: Packing.tight, // todo-00!!!! Write a test. This should not matter for one child!
+          packing: Packing.tight, // todo-00-later Write a test. This should not matter for one child!
         );
         var crossAxisLayoutProperties = LengthsPositionerProperties(
           align: cellDefiner.verticalAlign,
@@ -2374,8 +2412,8 @@ class Greedy extends NonPositioningBoxLayouter {
   }
 
   @override
-  void buildAndReplaceChildren(covariant LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 
 }
@@ -3019,3 +3057,19 @@ bool __is_Row_for_rewrite(BoxLayouter container)    => container is Row    && co
 bool __is_Column_for_rewrite(BoxLayouter container) => container is Column && container is! ExternalTicksColumn;
 
  */
+
+/*
+
+
+/// buildAndReplaceChildrenDefault - does not modify the passed [LayoutContext] and returns.
+
+
+/// no-op class that should handle passing information during hierarchy building.
+///
+/// Allows siblings which were layed out before this element, to pass information
+/// that control layout of this element.
+class LayoutContext {
+  LayoutContext._forUnused();
+  static final LayoutContext unused = LayoutContext._forUnused();
+}
+*/

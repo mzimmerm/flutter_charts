@@ -58,8 +58,8 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
   final view_maker.ChartViewMaker chartViewMaker;
 
   @override
-  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }
 

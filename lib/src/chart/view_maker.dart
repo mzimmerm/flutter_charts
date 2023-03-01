@@ -119,26 +119,6 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
 
   late util_labels.DataRangeLabelInfosGenerator xLabelsGenerator;
 
-
-  // todo-00-last : THE ONLY REASON THESE MEMBERS MUST BE KEPT IS THEIR USE ON _SourceYContainerAndYContainerToSinkDataContainer.
-  //            REMOVE THAT NEED, AND THESE MEMBERS.
-  /// Holder of inner container this maker is making for it's [chartRootContainer].
-  ///
-  /// Only exists so there is a single place the creation of [_legendContainer].
-  ///
-  /// Lifecycle: Its useful lifecycle is the time between this top-class maker [makeViewRoot] is invoked,
-  /// where [_legendContainer] is created, and when the concrete [makeViewRoot] is invoked,
-  /// which creates the concrete [chartRootContainer], and [_legendContainer] is passed to it.
-  late legend_container_new.LegendContainer legendContainer;
-  /// See [legendContainer]
-  late container.XContainer      xContainer;
-  /// See [legendContainer]
-  late container.YContainer      yContainerFirst;
-  late container.YContainer      yContainer;
-  /// See [legendContainer]
-  late container.DataContainer   dataContainer;
-  
-
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
 

@@ -161,7 +161,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   /// Lays out legend items, one for each data series.
   @override
   void layout() {
-    buildAndReplaceChildren(container_base.LayoutContext.unused);
+    buildAndReplaceChildren();
     // todo-013 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
@@ -357,8 +357,8 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
   }
 
   @override
-  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }
 
@@ -417,7 +417,7 @@ class LegendIndicatorRectContainer extends container_common_new.ChartAreaContain
     );
   }
   @override
-  void buildAndReplaceChildren(covariant container_base.LayoutContext layoutContext) {
-    buildAndReplaceChildrenDefault(layoutContext);
+  void buildAndReplaceChildren() {
+    buildAndReplaceChildrenDefault();
   }
 }

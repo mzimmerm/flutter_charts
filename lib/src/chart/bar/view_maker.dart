@@ -34,11 +34,11 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   /// Concrete implementation returns the root for vertical bar chart.
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
-    legendContainer = makeViewForLegendContainer();
-    xContainer = makeViewForDomainAxis();
-    yContainerFirst = makeViewForYContainerFirst();
-    yContainer = makeViewForRangeAxis();
-    dataContainer = makeViewForDataContainer();
+    var legendContainer = makeViewForLegendContainer();
+    var xContainer = makeViewForDomainAxis();
+    var yContainerFirst = makeViewForYContainerFirst();
+    var yContainer = makeViewForRangeAxis();
+    var dataContainer = makeViewForDataContainer();
 
     if (isUseOldDataContainer) {
       return VerticalBarChartRootContainer(

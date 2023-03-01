@@ -21,7 +21,7 @@ class NewDataContainer extends container_common_new.ChartAreaContainer implement
   );
 
   @override
-  void buildAndReplaceChildren(container_base.LayoutContext layoutContext) {
+  void buildAndReplaceChildren() {
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -42,21 +42,8 @@ class NewDataContainer extends container_common_new.ChartAreaContainer implement
   PointPresentersColumns get pointPresentersColumns => throw UnimplementedError();
   @override
   set pointPresentersColumns(PointPresentersColumns _) => throw UnimplementedError();
-
   @override
-  container.SourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
-    throw UnimplementedError();
-  }
-
-  @override
-  void lextrPointsColumns(container.SourceYContainerAndYContainerToSinkDataContainer layoutDependency) {
-    throw UnimplementedError();
-  }
-
-  @override
-  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
-    throw UnimplementedError();
-  }
+  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) => throw UnimplementedError();
   // --------------- overrides to implement legacy ^^^^^
 
   /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
@@ -133,7 +120,7 @@ class NewHBarPointContainer extends NewPointContainer {
 
   @override
   void layout() {
-    buildAndReplaceChildren(container_base.LayoutContext.unused);
+    buildAndReplaceChildren();
     // Calculate [_indicatorSize], the width and height of the Rectangle that represents data:
 
     // Rectangle width is from constraints
@@ -142,7 +129,7 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    container.YContainer yContainer = chartViewMaker.yContainer;
+    container.YContainer yContainer = chartViewMaker.chartRootContainer.yContainer; // todo-00-last-last : SHOULD WE BE ACCESSING yContainer here ?????
 
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
