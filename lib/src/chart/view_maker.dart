@@ -1,4 +1,5 @@
 import 'dart:ui' as ui show Canvas, Size;
+import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
@@ -101,10 +102,19 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
 
   final bool isStacked;
 
-  /// Access the view [chartRootContainer] from this maker [ChartViewMaker].
-  /// NOT final, recreated even on repaint, survived by this maker.
+  /// The root container (view) is created by this maker [ChartViewMaker]
+  /// on every [FlutterChartPainter] paint and repaint.
   ///
-  /// It's children, [legendContainer], etc are also not final.
+  /// While the owner maker survives repaint,
+  /// it's member, this [chartRootContainer] is recreated on each repaint in
+  /// the following code in [FlutterChartPainter.paint]:
+  ///
+  /// ```dart
+  ///         chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+  /// ```
+  ///
+  /// Because it can be recreated and re-set in [paint], it is not final;
+  ///   it's children, [legendContainer], etc are also not final.
   late container.ChartRootContainer chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],

@@ -94,7 +94,14 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
   );
 }
 
-/// See [LegendIndicatorRectContainer] for similar implementation
+/// See [LegendIndicatorRectContainer] for similar implementation.
+///
+/// todo-00-last-last-last : For some new containers (those that need to be sized from values to pixels),
+///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
+///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
+///                          For children of NewDataContainer, it will be NewDataContainer.constraints.
+///                          For children of YContainer, it will be YContainer.constraints (???)
+///                          Generally it must be an object that is known at layout time, and will not change - for example last cell in table,
 class NewHBarPointContainer extends NewPointContainer {
 
   /// The rectangle representing the value.
@@ -129,18 +136,24 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    container.YContainer yContainer = chartViewMaker.chartRootContainer.yContainer; // todo-00-last-last : SHOULD WE BE ACCESSING yContainer here ?????
+    // container.YContainer yContainer = chartViewMaker.chartRootContainer.yContainer; // todo-00-last-last : SHOULD WE BE ACCESSING yContainer here ?????
+
+    // todo-00-last-last : This [layout] method we are in, is invoked BEFORE layoutSize of the owner DataContainer
+    //                     is known (obviously). But we ASSUME that the owner DataContainer will use all it's constraints,
+    //                     so that are the pixels we lextr to.
+    var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
 
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      /* todo-note-00 : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
+      /* todo-00-last-last : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
-       */
-      //  todo-00-last-last-last : this works, but chart only occupies top half of screen
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.layoutSize.height, //  600.0, // yContainer.axisPixelsRange.max,
+      */
+      toPixelsMax: ownerDataContainerConstraints.size.height,
+      toPixelsMin: 0.0, // ownerDataContainerConstraints.size.height
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.

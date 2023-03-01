@@ -6,8 +6,8 @@ import 'package:logger/logger.dart' as logger;
 import '../container.dart' as old_container;
 
 import 'container_common_new.dart' as container_common_new;
-import 'axis_container_new.dart';
-import 'data_container_new.dart';
+// import 'axis_container_new.dart';
+// import 'data_container_new.dart';
 import 'legend_container_new.dart';
 
 import '../view_maker.dart';
@@ -17,11 +17,11 @@ import '../iterative_layout_strategy.dart' as strategy;
 class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainer {
 
   NewChartRootContainer({
-    required LegendContainer  legendContainer,
-    required NewXContainer    xContainer,
-    required NewYContainer    yContainer,
-    required NewYContainer    yContainerFirst,
-    required NewDataContainer dataContainer,
+    required this.legendContainer,
+    required this.xContainer,
+    required this.yContainer,
+    required this.yContainerFirst,
+    required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
     required NewModel         chartData,
     required bool             isStacked,
@@ -29,7 +29,6 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   }) : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing NewChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
-
 
     // Create YDEX_cellDefinersRows, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
@@ -43,21 +42,23 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
-    TableLayouter tableLayouter = TableLayouter(
-        cellsTable: [
-          [yContainer, dataContainer],
-          [axisCornerContainer, xContainer],
-        ],
-        tableLayoutDefiner: tableLayoutDefiner);
+    TableLayouter chartBody = TableLayouter(tableLayoutDefiner: tableLayoutDefiner, cellsTable: [
+      [yContainer, dataContainer],
+      [axisCornerContainer, xContainer],
+    ]);
 
     // Configure children, Legend on top, Table Layouter with X, Y, DataContainer below.
     addChildren([
-      Column(
-        children: [
-          legendContainer,
-          tableLayouter,
+      TableLayouter(
+        tableLayoutDefiner: TableLayoutDefiner.defaultRowWiseForSize(
+          numRows: 2,
+          numColumns: 1,
+        ),
+        cellsTable: [
+          [legendContainer],
+          [chartBody],
         ],
-      )
+      ),
     ]);
   }
 
@@ -68,8 +69,12 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
 
   /// Number of columns in the [DataContainer].
 
-  /// Base Areas of chart.
-  /// todo-00-later : change those to new containers :  All below declare the old containers. remove when completely separated, make this NewXContainer etc
+  /// todo-00-! The members are only needed during layout of deeper children (e.g., NewHBarPointContainer) to access the members' sizes or constraints
+  ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
+  ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
+  /// Members that display the Areas of chart.
+  /// todo-00-later : change those to new containers - or remove them entirely :  All below declare the old containers. remove when completely separated, make this NewXContainer etc
+  /// todo-00-later : these containers are never used in the NEW NewChartRootContainer. Maybe comment them out??
   @override
   late LegendContainer legendContainer;
   @override

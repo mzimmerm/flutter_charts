@@ -1605,10 +1605,11 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
       assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
-      //   self original constraint, and  nonGreedyChildrenSize
+      //   self original constraints, and  [nonGreedyBoundingRect] size
       BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateWithSize(nonGreedyBoundingRect.size);
 
-      // Divides constraintsRemainingForGreedy~into the ratios greed / sum(greed), creating ~greedyChildrenConstaints~
+      // Weight-divide [constraintsRemainingForGreedy] into the ratios greed / sum(greed),
+      //   creating [greedyChildrenConstraints].
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
         divideStrategy: ConstraintsDistribution.intWeights,
@@ -1616,7 +1617,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
         intWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
 
-      // Apply on greedyChildren their new greedyChildrenConstraints
+      // Apply on greedyChildren their newly weight-divided greedyChildrenConstraints
       assert(greedyChildrenConstraints.length == _greedyChildren.length);
       for (int i = 0; i < _greedyChildren.length; i++) {
         Greedy greedyChild = _greedyChildren[i];
@@ -1774,13 +1775,11 @@ class ExternalTicksRow extends Row {
 class TableLayoutCellDefiner {
 
   TableLayoutCellDefiner({
-    // required this.row,
-    // required this.column,
     required this.layoutSequence,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
     this.cellConstraints,
-});
+  });
   final int layoutSequence;
   late final int row;
   late final int column;
@@ -1815,6 +1814,8 @@ class TableLayoutCellDefiner {
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
 
+
+
 /// Manages [TableLayoutCellDefiner]s for TableLayouter during layout.
 ///
 /// Each instance requires validation of correctness, such as all rows must be the same length.
@@ -1827,16 +1828,35 @@ class TableLayoutDefiner {
     required this.cellDefinersRows,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
-  }) {
-
+  }) :
+        numRows = cellDefinersRows.length,
+        numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows.length : 0;
+ /* todo-00-last
+   {
     // Set members used in validation
     numRows = cellDefinersRows.length;
-/*
-    numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows[0].length : 0;
-    isEmpty = numRows == 0 || numColumns == 0;
-*/
+    numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows.length : 0;
+  }*/
 
-  }
+  /// Default creates an instance which [layoutSequence] follows row 1 columns from the left, then wraps to row 2,
+  /// and repeats, until the bottom right column gets index `numRows * numColumns - 1`.
+  TableLayoutDefiner.defaultRowWiseForSize({
+    required this.numRows,
+    required this.numColumns,
+    this.horizontalAlign = Align.center,
+    this.verticalAlign = Align.center,
+  }) : cellDefinersRows =
+            List.generate(
+              numRows,
+              (rowIndex) => List.generate(
+                numColumns,
+                (columnIndex) => TableLayoutCellDefiner(
+                layoutSequence: rowIndex * (numRows - 1) + columnIndex,
+                horizontalAlign: horizontalAlign,
+                verticalAlign: verticalAlign,
+                // cellConstraints: null,
+              ),
+            ));
 
   /// Holds the 2D table of [TableLayoutCellDefiner]s.
   ///
@@ -1844,9 +1864,9 @@ class TableLayoutDefiner {
   final List<List<TableLayoutCellDefiner>> cellDefinersRows;
 
   /// Caches number of rows in [cellDefinersRows].
-  late final int numRows;
+  final int numRows;
   /// Caches number of rows in [cellDefinersRows].
-  late final int numColumns;
+  final int numColumns;
 
   /// Answers [true] if this [TableLayoutDefiner] has no cell definers in []
   late final bool isEmpty;
@@ -1950,6 +1970,17 @@ class TableLayoutDefiner {
 /// Lays out [BoxContainer]s in the passed [cellsTable] as a table.
 ///
 /// The layout order is specified by the passed [tableLayoutDefiner].
+///
+/// Unlike [RollingPositioningBoxLayouter], each cell (child) in the [TableLayouter]
+/// receives it's constraints just before it's layout is called.
+/// The received constraints are calculated as a constraints from this layouter, deflated (decreased in size)
+/// by the [layoutSize]s of all previously layed out children.
+///
+/// The last layed out cell is 'greedy' in the sense it can take all [TableLayouter.constraints] remaining after all
+/// previous cells were layed out.
+/// 
+/// If [isLastCellForcedGreedy] is true, the last cell layed out in table is forced to be greedy,
+/// in the sense it's [layoutSize] must return the full size of remaining [TableLayouter.constraints] available to it.
 class TableLayouter extends PositioningBoxLayouter {
 
   TableLayouter({
@@ -1957,6 +1988,7 @@ class TableLayouter extends PositioningBoxLayouter {
     required this.tableLayoutDefiner,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
+    this.isLastCellForcedGreedy = true,
   }) {
 
     tableLayoutDefiner.tableLayouterContainer = this;
@@ -1987,6 +2019,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
   final Align horizontalAlign;
   final Align verticalAlign;
+  final bool isLastCellForcedGreedy; // todo-00-last-last : implement. In the layout, when layout sees last cell, it must return ???? hmm, maybe this is not needed.
 
   late final int numRows;
   late final int numColumns;
@@ -2060,7 +2093,7 @@ class TableLayouter extends PositioningBoxLayouter {
     }
 
     // Late set two other 'global' members on [tableLayoutDefiner]
-    tableLayoutDefiner.numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows.length : 0;
+    // todo-00-last-last : initialize earlier : tableLayoutDefiner.numColumns = cellDefinersRows.isNotEmpty ? cellDefinersRows.length : 0;
     tableLayoutDefiner.isEmpty = tableLayoutDefiner.numRows == 0 || tableLayoutDefiner.numColumns == 0;
 
     // Late set to the same values, number of rows and columns on this TableLayouter.
@@ -2078,8 +2111,11 @@ class TableLayouter extends PositioningBoxLayouter {
     // A. node-pre-descend; Overridden to do nothing
     _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
 
-    // B. node-descend: Overridden to each child first set constraints, then layout, then next child,
-    //                  rather than setting constraints for all children ahead of time
+    // B. node-descend: Overridden so that each child first sets constraints, then layouts, then next child, etc,
+    //                  rather than setting constraints for all children ahead of time.
+    //                  The constraints set on each child are 'cautiously optimistic', in the sense
+    //                  they remove the space taken by children layed out before. That is why the order
+    //                  of layout is important. Only the last child being layed out can get exact constraints.
     _layout_Descend();
     
     // C. node-post-descend.
@@ -2130,8 +2166,8 @@ class TableLayouter extends PositioningBoxLayouter {
     // which methods are needed to create constraints for the next cell.
     for (var cellDefiner in tableLayoutDefiner.flatOrderedCellDefiners) {
 
-      // b1. child-pre-descend: calculate constraints left over by previously
-      //     layed out children, and set the calculated constraints on the child
+      //---  b1. child-pre-descend: Calculate constraints left over by previously
+      //         layed out children, and set the calculated constraints on the child.
 
       // If cellConstraints were set (presumed from the cellDefiner), keep it,
       // otherwise calculate from non-layout cells.
@@ -2141,7 +2177,11 @@ class TableLayouter extends PositioningBoxLayouter {
           // First layedout cell gets full parent (this) constraints
           cellConstraints = constraints;
         } else {
-          // Further layedout cell get whatever constraints are left over from previously layed out cells
+          // Further layedout cell get 'cautiously optimistic' constraints = space left after previously layed out cells.
+          // However, the last cell (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.last),
+          //   gets constraints exactly the size of space left after all previous cells -
+          //   this is by the nature of what [calculate_available_constraint_on_cell] does
+          // todo-00-last-last
           cellConstraints = tableLayoutDefiner.calculate_available_constraint_on_cell(
             cellDefiner.row,
             cellDefiner.column,
@@ -2154,10 +2194,10 @@ class TableLayouter extends PositioningBoxLayouter {
       // Apply constraints on child just before layout
       child.applyParentConstraints(this, cellConstraints);
 
-      // b2. child-descend: layout the child
+      // --- b2. child-descend: layout the child
       child.layout();
 
-      // b3. child-post-descend: mark the cell definer that it's child container is layedout
+      // --- b3. child-post-descend: mark the cell definer that it's child container is layedout
       cellDefiner.isAlreadyLayedOut = true;
     }
   }
@@ -2320,11 +2360,11 @@ class TableLayouter extends PositioningBoxLayouter {
       List<TableLayoutCellDefiner> definerRow = cellDefinersRows[row];
       for (int column = 0; column < definerRow.length; column++) {
         TableLayoutCellDefiner cellDefiner = definerRow[column];
-        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * numRows + column].topLeft);
+        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * (numRows - 1) + column].topLeft);
       }
     }
 
-    /*
+    /* KEEP
     for (int row = 0; row < cellsTable.length; row++) {
       List<BoxContainer> cellsRow = cellsTable[row];
       for (int column = 0; column < cellsRow.length; column++) {
