@@ -1819,6 +1819,121 @@ class TableLayoutCellDefiner {
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
 
+/// Constraints, or a [BoxContainer] which will be layed out to provide constraints for the first layed out
+/// cell in [TableLayouter] - that is, constraints for the cell defined by [TableLayoutCellDefiner]
+/// with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
+///
+/// Part of [TableLayoutDefiner], which will ensure the provided constraint
+///
+/// Motivation: During table layout, we often need to set a minimum size of a row
+///             or a column - row width or column height, or both.
+///             This class helps to express this need, either by specifying a minimum size directly,
+///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
+/// How is this motivation implemented?  todo-00-last-last-document
+///
+class TableLayoutCellMinSizer {
+
+  TableLayoutCellMinSizer.fromMinima({
+    //required this.attachedToLayoutSequence,
+    required this.cellWidthMinimum,
+    required this.cellHeightMinimum,
+  }) : __isUseCellMinimum = true,
+        __isUseTablePortion = false,
+        __isUsePreLayout = false;
+
+  TableLayoutCellMinSizer.fromPortionOfTableConstraint({
+    //required this.attachedToLayoutSequence,
+    required this.tableWidthPortion,
+    required this.tableHeightPortion,
+  })  : __isUseCellMinimum = false,
+        __isUseTablePortion = true,
+        __isUsePreLayout = false;
+
+  TableLayoutCellMinSizer.fromCellPreLayout({
+    //required this.attachedToLayoutSequence,
+    required this.cellPreLayoutToGainMinima,
+    this.isUseWidth = true,
+    this.isUseHeight = true,
+  })  : __isUseCellMinimum = false,
+        __isUseTablePortion = false,
+        __isUsePreLayout = true;
+
+  /// Exists to remove need for nulling instances when no minimizing sizer is used.
+  TableLayoutCellMinSizer.none()
+      : // attachedToLayoutSequence = 0,
+        cellWidthMinimum = 0.0,
+        cellHeightMinimum = 0.0,
+        __isUseCellMinimum = false,
+        __isUseTablePortion = false,
+        __isUsePreLayout = false;
+
+  /// The cell's [TableLayoutCellDefiner.layoutSequence] to which is this size-minimizing sizer attached.
+  // final int attachedToLayoutSequence;
+
+  late final double cellWidthMinimum;
+  late final double cellHeightMinimum;
+  late final double tableWidthPortion; // between 0.0 and 1.0
+  late final double tableHeightPortion;
+  late final BoxContainer cellPreLayoutToGainMinima;
+  late final bool isUseWidth;
+  late final bool isUseHeight;
+
+  BoxContainerConstraints? preLayoutCellConstraints;
+  BoxContainerConstraints? tableConstraints;
+
+  /// Indicates which method to use to gain Minima,
+  /// without having to query any late finals
+  /// (as it is always a bad thing to query late final).
+  late final bool __isUseCellMinimum;
+  late final bool __isUseTablePortion;
+  late final bool __isUsePreLayout;
+
+  late final ui.Size __minLayoutSizeCached;
+  bool __isMinLayoutSizeCached = false;
+
+  ui.Size minLayoutSize({
+    required BoxContainerConstraints? preLayoutCellConstraints,
+    required BoxContainerConstraints? tableConstraints,
+  }) {
+    if (__isMinLayoutSizeCached
+        && preLayoutCellConstraints == this.preLayoutCellConstraints
+        && tableConstraints == this.tableConstraints
+    ) {
+      return __minLayoutSizeCached;
+    }
+
+    this.preLayoutCellConstraints = preLayoutCellConstraints;
+    this.tableConstraints = tableConstraints;
+    ui.Size prelimLayoutSize;
+
+    if (__isUseCellMinimum) {
+      prelimLayoutSize = ui.Size(cellWidthMinimum, cellHeightMinimum);
+    } else if (__isUseTablePortion) {
+      assert (tableConstraints != null);
+      prelimLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
+    } else if (__isUsePreLayout) {
+      assert(preLayoutCellConstraints != null);
+      // todo-00-last-last : parent == this will fail. Maybe allow apply to ignore.
+      cellPreLayoutToGainMinima.applyParentConstraints(cellPreLayoutToGainMinima, preLayoutCellConstraints!);
+      cellPreLayoutToGainMinima.layout();
+      prelimLayoutSize = cellPreLayoutToGainMinima.layoutSize;
+    } else {
+      throw StateError('Invalid state.');
+    }
+    __isMinLayoutSizeCached = true;
+
+    cellWidthMinimum = 0.0;
+    cellHeightMinimum = 0.0;
+    if (isUseWidth) cellWidthMinimum = prelimLayoutSize.width;
+    if (isUseHeight) cellHeightMinimum = prelimLayoutSize.height;
+
+    __minLayoutSizeCached = ui.Size(cellWidthMinimum, cellHeightMinimum);
+    __isMinLayoutSizeCached = true;
+
+    return __minLayoutSizeCached;
+  }
+}
+
 /// Manages [TableLayoutCellDefiner]s for TableLayouter during layout.
 ///
 /// Each instance requires validation of correctness, such as all rows must be the same length.
@@ -1916,174 +2031,6 @@ class TableLayoutDefiner {
               (cell) => cell.row == row && cell.column == column,
           orElse: () => throw StateError('No cell in this $this matching row=$row, column=$column'));
 
-  /// Calculates the added width of all layed out columns except the passed [column].
-  ///
-  /// Motivation and reason for existence:
-  ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
-  ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
-  ///     the constraints on the container which is next in layout order.
-  ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
-  ///     This method encapsulates the calculation, by looking at all already layed out cells,
-  ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
-
-  double calculate_layedout_used_width_except_column(int column) {
-    if (isEmpty) {
-      return 0.0;
-    }
-
-    return util_dart.transposeRowsToColumns(cellDefinersTable) // columns list
-        .where((definersColumn) => definersColumn[0].column != column) // cut out current column
-        .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each column keep only layed out cells
-        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.width)) // each column, instead of cells, put cellDefiner layout width
-        .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
-        .fold(0.0, (value, element) => value + element);
-  }
-
-  /// Calculates the added height of all layed out rows except the passed [row].
-  ///
-  /// See [calculate_layedout_used_width_except_column].
-  ///
-  double calculate_layedout_used_height_except_row(int row) {
-    if (isEmpty) {
-      return 0.0;
-    }
-    // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
-    // and column-wise, calculate max layout width
-    // then sum for all columns.
-    return cellDefinersTable // rows list
-        .where((definersRow) => definersRow[0].row != row) // cut out current row
-        .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each row keep only layed out cells
-        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.height)) // each row, instead of cells, put cellDefiner layout height
-        .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
-        .fold(0.0, (value, element) => value + element);
-  }
-
-  BoxContainerConstraints calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
-    if (find_cell_on(row, column).isAlreadyLayedOut) {
-      StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
-    }
-    double availableWidth = tableLayouterContainer.constraints.width -
-        calculate_layedout_used_width_except_column(column);
-    double availableHeight = tableLayouterContainer.constraints.height - calculate_layedout_used_height_except_row(row);
-    return BoxContainerConstraints.insideBox(
-        size: Size(availableWidth, availableHeight));
-  }
-}
-
-// todo-00-last-last-progress
-/// Constraints, or a [BoxContainer] which will be layed out to provide constraints for the first layed out
-/// cell in [TableLayouter] - that is, constraints for the cell defined by [TableLayoutCellDefiner]
-/// with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
-///
-/// Part of [TableLayoutDefiner], which will ensure the provided constraint
-/// 
-/// Motivation: During table layout, we often need to set a minimum size of a row 
-///             or a column - row width or column height, or both.
-///             This class helps to express this need, either by specifying a minimum size directly,
-///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
-/// How is this motivation implemented?  todo-00-last-last-document
-/// 
-class TableLayoutCellMinSizer {
-
-  TableLayoutCellMinSizer.fromMinima({
-    //required this.attachedToLayoutSequence,
-    required this.cellWidthMinimum,
-    required this.cellHeightMinimum,
-  }) : __isUseCellMinimum = true,
-       __isUseTablePortion = false,
-       __isUsePreLayout = false;
-
-  TableLayoutCellMinSizer.fromPortionOfTableConstraint({
-    //required this.attachedToLayoutSequence,
-    required this.tableWidthPortion,
-    required this.tableHeightPortion,
-  })  : __isUseCellMinimum = false,
-        __isUseTablePortion = true,
-        __isUsePreLayout = false;
-
-  TableLayoutCellMinSizer.fromCellPreLayout({
-    //required this.attachedToLayoutSequence,
-    required this.cellPreLayoutToGainMinima,
-    this.isUseWidth = true,
-    this.isUseHeight = true,
-  })  : __isUseCellMinimum = false,
-        __isUseTablePortion = false,
-        __isUsePreLayout = true;
-
-  /// Exists to remove need for nulling instances when no minimizing sizer is used.
-  TableLayoutCellMinSizer.none()
-      : // attachedToLayoutSequence = 0,
-        cellWidthMinimum = 0.0,
-        cellHeightMinimum = 0.0,
-        __isUseCellMinimum = false,
-        __isUseTablePortion = false,
-        __isUsePreLayout = false;
-
-  /// The cell's [TableLayoutCellDefiner.layoutSequence] to which is this size-minimizing sizer attached.
-  // final int attachedToLayoutSequence;
-
-  late final double cellWidthMinimum;
-  late final double cellHeightMinimum;
-  late final double tableWidthPortion; // between 0.0 and 1.0
-  late final double tableHeightPortion;
-  late final BoxContainer cellPreLayoutToGainMinima;
-  late final bool isUseWidth;
-  late final bool isUseHeight;
-
-  BoxContainerConstraints? preLayoutCellConstraints;
-  BoxContainerConstraints? tableConstraints;
-
-  /// Indicates which method to use to gain Minima,
-  /// without having to query any late finals
-  /// (as it is always a bad thing to query late final).
-  late final bool __isUseCellMinimum;
-  late final bool __isUseTablePortion;
-  late final bool __isUsePreLayout;
-
-  late final ui.Size __minLayoutSizeCached;
-  bool __isMinLayoutSizeCached = false;
-
-  ui.Size minLayoutSize({
-    required BoxContainerConstraints? preLayoutCellConstraints,
-    required BoxContainerConstraints? tableConstraints,
-  }) {
-    if (__isMinLayoutSizeCached
-        && preLayoutCellConstraints == this.preLayoutCellConstraints
-        && tableConstraints == this.tableConstraints
-    ) {
-      return __minLayoutSizeCached;
-    }
-
-    this.preLayoutCellConstraints = preLayoutCellConstraints;
-    this.tableConstraints = tableConstraints;
-    ui.Size prelimLayoutSize;
-
-    if (__isUseCellMinimum) {
-      prelimLayoutSize = ui.Size(cellWidthMinimum, cellHeightMinimum);
-    } else if (__isUseTablePortion) {
-      assert (tableConstraints != null);
-      prelimLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
-    } else if (__isUsePreLayout) {
-      assert(preLayoutCellConstraints != null);
-      // todo-00-last-last-last : parent == this will fail. Maybe allow apply to ignore.
-      cellPreLayoutToGainMinima.applyParentConstraints(cellPreLayoutToGainMinima, preLayoutCellConstraints!);
-      cellPreLayoutToGainMinima.layout();
-      prelimLayoutSize = cellPreLayoutToGainMinima.layoutSize;
-    } else {
-      throw StateError('Invalid state.');
-    }
-    __isMinLayoutSizeCached = true;
-
-    cellWidthMinimum = 0.0;
-    cellHeightMinimum = 0.0;
-    if (isUseWidth) cellWidthMinimum = prelimLayoutSize.width;
-    if (isUseHeight) cellHeightMinimum = prelimLayoutSize.height;
-
-    __minLayoutSizeCached = ui.Size(cellWidthMinimum, cellHeightMinimum);
-    __isMinLayoutSizeCached = true;
-
-    return __minLayoutSizeCached;
-  }
 }
 
 /// Lays out [BoxContainer]s in the passed [cellsTable] as a table.
@@ -2225,6 +2172,58 @@ class TableLayouter extends PositioningBoxLayouter {
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
   }
 
+  /// Calculates the added width of all layed out columns except the passed [column].
+  ///
+  /// Motivation and reason for existence:
+  ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
+  ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
+  ///     the constraints on the container which is next in layout order.
+  ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
+  ///     This method encapsulates the calculation, by looking at all already layed out cells,
+  ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
+  double calculate_layedout_used_width_except_column(int column) {
+    if (tableLayoutDefiner.isEmpty) {
+      return 0.0;
+    }
+
+    return util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable) // columns list
+        .where((definersColumn) => definersColumn[0].column != column) // cut out current column
+        .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each column keep only layed out cells
+        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.width)) // each column, instead of cells, put cellDefiner layout width
+        .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
+        .fold(0.0, (value, element) => value + element);
+  }
+
+  /// Calculates the added height of all layed out rows except the passed [row].
+  ///
+  /// See [calculate_layedout_used_width_except_column].
+  ///
+  double calculate_layedout_used_height_except_row(int row) {
+    if (tableLayoutDefiner.isEmpty) {
+      return 0.0;
+    }
+    // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
+    // and column-wise, calculate max layout width
+    // then sum for all columns.
+    return tableLayoutDefiner.cellDefinersTable // rows list
+        .where((definersRow) => definersRow[0].row != row) // cut out current row
+        .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each row keep only layed out cells
+        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.height)) // each row, instead of cells, put cellDefiner layout height
+        .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
+        .fold(0.0, (value, element) => value + element);
+  }
+
+  BoxContainerConstraints calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
+    if (tableLayoutDefiner.find_cell_on(row, column).isAlreadyLayedOut) {
+      StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
+    }
+    double availableWidth = constraints.width -
+        calculate_layedout_used_width_except_column(column);
+    double availableHeight = constraints.height - calculate_layedout_used_height_except_row(row);
+    return BoxContainerConstraints.insideBox(
+        size: Size(availableWidth, availableHeight));
+  }
+
   @override
   void _layout_TopRecurse() {
     // A. node-pre-descend; Overridden to do nothing
@@ -2302,7 +2301,7 @@ class TableLayouter extends PositioningBoxLayouter {
           //   ALWAYS gets constraints exactly the size of space remaining after all previous layed out cells -
           //   this is by the nature of the [calculate_available_constraint_on_cell] algorithm :
           //     it return the table direction-constraint, minus the sum of layed out row heights (or column widths)
-          cellConstraints = tableLayoutDefiner.calculate_remaining_non_layedout_constraints_on_cell(
+          cellConstraints = calculate_remaining_non_layedout_constraints_on_cell(
             cellDefiner.row,
             cellDefiner.column,
           );
