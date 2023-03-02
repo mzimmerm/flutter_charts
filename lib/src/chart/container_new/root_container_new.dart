@@ -30,36 +30,41 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     logger.Logger().d('    Constructing NewChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
 
-    // Create YDEX_cellDefinersRows, with definers arranged the same way as cells,
+    // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
-    List<List<TableLayoutCellDefiner>> YDEX_cellDefinersRows = [
+    List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 0), TableLayoutCellDefiner(layoutSequence: 2)],
     ];
 
-    TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersRows: YDEX_cellDefinersRows);
+    TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersTable: YDEX_cellDefinersTable);
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
-    TableLayouter chartBody = TableLayouter(tableLayoutDefiner: tableLayoutDefiner, cellsTable: [
-      [yContainer, dataContainer],
-      [axisCornerContainer, xContainer],
-    ]);
+    TableLayouter chartBody = TableLayouter(
+      tableLayoutDefiner: tableLayoutDefiner,
+      cellsTable: [
+        [yContainer, dataContainer],
+        [axisCornerContainer, xContainer],
+      ],
+    );
 
     // Configure children, Legend on top, Table Layouter with X, Y, DataContainer below.
-    addChildren([
-      TableLayouter(
-        tableLayoutDefiner: TableLayoutDefiner.defaultRowWiseForSize(
-          numRows: 2,
-          numColumns: 1,
+    addChildren(
+      [
+        TableLayouter(
+          tableLayoutDefiner: TableLayoutDefiner.defaultRowWiseForTableSize(
+            numRows: 2,
+            numColumns: 1,
+          ),
+          cellsTable: [
+            [legendContainer],
+            [chartBody],
+          ],
         ),
-        cellsTable: [
-          [legendContainer],
-          [chartBody],
-        ],
-      ),
-    ]);
+      ],
+    );
   }
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
