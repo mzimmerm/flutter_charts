@@ -75,7 +75,6 @@ class LineContainer extends container_common_new.ChartAreaContainer {
     canvas.drawLine(lineFrom, lineTo, linePaint);
   }
 
-  // todo-00!!! remove the LayoutContext everywhere
   @override
   void buildAndReplaceChildren() {
     buildAndReplaceChildrenDefault();

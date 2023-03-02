@@ -1,4 +1,5 @@
-import 'dart:ui';
+import 'dart:ui' as ui show Rect, Offset, Canvas, Paint;
+import 'package:flutter/material.dart' as material show Colors;
 
 // base libraries
 // import 'package:flutter_charts/flutter_charts.dart';
@@ -23,12 +24,27 @@ class AxisCornerContainer extends container_common_new.ChartAreaContainer {
           children: children,
         );
 
+  late ui.Rect _rect;
+
   /// This default implementation has no children, it is leaf, so override the only method
   /// needed to override for leafs
   @override
   layout_Post_Leaf_SetSize_FromInternals() {
     /// Set some small layoutSize
     /// todo-00-last-last should be changed to 0.0 after we implement the 'pre-layout'
-    layoutSize = const Size(50.0, 50.0);
+    _rect = const ui.Rect.fromLTWH(0.0, 0.0, 50.0, 50.0);
+
+    layoutSize = _rect.size;
+  }
+
+  @override
+  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
+    _rect = _rect.shift(offset);
+  }
+
+  @override
+  paint(ui.Canvas canvas) {
+    ui.Paint paint = (ui.Paint()..color = material.Colors.red);
+    canvas.drawRect(_rect, paint);
   }
 }

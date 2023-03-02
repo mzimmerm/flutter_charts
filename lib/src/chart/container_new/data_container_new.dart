@@ -96,7 +96,7 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// todo-00-last-last-last : For some new containers (those that need to be sized from values to pixels),
+/// todo-00-last-last : For some new containers (those that need to be sized from values to pixels),
 ///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
 ///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
 ///                          For children of NewDataContainer, it will be NewDataContainer.constraints.
@@ -115,7 +115,7 @@ class NewHBarPointContainer extends NewPointContainer {
   NewHBarPointContainer({
     required model.NewPointModel newPointModel,
     required view_maker.ChartViewMaker chartViewMaker,
-    // todo-00!!! Do we need children and key? LineSegmentContainer does not have it.
+    // todo-00!! Do we need children and key? LineSegmentContainer does not have it.
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
   }) : super(
@@ -136,11 +136,10 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    // container.YContainer yContainer = chartViewMaker.chartRootContainer.yContainer; // todo-00-last-last : SHOULD WE BE ACCESSING yContainer here ?????
-
     // todo-00-last-last : This [layout] method we are in, is invoked BEFORE layoutSize of the owner DataContainer
     //                     is known (obviously). But we ASSUME that the owner DataContainer will use all it's constraints,
     //                     so that are the pixels we lextr to.
+    //          Also: should we be accessing dataContainer here?
     var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
 
     var lextr = ToPixelsExtrapolation1D(

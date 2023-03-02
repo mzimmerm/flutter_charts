@@ -1779,7 +1779,10 @@ class TableLayoutCellDefiner {
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
     this.cellConstraints,
+    this.cellMinSizer,
   });
+  // Members
+
   final int layoutSequence;
   late final int row;
   late final int column;
@@ -1802,12 +1805,48 @@ class TableLayoutCellDefiner {
   /// If set, expresses a minimum [layoutSize] on the member [cellForThisDefiner].
   ///
   /// In a way this represents and provides 'minimum constraints'.
+  ///
+  /// The important role of a cell definer which has a non null [cellMinSizer],
+  /// is that, during the [TableLayouter.layout] it behaves as if if the cell was layed out to the min size,
+  /// even if it is not. That causes all other cells (notably the first cell in layout sequence) to
+  /// receive smaller constraints.
+  // todo-00-last-last-last finish this
+
   late final TableLayoutCellMinSizer? cellMinSizer;
+
+  bool get isHasCellMinSizer => cellMinSizer != null;
 
   /// Tracks if the cell container [cellForThisDefiner] invoked [layout];
   /// should be set to true after the corresponding container cell, the [TableLayoutCellDefiner.cellForThisDefiner]
   /// calls [BoxContainer.layout].
   bool isAlreadyLayedOut = false;
+
+  bool get isAlreadyLayedOutOrHasCellMinSizer => isAlreadyLayedOut || isHasCellMinSizer;
+
+  /// While this class is not a [BoxLayouter], we allow it to be asked for [layoutSize].
+  /// This method should be invoked ONLY under conditions where [isAlreadyLayedOutOrHasCellMinSizer] is true.
+  ///
+  /// The returned [pseudoLayoutSize] is either the contained [cellForThisDefiner]'s [layoutSize],
+  /// or the todo-00-last-last-last finish
+  ui.Size pseudoLayoutSize({
+    required BoxContainerConstraints? tableConstraints,
+  }) {
+    // todo-00-last : what happens, after layoutSize is actually set on cellForThisDefiner?
+    //                a different [layoutSize] will start to appear. By then, the goal of restricting the 0th sequence cell
+    //                was achieved, but something has to be done about the fact this cell may be smaller than the
+    //                 previously claimed pseudoLayoutSize
+    assert(isAlreadyLayedOutOrHasCellMinSizer == true);
+
+    if (isAlreadyLayedOut) {
+      return cellForThisDefiner.layoutSize;
+    } else if (isHasCellMinSizer) {
+      return cellMinSizer!.minLayoutSize(
+        tableConstraints: tableConstraints,
+      );
+    } else {
+      throw StateError('Must be called when isAlreadyLayedOut || isHasCellMinSizer is true');
+    }
+  }
 
   /// The [BoxContainer] cell child of the [TableLayouter] which layout order is
   /// defined by this [TableLayoutCellDefiner] instance.
@@ -1815,6 +1854,7 @@ class TableLayoutCellDefiner {
   /// There is exactly one, because the cell definers 2D array [TableLayoutDefiner.cellDefinersTable]
   /// is same size as the table cells array [TableLayouter.cellsTable] which is layed out.
   late final BoxContainer cellForThisDefiner;
+
   // null means last
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
@@ -1829,7 +1869,7 @@ class TableLayoutCellDefiner {
 ///             or a column - row width or column height, or both.
 ///             This class helps to express this need, either by specifying a minimum size directly,
 ///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
-/// How is this motivation implemented?  todo-00-last-last-document
+/// How is this motivation implemented?  todo-00-doc
 ///
 class TableLayoutCellMinSizer {
 
@@ -1851,7 +1891,7 @@ class TableLayoutCellMinSizer {
 
   TableLayoutCellMinSizer.fromCellPreLayout({
     //required this.attachedToLayoutSequence,
-    required this.cellPreLayoutToGainMinima,
+    required this.preLayoutCellToGainMinima,
     this.isUseWidth = true,
     this.isUseHeight = true,
   })  : __isUseCellMinimum = false,
@@ -1874,11 +1914,12 @@ class TableLayoutCellMinSizer {
   late final double cellHeightMinimum;
   late final double tableWidthPortion; // between 0.0 and 1.0
   late final double tableHeightPortion;
-  late final BoxContainer cellPreLayoutToGainMinima;
+  /// If not null, must be prepared with constraints applied
+  late final BoxContainer? preLayoutCellToGainMinima;
   late final bool isUseWidth;
   late final bool isUseHeight;
 
-  BoxContainerConstraints? preLayoutCellConstraints;
+  // BoxContainerConstraints? preLayoutCellConstraints;
   BoxContainerConstraints? tableConstraints;
 
   /// Indicates which method to use to gain Minima,
@@ -1892,17 +1933,17 @@ class TableLayoutCellMinSizer {
   bool __isMinLayoutSizeCached = false;
 
   ui.Size minLayoutSize({
-    required BoxContainerConstraints? preLayoutCellConstraints,
+    // required BoxContainerConstraints? preLayoutCellConstraints,
     required BoxContainerConstraints? tableConstraints,
   }) {
     if (__isMinLayoutSizeCached
-        && preLayoutCellConstraints == this.preLayoutCellConstraints
+        // && preLayoutCellConstraints == this.preLayoutCellConstraints
         && tableConstraints == this.tableConstraints
     ) {
       return __minLayoutSizeCached;
     }
 
-    this.preLayoutCellConstraints = preLayoutCellConstraints;
+    // this.preLayoutCellConstraints = preLayoutCellConstraints;
     this.tableConstraints = tableConstraints;
     ui.Size prelimLayoutSize;
 
@@ -1912,11 +1953,11 @@ class TableLayoutCellMinSizer {
       assert (tableConstraints != null);
       prelimLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
-      assert(preLayoutCellConstraints != null);
+      assert(preLayoutCellToGainMinima != null);
       // todo-00-last-last : parent == this will fail. Maybe allow apply to ignore.
-      cellPreLayoutToGainMinima.applyParentConstraints(cellPreLayoutToGainMinima, preLayoutCellConstraints!);
-      cellPreLayoutToGainMinima.layout();
-      prelimLayoutSize = cellPreLayoutToGainMinima.layoutSize;
+      // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima, preLayoutCellConstraints!);
+      preLayoutCellToGainMinima!.layout();
+      prelimLayoutSize = preLayoutCellToGainMinima!.layoutSize;
     } else {
       throw StateError('Invalid state.');
     }
@@ -1949,12 +1990,6 @@ class TableLayoutDefiner {
   }) :
         numRows = cellDefinersTable.length,
         numColumns = cellDefinersTable.isNotEmpty ? cellDefinersTable.length : 0;
- /* todo-00-last
-   {
-    // Set members used in validation
-    numRows = cellDefinersTable.length;
-    numColumns = cellDefinersTable.isNotEmpty ? cellDefinersTable.length : 0;
-  }*/
 
   /// Default creates an instance which [layoutSequence] follows row 1 columns from the left, then wraps to row 2,
   /// and repeats, until the bottom right column gets index `numRows * numColumns - 1`.
@@ -1966,10 +2001,10 @@ class TableLayoutDefiner {
   }) : cellDefinersTable =
             List.generate(
               numRows,
-              (rowIndex) => List.generate(
+              (int row) => List.generate(
                 numColumns,
-                (columnIndex) => TableLayoutCellDefiner(
-                layoutSequence: rowIndex * (numRows - 1) + columnIndex,
+                (int column) => TableLayoutCellDefiner(
+                layoutSequence: row * numColumns + column,
                 horizontalAlign: horizontalAlign,
                 verticalAlign: verticalAlign,
                 // cellConstraints: null,
@@ -2085,7 +2120,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
   final Align horizontalAlign;
   final Align verticalAlign;
-  final bool isLastCellForcedGreedy; // todo-00-last-last : implement. In the layout, when layout sees last cell, it must return ???? hmm, maybe this is not needed.
+  final bool isLastCellForcedGreedy; // todo-00-last : implement. In the layout, when layout sees last cell, it must return ???? hmm, maybe this is not needed.
 
   late final int numRows;
   late final int numColumns;
@@ -2159,7 +2194,6 @@ class TableLayouter extends PositioningBoxLayouter {
     }
 
     // Late set two other 'global' members on [tableLayoutDefiner]
-    // todo-00-last-last : initialize earlier : tableLayoutDefiner.numColumns = cellDefinersTable.isNotEmpty ? cellDefinersTable.length : 0;
     tableLayoutDefiner.isEmpty = tableLayoutDefiner.numRows == 0 || tableLayoutDefiner.numColumns == 0;
 
     // Late set to the same values, number of rows and columns on this TableLayouter.
@@ -2171,6 +2205,8 @@ class TableLayouter extends PositioningBoxLayouter {
     assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
   }
+
+  // ############################## During layout method helpers
 
   /// Calculates the added width of all layed out columns except the passed [column].
   ///
@@ -2223,6 +2259,8 @@ class TableLayouter extends PositioningBoxLayouter {
     return BoxContainerConstraints.insideBox(
         size: Size(availableWidth, availableHeight));
   }
+
+  // ############################## Layout methods
 
   @override
   void _layout_TopRecurse() {
@@ -2445,22 +2483,54 @@ class TableLayouter extends PositioningBoxLayouter {
 
     // Calculate and set the member max row heights and max column widths,
     // needed to offset children cell in this layouter table cells.
+    /* todo-00-last-last-last remove
     rowHeights = tableLayoutDefiner.cellDefinersTable
         .map((definersRow) => definersRow.map((definer) {
-            if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
-            if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.height;
-            return math.min(definer.cellForThisDefiner.layoutSize.height, definer.cellForThisDefiner.constraints.height);
-            })
-          .reduceOrElse(math.max, orElse: () => 0.0)).toList();
+              if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
+              if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.height;
+              return math.min(
+                  definer.cellForThisDefiner.layoutSize.height, definer.cellForThisDefiner.constraints.height);
+            }).reduceOrElse(math.max, orElse: () => 0.0))
+        .toList();
+
+    columnWidths = util_dart
+        .transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable)
+        .map((definersColumn) => definersColumn.map((definer) {
+              if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
+              if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.width;
+              return math.min(
+                  definer.cellForThisDefiner.layoutSize.width, definer.cellForThisDefiner.constraints.width);
+            }).reduceOrElse(math.max, orElse: () => 0.0))
+        .toList();
+  */
+    // todo-00-last-last-last
+    rowHeights = tableLayoutDefiner.cellDefinersTable
+        .map((definersRow) => definersRow
+        .map((definer) {
+          if (!definer.isAlreadyLayedOutOrHasCellMinSizer) throw StateError('definer $definer not layed out');
+          ui.Size pseudoLayoutSize = definer.pseudoLayoutSize(
+            tableConstraints: constraints,
+          );
+          if (!definer.isLayoutOverflown) return pseudoLayoutSize.height;
+          return math.min(pseudoLayoutSize.height, definer.cellForThisDefiner.constraints.height);
+        })
+        .reduceOrElse(math.max, orElse: () => 0.0))
+        .toList();
 
     columnWidths = util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable)
-        .map((definersColumn) =>
-        definersColumn.map((definer) {
-          if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
-          if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.width;
-          return math.min(definer.cellForThisDefiner.layoutSize.width, definer.cellForThisDefiner.constraints.width);
+        .map((definersColumn) => definersColumn
+        .map((definer) {
+
+          if (!definer.isAlreadyLayedOutOrHasCellMinSizer) throw StateError('definer $definer not layed out');
+          ui.Size pseudoLayoutSize = definer.pseudoLayoutSize(
+            tableConstraints: constraints,
+          );
+          if (!definer.isLayoutOverflown) return pseudoLayoutSize.width;
+          return math.min(pseudoLayoutSize.width, definer.cellForThisDefiner.constraints.width);
         })
-            .reduceOrElse(math.max, orElse: () => 0.0)).toList();
+        .reduceOrElse(math.max, orElse: () => 0.0))
+        .toList();
+
   }
 
   /// This method which offsets children base on rectangles from
@@ -2479,7 +2549,7 @@ class TableLayouter extends PositioningBoxLayouter {
       List<TableLayoutCellDefiner> definerRow = cellDefinersTable[row];
       for (int column = 0; column < definerRow.length; column++) {
         TableLayoutCellDefiner cellDefiner = definerRow[column];
-        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * (numRows - 1) + column].topLeft);
+        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * numColumns + column].topLeft);
       }
     }
 

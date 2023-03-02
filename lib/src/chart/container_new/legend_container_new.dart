@@ -150,7 +150,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
             ..color = chartViewMaker.chartData.dataRowsColors
-                .elementAt(index % chartViewMaker.chartData.dataRowsColors.length)), //
+                .elementAt(index % chartViewMaker.chartData.dataRowsColors.length)),
           options: options,
         ),
     ];
