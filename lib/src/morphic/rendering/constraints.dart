@@ -132,6 +132,9 @@ abstract class BoundingBoxesBase {
 
   bool get isInside => minSize.width <= maxSize.width && minSize.height <= maxSize.height;
 
+  /// Returns [true] if the set all points of a left-top origin-positioned rectangle representing the passed [size]
+  /// is a subset of the set of points in the area between the embedded rectangles of this [BoundingBoxesBase] - that is,
+  /// [size] is between [minSize] and [maxSize], inclusive the borders of all sizes.
   bool containsFully(Size size) {
     return size.width <= maxSize.width &&
         size.height <= maxSize.height &&

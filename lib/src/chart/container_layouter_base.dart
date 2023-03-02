@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
+import 'package:flutter_charts/src/chart/chart.dart';
 
 // this level or equivalent
 import 'container_edge_padding.dart' show EdgePadding;
@@ -508,7 +509,6 @@ class ConstraintsWeights {
 /// hierarchy, (getting children, parents, etc),
 /// and points out only what is needed to position a list of [LayoutableBox]s
 /// by another [LayoutableBox].
-
 abstract class LayoutableBox {
   /// Size after the box has been layed out.
   ///
@@ -668,6 +668,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   late final ui.Size layoutSize;
 
   // offset ------
+
   ui.Offset _offset = ui.Offset.zero;
 
   /// Current absolute offset, set by parent (and it's parent etc, to root).
@@ -717,6 +718,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   }
 
   // constraints ------
+
   /// Constraints set by parent.
   late final BoxContainerConstraints _constraints;
 
@@ -728,6 +730,37 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     assertCallerIsParent(caller);
     _constraints = constraints;
   }
+
+  // todo-00-last-last-progress
+
+  /// A core function through which layoutSize should be set.
+  ///
+  /// It should be invoked from the context of this [BoxLayouter]; it's parent must be passed as
+  /// [callersParent].
+  setLayoutSizePotentiallyEnlarged(LayoutableBox callersParent, ui.Size prelimLayoutSize) {
+    assertCallerIsParent(callersParent);
+    ui.Size enlargedLayoutSize = prelimLayoutSize;
+    if (!prelimLayoutSize.containsFully(constraints.minSize)) {
+      // Enlarge to constraints inner size
+      enlargedLayoutSize = prelimLayoutSize.envelope([constraints.minSize]);
+      // Then, because the returned layoutSize is greater than intended by the container,
+      // apply offset that positions self in the double-box of
+      // todo-00-last-last-progress
+      // Use Aligner, Alignment ??
+      // ui.Offset offset =
+      // applyParentOffset(callersParent, offset);
+    }
+
+    // Set [layoutSize] the potentially enlarged [prelimLayoutSize] and [enlargedLayoutSize]
+    layoutSize = enlargedLayoutSize;
+  }
+
+  /// Default alignment used for offset value when [setLayoutSizePotentiallyEnlarged]
+  /// is actually enlarging the preliminary layout size.
+  ///
+  /// The default value is somewhat unusual, but it is geared towards the need of
+  /// [TableLayouter] default layout in flutter_charts.
+  Alignment alignmentForMinSizeEnlarged = Alignment.endBottom;
 
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
@@ -2805,7 +2838,7 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// See discussion in [Alignment] for the positioning of child in [Aligner], given [Alignment].
   ui.Offset _offsetChildInSelf({
-    required ui.Size selfSize,
+    required ui.Size selfSize, // todo-00-last : this appears unused
     required ui.Size childSize,
   }) {
     double childWidth = childSize.width;

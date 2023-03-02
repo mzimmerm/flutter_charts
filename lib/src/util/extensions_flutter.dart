@@ -37,6 +37,21 @@ extension SizeExtension on ui.Size {
     }
   }
 
+  /// Returns [true] if this instance contains fully the passed [other] object of type [ui.Size].
+  bool containsFully(ui.Size size) {
+    return size.width <= width &&
+        size.height <= height;
+  }
+
+  /// Outermost union of this size with [other].
+  ui.Size merge(ui.Size other) {
+    return ui.Size(math.max(width, other.width), math.max(height, other.height));
+  }
+  
+  ui.Size envelope(List<ui.Size> otherSizes) => otherSizes.isNotEmpty
+      ? otherSizes.fold(this, (previousSize, size) => previousSize.merge(size))
+      : this;
+  
 }
 
 extension RectExtension on ui.Rect {
