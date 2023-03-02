@@ -96,7 +96,7 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// todo-00-last-last : For some new containers (those that need to be sized from values to pixels),
+/// todo-00-last! : For some new containers (those that need to be sized from values to pixels),
 ///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
 ///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
 ///                          For children of NewDataContainer, it will be NewDataContainer.constraints.
@@ -145,7 +145,7 @@ class NewHBarPointContainer extends NewPointContainer {
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      /* todo-00-last-last : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
+      /* todo-00-last : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
       toPixelsMin: yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.axisPixelsRange.max,
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,

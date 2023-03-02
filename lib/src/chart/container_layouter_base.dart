@@ -1800,7 +1800,6 @@ class TableLayoutCellDefiner {
   /// To enforce a [BoxLayouter.layoutSize] constraint on the ember [cellForThisDefiner].
   /// they should be set by the client on creation of this instance.
   /// If not set by user, they should be calculated and set during layout.
-  // todo-00-last-last : removed final late final BoxContainerConstraints? cellConstraints;
   BoxContainerConstraints? cellConstraints;
 
   /// If set, expresses a minimum [layoutSize] on the member [cellForThisDefiner].
@@ -1811,8 +1810,6 @@ class TableLayoutCellDefiner {
   /// is that, during the [TableLayouter.layout] it behaves as if if the cell was layed out to the min size,
   /// even if it is not. That causes all other cells (notably the first cell in layout sequence) to
   /// receive smaller constraints.
-  // todo-00-last-last-last finish this
-
   late final TableLayoutCellMinSizer? cellMinSizer;
 
   bool get isHasCellMinSizer => cellMinSizer != null;
@@ -1828,7 +1825,7 @@ class TableLayoutCellDefiner {
   /// This method should be invoked ONLY under conditions where [isAlreadyLayedOutOrHasCellMinSizer] is true.
   ///
   /// The returned [pseudoLayoutSize] is either the contained [cellForThisDefiner]'s [layoutSize],
-  /// or the todo-00-last-last-last finish
+  /// or the todo-00-doc finish
   ui.Size pseudoLayoutSize({
     required BoxContainerConstraints? tableConstraints,
   }) {
@@ -1838,7 +1835,7 @@ class TableLayoutCellDefiner {
     //                 previously claimed pseudoLayoutSize
     assert(isAlreadyLayedOutOrHasCellMinSizer == true);
 
-    // todo-00-last-last-last-last : This is a big decision, what should have precedence.
+    // todo-00-last-last : This is a big decision, what should have precedence.
     //      Maybe we need to set this to envelope of layoutSize and minLayoutSize !!
     //      But then, we also need to force return the same from the minSizer??
     if (isHasCellMinSizer) {
@@ -2217,49 +2214,6 @@ class TableLayouter extends PositioningBoxLayouter {
 
   // ############################## During layout method helpers
 
-  /* todo-00-last-last-last replacing with pseudoLayout
-  /// Calculates the added width of all layed out columns except the passed [column].
-  ///
-  /// Motivation and reason for existence:
-  ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
-  ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
-  ///     the constraints on the container which is next in layout order.
-  ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
-  ///     This method encapsulates the calculation, by looking at all already layed out cells,
-  ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
-  double calculate_layedout_used_width_except_column(int column) {
-    if (tableLayoutDefiner.isEmpty) {
-      return 0.0;
-    }
-
-    return util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable) // columns list
-        .where((definersColumn) => definersColumn[0].column != column) // cut out current column
-        .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each column keep only layed out cells
-        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.width)) // each column, instead of cells, put cellDefiner layout width
-        .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
-        .fold(0.0, (value, element) => value + element);
-  }
-
-  /// Calculates the added height of all layed out rows except the passed [row].
-  ///
-  /// See [calculate_layedout_used_width_except_column].
-  ///
-  double calculate_layedout_used_height_except_row(int row) {
-    if (tableLayoutDefiner.isEmpty) {
-      return 0.0;
-    }
-    // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
-    // and column-wise, calculate max layout width
-    // then sum for all columns.
-    return tableLayoutDefiner.cellDefinersTable // rows list
-        .where((definersRow) => definersRow[0].row != row) // cut out current row
-        .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOut)) // each row keep only layed out cells
-        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.cellForThisDefiner.layoutSize.height)) // each row, instead of cells, put cellDefiner layout height
-        .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
-        .fold(0.0, (value, element) => value + element);
-  }
-  */
-
   /// Calculates the added width of all layed out columns except the passed [column].
   ///
   /// Motivation and reason for existence:
@@ -2275,9 +2229,8 @@ class TableLayouter extends PositioningBoxLayouter {
     }
     int transposedColumn = 0;
     return util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable) // columns list
-        // todo-00-last-last-last .where((definersColumn) => definersColumn[0].row != column) // cut out current column : NOTE: When transposing, column and row is reversed
         .where((definersColumn) {
-           // definersColumn[0].row != column
+           // cannot use in transposed : definersColumn[0].row != column
            bool include = transposedColumn != column;
            transposedColumn++;
            return include;
@@ -2382,29 +2335,8 @@ class TableLayouter extends PositioningBoxLayouter {
       //---  b1. child-pre-descend: Calculate constraints left over by previously
       //         layed out children, and set the calculated constraints on the child.
 
-      // If cellConstraints were set (presumed from the cellDefiner), keep it,
-      // otherwise calculate from non-layout cells.
-      /* todo-00-last-last-last
-      BoxContainerConstraints? cellConstraints = cellDefiner.cellConstraints;
-      if (cellConstraints == null) {
-        if (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.first) {
-          // First layedout cell gets full parent's (this table's) constraints
-          cellConstraints = constraints;
-        } else {
-          // Further layedout cell get 'cautiously optimistic' constraints = space left from this table's constraints,
-          //   minus added [layoutSize] of previously layed out 'non-row, non-colum' cells.
-          // Note that the last cell (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.last),
-          //   ALWAYS gets constraints exactly the size of space remaining after all previous layed out cells -
-          //   this is by the nature of the [calculate_available_constraint_on_cell] algorithm :
-          //     it return the table direction-constraint, minus the sum of layed out row heights (or column widths)
-          cellConstraints = calculate_remaining_non_layedout_constraints_on_cell(
-            cellDefiner.row,
-            cellDefiner.column,
-          );
-        }
-      }
-      */
-
+      // If cellConstraints ??= not null, they were set (presumed from the cellDefiner), then keep it,
+      //   otherwise calculate from non-layout cells.
       // Layedout cell get 'cautiously optimistic' constraints = space left from this table's constraints,
       //   minus added [layoutSize] of previously layed out 'non-row, non-colum' cells.
       // Note that the last cell (cellDefiner == tableLayoutDefiner.flatOrderedCellDefiners.last),
@@ -2553,27 +2485,6 @@ class TableLayouter extends PositioningBoxLayouter {
 
     // Calculate and set the member max row heights and max column widths,
     // needed to offset children cell in this layouter table cells.
-    /* todo-00-last-last-last remove
-    rowHeights = tableLayoutDefiner.cellDefinersTable
-        .map((definersRow) => definersRow.map((definer) {
-              if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
-              if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.height;
-              return math.min(
-                  definer.cellForThisDefiner.layoutSize.height, definer.cellForThisDefiner.constraints.height);
-            }).reduceOrElse(math.max, orElse: () => 0.0))
-        .toList();
-
-    columnWidths = util_dart
-        .transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable)
-        .map((definersColumn) => definersColumn.map((definer) {
-              if (!definer.isAlreadyLayedOut) throw StateError('definer $definer not layed out');
-              if (!definer.isLayoutOverflown) return definer.cellForThisDefiner.layoutSize.width;
-              return math.min(
-                  definer.cellForThisDefiner.layoutSize.width, definer.cellForThisDefiner.constraints.width);
-            }).reduceOrElse(math.max, orElse: () => 0.0))
-        .toList();
-  */
-    // todo-00-last-last-last
     rowHeights = tableLayoutDefiner.cellDefinersTable
         .map((definersRow) => definersRow
         .map((definer) {

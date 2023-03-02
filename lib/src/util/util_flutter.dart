@@ -18,7 +18,7 @@ ui.Rect boundingRectOfRects(List<ui.Rect> rectangles) {
 void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
   if (!(isCloserThanEpsilon(result.width, otherResult.width) ||
       isCloserThanEpsilon(result.height, otherResult.height))) {
-/* todo-00-last-last-last-last : We need to fix the reason this happens - because we set inconsisten layoutSize when minSizer is present.
+/* todo-00-last-last-last-last : We need to fix the reason this happens - because we set inconsistent layoutSize when is minSizer is present.
     throw StateError('Size results do not match. Result was $result, '
         'Other result was $otherResult.');
 */

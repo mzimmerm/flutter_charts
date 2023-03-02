@@ -33,11 +33,11 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
-    // todo-00-last-last-last : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
+    // todo-00-doc : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
     TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
       layoutSequence: 1,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 85.0, // todo-00-last-last-last
+        cellWidthMinimum: 85.0,
         cellHeightMinimum: 0.0,
       ),
     );
