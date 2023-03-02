@@ -31,8 +31,7 @@ class AxisCornerContainer extends container_common_new.ChartAreaContainer {
   @override
   layout_Post_Leaf_SetSize_FromInternals() {
     /// Set some small layoutSize
-    /// todo-00-last-last should be changed to 0.0 after we implement the 'pre-layout'
-    _rect = const ui.Rect.fromLTWH(0.0, 0.0, 50.0, 50.0);
+    _rect = const ui.Rect.fromLTWH(0.0, 0.0, 20.0, 20.0);
 
     layoutSize = _rect.size;
   }

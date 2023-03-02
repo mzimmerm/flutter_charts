@@ -34,9 +34,17 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
     // todo-00-last-last-last : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
+    TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
+      layoutSequence: 1,
+      cellMinSizer: TableLayoutCellMinSizer.fromMinima(
+        cellWidthMinimum: 85.0, // todo-00-last-last-last
+        cellHeightMinimum: 0.0,
+      ),
+    );
+
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
-      [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 3)],
-      [TableLayoutCellDefiner(layoutSequence: 0), TableLayoutCellDefiner(layoutSequence: 2)],
+      [yDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
+      [TableLayoutCellDefiner(layoutSequence: 2), TableLayoutCellDefiner(layoutSequence: 0)],
     ];
 
     TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersTable: YDEX_cellDefinersTable);
