@@ -2,7 +2,6 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
-import 'package:flutter_charts/src/chart/chart.dart';
 
 // this level or equivalent
 import 'container_edge_padding.dart' show EdgePadding;
@@ -14,7 +13,7 @@ import 'layouter_one_dimensional.dart'
     LayedoutLengthsPositioner,
     PositionedLineSegments,
     ConstraintsDistribution;
-import 'container_alignment.dart' show Alignment;
+import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../util/util_dart.dart' as util_dart show LineSegment, Interval, ToPixelsExtrapolation1D, transposeRowsToColumns;
@@ -737,18 +736,35 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// It should be invoked from the context of this [BoxLayouter]; it's parent must be passed as
   /// [callersParent].
+  /// todo-00-last-last-last-progress
   setLayoutSizePotentiallyEnlarged(LayoutableBox callersParent, ui.Size prelimLayoutSize) {
-    assertCallerIsParent(callersParent);
+    if (constraints.minSize.width == 0.0 || constraints.minSize.height == 0.0) {
+      return prelimLayoutSize;
+    }
+
+    if (prelimLayoutSize.width == 0.0) {
+      double width = constraints.minSize.width;
+      double height = prelimLayoutSize.height;
+      if (prelimLayoutSize.height == 0.0) {
+        height = constraints.minSize.height;
+      }
+      prelimLayoutSize = ui.Size(width, height);
+    }
+
     ui.Size enlargedLayoutSize = prelimLayoutSize;
     if (!prelimLayoutSize.containsFully(constraints.minSize)) {
       // Enlarge to constraints inner size
       enlargedLayoutSize = prelimLayoutSize.envelope([constraints.minSize]);
       // Then, because the returned layoutSize is greater than intended by the container,
-      // apply offset that positions self in the double-box of
-      // todo-00-last-last-progress
-      // Use Aligner, Alignment ??
-      // ui.Offset offset =
-      // applyParentOffset(callersParent, offset);
+      // apply offset that positions the [prelimLayoutSize] somewhere inside the new enlargedLayoutSize.
+      // Paint will paint ONLY to the [prelimLayoutSize], but it has to know changed offset
+      assert (alignmentForMinSizeEnlarged != null);
+      ui.Offset offset = AlignmentTransform(
+        childWidthBy: enlargedLayoutSize.width / prelimLayoutSize.width,
+        childHeightBy: enlargedLayoutSize.height / prelimLayoutSize.height,
+        alignment: alignmentForMinSizeEnlarged!,
+      ).childOffsetWhenAlignmentApplied(childSize: prelimLayoutSize);
+      applyParentOffset(callersParent, offset);
     }
 
     // Set [layoutSize] the potentially enlarged [prelimLayoutSize] and [enlargedLayoutSize]
@@ -760,7 +776,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   /// The default value is somewhat unusual, but it is geared towards the need of
   /// [TableLayouter] default layout in flutter_charts.
-  Alignment alignmentForMinSizeEnlarged = Alignment.endBottom;
+  late final Alignment? alignmentForMinSizeEnlarged; //  = Alignment.endBottom;
 
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
@@ -2733,9 +2749,9 @@ class Padder extends PositioningBoxLayouter {
 
 /// A positioning layouter that sizes self from the child
 /// by relative ratios [childWidthBy] and [childHeightBy],
-/// then aligns the single child within resized self.
+/// then aligns the single child within the sized self.
 ///
-/// The resizing of self makes self typically larger than the child, although not necessarily.
+/// The sizing of self makes self typically larger than the child, although not necessarily.
 ///
 /// The self sizing from child is defined by the multiples of child width and height,
 /// the members [childWidthBy] and [childHeightBy].
@@ -2750,13 +2766,19 @@ class Aligner extends PositioningBoxLayouter {
     required this.childHeightBy,
     this.alignment = Alignment.center,
     required BoxContainer child,
-  }) : super(children: [child]) {
-    assert(childWidthBy >= 1 && childHeightBy >= 1);
-  }
+  }) :
+        assert(childWidthBy >= 1 && childHeightBy >= 1),
+        alignmentTransform = AlignmentTransform(childWidthBy: childWidthBy, childHeightBy: childHeightBy),
+        super(children: [child]);
 
+  /// The alignment specification
   final Alignment alignment;
+  /// Defines the width of this [Aligner], in terms of child width.
+  ///
+  /// For example, if child width is `childWidth`, the width of this [Aligner] is `childWidth * childWidthBy`
   final double childWidthBy;
   final double childHeightBy;
+  final AlignmentTransform alignmentTransform;
 
   /// This override passes the immediate children of this [Aligner]
   /// the constraints that are deflated from self constraints by the
@@ -2782,10 +2804,10 @@ class Aligner extends PositioningBoxLayouter {
     // The selfLayoutSize is needed here early to position children (end of selfLayoutSize is needed
     // to align to the end!!). This is the nature of this layouter - it defines selfLayoutSize from childSize,
     // so selfLayoutSize is known once child is layed out - true when this method is invoked.
-    ui.Size selfLayoutSize = _selfLayoutSizeFromChild(child.layoutSize);
+    // todo-00-last-last-delete : this appears unuse ui.Size selfLayoutSize = _selfLayoutSizeFromChild(child.layoutSize);
     List<ui.Rect> positionedRectsInMe = [
       _positionChildInSelf(
-        selfSize: selfLayoutSize,
+        // selfSize: selfLayoutSize, // todo-00-last-last-delete : this appears unuse
         childSize: child.layoutSize,
       )
     ];
@@ -2821,16 +2843,23 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// Used in overridden [layout_Post_NotLeaf_PositionChildren] to position child in this [Aligner].
   ui.Rect _positionChildInSelf({
-    required ui.Size selfSize,
+    // required ui.Size selfSize,// todo-00-last-last-delete : this appears unuse
     required ui.Size childSize,
   }) {
+    /* todo-00-last-last-remove
     return _offsetChildInSelf(
-      selfSize: selfSize,
+      // selfSize: selfSize,// todo-00-last-last-delete : this appears unuse
       childSize: childSize,
     ) &
     childSize;
+   */
+    return alignmentTransform.childOffsetWhenAlignmentApplied(
+          childSize: childSize,
+        ) &
+        childSize;
   }
 
+/* todo-00-last-last-remove
   /// Child offset function implements the positioning the child in self, mandated by this [Aligner].
   ///
   /// Given a [selfSize], a [childSize], returns the child offset in self,
@@ -2838,7 +2867,7 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// See discussion in [Alignment] for the positioning of child in [Aligner], given [Alignment].
   ui.Offset _offsetChildInSelf({
-    required ui.Size selfSize, // todo-00-last : this appears unused
+    // required ui.Size selfSize, // todo-00-last-last-delete : this appears unused
     required ui.Size childSize,
   }) {
     double childWidth = childSize.width;
@@ -2850,6 +2879,8 @@ class Aligner extends PositioningBoxLayouter {
 
     return ui.Offset(childTopLefOffsetX, childTopLefOffsetY);
   }
+*/
+
 }
 
 // Helper classes ------------------------------------------------------------------------------------------------------
