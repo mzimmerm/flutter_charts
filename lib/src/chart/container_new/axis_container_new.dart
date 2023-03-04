@@ -88,6 +88,7 @@ import '../container_new/container_common_new.dart' as container_common_new;
 }
 
 class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainer {
+
   NewYContainer({
     required view_maker.ChartViewMaker chartViewMaker,
   }) : super(

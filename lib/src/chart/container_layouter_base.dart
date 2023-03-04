@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
+import 'package:flutter_charts/src/chart/container_new/axis_corner_container.dart';
 
 // this level or equivalent
 import 'container_edge_padding.dart' show EdgePadding;
@@ -530,24 +531,37 @@ abstract class LayoutableBox {
   /// this [LayoutableBox].
   ///
   /// Important override notes and rules for [applyParentOffset] on extensions:
-  ///  1) Generally, neither leafs nor non-leafs need to override [applyParentOffset],
-  ///     as this method is integral part of the layout process (implemented in [layout]).
-  ///  2) Exception that need to override would be those using manual
-  ///     layout process. Those would generally (always?) be leafs, and they would do the following:
+  ///  1) Generally, IF OVERRIDDEN, `super.applyParentOffset` SHOULD BE CALLED FIRST.
+  ///  2) Generally,
+  ///    - Non-leafs do NOT need to override [applyParentOffset], as calling this method
+  ///      (which delegates offset to children) is an integral part of the layout process (implemented in [layout]).
+  ///    - Leafs WHICH carry additional non-child members to paint (e.g. rectangle), LIKELY NEED TO OVERRIDE as follows:
+  ///      - call `super.applyParentOffset` first, to set overall offset in parent.
+  ///      - apply offset on the non-child members that will be painted on the offset.
+  ///      The override is also needed to ensure the layed out rectangles outer rectangle assert to
+  ///      envelope to children, will succeed.
+  ///      Example [AxisCornerContainer]
+  ///      ```dart
+  ///          @override
+  ///          void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
+  ///            // This was a core issue of layout rectangles and child rectangles not matching.
+  ///            super.applyParentOffset(caller, offset);
+  ///            _rect = _rect.shift(offset);
+  ///          }
+  ///      ```
+  ///  3) Generally, [BoxContainer]s using manual layout, SHOULD override.
+  ///     Those would generally (always?) be leafs, and they would do the following:
   ///       - Override [layout] (no super call), do manual layout calculations,
   ///         likely store the result as member (see [LabelContainer._tiltedLabelEnvelope],
   ///         and set [layoutSize] at the end, so parent can pick it up
   ///       - Override [applyParentOffset] as follows:
-  ///          - likely call super [applyParentOffset] to set overall offset in parent.
+  ///          - likely call super [applyParentOffset] first, to set overall offset in parent.
+  ///          - offset the additionally maintained children by the same offset as the [BoxContainerHierarchy._children].
   ///          - potentially re-offset the position as a result of the manual layout
-  ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member.
+  ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member
   ///        - Override [paint] by painting on the calculated (parent also applied) offset,
   ///           (see [LabelContainer.paint].
-  ///  3) As a lemma of 1), generally, there is no need to call [super.applyParentOffset] ;
-  ///     Extensions covered in 2) which do override, are those manual layout classes
-  ///     which maintain some child [BoxContainer]s in addition to [BoxContainerHierarchy._children].
-  ///     Those should call [super.applyParentOffset] first, to offset the [BoxContainerHierarchy._children],
-  ///     then offset the additionally maintained children by the same offset as the [BoxContainerHierarchy._children].
+
   ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
@@ -730,54 +744,6 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     _constraints = constraints;
   }
 
-  // todo-00-last-last-progress
-
-  /// A core function through which layoutSize should be set.
-  ///
-  /// It should be invoked from the context of this [BoxLayouter]; it's parent must be passed as
-  /// [callersParent].
-  /// todo-00-last-last-last-progress
-  setLayoutSizePotentiallyEnlarged(LayoutableBox callersParent, ui.Size prelimLayoutSize) {
-    if (constraints.minSize.width == 0.0 || constraints.minSize.height == 0.0) {
-      return prelimLayoutSize;
-    }
-
-    if (prelimLayoutSize.width == 0.0) {
-      double width = constraints.minSize.width;
-      double height = prelimLayoutSize.height;
-      if (prelimLayoutSize.height == 0.0) {
-        height = constraints.minSize.height;
-      }
-      prelimLayoutSize = ui.Size(width, height);
-    }
-
-    ui.Size enlargedLayoutSize = prelimLayoutSize;
-    if (!prelimLayoutSize.containsFully(constraints.minSize)) {
-      // Enlarge to constraints inner size
-      enlargedLayoutSize = prelimLayoutSize.envelope([constraints.minSize]);
-      // Then, because the returned layoutSize is greater than intended by the container,
-      // apply offset that positions the [prelimLayoutSize] somewhere inside the new enlargedLayoutSize.
-      // Paint will paint ONLY to the [prelimLayoutSize], but it has to know changed offset
-      assert (alignmentForMinSizeEnlarged != null);
-      ui.Offset offset = AlignmentTransform(
-        childWidthBy: enlargedLayoutSize.width / prelimLayoutSize.width,
-        childHeightBy: enlargedLayoutSize.height / prelimLayoutSize.height,
-        alignment: alignmentForMinSizeEnlarged!,
-      ).childOffsetWhenAlignmentApplied(childSize: prelimLayoutSize);
-      applyParentOffset(callersParent, offset);
-    }
-
-    // Set [layoutSize] the potentially enlarged [prelimLayoutSize] and [enlargedLayoutSize]
-    layoutSize = enlargedLayoutSize;
-  }
-
-  /// Default alignment used for offset value when [setLayoutSizePotentiallyEnlarged]
-  /// is actually enlarging the preliminary layout size.
-  ///
-  /// The default value is somewhat unusual, but it is geared towards the need of
-  /// [TableLayouter] default layout in flutter_charts.
-  late final Alignment? alignmentForMinSizeEnlarged; //  = Alignment.endBottom;
-
   /// If size constraints imposed by parent are too tight,
   /// some internal calculations of sizes may lead to negative values,
   /// making painting of this [BoxLayouter] not possible.
@@ -893,8 +859,9 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
       child.layout();
       // b3. child-post-descend (empty)
     }
-    // C. node-post-descend.
-    //    Here, children have layoutSizes, which are used to lay them out in me, then offset them in me
+
+    // C. node-post-descend. Children now have layoutSizes, used to layout children in me (place in rectangles in me),
+    //    then rectangle offsets in me are applied on children as parent offset
     _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
   }
 
@@ -1064,7 +1031,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - [RollingPositioningBoxLayouter]s [Row] and [Column] use this
   ///     - although they override [layout], the method [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
   ///     which invokes this is default. These classes rely on this default
-  ///     "bounding rectangle of all positioned children" implementaion.
+  ///     "bounding rectangle of all positioned children" implementation.
   ///
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
     assert(!isLeaf);
@@ -1412,7 +1379,9 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// The required unnamed constructor
   NonPositioningBoxLayouter({
     List<BoxContainer>? children,
-  }) : super(children: children);
+  }) : super(
+    children: children,
+  );
 
   /// Override for non-positioning:
   /// Does not apply any offsets on the it's children (passed in [layout] internals.
@@ -1873,27 +1842,32 @@ class TableLayoutCellDefiner {
   /// While this class is not a [BoxLayouter], we allow it to be asked for [layoutSize].
   /// This method should be invoked ONLY under conditions where [isAlreadyLayedOutOrHasCellMinSizer] is true.
   ///
-  /// The returned [pseudoLayoutSize] is either the contained [cellForThisDefiner]'s [layoutSize],
+  /// The returned [minSizeOrLayoutSize] is either the contained [cellForThisDefiner]'s [layoutSize],
   /// or the todo-00-doc finish
-  ui.Size pseudoLayoutSize({
+  ui.Size minSizeOrLayoutSize({
     required BoxContainerConstraints? tableConstraints,
   }) {
-    // todo-00-last! : what happens, after layoutSize is actually set on cellForThisDefiner?
-    //                a different [layoutSize] will start to appear. By then, the goal of restricting the 0th sequence cell
-    //                was achieved, but something has to be done about the fact this cell may be smaller than the
-    //                 previously claimed pseudoLayoutSize
     assert(isAlreadyLayedOutOrHasCellMinSizer == true);
 
-    // todo-00-last-last : This is a big decision, what should have precedence.
-    //      Maybe we need to set this to envelope of layoutSize and minLayoutSize !!
-    //      But then, we also need to force return the same from the minSizer??
+    // A difficult decision, what should have precedence.
+    // Basically, during layoutDescend, in the loop where some cells are layed out and some are not,
+    // we first use the isHasCellMinSizer if it is defined, to always get the bigger size, else use layoutSize.
+    //  (if neither exists, this should NOT be called at layoutDescend.
+    // Later, during PostDescend, layoutSize already exists.
+    // Here, to calculate row heights, and column widths, also use the bigger size,
+    // but enveloped with the layoutSize. Cells wit no MinSizer, use layoutSize.
+
     if (isHasCellMinSizer) {
-      return cellMinSizer!.minLayoutSize(
+      ui.Size minCellSize = cellMinSizer!.minCellSize(
         tableConstraints: tableConstraints,
       );
+      if (isAlreadyLayedOut) {
+        return minCellSize.envelope([cellForThisDefiner.layoutSize]);
+      }
+      return minCellSize;
     } else if (isAlreadyLayedOut) {
       return cellForThisDefiner.layoutSize;
-    }  else {
+    } else {
       throw StateError('Must be called when isAlreadyLayedOut || isHasCellMinSizer is true');
     }
   }
@@ -1909,9 +1883,20 @@ class TableLayoutCellDefiner {
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
 
-/// Constraints, or a [BoxContainer] which will be layed out to provide constraints for the first layed out
-/// cell in [TableLayouter] - that is, constraints for the cell defined by [TableLayoutCellDefiner]
-/// with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
+/// Represents a minimum Size of a cell in [TableLayout].
+///
+/// By 'minimum Size of a cell in [TableLayout]' we mean that from the beginning of the [layout]
+/// process in [TableLayout] the algorithm assumes the [BoxContainer] in the cell will have
+/// at least the minimum Size. The side-effect of this fact is important: From the beginning of the [layout],
+/// all other cells being layed out are given (smaller) constraints, assuming the 'minimum size of one cell'
+/// is taken away.
+///
+/// todo-00-doc fix docs
+/// The method by which the minimum Size is defined can be one of:
+///   - providing minimum width and height for the cell
+/// or a [BoxContainer] which produces constraints upon a 'test layout' for
+/// a cell in [TableLayouter] - that is, minimum constraints for the cell defined by [TableLayoutCellDefiner].
+/// todo-00-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
 ///
 /// Part of [TableLayoutDefiner], which will ensure the provided constraint
 ///
@@ -1987,7 +1972,7 @@ class TableLayoutCellMinSizer {
   late final ui.Size __minLayoutSizeCached;
   bool __isMinLayoutSizeCached = false;
 
-  ui.Size minLayoutSize({
+  ui.Size minCellSize({
     // required BoxContainerConstraints? preLayoutCellConstraints,
     required BoxContainerConstraints? tableConstraints,
   }) {
@@ -2000,19 +1985,19 @@ class TableLayoutCellMinSizer {
 
     // this.preLayoutCellConstraints = preLayoutCellConstraints;
     this.tableConstraints = tableConstraints;
-    ui.Size prelimLayoutSize;
+    ui.Size enforcedMinLayoutSize;
 
     if (__isUseCellMinimum) {
-      prelimLayoutSize = ui.Size(cellWidthMinimum, cellHeightMinimum);
+      enforcedMinLayoutSize = ui.Size(cellWidthMinimum, cellHeightMinimum);
     } else if (__isUseTablePortion) {
       assert (tableConstraints != null);
-      prelimLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
+      enforcedMinLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
       assert(preLayoutCellToGainMinima != null);
-      // todo-00-last-last : parent == this will fail. Maybe allow apply to ignore.
-      // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima, preLayoutCellConstraints!);
+      // todo-00! : parent == this will fail. Maybe allow apply to ignore.
+      // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima as LayoutableBox, preLayoutCellConstraints!);
       preLayoutCellToGainMinima!.layout();
-      prelimLayoutSize = preLayoutCellToGainMinima!.layoutSize;
+      enforcedMinLayoutSize = preLayoutCellToGainMinima!.layoutSize;
     } else {
       throw StateError('Invalid state.');
     }
@@ -2020,8 +2005,8 @@ class TableLayoutCellMinSizer {
 
     double width = 0.0;
     double height = 0.0;
-    if (isUseWidth) width = prelimLayoutSize.width;
-    if (isUseHeight) height = prelimLayoutSize.height;
+    if (isUseWidth) width = enforcedMinLayoutSize.width;
+    if (isUseHeight) height = enforcedMinLayoutSize.height;
 
     __minLayoutSizeCached = ui.Size(width, height);
     __isMinLayoutSizeCached = true;
@@ -2116,7 +2101,7 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
-  TableLayoutCellDefiner find_cell_on(row, column) =>
+  TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cell) => cell.row == row && cell.column == column,
           orElse: () => throw StateError('No cell in this $this matching row=$row, column=$column'));
@@ -2135,8 +2120,6 @@ class TableLayoutDefiner {
 /// The last layed out cell is 'greedy' in the sense it can take all [TableLayouter.constraints] remaining after all
 /// previous cells were layed out.
 /// 
-/// If [isLastCellForcedGreedy] is true, the last cell layed out in table is forced to be greedy,
-/// in the sense it's [layoutSize] must return the full size of remaining [TableLayouter.constraints] available to it.
 class TableLayouter extends PositioningBoxLayouter {
 
   TableLayouter({
@@ -2144,7 +2127,6 @@ class TableLayouter extends PositioningBoxLayouter {
     required this.tableLayoutDefiner,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
-    this.isLastCellForcedGreedy = true,
   }) {
 
     tableLayoutDefiner.tableLayouterContainer = this;
@@ -2175,7 +2157,6 @@ class TableLayouter extends PositioningBoxLayouter {
 
   final Align horizontalAlign;
   final Align verticalAlign;
-  final bool isLastCellForcedGreedy; // todo-00-last : implement. In the layout, when layout sees last cell, it must return ???? hmm, maybe this is not needed.
 
   late final int numRows;
   late final int numColumns;
@@ -2285,7 +2266,7 @@ class TableLayouter extends PositioningBoxLayouter {
            return include;
          }) // cut out current column : NOTE: When transposing, column and row is reversed
         .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each column keep only layed out cells
-        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.pseudoLayoutSize(tableConstraints: constraints).width)) // each column, instead of cells, put cellDefiner layout width
+        .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).width)) // each column, instead of cells, put cellDefiner layout width
         .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
         .fold(0.0, (value, element) => value + element);
   }
@@ -2304,14 +2285,15 @@ class TableLayouter extends PositioningBoxLayouter {
     return tableLayoutDefiner.cellDefinersTable // rows list
         .where((definersRow) => definersRow[0].row != row) // cut out current row
         .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each row keep only layed out cells
-        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.pseudoLayoutSize(tableConstraints: constraints).height)) // each row, instead of cells, put cellDefiner layout height
+        .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).height)) // each row, instead of cells, put cellDefiner layout height
         .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
         .fold(0.0, (value, element) => value + element);
   }
 
 
   BoxContainerConstraints calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
-    if (tableLayoutDefiner.find_cell_on(row, column).isAlreadyLayedOut) {
+    TableLayoutCellDefiner cellDefiner = tableLayoutDefiner.find_cellDefiner_on(row, column);
+    if (cellDefiner.isAlreadyLayedOut) {
       StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
     }
     double availableWidth = constraints.width - calculate_layedout_used_width_except_column(column);
@@ -2472,7 +2454,7 @@ class TableLayouter extends PositioningBoxLayouter {
         TableLayoutCellDefiner cellDefiner = definerRow[column];
 
         // get constraint for child in the cell: cell constraint is from rowHeights columnWidths
-        var cellConstraintForChild = BoxContainerConstraints.insideBox(
+        var cellWidthHeightAsConstraintForChild = BoxContainerConstraints.insideBox(
           size: Size(
             columnWidths[column],
             rowHeights[row],
@@ -2494,11 +2476,11 @@ class TableLayouter extends PositioningBoxLayouter {
         var mainLayoutAxis = LayoutAxis.horizontal;
 
         // Use the 1Dim Positioner on main and cross direction, to position
-        // [cellDefiner.cellForThisDefiner] inside the cell constraint [cellConstraintForChild]
+        // [cellDefiner.cellForThisDefiner] inside the cell constraint [cellWidthHeightAsConstraintForChild]
         ui.Rect positionedRect = _MainAndCrossPositionedSegments(
           parentBoxLayouter: this,
           // Position one length of the single cellForThisDefiner inside the cellSize according to layoutProperties
-          parentConstraints: cellConstraintForChild,
+          parentConstraints: cellWidthHeightAsConstraintForChild,
           children: [cellDefiner.cellForThisDefiner],
           mainAxisLayoutProperties: mainAxisLayoutProperties,
           crossAxisLayoutProperties: crossAxisLayoutProperties,
@@ -2538,7 +2520,7 @@ class TableLayouter extends PositioningBoxLayouter {
         .map((definersRow) => definersRow
         .map((definer) {
           if (!definer.isAlreadyLayedOutOrHasCellMinSizer) throw StateError('definer $definer not layed out');
-          ui.Size pseudoLayoutSize = definer.pseudoLayoutSize(
+          ui.Size pseudoLayoutSize = definer.minSizeOrLayoutSize(
             tableConstraints: constraints,
           );
           if (!definer.isLayoutOverflown) {
@@ -2554,7 +2536,7 @@ class TableLayouter extends PositioningBoxLayouter {
         .map((definer) {
 
           if (!definer.isAlreadyLayedOutOrHasCellMinSizer) throw StateError('definer $definer not layed out');
-          ui.Size pseudoLayoutSize = definer.pseudoLayoutSize(
+          ui.Size pseudoLayoutSize = definer.minSizeOrLayoutSize(
             tableConstraints: constraints,
           );
           if (!definer.isLayoutOverflown) {
@@ -2768,7 +2750,11 @@ class Aligner extends PositioningBoxLayouter {
     required BoxContainer child,
   }) :
         assert(childWidthBy >= 1 && childHeightBy >= 1),
-        alignmentTransform = AlignmentTransform(childWidthBy: childWidthBy, childHeightBy: childHeightBy),
+        alignmentTransform = AlignmentTransform(
+          childWidthBy: childWidthBy,
+          childHeightBy: childHeightBy,
+          alignment: alignment,
+        ),
         super(children: [child]);
 
   /// The alignment specification
@@ -2804,10 +2790,8 @@ class Aligner extends PositioningBoxLayouter {
     // The selfLayoutSize is needed here early to position children (end of selfLayoutSize is needed
     // to align to the end!!). This is the nature of this layouter - it defines selfLayoutSize from childSize,
     // so selfLayoutSize is known once child is layed out - true when this method is invoked.
-    // todo-00-last-last-delete : this appears unuse ui.Size selfLayoutSize = _selfLayoutSizeFromChild(child.layoutSize);
     List<ui.Rect> positionedRectsInMe = [
       _positionChildInSelf(
-        // selfSize: selfLayoutSize, // todo-00-last-last-delete : this appears unuse
         childSize: child.layoutSize,
       )
     ];
@@ -2843,43 +2827,13 @@ class Aligner extends PositioningBoxLayouter {
   ///
   /// Used in overridden [layout_Post_NotLeaf_PositionChildren] to position child in this [Aligner].
   ui.Rect _positionChildInSelf({
-    // required ui.Size selfSize,// todo-00-last-last-delete : this appears unuse
     required ui.Size childSize,
   }) {
-    /* todo-00-last-last-remove
-    return _offsetChildInSelf(
-      // selfSize: selfSize,// todo-00-last-last-delete : this appears unuse
-      childSize: childSize,
-    ) &
-    childSize;
-   */
     return alignmentTransform.childOffsetWhenAlignmentApplied(
           childSize: childSize,
         ) &
         childSize;
   }
-
-/* todo-00-last-last-remove
-  /// Child offset function implements the positioning the child in self, mandated by this [Aligner].
-  ///
-  /// Given a [selfSize], a [childSize], returns the child offset in self,
-  /// calculated from members [alignment],  [childWidthBy], [childHeightBy].
-  ///
-  /// See discussion in [Alignment] for the positioning of child in [Aligner], given [Alignment].
-  ui.Offset _offsetChildInSelf({
-    // required ui.Size selfSize, // todo-00-last-last-delete : this appears unused
-    required ui.Size childSize,
-  }) {
-    double childWidth = childSize.width;
-    double childHeight = childSize.height;
-
-    /// The child is then positioned in the [Aligner] at offset controlled by [alignX] and [alignY]:
-    double childTopLefOffsetX = (childWidth * (childWidthBy - 1)) * (alignment.alignX + 1) / 2;
-    double childTopLefOffsetY = (childHeight * (childHeightBy - 1)) * (alignment.alignY + 1) / 2;
-
-    return ui.Offset(childTopLefOffsetX, childTopLefOffsetY);
-  }
-*/
 
 }
 

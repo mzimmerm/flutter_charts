@@ -38,9 +38,9 @@ extension SizeExtension on ui.Size {
   }
 
   /// Returns [true] if this instance contains fully the passed [other] object of type [ui.Size].
-  bool containsFully(ui.Size size) {
-    return size.width <= width &&
-        size.height <= height;
+  bool containsFully(ui.Size other) {
+    return other.width <= width &&
+        other.height <= height;
   }
 
   /// Outermost union of this size with [other].
@@ -52,6 +52,18 @@ extension SizeExtension on ui.Size {
       ? otherSizes.fold(this, (previousSize, size) => previousSize.merge(size))
       : this;
   
+  ui.Size replaceZerosFrom(ui.Size other) {
+
+    if (this.width > 0.0 && this.height > 0.0) {
+      return this;
+    }
+    double width = this.width;
+    double height = this.height;
+    if (width == 0.0) width = other.width;
+    if (height == 0.0) height = other.height;
+
+    return ui.Size(width, height);
+  }
 }
 
 extension RectExtension on ui.Rect {
@@ -130,9 +142,9 @@ extension RectExtension on ui.Rect {
       }
     }
 
-    // todo-00-last-last-last-last : need to fix this. minSizer inconsistent layoutSize when minSizer is present: assert (overlaps(other));
+    assert (overlaps(other));
     ui.Rect intersection = intersect(other);
-    // todo-00-last-last-last-last : need to fix this. minSizer inconsistent layoutSize when minSizer is present: assert (intersection.width >= widthIntersect);
+    assert (intersection.width >= widthIntersect);
     // assert (intersection.height >= heightIntersect);
 
     return intersection;

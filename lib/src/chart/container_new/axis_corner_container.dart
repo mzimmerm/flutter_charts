@@ -38,6 +38,8 @@ class AxisCornerContainer extends container_common_new.ChartAreaContainer {
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
+    // This was a core issue of layout rectangles and child rectangles not matching.
+    super.applyParentOffset(caller, offset);
     _rect = _rect.shift(offset);
   }
 

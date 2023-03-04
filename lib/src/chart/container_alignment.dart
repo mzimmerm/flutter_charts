@@ -170,7 +170,6 @@ class Alignment {
 /// This class allows us to find how much
 /// is the smaller rectangle [Offset] during such transform.
 ///
-// todo-00-last-last-progress
 class AlignmentTransform {
 
   const AlignmentTransform({

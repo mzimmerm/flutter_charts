@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Canvas, Size;
-import 'package:flutter_charts/src/chart/painter.dart';
+
+import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
