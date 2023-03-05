@@ -47,7 +47,12 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
       [TableLayoutCellDefiner(layoutSequence: 2), TableLayoutCellDefiner(layoutSequence: 0)],
     ];
 
-    TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(cellDefinersTable: YDEX_cellDefinersTable);
+    TableLayoutDefiner tableLayoutDefiner = TableLayoutDefiner(
+      cellDefinersTable: YDEX_cellDefinersTable,
+      cellsAlignerDefiner: ChartTableLayoutCellsAlignerDefiner.sizeOf( // or just 2x2
+        cellDefinersTable: YDEX_cellDefinersTable,
+      ),
+    );
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 

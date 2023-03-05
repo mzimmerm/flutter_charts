@@ -1784,6 +1784,82 @@ class ExternalTicksRow extends Row {
 }
 
 // --------------------------- vvvvvvvvvv Table
+// todo-00-last-last
+
+/// If used on [TableLayoutDefiner], it aligns the table cells 'packed towards middle' as much as possible.
+///
+/// The intended use is in situations where the [TableLayout] should layout Flutter Charts.
+/// In charts context, the X axis, Y axis, and data container should be aligned so the pack tight without spacing
+/// between them.
+///
+/// This class allows to define cells alignment to achieve that, for a limited number of rows and cells..
+///
+/// All cells are aligned as follows:
+/// ```
+///   - Top    (Start)    Row,   push down  -  cell vertical align = End
+///   - Middle (Center)   Row    center     -  cell vertical align = Center (IF Middle row EXISTS, ONLY 3 ROWS or 1 ROW)
+///   - Bottom (End)      Row,   push up    -  cell vertical align = Start
+///   - Start             Column, push right - cell horizontal align = End
+///   - Middle (Center)   Column, center     - cell horizontal align = Center (IF Middle column EXISTS, ONLY 3 COLUMNS)
+///   - End               Column, push left  - cell horizontal align = Start
+/// ```
+///
+/// Note: If there is only 1 row, it is considered end (bottom), if there is only 1 column, it is considered end.
+///
+class ChartTableLayoutCellsAlignerDefiner {
+  ChartTableLayoutCellsAlignerDefiner({
+    required this.numRows,
+    required this.numColumns,
+  }) : assert (0 < numRows && numRows <= 3 && 0 < numColumns && numColumns <= 3);
+
+  ChartTableLayoutCellsAlignerDefiner.sizeOf({
+    required List<List<TableLayoutCellDefiner>> cellDefinersTable,
+  })  : numRows = cellDefinersTable.length,
+        numColumns = cellDefinersTable.isNotEmpty ? cellDefinersTable[0].length : 0 {
+    assert(0 < numRows && numRows <= 3 && 0 < numColumns && numColumns <= 3);
+  }
+
+  final int numRows;
+  final int numColumns;
+
+  bool isStart(int rowOrCol, int numRowsOrCols) {
+    return numRowsOrCols >= 2 && rowOrCol == 0;
+  }
+  bool isMiddle(int rowOrCol, int numRowsOrCols) {
+    return numRowsOrCols == 3 && rowOrCol == 1;
+  }
+  bool isEnd(int rowOrCol, int numRowsOrCols) {
+    return rowOrCol == numRowsOrCols - 1;
+  }
+
+  /// All outside cells are aligned as follows:
+  ///   - Top    (Start)    Row,   push down  -  vertical align = End
+  ///   - Middle (Center)   Row    center     -  vertical align = Center (IF Middle row EXISTS, ONLY 3 ROWS or 1 ROW)
+  ///   - Bottom (End)      Row,   push up    -  vertical align = Start
+  ///   - Start             Column, push right - horizontal align = End
+  ///   - Middle (Center)   Column, center     - horizontal align = Center (IF Middle column EXISTS, ONLY 3 COLUMNS)
+  ///   - End               Column, push left  - horizontal align = Start
+  Align alignFor(int rowOrCol, int numRowsOrCols) {
+    if (isStart(rowOrCol, numRowsOrCols)) {
+      return Align.end;
+    } else if (isMiddle(rowOrCol, numRowsOrCols)) {
+      return Align.center;
+    } else if (isEnd(rowOrCol, numRowsOrCols)) {
+      return Align.start;
+    } else {
+      throw StateError('Internal error: no alignment for rowOrCol=$rowOrCol, numRowsOrCols=$numRowsOrCols');
+    }
+  }
+  
+  /*
+  void _validate(int row, int column) {
+    if (row >= numRows)       throw StateError('row $row >= numRows $numRows: pass row < numRows');
+    if (column >= numColumns) throw StateError('column $column >= numColumns $numColumns: pass column < numColumns');
+  }
+  */
+
+}
+
 /// Manages one cell layed out by the [TableLayouter].
 ///
 /// Exists for the benefit of the [TableLayouter], during it's [TableLayouter.layout],
@@ -1794,19 +1870,21 @@ class TableLayoutCellDefiner {
 
   TableLayoutCellDefiner({
     required this.layoutSequence,
-    this.horizontalAlign = Align.center,
-    this.verticalAlign = Align.center,
+    this.horizontalAlign,
+    this.verticalAlign,
     this.cellConstraints,
     this.cellMinSizer,
   });
   // Members
 
   final int layoutSequence;
+  bool isLayoutOverflown = false;
   late final int row;
   late final int column;
-  final Align horizontalAlign;
-  final Align verticalAlign;
-  bool isLayoutOverflown = false;
+
+  /// If remains null after construction, the [TableLayouter] is responsible for setting a value.
+  Align? horizontalAlign;
+  Align? verticalAlign;
 
   // Late final constraints, can be pre-set by client OR set during [layout],
   // this is especially useful for the first layed out: e.g. YContainer,
@@ -2052,17 +2130,24 @@ class TableLayoutDefiner {
     required this.cellDefinersTable,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
+    this.cellsAlignerDefiner,
   }) :
         numRows = cellDefinersTable.length,
         numColumns = cellDefinersTable.isNotEmpty ? cellDefinersTable.length : 0;
 
-  /// Default creates an instance which [layoutSequence] follows row 1 columns from the left, then wraps to row 2,
-  /// and repeats, until the bottom right column gets index `numRows * numColumns - 1`.
+  /// Default creates an instance which [layoutSequence] follows the normal 'top to bottom, left to right'
+  /// processing of cells, that is, row 1 columns from the left, then wraps to row 2,
+  /// and repeats.
+  ///
+  /// The [cellDefinersTable] cell at position `row`, `column` receive [TableLayoutCellDefiner.layoutSequence]
+  ///   `row * numColumns + column`.
+  ///
   TableLayoutDefiner.defaultRowWiseForTableSize({
     required this.numRows,
     required this.numColumns,
     this.horizontalAlign = Align.center,
     this.verticalAlign = Align.center,
+    this.cellsAlignerDefiner,
   }) : cellDefinersTable =
             List.generate(
               numRows,
@@ -2070,8 +2155,8 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
-                horizontalAlign: horizontalAlign,
-                verticalAlign: verticalAlign,
+                // horizontalAlign: horizontalAlign,
+                // verticalAlign: verticalAlign,
                 // cellConstraints: null,
               ),
             ));
@@ -2096,6 +2181,9 @@ class TableLayoutDefiner {
 
   final Align horizontalAlign;
   final Align verticalAlign;
+  /// If not null, overrides alignment that may be set on individual cells, and also
+  /// alignment set on this definer in [horizontalAlign] and [verticalAlign].
+  final ChartTableLayoutCellsAlignerDefiner? cellsAlignerDefiner;
 
   /// [_cachedFlatCellDefiners] and [_isFlatCellDefinersCached] supports 
   /// fast access to [flatCellDefiners].
@@ -2126,10 +2214,39 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
+  /// todo-00!!!! optimize, find it in cellDefinersTable instead !!!!
   TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
-              (cell) => cell.row == row && cell.column == column,
+              (cellDefiner) => cellDefiner.row == row && cellDefiner.column == column,
           orElse: () => throw StateError('No cell in this $this matching row=$row, column=$column'));
+
+  /// Returns priority-order align for a row and column.
+  ///
+  /// The priority is:
+  ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
+  ///   - next is the [cellsAlignerDefiner]
+  ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
+  Align verticalAlignFor(int row, int column) {
+    var cellDefiner = find_cellDefiner_on(row, column);
+    if (cellDefiner.verticalAlign != null) {
+      return cellDefiner.verticalAlign!;
+    }
+    if (cellsAlignerDefiner != null) {
+      return cellsAlignerDefiner!.alignFor(row, numRows);
+    }
+    return verticalAlign;
+  }
+
+  Align horizontalAlignFor(int row, int column) {
+    var cellDefiner = find_cellDefiner_on(row, column);
+    if (cellDefiner.horizontalAlign != null) {
+      return cellDefiner.horizontalAlign!;
+    }
+    if (cellsAlignerDefiner != null) {
+      return cellsAlignerDefiner!.alignFor(column, numColumns);
+    }
+    return horizontalAlign;
+  }
 
 }
 
@@ -2235,6 +2352,8 @@ class TableLayouter extends PositioningBoxLayouter {
 
         currDefiner.row = row;
         currDefiner.column = column;
+        currDefiner.verticalAlign = tableLayoutDefiner.verticalAlignFor(row, column);
+        currDefiner.horizontalAlign = tableLayoutDefiner.horizontalAlignFor(row, column);
         currDefiner.cellContainer = currCell;
 
         // Collect layoutSequences and make sure they go from 0 to numColumns * numRows
@@ -2266,65 +2385,6 @@ class TableLayouter extends PositioningBoxLayouter {
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
   }
 
-  // ############################## During layout Descend method helpers
-
-  BoxContainerConstraints __layout_descend_calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
-
-    /// Inner function calculates the added width of all layed out columns except the passed [column].
-    ///
-    /// Motivation and reason for existence:
-    ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
-    ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
-    ///     the constraints on the container which is next in layout order.
-    ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
-    ///     This method encapsulates the calculation, by looking at all already layed out cells,
-    ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
-    double descend_used_layedout_width_except_column(int column) {
-      if (tableLayoutDefiner.isEmpty) {
-        return 0.0;
-      }
-      int transposedColumn = 0;
-      return util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable) // columns list
-          .where((definersColumn) {
-        // cannot use in transposed : definersColumn[0].row != column
-        bool include = transposedColumn != column;
-        transposedColumn++;
-        return include;
-      }) // cut out current column : NOTE: When transposing, column and row is reversed
-          .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each column keep only layed out cells
-          .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).width)) // each column, instead of cells, put cellDefiner layout width
-          .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
-          .fold(0.0, (value, element) => value + element);
-    }
-
-    /// Calculates the added height of all layed out rows except the passed [row].
-    ///
-    /// See [calculate_layedout_used_width_except_column].
-    ///
-    double descend_used_layedout_height_except_row(int row) {
-      if (tableLayoutDefiner.isEmpty) {
-        return 0.0;
-      }
-      // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
-      // and column-wise, calculate max layout width
-      // then sum for all columns.
-      return tableLayoutDefiner.cellDefinersTable // rows list
-          .where((definersRow) => definersRow[0].row != row) // cut out current row
-          .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each row keep only layed out cells
-          .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).height)) // each row, instead of cells, put cellDefiner layout height
-          .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
-          .fold(0.0, (value, element) => value + element);
-    }
-
-    TableLayoutCellDefiner cellDefiner = tableLayoutDefiner.find_cellDefiner_on(row, column);
-    if (cellDefiner.isAlreadyLayedOut) {
-      StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
-    }
-    double availableWidth = constraints.width - descend_used_layedout_width_except_column(column);
-    double availableHeight = constraints.height - descend_used_layedout_height_except_row(row);
-    return BoxContainerConstraints.insideBox(size: Size(availableWidth, availableHeight));
-  }
-
   // ############################## Layout methods
 
   @override
@@ -2354,8 +2414,11 @@ class TableLayouter extends PositioningBoxLayouter {
   @override
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {}
 
-  /// Descends to children: iterates table children (container), in the layout order [TableLayoutCellDefiner.layoutSequence]
-  /// as defined by the cell definers in the [TableLayouter.tableLayoutDefiner].
+  /// Descends to children: Lays out table children (table cell containers), one after another,
+  /// in the layout order of their cell definer's sequence [TableLayoutCellDefiner.layoutSequence].
+  ///
+  /// The sequences for all cells are defined by the cell definers list in the [TableLayouter.tableLayoutDefiner]'s
+  /// table [TableLayoutDefiner.cellDefinersTable].
   ///
   /// In each child iteration step, the algorithm:
   ///   - first creates cellConstraints on the table cell, giving each cell
@@ -2414,6 +2477,63 @@ class TableLayouter extends PositioningBoxLayouter {
       // --- b3. child-post-descend: mark the cell definer that it's child container is layedout
       cellDefiner.isAlreadyLayedOut = true;
     }
+  }
+
+  BoxContainerConstraints __layout_descend_calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
+
+    /// Inner function calculates the added width of all layed out columns except the passed [column].
+    ///
+    /// Motivation and reason for existence:
+    ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
+    ///   - The [TableLayouter], after a container corresponding to a [TableLayoutCellDefiner] was layed out, sets
+    ///     the constraints on the container which is next in layout order.
+    ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
+    ///     This method encapsulates the calculation, by looking at all already layed out cells,
+    ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
+    double descend_used_layedout_width_except_column(int column) {
+      if (tableLayoutDefiner.isEmpty) {
+        return 0.0;
+      }
+      int transposedColumn = 0;
+      return util_dart.transposeRowsToColumns(tableLayoutDefiner.cellDefinersTable) // columns list
+          .where((definersColumn) {
+        // cannot use in transposed : definersColumn[0].row != column
+        bool include = transposedColumn != column;
+        transposedColumn++;
+        return include;
+      }) // cut out current column : NOTE: When transposing, column and row is reversed
+          .map((definersColumn) => definersColumn.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each column keep only layed out cells
+          .map((definersColumn) => definersColumn.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).width)) // each column, instead of cells, put cellDefiner layout width
+          .map((definersColumn) => definersColumn.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each column, reduce to one number - max of layout width
+          .fold(0.0, (value, element) => value + element);
+    }
+
+    /// Calculates the added height of all layed out rows except the passed [row].
+    ///
+    /// See [calculate_layedout_used_width_except_column].
+    ///
+    double descend_used_layedout_height_except_row(int row) {
+      if (tableLayoutDefiner.isEmpty) {
+        return 0.0;
+      }
+      // go over all columns except the passed, column-wise, only keep cells where cellDefiner.isAlreadyLayedOut
+      // and column-wise, calculate max layout width
+      // then sum for all columns.
+      return tableLayoutDefiner.cellDefinersTable // rows list
+          .where((definersRow) => definersRow[0].row != row) // cut out current row
+          .map((definersRow) => definersRow.where((cellDefiner) => cellDefiner.isAlreadyLayedOutOrHasCellMinSizer)) // each row keep only layed out cells
+          .map((definersRow) => definersRow.map((cellDefiner) => cellDefiner.minSizeOrLayoutSize(tableConstraints: constraints).height)) // each row, instead of cells, put cellDefiner layout height
+          .map((definersRow) => definersRow.reduceOrElse(math.max<double>, orElse: () => 0.0)) // each row, reduce to one number - max of layout height
+          .fold(0.0, (value, element) => value + element);
+    }
+
+    TableLayoutCellDefiner cellDefiner = tableLayoutDefiner.find_cellDefiner_on(row, column);
+    if (cellDefiner.isAlreadyLayedOut) {
+      StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
+    }
+    double availableWidth = constraints.width - descend_used_layedout_width_except_column(column);
+    double availableHeight = constraints.height - descend_used_layedout_height_except_row(row);
+    return BoxContainerConstraints.insideBox(size: Size(availableWidth, availableHeight));
   }
 
   /// This [TableLayouter] override creates table-positioned rectangles around each child,
@@ -2489,11 +2609,11 @@ class TableLayouter extends PositioningBoxLayouter {
         // We can consider main axis horizontal, but it does not matter for result,
         // as long as we pass the Align on the corresponding axis
         var mainAxisLayoutProperties = LengthsPositionerProperties(
-          align: cellDefiner.horizontalAlign,
+          align: cellDefiner.horizontalAlign!,
           packing: Packing.tight, // todo-00-later Write a test. This should not matter for one child!
         );
         var crossAxisLayoutProperties = LengthsPositionerProperties(
-          align: cellDefiner.verticalAlign,
+          align: cellDefiner.verticalAlign!,
           packing: Packing.tight,
         );
         var mainLayoutAxis = LayoutAxis.horizontal;
