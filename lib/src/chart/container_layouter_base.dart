@@ -1813,14 +1813,14 @@ class TableLayoutCellDefiner {
   // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
   // THE NewChartRootContainer AND the TableLayouter must add children in build,
   // because only then TableLayouter has constraints set!!!
-  /// If set, expresses constraints on the member [cellForThisDefiner].
+  /// If set, expresses constraints on the member [cellContainer].
   ///
-  /// To enforce a [BoxLayouter.layoutSize] constraint on the ember [cellForThisDefiner].
+  /// To enforce a [BoxLayouter.layoutSize] constraint on the ember [cellContainer].
   /// they should be set by the client on creation of this instance.
   /// If not set by user, they should be calculated and set during layout.
   BoxContainerConstraints? cellConstraints;
 
-  /// If set, expresses a minimum [layoutSize] on the member [cellForThisDefiner].
+  /// If set, expresses a minimum [layoutSize] on the member [cellContainer].
   ///
   /// In a way this represents and provides 'minimum constraints'.
   ///
@@ -1832,18 +1832,43 @@ class TableLayoutCellDefiner {
 
   bool get isHasCellMinSizer => cellMinSizer != null;
 
-  /// Tracks if the cell container [cellForThisDefiner] invoked [layout];
-  /// should be set to true after the corresponding container cell, the [TableLayoutCellDefiner.cellForThisDefiner]
-  /// calls [BoxContainer.layout].
+  /// Tracks if the [cellContainer] invoked [layout];
+  /// is set to true after [cellContainer] invokes [BoxContainer.layout].
   bool isAlreadyLayedOut = false;
 
   bool get isAlreadyLayedOutOrHasCellMinSizer => isAlreadyLayedOut || isHasCellMinSizer;
 
-  /// While this class is not a [BoxLayouter], we allow it to be asked for [layoutSize].
-  /// This method should be invoked ONLY under conditions where [isAlreadyLayedOutOrHasCellMinSizer] is true.
+  /// Minimum size which the table cell at [row] and [column] (which contains the [cellContainer]) should
+  /// announce to the [TableLayouter] during the [TableLayouter.layout].
   ///
-  /// The returned [minSizeOrLayoutSize] is either the contained [cellForThisDefiner]'s [layoutSize],
-  /// or the todo-00-doc finish
+  /// Must be called on this [TableLayoutCellDefiner] only if
+  ///   - either the container this cell is either layed out ([isAlreadyLayedOut] is true)
+  ///   - or this cell has a non null [TableLayoutCellMinSizer] ([isHasCellMinSizer] is true).
+  ///   (above conditions unified in [isAlreadyLayedOutOrHasCellMinSizer] is true)
+  ///
+  /// Invoked both:
+  ///   1. During [TableLayouter.layout] Descend step,
+  ///        in [__layout_descend_calculate_remaining_non_layedout_constraints_on_cell], where
+  ///        it may be invoked repeatedly both before this cell is layed out, or after.
+  ///   2. During the [TableLayouter.layout] Post step.
+  ///
+  /// Details of the invocation results:
+  ///   1. In the Descend step, it can ONLY be called if this cell is layed out or has it cell sizer non null (see above)
+  ///         1.1. Lifecycle before the [cellContainer] is layed out: the [TableLayoutCellMinSizer.minCellSize] along the dimensions
+  ///              where the [TableLayoutCellMinSizer.minCellSize] is defined (this could be 0.0 along one dimension)
+  ///         1.2. Lifecycle after the [cellContainer] is layed out: envelope of the above size
+  ///              with [cellContainer.layoutSize].
+  ///   2.  In the Post step, it is called on each cell (because it is layed out, see above) returns the same as 1.2.
+  ///       if this cell has MinSizer, returns [layoutSize] otherwise.
+  ///
+  /// The above logic under different conditions guarantees that the result [Size],
+  /// for cells that specify [cellMinSizer]:
+  ///   - along the direction(s) where [TableLayoutCellMinSizer] IS defined: yields the same result before
+  ///     and after the cell container is layed out (that is, both before and after layout, the min size)
+  ///   - along the direction(s) where [TableLayoutCellMinSizer] IS NOT defined: yields workflow consistent results
+  ///     with [TableLayoutCellDefiner] cells that do NOT specify [cellMinSizer]
+  ///     (that is : before layout -  effectively 0.0 as it is not called, after layout - [layoutSize]).
+  ///
   ui.Size minSizeOrLayoutSize({
     required BoxContainerConstraints? tableConstraints,
   }) {
@@ -1862,11 +1887,11 @@ class TableLayoutCellDefiner {
         tableConstraints: tableConstraints,
       );
       if (isAlreadyLayedOut) {
-        return minCellSize.envelope([cellForThisDefiner.layoutSize]);
+        return minCellSize.envelope([cellContainer.layoutSize]);
       }
       return minCellSize;
     } else if (isAlreadyLayedOut) {
-      return cellForThisDefiner.layoutSize;
+      return cellContainer.layoutSize;
     } else {
       throw StateError('Must be called when isAlreadyLayedOut || isHasCellMinSizer is true');
     }
@@ -1877,7 +1902,7 @@ class TableLayoutCellDefiner {
   ///
   /// There is exactly one, because the cell definers 2D array [TableLayoutDefiner.cellDefinersTable]
   /// is same size as the table cells array [TableLayouter.cellsTable] which is layed out.
-  late final BoxContainer cellForThisDefiner;
+  late final BoxContainer cellContainer;
 
   // null means last
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
@@ -2138,7 +2163,7 @@ class TableLayouter extends PositioningBoxLayouter {
     // Still have to add children, even though TableLayouter cheats and uses
     // cell definers instead of cells, so without children [layout] complains on isLeaf.
     addChildren(
-        tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellForThisDefiner).toList());
+        tableLayoutDefiner.flatOrderedCellDefiners.map((cellDefiner) => cellDefiner.cellContainer).toList());
   }
 
   /// Represents rows and columns of the children layed out by this [TableLayouter]
@@ -2210,7 +2235,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
         currDefiner.row = row;
         currDefiner.column = column;
-        currDefiner.cellForThisDefiner = currCell;
+        currDefiner.cellContainer = currCell;
 
         // Collect layoutSequences and make sure they go from 0 to numColumns * numRows
         collectedSequences.add(currDefiner.layoutSequence);
@@ -2245,7 +2270,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
   BoxContainerConstraints __layout_descend_calculate_remaining_non_layedout_constraints_on_cell(int row, int column) {
 
-    /// Calculates the added width of all layed out columns except the passed [column].
+    /// Inner function calculates the added width of all layed out columns except the passed [column].
     ///
     /// Motivation and reason for existence:
     ///   - Exists for the benefit of the [TableLayouter] owned by [tableLayouterContainer].
@@ -2254,7 +2279,7 @@ class TableLayouter extends PositioningBoxLayouter {
     ///     The layouter wants to specify, how much space (constraints) is left over for the next container.
     ///     This method encapsulates the calculation, by looking at all already layed out cells,
     ///     and finding the used up size (sum of [BoxContainer.layoutSize]).
-    double layedout_used_width_except_column(int column) {
+    double descend_used_layedout_width_except_column(int column) {
       if (tableLayoutDefiner.isEmpty) {
         return 0.0;
       }
@@ -2276,7 +2301,7 @@ class TableLayouter extends PositioningBoxLayouter {
     ///
     /// See [calculate_layedout_used_width_except_column].
     ///
-    double layedout_used_height_except_row(int row) {
+    double descend_used_layedout_height_except_row(int row) {
       if (tableLayoutDefiner.isEmpty) {
         return 0.0;
       }
@@ -2295,8 +2320,8 @@ class TableLayouter extends PositioningBoxLayouter {
     if (cellDefiner.isAlreadyLayedOut) {
       StateError('Cell $runtimeType $this on row=$row, column=$column is already layed out.');
     }
-    double availableWidth = constraints.width - layedout_used_width_except_column(column);
-    double availableHeight = constraints.height - layedout_used_height_except_row(row);
+    double availableWidth = constraints.width - descend_used_layedout_width_except_column(column);
+    double availableHeight = constraints.height - descend_used_layedout_height_except_row(row);
     return BoxContainerConstraints.insideBox(size: Size(availableWidth, availableHeight));
   }
 
@@ -2378,7 +2403,7 @@ class TableLayouter extends PositioningBoxLayouter {
         cellDefiner.column,
       );
 
-      var child = cellDefiner.cellForThisDefiner;
+      var child = cellDefiner.cellContainer;
 
       // Apply constraints on child just before layout
       child.applyParentConstraints(this, cellDefiner.cellConstraints!);
@@ -2441,18 +2466,17 @@ class TableLayouter extends PositioningBoxLayouter {
 
     List<List<TableLayoutCellDefiner>> cellDefinersTable = tableLayoutDefiner.cellDefinersTable;
 
-    // Position containers (children) in each cell by finding container offset in cell,
-    // then offset the whole cell by moving it to the position for row and column
+    // Position containers (children) in each cell by finding container offset
+    // in cell *which is bigger than container, unless it's biggest container in row or column*,
+    // then offset the whole cell by moving it to the position for table row and column
     for (int row = 0; row < cellDefinersTable.length; row++) {
-
       List<TableLayoutCellDefiner> definerRow = cellDefinersTable[row];
       internalWidthOffset = 0; // new row, start width on the left (0)
 
       for (int column = 0; column < definerRow.length; column++) {
-
         TableLayoutCellDefiner cellDefiner = definerRow[column];
 
-        // get constraint for child in the cell: cell constraint is from rowHeights columnWidths
+        // Constraint for child container in the cell: cell constraint is from rowHeights columnWidths
         var cellWidthHeightAsConstraintForChild = BoxContainerConstraints.insideBox(
           size: Size(
             columnWidths[column],
@@ -2460,11 +2484,11 @@ class TableLayouter extends PositioningBoxLayouter {
           ),
         );
 
-          // For each child separately, create layout properties from the cell definer,
-          // and obtain it's rectangle.
-          // We can consider main axis horizontal, but it does not matter for result,
-          // as long as we pass the Align on the corresponding axis
-          var mainAxisLayoutProperties = LengthsPositionerProperties(
+        // For each child separately, create layout properties from the cell definer,
+        // and obtain it's rectangle.
+        // We can consider main axis horizontal, but it does not matter for result,
+        // as long as we pass the Align on the corresponding axis
+        var mainAxisLayoutProperties = LengthsPositionerProperties(
           align: cellDefiner.horizontalAlign,
           packing: Packing.tight, // todo-00-later Write a test. This should not matter for one child!
         );
@@ -2480,13 +2504,11 @@ class TableLayouter extends PositioningBoxLayouter {
           parentBoxLayouter: this,
           // Position one length of the single cellForThisDefiner inside the cellSize according to layoutProperties
           parentConstraints: cellWidthHeightAsConstraintForChild,
-          children: [cellDefiner.cellForThisDefiner],
+          children: [cellDefiner.cellContainer],
           mainAxisLayoutProperties: mainAxisLayoutProperties,
           crossAxisLayoutProperties: crossAxisLayoutProperties,
           mainLayoutAxis: mainLayoutAxis,
-        )
-            .asRectangles()
-            .first;
+        ).asRectangles().first;
 
         // Now offset the rectangle by the left-top position of the (row, column) cell being layedout.
         positionedRect = positionedRect.shift(ui.Offset(internalWidthOffset, internalHeightOffset));
@@ -2525,7 +2547,7 @@ class TableLayouter extends PositioningBoxLayouter {
           if (!definer.isLayoutOverflown) {
             return minSizeOrLayoutSize.height;
           }
-          return math.min(minSizeOrLayoutSize.height, definer.cellForThisDefiner.constraints.height);
+          return math.min(minSizeOrLayoutSize.height, definer.cellContainer.constraints.height);
         })
         .reduceOrElse(math.max, orElse: () => 0.0))
         .toList();
@@ -2541,7 +2563,7 @@ class TableLayouter extends PositioningBoxLayouter {
           if (!definer.isLayoutOverflown) {
             return minSizeOrLayoutSize.width;
           }
-          return math.min(minSizeOrLayoutSize.width, definer.cellForThisDefiner.constraints.width);
+          return math.min(minSizeOrLayoutSize.width, definer.cellContainer.constraints.width);
         })
         .reduceOrElse(math.max, orElse: () => 0.0))
         .toList();
@@ -2564,7 +2586,7 @@ class TableLayouter extends PositioningBoxLayouter {
       List<TableLayoutCellDefiner> definerRow = cellDefinersTable[row];
       for (int column = 0; column < definerRow.length; column++) {
         TableLayoutCellDefiner cellDefiner = definerRow[column];
-        cellDefiner.cellForThisDefiner.applyParentOffset(this, positionedRectsInMe[row * numColumns + column].topLeft);
+        cellDefiner.cellContainer.applyParentOffset(this, positionedRectsInMe[row * numColumns + column].topLeft);
       }
     }
 
