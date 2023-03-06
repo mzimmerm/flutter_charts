@@ -69,6 +69,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
     yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+      chartViewMaker: this,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
@@ -79,6 +80,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
 
     // See comment in YContainer constructor
     xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+      chartViewMaker: this,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.xContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,

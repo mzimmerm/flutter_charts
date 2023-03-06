@@ -1784,7 +1784,6 @@ class ExternalTicksRow extends Row {
 }
 
 // --------------------------- vvvvvvvvvv Table
-// todo-00-last-last
 
 /// If used on [TableLayoutDefiner], it aligns the table cells 'packed towards middle' as much as possible.
 ///
@@ -1797,10 +1796,10 @@ class ExternalTicksRow extends Row {
 /// All cells are aligned as follows:
 /// ```
 ///   - Top    (Start)    Row,   push down  -  cell vertical align = End
-///   - Middle (Center)   Row    center     -  cell vertical align = Center (IF Middle row EXISTS, ONLY 3 ROWS or 1 ROW)
+///   - Middle (Center)   Row    center     -  cell vertical align = Center (IF Middle row EXISTS, only for 3 ROWS)
 ///   - Bottom (End)      Row,   push up    -  cell vertical align = Start
 ///   - Start             Column, push right - cell horizontal align = End
-///   - Middle (Center)   Column, center     - cell horizontal align = Center (IF Middle column EXISTS, ONLY 3 COLUMNS)
+///   - Middle (Center)   Column, center     - cell horizontal align = Center (IF Middle col EXISTS, only for 3 COLUMNS)
 ///   - End               Column, push left  - cell horizontal align = Start
 /// ```
 ///
@@ -3012,6 +3011,7 @@ class ExternalTicksLayoutProvider {
   ExternalTicksLayoutProvider({
     required this.tickValues,
     required this.tickValuesDomain,
+    // todo-00-last-last-last : need to add tickValuesLextered - but to which axisPixelsRange???
     required this.isAxisPixelsAndDisplayedValuesInSameDirection,
     required this.externalTickAt,
 });
@@ -3071,6 +3071,9 @@ class ExternalTicksLayoutProvider {
   }
 
 }
+
+// todo-00-last-last rename to ExternalTickAtChildPosition
+//  rename also variables
 
 enum ExternalTickAt {
   childStart,

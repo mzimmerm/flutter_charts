@@ -1,9 +1,11 @@
 import 'dart:math' as math show min, max, pow;
 
+// import '../../flutter_charts.dart';
 import '../chart/container_layouter_base.dart';
 import '../chart/model/data_model_new.dart';
 import '../chart/container.dart';
 import '../chart/options.dart';
+import '../chart/view_maker.dart';
 
 import 'util_dart.dart' as util_dart;
 import 'util_labels.dart' as util_labels;
@@ -50,6 +52,7 @@ class DataRangeLabelInfosGenerator {
 
 
   DataRangeLabelInfosGenerator({
+    required this.chartViewMaker, // todo-00-last : added as a temporary to test old vs new
     required NewModel dataModel,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
@@ -97,6 +100,9 @@ class DataRangeLabelInfosGenerator {
     );
 
   }
+
+  final ChartViewMaker chartViewMaker; // todo-00-last : added as a temporary to test old vs new
+
 
   /// Describes labels - their values and String values.
   /// Important note: [_AxisLabelInfos] should NOT be part of model,
@@ -158,6 +164,11 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
+    // todo-00-last : added as a test
+    if (!chartViewMaker.isUseOldDataContainer) {
+      throw StateError('Only should be called in OLD Layouters');
+    }
+
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
@@ -189,7 +200,13 @@ class DataRangeLabelInfosGenerator {
     required ExternalTickAt externalTickAt,
   }) {
     return ExternalTicksLayoutProvider(
+      // todo-00-last-last-last : The tickValues must be NOT from the dataValue (data range),
+      //     BUT IT MUST BE TRANSFORMED USING THE
+      //     ExternalTicksLayoutProvider.lextrValuesToPixels(util_dart.Interval axisPixelsRange)
+      //     PIXELS MUST BE IN COORDINATES OF THE LAYOUTER -
+      // todo-00-last-last-last : tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
       tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
+      // todo-00-last-last-last : need to add tickValuesLextered - but to which axisPixelsRange???
       tickValuesDomain: dataRange,
       isAxisPixelsAndDisplayedValuesInSameDirection: isAxisPixelsAndDisplayedValuesInSameDirection,
       externalTickAt: externalTickAt,

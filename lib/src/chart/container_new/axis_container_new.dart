@@ -42,6 +42,17 @@ import '../container_new/container_common_new.dart' as container_common_new;
         container_base.Column(children: [
           // todo-00-!!!!! add LineSegment for axis line
           container_base.ExternalTicksRow(
+            // todo-00-last-last-last-LAST : somewhere in the ExternalTicksRow layout, once we know how much
+            //    space along the main (horizontal) axis is available for the ExternalTicksRow,
+            //    we must set, on the mainAxisExternalTicksLayoutProvider
+            //    the dataPixelsRange (new member on ExternalTicksLayoutProvider)
+            //      BUT WHERE? AND FROM WHAT? CANNOT WAIT TILL LAYOUT - IT SEEMS, AFTER CONSTRAINT IS
+            //      APPLIED ON THE ExternalTicksRow FROM IT'S PARENT, WE TAKE THE FULL CONSTRAINT ALONG THE MAIN AXIS,
+            //      AND USE THAT AS THE mainAxisExternalTicksLayoutProvider.dataPixelsRange ???
+            //
+            //  WHICH METHOD IN THE LAYOUT ALGORITHM? LOOKS LIKE WE HAVE TO OVERRIDE SOMETHING between Row and ExternalTicksRow.
+            //
+            // TODO-00-LAST-LAST-LAST ALSO IT SEEMS THE EXTERNAL LAYOUTERS SHOULD ALWAYS BE WRAPPED IN GREEDY - MAYBE WE CAN DO THAT IN THE build method?????
             mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
               externalTickAt: ExternalTickAt.childCenter,
             ),

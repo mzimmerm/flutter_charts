@@ -165,14 +165,36 @@ void main() {
 }
 
 DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> xUserLabels, List<String> dataRowsLegends) {
+  var mockNewModel = _constructMockNewModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends);
   return DataRangeLabelInfosGenerator(
+    chartViewMaker: MockChartViewMaker(chartData: mockNewModel, isStacked: true,),
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: options.yContainerOptions.valueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
-    dataModel: _constructMockNewModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends),
+    dataModel: mockNewModel,
     isStacked: false,
   );
 }
+
+class MockChartViewMaker extends ChartViewMaker {
+  MockChartViewMaker({
+    required NewModel chartData,
+    required bool isStacked,
+}): super(
+    chartData: chartData,
+    isStacked: true,
+);
+
+  @override
+  bool get extendAxisToOrigin => false;
+
+  @override
+  DataContainer makeViewForDataContainer() => throw UnimplementedError();
+
+  @override
+  ChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) => throw UnimplementedError();
+}
+
 
 MockNewModel _constructMockNewModel(
   ChartOptions options,
@@ -210,6 +232,7 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
+      chartViewMaker: MockChartViewMaker(chartData: dataModel, isStacked: true,),
       dataModel: dataModel,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
