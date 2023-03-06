@@ -426,14 +426,22 @@ mixin DoubleLinkedOwner<E> {
   }
 }
 
-/// On a child [BoxLayouter], defines how constraints should be distributed among it's siblings.
+/// If set on a [BoxLayouter] instance, when looking at the instance as one of siblings (of a parent),
+/// defines how constraints should be distributed among it's siblings.
+///
+/// The parent of such instance gathers all the children's [ConstraintsWeight]s, and distribute constraints
+/// among it's children (including the said instance) proportionally to their [ConstraintsWeight]s
 /// 
 /// Definition: Weights with value of 0 [defaultWeight] or negative values are all classified as *undefined weight*
 ///             [BoxLayouter] with [BoxLayouter.constraintsWeight] set to [defaultWeight] or negative value
 ///             is also classified as *undefined weight* layouter.
 ///
-/// Important note: On [BoxLayouter] children where at least one sibling has *undefined weight*,
-///                 layout algorithm should pass to all children a full constraint of parent.
+/// Important notes regarding constraints distribution:
+///   - On [BoxLayouter] parent on which, among it's children at least one child has *UNDEFINED weight*,
+///     parent's layout algorithm should pass to all children it's full constraint.
+///   - On [BoxLayouter] parent on which, all children have  *DEFINED weights*,
+///     parent's layout algorithm should distribute constraints among it's children
+///     proportionally to their [ConstraintsWeight]s.
 ///
 class ConstraintsWeight {
 
@@ -1437,7 +1445,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     children: children,
     constraintsWeight: mainAxisConstraintsWeight,
   ) {
-    mainLayoutAxis = LayoutAxis.vertical;
+    mainLayoutAxis = LayoutAxis.vertical;  // todo-00-last-last : is this needed????
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
@@ -1448,7 +1456,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     );
   }
 
-  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
+  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal; // todo-00-last-last : is this needed????
 
   // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
@@ -1659,6 +1667,248 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
 }
 
+/// Layouter which positions it's children to a externally passed grid along the
+/// main axis.
+///
+/// The 1D points on the grid are referred to as 'ticks'.
+///
+/// Extends the [RollingPositioningBoxLayouter] from which it keeps the concept of main and cross axis,
+/// using a rolling one-row (or one-column) [Packing] layout along the main axis, and a [Packing] layout
+/// within the one-row (or one-column) along the cross axis.
+///
+///
+/// But it overrides the [layout] method from it's super [RollingPositioningBoxLayouter], with
+/// a different constraints distribution to children, and a different order of children [layout]
+/// (in [RollingPositioningBoxLayouter] it is non-greedy first, greedy last, on this derived class
+/// it is just in order of the ticks)
+abstract class RollingPositioningExternalTicksBoxLayouter extends RollingPositioningBoxLayouter {
+  RollingPositioningExternalTicksBoxLayouter({
+    required List<BoxContainer> children,
+    required Align mainAxisAlign,
+    // mainAxisPacking not allowed to be set, positions provided by external ticks: required Packing mainAxisPacking,
+    required Align crossAxisAlign,
+    required Packing crossAxisPacking,
+    // External ticks layouter: weights make no sense.
+    // If anything, weights could be generated from ticks, if asked by an argument.
+    //   ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    this.isDistributeConstraintsBasedOnTickSpacing = false,
+  }) : super(
+    children                  : children,
+    mainAxisAlign             : mainAxisAlign,
+    mainAxisPacking           : Packing.externalTicksProvided,
+    crossAxisAlign            : crossAxisAlign,
+    crossAxisPacking          : crossAxisPacking,
+    mainAxisConstraintsWeight : ConstraintsWeight.defaultWeight,
+  )
+  {
+    // mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: Packing.externalTicksProvided,
+      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+    );
+    if (isDistributeConstraintsBasedOnTickSpacing) {
+      throw StateError('Not implemented yet. Difficult design decisions how to calculate children sizes '
+          'from tick spacing, due to the ');
+    }
+  }
+
+  final bool isDistributeConstraintsBasedOnTickSpacing;
+
+  /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
+  ///
+  /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
+  ///   obviously implementing the abstract functionality of the base layout:
+  ///   - Distributes constraints to children in [_layout_Pre_DistributeConstraintsToImmediateChildren];
+  ///     constraints given to each child are full parent's constraints.
+  /// - If [Greedy] children are     present, this implementation first processed non [Greedy] children:
+  ///   - Distributes constraints to non-greedy children in in [_layout_Pre_DistributeConstraintsToImmediateChildren];
+  ///     (constraints on non-greedy are same as parent's, as if greedy were not present),
+  ///   - Invokes child [layout] on non [Greedy] first
+  ///   - Then uses the size unused by non-greedy [layoutSize] as constraint to the [Greedy] child which is layed out.
+  ///
+  @override
+  void layout() {
+    buildAndReplaceChildren();
+
+    _layout_IfRoot_DefaultTreePreprocessing();
+
+    // Process Non-Greedy children first, to find what size they use
+    if (_hasNonGreedy) {
+      // A. Non-Greedy pre-descend : Distribute and set constraints only to nonGreedyChildren, which will be layed out
+      //      using the set constraints. Constraints are distributed by children weight if used, else full constraints
+      //      from parent are used.
+      _layout_Pre_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
+      // B. Non-Greedy node-descend : layout non-greedy children first to get their [layoutSize]s.
+      for (var child in _nonGreedyChildren) {
+        child.layout();
+      }
+      // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
+      //      which we can get and use to lay them out to find constraints left for greedy children.
+      //    But to position children in self, we need to run pre-position of children in self
+      //      using left/tight to get sizes without spacing.
+      _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
+    } // same as current on Row and Column
+
+    // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
+    //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
+    //   set on non_Greedy. This will be done later in  _layout_Post_IfLeaf_SetSize(etc).
+    //
+    // So to fully layout self, there are 3 steps left:
+    //   1. Need to recursively layout GREEDY children to get their size.
+    //      Their greedy constraints were set in previous layout_Post,
+    //        the _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
+    //      So we do NOT want to run a full [layout] on greedy children - we need to avoid setting
+    //      child constraints again in  _layout_TopRecurse() -> _layout_Pre_DistributeConstraintsToImmediateChildren(children);
+    //      We only want the descend part of _layout_TopRecurse(), even the layout_Post must be different
+    //        as it must apply to all children, not just GREEDY.
+    //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
+    //   3. Apply offsets from step 2 on children
+    // Steps 2. and 3 already have a default method, the
+    //       _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
+    //       which must be applies on all children. (it is).
+
+    // Step 1.
+    for (var child in _greedyChildren) {
+      child.layout();
+    }
+    // Step 2. and 3. is a base class method unchanged.
+    _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
+    // } else {
+    //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
+    //   _layout_TopRecurse();
+    // }
+  }
+
+  /// Distributes constraints to the passed [children] specifically for this layout, the
+  ///
+  /// Overridden from [BoxLayouter] to work like this:
+  ///
+  ///   - If all children have a weight defined
+  ///     (that is, none have [ConstraintsWeight.defaultWeight], checked by [ConstraintsWeights.allDefined])
+  ///     this method divides the self constraints to smaller pieces along the main axis, keeping the self constraint size
+  ///     along the cross axis. Then distributes the divided constraints to children
+  ///   - else if some children do not have weight defined (that is, some have [ConstraintsWeight.defaultWeight])
+  ///     this method invokes super implementation equivalent, which distributes self constraints undivided to all children.
+  @override
+  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+    ConstraintsWeights childrenWeights = ConstraintsWeights.from(
+        constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
+            .toList());
+    if (childrenWeights.allDefined) {
+      assert (childrenWeights.constraintsWeightList.length == children.length);
+      // Create divided constraints for children according to defined weights
+      List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
+        divideIntoCount: children.length,
+        divideStrategy: ConstraintsDistribution.intWeights,
+        layoutAxis:  mainLayoutAxis,
+        intWeights: childrenWeights.intWeightList,
+      );
+
+      assert (childrenConstraints.length == children.length);
+
+      // Apply the divided constraints on children
+      for (int i = 0; i < children.length; i++) {
+        _children[i].applyParentConstraints(this, childrenConstraints[i] as BoxContainerConstraints);
+      }
+    } else {
+      // This code is the same as super implementation in [BoxLayouter]
+      for (var child in children) {
+        child.applyParentConstraints(this, constraints);
+      }
+    }
+  }
+
+  /// Implementation of the abstract method which lays out the invoker's children.
+  ///
+  /// It lay out children of self [BoxLayouter],
+  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
+  /// where children will be placed relative to the invoker,
+  /// in the order of the passed [children].
+  ///
+  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
+  ///
+  /// Implementation detail:
+  ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
+  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
+  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
+  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
+  ///   - Both main and cross axis properties are members of this [RollingPositioningBoxLayouter].
+  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
+  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
+  @override
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+    /*
+      if (isLeaf) {
+      return [];
+    }
+    */
+
+    return _MainAndCrossPositionedSegments(
+      parentBoxLayouter: this,
+      parentConstraints: constraints,
+      children: children,
+      mainAxisLayoutProperties: mainAxisLayoutProperties,
+      crossAxisLayoutProperties: crossAxisLayoutProperties,
+      mainLayoutAxis: mainLayoutAxis,
+    ).asRectangles();
+  }
+
+  @override
+  /// Specific for [RollingPositioningBoxLayouter.layout], finds constraints remaining for [Greedy] children,
+  /// and applies them on [Greedy] the children.
+  ///
+  /// This post descend is called after NonGreedy children, are layed out, and their [layoutSize]s known.
+  ///
+  /// In some detail,
+  ///   - finds the constraint on self that remains after NonGreedy are given the (non greedy) space they want
+  ///   - divides the remaining constraints into smaller constraints for all Greedy children in the greedy ratio
+  ///   - applies the smaller constraints on Greedy children.
+  ///
+  /// This is required before we can layout Greedy children.
+  void _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
+    // Note: non greedy children have layout size when we reach here
+
+    if (_hasGreedy) {
+
+      // Get the NonGreedy [layoutSize](s), call this layouter layout method,
+      // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
+      // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
+      // in the Column/Row direction. This is effectively a pre-positioning of children is self
+      List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
+      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
+      assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
+
+      // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
+      //   self original constraints, and  [nonGreedyBoundingRect] size
+      BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateWithSize(nonGreedyBoundingRect.size);
+
+      // Weight-divide [constraintsRemainingForGreedy] into the ratios greed / sum(greed),
+      //   creating [greedyChildrenConstraints].
+      List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
+        divideIntoCount: _greedyChildren.length,
+        divideStrategy: ConstraintsDistribution.intWeights,
+        layoutAxis: mainLayoutAxis,
+        intWeights: _greedyChildren.map((child) => child.greed).toList(),
+      );
+
+      // Apply on greedyChildren their newly weight-divided greedyChildrenConstraints
+      assert(greedyChildrenConstraints.length == _greedyChildren.length);
+      for (int i = 0; i < _greedyChildren.length; i++) {
+        Greedy greedyChild = _greedyChildren[i];
+        BoxContainerConstraints childConstraint = greedyChildrenConstraints[i] as BoxContainerConstraints;
+        greedyChild.applyParentConstraints(this, childConstraint);
+      }
+    }
+  }
+
+}
+
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
 class Row extends RollingPositioningBoxLayouter {
   Row({
@@ -1722,54 +1972,27 @@ class Column extends RollingPositioningBoxLayouter {
   }
 }
 
-class ExternalTicksColumn extends Column {
-  ExternalTicksColumn({
-    required List<BoxContainer> children,
-    // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
-    Align mainAxisAlign = Align.start,
-    // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
-    Align crossAxisAlign = Align.start,
-    Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
-  }) : super(
-    children: children,
-    mainAxisAlign: mainAxisAlign,
-    mainAxisPacking: Packing.externalTicksProvided,
-    crossAxisAlign: crossAxisAlign,
-    crossAxisPacking: crossAxisPacking,
-    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
-  ) {
-    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: mainAxisAlign,
-      packing: Packing.externalTicksProvided, // mainAxisPacking,
-      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
-    );
-    crossAxisLayoutProperties = LengthsPositionerProperties(
-      align: crossAxisAlign,
-      packing: crossAxisPacking,
-    );
-  }
-}
-
-class ExternalTicksRow extends Row {
+class ExternalTicksRow extends RollingPositioningExternalTicksBoxLayouter {
   ExternalTicksRow({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
     required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
   }) : super(
     children: children,
     mainAxisAlign: mainAxisAlign,
-    mainAxisPacking: Packing.externalTicksProvided,
+    // done in super : mainAxisPacking: Packing.externalTicksProvided,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+    mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+
+    // mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
+    mainLayoutAxis = LayoutAxis.horizontal;
+  } /* todo-00-last-last : done in super : {
     // done in Column : mainLayoutAxis = LayoutAxis.vertical;
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
@@ -1780,7 +2003,43 @@ class ExternalTicksRow extends Row {
       align: crossAxisAlign,
       packing: crossAxisPacking,
     );
+  }*/
+}
+
+class ExternalTicksColumn extends RollingPositioningExternalTicksBoxLayouter {
+  ExternalTicksColumn({
+    required List<BoxContainer> children,
+    // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    Align mainAxisAlign = Align.start,
+    // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+    // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+  }) : super(
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    // done in super : mainAxisPacking: Packing.externalTicksProvided,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+    mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+
+    // mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+  ) {
+    mainLayoutAxis = LayoutAxis.vertical;
   }
+  /* todo-00-last-last : done in super : {
+    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: Packing.externalTicksProvided, // mainAxisPacking,
+      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+    );
+  }*/
 }
 
 // --------------------------- vvvvvvvvvv Table
