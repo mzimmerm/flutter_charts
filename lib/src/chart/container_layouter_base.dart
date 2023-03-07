@@ -860,13 +860,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // A. node-pre-descend. Here, children to not have layoutSize yet. Constraint from root down should be set
     _layout_Pre_DistributeConstraintsToImmediateChildren(_children);
 
-    // B. node-descend todo-00-later extract into method _layout_Descend
-    for (var child in _children) {
-      // b1. child-pre-descend (empty)
-      // b2. child-descend
-      child.layout();
-      // b3. child-post-descend (empty)
-    }
+    // B. node-descend
+    _layout_Descend();
 
     // C. node-post-descend. Children now have layoutSizes, used to layout children in me (place in rectangles in me),
     //    then rectangle offsets in me are applied on children as parent offset
@@ -890,6 +885,15 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     for (var child in children) {
       child.applyParentConstraints(this, constraints);
+    }
+  }
+
+  void _layout_Descend() {
+    for (var child in _children) {
+      // b1. child-pre-descend (empty)
+      // b2. child-descend
+      child.layout();
+      // b3. child-post-descend (empty)
     }
   }
 
@@ -1414,27 +1418,10 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 
 }
 
-/// Base class for layouters which layout along two axes: the main axis, along which the layout
-/// children flow in the axis direction without wrapping (although can overlap),
-/// and the cross axis, along which the layout children can be positioned anywhere.
-///
-/// The intended derived layouters are [Row] and [Column], which both also allow to process [Greedy] children.
-///
-/// This base layouter supports various alignment and packing of children,
-/// along both the main and the cross axes. The alignment and packing is set
-/// by the named parameters [mainAxisAlign], [mainAxisPacking], [crossAxisAlign], [crossAxisPacking].
-/// See [Align] and [Packing] for the supported values of the named parameters;
-/// their values affect the resulting layout of the [children].
-///
-/// The members [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
-/// are private wrappers for alignment and packing properties.
-///
-/// Note that [Align] and [Packing] are needed to be set both on the 'main' direction,
-/// as well as the 'cross' direction on this base class constructor.
-///
-/// Similar to Flex.
-abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
-  RollingPositioningBoxLayouter({
+// todo-00-last-last-last-last : added this intermediate to use the main/cross concept,
+// but does not touch layout
+abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
+  MainAndCrossAxisBoxLayouter({
     required List<BoxContainer> children,
     required Align mainAxisAlign,
     required Packing mainAxisPacking,
@@ -1445,7 +1432,7 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
     children: children,
     constraintsWeight: mainAxisConstraintsWeight,
   ) {
-    mainLayoutAxis = LayoutAxis.vertical;  // todo-00-last-last : is this needed????
+    mainLayoutAxis = LayoutAxis.vertical; // todo-00-last-last : is this needed????
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
@@ -1466,6 +1453,57 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
   ///
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
+
+}
+
+  /// Base class for layouters which layout along two axes: the main axis, along which the layout
+/// children flow in the axis direction without wrapping (although can overlap),
+/// and the cross axis, along which the layout children can be positioned anywhere.
+///
+/// The intended derived layouters are [Row] and [Column], which both also allow to process [Greedy] children.
+///
+/// This base layouter supports various alignment and packing of children,
+/// along both the main and the cross axes. The alignment and packing is set
+/// by the named parameters [mainAxisAlign], [mainAxisPacking], [crossAxisAlign], [crossAxisPacking].
+/// See [Align] and [Packing] for the supported values of the named parameters;
+/// their values affect the resulting layout of the [children].
+///
+/// The members [mainAxisLayoutProperties] and [crossAxisLayoutProperties]
+/// are private wrappers for alignment and packing properties.
+///
+/// Note that [Align] and [Packing] are needed to be set both on the 'main' direction,
+/// as well as the 'cross' direction on this base class constructor.
+///
+/// Similar to Flex.
+abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter {
+  RollingPositioningBoxLayouter({
+    required List<BoxContainer> children,
+    required Align mainAxisAlign,
+    required Packing mainAxisPacking,
+    required Align crossAxisAlign,
+    required Packing crossAxisPacking,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+  }) : super(
+    children: children,
+    mainAxisAlign: mainAxisAlign,
+    mainAxisPacking: mainAxisPacking,
+    crossAxisAlign: crossAxisAlign,
+    crossAxisPacking: crossAxisPacking,
+    mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+  );
+
+  /* todo-00-last-last-last-last : moved to the new super
+  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal; // todo-00-last-last : is this needed????
+
+  // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
+  //            so noone overrides their 'packing: Packing.tight, align: Align.start'
+  /// Properties of layout on main axis.
+  ///
+  /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize
+  ///
+  late LengthsPositionerProperties mainAxisLayoutProperties;
+  late LengthsPositionerProperties crossAxisLayoutProperties;
+  */
 
   /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
@@ -1667,248 +1705,6 @@ abstract class RollingPositioningBoxLayouter extends PositioningBoxLayouter {
 
 }
 
-/// Layouter which positions it's children to a externally passed grid along the
-/// main axis.
-///
-/// The 1D points on the grid are referred to as 'ticks'.
-///
-/// Extends the [RollingPositioningBoxLayouter] from which it keeps the concept of main and cross axis,
-/// using a rolling one-row (or one-column) [Packing] layout along the main axis, and a [Packing] layout
-/// within the one-row (or one-column) along the cross axis.
-///
-///
-/// But it overrides the [layout] method from it's super [RollingPositioningBoxLayouter], with
-/// a different constraints distribution to children, and a different order of children [layout]
-/// (in [RollingPositioningBoxLayouter] it is non-greedy first, greedy last, on this derived class
-/// it is just in order of the ticks)
-abstract class RollingPositioningExternalTicksBoxLayouter extends RollingPositioningBoxLayouter {
-  RollingPositioningExternalTicksBoxLayouter({
-    required List<BoxContainer> children,
-    required Align mainAxisAlign,
-    // mainAxisPacking not allowed to be set, positions provided by external ticks: required Packing mainAxisPacking,
-    required Align crossAxisAlign,
-    required Packing crossAxisPacking,
-    // External ticks layouter: weights make no sense.
-    // If anything, weights could be generated from ticks, if asked by an argument.
-    //   ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
-    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
-    this.isDistributeConstraintsBasedOnTickSpacing = false,
-  }) : super(
-    children                  : children,
-    mainAxisAlign             : mainAxisAlign,
-    mainAxisPacking           : Packing.externalTicksProvided,
-    crossAxisAlign            : crossAxisAlign,
-    crossAxisPacking          : crossAxisPacking,
-    mainAxisConstraintsWeight : ConstraintsWeight.defaultWeight,
-  )
-  {
-    // mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: mainAxisAlign,
-      packing: Packing.externalTicksProvided,
-      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
-    );
-    crossAxisLayoutProperties = LengthsPositionerProperties(
-      align: crossAxisAlign,
-      packing: crossAxisPacking,
-    );
-    if (isDistributeConstraintsBasedOnTickSpacing) {
-      throw StateError('Not implemented yet. Difficult design decisions how to calculate children sizes '
-          'from tick spacing, due to the ');
-    }
-  }
-
-  final bool isDistributeConstraintsBasedOnTickSpacing;
-
-  /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
-  ///
-  /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
-  ///   obviously implementing the abstract functionality of the base layout:
-  ///   - Distributes constraints to children in [_layout_Pre_DistributeConstraintsToImmediateChildren];
-  ///     constraints given to each child are full parent's constraints.
-  /// - If [Greedy] children are     present, this implementation first processed non [Greedy] children:
-  ///   - Distributes constraints to non-greedy children in in [_layout_Pre_DistributeConstraintsToImmediateChildren];
-  ///     (constraints on non-greedy are same as parent's, as if greedy were not present),
-  ///   - Invokes child [layout] on non [Greedy] first
-  ///   - Then uses the size unused by non-greedy [layoutSize] as constraint to the [Greedy] child which is layed out.
-  ///
-  @override
-  void layout() {
-    buildAndReplaceChildren();
-
-    _layout_IfRoot_DefaultTreePreprocessing();
-
-    // Process Non-Greedy children first, to find what size they use
-    if (_hasNonGreedy) {
-      // A. Non-Greedy pre-descend : Distribute and set constraints only to nonGreedyChildren, which will be layed out
-      //      using the set constraints. Constraints are distributed by children weight if used, else full constraints
-      //      from parent are used.
-      _layout_Pre_DistributeConstraintsToImmediateChildren(_nonGreedyChildren);
-      // B. Non-Greedy node-descend : layout non-greedy children first to get their [layoutSize]s.
-      for (var child in _nonGreedyChildren) {
-        child.layout();
-      }
-      // C. Non-greedy node-post-descend. Here, non-greedy children have layoutSize
-      //      which we can get and use to lay them out to find constraints left for greedy children.
-      //    But to position children in self, we need to run pre-position of children in self
-      //      using left/tight to get sizes without spacing.
-      _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy();
-    } // same as current on Row and Column
-
-    // At this point, both Greedy and non-Greedy children have constraints. In addition, non-Greedy children
-    //   are fully recursively layed out, but not positioned in self yet - and so not parent offsets are
-    //   set on non_Greedy. This will be done later in  _layout_Post_IfLeaf_SetSize(etc).
-    //
-    // So to fully layout self, there are 3 steps left:
-    //   1. Need to recursively layout GREEDY children to get their size.
-    //      Their greedy constraints were set in previous layout_Post,
-    //        the _layout_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy.
-    //      So we do NOT want to run a full [layout] on greedy children - we need to avoid setting
-    //      child constraints again in  _layout_TopRecurse() -> _layout_Pre_DistributeConstraintsToImmediateChildren(children);
-    //      We only want the descend part of _layout_TopRecurse(), even the layout_Post must be different
-    //        as it must apply to all children, not just GREEDY.
-    //   2. Position ALL children within self, using self axis layout properties (which is set back to original)
-    //   3. Apply offsets from step 2 on children
-    // Steps 2. and 3 already have a default method, the
-    //       _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints
-    //       which must be applies on all children. (it is).
-
-    // Step 1.
-    for (var child in _greedyChildren) {
-      child.layout();
-    }
-    // Step 2. and 3. is a base class method unchanged.
-    _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
-    // } else {
-    //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
-    //   _layout_TopRecurse();
-    // }
-  }
-
-  /// Distributes constraints to the passed [children] specifically for this layout, the
-  ///
-  /// Overridden from [BoxLayouter] to work like this:
-  ///
-  ///   - If all children have a weight defined
-  ///     (that is, none have [ConstraintsWeight.defaultWeight], checked by [ConstraintsWeights.allDefined])
-  ///     this method divides the self constraints to smaller pieces along the main axis, keeping the self constraint size
-  ///     along the cross axis. Then distributes the divided constraints to children
-  ///   - else if some children do not have weight defined (that is, some have [ConstraintsWeight.defaultWeight])
-  ///     this method invokes super implementation equivalent, which distributes self constraints undivided to all children.
-  @override
-  void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
-    ConstraintsWeights childrenWeights = ConstraintsWeights.from(
-        constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
-            .toList());
-    if (childrenWeights.allDefined) {
-      assert (childrenWeights.constraintsWeightList.length == children.length);
-      // Create divided constraints for children according to defined weights
-      List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
-        divideIntoCount: children.length,
-        divideStrategy: ConstraintsDistribution.intWeights,
-        layoutAxis:  mainLayoutAxis,
-        intWeights: childrenWeights.intWeightList,
-      );
-
-      assert (childrenConstraints.length == children.length);
-
-      // Apply the divided constraints on children
-      for (int i = 0; i < children.length; i++) {
-        _children[i].applyParentConstraints(this, childrenConstraints[i] as BoxContainerConstraints);
-      }
-    } else {
-      // This code is the same as super implementation in [BoxLayouter]
-      for (var child in children) {
-        child.applyParentConstraints(this, constraints);
-      }
-    }
-  }
-
-  /// Implementation of the abstract method which lays out the invoker's children.
-  ///
-  /// It lay out children of self [BoxLayouter],
-  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
-  /// where children will be placed relative to the invoker,
-  /// in the order of the passed [children].
-  ///
-  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
-  ///
-  /// Implementation detail:
-  ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
-  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
-  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
-  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
-  ///   - Both main and cross axis properties are members of this [RollingPositioningBoxLayouter].
-  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
-  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
-  @override
-  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    /*
-      if (isLeaf) {
-      return [];
-    }
-    */
-
-    return _MainAndCrossPositionedSegments(
-      parentBoxLayouter: this,
-      parentConstraints: constraints,
-      children: children,
-      mainAxisLayoutProperties: mainAxisLayoutProperties,
-      crossAxisLayoutProperties: crossAxisLayoutProperties,
-      mainLayoutAxis: mainLayoutAxis,
-    ).asRectangles();
-  }
-
-  @override
-  /// Specific for [RollingPositioningBoxLayouter.layout], finds constraints remaining for [Greedy] children,
-  /// and applies them on [Greedy] the children.
-  ///
-  /// This post descend is called after NonGreedy children, are layed out, and their [layoutSize]s known.
-  ///
-  /// In some detail,
-  ///   - finds the constraint on self that remains after NonGreedy are given the (non greedy) space they want
-  ///   - divides the remaining constraints into smaller constraints for all Greedy children in the greedy ratio
-  ///   - applies the smaller constraints on Greedy children.
-  ///
-  /// This is required before we can layout Greedy children.
-  void _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy() {
-    // Note: non greedy children have layout size when we reach here
-
-    if (_hasGreedy) {
-
-      // Get the NonGreedy [layoutSize](s), call this layouter layout method,
-      // which returns [positionedRectsInMe] rectangles relative to self where children should be positioned.
-      // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
-      // in the Column/Row direction. This is effectively a pre-positioning of children is self
-      List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
-      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
-      assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
-
-      // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
-      //   self original constraints, and  [nonGreedyBoundingRect] size
-      BoxContainerConstraints constraintsRemainingForGreedy = constraints.deflateWithSize(nonGreedyBoundingRect.size);
-
-      // Weight-divide [constraintsRemainingForGreedy] into the ratios greed / sum(greed),
-      //   creating [greedyChildrenConstraints].
-      List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
-        divideIntoCount: _greedyChildren.length,
-        divideStrategy: ConstraintsDistribution.intWeights,
-        layoutAxis: mainLayoutAxis,
-        intWeights: _greedyChildren.map((child) => child.greed).toList(),
-      );
-
-      // Apply on greedyChildren their newly weight-divided greedyChildrenConstraints
-      assert(greedyChildrenConstraints.length == _greedyChildren.length);
-      for (int i = 0; i < _greedyChildren.length; i++) {
-        Greedy greedyChild = _greedyChildren[i];
-        BoxContainerConstraints childConstraint = greedyChildrenConstraints[i] as BoxContainerConstraints;
-        greedyChild.applyParentConstraints(this, childConstraint);
-      }
-    }
-  }
-
-}
-
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
 class Row extends RollingPositioningBoxLayouter {
   Row({
@@ -1970,6 +1766,177 @@ class Column extends RollingPositioningBoxLayouter {
       packing: crossAxisPacking,
     );
   }
+}
+
+/// Layouter which positions it's children to a externally passed grid along the
+/// main axis.
+///
+/// The 1D points on the grid are referred to as 'ticks'.
+///
+/// Extends the [MainAndCrossAxisBoxLayouter] from which it gains and keeps the concept of main and cross axis,
+/// using a rolling one-row (or one-column) [Packing] layout along the main axis, and a [Packing] layout
+/// within the one-row (or one-column) along the cross axis.
+///
+/// It is similar to [RollingPositioningBoxLayouter], but has a very different layout, so it is made to be  a sibling
+/// class to it.
+///
+/// Importantly, it differs in the [layout] method from the [RollingPositioningBoxLayouter], in using
+/// a different constraints distribution to children, and a different order of children [layout]
+/// (in [RollingPositioningBoxLayouter] it is non-greedy first, greedy last, on this derived class
+/// it is just in order of the ticks)
+///
+/// The main goal of this layouter 's [layout] is to allow:
+///
+/// - set layoutSize to full constraint size in main axis direction (NOT
+///   just outer envelope of children)
+/// - when layoutSize in main axis direction is known, set
+///   [ExternalTicksLayoutProvider.tickPixelsDomain] to full layoutSize in main
+///   axis direction.
+abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
+  RollingPositioningExternalTicksBoxLayouter({
+    required List<BoxContainer> children,
+    required Align mainAxisAlign,
+    // mainAxisPacking not allowed to be set, positions provided by external ticks: required Packing mainAxisPacking,
+    required Align crossAxisAlign,
+    required Packing crossAxisPacking,
+    // External ticks layouter: weights make no sense.
+    // If anything, weights could be generated from ticks, if asked by an argument.
+    //   ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+    this.isDistributeConstraintsBasedOnTickSpacing = false,
+  }) : super(
+    children                  : children,
+    mainAxisAlign             : mainAxisAlign,
+    mainAxisPacking           : Packing.externalTicksProvided,
+    crossAxisAlign            : crossAxisAlign,
+    crossAxisPacking          : crossAxisPacking,
+    mainAxisConstraintsWeight : ConstraintsWeight.defaultWeight,
+  )
+  {
+    // mainLayoutAxis = LayoutAxis.vertical;
+    mainAxisLayoutProperties = LengthsPositionerProperties(
+      align: mainAxisAlign,
+      packing: Packing.externalTicksProvided,
+      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+    );
+    crossAxisLayoutProperties = LengthsPositionerProperties(
+      align: crossAxisAlign,
+      packing: crossAxisPacking,
+    );
+    if (isDistributeConstraintsBasedOnTickSpacing) {
+      throw StateError('Not implemented yet. Difficult design decisions how to calculate children sizes '
+          'from tick spacing, due to the ');
+    }
+  }
+
+  final bool isDistributeConstraintsBasedOnTickSpacing;
+
+  /// Implementation of the abstract method which lays out the invoker's children.
+  ///
+  /// It lay out children of self [BoxLayouter],
+  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
+  /// where children will be placed relative to the invoker,
+  /// in the order of the passed [children].
+  ///
+  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
+  ///
+  /// Implementation detail:
+  ///   - Note: With it's class-hierarchy sibling, the [RollingPositioningBoxLayouter] this method shares the core
+  ///           of children positioning, where the children's rectangles using two 1D positioners
+  ///           in [_MainAndCrossPositionedSegments.asRectangles]. But it differs in todo-00-last-last-last-document
+  ///   - The algorithm invokes the [LayedoutLengthsPositioner.positionLengths], method.
+  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
+  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
+  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
+  ///   - Both main and cross axis properties are members of this [RollingPositioningExternalTicksBoxLayouter].
+  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
+  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
+  @override
+  // todo-00-last-last-last-last : should this be kept?? - I think so, this is the core layout even for ticks
+  List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
+    /*
+      if (isLeaf) {
+      return [];
+    }
+    */
+
+    if (mainAxisLayoutProperties.externalTicksLayoutProvider == null) {
+      throw StateError('externalTicksLayoutProvider is null');
+    }
+    double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
+    var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);// todo-00-last-last-last-last-last from constraints along main axis
+    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextr(tickPixelsDomainFromOwnerConstraints);
+
+    // must be set  before layout, as the ticksValues CAN NOT BE USER - MUST USE
+    return _MainAndCrossPositionedSegments(
+      parentBoxLayouter: this,
+      parentConstraints: constraints,
+      children: children,
+      mainAxisLayoutProperties: mainAxisLayoutProperties,
+      crossAxisLayoutProperties: crossAxisLayoutProperties,
+      mainLayoutAxis: mainLayoutAxis,
+    ).asRectangles();
+  }
+
+  /// An abstract method of the default [layout] which role is to
+  /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
+  ///
+  /// Important override notes and rules for [_layout_Post_NotLeaf_OffsetChildren] on extensions:
+  ///
+  ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset]
+  ///     for all children in argument [children] and apply the [Rect.topLeft]
+  ///     offset from the passed [positionedRectsInMe].
+  ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op.
+  ///
+  /// First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
+  /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
+  // todo-00-last-last-last-last : implement this
+  @override
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
+
+  // ---------------------------- vvvvvvvvvvvvv
+  // todo-00-last-last-last : implement the following and keep track of progress here:
+  // The main goal of this layouter 's [layout] is to allow:
+  //
+  // - set layoutSize to full constraint size in main axis direction (NOT
+  //   just outer envelope of children)
+  // - when layoutSize in main axis direction is known, set
+  //   [ExternalTicksLayoutProvider.tickPixelsDomain] to full layoutSize in main
+  //   axis direction.
+
+  // D Calculated late, after tickPixelsDomain is set:
+  // D late final List<double> tickPixels;
+
+  // Set late, during layout, once layoutSize along main axis is known.
+  // Actually equals the [layoutSize] along main axis, which is also the constraints of the owner
+  // [RollingPositioningExternalTicksBoxLayouter].
+  // D late final util_dart.Interval tickPixelsDomain;
+  // ---------------------------- ^^^^^^^^^^^^^^^^^
+
+  // todo-00-last-last-last-last : override to:
+  //    - only check overflow, not sameness,
+  //    - then set layoutSize from constraints
+  //    - then set RollingPositioningExternalTicksBoxLayouter.tickPixelsDomain
+  @override
+  void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
+    assert(!isLeaf);
+    ui.Rect positionedChildrenOuterRects = util_flutter
+        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
+    ui.Rect childrenOuterRectangle = util_flutter
+        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+    util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
+
+    // todo-00-last-last-last-last-last: Set layout size in main axis direction to full constraints,
+    //       in the cross direction set layoutSize to the bounding rectangle
+    // layoutSize = positionedChildrenOuterRects.size;
+
+    layoutSize = constraints.size.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      other: positionedChildrenOuterRects.size,
+      axis: mainLayoutAxis,
+    );
+  }
+
 }
 
 class ExternalTicksRow extends RollingPositioningExternalTicksBoxLayouter {
@@ -2702,6 +2669,7 @@ class TableLayouter extends PositioningBoxLayouter {
   ///       is in the order of the layout sequence order [TableLayoutDefiner.cellDefinersTable],
   ///       from [TableLayoutDefiner.flatOrderedCellDefiners]
   ///
+  @override
   void _layout_Descend() {
 
     // Descends into children, not directly, but via the table's cell definers
@@ -3165,8 +3133,9 @@ class Aligner extends PositioningBoxLayouter {
   final double childHeightBy;
   final AlignmentTransform alignmentTransform;
 
-  /// This override passes the immediate children of this [Aligner]
-  /// the constraints that are deflated from self constraints by the
+  /// This override applies constraints on the immediate children of this [Aligner].
+  ///
+  /// The applied constraints are deflated from self constraints by the
   /// [childWidthBy] and [childHeightBy]
   @override
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
@@ -3285,9 +3254,24 @@ class ExternalTicksLayoutProvider {
 
   final util_dart.Interval tickValuesDomain;
 
+  // todo-00-last-last-last: Calculated late, after tickPixelsDomain is set
+  late final List<double> tickPixels;
+
+  // todo-00-last-last-last: Set late, during layout, once layoutSize along main axis is known.
+  // Actually equals the [layoutSize] along main axis, which is also the constraints of the owner
+  // [RollingPositioningExternalTicksBoxLayouter].
+  late final util_dart.Interval tickPixelsDomain;
+
   final bool isAxisPixelsAndDisplayedValuesInSameDirection;
 
   final ExternalTickAt externalTickAt;
+
+  // todo-00-last-last-last : done - but document, what is meant by owner
+
+  void setTickPixelsDomainAndLextr(util_dart.Interval tickPixelsDomainFromOwnerConstraints) {
+    tickPixelsDomain = tickPixelsDomainFromOwnerConstraints;
+    tickPixels = lextrValuesToPixels();
+  }
 
   /// Returns tha [tickValues] Linearly extrapolated to the passed [axisPixelsRange].
   ///
@@ -3303,7 +3287,7 @@ class ExternalTicksLayoutProvider {
   ///                     - If we want the [tickValues] be displayed bottom-to-tom, set it to [false] (default).
   ///                     - Else set it to [false]
   ///
-  List<double> lextrValuesToPixels(util_dart.Interval axisPixelsRange) {
+  List<double> lextrValuesToPixels() {
     /* todo-00! Maybe something like this is needed
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
@@ -3322,8 +3306,8 @@ class ExternalTicksLayoutProvider {
         .map((double value) => util_dart.ToPixelsExtrapolation1D(
               fromValuesMin: tickValuesDomain.min,
               fromValuesMax: tickValuesDomain.max,
-              toPixelsMin: axisPixelsRange.min,
-              toPixelsMax: axisPixelsRange.max,
+              toPixelsMin: tickPixelsDomain.min,
+              toPixelsMax: tickPixelsDomain.max,
               doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
             ).apply(value))
         .toList();

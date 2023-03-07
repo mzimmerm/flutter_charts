@@ -37,6 +37,19 @@ extension SizeExtension on ui.Size {
     }
   }
 
+  ui.Size fromMySideAlongPassedAxisOtherSideAlongCrossAxis({
+    required ui.Size other,
+    required container_base.LayoutAxis axis,
+  }) {
+    // if passed axis is horizontal, use my width, other's height
+    if (axis == container_base.LayoutAxis.horizontal) {
+      return ui.Size(width, other.height);
+    } else {
+      // else (passed axis is vertical), use my height, other's width
+      return ui.Size(other.width, height);
+    }
+  }
+
   /// Returns [true] if this instance contains fully the passed [other] object of type [ui.Size].
   bool containsFully(ui.Size other) {
     return other.width <= width &&

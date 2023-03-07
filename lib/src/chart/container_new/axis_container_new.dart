@@ -45,10 +45,10 @@ import '../container_new/container_common_new.dart' as container_common_new;
             // todo-00-last-last-last-LAST : somewhere in the ExternalTicksRow layout, once we know how much
             //    space along the main (horizontal) axis is available for the ExternalTicksRow,
             //    we must set, on the mainAxisExternalTicksLayoutProvider
-            //    the dataPixelsRange (new member on ExternalTicksLayoutProvider)
+            //    the tickPixelsDomain (new member on ExternalTicksLayoutProvider)
             //      BUT WHERE? AND FROM WHAT? CANNOT WAIT TILL LAYOUT - IT SEEMS, AFTER CONSTRAINT IS
             //      APPLIED ON THE ExternalTicksRow FROM IT'S PARENT, WE TAKE THE FULL CONSTRAINT ALONG THE MAIN AXIS,
-            //      AND USE THAT AS THE mainAxisExternalTicksLayoutProvider.dataPixelsRange ???
+            //      AND USE THAT AS THE mainAxisExternalTicksLayoutProvider.tickPixelsDomain ???
             //
             //  WHICH METHOD IN THE LAYOUT ALGORITHM? LOOKS LIKE WE HAVE TO OVERRIDE SOMETHING between Row and ExternalTicksRow.
             //

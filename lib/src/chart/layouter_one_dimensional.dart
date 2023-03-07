@@ -341,8 +341,12 @@ class LayedoutLengthsPositioner {
           break;
       }
       positionedSegments.add(util_dart.LineSegment(
+        /* todo-00-last-last-last-last-last : using the pixels now - this broke things
         ticksProvider.tickValues[i] + startOffset,
         ticksProvider.tickValues[i] + endOffset,
+        */
+        ticksProvider.tickPixels[i] + startOffset,
+        ticksProvider.tickPixels[i] + endOffset,
       ));
     }
 
