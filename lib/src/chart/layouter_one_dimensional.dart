@@ -3,7 +3,7 @@ import 'package:tuple/tuple.dart';
 import 'dart:ui' as ui;
 
 // this level or equivalent
-import 'container_layouter_base.dart' show BoxLayouter, ExternalTicksLayoutProvider, ExternalTickAt;
+import 'container_layouter_base.dart' show BoxLayouter, ExternalTicksLayoutProvider, ExternalTickAtPosition;
 import '../util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
@@ -316,9 +316,9 @@ class LayedoutLengthsPositioner {
   ///
   /// The member [externalTicksLayoutProvider] must be not null for [Packing.externalTicksProvided].
   List<util_dart.LineSegment> _positionToExternalTicksAsSegments() {
-    // depending on externalTicksLayoutProvider.externalTickAt,
+    // depending on externalTicksLayoutProvider.externalTickAtPosition,
     // iterate externalTicksLayoutProvider.tickValues, and place each lenght in lengths to position given by the tickValue,
-    // moved a bit depending on externalTickAt\
+    // moved a bit depending on externalTickAtPosition\
 
     ExternalTicksLayoutProvider ticksProvider = lengthsPositionerProperties.externalTicksLayoutProvider!;
 
@@ -326,25 +326,21 @@ class LayedoutLengthsPositioner {
 
     for (int i = 0; i < lengths.length; i++) {
       double startOffset, endOffset;
-      switch (ticksProvider.externalTickAt) {
-        case ExternalTickAt.childStart:
+      switch (ticksProvider.externalTickAtPosition) {
+        case ExternalTickAtPosition.childStart:
           startOffset = 0.0;
           endOffset = lengths[i];
           break;
-        case ExternalTickAt.childCenter:
+        case ExternalTickAtPosition.childCenter:
           startOffset = -1 * lengths[i] / 2;
           endOffset = lengths[i] / 2;
           break;
-        case ExternalTickAt.childEnd:
+        case ExternalTickAtPosition.childEnd:
           startOffset = -1 * lengths[i];
           endOffset = 0;
           break;
       }
       positionedSegments.add(util_dart.LineSegment(
-        /* todo-00-last-last-last-last-last : using the pixels now - this broke things
-        ticksProvider.tickValues[i] + startOffset,
-        ticksProvider.tickValues[i] + endOffset,
-        */
         ticksProvider.tickPixels[i] + startOffset,
         ticksProvider.tickPixels[i] + endOffset,
       ));

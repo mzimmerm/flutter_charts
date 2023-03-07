@@ -136,7 +136,7 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    // todo-00-last-last : This [layout] method we are in, is invoked BEFORE layoutSize of the owner DataContainer
+    // todo-00-last : This [layout] method we are in, is invoked BEFORE layoutSize of the owner DataContainer
     //                     is known (obviously). But we ASSUME that the owner DataContainer will use all it's constraints,
     //                     so that are the pixels we lextr to.
     //          Also: should we be accessing dataContainer here?

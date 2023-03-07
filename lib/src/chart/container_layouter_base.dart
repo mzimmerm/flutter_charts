@@ -919,7 +919,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     } else {
       _layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize();
     }
-    _layout_Post_AssertSizeInsideConstraints();
+    __layout_Post_AssertSizeInsideConstraints();
   }
 
   /// Performs the CORE of the 'layouter specific processing',
@@ -981,6 +981,8 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Implementations should lay out children of self [BoxLayouter],
   /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
   /// where children will be placed relative to the invoker, in the order of the passed [children].
+  /// If no [children] are passed, the implementation should use all member [_children].
+  ///
   ///
   /// On a leaf node, implementations should return an empty list.
   ///
@@ -1046,15 +1048,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///     "bounding rectangle of all positioned children" implementation.
   ///
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    assert(!isLeaf);
-    ui.Rect positionedChildrenOuterRects = util_flutter
-        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
-    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
-    ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
 
-    layoutSize = positionedChildrenOuterRects.size;
+    ui.Rect positionedChildrenOuterRect = util_flutter
+        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+
+    __layout_Post_Assert_Layedout_Rects(positionedChildrenRects, positionedChildrenOuterRect);
+
+    layoutSize = positionedChildrenOuterRect.size;
   }
 
   /// Leaf [BoxLayouter] extensions should override and set [layoutSize].
@@ -1069,10 +1069,19 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
         '[layout_Post_Leaf_SetSize_FromInternals] must be overridden. Method called on $runtimeType instance=$this.');
   }
 
+  ui.Rect __layout_Post_Assert_Layedout_Rects(List<ui.Rect> positionedChildrenRects, ui.Rect positionedChildrenOuterRect) {
+    assert(!isLeaf);
+    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
+    ui.Rect childrenOuterRectangle = util_flutter
+        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+    util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRect.size);
+    return positionedChildrenOuterRect;
+  }
+
   /// Checks if [layoutSize] box is within the [constraints] box.
   ///
   /// Throws error otherwise.
-  void _layout_Post_AssertSizeInsideConstraints() {
+  void __layout_Post_AssertSizeInsideConstraints() {
     if (!constraints.containsFully(layoutSize)) {
       String errText = 'Warning: Layout size of this layouter $this is $layoutSize,'
           ' which does not fit inside it\'s constraints $constraints';
@@ -1106,6 +1115,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     throw UnimplementedError('Implement in extensions');
   }
 }
+
 
 /// Base class for all containers and layouters.
 ///
@@ -1418,8 +1428,9 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 
 }
 
-// todo-00-last-last-last-last : added this intermediate to use the main/cross concept,
-// but does not touch layout
+/// Intermediate layout class uses the main/cross axis properties concept, but keeps layout from it's superclass.
+///
+/// Extensions are intended to split to external ticks layoter and rolling layouter.
 abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   MainAndCrossAxisBoxLayouter({
     required List<BoxContainer> children,
@@ -1432,7 +1443,6 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
     children: children,
     constraintsWeight: mainAxisConstraintsWeight,
   ) {
-    mainLayoutAxis = LayoutAxis.vertical; // todo-00-last-last : is this needed????
     mainAxisLayoutProperties = LengthsPositionerProperties(
       align: mainAxisAlign,
       packing: mainAxisPacking,
@@ -1443,7 +1453,7 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
     );
   }
 
-  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal; // todo-00-last-last : is this needed????
+  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
 
   // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
@@ -1491,19 +1501,6 @@ abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter
     crossAxisPacking: crossAxisPacking,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   );
-
-  /* todo-00-last-last-last-last : moved to the new super
-  LayoutAxis mainLayoutAxis = LayoutAxis.horizontal; // todo-00-last-last : is this needed????
-
-  // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
-  //            so noone overrides their 'packing: Packing.tight, align: Align.start'
-  /// Properties of layout on main axis.
-  ///
-  /// Note: cannot be final, as _forceMainAxisLayoutProperties may re-initialize
-  ///
-  late LengthsPositionerProperties mainAxisLayoutProperties;
-  late LengthsPositionerProperties crossAxisLayoutProperties;
-  */
 
   /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
@@ -1785,13 +1782,9 @@ class Column extends RollingPositioningBoxLayouter {
 /// (in [RollingPositioningBoxLayouter] it is non-greedy first, greedy last, on this derived class
 /// it is just in order of the ticks)
 ///
-/// The main goal of this layouter 's [layout] is to allow:
+/// See comments in [layout_Post_NotLeaf_PositionChildren] for comments on core goals
+/// of this class [layout] method and how it differs from it's base and sibling classes.
 ///
-/// - set layoutSize to full constraint size in main axis direction (NOT
-///   just outer envelope of children)
-/// - when layoutSize in main axis direction is known, set
-///   [ExternalTicksLayoutProvider.tickPixelsDomain] to full layoutSize in main
-///   axis direction.
 abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   RollingPositioningExternalTicksBoxLayouter({
     required List<BoxContainer> children,
@@ -1831,43 +1824,46 @@ abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAx
 
   final bool isDistributeConstraintsBasedOnTickSpacing;
 
-  /// Implementation of the abstract method which lays out the invoker's children.
+  /// Overridden implementation of the abstract method which positions the invoker's children using
+  /// two 1D positioners wrapped in class [_MainAndCrossPositionedSegments].
   ///
-  /// It lay out children of self [BoxLayouter],
-  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
-  /// where children will be placed relative to the invoker,
-  /// in the order of the passed [children].
+  /// The main goal of this layouter 's [layout] is to allow:
   ///
-  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
+  /// - set [layoutSize] to full constraint size in main axis direction (NOT
+  ///   just outer envelope of children)
+  /// - before positioning children in [_MainAndCrossPositionedSegments], the
+  ///   [ExternalTicksLayoutProvider.tickPixelsDomain] must be set to the full constraints size in main
+  ///   axis direction (the full constraints size will become layoutSize in that direction, per point above).
+  ///
+  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for more requirements and definitions.
   ///
   /// Implementation detail:
   ///   - Note: With it's class-hierarchy sibling, the [RollingPositioningBoxLayouter] this method shares the core
-  ///           of children positioning, where the children's rectangles using two 1D positioners
-  ///           in [_MainAndCrossPositionedSegments.asRectangles]. But it differs in todo-00-last-last-last-document
+  ///           of children positioning, where the children's rectangles using two 1D positioners wrapped
+  ///           in [_MainAndCrossPositionedSegments.asRectangles] . But it differs in that this tick layout
+  ///           is greedy in the main axis direction.
   ///   - The algorithm invokes the [LayedoutLengthsPositioner.positionLengths], method.
-  ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
-  ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
-  ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
-  ///   - Both main and cross axis properties are members of this [RollingPositioningExternalTicksBoxLayouter].
-  ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
-  ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
   @override
-  // todo-00-last-last-last-last : should this be kept?? - I think so, this is the core layout even for ticks
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
-    /*
-      if (isLeaf) {
-      return [];
-    }
-    */
+    // if (isLeaf) { return []; }
 
     if (mainAxisLayoutProperties.externalTicksLayoutProvider == null) {
       throw StateError('externalTicksLayoutProvider is null');
     }
+    // External ticks layouter is greedy along the main axis - MUST take full constraints along main axis direction.
+    // Along main axis direction:
+    //   - the constraints are ALSO the pixel domain to which the ticks will be lextred!
+    //   - the constraints will ALSO become the layout size! See [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
+    //     for how the layoutSize is set
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
-    var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);// todo-00-last-last-last-last-last from constraints along main axis
+    // So, knowing the size to which to lextr, create the range to which the [externalTicksLayoutProvider]
+    //   will be lextered, apply the pixel domain on the [externalTicksLayoutProvider], and lextr the ticks to pixels.
+    var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
     mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextr(tickPixelsDomainFromOwnerConstraints);
 
-    // must be set  before layout, as the ticksValues CAN NOT BE USER - MUST USE
+    // The set ticks pixel domain to which to lextr, and the ticks lextr MUST be done before layout (positioning) below,
+    //   as the positioning works on pixels. ACTUALLY: The ticks pixel domain MUST be set, lextr could
+    //   be done after positioning.
     return _MainAndCrossPositionedSegments(
       parentBoxLayouter: this,
       parentConstraints: constraints,
@@ -1878,6 +1874,7 @@ abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAx
     ).asRectangles();
   }
 
+  /* todo-00-last-remove
   /// An abstract method of the default [layout] which role is to
   /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
   ///
@@ -1890,49 +1887,26 @@ abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAx
   ///
   /// First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
   /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
-  // todo-00-last-last-last-last : implement this
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
+  */
 
-  // ---------------------------- vvvvvvvvvvvvv
-  // todo-00-last-last-last : implement the following and keep track of progress here:
-  // The main goal of this layouter 's [layout] is to allow:
-  //
-  // - set layoutSize to full constraint size in main axis direction (NOT
-  //   just outer envelope of children)
-  // - when layoutSize in main axis direction is known, set
-  //   [ExternalTicksLayoutProvider.tickPixelsDomain] to full layoutSize in main
-  //   axis direction.
-
-  // D Calculated late, after tickPixelsDomain is set:
-  // D late final List<double> tickPixels;
-
-  // Set late, during layout, once layoutSize along main axis is known.
-  // Actually equals the [layoutSize] along main axis, which is also the constraints of the owner
-  // [RollingPositioningExternalTicksBoxLayouter].
-  // D late final util_dart.Interval tickPixelsDomain;
-  // ---------------------------- ^^^^^^^^^^^^^^^^^
-
-  // todo-00-last-last-last-last : override to:
-  //    - only check overflow, not sameness,
-  //    - then set layoutSize from constraints
-  //    - then set RollingPositioningExternalTicksBoxLayouter.tickPixelsDomain
+  /// Sets layoutSize from full constraint in the main axis direction, from OuterRect in cross axis direction.
+  ///
+  /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    assert(!isLeaf);
-    ui.Rect positionedChildrenOuterRects = util_flutter
-        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
-    // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
-    ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRects.size);
 
-    // todo-00-last-last-last-last-last: Set layout size in main axis direction to full constraints,
+    ui.Rect positionedChildrenOuterRect = util_flutter
+        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+
+    __layout_Post_Assert_Layedout_Rects(positionedChildrenRects, positionedChildrenOuterRect);
+
+    // Set [layoutSize] in main axis direction to full constraints,
     //       in the cross direction set layoutSize to the bounding rectangle
-    // layoutSize = positionedChildrenOuterRects.size;
 
     layoutSize = constraints.size.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
-      other: positionedChildrenOuterRects.size,
+      other: positionedChildrenOuterRect.size,
       axis: mainLayoutAxis,
     );
   }
@@ -1959,18 +1933,7 @@ class ExternalTicksRow extends RollingPositioningExternalTicksBoxLayouter {
     // mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.horizontal;
-  } /* todo-00-last-last : done in super : {
-    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: mainAxisAlign,
-      packing: Packing.externalTicksProvided, // mainAxisPacking,
-      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
-    );
-    crossAxisLayoutProperties = LengthsPositionerProperties(
-      align: crossAxisAlign,
-      packing: crossAxisPacking,
-    );
-  }*/
+  }
 }
 
 class ExternalTicksColumn extends RollingPositioningExternalTicksBoxLayouter {
@@ -1995,18 +1958,6 @@ class ExternalTicksColumn extends RollingPositioningExternalTicksBoxLayouter {
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
   }
-  /* todo-00-last-last : done in super : {
-    // done in Column : mainLayoutAxis = LayoutAxis.vertical;
-    mainAxisLayoutProperties = LengthsPositionerProperties(
-      align: mainAxisAlign,
-      packing: Packing.externalTicksProvided, // mainAxisPacking,
-      externalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
-    );
-    crossAxisLayoutProperties = LengthsPositionerProperties(
-      align: crossAxisAlign,
-      packing: crossAxisPacking,
-    );
-  }*/
 }
 
 // --------------------------- vvvvvvvvvv Table
@@ -2451,6 +2402,8 @@ class TableLayoutDefiner {
   ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
   ///   - next is the [cellsAlignerDefiner]
   ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
+  ///   todo-00!!! : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  ///                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);
     if (cellDefiner.verticalAlign != null) {
@@ -2986,15 +2939,15 @@ class Greedy extends NonPositioningBoxLayouter {
     //    bu this Greedy should still expand in the main direction to it's allowed maximum.
     //  - In the cross-axis direction, take on the layout size of children outer rectangle, as
     //    ih the default implementation.
-    ui.Rect positionedChildrenOuterRects =  util_flutter
+    ui.Rect positionedChildrenBoundingRect =  util_flutter
         .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
         .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
-    assert(childrenOuterRectangle.size == positionedChildrenOuterRects.size);
+    assert(childrenOuterRectangle.size == positionedChildrenBoundingRect.size);
 
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis
-    ui.Size childrenLayoutSize = positionedChildrenOuterRects.size; // use the portion of this size along cross axis
+    ui.Size childrenLayoutSize = positionedChildrenBoundingRect.size; // use the portion of this size along cross axis
 
     if (_parent is! RollingPositioningBoxLayouter) {
       throw StateError('Parent of this Greedy container "$this" must be '
@@ -3225,23 +3178,22 @@ class Aligner extends PositioningBoxLayouter {
 ///     it's boundaries may be larger than the envelope of all [tickValues]
 ///   - [isAxisPixelsAndDisplayedValuesInSameDirection] defines whether the axis pixel positions and [tickValues]
 ///     are run in the same direction.
-///   - [externalTickAt] the information what point on the child should be placed at the tick value:
-///     child's start, center, or end. This is expressed by [ExternalTickAt.childStart] etc.
+///   - [externalTickAtPosition] the information what point on the child should be placed at the tick value:
+///     child's start, center, or end. This is expressed by [ExternalTickAtPosition.childStart] etc.
 ///
 /// Note: The parameter names use the term 'value' not 'position', as they represent
 ///        data values ('transformed' but NOT 'extrapolated to pixels').
 ///
 /// Important note: Although not clear from this class, should ONLY position along the main axis.
-///                 This is reflected in one-dimensionality of [tickValues] and [externalTickAt]
+///                 This is reflected in one-dimensionality of [tickValues] and [externalTickAtPosition]
 ///
 class ExternalTicksLayoutProvider {
 
   ExternalTicksLayoutProvider({
     required this.tickValues,
     required this.tickValuesDomain,
-    // todo-00-last-last-last : need to add tickValuesLextered - but to which axisPixelsRange???
     required this.isAxisPixelsAndDisplayedValuesInSameDirection,
-    required this.externalTickAt,
+    required this.externalTickAtPosition,
 });
 
   /// Represent future positions of children of the layouter controlled
@@ -3254,20 +3206,19 @@ class ExternalTicksLayoutProvider {
 
   final util_dart.Interval tickValuesDomain;
 
-  // todo-00-last-last-last: Calculated late, after tickPixelsDomain is set
+  /// Calculated late, after tickPixelsDomain is set
   late final List<double> tickPixels;
 
-  // todo-00-last-last-last: Set late, during layout, once layoutSize along main axis is known.
-  // Actually equals the [layoutSize] along main axis, which is also the constraints of the owner
-  // [RollingPositioningExternalTicksBoxLayouter].
+  /// Set late, during layout, Post, after children are layed out, from the full constraints along main axis.
+  /// Actually equals the [layoutSize] portion along main axis, which is also the constraints of the owner
+  /// [RollingPositioningExternalTicksBoxLayouter].
   late final util_dart.Interval tickPixelsDomain;
 
   final bool isAxisPixelsAndDisplayedValuesInSameDirection;
 
-  final ExternalTickAt externalTickAt;
+  final ExternalTickAtPosition externalTickAtPosition;
 
-  // todo-00-last-last-last : done - but document, what is meant by owner
-
+  /// Sets the domain for the ticks in [tickValues]; this is pixel-lextr-equivalent of [tickValuesDomain].
   void setTickPixelsDomainAndLextr(util_dart.Interval tickPixelsDomainFromOwnerConstraints) {
     tickPixelsDomain = tickPixelsDomainFromOwnerConstraints;
     tickPixels = lextrValuesToPixels();
@@ -3315,10 +3266,7 @@ class ExternalTicksLayoutProvider {
 
 }
 
-// todo-00-last-last rename to ExternalTickAtChildPosition
-//  rename also variables
-
-enum ExternalTickAt {
+enum ExternalTickAtPosition {
   childStart,
   childCenter,
   childEnd,
@@ -3380,12 +3328,21 @@ class _MainAndCrossPositionedSegments {
   /// Uses the passed [mainAxisLayoutProperties], [crossAxisLayoutProperties] and the [mainLayoutAxis]
   /// to find children positions in the [parentBoxLayouter].
   ///
-  /// This method finds the children 1D positions using the [LayedoutLengthsPositioner],
-  /// and keeps the children positions on state in a 'primitive one-dimensional format',
-  /// in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
-  /// which contain the 1D [LayedOutLineSegments] along main and cross axis.
+  /// This method:
+  ///   - Created two instances of [LayedoutLengthsPositioner], one for the main axis, one for the cross axis,
+  ///     and invokes their [LayedoutLengthsPositioner.positionLengths] on each.
   ///
-  /// [asRectangles] can convert the 1D positions into rectangles representing [children] positions in [parentBoxLayouter].
+  ///   - The result is the children 1D positions using the [LayedoutLengthsPositioner],
+  ///     and keeps the children positions on state in a 'primitive one-dimensional format',
+  ///     in [mainAxisPositionedSegments] and [crossAxisPositionedSegments]
+  ///     which contain the 1D [LayedOutLineSegments] along main and cross axis.
+  ///
+  /// Note that, in the[LayedoutLengthsPositioner.positionLengths],  the offset on each element
+  /// is calculated using the [mainAxisLayoutProperties] in the main axis direction,
+  /// and the [crossAxisLayoutProperties] in the cross axis direction.
+  ///
+  /// The method [asRectangles] can convert the 1D positions into rectangles representing [children]
+  /// positions in [parentBoxLayouter].
   ///
   _MainAndCrossPositionedSegments({
     required this.parentBoxLayouter,

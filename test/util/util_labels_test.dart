@@ -173,6 +173,7 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, C
     inverseTransform: options.dataContainerOptions.yInverseTransform,
     dataModel: mockNewModel,
     isStacked: false,
+    isAxisPixelsAndDisplayedValuesInSameDirection: false,
   );
 }
 
@@ -238,6 +239,7 @@ void rangeTestCore(
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
       isStacked: false,
+      isAxisPixelsAndDisplayedValuesInSameDirection: false,
     );
 
 

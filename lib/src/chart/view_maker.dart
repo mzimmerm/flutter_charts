@@ -76,6 +76,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
       userLabels: chartData.yUserLabels,
       dataModel: chartData,
       isStacked: isStacked,
+      isAxisPixelsAndDisplayedValuesInSameDirection: false,
     );
 
     // See comment in YContainer constructor
@@ -87,6 +88,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
       userLabels: chartData.xUserLabels,
       dataModel: chartData,
       isStacked: isStacked,
+      isAxisPixelsAndDisplayedValuesInSameDirection: true,
     );
 
   }

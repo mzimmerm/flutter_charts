@@ -58,6 +58,7 @@ class DataRangeLabelInfosGenerator {
     required Function valueToLabel,
     required Function inverseTransform,
     required bool isStacked,
+    required this.isAxisPixelsAndDisplayedValuesInSameDirection,
     List<String>? userLabels,
   })  :
         _valueToLabel = valueToLabel,
@@ -141,7 +142,7 @@ class DataRangeLabelInfosGenerator {
 
 
   // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
-  final bool isAxisPixelsAndDisplayedValuesInSameDirection = false;
+  final bool isAxisPixelsAndDisplayedValuesInSameDirection;
 
   /// The function converts value to label.
   ///
@@ -164,7 +165,7 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
-    // todo-00-last : added as a test
+    // todo-00-last : added as a confirmation
     if (!chartViewMaker.isUseOldDataContainer) {
       throw StateError('Only should be called in OLD Layouters');
     }
@@ -197,19 +198,16 @@ class DataRangeLabelInfosGenerator {
   /// position of labels, it can be converted to a provider of these label positions
   /// for layouts that use externally defined positions to layout their children.
   ExternalTicksLayoutProvider asExternalTicksLayoutProvider({
-    required ExternalTickAt externalTickAt,
+    required ExternalTickAtPosition externalTickAtPosition,
   }) {
+    // Return [ExternalTicksLayoutProvider] and provide ticks.
+    // The ticks must be lextered to pixels, once ticksPixelsDomain is known.
+    // See [RollingPositioningExternalTicksBoxLayouter].
     return ExternalTicksLayoutProvider(
-      // todo-00-last-last-last : The tickValues must be NOT from the dataValue (data range),
-      //     BUT IT MUST BE TRANSFORMED USING THE
-      //     ExternalTicksLayoutProvider.lextrValuesToPixels(util_dart.Interval axisPixelsRange)
-      //     PIXELS MUST BE IN COORDINATES OF THE LAYOUTER -
-      // todo-00-last-last-last : tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
       tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
-      // todo-00-last-last-last : need to add tickValuesLextered - but to which axisPixelsRange???
       tickValuesDomain: dataRange,
       isAxisPixelsAndDisplayedValuesInSameDirection: isAxisPixelsAndDisplayedValuesInSameDirection,
-      externalTickAt: externalTickAt,
+      externalTickAtPosition: externalTickAtPosition,
     );
   }
 }
