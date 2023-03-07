@@ -96,7 +96,7 @@ enum ConstraintsDistribution {
 /// For layouters with [packing] = [Packing.externalTicksProvided], that is, for layouters using external ticks,
 /// the optional [externalTicksLayoutProvider] must be also provided.
 ///
-/// Instances are intended to be members on [RollingPositioningBoxLayouter]; they describe
+/// Instances are intended to be members on [RollingBoxLayouter]; they describe
 /// the properties of the layouter and it's extensions such as [Row] and [Column].
 /// In more detail: the members [align] and [packing] define alignment and packing of children
 /// during layout; the member [layoutDirection] defines if children are layed out start-to-end

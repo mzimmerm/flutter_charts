@@ -202,7 +202,7 @@ class DataRangeLabelInfosGenerator {
   }) {
     // Return [ExternalTicksLayoutProvider] and provide ticks.
     // The ticks must be lextered to pixels, once ticksPixelsDomain is known.
-    // See [RollingPositioningExternalTicksBoxLayouter].
+    // See [ExternalTicksBoxLayouter].
     return ExternalTicksLayoutProvider(
       tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
       tickValuesDomain: dataRange,

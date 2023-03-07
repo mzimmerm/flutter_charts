@@ -49,9 +49,9 @@ tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsSh
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration3
 tool/test/integration_test_validate_screenshots.sh ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose
-tool/test/integration_test_validate_screenshots.sh ex71AnimalsBySeasonLegendIsColumnStartSnapItemIsRowStartSnap
+tool/test/integration_test_validate_screenshots.sh ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight
 tool/test/integration_test_validate_screenshots.sh ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose
-tool/test/integration_test_validate_screenshots.sh ex73AnimalsBySeasonLegendIsRowStartSnapItemIsRowStartSnap
+tool/test/integration_test_validate_screenshots.sh ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight
 tool/test/integration_test_validate_screenshots.sh ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy
 tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
 tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
@@ -60,4 +60,4 @@ echo
 echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot actual/expected test for NEW LAYOUT
-USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+# USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

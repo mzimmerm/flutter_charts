@@ -1042,7 +1042,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - Only override if self needs to set the layoutSize bigger than the outer rectangle of children.
   ///     Overriding extensions include layouts which do padding,
   ///     or otherwise increase their sizes, such as [Greedy], [Padder], [Aligner].
-  ///   - [RollingPositioningBoxLayouter]s [Row] and [Column] use this
+  ///   - [RollingBoxLayouter]s [Row] and [Column] use this
   ///     - although they override [layout], the method [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize]
   ///     which invokes this is default. These classes rely on this default
   ///     "bounding rectangle of all positioned children" implementation.
@@ -1485,8 +1485,8 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
 /// as well as the 'cross' direction on this base class constructor.
 ///
 /// Similar to Flex.
-abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter {
-  RollingPositioningBoxLayouter({
+abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
+  RollingBoxLayouter({
     required List<BoxContainer> children,
     required Align mainAxisAlign,
     required Packing mainAxisPacking,
@@ -1502,7 +1502,7 @@ abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   );
 
-  /// [RollingPositioningBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
+  /// [RollingBoxLayouter] overrides the base [BoxLayouter.layout] to support [Greedy] children
   ///
   /// - If [Greedy] children are not present, this implementation behaves the same as the overridden base,
   ///   obviously implementing the abstract functionality of the base layout:
@@ -1620,7 +1620,7 @@ abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter
   ///   - There are two instances of the [LayedoutLengthsPositioner] created, one
   ///     for the [mainLayoutAxis] (using the [mainAxisLayoutProperties]),
   ///     another and for axis perpendicular to [mainLayoutAxis] (using the [crossAxisLayoutProperties]).
-  ///   - Both main and cross axis properties are members of this [RollingPositioningBoxLayouter].
+  ///   - Both main and cross axis properties are members of this [RollingBoxLayouter].
   ///   - The offset on each notGreedyChild element is calculated using the [mainAxisLayoutProperties]
   ///     in the main axis direction, and the [crossAxisLayoutProperties] in the cross axis direction.
   @override
@@ -1641,7 +1641,7 @@ abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter
     ).asRectangles();
   }
 
-  /// Specific for [RollingPositioningBoxLayouter.layout], finds constraints remaining for [Greedy] children,
+  /// Specific for [RollingBoxLayouter.layout], finds constraints remaining for [Greedy] children,
   /// and applies them on [Greedy] the children.
   ///
   /// This post descend is called after NonGreedy children, are layed out, and their [layoutSize]s known.
@@ -1703,7 +1703,7 @@ abstract class RollingPositioningBoxLayouter extends MainAndCrossAxisBoxLayouter
 }
 
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
-class Row extends RollingPositioningBoxLayouter {
+class Row extends RollingBoxLayouter {
   Row({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -1737,7 +1737,7 @@ class Row extends RollingPositioningBoxLayouter {
 
 /// Layouter lays out children in a column that keeps extending,
 /// which may overflow if there are too many or too large children.
-class Column extends RollingPositioningBoxLayouter {
+class Column extends RollingBoxLayouter {
   Column({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -1774,19 +1774,19 @@ class Column extends RollingPositioningBoxLayouter {
 /// using a rolling one-row (or one-column) [Packing] layout along the main axis, and a [Packing] layout
 /// within the one-row (or one-column) along the cross axis.
 ///
-/// It is similar to [RollingPositioningBoxLayouter], but has a very different layout, so it is made to be  a sibling
+/// It is similar to [RollingBoxLayouter], but has a very different layout, so it is made to be  a sibling
 /// class to it.
 ///
-/// Importantly, it differs in the [layout] method from the [RollingPositioningBoxLayouter], in using
+/// Importantly, it differs in the [layout] method from the [RollingBoxLayouter], in using
 /// a different constraints distribution to children, and a different order of children [layout]
-/// (in [RollingPositioningBoxLayouter] it is non-greedy first, greedy last, on this derived class
+/// (in [RollingBoxLayouter] it is non-greedy first, greedy last, on this derived class
 /// it is just in order of the ticks)
 ///
 /// See comments in [layout_Post_NotLeaf_PositionChildren] for comments on core goals
 /// of this class [layout] method and how it differs from it's base and sibling classes.
 ///
-abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
-  RollingPositioningExternalTicksBoxLayouter({
+abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
+  ExternalTicksBoxLayouter({
     required List<BoxContainer> children,
     required Align mainAxisAlign,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: required Packing mainAxisPacking,
@@ -1838,7 +1838,7 @@ abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAx
   /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for more requirements and definitions.
   ///
   /// Implementation detail:
-  ///   - Note: With it's class-hierarchy sibling, the [RollingPositioningBoxLayouter] this method shares the core
+  ///   - Note: With it's class-hierarchy sibling, the [RollingBoxLayouter] this method shares the core
   ///           of children positioning, where the children's rectangles using two 1D positioners wrapped
   ///           in [_MainAndCrossPositionedSegments.asRectangles] . But it differs in that this tick layout
   ///           is greedy in the main axis direction.
@@ -1913,7 +1913,7 @@ abstract class RollingPositioningExternalTicksBoxLayouter extends MainAndCrossAx
 
 }
 
-class ExternalTicksRow extends RollingPositioningExternalTicksBoxLayouter {
+class ExternalTicksRow extends ExternalTicksBoxLayouter {
   ExternalTicksRow({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -1936,10 +1936,10 @@ class ExternalTicksRow extends RollingPositioningExternalTicksBoxLayouter {
   }
 }
 
-class ExternalTicksColumn extends RollingPositioningExternalTicksBoxLayouter {
+class ExternalTicksColumn extends ExternalTicksBoxLayouter {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    // todo-00!! provide some way to express that for ExternalRollingPositioningTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-00!! provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2432,7 +2432,7 @@ class TableLayoutDefiner {
 ///
 /// The layout order is specified by the passed [tableLayoutDefiner].
 ///
-/// Unlike [RollingPositioningBoxLayouter], each cell (child) in the [TableLayouter]
+/// Unlike [RollingBoxLayouter], each cell (child) in the [TableLayouter]
 /// receives it's constraints just before it's layout is called.
 /// The received constraints are calculated as a constraints from this layouter, deflated (decreased in size)
 /// by the [layoutSize]s of all previously layed out children.
@@ -2904,7 +2904,7 @@ class TableLayouter extends PositioningBoxLayouter {
 
 // --------------------------- ^^^^^^^^^^ Table
 
-/// Layouter which asks it's parent [RollingPositioningBoxLayouter] to allocate as much space
+/// Layouter which asks it's parent [RollingBoxLayouter] to allocate as much space
 /// as possible for it's single child .
 ///
 /// It is NonPositioning, so it cannot honour it's parent [Align] and [Packing], and it's
@@ -2949,11 +2949,11 @@ class Greedy extends NonPositioningBoxLayouter {
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis
     ui.Size childrenLayoutSize = positionedChildrenBoundingRect.size; // use the portion of this size along cross axis
 
-    if (_parent is! RollingPositioningBoxLayouter) {
+    if (_parent is! RollingBoxLayouter) {
       throw StateError('Parent of this Greedy container "$this" must be '
-          'a ${(RollingPositioningBoxLayouter).toString()} but it is $_parent');
+          'a ${(RollingBoxLayouter).toString()} but it is $_parent');
     }
-    RollingPositioningBoxLayouter p = (_parent as RollingPositioningBoxLayouter);
+    RollingBoxLayouter p = (_parent as RollingBoxLayouter);
     ui.Size size = _greedySizeAlongGreedyAxis(p.mainLayoutAxis, greedySize, childrenLayoutSize);
 
     // Set the layout size as the full constraint side along the greedy axis,
@@ -3160,10 +3160,10 @@ class Aligner extends PositioningBoxLayouter {
 
 // Helper classes ------------------------------------------------------------------------------------------------------
 
-/// This class controls how layouters implementing the mixin [ExternalTicksRollingPositioning] position their children
+/// This class controls how layouters implementing the mixin [ExternalTicksRolling] position their children
 /// along their main axis.
 ///
-/// It manages all the directives the [ExternalTicksRollingPositioning] need to position their children
+/// It manages all the directives the [ExternalTicksRolling] need to position their children
 /// in their main axis direction.
 ///
 /// It's useful role is provided by the method [lextrValuesToPixels], which,
@@ -3171,7 +3171,7 @@ class Aligner extends PositioningBoxLayouter {
 /// to layouter-relative positions on the axis, to which the layouter children will be positioned.
 ///
 /// Specifically, this class provides the following directives for the layouters
-/// that are [ExternalTicksRollingPositioning]:
+/// that are [ExternalTicksRolling]:
 ///   - [tickValues] is the relative positions on which the children are placed
 ///   - [tickValuesDomain] is the interval in which the relative positions [tickValues] are.
 ///     [tickValuesDomain] must include all [tickValues];
@@ -3211,7 +3211,7 @@ class ExternalTicksLayoutProvider {
 
   /// Set late, during layout, Post, after children are layed out, from the full constraints along main axis.
   /// Actually equals the [layoutSize] portion along main axis, which is also the constraints of the owner
-  /// [RollingPositioningExternalTicksBoxLayouter].
+  /// [ExternalTicksBoxLayouter].
   late final util_dart.Interval tickPixelsDomain;
 
   final bool isAxisPixelsAndDisplayedValuesInSameDirection;
@@ -3493,7 +3493,7 @@ class _MainAndCrossPositionedSegments {
 /* --------------------------
   Removed forced Packing changes on deeper Row and Column
 
-  1. was on : RollingPositioningBoxLayouter
+  1. was on : RollingBoxLayouter
   void _forceMainAxisLayoutProperties({
     required _FirstRollingLayouterTracker rollingTracker,
     required Packing packing,
@@ -3520,7 +3520,7 @@ class _MainAndCrossPositionedSegments {
   );
 
 
-  // 3. Was in : RollingPositioningBoxLayouter
+  // 3. Was in : RollingBoxLayouter
           method _layout_Rolling_Post_NonGreedy_FindConstraintRemainingAfterNonGreedy_DivideIt_And_ApplyOnGreedy
           section if (_hasGreedy)
   LengthsPositionerProperties storedLayout = mainAxisLayoutProperties;
@@ -3605,7 +3605,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
 
   for (var currentContainer in parentContainer._children) {
     if (__is_Row_for_rewrite(currentContainer) && rollingTracker.firstRowFromTopFoundBefore) {
-      (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
+      (currentContainer as RollingBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.tight,
@@ -3613,7 +3613,7 @@ void _static_ifRoot_Force_Deeper_Row_And_Column_LayoutProperties_To_NonPositioni
       );
     }
     if (__is_Column_for_rewrite(currentContainer) && rollingTracker.firstColumnFromTopFoundBefore) {
-      (currentContainer as RollingPositioningBoxLayouter)._forceMainAxisLayoutProperties(
+      (currentContainer as RollingBoxLayouter)._forceMainAxisLayoutProperties(
         rollingTracker: rollingTracker,
         align: currentContainer.mainAxisLayoutProperties.align, // Keep alignment
         packing: Packing.matrjoska,
