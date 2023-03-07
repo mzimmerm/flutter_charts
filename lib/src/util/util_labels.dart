@@ -73,6 +73,10 @@ class DataRangeLabelInfosGenerator {
     //   are **not-extrapolated && transformed** data from [NewModelPoint].
     if (userLabels != null) {
       dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
+      // todo-00-last-last : on axis with user labels, in the new layout, we cannot use dataEnvelope. We have to get pixel values instead. Somehow, the asExternalTicksLayoutProvider must work differently - we probably must delay dataEnvelope, and once pixels are known, dataEnvelope must be same as pixel envelope.
+      //                     OR MAYBE dataEnvelope IS IRRELEVANT, CAN BE SET TO ANYTHING, AND THE SCALING SCALES IT
+      //                     MAYBE IT IS TIME TO INTRODUCE PADDING OPTIONS: VERT_PADDING FOR ESTIMATED_MINIMUM-OF-Y-LABEL-HEIGHT / 2, HORIZ_PADDING FOR ESTIMATED_MINIMUM-OF-X-LABEL-WIDTH,
+      //                     I THINK COMBINATION OF THE 2 IS THE ONLY THING THAT IS NEEDED.
       _transformedLabelValues = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels.length);
     } else {
       dataEnvelope = dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: isStacked);
