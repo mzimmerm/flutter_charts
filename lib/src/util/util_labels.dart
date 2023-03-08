@@ -84,10 +84,10 @@ class DataRangeLabelInfosGenerator {
           // We COULD return the same dataValuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
           dataEnvelope = const util_dart.Interval(0.0, 100.0);
-          transformedLabelValues = evenlySpacedValuesIn(
+          transformedLabelValues = placeLabelPointsInInterval(
             interval: dataEnvelope,
-            pointsCount: userLabels.length,
-            lineSegmentPosition: util_dart.LineSegmentPosition.center,
+            labelPointsCount: userLabels.length,
+            pointPositionInSegment: util_dart.LineSegmentPosition.center,
           );
           break;
         case DataRangeDependency.dependentData:
@@ -136,7 +136,7 @@ class DataRangeLabelInfosGenerator {
 
   final ChartViewMaker chartViewMaker; // todo-00-last : added as a temporary to test old vs new
 
-  /// Describes if this data range is for dependent or independent data.
+  /// Describes if this [DataRangeLabelInfosGenerator] is for dependent or independent data.
   final DataRangeDependency dataRangeDependency;
 
   /// Describes labels - their values and String values.
@@ -166,14 +166,6 @@ class DataRangeLabelInfosGenerator {
   /// This [Interval] is displayed on the axis pixel domain [AxisContainer.axisPixelsRange].
   /// Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
-
-  /// [_transformedLabelValues] keep the transformed, non-extrapolated data values at which labels are shown.
-  // todo-00!!! Remove this member and getter entirely. Must address tests first, easy
-  // todo-00-last-done : late final List<double> _transformedLabelValues;
-
-  /// Public getter is for tests only!
-  // todo-00-last-done : List<double> get testTransformedLabelValues => _transformedLabelValues;
-
 
   // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
   final bool isAxisPixelsAndDisplayedValuesInSameDirection;
@@ -247,31 +239,49 @@ class DataRangeLabelInfosGenerator {
 
 
 
-// todo-00-last-last-done : all the way to end of class, moved here from top funtions in util_labels.dart
-  /// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
-  /// ending at [interval.max], and returns the positions list.
+  /// Places [labelPointsCount] positions evenly distanced in [interval] between [interval.min]
+  /// and [interval.max], and returns the positions list.
   ///
-  /// The positions include both ends, unless [pointsCount] is one, then the positions at ends
-  /// are not included, list with center position is returned.
+  /// Motivation and role:
+  ///   We need to evenly place [labelPointsCount] labels inside [interval].
+  ///   This method allows to do that, returning positions of label starts, label centers,
+  ///   or label ends in the [interval]. The positions are controlled by the passed [pointPositionInSegment].
   ///
-  /// As this method simply divides the available interval into [pointsCount],
-  /// it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
-  /// (which it would be even for logarithmic scale). But usually the interval represents
-  /// scaled, non-transformed values.
-  /// todo-00-last-last-document
-// todo-00-last-last-progress : use the existing layouter to lay out lengths in interval. Add option to return left points, center points, or right points of lengths
-  List<double> evenlySpacedValuesIn({
+  /// Algorithm:
+  ///   The returned positions list is calculated by dividing the [interval] into [labelPointsCount]
+  ///   line segments of type [util_dart.LineSegment], and returning the start, center, or end of the line segments,
+  ///   depending on [pointPositionInSegment] set to one of [util_dart.LineSegmentPosition.min],
+  ///   [util_dart.LineSegmentPosition.center], or [util_dart.LineSegmentPosition.max]
+  ///
+  /// Notes:
+  ///   1. This algorithm makes no attempt to guarantee whether each label actually fits it's allocated line segment
+  ///      [util_dart.LineSegment], it merely ensures the chosen point of all line segments (start, center, end)
+  ///      is within the passed [interval], and the points are evenly distributed.
+  ///   2. Returned point positions are as follows:
+  ///      - If [pointPositionInSegment] is [util_dart.LineSegmentPosition.min], the first point in the returned list
+  ///        is [interval.min], and there is no point on [interval.max]
+  ///        (last point is at `interval.max - points_equidistance`)
+  ///      - If [pointPositionInSegment] is [util_dart.LineSegmentPosition.center], there are no points on the
+  ///        neither [interval.min] nor [interval.max]. The first and last points are half of the points even distance
+  ///        to the right of the [interval.min], and to the left of [interval.max] respectively.
+  ///      - If [pointPositionInSegment] is [util_dart.LineSegmentPosition.max], the first point in the returned list
+  ///        is at  at `interval.min + points_equidistance`, the last point is at [interval.max].
+  ///    3. As this method simply divides the available interval into [labelPointsCount],
+  ///       it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
+  ///       (which it would be even for logarithmic scale). The interval represents transformed (ususally identity),
+  ///       non-lextr-ed values.
+  List<double> placeLabelPointsInInterval({
     required util_dart.Interval interval,
-    required int pointsCount, // todo-00-last-last rename to labelCount which is what it is. Also move this method to DataRangeLabelInfosGenerator
-    required util_dart.LineSegmentPosition lineSegmentPosition,
+    required int labelPointsCount,
+    required util_dart.LineSegmentPosition pointPositionInSegment,
   }) {
-    if (pointsCount < 0) {
+    if (labelPointsCount < 0) {
       throw StateError('Cannot distribute negative number of positions');
     }
 
     // Use existing positioner to find segments for labels
     PositionedLineSegments positionedSegments = LayedoutLengthsPositioner(
-      lengths: List.generate(pointsCount, (index) => interval.length / pointsCount),
+      lengths: List.generate(labelPointsCount, (index) => interval.length / labelPointsCount),
       lengthsPositionerProperties: const LengthsPositionerProperties(
         align: Align.start,
         packing: Packing.tight,
@@ -279,7 +289,7 @@ class DataRangeLabelInfosGenerator {
       lengthsConstraint: interval.length,
     ).positionLengths();
 
-    switch(lineSegmentPosition) {
+    switch(pointPositionInSegment) {
       case util_dart.LineSegmentPosition.min:
         return positionedSegments.lineSegments.map((lineSegment) => lineSegment.min).toList();
       case util_dart.LineSegmentPosition.center:
@@ -288,29 +298,6 @@ class DataRangeLabelInfosGenerator {
         return positionedSegments.lineSegments.map((lineSegment) => lineSegment.max).toList();
     }
   }
-
-/* todo-00-last-done
-List<double> evenlySpacedValuesIn({
-  required util_dart.Interval interval,
-  required int pointsCount,
-}) {
-  if (pointsCount <= 0) {
-    throw StateError('Cannot distribute 0 or negative number of positions');
-  }
-
-  if (pointsCount == 1) {
-    return [(interval.max - interval.min) / 2.0];
-  }
-  double dataStepHeight = (interval.max - interval.min) / (pointsCount - 1);
-
-  // Evenly distribute labels in [interval]
-  List<double> pointsPositions = List.empty(growable: true);
-  for (int yIndex = 0; yIndex < pointsCount; yIndex++) {
-    pointsPositions.add(interval.min + dataStepHeight * yIndex);
-  }
-  return pointsPositions;
-}
-*/
 
   /// Automatically generates values (anywhere from zero to nine values) intended to
   /// be displayed as label in [interval], which represents a domain

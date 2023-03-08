@@ -103,33 +103,6 @@ class NewModel {
     }
   }
 
-  /* todo-00-last-last-done : added and removed
-  /// Returns stand-in range of values on an axis that shows user-defined labels.
-  ///
-  /// The stand-in range is used to space labels, it's actual minimum and maximum can be any values
-  /// that are not the same. Once the pixels range on the axis is available,
-  /// it is lextr-ed to the pixel range.
-  ///
-  Interval dataValuesIntervalOnUserLabeledAxis({
-    required DataRangeDependency dataRangeDependency,
-    required bool isStacked,
-  }) {
-    switch(dataRangeDependency) {
-      case DataRangeDependency.dependentData:
-        // On dependent (Y) axis, with user labels, we have to use actual data values,
-        //   because all scaling uses actual data values
-        return dataValuesInterval(isStacked: isStacked);
-      case DataRangeDependency.independentData:
-        // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
-        //   the interval is, once the pixels range on the axis is available,
-        //   it will be lextr-ed to the pixel range.
-        // We COULD return the same dataValuesInterval(isStacked: isStacked) but
-        //   as that is for dependent data, it would be confusing.
-        return const Interval(0.0, 100.0);
-    }
-  }
-  */
-
   /// Returns the interval that envelopes all data values in [NewModel.dataRows], possibly extended to 0.
   ///
   /// The [isStacked] controls whether the interval is created from values in [NewPointModel._dataValue]
@@ -239,7 +212,7 @@ class NewModel {
 
 }
 
-/// todo-done-last-3 : NewCrossSeriesPointsModel replaces PointsColumn
+/// todo-done-last-3 : Note: NewCrossSeriesPointsModel replaces PointsColumn
 ///
 /// Represents a list of cross-series data values, in the [NewModel].
 ///

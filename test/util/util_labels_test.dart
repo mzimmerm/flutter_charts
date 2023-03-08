@@ -63,7 +63,6 @@ void main() {
 
     var dataRows = [[1.0, 22.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    // todo-00-last-done : List<num> labels = labelsGenerator.testTransformedLabelValues;
     List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, 0.0);
@@ -74,7 +73,6 @@ void main() {
 
     dataRows = [[-1.0, -22.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, -300.0);
@@ -84,7 +82,6 @@ void main() {
 
     dataRows = [[22.0, 10.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].dataValue, -300.0);
@@ -95,7 +92,6 @@ void main() {
 
     dataRows = [[-22.0, -10.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].dataValue, -100.0);
@@ -106,7 +102,6 @@ void main() {
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
-    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, -1000.0);
@@ -116,7 +111,6 @@ void main() {
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].dataValue, -1000.0);
@@ -251,12 +245,9 @@ void rangeTestCore(
     );
 
 
-    // todo-00-last-done : expect(labelsGenerator.testTransformedLabelValues.length, expectedLabels.length);
     expect(labelsGenerator.labelInfoList.length, expectedLabels.length);
-    // todo-00-last-done : for (int i = 0; i < labelsGenerator.testTransformedLabelValues.length; i++) {
     for (int i = 0; i < labelsGenerator.labelInfoList.length; i++) {
       expect(
-        // todo-00-last-done : labelsGenerator.testTransformedLabelValues[i],
         labelsGenerator.labelInfoList[i].dataValue,
         expectedLabels[i],
       );
