@@ -63,59 +63,65 @@ void main() {
 
     var dataRows = [[1.0, 22.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    List<num> labels = labelsGenerator.testTransformedLabelValues;
-    expect(labels.length, 4);
-    expect(labels[0], 0.0);
-    expect(labels[1], 100.0);
-    expect(labels[2], 200.0);
-    expect(labels[3], 300.0);
+    // todo-00-last-done : List<num> labels = labelsGenerator.testTransformedLabelValues;
+    List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 4);
+    expect(labelInfoList[0].dataValue, 0.0);
+    expect(labelInfoList[1].dataValue, 100.0);
+    expect(labelInfoList[2].dataValue, 200.0);
+    expect(labelInfoList[3].dataValue, 300.0);
 
 
     dataRows = [[-1.0, -22.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.testTransformedLabelValues;
-    expect(labels.length, 4);
-    expect(labels[0], -300.0);
-    expect(labels[1], -200.0);
-    expect(labels[2], -100.0);
-    expect(labels[3], 0.0);
+    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
+    labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 4);
+    expect(labelInfoList[0].dataValue, -300.0);
+    expect(labelInfoList[1].dataValue, -200.0);
+    expect(labelInfoList[2].dataValue, -100.0);
+    expect(labelInfoList[3].dataValue, 0.0);
 
     dataRows = [[22.0, 10.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.testTransformedLabelValues;
-    expect(labels.length, 5);
-    expect(labels[0], -300.0);
-    expect(labels[1], -200.0);
-    expect(labels[2], -100.0);
-    expect(labels[3], 0.0);
-    expect(labels[4], 100.0);
+    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
+    labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 5);
+    expect(labelInfoList[0].dataValue, -300.0);
+    expect(labelInfoList[1].dataValue, -200.0);
+    expect(labelInfoList[2].dataValue, -100.0);
+    expect(labelInfoList[3].dataValue, 0.0);
+    expect(labelInfoList[4].dataValue, 100.0);
 
     dataRows = [[-22.0, -10.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator.testTransformedLabelValues;
-    expect(labels.length, 5);
-    expect(labels[0], -100.0);
-    expect(labels[1], 0.0);
-    expect(labels[2], 100.0);
-    expect(labels[3], 200.0);
-    expect(labels[4], 300.0);
+    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
+    labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 5);
+    expect(labelInfoList[0].dataValue, -100.0);
+    expect(labelInfoList[1].dataValue, 0.0);
+    expect(labelInfoList[2].dataValue, 100.0);
+    expect(labelInfoList[3].dataValue, 200.0);
+    expect(labelInfoList[4].dataValue, 300.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
-    labels = labelsGenerator.testTransformedLabelValues;
-    expect(labels.length, 4);
-    expect(labels[0], -1000.0);
-    expect(labels[1], 0.0);
-    expect(labels[2], 1000.0);
-    expect(labels[3], 2000.0);
+    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
+    labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 4);
+    expect(labelInfoList[0].dataValue, -1000.0);
+    expect(labelInfoList[1].dataValue, 0.0);
+    expect(labelInfoList[2].dataValue, 1000.0);
+    expect(labelInfoList[3].dataValue, 2000.0);
 
     dataRows = [[-1000.0, 0.0, 1000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
-    labels = labelsGenerator. testTransformedLabelValues;
-    expect(labels.length, 3);
-    expect(labels[0], -1000.0);
-    expect(labels[1], 0.0);
-    expect(labels[2], 1000.0);
+    // todo-00-last-done : labels = labelsGenerator.testTransformedLabelValues;
+    labelInfoList = labelsGenerator.labelInfoList;
+    expect(labelInfoList.length, 3);
+    expect(labelInfoList[0].dataValue, -1000.0);
+    expect(labelInfoList[1].dataValue, 0.0);
+    expect(labelInfoList[2].dataValue, 1000.0);
 
   });
 
@@ -168,10 +174,11 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, C
   var mockNewModel = _constructMockNewModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends);
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(chartData: mockNewModel, isStacked: true,),
+    dataModel: mockNewModel,
+    dataRangeDependency: DataRangeDependency.dependentData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: options.yContainerOptions.valueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
-    dataModel: mockNewModel,
     isStacked: false,
     isAxisPixelsAndDisplayedValuesInSameDirection: false,
   );
@@ -235,6 +242,7 @@ void rangeTestCore(
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
       chartViewMaker: MockChartViewMaker(chartData: dataModel, isStacked: true,),
       dataModel: dataModel,
+      dataRangeDependency: DataRangeDependency.dependentData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
@@ -243,10 +251,13 @@ void rangeTestCore(
     );
 
 
-    expect(labelsGenerator.testTransformedLabelValues.length, expectedLabels.length);
-    for (int i = 0; i < labelsGenerator.testTransformedLabelValues.length; i++) {
+    // todo-00-last-done : expect(labelsGenerator.testTransformedLabelValues.length, expectedLabels.length);
+    expect(labelsGenerator.labelInfoList.length, expectedLabels.length);
+    // todo-00-last-done : for (int i = 0; i < labelsGenerator.testTransformedLabelValues.length; i++) {
+    for (int i = 0; i < labelsGenerator.labelInfoList.length; i++) {
       expect(
-        labelsGenerator.testTransformedLabelValues[i],
+        // todo-00-last-done : labelsGenerator.testTransformedLabelValues[i],
+        labelsGenerator.labelInfoList[i].dataValue,
         expectedLabels[i],
       );
     }

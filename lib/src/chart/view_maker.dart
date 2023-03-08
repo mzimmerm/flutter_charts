@@ -70,11 +70,12 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     //                         should be public, but the constructor of it private to the new_model.
     yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
+      dataModel: chartData,
+      dataRangeDependency: model.DataRangeDependency.dependentData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
       userLabels: chartData.yUserLabels,
-      dataModel: chartData,
       isStacked: isStacked,
       isAxisPixelsAndDisplayedValuesInSameDirection: false,
     );
@@ -82,11 +83,12 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
     // See comment in YContainer constructor
     xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
+      dataModel: chartData,
+      dataRangeDependency: model.DataRangeDependency.independentData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.xContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
       userLabels: chartData.xUserLabels,
-      dataModel: chartData,
       isStacked: isStacked,
       isAxisPixelsAndDisplayedValuesInSameDirection: true,
     );

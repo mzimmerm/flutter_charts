@@ -155,6 +155,8 @@ class Interval {
     return max - min;
   }
 
+  double get center => (max + min) / 2;
+
   @override
   String toString() {
     return 'Interval($min, $max)';
@@ -192,6 +194,15 @@ class LineSegment extends Interval {
     return LineSegment(min, max);
   }
 }
+
+
+/// Position in [LineSegment].
+enum LineSegmentPosition {
+  min,
+  center,
+  max,
+}
+
 
 /// Encapsulates the concept of linear transformations in 1D.
 ///

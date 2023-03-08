@@ -121,8 +121,8 @@ class LengthsPositionerProperties {
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.
 ///
-/// The [lengths] typically originate from [BoxLayouter.layoutSize]s of children of
-/// a parent [BoxLayouter] which creates this object - this is reflected in the adjective 'Layedout'
+/// The [lengths] typically originate from children [BoxLayouter.layoutSize]s of a parent [BoxLayouter]
+/// which creates this object - this is reflected in the adjective 'Layedout'
 /// in the name [LayedoutLengthsPositioner].
 ///
 /// The [lengthsPositionerProperties] specifies [Packing] and [Align] properties.
@@ -563,6 +563,7 @@ class PositionedLineSegments {
   /// Envelope of the layed out [lineSegments].
   ///
   /// This will become the [BoxLayouter.layoutSize] along the layout axis.
+  // todo-00-last-last : how is this actually used ?? Why is width 0.0?? It must work but how?
   ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
   /// Returns copy of this instance's [lineSegments] that are reversed and

@@ -1852,12 +1852,12 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     }
     // External ticks layouter is greedy along the main axis - MUST take full constraints along main axis direction.
     // Along main axis direction:
-    //   - the constraints are ALSO the pixel domain to which the ticks will be lextred!
+    //   - the constraints are ALSO the pixel domain to which the ticks will be lextr-ed!
     //   - the constraints will ALSO become the layout size! See [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
     //     for how the layoutSize is set
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
     // So, knowing the size to which to lextr, create the range to which the [externalTicksLayoutProvider]
-    //   will be lextered, apply the pixel domain on the [externalTicksLayoutProvider], and lextr the ticks to pixels.
+    //   will be lextr-ed, apply the pixel domain on the [externalTicksLayoutProvider], and lextr the ticks to pixels.
     var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
     mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextr(tickPixelsDomainFromOwnerConstraints);
 

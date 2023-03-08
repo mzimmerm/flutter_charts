@@ -281,7 +281,7 @@ class DataContainerOptions {
   /// The request to start Y axis and it's labels at data minimum.
   ///
   /// When [extendAxisToOriginRequested] is set to [true], the Y axis and it's labels tries to start at the minimum
-  /// Y data value (transformed with the [yTransform] method).
+  /// Y data value (after transforming it with the [yTransform] method).
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
   /// in several conditions:
@@ -313,6 +313,11 @@ class LabelCommonOptions {
   final ui.TextDirection labelTextDirection;
   final ui.TextAlign labelTextAlign;
   final double labelTextScaleFactor;
+  /// Estimated width of a horizontally oriented label.
+  final double estimatedHorizontalLabelWidth;
+
+  /// Estimated height of a horizontally oriented label.
+  final double estimatedHorizontalLabelHeight;
 
   const LabelCommonOptions({
     // this.labelFontSize = 14.0,
@@ -320,6 +325,8 @@ class LabelCommonOptions {
     this.labelTextDirection = ui.TextDirection.ltr,
     this.labelTextAlign = ui.TextAlign.center,
     this.labelTextScaleFactor = 1.0,
+    this.estimatedHorizontalLabelWidth = 50.0,
+    this.estimatedHorizontalLabelHeight = 12.0,
   });
 
   /// Text style for all labels (X labels, Y labels, legend labels).

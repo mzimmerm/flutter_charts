@@ -6,9 +6,11 @@ import '../chart/model/data_model_new.dart';
 import '../chart/container.dart';
 import '../chart/options.dart';
 import '../chart/view_maker.dart';
+import '../chart/layouter_one_dimensional.dart'
+    show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 
 import 'util_dart.dart' as util_dart;
-import 'util_labels.dart' as util_labels;
+// import 'util_labels.dart' as util_labels;
 
 // todo-doc-01 documentation fix, this is old
 /// Generates label values from data values, and allows label manipulation: transform, format, extrapolate to axis pixels.
@@ -54,6 +56,7 @@ class DataRangeLabelInfosGenerator {
   DataRangeLabelInfosGenerator({
     required this.chartViewMaker, // todo-00-last : added as a temporary to test old vs new
     required NewModel dataModel,
+    required this.dataRangeDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
@@ -65,6 +68,7 @@ class DataRangeLabelInfosGenerator {
         _inverseTransform = inverseTransform
   {
     util_dart.Interval dataEnvelope;
+    List<double> transformedLabelValues;
 
     // Finds the [dataRange] interval for data values
     //   (which may be an envelop around values, for example if we want to always start at 0),
@@ -72,26 +76,50 @@ class DataRangeLabelInfosGenerator {
     // Both local [dataEnvelope] and member [dataRange]
     //   are **not-extrapolated && transformed** data from [NewModelPoint].
     if (userLabels != null) {
-      dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
-      // todo-00-last-last : on axis with user labels, in the new layout, we cannot use dataEnvelope. We have to get pixel values instead. Somehow, the asExternalTicksLayoutProvider must work differently - we probably must delay dataEnvelope, and once pixels are known, dataEnvelope must be same as pixel envelope.
-      //                     OR MAYBE dataEnvelope IS IRRELEVANT, CAN BE SET TO ANYTHING, AND THE SCALING SCALES IT
-      //                     MAYBE IT IS TIME TO INTRODUCE PADDING OPTIONS: VERT_PADDING FOR ESTIMATED_MINIMUM-OF-Y-LABEL-HEIGHT / 2, HORIZ_PADDING FOR ESTIMATED_MINIMUM-OF-X-LABEL-WIDTH,
-      //                     I THINK COMBINATION OF THE 2 IS THE ONLY THING THAT IS NEEDED.
-      _transformedLabelValues = util_labels.evenlySpacedValuesIn(interval: dataEnvelope, pointsCount: userLabels.length);
+      switch(dataRangeDependency) {
+        case DataRangeDependency.independentData:
+          // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
+          //   the interval is, once the pixels range on the axis is available,
+          //   it will be lextr-ed to the pixel range.
+          // We COULD return the same dataValuesInterval(isStacked: isStacked) but
+          //   as that is for dependent data, it would be confusing.
+          dataEnvelope = const util_dart.Interval(0.0, 100.0);
+          transformedLabelValues = evenlySpacedValuesIn(
+            interval: dataEnvelope,
+            pointsCount: userLabels.length,
+            lineSegmentPosition: util_dart.LineSegmentPosition.center,
+          );
+          break;
+        case DataRangeDependency.dependentData:
+          // This REALLY only needed for legacy to work
+          // On dependent (Y) axis, with user labels, we have to use actual data values,
+          //   because all scaling uses actual data values
+          dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
+          double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
+          transformedLabelValues =
+              List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
+          break;
+      }
     } else {
-      dataEnvelope = dataModel.extendedDataValuesInterval(extendAxisToOrigin: extendAxisToOrigin, isStacked: isStacked);
-      _transformedLabelValues = util_labels.generateValuesForLabelsIn(interval: dataEnvelope, extendAxisToOrigin: extendAxisToOrigin);
+      dataEnvelope = dataModel.extendedDataValuesInterval(
+        extendAxisToOrigin: extendAxisToOrigin,
+        isStacked: isStacked,
+      );
+      transformedLabelValues = generateValuesForLabelsIn(
+        interval: dataEnvelope,
+        extendAxisToOrigin: extendAxisToOrigin,
+      );
     }
 
     // Store the merged interval of values and label envelope for [AxisLabelInfos] creation
     // that can be created immediately after by invoking [createAxisLabelInfos].
     dataRange = util_dart.Interval(
-      _transformedLabelValues.reduce(math.min),
-      _transformedLabelValues.reduce(math.max),
+      transformedLabelValues.reduce(math.min),
+      transformedLabelValues.reduce(math.max),
     ).merge(dataEnvelope);
 
     // Format and extrapolate labels from the [_labelPositions] local to the [_labelInfos] member.
-    List<AxisLabelInfo> labelInfos = _transformedLabelValues
+    List<AxisLabelInfo> labelInfos = transformedLabelValues
         .map((transformedLabelValue) =>
         AxisLabelInfo(
           dataValue: transformedLabelValue,
@@ -108,6 +136,8 @@ class DataRangeLabelInfosGenerator {
 
   final ChartViewMaker chartViewMaker; // todo-00-last : added as a temporary to test old vs new
 
+  /// Describes if this data range is for dependent or independent data.
+  final DataRangeDependency dataRangeDependency;
 
   /// Describes labels - their values and String values.
   /// Important note: [_AxisLabelInfos] should NOT be part of model,
@@ -139,10 +169,10 @@ class DataRangeLabelInfosGenerator {
 
   /// [_transformedLabelValues] keep the transformed, non-extrapolated data values at which labels are shown.
   // todo-00!!! Remove this member and getter entirely. Must address tests first, easy
-  late final List<double> _transformedLabelValues;
+  // todo-00-last-done : late final List<double> _transformedLabelValues;
 
   /// Public getter is for tests only!
-  List<double> get testTransformedLabelValues => _transformedLabelValues;
+  // todo-00-last-done : List<double> get testTransformedLabelValues => _transformedLabelValues;
 
 
   // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
@@ -205,7 +235,7 @@ class DataRangeLabelInfosGenerator {
     required ExternalTickAtPosition externalTickAtPosition,
   }) {
     // Return [ExternalTicksLayoutProvider] and provide ticks.
-    // The ticks must be lextered to pixels, once ticksPixelsDomain is known.
+    // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
     return ExternalTicksLayoutProvider(
       tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
@@ -214,6 +244,165 @@ class DataRangeLabelInfosGenerator {
       externalTickAtPosition: externalTickAtPosition,
     );
   }
+
+
+
+// todo-00-last-last-done : all the way to end of class, moved here from top funtions in util_labels.dart
+  /// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
+  /// ending at [interval.max], and returns the positions list.
+  ///
+  /// The positions include both ends, unless [pointsCount] is one, then the positions at ends
+  /// are not included, list with center position is returned.
+  ///
+  /// As this method simply divides the available interval into [pointsCount],
+  /// it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
+  /// (which it would be even for logarithmic scale). But usually the interval represents
+  /// scaled, non-transformed values.
+  /// todo-00-last-last-document
+// todo-00-last-last-progress : use the existing layouter to lay out lengths in interval. Add option to return left points, center points, or right points of lengths
+  List<double> evenlySpacedValuesIn({
+    required util_dart.Interval interval,
+    required int pointsCount, // todo-00-last-last rename to labelCount which is what it is. Also move this method to DataRangeLabelInfosGenerator
+    required util_dart.LineSegmentPosition lineSegmentPosition,
+  }) {
+    if (pointsCount < 0) {
+      throw StateError('Cannot distribute negative number of positions');
+    }
+
+    // Use existing positioner to find segments for labels
+    PositionedLineSegments positionedSegments = LayedoutLengthsPositioner(
+      lengths: List.generate(pointsCount, (index) => interval.length / pointsCount),
+      lengthsPositionerProperties: const LengthsPositionerProperties(
+        align: Align.start,
+        packing: Packing.tight,
+      ),
+      lengthsConstraint: interval.length,
+    ).positionLengths();
+
+    switch(lineSegmentPosition) {
+      case util_dart.LineSegmentPosition.min:
+        return positionedSegments.lineSegments.map((lineSegment) => lineSegment.min).toList();
+      case util_dart.LineSegmentPosition.center:
+        return positionedSegments.lineSegments.map((lineSegment) => lineSegment.center).toList();
+      case util_dart.LineSegmentPosition.max:
+        return positionedSegments.lineSegments.map((lineSegment) => lineSegment.max).toList();
+    }
+  }
+
+/* todo-00-last-done
+List<double> evenlySpacedValuesIn({
+  required util_dart.Interval interval,
+  required int pointsCount,
+}) {
+  if (pointsCount <= 0) {
+    throw StateError('Cannot distribute 0 or negative number of positions');
+  }
+
+  if (pointsCount == 1) {
+    return [(interval.max - interval.min) / 2.0];
+  }
+  double dataStepHeight = (interval.max - interval.min) / (pointsCount - 1);
+
+  // Evenly distribute labels in [interval]
+  List<double> pointsPositions = List.empty(growable: true);
+  for (int yIndex = 0; yIndex < pointsCount; yIndex++) {
+    pointsPositions.add(interval.min + dataStepHeight * yIndex);
+  }
+  return pointsPositions;
+}
+*/
+
+  /// Automatically generates values (anywhere from zero to nine values) intended to
+  /// be displayed as label in [interval], which represents a domain
+  ///
+  /// More precisely, all generated label values are inside, or slightly protruding from,
+  /// the passed [interval], which was created as tight envelope of all data values.
+  ///
+  /// As the values are generated from [interval], the values us whatever is the
+  /// [interval]'s values scale and transform. Likely, the [interval] represents
+  /// transformed but non-extrapolated values.
+  ///
+  /// The label values power is the same as the greatest power
+  /// of the passed number [interval.end], when expanded to 10 based power series.
+  ///
+  /// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
+  ///
+  /// Examples:
+  ///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
+  ///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
+  ///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
+  ///
+  /// Further notes and related topics:
+  ///   - Labels are encapsulated in the [DataRangeLabelInfosGenerator],
+  ///     which creates [AxisLabelInfo]s for all generated labels.
+  ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
+  ///
+  List<double> generateValuesForLabelsIn({
+    required util_dart.Interval interval,
+    required bool extendAxisToOrigin,
+  }) {
+    var polyMin = util_dart.Poly(from: interval.min);
+    var polyMax = util_dart.Poly(from: interval.max);
+
+    int powerMax = polyMax.maxPower;
+    int coeffMax = polyMax.coefficientAtMaxPower;
+    int signMax = polyMax.signum;
+
+    // using Min makes sense if one or both (min, max) are negative
+    int powerMin = polyMin.maxPower;
+    int coeffMin = polyMin.coefficientAtMaxPower;
+    int signMin = polyMin.signum;
+
+    List<double> labels = [];
+    int power = math.max(powerMin, powerMax);
+
+    if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
+      // both negative or positive
+      if (signMax <= 0) {
+        double startCoeff = 1.0 * signMin * coeffMin;
+        int endCoeff = 0;
+        if (!extendAxisToOrigin) {
+          endCoeff = signMax * coeffMax;
+        }
+        for (double l = startCoeff; l <= endCoeff; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      } else {
+        // signMax >= 0
+        double startCoeff = 1.0 * 0;
+        int endCoeff = signMax * coeffMax;
+        if (!extendAxisToOrigin) {
+          startCoeff = 1.0 * coeffMin;
+        }
+        for (double l = startCoeff; l <= endCoeff; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      }
+    } else {
+      // min is negative, max is positive - need added logic
+      if (powerMax == powerMin) {
+        for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
+          labels.add(l * math.pow(10, power));
+        }
+      } else if (powerMax < powerMin) {
+        for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
+          // just one over 0
+          labels.add(l * math.pow(10, power));
+        }
+      } else if (powerMax > powerMin) {
+        for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
+          // just one under 0
+          labels.add(l * math.pow(10, power));
+        }
+      } else {
+        throw Exception('Unexpected power: $powerMin, $powerMax ');
+      }
+    }
+
+    // Check if positions are fully inside interval - probably not, which is fine
+    return labels;
+  }
+
 }
 
 /// The [AxisLabelInfo] is a holder for one label,
@@ -362,124 +551,3 @@ util_dart.Interval extendToOrigin(util_dart.Interval interval, bool extendAxisTo
   return interval;
 }
 
-/// Evenly places [pointsCount] positions in [interval], starting at [interval.min],
-/// ending at [interval.max], and returns the positions list.
-///
-/// The positions include both ends, unless [pointsCount] is one, then the positions at ends
-/// are not included, list with center position is returned.
-///
-/// As this method simply divides the available interval into [pointsCount],
-/// it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
-/// (which it would be even for logarithmic scale). But usually the interval represents
-/// scaled, non-transformed values.
-List<double> evenlySpacedValuesIn({
-  required util_dart.Interval interval,
-  required int pointsCount,
-}) {
-  if (pointsCount <= 0) {
-    throw StateError('Cannot distribute 0 or negative number of positions');
-  }
-
-  if (pointsCount == 1) {
-    return [(interval.max - interval.min) / 2.0];
-  }
-  double dataStepHeight = (interval.max - interval.min) / (pointsCount - 1);
-
-  // Evenly distribute labels in [interval]
-  List<double> pointsPositions = List.empty(growable: true);
-  for (int yIndex = 0; yIndex < pointsCount; yIndex++) {
-    pointsPositions.add(interval.min + dataStepHeight * yIndex);
-  }
-  return pointsPositions;
-}
-
-/// Automatically generates values (anywhere from zero to nine values) intended to
-/// be displayed as label in [interval], which represents a domain
-///
-/// More precisely, all generated label values are inside, or slightly protruding from,
-/// the passed [interval], which was created as tight envelope of all data values.
-///
-/// As the values are generated from [interval], the values us whatever is the
-/// [interval]'s values scale and transform. Likely, the [interval] represents
-/// transformed but non-extrapolated values.
-///
-/// The label values power is the same as the greatest power
-/// of the passed number [interval.end], when expanded to 10 based power series.
-///
-/// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
-///
-/// Examples:
-///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
-///   2. [util_dart.Interval] is <0, 299> then labels=[0, 100, 200]
-///   3. [util_dart.Interval] is <0, 999> then labels=[0, 100, 200 ... 900]
-///
-/// Further notes and related topics:
-///   - Labels are encapsulated in the [DataRangeLabelInfosGenerator],
-///     which creates [AxisLabelInfo]s for all generated labels.
-///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
-///
-List<double> generateValuesForLabelsIn({
-  required util_dart.Interval interval,
-  required bool extendAxisToOrigin,
-}) {
-  var polyMin = util_dart.Poly(from: interval.min);
-  var polyMax = util_dart.Poly(from: interval.max);
-
-  int powerMax = polyMax.maxPower;
-  int coeffMax = polyMax.coefficientAtMaxPower;
-  int signMax = polyMax.signum;
-
-  // using Min makes sense if one or both (min, max) are negative
-  int powerMin = polyMin.maxPower;
-  int coeffMin = polyMin.coefficientAtMaxPower;
-  int signMin = polyMin.signum;
-
-  List<double> labels = [];
-  int power = math.max(powerMin, powerMax);
-
-  if (signMax <= 0 && signMin <= 0 || signMax >= 0 && signMin >= 0) {
-    // both negative or positive
-    if (signMax <= 0) {
-      double startCoeff = 1.0 * signMin * coeffMin;
-      int endCoeff = 0;
-      if (!extendAxisToOrigin) {
-        endCoeff = signMax * coeffMax;
-      }
-      for (double l = startCoeff; l <= endCoeff; l++) {
-        labels.add(l * math.pow(10, power));
-      }
-    } else {
-      // signMax >= 0
-      double startCoeff = 1.0 * 0;
-      int endCoeff = signMax * coeffMax;
-      if (!extendAxisToOrigin) {
-        startCoeff = 1.0 * coeffMin;
-      }
-      for (double l = startCoeff; l <= endCoeff; l++) {
-        labels.add(l * math.pow(10, power));
-      }
-    }
-  } else {
-    // min is negative, max is positive - need added logic
-    if (powerMax == powerMin) {
-      for (double l = 1.0 * signMin * coeffMin; l <= signMax * coeffMax; l++) {
-        labels.add(l * math.pow(10, power));
-      }
-    } else if (powerMax < powerMin) {
-      for (double l = 1.0 * signMin * coeffMin; l <= 1; l++) {
-        // just one over 0
-        labels.add(l * math.pow(10, power));
-      }
-    } else if (powerMax > powerMin) {
-      for (double l = 1.0 * signMin * 1; l <= signMax * coeffMax; l++) {
-        // just one under 0
-        labels.add(l * math.pow(10, power));
-      }
-    } else {
-      throw Exception('Unexpected power: $powerMin, $powerMax ');
-    }
-  }
-
-  // Check if positions are fully inside interval - probably not, which is fine
-  return labels;
-}
