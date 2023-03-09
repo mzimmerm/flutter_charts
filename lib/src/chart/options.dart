@@ -355,7 +355,6 @@ class LabelCommonOptions {
 */
 }
 
-// todo-00-last-last adding this class
 /// Groups methods that define padding across containers.
 ///
 /// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding

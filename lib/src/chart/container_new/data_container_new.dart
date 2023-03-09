@@ -148,28 +148,29 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    // todo-00-last : This [layout] method we are in, is invoked BEFORE layoutSize of the owner DataContainer
-    //                     is known (obviously). But we ASSUME that the owner DataContainer will use all it's constraints,
-    //                     so that are the pixels we lextr to.
-    //          Also: should we be accessing dataContainer here?
-    // todo-00-last-last : this is likely the problem when Padder is used to pad DataContainer.
-    //                  WE NEED TO USE A KIND OF 'DATA-USED-CONSTRAINTS, BOTH ON NewYContainer and NewDataContainer.
-    //             BUT HOW TO DO THIS ??????????????????
+    // todo-00-last-00 : Using the ownerDataContainerConstraints, and the padGroup this deep is VERY SUSPECT.
+    //                   WE NEED TO USE A KIND OF 'CONSTRAINTS-TO-WHICH-DATA-EXPAND,
+    //                   ON NewXContainer, NewYContainer and NewDataContainer.
+    //                   BASICALLY WE NEED TO KNOW THE EXACT CONTAINER IN THE HIERARCHY,
+    //                   TO WHICH DATA WILL EXPAND, SO WE CAN ENSURE THEY ARE THE SAME SIZE
+    //                   BUT HOW TO DO THIS ??? PERHAPS WE NEED AN ARTIFICIAL MARKER ON ALL LAYOUTERS, WHICH
+    //                   IF SET, RUN A HOOK IN THEIR LAYOUT - ONCE CONSTRAINT IS SET ON SUCH CONTAINER,
+    //                   IT WILL SET A SPECIAL MEMBER ON ROOT FOR DATA CONTAINER DATA AVAILABLE HEIGHT AND WIDTH,
+    //                   WHICH ALSO DRIVE X AND YCONTAINER DATA AVAILABLE HEIGHT AND WIDTH ???
+    //
+    //                   ANOTHER OPTION IS TO USE THE EXTERNAL TICKS **RANGE** FOR X AND Y; AND SAME FOR DATA CONTAINER
+    //                   BUT AGAin, details ???
     var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
 
-    var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions); // todo-00-last-last-last : added
+    var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
 
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      /* todo : cannot ask for axisPixelsRange : Check in debugger how new layoutSize compares to axisPixelsRange
-      toPixelsMin: yContainer.axisPixelsRange.min,
-      toPixelsMax: yContainer.axisPixelsRange.max,
-      toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
-      toPixelsMax: yContainer.layoutSize.height, //  600.0, // yContainer.axisPixelsRange.max,
-      */
-      toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(), // todo-00-last-last-last : was : ownerDataContainerConstraints.size.height,
-      toPixelsMin: padGroup.heightPadTopOfYAndData(), // todo-00-last-last-last : was : 0.0,
+      // HERE WE USE THE KNOWLEDGE THAT THE TOP OF DATA CONTAINER IS A PADDER WITH THIS EXACT PADDING.
+      // SEE COMMENTS ABOVE.
+      toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
+      toPixelsMin: padGroup.heightPadTopOfYAndData(),
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
