@@ -6,7 +6,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import '../container_layouter_base.dart';
 import '../container_edge_padding.dart';
 
-import '../container.dart' as container;
+import '../../coded_layout/chart/container.dart' as container;
 import '../label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
@@ -72,6 +72,7 @@ import 'container_common_new.dart' as container_common_new;
   Interval get axisPixelsRange => throw UnimplementedError();
   @override
   set axisPixelsRange(Interval _) => throw UnimplementedError();
+
   @override
   Size get lateReLayoutSize => throw UnimplementedError();
   @override

@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Rect, Offset, Paint, Color;
 // base libraries
 import '../presenter.dart';
 import '../container.dart';
-import '../view_maker.dart';
+import '../../../chart/view_maker.dart';
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],

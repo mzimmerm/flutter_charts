@@ -1,10 +1,11 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 // this level
-import 'package:flutter_charts/flutter_charts.dart';
 
-import 'container_layouter_base.dart' show LayoutableBox;
-import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
+import '../../chart/container_layouter_base.dart' show LayoutableBox;
+import '../../chart/container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
+import '../../chart/view_maker.dart';
+
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineContainer extends container_common_new.ChartAreaContainer {

@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Offset, Paint, Color;
 
 // base libraries
 import '../container.dart';
-import '../view_maker.dart';
+import '../../../chart/view_maker.dart';
 import '../line_container.dart';
 import '../presenter.dart'; // OLD
 

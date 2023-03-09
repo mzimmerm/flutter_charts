@@ -5,27 +5,27 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
-import 'container_new/container_common_new.dart';
-import 'container_new/legend_container_new.dart';
-import 'model/data_model_new.dart';
-import 'view_maker.dart';
-import 'painter.dart';
-import 'label_container.dart';
-import 'container_layouter_base.dart'
+import '../../chart/container_new/container_common_new.dart';
+import '../../chart/container_new/legend_container_new.dart';
+import '../../chart/model/data_model_new.dart';
+import '../../chart/view_maker.dart';
+import '../../chart/painter.dart';
+import '../../chart/label_container.dart';
+import '../../chart/container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     LayoutableBox;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
 import 'presenter.dart';
-import 'options.dart';
-import '../util/util_dart.dart';
-import '../util/util_labels.dart';
-import '../util/collection.dart' as custom_collection show CustomList;
+import '../../chart/options.dart';
+import '../../util/util_dart.dart';
+import '../../util/util_labels.dart';
+import '../../util/collection.dart' as custom_collection show CustomList;
 //import '../container/container_key.dart';
-import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 //import '../chart/layouter_one_dimensional.dart';
-import 'iterative_layout_strategy.dart' as strategy;
+import '../../chart/iterative_layout_strategy.dart' as strategy;
 
 // extension libraries
 import 'line/presenter.dart' as line_presenters;
@@ -311,7 +311,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
 }
 
 /// Common base class for containers of axes with their labels - [XContainer] and [YContainer].
-abstract class AxisContainer extends ChartAreaContainer {
+abstract class AxisContainer extends ChartAreaContainer with PixelRangeProvider {
   AxisContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
@@ -337,10 +337,36 @@ abstract class AxisContainer extends ChartAreaContainer {
   ///
   /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
   ///                 this is set may be called multiple times.
-  late Interval axisPixelsRange;
+  // todo-00-last-last : moced to mixin : late Interval axisPixelsRange;
 
 }
 
+// todo-00-last-last : added this mixin
+mixin PixelRangeProvider on ChartAreaContainer {
+
+  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainer].
+  ///
+  /// The [axisPixelsRange] has several important properties and roles:
+  ///   1. It contains the pixels of this [AxisContainer]
+  ///      available to the axis. Because this [AxisContainer] is generally bigger than the axis pixels,
+  ///      this range generally does NOT generally start at zero and end below the pixels available
+  ///      to the [AxisContainer], as follows:
+  ///      - For the [YContainer], the [axisPixelsRange]  start after a half-label height is excluded on the top,
+  ///        and a vertical tick height is excluded on the bottom.
+  ///      - For the [XContainer], the [axisPixelsRange] is currently UNUSED.
+  ///
+  ///  2. The difference between [axisPixelsRange] min and max is the height constraint
+  ///     on [NewDataContainer]!
+  ///
+  ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
+  ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
+  ///
+  /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
+  ///                 this is set may be called multiple times.
+  late Interval axisPixelsRange;
+}
+
+/* todo-00-last-last : moved to container__common_new/container_new.dart
 /// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
 /// (actually currently the [ChartAreaContainer].
 ///
@@ -361,6 +387,7 @@ abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implemen
     _labelLayoutStrategy.onContainer(this);
   }
 }
+*/
 
 /// Container of the Y axis labels.
 ///
@@ -542,7 +569,7 @@ class YContainer extends AxisContainer {
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
-class XContainer extends AdjustableLabelsChartAreaContainer {
+class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
 
   /// Constructs the container that holds X labels.
   ///
@@ -1076,6 +1103,7 @@ abstract class DataContainer extends ChartAreaContainer {
 }
 
 
+/* todo-00-last-last moved to container_common_new.dart
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
 // todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
@@ -1086,6 +1114,7 @@ abstract class DataContainer extends ChartAreaContainer {
 abstract class AdjustableLabels {
   bool labelsOverlap();
 }
+*/
 
 
 /// Provides the data area container for the bar chart.

@@ -1,10 +1,10 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
-import 'package:flutter_charts/src/chart/presenter.dart';
+import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
 
 import 'container_common_new.dart' as container_common_new;
-import '../container.dart' as container;
+import '../../coded_layout/chart/container.dart' as container;
 import '../container_layouter_base.dart';
 import '../model/data_model_new.dart' as model;
 import '../view_maker.dart';

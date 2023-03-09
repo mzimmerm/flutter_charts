@@ -7,6 +7,7 @@ import '../view_maker.dart' as view_maker;
 import '../../container/container_key.dart';
 //import '../../util/util_dart.dart';
 //import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
+import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
 
 /// Base class which manages, lays out, offsets, and paints
 /// all [container_base.BoxContainer] derived classes used on charts.
@@ -62,4 +63,41 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
     buildAndReplaceChildrenDefault();
   }
 }
+
+
+//  todo-00-last-last : moved here from coded_layout/chart/container.dart
+/// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
+/// (actually currently the [ChartAreaContainer].
+///
+/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
+//  todo-00-last-last : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
+abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
+  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
+
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+
+  AdjustableLabelsChartAreaContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
+      strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
+        super(
+        chartViewMaker: chartViewMaker,
+      ) {
+    _labelLayoutStrategy.onContainer(this);
+  }
+}
+
+// todo-00-last-last moved from old container.dart
+/// A marker of container with adjustable contents,
+/// such as labels that can be skipped.
+// todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
+//          in AdjustableLabelsChartAreaContainer
+//          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
+//          But Dart bug #25742 does not allow mixins with named parameters.
+
+abstract class AdjustableLabels {
+  bool labelsOverlap();
+}
+
 

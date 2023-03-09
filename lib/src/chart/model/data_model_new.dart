@@ -1,10 +1,10 @@
-import 'dart:math' as math show min, max;
+import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart' as logger;
+import 'package:flutter/material.dart' as material show Colors;
 
 // this level or equivalent
-import '../data_model.dart' show dataRowsDefaultColors;
-import '../container.dart';
+import '../../coded_layout/chart/container.dart';
 import '../container_layouter_base.dart';
 
 import '../../util/util_labels.dart' as util_labels;
@@ -427,3 +427,40 @@ enum DataRangeDependency {
   dependentData,
 }
 
+// -------------------- Functions
+
+// To initialize default colors with dynamic list that allows the colors NOT null, initialization must be done in
+//  initializer list (it is too late in constructor, by then, the colors list would have to be NULLABLE).
+/// Sets up colors for legends, first several explicitly, rest randomly.
+///
+/// This is used if user does not set colors.
+List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
+  List<ui.Color> rowsColors = List.empty(growable: true);
+
+  if (dataRowsCount >= 1) {
+    rowsColors.add(material.Colors.yellow);
+  }
+  if (dataRowsCount >= 2) {
+    rowsColors.add(material.Colors.green);
+  }
+  if (dataRowsCount >= 3) {
+    rowsColors.add(material.Colors.blue);
+  }
+  if (dataRowsCount >= 4) {
+    rowsColors.add(material.Colors.black);
+  }
+  if (dataRowsCount >= 5) {
+    rowsColors.add(material.Colors.grey);
+  }
+  if (dataRowsCount >= 6) {
+    rowsColors.add(material.Colors.orange);
+  }
+  if (dataRowsCount > 6) {
+    for (int i = 3; i < dataRowsCount; i++) {
+      int colorHex = math.Random().nextInt(0xFFFFFF);
+      int opacityHex = 0xFF;
+      rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));
+    }
+  }
+  return rowsColors;
+}

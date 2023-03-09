@@ -149,8 +149,8 @@ export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
 export 'src/util/util_labels.dart';
 
-export 'src/chart/data_model.dart';
-export 'src/chart/container.dart';
+export 'src/coded_layout/chart/data_model.dart';
+export 'src/coded_layout/chart/container.dart';
 export 'src/chart/view_maker.dart';
 export 'src/chart/container_new/data_container_new.dart';
 
@@ -161,14 +161,14 @@ export 'src/chart/options.dart';
 
 export 'src/chart/line/chart.dart';
 export 'src/chart/line/painter.dart';
-export 'src/chart/line/container.dart';
+export 'src/coded_layout/chart/line/container.dart';
 export 'src/chart/line/options.dart';
 export 'src/chart/line/view_maker.dart';
 export 'src/chart/line/container_new.dart';
 
 export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
-export 'src/chart/bar/container.dart';
+export 'src/coded_layout/chart/bar/container.dart';
 export 'src/chart/bar/options.dart';
 export 'src/chart/bar/view_maker.dart';
 export 'src/chart/bar/container_new.dart';

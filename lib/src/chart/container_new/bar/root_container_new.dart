@@ -6,7 +6,7 @@ import '../legend_container_new.dart';
 import '../../model/data_model_new.dart';
 import '../../view_maker.dart';
 
-import '../../bar/container.dart' as old_bar_container;
+import '../../../coded_layout/chart/bar/container.dart' as old_bar_container;
 
 import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;

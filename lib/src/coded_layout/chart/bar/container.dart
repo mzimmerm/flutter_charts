@@ -1,11 +1,11 @@
 // base libraries
 import '../container.dart';
-import '../container_new/legend_container_new.dart';
-import '../model/data_model_new.dart';
-import '../view_maker.dart';
+import '../../../chart/container_new/legend_container_new.dart';
+import '../../../chart/model/data_model_new.dart';
+import '../../../chart/view_maker.dart';
 
-import '../options.dart';
-import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import '../../../chart/options.dart';
+import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
 // import 'data_container_new.dart';

@@ -2,9 +2,9 @@ import 'dart:ui' as ui show Paint, PaintingStyle;
 
 // this level or equivalent
 import 'container.dart';
-import 'view_maker.dart';
-import 'options.dart';
-import '../util/collection.dart' as custom_collection show CustomList;
+import '../../chart/view_maker.dart';
+import '../../chart/options.dart';
+import '../../util/collection.dart' as custom_collection show CustomList;
 
 // todo-1 refactor - can this be a behavior?
 ui.Paint gridLinesPaint(ChartOptions options) {

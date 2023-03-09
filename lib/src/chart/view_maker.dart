@@ -6,7 +6,7 @@ import 'package:logger/logger.dart' as logger;
 // import 'dart:developer' as dart_developer;
 
 // this level or equivalent
-import 'container.dart' as container;
+import '../coded_layout/chart/container.dart' as container;
 import 'container_new/data_container_new.dart' as data_container_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
 import 'container_new/axis_container_new.dart' as axis_container_new;
@@ -14,7 +14,7 @@ import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
 import '../util/util_labels.dart' as util_labels;
-import 'presenter.dart' as presenter; // OLD
+import '../coded_layout/chart/presenter.dart' as presenter; // OLD
 
 import 'options.dart' as options;
 import '../morphic/rendering/constraints.dart' as constraints;
