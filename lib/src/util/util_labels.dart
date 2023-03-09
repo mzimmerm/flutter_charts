@@ -84,7 +84,7 @@ class DataRangeLabelInfosGenerator {
           // We COULD return the same dataValuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
           dataEnvelope = const util_dart.Interval(0.0, 100.0);
-          transformedLabelValues = placeLabelPointsInInterval(
+          transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
             pointPositionInSegment: util_dart.LineSegmentPosition.center,
@@ -105,7 +105,7 @@ class DataRangeLabelInfosGenerator {
         extendAxisToOrigin: extendAxisToOrigin,
         isStacked: isStacked,
       );
-      transformedLabelValues = generateValuesForLabelsIn(
+      transformedLabelValues = _generateValuesForLabelsIn(
         interval: dataEnvelope,
         extendAxisToOrigin: extendAxisToOrigin,
       );
@@ -270,7 +270,7 @@ class DataRangeLabelInfosGenerator {
   ///       it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
   ///       (which it would be even for logarithmic scale). The interval represents transformed (ususally identity),
   ///       non-lextr-ed values.
-  List<double> placeLabelPointsInInterval({
+  List<double> _placeLabelPointsInInterval({
     required util_dart.Interval interval,
     required int labelPointsCount,
     required util_dart.LineSegmentPosition pointPositionInSegment,
@@ -324,7 +324,7 @@ class DataRangeLabelInfosGenerator {
   ///     which creates [AxisLabelInfo]s for all generated labels.
   ///   - The [axisYMin] and [axisYMax] define the top and the bottom of the Y axis in the canvas coordinate system.
   ///
-  List<double> generateValuesForLabelsIn({
+  List<double> _generateValuesForLabelsIn({
     required util_dart.Interval interval,
     required bool extendAxisToOrigin,
   }) {

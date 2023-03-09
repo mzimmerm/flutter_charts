@@ -55,7 +55,7 @@ tool/test/integration_test_validate_screenshots.sh ex72AnimalsBySeasonLegendIsRo
 tool/test/integration_test_validate_screenshots.sh ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight
 tool/test/integration_test_validate_screenshots.sh ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy
 tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
-# tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
+tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
 
 echo
 echo -------------------------------------

@@ -1,8 +1,9 @@
 import 'dart:ui' as ui show Color, TextDirection, TextAlign;
 import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
-import 'dart:math' as math show pi, log, ln10, pow;
+import 'dart:math' as math show pi, log, ln10, pow, max;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter_charts/src/chart/container_new/container_common_new.dart';
 
 // extension libraries
 import 'line/options.dart';
@@ -141,7 +142,7 @@ class XContainerOptions {
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
   /// Auto layout can increase these lengths, to fit labels below them.
-  final double xBottomMinTicksHeight;
+  final double xBottomTickHeight;
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
   final double xLabelsPadTB;
@@ -151,7 +152,7 @@ class XContainerOptions {
 
   const XContainerOptions({
     this.isXContainerShown = true,
-    this.xBottomMinTicksHeight = 6.0,
+    this.xBottomTickHeight = 6.0, // todo-00!!!!! move to DataContainerOptions and name dataBottomTickHeight
     this.xLabelsPadTB = 6.0,
     this.xLabelsPadLR = 40.0,
   });
@@ -188,14 +189,14 @@ class YContainerOptions {
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
   /// Auto layout can increase these lengths, to fit labels below them.
-  final double yLeftMinTicksWidth;
+  final double yLeftTickWidth; // todo-00!!!!! move to DataContainerOptions and name dataLeftTickWidth
 
   /// Length of the ticks around the grid rectangle.
   ///
   /// Each tick indicates a center of a label (X on the top and bottom,
   /// Y on the left and right)
   /// Auto layout can increase these lengths, to fit labels below them.
-  final double yRightMinTicksWidth;
+  final double yRightTickWidth; // todo-00!!!!! move to DataContainerOptions and name dataRightTickWidth
 
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
   final double yLabelsPadTB;
@@ -209,8 +210,8 @@ class YContainerOptions {
   const YContainerOptions({
     this.isYContainerShown = true,
     this.isYGridlinesShown = true,
-    this.yLeftMinTicksWidth = 6.0,
-    this.yRightMinTicksWidth = 6.0,
+    this.yLeftTickWidth = 6.0,
+    this.yRightTickWidth = 6.0,
     this.yLabelsPadTB = 40.0,
     this.yLabelsPadLR = 6.0,
     this.yLabelUnits = '',
@@ -325,7 +326,7 @@ class LabelCommonOptions {
     this.labelTextDirection = ui.TextDirection.ltr,
     this.labelTextAlign = ui.TextAlign.center,
     this.labelTextScaleFactor = 1.0,
-    this.estimatedHorizontalLabelWidth = 50.0,
+    this.estimatedHorizontalLabelWidth = 40.0,
     this.estimatedHorizontalLabelHeight = 12.0,
   });
 
@@ -352,6 +353,54 @@ class LabelCommonOptions {
         color: const ui.Color(0xFF757575),
       );
 */
+}
+
+// todo-00-last-last adding this class
+/// Groups methods that define padding across containers.
+///
+/// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding
+/// to correctly lineup.
+///
+/// For example, a padding on the bottom of a [YContainer] which provides space
+/// to the bottom half of the label, must be duplicated on the bottom of the [DataContainer]
+/// for the container contents to lineup in the vertical direction.
+///
+/// Note: Perhaps a better alternative would be to replace the padding with a table row
+///       with two cells below the  [YContainer] and the [DataContainer]. Worth investigating?
+@immutable
+class ChartPaddingGroup {
+
+  const ChartPaddingGroup({required this.fromChartOptions});
+
+  final ChartOptions fromChartOptions;
+
+  double heightPadBottomOfYAndData() {
+    return math.max(
+        fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,
+        fromChartOptions.xContainerOptions.xBottomTickHeight,
+    );
+  }
+
+  double heightPadTopOfYAndData() {
+    return math.max(
+      fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,
+      0.0, // No ticks on top of DataContainer - in the future there could be, if there is another X axis on top
+    );
+  }
+
+  double widthPadLeftOfXAndData() {
+    return math.max(
+      0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
+      fromChartOptions.yContainerOptions.yLeftTickWidth,
+    );
+  }
+
+  double widthPadRightOfXAndData() {
+    return math.max(
+      0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
+      fromChartOptions.yContainerOptions.yRightTickWidth,
+    );
+  }
 }
 
 enum DataRowsPaintingOrder {

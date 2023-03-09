@@ -469,7 +469,7 @@ class YContainer extends AxisContainer {
     double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
     double axisPixelsMax =
-        constraints.size.height - (chartViewMaker.chartOptions.xContainerOptions.xBottomMinTicksHeight);
+        constraints.size.height - (chartViewMaker.chartOptions.xContainerOptions.xBottomTickHeight);
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
@@ -632,7 +632,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
     axisPixelsRange = const Interval(0.0, 200.0);
 
     List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
-    double       yTicksWidth = options.yContainerOptions.yLeftMinTicksWidth + options.yContainerOptions.yRightMinTicksWidth;
+    double       yTicksWidth = options.yContainerOptions.yLeftTickWidth + options.yContainerOptions.yRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
     double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
     int numShownLabels    = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
@@ -653,7 +653,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer {
       ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
       double halfStepWidth = _xGridStep / 2;
       double atIndexOffset = _xGridStep * xIndex;
-      double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftMinTicksWidth;
+      double xTickX = halfStepWidth + atIndexOffset + options.yContainerOptions.yLeftTickWidth;
       double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
 
       xLabelContainer.parentOffsetTick = xTickX;

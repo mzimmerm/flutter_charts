@@ -2994,12 +2994,13 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 /// Layouter which lays out it's single child surrounded by [EdgePadding] within itself.
 ///
 /// [Padder] behaves as follows:
-///   - Decreases own constraint by Padding and provides it do a child
+///   - Decreases own constraint by [edgePadding and provides it do a child
 ///   - When child returns it's [layoutSize], this layouter sets it's size as that of the child, surrounded with
-///     the [EdgePadding] [edgePadding].
+///     the [edgePadding].
 ///
 /// This governs implementation:
-///   - [Padder] uses the default [layout].
+///   - [Padder] uses the default [BoxLayouter]'s [layout] except the
+///     [_layout_Post_NotLeaf_OffsetChildren] is from immediate superclass [PositioningBoxLayouter].
 ///   - [Padder] changes the constraint before sending it to it's child, so
 ///     the [_layout_Pre_DistributeConstraintsToImmediateChildren] must be overridden.
 ///   - [Padder] is positioning, so the [layout_Post_NotLeaf_PositionChildren] is overridden,

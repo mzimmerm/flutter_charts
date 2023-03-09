@@ -3,18 +3,18 @@ import 'dart:ui';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import '../container_layouter_base.dart';
+import '../container_edge_padding.dart';
 
 import '../container.dart' as container;
-import '../label_container.dart' as label_container;
-import '../container_layouter_base.dart' as container_base;
-import '../view_maker.dart' as view_maker;
-import '../iterative_layout_strategy.dart' as strategy;
+import '../label_container.dart';
+import '../view_maker.dart';
+import '../iterative_layout_strategy.dart';
+import '../options.dart';
+import '../../util/util_dart.dart';
 
 // this level libraries
-// import '../container_new/axis_container_new.dart' as container_new;
-import '../container_new/container_common_new.dart' as container_common_new;
+import 'container_common_new.dart' as container_common_new;
 
   class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainer {
     /// Constructs the container that holds X labels.
@@ -22,8 +22,8 @@ import '../container_new/container_common_new.dart' as container_common_new;
     /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
     /// all available horizontal space, and only use necessary vertical space.
     NewXContainer({
-      required view_maker.ChartViewMaker chartViewMaker,
-      strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+      required ChartViewMaker chartViewMaker,
+      LabelLayoutStrategy? xContainerLabelLayoutStrategy,
     }) : super(
       chartViewMaker: chartViewMaker,
     ) {
@@ -39,16 +39,16 @@ import '../container_new/container_common_new.dart' as container_common_new;
       );
 
       List<BoxContainer> children = [
-        container_base.Column(children: [
+        Column(children: [
           // todo-00-!!!!! add LineSegment for axis line
-          container_base.ExternalTicksRow(
+          ExternalTicksRow(
             mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
               externalTickAtPosition: ExternalTickAtPosition.childCenter,
             ),
             children: [
               for (var labelInfo in labelsGenerator.labelInfoList)
                 // todo-00-last : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
-                label_container.XLabelContainer(
+                XLabelContainer(
                   chartViewMaker: chartViewMaker,
                   label: labelInfo.formattedLabel,
                   labelTiltMatrix: vector_math.Matrix2.identity(),
@@ -90,7 +90,7 @@ import '../container_new/container_common_new.dart' as container_common_new;
 class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainer {
 
   NewYContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
@@ -106,29 +106,38 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
+    var padGroup = ChartPaddingGroup(fromChartOptions: options);
+
     List<BoxContainer> children = [
       // Row contains Column of labels and vertical LineSegment for Y axis
-      container_base.Row(children: [
-        // todo-00-!!!!! add LineSegment for axis line
-        container_base.ExternalTicksColumn(
-          mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
-            externalTickAtPosition: ExternalTickAtPosition.childCenter,
-          ),
-          children: [
-            for (var labelInfo in labelsGenerator.labelInfoList)
-              label_container.YLabelContainer(
-                chartViewMaker: chartViewMaker,
-                label: labelInfo.formattedLabel,
-                labelTiltMatrix: vector_math.Matrix2.identity(),
-                // No tilted labels in YContainer
-                labelStyle: labelStyle,
-                options: options,
-                labelInfo: labelInfo,
-                ownerAxisContainer: this,
-              )
-          ],
+
+      Padder(
+        edgePadding: EdgePadding.withSides(
+          top: padGroup.heightPadTopOfYAndData(),
+          bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-      ]),
+        child: Row(children: [
+          // todo-00-!!!!! add LineSegment for axis line
+          ExternalTicksColumn(
+            mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
+              externalTickAtPosition: ExternalTickAtPosition.childCenter,
+            ),
+            children: [
+              for (var labelInfo in labelsGenerator.labelInfoList)
+                YLabelContainer(
+                  chartViewMaker: chartViewMaker,
+                  label: labelInfo.formattedLabel,
+                  labelTiltMatrix: vector_math.Matrix2.identity(),
+                  // No tilted labels in YContainer
+                  labelStyle: labelStyle,
+                  options: options,
+                  labelInfo: labelInfo,
+                  ownerAxisContainer: this,
+                )
+            ],
+          ),
+        ]),
+      ),
     ];
 
     addChildren(children);

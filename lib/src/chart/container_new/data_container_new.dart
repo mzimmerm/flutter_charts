@@ -5,35 +5,47 @@ import 'package:flutter_charts/src/chart/presenter.dart';
 
 import 'container_common_new.dart' as container_common_new;
 import '../container.dart' as container;
-import '../container_layouter_base.dart' as container_base;
+import '../container_layouter_base.dart';
 import '../model/data_model_new.dart' as model;
-import '../view_maker.dart' as view_maker;
+import '../view_maker.dart';
+import '../container_edge_padding.dart';
 import '../layouter_one_dimensional.dart';
+import '../options.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
 class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainer {
 
   NewDataContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,
   );
 
+  // todo-00-last : why do we construct in buildAndReplaceChildre here, but in constuctor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
+
+    var options = chartViewMaker.chartOptions;
+    var padGroup = ChartPaddingGroup(fromChartOptions: options);
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
     // todo-00!! move this up when higher containers converted to new.
     addChildren([
-      container_base.Row(
-        crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-        children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-          chartViewMaker,
-          chartViewMaker.chartData.crossSeriesPointsList,
+      Padder(
+        edgePadding: EdgePadding.withSides(
+          top: padGroup.heightPadTopOfYAndData(),
+          bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-      )
+        child: Row(
+          crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+          children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
+            chartViewMaker,
+            chartViewMaker.chartData.crossSeriesPointsList,
+          ),
+        ),
+      ),
     ]);
   }
 
@@ -65,12 +77,12 @@ class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContai
   model.NewCrossSeriesPointsModel backingDataCrossSeriesPointsModel;
 
   NewCrossSeriesPointsContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required ChartViewMaker chartViewMaker,
     required this.backingDataCrossSeriesPointsModel,
-    List<container_base.BoxContainer>? children,
+    List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
-    required container_base.ConstraintsWeight constraintsWeight,
+    required ConstraintsWeight constraintsWeight,
   }) : super(
     chartViewMaker: chartViewMaker,
     children: children,
@@ -84,8 +96,8 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
 
   NewPointContainer({
     required this.newPointModel,
-    required view_maker.ChartViewMaker chartViewMaker,
-    List<container_base.BoxContainer>? children,
+    required ChartViewMaker chartViewMaker,
+    List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     chartViewMaker: chartViewMaker,
@@ -114,9 +126,9 @@ class NewHBarPointContainer extends NewPointContainer {
 
   NewHBarPointContainer({
     required model.NewPointModel newPointModel,
-    required view_maker.ChartViewMaker chartViewMaker,
+    required ChartViewMaker chartViewMaker,
     // todo-00!! Do we need children and key? LineSegmentContainer does not have it.
-    List<container_base.BoxContainer>? children,
+    List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     newPointModel: newPointModel,
@@ -140,7 +152,12 @@ class NewHBarPointContainer extends NewPointContainer {
     //                     is known (obviously). But we ASSUME that the owner DataContainer will use all it's constraints,
     //                     so that are the pixels we lextr to.
     //          Also: should we be accessing dataContainer here?
+    // todo-00-last-last : this is likely the problem when Padder is used to pad DataContainer.
+    //                  WE NEED TO USE A KIND OF 'DATA-USED-CONSTRAINTS, BOTH ON NewYContainer and NewDataContainer.
+    //             BUT HOW TO DO THIS ??????????????????
     var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
+
+    var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions); // todo-00-last-last-last : added
 
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
@@ -151,8 +168,8 @@ class NewHBarPointContainer extends NewPointContainer {
       toPixelsMin: 0.0,                          // yContainer.axisPixelsRange.min,
       toPixelsMax: yContainer.layoutSize.height, //  600.0, // yContainer.axisPixelsRange.max,
       */
-      toPixelsMax: ownerDataContainerConstraints.size.height,
-      toPixelsMin: 0.0, // ownerDataContainerConstraints.size.height
+      toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(), // todo-00-last-last-last : was : ownerDataContainerConstraints.size.height,
+      toPixelsMin: padGroup.heightPadTopOfYAndData(), // todo-00-last-last-last : was : 0.0,
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
