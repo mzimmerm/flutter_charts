@@ -5,12 +5,13 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
+import 'label_container.dart';
 import '../../chart/container_new/container_common_new.dart';
 import '../../chart/container_new/legend_container_new.dart';
 import '../../chart/model/data_model_new.dart';
+import '../../chart/label_container.dart' as label_container_new;
 import '../../chart/view_maker.dart';
 import '../../chart/painter.dart';
-import '../../chart/label_container.dart';
 import '../../chart/container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     LayoutableBox;
@@ -337,7 +338,7 @@ abstract class AxisContainer extends ChartAreaContainer with PixelRangeProvider 
   ///
   /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
   ///                 this is set may be called multiple times.
-  // todo-00-last-last : moced to mixin : late Interval axisPixelsRange;
+  // todo-00-last-last : moved to mixin : late Interval axisPixelsRange;
 
 }
 
@@ -413,7 +414,7 @@ class YContainer extends AxisContainer {
   }
 
   /// Containers of Y labels.
-  late List<YLabelContainer> _yLabelContainers;
+  late List<YLabelContainerCL> _yLabelContainers;
 
   /// Maximum label height found by the first layout (pre-layout),
   /// is ONLY used to 'shorten' YContainer constraints on top.
@@ -448,7 +449,7 @@ class YContainer extends AxisContainer {
     ChartOptions options = chartViewMaker.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
+    label_container_new.LabelStyle labelStyle = label_container_new.LabelStyle(
       textStyle: options.labelCommonOptions.labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
       textAlign: options.labelCommonOptions.labelTextAlign, // center text
@@ -456,7 +457,7 @@ class YContainer extends AxisContainer {
     );
 
     for (AxisLabelInfo labelInfo in chartViewMaker.yLabelsGenerator.labelInfoList) {
-      var yLabelContainer = YLabelContainer(
+      var yLabelContainer = YLabelContainerCL(
         chartViewMaker: chartViewMaker,
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
@@ -538,7 +539,7 @@ class YContainer extends AxisContainer {
     if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
-    for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
+    for (AxisLabelContainerCL yLabelContainer in _yLabelContainers) {
       yLabelContainer.applyParentOffset(this, offset);
     }
   }
@@ -548,7 +549,7 @@ class YContainer extends AxisContainer {
     if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
       return;
     }
-    for (AxisLabelContainer yLabelContainer in _yLabelContainers) {
+    for (AxisLabelContainerCL yLabelContainer in _yLabelContainers) {
       yLabelContainer.paint(canvas);
     }
   }
@@ -584,7 +585,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
   );
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
-  List<AxisLabelContainer> _xLabelContainers = List.empty(growable: true);
+  List<AxisLabelContainerCL> _xLabelContainers = List.empty(growable: true);
 
   double _xGridStep = 0.0;
 
@@ -620,13 +621,13 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
 
     ChartOptions options = chartViewMaker.chartOptions;
     List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
-    LabelStyle labelStyle = _styleForLabels(options);
+    label_container_new.LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
 
     for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
-      var xLabelContainer = XLabelContainer(
+      var xLabelContainer = XLabelContainerCL(
         chartViewMaker: chartViewMaker,
         label: xUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
@@ -668,7 +669,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
 
     // Layout all X labels in _xLabelContainers created and added in [buildAndAddChildrenLateDuringParentLayout]
     int xIndex = 0;
-    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
+    for (AxisLabelContainerCL xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentConstraints(this, BoxContainerConstraints.infinity());
       xLabelContainer.layout();
 
@@ -722,7 +723,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
         : _xLabelContainers.map((xLabelContainer) => xLabelContainer.layoutSize.height).reduce(math.max);
   }
 
-  LabelStyle _styleForLabels(ChartOptions options) {
+  label_container_new.LabelStyle _styleForLabels(ChartOptions options) {
     // Use widgets.TextStyle obtained from ChartOptions and "extend it" as a copy, so a 
     //   (potentially modified) TextStyle from Options is used in all places in flutter_charts.
 
@@ -731,7 +732,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
+    label_container_new.LabelStyle labelStyle = label_container_new.LabelStyle(
       textStyle: labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
       textAlign: options.labelCommonOptions.labelTextAlign, // center text
@@ -747,7 +748,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
     }
     // super.applyParentOffset(caller, offset); // super did double-offset as xLabelContainer are on 2 places
 
-    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
+    for (AxisLabelContainerCL xLabelContainer in _xLabelContainers) {
       xLabelContainer.applyParentOffset(this, offset);
     }
   }
@@ -787,7 +788,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
   }
 
   void _paintLabelContainers(canvas) {
-    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
+    for (AxisLabelContainerCL  xLabelContainer in _xLabelContainers) {
       if (!xLabelContainer.orderedSkip) xLabelContainer.paint(canvas);
     }
   }

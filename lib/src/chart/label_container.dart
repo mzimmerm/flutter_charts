@@ -5,7 +5,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
-import '../coded_layout/chart/container.dart' show AxisContainer, PixelRangeProvider;
+import '../coded_layout/chart/container.dart' show AxisContainer; // todo-00-last-last-last-last
 import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' show LayoutableBox, BoxLayouter;
@@ -360,6 +360,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
   // todo-00-last-last : replaced with ChartAreaContainer : final AxisContainer _ownerAxisContainer;
   final container_common_new.ChartAreaContainer _ownerAxisContainer;
+  container_common_new.ChartAreaContainer get ownerAxisContainer => _ownerAxisContainer; // todo-00-last-last-last-done - added for legacy CL extension
 
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
@@ -396,7 +397,7 @@ abstract class AxisLabelContainer extends LabelContainer {
   ///     First "tick dash" is on the first label, last on the last label,
   ///     but both x and y label containers can be skipped.
   ///
-  double parentOffsetTick = 0.0;
+  // todo-00-last-last-last-done : moved to AxisLabelContainerCL : double parentOffsetTick = 0.0;
 
   /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
@@ -408,16 +409,17 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// is determined.
   @override
   void layout_Post_Leaf_SetSize_FromInternals() {
+    /* todo-00-last-last-last-done : moved to AxisLabelContainerCL
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE XContainer / YContainer.
     // Important Note: This is NOT called for XAxisLabels
     var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
     // todo-00-last-last-last : axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, axisPixelsRange MUST BE UNUSED IN NEW - SO JUST COMMENT OUT
     // todo-00-last-last This seems called for XLabelContainer - why?
-    // todo Probably create a legacy extension ManualAxisLabelContainer which will override:
+    // todo Probably create a legacy extension AxisLabelContainerCL which will override:
     //     - 1. this method
     //     - 2. parentOffsetTick (move it from this class to there
-    //     - 3. legacy classes will create or extend ManualAxisLabelContainer!!!
+    //     - 3. legacy classes will create or extend AxisLabelContainerCL!!!
     if (chartViewMaker.isUseOldDataContainer) {
       parentOffsetTick = labelsGenerator.lextrValueToPixels(
         value: labelInfo.dataValue.toDouble(),
@@ -425,6 +427,7 @@ abstract class AxisLabelContainer extends LabelContainer {
         axisPixelsMax: (_ownerAxisContainer as PixelRangeProvider).axisPixelsRange.max,
       );
     }
+    */
 
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
