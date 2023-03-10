@@ -1,3 +1,4 @@
+/* todo-00-last-last-last-progress : where to split old/new?
 import 'dart:ui' as ui show Canvas, Size;
 
 import '../../chart/view_maker.dart';
@@ -23,7 +24,6 @@ import '../../morphic/rendering/constraints.dart' as constraints;
 
 import '../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
-/* todo-00-last-last-last-progress : where to split old/new?
 abstract class ChartViewMakerCL extends ChartViewMaker {
 
   ChartViewMakerCL({

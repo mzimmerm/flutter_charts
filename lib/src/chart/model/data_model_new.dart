@@ -156,8 +156,8 @@ class NewModel {
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
   /// Can be Strings or numbers.
-  /// If not null, a "manual" layout is used in the [YContainer].
-  /// If null, a "auto" layout is used in the [YContainer].
+  /// If not null, a "manual" layout is used in the [YContainerCL].
+  /// If null, a "auto" layout is used in the [YContainerCL].
   ///
   final List<String>? yUserLabels;
 
@@ -171,8 +171,8 @@ class NewModel {
   /// Keeps data values grouped in columns.
   ///
   /// This column grouped data instance is managed here in the [ChartRootContainerCL],
-  /// (immediate owner of [YContainer] and [DataContainer])
-  /// as their data points are needed both during [YContainer.layout]
+  /// (immediate owner of [YContainerCL] and [DataContainer])
+  /// as their data points are needed both during [YContainerCL.layout]
   /// to calculate extrapolating, and also in [DataContainer.layout] to create
   /// [PointPresentersColumns] instance.
   late PointsColumns pointsColumns;

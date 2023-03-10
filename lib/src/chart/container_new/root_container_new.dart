@@ -94,11 +94,11 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   @override
   late LegendContainer legendContainer;
   @override
-  late old_container.XContainer xContainer;
+  late old_container.XContainerCL xContainer;
   @override
-  late old_container.YContainer yContainer;
+  late old_container.YContainerCL yContainer;
   @override
-  late old_container.YContainer yContainerFirst;
+  late old_container.YContainerCL yContainerFirst;
   @override
   late old_container.DataContainer dataContainer;
 

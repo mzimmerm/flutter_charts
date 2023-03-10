@@ -344,9 +344,9 @@ abstract class AxisLabelContainer extends LabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required container_common_new.ChartAreaContainer ownerAxisContainer,
+    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   })  : _labelInfo = labelInfo,
-        _ownerAxisContainer = ownerAxisContainer,
+        _ownerChartAreaContainer = ownerChartAreaContainer,
         super(
           chartViewMaker: chartViewMaker,
           label: label,
@@ -356,8 +356,8 @@ abstract class AxisLabelContainer extends LabelContainer {
         );
 
   /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
-  final container_common_new.ChartAreaContainer _ownerAxisContainer;
-  container_common_new.ChartAreaContainer get ownerAxisContainer => _ownerAxisContainer;
+  final container_common_new.ChartAreaContainer _ownerChartAreaContainer;
+  container_common_new.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
 
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
@@ -366,21 +366,6 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Getter of [AxisLabelInfo] which created this Y label.
   AxisLabelInfo get labelInfo => _labelInfo;
 
-  // todo-00-last-last-done : removed, only calling super anyway
-/*
-  /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
-  /// added logic to set pixels. ONLY used on Y axis labels for now.
-  ///
-  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
-  /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
-  ///
-  /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
-  /// is determined.
-  @override
-  void layout_Post_Leaf_SetSize_FromInternals() {
-    super.layout_Post_Leaf_SetSize_FromInternals();
-  }
-*/
 }
 
 /// Label container for Y labels, which maintain, in addition to
@@ -395,7 +380,7 @@ class YLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required AxisContainer ownerAxisContainer,
+    required AxisContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,
     label:           label,
@@ -403,7 +388,7 @@ class YLabelContainer extends AxisLabelContainer {
     labelStyle:      labelStyle,
     options:         options,
     labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
+    ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }
 
@@ -417,7 +402,7 @@ class XLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required container_common_new.ChartAreaContainer ownerAxisContainer,
+    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker:  chartViewMaker,
     label:           label,
@@ -425,6 +410,6 @@ class XLabelContainer extends AxisLabelContainer {
     labelStyle:      labelStyle,
     options:         options,
     labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
+    ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }

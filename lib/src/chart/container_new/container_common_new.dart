@@ -68,7 +68,7 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
 /// [ChartAreaContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-//  todo-00-last-last-done : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
+//  todo-00-last-done : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
@@ -86,7 +86,6 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   }
 }
 
-// todo-00-last-last-done moved from old container.dart
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
 // todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not

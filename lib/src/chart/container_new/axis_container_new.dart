@@ -16,7 +16,7 @@ import '../../util/util_dart.dart';
 // this level libraries
 import 'container_common_new.dart' as container_common_new;
 
-  class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainer {
+  class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainerCL {
     /// Constructs the container that holds X labels.
     ///
     /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
@@ -56,7 +56,7 @@ import 'container_common_new.dart' as container_common_new;
                   labelStyle: labelStyle,
                   options: options,
                   labelInfo: labelInfo,
-                  ownerAxisContainer: this,
+                  ownerChartAreaContainer: this,
                 )
             ],
           ),
@@ -88,7 +88,7 @@ import 'container_common_new.dart' as container_common_new;
   // --------------- overrides to implement legacy ^^^^^
 }
 
-class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainer {
+class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainerCL {
 
   NewYContainer({
     required ChartViewMaker chartViewMaker,
@@ -133,7 +133,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
                   labelStyle: labelStyle,
                   options: options,
                   labelInfo: labelInfo,
-                  ownerAxisContainer: this,
+                  ownerChartAreaContainer: this,
                 )
             ],
           ),

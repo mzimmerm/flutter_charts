@@ -19,9 +19,9 @@ import 'presenter.dart'; // OLD
 class LineChartRootContainer extends ChartRootContainerCL {
   LineChartRootContainer({
     required LegendContainer legendContainer,
-    required XContainer xContainer,
-    required YContainer yContainerFirst,
-    required YContainer yContainer,
+    required XContainerCL xContainer,
+    required YContainerCL yContainerFirst,
+    required YContainerCL yContainer,
     required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
     required NewModel chartData,

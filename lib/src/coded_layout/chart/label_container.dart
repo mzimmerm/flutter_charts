@@ -134,7 +134,7 @@ class LabelContainerCL extends LabelContainer {
   }
 
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-00-last : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-00-last-00 : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -189,6 +189,14 @@ class LabelContainerCL extends LabelContainer {
 }
 */
 
+/// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
+/// with added behavior needed for manual layout:
+///   1. overrides method [layout_Post_Leaf_SetSize_FromInternals] to use the
+///      (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange to lextr label data values to pixels
+///   2. has member parentOffsetTick to keep location (from build to manual layout?).
+///
+///  Legacy label containers [XLabelContainerCL] and [YLabelContainerCL] should extend this
+///
 abstract class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
     required view_maker.ChartViewMaker chartViewMaker,
@@ -197,8 +205,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    // todo-00-last-last : replaced with ChartAreaContainer : required AxisContainer ownerAxisContainer,
-    required container_common_new.ChartAreaContainer ownerAxisContainer,
+    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
         chartViewMaker: chartViewMaker,
         label: label,
@@ -206,7 +213,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
         labelStyle: labelStyle,
         options: options,
         labelInfo: labelInfo,
-        ownerAxisContainer: ownerAxisContainer,
+        ownerChartAreaContainer: ownerChartAreaContainer,
       );
 
   /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
@@ -237,37 +244,39 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   ///     First "tick dash" is on the first label, last on the last label,
   ///     but both x and y label containers can be skipped.
   ///
+  /// Must NOT be used in new auto-layout
   double parentOffsetTick = 0.0;
 
   /// Overridden from [AxisLabelContainer.layout_Post_Leaf_SetSize_FromInternals]
-  /// added logic to set pixels. ONLY used on Y axis labels for now.
+  /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
   /// Uses the [YContainerCL.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
-  /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
+  /// lextr the [labelInfo] value [AxisLabelInfo.dataValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
+  ///
+  /// Note: Invoked on BOTH [XLabelContainerCL] and [YLabelContainerCL], but only relevant on [YLabelContainerCL].
+  ///       On [XLabelContainerCL] it could be skipped, the layout code in [XContainerCL.layout]
+  ///       ```dart
+  ///           xLabelContainer.parentOffsetTick = xTickX;
+  ///        ```
+  ///        overrides this.
   @override
   void layout_Post_Leaf_SetSize_FromInternals() {
     // We now know how long the Y axis is in pixels,
-    // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    // Important Note: This is NOT called for XAxisLabels
-    var labelsGenerator = ownerAxisContainer.chartViewMaker.yLabelsGenerator;
-    // todo-00-last-last-last : axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, axisPixelsRange MUST BE UNUSED IN NEW - SO JUST COMMENT OUT
-    // todo-00-last-last This seems called for XLabelContainer - why?
-    // todo Probably create a legacy extension ManualAxisLabelContainer which will override:
-    //     - 1. this method
-    //     - 2. parentOffsetTick (move it from this class to there
-    //     - 3. legacy classes will create or extend ManualAxisLabelContainer!!!
+    // so we can calculate this label pixel position IN THE XContainer / YContainer
+    // and place it on [parentOffsetTick]
+    var labelsGenerator = ownerChartAreaContainer.chartViewMaker.yLabelsGenerator;
     assert (chartViewMaker.isUseOldDataContainer == true);
 
     parentOffsetTick = labelsGenerator.lextrValueToPixels(
       value: labelInfo.dataValue.toDouble(),
-      axisPixelsMin: (ownerAxisContainer as PixelRangeProvider).axisPixelsRange.min,
-      axisPixelsMax: (ownerAxisContainer as PixelRangeProvider).axisPixelsRange.max,
+      axisPixelsMin: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
+      axisPixelsMax: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
     );
 
-    super.layout_Post_Leaf_SetSize_FromInternals(); // todo-00-last-last-last : is this needed??
+    super.layout_Post_Leaf_SetSize_FromInternals();
   }
 }
 
@@ -283,7 +292,7 @@ class YLabelContainerCL extends AxisLabelContainerCL {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required AxisContainer ownerAxisContainer,
+    required AxisContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,
     label:           label,
@@ -291,7 +300,7 @@ class YLabelContainerCL extends AxisLabelContainerCL {
     labelStyle:      labelStyle,
     options:         options,
     labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
+    ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }
 
@@ -305,8 +314,7 @@ class XLabelContainerCL extends AxisLabelContainerCL {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    // todo-00-last-last : replaced with ChartAreaContainer : required AxisContainer ownerAxisContainer,
-    required container_common_new.ChartAreaContainer ownerAxisContainer,
+    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker:  chartViewMaker,
     label:           label,
@@ -314,6 +322,6 @@ class XLabelContainerCL extends AxisLabelContainerCL {
     labelStyle:      labelStyle,
     options:         options,
     labelInfo:       labelInfo,
-    ownerAxisContainer: ownerAxisContainer,
+    ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }

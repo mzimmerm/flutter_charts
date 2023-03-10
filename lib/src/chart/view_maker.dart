@@ -211,24 +211,24 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels]
-  /// or [container.YContainer.labelInfos].
-  container.XContainer makeViewForDomainAxis() {
+  /// or [container.YContainerCL.labelInfos].
+  container.XContainerCL makeViewForDomainAxis() {
     return isUseOldDataContainer
-        ? container.XContainer(chartViewMaker: this)
+        ? container.XContainerCL(chartViewMaker: this)
         : axis_container_new.NewXContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels]
-  /// or labels in [container.YContainer.labelInfos].
-  container.YContainer makeViewForRangeAxis() {
+  /// or labels in [container.YContainerCL.labelInfos].
+  container.YContainerCL makeViewForRangeAxis() {
     return isUseOldDataContainer
-        ? container.YContainer(chartViewMaker: this)
+        ? container.YContainerCL(chartViewMaker: this)
         : axis_container_new.NewYContainer(chartViewMaker: this);
   }
 
-  container.YContainer makeViewForYContainerFirst() {
+  container.YContainerCL makeViewForYContainerFirst() {
     return isUseOldDataContainer
-        ? container.YContainer(chartViewMaker: this)
+        ? container.YContainerCL(chartViewMaker: this)
         : axis_container_new.NewYContainer(chartViewMaker: this);
   }
 

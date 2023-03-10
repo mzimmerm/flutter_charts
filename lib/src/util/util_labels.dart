@@ -53,7 +53,7 @@ class DataRangeLabelInfosGenerator {
 
 
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // todo-00-last : added as a temporary to test old vs new
+    required this.chartViewMaker, // todo-00-last-done : added as a temporary to test old vs new
     required NewModel dataModel,
     required this.dataRangeDependency,
     required bool extendAxisToOrigin,
@@ -133,7 +133,7 @@ class DataRangeLabelInfosGenerator {
 
   }
 
-  final ChartViewMaker chartViewMaker; // todo-00-last : added as a temporary to test old vs new
+  final ChartViewMaker chartViewMaker; // todo-00-last-done : added as a temporary to test old vs new
 
   /// Describes if this [DataRangeLabelInfosGenerator] is for dependent or independent data.
   final DataRangeDependency dataRangeDependency;
@@ -190,7 +190,7 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
-    // todo-00-last : added as a confirmation
+    // todo-00-last-done : added as a confirmation
     if (!chartViewMaker.isUseOldDataContainer) {
       throw StateError('Only should be called in OLD Layouters');
     }

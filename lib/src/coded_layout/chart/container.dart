@@ -50,15 +50,15 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
-  /// - [YContainer] area manages and lays out the Y labels area, by calculating
+  /// - [YContainerCL] area manages and lays out the Y labels area, by calculating
   ///   sizes required for Y labels (in both X and Y direction).
-  ///   The [YContainer]
-  /// - [XContainer] area manages and lays out the
+  ///   The [YContainerCL]
+  /// - [XContainerCL] area manages and lays out the
   ///   - X labels area, and the
   ///   - grid area.
   /// In the X direction, takes up all space left after the
   /// YContainer layes out the  Y labels area, that is, full width
-  /// minus [YContainer.yLabelsContainerWidth].
+  /// minus [YContainerCL.yLabelsContainerWidth].
   /// In the Y direction, takes
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
@@ -87,9 +87,9 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
 
   /// Base Areas of chart.
   late LegendContainer legendContainer;
-  late XContainer xContainer;
-  late YContainer yContainer;
-  late YContainer yContainerFirst;
+  late XContainerCL xContainer;
+  late YContainerCL yContainer;
+  late YContainerCL yContainerFirst;
   late DataContainer dataContainer;
 
   /// ##### Subclasses - aware members.
@@ -101,7 +101,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
   double get xGridStep => xContainer.xGridStep;
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label).
-  /// Once [XContainer.layout] and [YContainer.layout] are complete,
+  /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
   /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
@@ -112,7 +112,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
       xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
 
   /// Y coordinates of y ticks (y tick - extrapolated value of data, also middle of label).
-  /// Once [XContainer.layout] and [YContainer.layout] are complete,
+  /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
   /// this list drives the layout of [DataContainer].
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
@@ -267,7 +267,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
   /// Before the actual canvas painting, at the beginning of this method,
   /// this class's [layout] is performed, which recursively lays out all member [BoxContainer]s.
   /// Once this top container is layed out, the [paint] is called on all
-  /// member [BoxContainer]s ([YContainer],[XContainer] etc),
+  /// member [BoxContainer]s ([YContainerCL],[XContainerCL] etc),
   /// which recursively paints the leaf [BoxContainer]s lines, rectangles and circles
   /// in their calculated layout positions.
   @override
@@ -289,38 +289,15 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
 
 }
 
-/// Common base class for containers of axes with their labels - [XContainer] and [YContainer].
+/// Common base class for containers of axes with their labels - [XContainerCL] and [YContainerCL].
 abstract class AxisContainer extends ChartAreaContainer with PixelRangeProvider {
   AxisContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,
   );
-
-  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainer].
-  ///
-  /// The [axisPixelsRange] has several important properties and roles:
-  ///   1. It contains the pixels of this [AxisContainer]
-  ///      available to the axis. Because this [AxisContainer] is generally bigger than the axis pixels,
-  ///      this range generally does NOT generally start at zero and end below the pixels available
-  ///      to the [AxisContainer], as follows:
-  ///      - For the [YContainer], the [axisPixelsRange]  start after a half-label height is excluded on the top,
-  ///        and a vertical tick height is excluded on the bottom.
-  ///      - For the [XContainer], the [axisPixelsRange] is currently UNUSED.
-  ///
-  ///  2. The difference between [axisPixelsRange] min and max is the height constraint
-  ///     on [NewDataContainer]!
-  ///
-  ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
-  ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
-  ///
-  /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
-  ///                 this is set may be called multiple times.
-  // todo-00-last-last : moved to mixin : late Interval axisPixelsRange;
-
 }
 
-// todo-00-last-last : added this mixin
 mixin PixelRangeProvider on ChartAreaContainer {
 
   /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainer].
@@ -330,9 +307,9 @@ mixin PixelRangeProvider on ChartAreaContainer {
   ///      available to the axis. Because this [AxisContainer] is generally bigger than the axis pixels,
   ///      this range generally does NOT generally start at zero and end below the pixels available
   ///      to the [AxisContainer], as follows:
-  ///      - For the [YContainer], the [axisPixelsRange]  start after a half-label height is excluded on the top,
+  ///      - For the [YContainerCL], the [axisPixelsRange]  start after a half-label height is excluded on the top,
   ///        and a vertical tick height is excluded on the bottom.
-  ///      - For the [XContainer], the [axisPixelsRange] is currently UNUSED.
+  ///      - For the [XContainerCL], the [axisPixelsRange] is currently UNUSED.
   ///
   ///  2. The difference between [axisPixelsRange] min and max is the height constraint
   ///     on [NewDataContainer]!
@@ -345,29 +322,6 @@ mixin PixelRangeProvider on ChartAreaContainer {
   late Interval axisPixelsRange;
 }
 
-/* todo-00-last-last : moved to container__common_new/container_new.dart
-/// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
-/// (actually currently the [ChartAreaContainer].
-///
-/// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
-  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
-
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
-
-  AdjustableLabelsChartAreaContainer({
-    required ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
-      strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
-        super(
-        chartViewMaker: chartViewMaker,
-      ) {
-    _labelLayoutStrategy.onContainer(this);
-  }
-}
-*/
-
 /// Container of the Y axis labels.
 ///
 /// This [ChartAreaContainer] operates as follows:
@@ -375,14 +329,14 @@ abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implemen
 /// - Horizontally available space is used only as much as needed.
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
-/// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
-class YContainer extends AxisContainer {
+/// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
+class YContainerCL extends AxisContainer {
 
   /// Constructs the container that holds Y labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
-  YContainer({
+  YContainerCL({
     required ChartViewMaker chartViewMaker,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
@@ -398,14 +352,14 @@ class YContainer extends AxisContainer {
   /// is ONLY used to 'shorten' YContainer constraints on top.
   double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
-  /// Overridden method creates this [YContainer]'s hierarchy-children Y labels
-  /// (instances of [YLabelContainer]) which are maintained in this [YContainer._yLabelContainers].
+  /// Overridden method creates this [YContainerCL]'s hierarchy-children Y labels
+  /// (instances of [YLabelContainer]) which are maintained in this [YContainerCL._yLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndReplaceChildren] is that we MAY NOT know until the parent
   /// [chartViewMaker] is being layed out, how much Y-space there is, therefore,
-  /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [YContainer],
-  /// only on [XContainer] re-layout.
+  /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [YContainerCL],
+  /// only on [XContainerCL] re-layout.
   ///
   /// The created Y labels should be layed out by invoking [layout]
   /// immediately after this method [buildAndReplaceChildren]
@@ -442,7 +396,7 @@ class YContainer extends AxisContainer {
         labelStyle: labelStyle,
         options: options,
         labelInfo: labelInfo,
-        ownerAxisContainer: this,
+        ownerChartAreaContainer: this,
       );
 
       _yLabelContainers.add(yLabelContainer);
@@ -451,21 +405,21 @@ class YContainer extends AxisContainer {
     replaceChildrenWith(_yLabelContainers);
   }
 
-  /// Lays out this [YContainer] - the area containing the Y axis labels -
+  /// Lays out this [YContainerCL] - the area containing the Y axis labels -
   /// which children were build during [buildAndReplaceChildren].
   ///
-  /// As this [YContainer] is [BuilderOfChildrenDuringParentLayout],
+  /// As this [YContainerCL] is [BuilderOfChildrenDuringParentLayout],
   /// this method should be called just after [buildAndReplaceChildren]
   /// which builds hierarchy-children of this container.
   ///
   /// In the hierarchy-parent [ChartRootContainerCL.layout],
   /// the call to this object's [layout] is second, after [LegendContainer.layout].
-  /// This [YContainer.layout] calculates [YContainer]'s labels width,
+  /// This [YContainerCL.layout] calculates [YContainerCL]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
   /// The remaining horizontal width of [ChartRootContainerCL.chartArea] minus
-  /// [YContainer]'s labels width provides remaining available
-  /// horizontal space for the [GridLinesContainer] and [XContainer].
+  /// [YContainerCL]'s labels width provides remaining available
+  /// horizontal space for the [GridLinesContainer] and [XContainerCL].
   @override
   void layout() {
     buildAndReplaceChildren();
@@ -547,14 +501,14 @@ class YContainer extends AxisContainer {
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
-/// - See the [XContainer] constructor for the assumption on [BoxContainerConstraints].
-class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
+/// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
+class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
 
   /// Constructs the container that holds X labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
-  XContainer({
+  XContainerCL({
     required ChartViewMaker chartViewMaker,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -579,7 +533,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
   ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
 
   @override
-  /// Overridden method creates this [XContainer]'s hierarchy-children X labels
+  /// Overridden method creates this [XContainerCL]'s hierarchy-children X labels
   /// (instances of [XLabelContainer]) which are maintained in this [_xLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
@@ -613,7 +567,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
         options: options,
         // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
         labelInfo: chartViewMaker.xLabelsGenerator.labelInfoList[xIndex],
-        ownerAxisContainer: this,
+        ownerChartAreaContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
     }
@@ -731,7 +685,7 @@ class XContainer extends AdjustableLabelsChartAreaContainer with PixelRangeProvi
     }
   }
 
-  /// Paints this [XContainer] on the passed [canvas].
+  /// Paints this [XContainerCL] on the passed [canvas].
   ///
   /// Delegates painting to all contained [LabelContainerOriginalKeep]s.
   /// Any contained [LabelContainerOriginalKeep] must have been offset to the appropriate position.
@@ -924,7 +878,7 @@ abstract class DataContainer extends ChartAreaContainer {
   /// Uses all available space in the [constraints] set in parent [buildAndReplaceChildren],
   /// which it divides evenly between it's children.
   ///
-  /// First lays out the Grid, then, scales the columns to the [YContainer]'s extrapolate
+  /// First lays out the Grid, then, scales the columns to the [YContainerCL]'s extrapolate
   /// based on the available size.
   @override
   void layout() {
@@ -1080,21 +1034,6 @@ abstract class DataContainer extends ChartAreaContainer {
     return pointPresenters;
   }
 }
-
-
-/* todo-00-last-last moved to container_common_new.dart
-/// A marker of container with adjustable contents,
-/// such as labels that can be skipped.
-// todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
-//          in AdjustableLabelsChartAreaContainer
-//          Also, AdjustableLabels and perhaps AdjustableLabelsChartAreaContainer should be a mixin.
-//          But Dart bug #25742 does not allow mixins with named parameters.
-
-abstract class AdjustableLabels {
-  bool labelsOverlap();
-}
-*/
-
 
 /// Provides the data area container for the bar chart.
 ///
