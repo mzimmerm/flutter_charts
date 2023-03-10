@@ -14,7 +14,7 @@ import '../options.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
-class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainer {
+class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainerCL {
 
   NewDataContainer({
     required ChartViewMaker chartViewMaker,

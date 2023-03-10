@@ -23,7 +23,7 @@ class VerticalBarChartRootContainer extends ChartRootContainerCL {
     required XContainerCL      xContainer,
     required YContainerCL      yContainerFirst,
     required YContainerCL      yContainer,
-    required DataContainer   dataContainer,
+    required DataContainerCL   dataContainer,
     required ChartViewMaker  chartViewMaker,
     required NewModel        chartData,
     required ChartOptions    chartOptions,

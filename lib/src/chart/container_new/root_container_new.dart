@@ -100,7 +100,7 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   @override
   late old_container.YContainerCL yContainerFirst;
   @override
-  late old_container.DataContainer dataContainer;
+  late old_container.DataContainerCL dataContainer;
 
   /// ##### Subclasses - aware members.
 

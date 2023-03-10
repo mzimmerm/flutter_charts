@@ -171,9 +171,9 @@ class NewModel {
   /// Keeps data values grouped in columns.
   ///
   /// This column grouped data instance is managed here in the [ChartRootContainerCL],
-  /// (immediate owner of [YContainerCL] and [DataContainer])
+  /// (immediate owner of [YContainerCL] and [DataContainerCL])
   /// as their data points are needed both during [YContainerCL.layout]
-  /// to calculate extrapolating, and also in [DataContainer.layout] to create
+  /// to calculate extrapolating, and also in [DataContainerCL.layout] to create
   /// [PointPresentersColumns] instance.
   late PointsColumns pointsColumns;
 

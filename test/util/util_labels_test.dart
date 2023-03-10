@@ -192,7 +192,7 @@ class MockChartViewMaker extends ChartViewMaker {
   bool get extendAxisToOrigin => false;
 
   @override
-  DataContainer makeViewForDataContainer() => throw UnimplementedError();
+  DataContainerCL makeViewForDataContainer() => throw UnimplementedError();
 
   @override
   ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) => throw UnimplementedError();

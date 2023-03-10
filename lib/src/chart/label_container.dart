@@ -4,7 +4,6 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
-import '../coded_layout/chart/container.dart' show AxisContainer; // todo-00-last-last-last-last
 import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' show LayoutableBox, BoxLayouter;
@@ -355,7 +354,7 @@ abstract class AxisLabelContainer extends LabelContainer {
           options: options,
         );
 
-  /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
+  /// The [container_common_new.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
   final container_common_new.ChartAreaContainer _ownerChartAreaContainer;
   container_common_new.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
 
@@ -380,7 +379,8 @@ class YLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required AxisContainer ownerChartAreaContainer,
+    // todo-00-last-last-done : change to ChartAreaContainer : required AxisContainerCL ownerChartAreaContainer,
+    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,
     label:           label,

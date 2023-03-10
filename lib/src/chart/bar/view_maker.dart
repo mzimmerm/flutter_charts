@@ -70,7 +70,7 @@ class VerticalBarChartViewMaker extends ChartViewMaker {
   }
 
   @override
-  DataContainer makeViewForDataContainer() {
+  DataContainerCL makeViewForDataContainer() {
     if (isUseOldDataContainer) {
       return VerticalBarChartDataContainer(
         chartViewMaker: this,

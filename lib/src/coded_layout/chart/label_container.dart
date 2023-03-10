@@ -5,7 +5,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 // import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
-import 'container.dart' show AxisContainer, PixelRangeProvider;
+import 'container.dart' show AxisContainerCL, PixelRangeProvider;
 import '../../chart/container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
 import '../../chart/label_container.dart';
 import '../../chart/view_maker.dart' as view_maker;
@@ -224,11 +224,11 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   ///
   /// It's value is not affected by call to [applyParentOffset].
   /// It is calculated during parent's [YContainer] [layout] method,
-  /// as a result, it remains positioned in the [AxisContainer]'s coordinates.
+  /// as a result, it remains positioned in the [AxisContainerCL]'s coordinates.
   /// Any objects using [parentOffsetTick] as it's end point
   /// (for example grid line's end point), should apply
   /// the parent offset to themselves. The reason for this behavior is for
-  /// the [parentOffsetTick]'s value to live after [AxisContainer]'s layout,
+  /// the [parentOffsetTick]'s value to live after [AxisContainerCL]'s layout,
   /// so the  [parentOffsetTick]'s value can be used in the
   /// grid layout, without reversing any offsets.
   ///
@@ -292,7 +292,7 @@ class YLabelContainerCL extends AxisLabelContainerCL {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    required AxisContainer ownerChartAreaContainer,
+    required AxisContainerCL ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,
     label:           label,

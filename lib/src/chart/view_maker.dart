@@ -242,7 +242,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
   /// Assumed made from [model.NewModel.crossSeriesPointsList], presents all data in the data area.
-  container.DataContainer makeViewForDataContainer();
+  container.DataContainerCL makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///

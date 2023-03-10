@@ -71,7 +71,7 @@ class LineChartViewMaker extends ChartViewMaker {
 
 
   @override
-  DataContainer makeViewForDataContainer() {
+  DataContainerCL makeViewForDataContainer() {
     if (isUseOldDataContainer) {
       return LineChartDataContainer(
         chartViewMaker: this,

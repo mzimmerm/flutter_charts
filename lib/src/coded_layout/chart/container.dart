@@ -83,14 +83,14 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
   @override
   bool get isRoot => true;
 
-  /// Number of columns in the [DataContainer].
+  /// Number of columns in the [DataContainerCL].
 
   /// Base Areas of chart.
   late LegendContainer legendContainer;
   late XContainerCL xContainer;
   late YContainerCL yContainer;
   late YContainerCL yContainerFirst;
-  late DataContainer dataContainer;
+  late DataContainerCL dataContainer;
 
   /// ##### Subclasses - aware members.
 
@@ -102,7 +102,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label).
   /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
-  /// this list drives the layout of [DataContainer].
+  /// this list drives the layout of [DataContainerCL].
   ///
   /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
   ///  layout and painting of the DataContainer in ChartContainer.
@@ -113,7 +113,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
 
   /// Y coordinates of y ticks (y tick - extrapolated value of data, also middle of label).
   /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
-  /// this list drives the layout of [DataContainer].
+  /// this list drives the layout of [DataContainerCL].
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get yTickYs => yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
@@ -290,8 +290,8 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
 }
 
 /// Common base class for containers of axes with their labels - [XContainerCL] and [YContainerCL].
-abstract class AxisContainer extends ChartAreaContainer with PixelRangeProvider {
-  AxisContainer({
+abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {
+  AxisContainerCL({
     required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,
@@ -300,13 +300,13 @@ abstract class AxisContainer extends ChartAreaContainer with PixelRangeProvider 
 
 mixin PixelRangeProvider on ChartAreaContainer {
 
-  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainer].
+  /// Late calculated minimum and maximum pixels for the Y axis WITHIN the [AxisContainerCL].
   ///
   /// The [axisPixelsRange] has several important properties and roles:
-  ///   1. It contains the pixels of this [AxisContainer]
-  ///      available to the axis. Because this [AxisContainer] is generally bigger than the axis pixels,
+  ///   1. It contains the pixels of this [AxisContainerCL]
+  ///      available to the axis. Because this [AxisContainerCL] is generally bigger than the axis pixels,
   ///      this range generally does NOT generally start at zero and end below the pixels available
-  ///      to the [AxisContainer], as follows:
+  ///      to the [AxisContainerCL], as follows:
   ///      - For the [YContainerCL], the [axisPixelsRange]  start after a half-label height is excluded on the top,
   ///        and a vertical tick height is excluded on the bottom.
   ///      - For the [XContainerCL], the [axisPixelsRange] is currently UNUSED.
@@ -330,7 +330,7 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class YContainerCL extends AxisContainer {
+class YContainerCL extends AxisContainerCL {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -759,7 +759,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainer extends ChartAreaContainer {
+abstract class DataContainerCL extends ChartAreaContainer {
   /// Container of gridlines parallel to X axis.
   ///
   /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
@@ -774,12 +774,12 @@ abstract class DataContainer extends ChartAreaContainer {
   ///
   late PointPresentersColumns pointPresentersColumns;
 
-  DataContainer({required ChartViewMaker chartViewMaker})
+  DataContainerCL({required ChartViewMaker chartViewMaker})
       : super(
     chartViewMaker: chartViewMaker,
   );
 
-  /// Overridden builds children of self [DataContainer], the [_yGridLinesContainer] and [_xGridLinesContainer]
+  /// Overridden builds children of self [DataContainerCL], the [_yGridLinesContainer] and [_xGridLinesContainer]
   /// and adds them as self children.
   @override
   void buildAndReplaceChildren() {
@@ -1039,7 +1039,7 @@ abstract class DataContainer extends ChartAreaContainer {
 ///
 /// The only role is to implement the abstract method of the baseclass,
 /// [paint] and [_drawPointPresentersColumns].
-class VerticalBarChartDataContainer extends DataContainer {
+class VerticalBarChartDataContainer extends DataContainerCL {
   VerticalBarChartDataContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
@@ -1084,7 +1084,7 @@ class VerticalBarChartDataContainer extends DataContainer {
 ///
 /// The only role is to implement the abstract method of the baseclass,
 /// [paint] and [drawDataPointPresentersColumns].
-class LineChartDataContainer extends DataContainer {
+class LineChartDataContainer extends DataContainerCL {
   LineChartDataContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
@@ -1449,7 +1449,7 @@ class PointsColumn {
 ///
 /// Manages value point structure as column based (currently supported) or row based (not supported).
 ///
-/// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainer].
+/// A (single instance per chart) is used to create a [PointPresentersColumns] instance, managed in the [DataContainerCL].
 // todo-04-note : PointsColumns IS A MODEL, NOT PRESENTER :
 //                 Convert to BoxContainer, add 1) _createChildrenOfPointsColumns 2) buildAndReplaceChildren 3) layout
 //                 Each PointsColumn is a child in children.
@@ -1562,12 +1562,12 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Makes this [PointsColumns] object a [BoxContainer] - like class,
   ///
   /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewMaker.chartData] by the [offset],
-  /// presumable calle from parent [DataContainer].
+  /// presumable calle from parent [DataContainerCL].
   ///
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer
   ///             dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
   ///
-  /// it moves all points by the offset of [DataContainer] in [ChartRootContainerCL].
+  /// it moves all points by the offset of [DataContainerCL] in [ChartRootContainerCL].
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
