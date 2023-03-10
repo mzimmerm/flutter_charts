@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
-// import 'package:flutter_charts/flutter_charts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
@@ -224,7 +223,7 @@ class LabelContainer extends container_common_new.ChartAreaContainer {
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-00-last : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-00-last-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -345,7 +344,6 @@ abstract class AxisLabelContainer extends LabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    // todo-00-last-last : replaced with ChartAreaContainer : required AxisContainer ownerAxisContainer,
     required container_common_new.ChartAreaContainer ownerAxisContainer,
   })  : _labelInfo = labelInfo,
         _ownerAxisContainer = ownerAxisContainer,
@@ -358,9 +356,8 @@ abstract class AxisLabelContainer extends LabelContainer {
         );
 
   /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
-  // todo-00-last-last : replaced with ChartAreaContainer : final AxisContainer _ownerAxisContainer;
   final container_common_new.ChartAreaContainer _ownerAxisContainer;
-  container_common_new.ChartAreaContainer get ownerAxisContainer => _ownerAxisContainer; // todo-00-last-last-last-done - added for legacy CL extension
+  container_common_new.ChartAreaContainer get ownerAxisContainer => _ownerAxisContainer;
 
   /// Maintains the LabelInfo from which this [LabelContainer] was created,
   /// for use during [layout] of self or parents.
@@ -369,36 +366,8 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// Getter of [AxisLabelInfo] which created this Y label.
   AxisLabelInfo get labelInfo => _labelInfo;
 
-  /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
-  /// X or Y data value.
-  ///
-  /// In more detail, it is the numerical value of a label, transformed, then extrapolated to axis pixels length,
-  /// so its value is in pixels relative to the immediate container - the [YContainer] or [XContainer]
-  ///
-  /// It's value is not affected by call to [applyParentOffset].
-  /// It is calculated during parent's [YContainer] [layout] method,
-  /// as a result, it remains positioned in the [AxisContainer]'s coordinates.
-  /// Any objects using [parentOffsetTick] as it's end point
-  /// (for example grid line's end point), should apply
-  /// the parent offset to themselves. The reason for this behavior is for
-  /// the [parentOffsetTick]'s value to live after [AxisContainer]'s layout,
-  /// so the  [parentOffsetTick]'s value can be used in the
-  /// grid layout, without reversing any offsets.
-  ///
-  /// [parentOffsetTick]  has multiple other roles:
-  ///   - The X or Y offset of the X or Y label middle point
-  ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
-  ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelInfosGenerator]).
-  ///     ```dart
-  ///        double yTickY = yLabelContainer.parentOffsetTick;
-  ///        double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
-  ///     ```
-  ///   - The "tick dash" for the label center on the X or Y axis.
-  ///     First "tick dash" is on the first label, last on the last label,
-  ///     but both x and y label containers can be skipped.
-  ///
-  // todo-00-last-last-last-done : moved to AxisLabelContainerCL : double parentOffsetTick = 0.0;
-
+  // todo-00-last-last-done : removed, only calling super anyway
+/*
   /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
@@ -409,28 +378,9 @@ abstract class AxisLabelContainer extends LabelContainer {
   /// is determined.
   @override
   void layout_Post_Leaf_SetSize_FromInternals() {
-    /* todo-00-last-last-last-done : moved to AxisLabelContainerCL
-    // We now know how long the Y axis is in pixels,
-    // so we can calculate this label pixel position IN THE XContainer / YContainer.
-    // Important Note: This is NOT called for XAxisLabels
-    var labelsGenerator = _ownerAxisContainer.chartViewMaker.yLabelsGenerator;
-    // todo-00-last-last-last : axisPixelsRange here IS ONLY USED TO CALCULATE parentOffsetTick, axisPixelsRange MUST BE UNUSED IN NEW - SO JUST COMMENT OUT
-    // todo-00-last-last This seems called for XLabelContainer - why?
-    // todo Probably create a legacy extension AxisLabelContainerCL which will override:
-    //     - 1. this method
-    //     - 2. parentOffsetTick (move it from this class to there
-    //     - 3. legacy classes will create or extend AxisLabelContainerCL!!!
-    if (chartViewMaker.isUseOldDataContainer) {
-      parentOffsetTick = labelsGenerator.lextrValueToPixels(
-        value: labelInfo.dataValue.toDouble(),
-        axisPixelsMin: (_ownerAxisContainer as PixelRangeProvider).axisPixelsRange.min,
-        axisPixelsMax: (_ownerAxisContainer as PixelRangeProvider).axisPixelsRange.max,
-      );
-    }
-    */
-
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
+*/
 }
 
 /// Label container for Y labels, which maintain, in addition to
@@ -467,7 +417,6 @@ class XLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    // todo-00-last-last : replaced with ChartAreaContainer : required AxisContainer ownerAxisContainer,
     required container_common_new.ChartAreaContainer ownerAxisContainer,
   }) : super(
     chartViewMaker:  chartViewMaker,

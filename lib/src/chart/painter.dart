@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart' as widgets; // note: external package
 import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
-// import '../coded_layout/chart/container.dart' as containers;
 import 'view_maker.dart' as view_maker;
 
 

@@ -17,7 +17,7 @@ import 'presenter.dart'; // OLD
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
-class VerticalBarChartRootContainer extends ChartRootContainer {
+class VerticalBarChartRootContainer extends ChartRootContainerCL {
   VerticalBarChartRootContainer({
     required LegendContainer legendContainer,
     required XContainer      xContainer,

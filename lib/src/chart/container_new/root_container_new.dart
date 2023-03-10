@@ -1,20 +1,17 @@
-
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
-import 'package:flutter_charts/src/chart/container_new/axis_corner_container.dart';
 import 'package:logger/logger.dart' as logger;
 
 import '../../coded_layout/chart/container.dart' as old_container;
 
 import 'container_common_new.dart' as container_common_new;
-// import 'axis_container_new.dart';
-// import 'data_container_new.dart';
+import '../container_layouter_base.dart';
+import '../container_new/axis_corner_container.dart';
 import 'legend_container_new.dart';
 
 import '../view_maker.dart';
 import '../model/data_model_new.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 
-class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainer {
+class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainerCL {
 
   NewChartRootContainer({
     required this.legendContainer,
@@ -37,7 +34,7 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
     TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-00-last will go away when we use YContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-00-last-02 will go away when we use YContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );

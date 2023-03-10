@@ -32,42 +32,20 @@ import '../../chart/iterative_layout_strategy.dart' as strategy;
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
-/// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
-/// or vertical bar chart.
-///
-/// The behavior is plugged in the container, not the container owner chart.
-abstract class ChartBehavior {
-  /// Behavior allows to start Y axis at data minimum (rather than 0).
-  ///
-  /// The request is asked by [DataContainerOptions.extendAxisToOriginRequested],
-  /// but the implementation of this behavior must confirm it.
-  /// See the extensions of this class for overrides of this method.
-  ///
-  /// [ChartBehavior] is mixed in to [ChartRootContainer]. This method
-  /// is implemented by concrete [LineChartRootContainer] and [VerticalBarChartRootContainer].
-  /// - In the stacked containers, such as [VerticalBarChartRootContainer], it should return [false],
-  ///   as stacked values should always start at zero, because stacked charts must show absolute values.
-  ///   See [VerticalBarChartRootContainer.extendAxisToOrigin].
-  /// - In the unstacked containers such as  [LineChartRootContainer], this is usually implemented to
-  ///   return the option [DataContainerOptions.extendAxisToOriginRequested],
-  ///   see [LineChartRootContainer.extendAxisToOrigin].
-  ///
-  bool get extendAxisToOrigin;
-}
 
 /// Abstract class representing the root [BoxContainer] of the whole chart.
 ///
-/// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation
+/// Concrete [ChartRootContainerCL] instance is created new on every [FlutterChartPainter.paint] invocation
 /// in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewMaker]
 /// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
 ///
 /// Child containers calculate coordinates of chart points
 /// used for painting grid, labels, chart points etc.
 ///
-/// The lifecycle of [ChartRootContainer] follows the lifecycle of any [BoxContainer], the sequence of
+/// The lifecycle of [ChartRootContainerCL] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-abstract class ChartRootContainer extends ChartAreaContainer {
+abstract class ChartRootContainerCL extends ChartAreaContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
@@ -84,7 +62,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   /// In the Y direction, takes
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
-  ChartRootContainer({
+  ChartRootContainerCL({
     required this.legendContainer,
     required this.xContainer,
     required this.yContainer,
@@ -101,7 +79,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
   }
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
-  /// which is never set on instances of this [ChartRootContainer].
+  /// which is never set on instances of this [ChartRootContainerCL].
   @override
   bool get isRoot => true;
 
@@ -274,7 +252,7 @@ abstract class ChartRootContainer extends ChartAreaContainer {
     dataContainer.applyParentOffset(this, dataContainerOffset);
   }
 
-  /// Implements abstract [paint] for the whole chart container hierarchy, the [ChartRootContainer].
+  /// Implements abstract [paint] for the whole chart container hierarchy, the [ChartRootContainerCL].
   /// Paints the chart on the passed [canvas], limited to the [size] area,
   /// which must be set before invoking this [paint] method.
   ///
@@ -480,12 +458,12 @@ class YContainer extends AxisContainer {
   /// this method should be called just after [buildAndReplaceChildren]
   /// which builds hierarchy-children of this container.
   ///
-  /// In the hierarchy-parent [ChartRootContainer.layout],
+  /// In the hierarchy-parent [ChartRootContainerCL.layout],
   /// the call to this object's [layout] is second, after [LegendContainer.layout].
   /// This [YContainer.layout] calculates [YContainer]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
-  /// The remaining horizontal width of [ChartRootContainer.chartArea] minus
+  /// The remaining horizontal width of [ChartRootContainerCL.chartArea] minus
   /// [YContainer]'s labels width provides remaining available
   /// horizontal space for the [GridLinesContainer] and [XContainer].
   @override
@@ -854,7 +832,7 @@ abstract class DataContainer extends ChartAreaContainer {
 
     List<BoxContainer> dataContainerChildren = [];
 
-    ChartRootContainer chartRootContainer = chartViewMaker.chartRootContainer;
+    ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer;
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartViewMaker.chartOptions;
@@ -1326,7 +1304,7 @@ class StackableValuePoint {
   //        by extrapolating group 2 members to the container coordinates (display coordinates)
 
   /// The [scaledFrom] and [scaledTo] are the pixel (extrapolated) coordinates
-  /// of (possibly stacked) data values in the [ChartRootContainer] coordinates.
+  /// of (possibly stacked) data values in the [ChartRootContainerCL] coordinates.
   /// They are positions used by [PointPresenter] to paint the 'widget'
   /// that represents the (possibly stacked) data value.
   ///
@@ -1357,7 +1335,7 @@ class StackableValuePoint {
   ///
   /// Points are constructed unstacked. Depending on chart type,
   /// a later processing can stack points using this method
-  /// (if chart type is [ChartRootContainer.isStacked].
+  /// (if chart type is [ChartRootContainerCL.isStacked].
   StackableValuePoint stackOnAnother(StackableValuePoint? predecessorPoint) {
     this.predecessorPoint = predecessorPoint;
     return stack();
@@ -1628,7 +1606,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainer chartRootContainer) {
+  void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
@@ -1650,7 +1628,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer
   ///             dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
   ///
-  /// it moves all points by the offset of [DataContainer] in [ChartRootContainer].
+  /// it moves all points by the offset of [DataContainer] in [ChartRootContainerCL].
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {

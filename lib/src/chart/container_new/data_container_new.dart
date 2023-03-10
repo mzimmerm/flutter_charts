@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
-import 'package:flutter_charts/src/coded_layout/chart/presenter.dart';
+import '../../coded_layout/chart/presenter.dart'; // todo-00-last-last-last
 
 import 'container_common_new.dart' as container_common_new;
 import '../../coded_layout/chart/container.dart' as container;
@@ -22,7 +22,7 @@ class NewDataContainer extends container_common_new.ChartAreaContainer implement
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-00-last : why do we construct in buildAndReplaceChildre here, but in constuctor in NewYContainer???
+  // todo-00-last-01 : why do we construct in buildAndReplaceChildre here, but in constuctor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
 
@@ -108,7 +108,7 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// todo-00-last! : For some new containers (those that need to be sized from values to pixels),
+/// todo-00-last-00 : For some new containers (those that need to be sized from values to pixels),
 ///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
 ///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
 ///                          For children of NewDataContainer, it will be NewDataContainer.constraints.
@@ -160,6 +160,11 @@ class NewHBarPointContainer extends NewPointContainer {
     //
     //                   ANOTHER OPTION IS TO USE THE EXTERNAL TICKS **RANGE** FOR X AND Y; AND SAME FOR DATA CONTAINER
     //                   BUT AGAin, details ???
+    //
+    // Decided on solution: - Add a 'void' extension to BoxContainer, called DataPixelsScope (enum: height, width, heightAndWidth)
+    //                      - This extension will override applyParentConstraint, where it will take the height, width, or both
+    //                        and set it on root of container hierarchy on member Size pixelsScope.
+    //                      - todo-00-last-00 : finish this thought and implementation
     var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
 
     var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);

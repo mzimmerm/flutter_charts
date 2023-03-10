@@ -2,9 +2,9 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
-import 'package:flutter_charts/src/chart/container_new/axis_corner_container.dart';
 
 // this level or equivalent
+import 'container_new/axis_corner_container.dart';
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
     show
@@ -1873,23 +1873,6 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
       mainLayoutAxis: mainLayoutAxis,
     ).asRectangles();
   }
-
-  /* todo-00-last-remove
-  /// An abstract method of the default [layout] which role is to
-  /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
-  ///
-  /// Important override notes and rules for [_layout_Post_NotLeaf_OffsetChildren] on extensions:
-  ///
-  ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset]
-  ///     for all children in argument [children] and apply the [Rect.topLeft]
-  ///     offset from the passed [positionedRectsInMe].
-  ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op.
-  ///
-  /// First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
-  /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
-  @override
-  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
-  */
 
   /// Sets layoutSize from full constraint in the main axis direction, from OuterRect in cross axis direction.
   ///

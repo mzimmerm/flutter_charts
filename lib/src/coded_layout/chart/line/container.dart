@@ -16,7 +16,7 @@ import 'presenter.dart'; // OLD
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [LineAndHotspotPointPresenter]s,
 /// which are, in turn, used to present each data value.
-class LineChartRootContainer extends ChartRootContainer {
+class LineChartRootContainer extends ChartRootContainerCL {
   LineChartRootContainer({
     required LegendContainer legendContainer,
     required XContainer xContainer,

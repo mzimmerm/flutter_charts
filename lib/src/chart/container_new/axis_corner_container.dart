@@ -2,8 +2,7 @@ import 'dart:ui' as ui show Rect, Offset, Canvas, Paint;
 import 'package:flutter/material.dart' as material show Colors;
 
 // base libraries
-// import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/chart/container_layouter_base.dart';
+import '../container_layouter_base.dart';
 
 // import '../container.dart' as container;
 // import '../label_container.dart' as label_container;
@@ -24,7 +23,7 @@ class AxisCornerContainer extends container_common_new.ChartAreaContainer {
           children: children,
         );
 
-  // todo-00-last : do not keep _rect, keep _size, and create _rect = _size & offset in paint.
+  // todo-00-last-01 : do not keep _rect, keep _size, and create _rect = _size & offset in paint.
   late ui.Rect _rect;
 
   /// This default implementation has no children, it is leaf, so override the only method

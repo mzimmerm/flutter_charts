@@ -47,7 +47,7 @@ import 'container_common_new.dart' as container_common_new;
             ),
             children: [
               for (var labelInfo in labelsGenerator.labelInfoList)
-                // todo-00-last : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                // todo-00-last-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                 XLabelContainer(
                   chartViewMaker: chartViewMaker,
                   label: labelInfo.formattedLabel,

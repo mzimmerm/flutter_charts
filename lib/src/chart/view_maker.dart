@@ -8,6 +8,7 @@ import 'package:logger/logger.dart' as logger;
 // this level or equivalent
 import '../coded_layout/chart/container.dart' as container;
 import 'container_new/data_container_new.dart' as data_container_new;
+import 'container_new/container_common_new.dart' as container_common_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
 import 'container_new/axis_container_new.dart' as axis_container_new;
 import 'view_maker.dart' as view_maker;
@@ -24,7 +25,7 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 /// Abstract base class for view makers.
 ///
 /// A view maker is a class that makes (creates, produces, generates) a chart view hierarchy,
-/// starting with a concrete [container.ChartRootContainer], with the help of [model.NewModel].
+/// starting with a concrete [container.ChartRootContainerCL], with the help of [model.NewModel].
 ///
 /// This base view maker has access to [model.NewModel]
 ///
@@ -48,7 +49,7 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 ///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
 ///   - [container.ChartBehavior.extendAxisToOrigin] is on this Maker,
 ///     as it controls how views behave (although does not control view making).
-abstract class ChartViewMaker extends Object with container.ChartBehavior {
+abstract class ChartViewMaker extends Object with container_common_new.ChartBehavior {
 
   ChartViewMaker({
     required this.chartData,
@@ -122,7 +123,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   ///
   /// Because it can be recreated and re-set in [paint], it is not final;
   ///   it's children, [legendContainer], etc are also not final.
-  late container.ChartRootContainer chartRootContainer;
+  late container.ChartRootContainerCL chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -205,7 +206,7 @@ abstract class ChartViewMaker extends Object with container.ChartBehavior {
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
-  container.ChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker});
+  container.ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker});
 
   // ##### Methods which create views (containers) for individual chart areas
 

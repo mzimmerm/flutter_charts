@@ -24,9 +24,9 @@ import '../options.dart';
 ///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR extrapolating, OFFSET AND PAINTING.
 ///
 /// Important lifecycle notes:
-///   - When [NewModel] is constructed, the [ChartRootContainer] is not available.
+///   - When [NewModel] is constructed, the [ChartRootContainerCL] is not available.
 ///     So in constructor, [NewModel] cannot be given access to the root container, and it's needed members
-///     such as [ChartRootContainer.labelsGenerator].
+///     such as [ChartRootContainerCL.labelsGenerator].
 class NewModel {
 
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
@@ -170,7 +170,7 @@ class NewModel {
 
   /// Keeps data values grouped in columns.
   ///
-  /// This column grouped data instance is managed here in the [ChartRootContainer],
+  /// This column grouped data instance is managed here in the [ChartRootContainerCL],
   /// (immediate owner of [YContainer] and [DataContainer])
   /// as their data points are needed both during [YContainer.layout]
   /// to calculate extrapolating, and also in [DataContainer.layout] to create

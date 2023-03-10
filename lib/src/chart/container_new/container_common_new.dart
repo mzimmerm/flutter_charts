@@ -65,12 +65,10 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
 }
 
 
-//  todo-00-last-last : moved here from coded_layout/chart/container.dart
-/// [AxisContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer],
-/// (actually currently the [ChartAreaContainer].
+/// [ChartAreaContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-//  todo-00-last-last : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
+//  todo-00-last-last-done : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 
@@ -88,7 +86,7 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
   }
 }
 
-// todo-00-last-last moved from old container.dart
+// todo-00-last-last-done moved from old container.dart
 /// A marker of container with adjustable contents,
 /// such as labels that can be skipped.
 // todo-04-morph LabelLayoutStrategy should be a member of AdjustableContainer, not
@@ -98,6 +96,29 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 
 abstract class AdjustableLabels {
   bool labelsOverlap();
+}
+
+/// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
+/// or vertical bar chart.
+///
+/// The behavior is plugged in the container, not the container owner chart.
+abstract class ChartBehavior {
+  /// Behavior allows to start Y axis at data minimum (rather than 0).
+  ///
+  /// The request is asked by [DataContainerOptions.extendAxisToOriginRequested],
+  /// but the implementation of this behavior must confirm it.
+  /// See the extensions of this class for overrides of this method.
+  ///
+  /// [ChartBehavior] is mixed in to [ChartRootContainer]. This method
+  /// is implemented by concrete [LineChartRootContainer] and [VerticalBarChartRootContainer].
+  /// - In the stacked containers, such as [VerticalBarChartRootContainer], it should return [false],
+  ///   as stacked values should always start at zero, because stacked charts must show absolute values.
+  ///   See [VerticalBarChartRootContainer.extendAxisToOrigin].
+  /// - In the unstacked containers such as  [LineChartRootContainer], this is usually implemented to
+  ///   return the option [DataContainerOptions.extendAxisToOriginRequested],
+  ///   see [LineChartRootContainer.extendAxisToOrigin].
+  ///
+  bool get extendAxisToOrigin;
 }
 
 

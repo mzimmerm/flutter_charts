@@ -209,19 +209,6 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
         ownerAxisContainer: ownerAxisContainer,
       );
 
-/* todo-00-last-last-last-done
-  /// The [AxisContainer] on which this [AxisLabelContainer] is shown.
-  // todo-00-last-last : replaced with ChartAreaContainer : final AxisContainer _ownerAxisContainer;
-  final container_common_new.ChartAreaContainer _ownerAxisContainer;
-
-  /// Maintains the LabelInfo from which this [LabelContainer] was created,
-  /// for use during [layout] of self or parents.
-  final AxisLabelInfo _labelInfo;
-
-  /// Getter of [AxisLabelInfo] which created this Y label.
-  AxisLabelInfo get labelInfo => _labelInfo;
-*/
-
   /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
   ///
@@ -252,10 +239,10 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   ///
   double parentOffsetTick = 0.0;
 
-  /// Overridden from [LabelContainer.layout_Post_Leaf_SetSize_FromInternals]
+  /// Overridden from [AxisLabelContainer.layout_Post_Leaf_SetSize_FromInternals]
   /// added logic to set pixels. ONLY used on Y axis labels for now.
   ///
-  /// Uses the [YContainer.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
+  /// Uses the [YContainerCL.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
   /// lextr the label [_dataValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)

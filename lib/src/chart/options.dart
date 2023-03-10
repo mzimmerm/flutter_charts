@@ -3,11 +3,11 @@ import 'package:flutter/material.dart' as material show Colors; // any color we 
 import 'dart:math' as math show pi, log, ln10, pow, max;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:flutter_charts/src/chart/container_new/container_common_new.dart';
 
 // extension libraries
 import 'line/options.dart';
 import 'bar/options.dart';
+import 'container_new/container_common_new.dart';
 
 /// Options for chart allow to configure certain sizes, colors, and layout.
 ///
