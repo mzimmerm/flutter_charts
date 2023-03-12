@@ -5,21 +5,11 @@ import '../data_container_new.dart';
 import '../legend_container_new.dart';
 import '../../model/data_model_new.dart';
 import '../../view_maker.dart';
-
 import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
-// this level
-// import 'data_container_new.dart';
-// import 'presenter.dart'; // OLD
 
-
-/// Container of the vertical bar chart.
-///
-/// The core override is setting the [pointPresenterCreator] -
-/// object which makes instances of [LinePointPresenter]s,
-/// which are, in turn, used to present each data value.
-
+/// The container-hierarchy root container of the line chart.
 class NewLineChartRootContainer extends NewChartRootContainer {
   NewLineChartRootContainer({
     required LegendContainer    legendContainer,

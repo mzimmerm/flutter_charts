@@ -56,6 +56,7 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
   ///
   /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
   /// to reach data model, as well as the view.
+  // todo-00-last-last-done : final view_maker.ChartViewMaker chartViewMaker; NO CHANGE - COULD MAKE COVARIANT BUT THEN NOT FINAL
   final view_maker.ChartViewMaker chartViewMaker;
 
   @override

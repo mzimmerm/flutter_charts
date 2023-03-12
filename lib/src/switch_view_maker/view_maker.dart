@@ -13,8 +13,16 @@ import '../chart/iterative_layout_strategy.dart' as strategy;
 /// Classes (the only classes) that know about both new auto layout and old coded_layout
 /// classes.
 ///
-/// The 'class-hierarchy-root' view maker has a factory constructor switch,
-/// which returns the old or new view maker based on an environment variable.
+/// The abstract view maker has factory constructors that return the old coded_layout or the
+/// new auto-layout instances for bar chart view maker or line chart view maker,
+/// determined by the environment variable `USE_OLD_DATA_CONTAINER` defined on scripts command lines using
+///   ```sh
+///     --dart-define=USE_OLD_DATA_CONTAINER=true # false
+///   ```
+/// and picked up in Dart code using code similar to
+///   ```dart
+///     bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+///   ```
 ///
 abstract class SwitchChartViewMaker extends ChartViewMaker {
   SwitchChartViewMaker ({

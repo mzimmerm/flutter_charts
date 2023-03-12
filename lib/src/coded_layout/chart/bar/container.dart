@@ -1,4 +1,5 @@
 // base libraries
+import '../../../switch_view_maker/view_maker_cl.dart';
 import '../container.dart';
 import '../../../chart/container_new/legend_container_new.dart';
 import '../../../chart/container_new/root_container_new.dart';
@@ -8,20 +9,14 @@ import '../../../chart/container_new/root_container_new.dart';
 //import '../../../chart/container_new/bar/root_container_new.dart';
 import '../../../chart/model/data_model_new.dart';
 import '../../../chart/view_maker.dart';
-
 import '../../../chart/options.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-// import 'data_container_new.dart';
 import 'presenter.dart'; // OLD
 
 
-/// Container of the vertical bar chart.
-///
-/// The core override is setting the [pointPresenterCreator] -
-/// object which makes instances of [VerticalBarPointPresenter]s,
-/// which are, in turn, used to present each data value.
+/// The container-hierarchy root container of the vertical bar chart in the coded_layout legacy version.
 class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
   VerticalBarChartRootContainerCL({
     required LegendContainer legendContainer,
@@ -45,7 +40,8 @@ class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements Ne
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    chartViewMaker.pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    // todo-00-last-last-done : (chartViewMaker as SwitchChartViewMakerCL) : chartViewMaker.pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
 }

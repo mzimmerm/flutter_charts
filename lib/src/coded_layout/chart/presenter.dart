@@ -18,6 +18,8 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 
 /// The visual element representing one data value on the chart.
 ///
+/// It serves the same role as view - the [BoxContainer] - in the auto-layout version.
+///
 /// PointPresenter of the atomic/leaf element of one data point on the chart.
 ///
 /// For example, on a bar chart, this is one rectangle;
@@ -148,6 +150,8 @@ class PointPresentersColumns extends custom_collection.CustomList<PointPresenter
 
 /// Maker of [PointPresenter] instances.
 ///
+/// It serves the same role as [ChartViewMaker] in the auto-layout version.
+///
 /// It's core method [createPointPresenter] creates [PointPresenter]s,
 /// the visuals painted on each chart column that
 /// represent data, (points and lines for the line chart,
@@ -161,7 +165,7 @@ abstract class PointPresenterCreator {
   PointPresenterCreator(); // same as  {}
 
   PointPresenter createPointPresenter({
-    // todo-03-note : point is needed for VerticalBarPointPresenter to obtain scaledFrom and scaledTo for stacking
+    // Point is needed for VerticalBarPointPresenter to obtain scaledFrom and scaledTo for stacking
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,

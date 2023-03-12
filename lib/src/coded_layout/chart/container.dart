@@ -1,5 +1,6 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'dart:math' as math show max;
+import 'package:flutter_charts/src/switch_view_maker/view_maker_cl.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:logger/logger.dart' as logger;
@@ -769,6 +770,29 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainerCL extends ChartAreaContainer implements NewDataContainer {
+
+  /// Constructs instance from [ChartViewMaker].
+  ///
+  /// Note: It is assumed that the passed [chartViewMaker]
+  ///       is [SwitchChartViewMakerCL], a derivation of [ChartViewMaker].
+  DataContainerCL({required ChartViewMaker chartViewMaker})
+      : super(
+    chartViewMaker: chartViewMaker,
+  );
+
+  /// Keeps data values grouped in columns.
+  ///
+  /// This column grouped data instance is managed here in the [DataContainerCL],
+  /// as their data points are needed both during [YContainerCL.layout]
+  /// to calculate extrapolating, and also here in [DataContainerCL.layout] to create
+  /// [PointPresentersColumns] instance.
+  ///
+  /// Moved here on [DataContainerCL] from [NewModel]. While this is strictly speaking a model legacy coded_layout
+  /// system, the only use is on this [DataContainerCL] so it is a good place to hold it.
+  // todo-00-last-last-done : moved to [DataContainerCL]
+  late PointsColumns pointsColumns;
+
+
   /// Container of gridlines parallel to X axis.
   ///
   /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
@@ -782,11 +806,6 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   /// - bars (stacked or grouped) in bar chart
   ///
   late PointPresentersColumns pointPresentersColumns;
-
-  DataContainerCL({required ChartViewMaker chartViewMaker})
-      : super(
-    chartViewMaker: chartViewMaker,
-  );
 
   /// Overridden builds children of self [DataContainerCL], the [_yGridLinesContainer] and [_xGridLinesContainer]
   /// and adds them as self children.
@@ -957,9 +976,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     //    which represent the list of columns on chart.
     //    Set the  [PointsColumns] instance on [chartViewMaker.chartData.pointsColumns].
     //    The coordinates in [PointsColumns] are relative - 0 based
-    chartViewMaker.chartData.pointsColumns = PointsColumns(
+    // todo-00-last-last-done : chartViewMaker.chartData.pointsColumns = PointsColumns(
+    pointsColumns = PointsColumns(
       chartViewMaker: chartViewMaker,
-      pointPresenterCreator: chartViewMaker.pointPresenterCreator,
+      // todo-00-last-last-done : pointPresenterCreator: chartViewMaker.pointPresenterCreator,
+      pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
       isStacked: chartViewMaker.isStacked,
       caller: this,
     );
@@ -971,16 +992,19 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     _lextrPointsColumns(chartViewMaker.chartData);
     
     // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
-    chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
-    
+    // todo-00-last-last-done : chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
+    pointsColumns.applyParentOffset(this, offset);
+
     // 4. Create the 'view maker', represented here by [PointPresentersColumns],
     //    and set it on [pointPresentersColumns].
     //    Note: The 'view maker' [PointPresentersColumns] is created from the [PointsColumns],
     //          'data container'.
     pointPresentersColumns = PointPresentersColumns(
-      pointsColumns: chartViewMaker.chartData.pointsColumns,
+      // todo-00-last-last-done : pointsColumns: chartViewMaker.chartData.pointsColumns,
+      pointsColumns: pointsColumns,
       chartViewMaker: chartViewMaker,
-      pointPresenterCreator: chartViewMaker.pointPresenterCreator,
+      // todo-00-last-last-done : pointPresenterCreator: chartViewMaker.pointPresenterCreator,
+      pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
     );
   }
 
@@ -1017,7 +1041,6 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     _drawPointPresentersColumns(canvas);
   }
 
-
   // ##### Extrapolating and layout methods of [_chartContainer.pointsColumns]
   //       and [pointPresentersColumns]
 
@@ -1030,7 +1053,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
   void _lextrPointsColumns(NewModel chartData) {
     // ChartRootContainer, cast to CL version
-    chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
+    // todo-00-last-last-done : chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
+    pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
   }
 
   /// Optionally paint series in reverse order (first to last,

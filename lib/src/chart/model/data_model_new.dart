@@ -4,7 +4,7 @@ import 'package:logger/logger.dart' as logger;
 import 'package:flutter/material.dart' as material show Colors;
 
 // this level or equivalent
-import '../../coded_layout/chart/container.dart';
+// import '../../coded_layout/chart/container.dart'; // todo-00-last-last resolve
 import '../container_layouter_base.dart';
 
 import '../../util/util_labels.dart' as util_labels;
@@ -38,14 +38,12 @@ class NewModel {
     required this.chartOptions,
     this.yUserLabels,
     List<ui.Color>? dataRowsColors,
-  })
-      :
-  // Initializing of non-nullable _dataRowsColors which is a non-required argument
-  // must be in the initializer list by a non-member function (member methods only in constructor)
+  })  :
+        // Initializing of non-nullable _dataRowsColors which is a non-required argument
+        // must be in the initializer list by a non-member function (member methods only in constructor)
         _dataRows = dataRows,
         _dataRowsLegends = dataRowsLegends,
-        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length)
-  {
+        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length) {
     logger.Logger().d('Constructing NewModel');
     validate();
 
@@ -64,7 +62,6 @@ class NewModel {
         ),
       );
     }
-
   }
 
   // NEW CODE =============================================================
@@ -175,7 +172,8 @@ class NewModel {
   /// as their data points are needed both during [YContainerCL.layout]
   /// to calculate extrapolating, and also in [DataContainerCL.layout] to create
   /// [PointPresentersColumns] instance.
-  late PointsColumns pointsColumns;
+  // todo-00-last-last-done : moved to [DataContainerCL]
+  // late PointsColumns pointsColumns;
 
   List<double> get flatten => _dataRows.expand((element) => element).toList();
   double get dataYMax => flatten.reduce(math.max);

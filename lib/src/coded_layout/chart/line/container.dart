@@ -1,4 +1,5 @@
 // base libraries
+import '../../../switch_view_maker/view_maker_cl.dart';
 import '../container.dart';
 import '../../../chart/container_new/legend_container_new.dart';
 import '../../../chart/container_new/root_container_new.dart';
@@ -9,19 +10,13 @@ import '../../../chart/container_new/root_container_new.dart';
 //import '../../../chart/container_new/bar/root_container_new.dart';
 import '../../../chart/model/data_model_new.dart';
 import '../../../chart/view_maker.dart';
-
 import '../../../chart/options.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-// import 'data_container_new.dart';
 import 'presenter.dart'; // OLD
 
-/// Container of the line chart.
-///
-/// The core override is setting the [pointPresenterCreator] -
-/// object which makes instances of [LineAndHotspotPointPresenter]s,
-/// which are, in turn, used to present each data value.
+/// The container-hierarchy root container of the line chart in the coded_layout legacy version.
 class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
   LineChartRootContainerCL({
     required LegendContainer legendContainer,
@@ -45,6 +40,7 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartR
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    chartViewMaker.pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
+    // todo-00-last-last-done : (chartViewMaker as SwitchChartViewMakerCL) : chartViewMaker.pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
+    (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 }
