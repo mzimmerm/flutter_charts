@@ -19,7 +19,7 @@ class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
-          isStacked: true, // only supported for now
+          isStacked: true, // only supported for now for bar chart
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     logger.Logger().d('$runtimeType created');

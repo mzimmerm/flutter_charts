@@ -19,7 +19,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartData: chartData,
-          isStacked: true, // only supported for now
+          isStacked: false, // only supported for now for line chart
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
     logger.Logger().d('$runtimeType created');
@@ -59,6 +59,22 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
     );
   }
 
+/* todo-00-last-last-last-last-last-done : maybe a fix for CL line chart?
   @override
   bool get extendAxisToOrigin => true;
+*/
+
+  /// Implements [ChartBehavior] mixin abstract method.
+  ///
+  /// If resolved to [true], Y axis will start on the minimum of Y values, otherwise at [0.0].
+  ///
+  /// This is the method used in code logic when building the Y labels and axis.
+  ///
+  /// The related variable [DataContainerOptions.extendAxisToOriginRequested],
+  /// is merely a request that may not be granted in some situations.
+  ///
+  /// On this line chart container, allow the y axis start from 0 if requested by options.
+  @override
+  bool get extendAxisToOrigin => chartOptions.dataContainerOptions.extendAxisToOriginRequested;
+
 }

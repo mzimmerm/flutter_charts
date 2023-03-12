@@ -23,7 +23,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
     chartData: chartData,
-    isStacked: false, // only supported for now
+    isStacked: false, // only supported for now for line chart
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');
