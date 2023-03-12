@@ -11,7 +11,6 @@ import '../options.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
-// todo-00-last-last-done : class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainerCL {
 class NewDataContainer extends container_common_new.ChartAreaContainer {
 
   NewDataContainer({
@@ -47,16 +46,6 @@ class NewDataContainer extends container_common_new.ChartAreaContainer {
     ]);
   }
 
-/* todo-00-last-last-done :
-  // --------------- overrides to implement legacy vvvvv
-  @override
-  PointPresentersColumns get pointPresentersColumns => throw UnimplementedError();
-  @override
-  set pointPresentersColumns(PointPresentersColumns _) => throw UnimplementedError();
-  @override
-  List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) => throw UnimplementedError();
-  // --------------- overrides to implement legacy ^^^^^
- */
 }
 
 class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {

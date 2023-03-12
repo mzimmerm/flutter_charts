@@ -379,7 +379,6 @@ class YLabelContainer extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required ChartOptions options,
     required AxisLabelInfo labelInfo,
-    // todo-00-last-last-done : change to ChartAreaContainer : required AxisContainerCL ownerChartAreaContainer,
     required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,

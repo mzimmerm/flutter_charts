@@ -31,7 +31,6 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-// todo-00-last-last-done :   LineChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
   NewLineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var xContainer = makeViewForDomainAxis();
@@ -39,7 +38,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-last-last-last-done : assert(isUseOldDataContainer == false);
+    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
     return NewLineChartRootContainer(
       legendContainer: legendContainer,
@@ -57,7 +56,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
   @override
   NewDataContainer makeViewForDataContainer() {
-    // todo-00-last-last-last-done : assert(isUseOldDataContainer == false);
+    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
     return NewLineChartDataContainer(
       chartViewMaker: this,

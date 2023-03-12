@@ -48,7 +48,6 @@ import 'bar/presenter.dart' as bar_presenters;
 /// The lifecycle of [ChartRootContainerCL] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-// todo-00-last-last-done : abstract class ChartRootContainerCL extends ChartAreaContainer {
 abstract class ChartRootContainerCL extends ChartAreaContainer implements NewChartRootContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
@@ -89,21 +88,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements NewCha
 
   /// Number of columns in the [DataContainerCL].
 
-  /// Base Areas of chart.
-  /* todo-00-last-last-done : removed, this is in super, but usages will have to be cast
-  @override
-  late LegendContainer legendContainer;
-  late XContainerCL xContainer;
-  late YContainerCL yContainer;
-  late YContainerCL yContainerFirst;
-  late DataContainerCL dataContainer;
-
-  // The cast has to be to:
-  //  late NewXContainer xContainer;
-  //  late NewYContainer yContainer;
-  //  late NewYContainer yContainerFirst;
-  //  late NewDataContainer dataContainer;
-  */
+  /// Base Areas of chart. In some sections of legacy coded_layout code, may need cast to their CL versions.
   @override
   late LegendContainer legendContainer;
   @override
@@ -198,9 +183,9 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements NewCha
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.layout();
 
-    // todo-00-last-last-last-done : if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-remove : if (chartViewMaker.isUseOldDataContainer) {
       yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    // todo-00-last-last-last-done : }
+    // todo-00-switch-remove : }
     // ####### 3. XContainer: Given width of YContainerFirst, constraint, then layout XContainer
 
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
@@ -253,23 +238,23 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements NewCha
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
     // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
     BoxContainerConstraints dataContainerBoxConstraints;
-    // todo-00-last-last-last-done : if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-remove : if (chartViewMaker.isUseOldDataContainer) {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
             yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - xContainerSize.height,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
-    // todo-00-last-last-last-done : } else {
-    // todo-00-last-last-last-done :   dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
-    // todo-00-last-last-last-done :       size: ui.Size(
-    // todo-00-last-last-last-done :         constraints.width - yContainerSize.width,
-    // todo-00-last-last-last-done :         // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
-    // todo-00-last-last-last-done :         //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-    // todo-00-last-last-last-done :         yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
-    // todo-00-last-last-last-done :       ));
-    // todo-00-last-last-last-done :   dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
-    // todo-00-last-last-last-done : }
+    // todo-00-switch-remove : } else {
+    // todo-00-switch-remove :   dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
+    // todo-00-switch-remove :       size: ui.Size(
+    // todo-00-switch-remove :         constraints.width - yContainerSize.width,
+    // todo-00-switch-remove :         // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
+    // todo-00-switch-remove :         //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
+    // todo-00-switch-remove :         yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+    // todo-00-switch-remove :       ));
+    // todo-00-switch-remove :   dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+    // todo-00-switch-remove : }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.layout();
@@ -354,7 +339,6 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-// todo-00-last-last-done : class YContainerCL extends AxisContainerCL {
 class YContainerCL extends AxisContainerCL implements NewYContainer {
 
   /// Constructs the container that holds Y labels.
@@ -527,7 +511,6 @@ class YContainerCL extends AxisContainerCL implements NewYContainer {
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-// todo-00-last-last-done : class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
 class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements NewXContainer {
 
   /// Constructs the container that holds X labels.
@@ -785,7 +768,6 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-// todo-00-last-last-done : abstract class DataContainerCL extends ChartAreaContainer {
 abstract class DataContainerCL extends ChartAreaContainer implements NewDataContainer {
   /// Container of gridlines parallel to X axis.
   ///
@@ -813,7 +795,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
 
     List<BoxContainer> dataContainerChildren = [];
 
-    // todo-00-last-last-done : ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer;
+    /// Root of chart, cast to CL version.
     ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer as ChartRootContainerCL;
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
@@ -911,10 +893,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   @override
   void layout() {
 
-    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-last-last-last-done :   super.layout();
-    // todo-00-last-last-last-done :   return;
-    // todo-00-last-last-last-done : }
+    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-remove :   super.layout();
+    // todo-00-switch-remove :   return;
+    // todo-00-switch-remove : }
 
     // OLD Manual layout build. NEW invokes this as part of auto-layout.
     buildAndReplaceChildren();
@@ -937,10 +919,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-last-last-last-done :   super.applyParentOffset(caller, offset);
-    // todo-00-last-last-last-done :   return;
-    // todo-00-last-last-last-done : }
+    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-remove :   super.applyParentOffset(caller, offset);
+    // todo-00-switch-remove :   return;
+    // todo-00-switch-remove : }
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1020,16 +1002,16 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   }
 
   /// Abstract method common to implementing data containers,
-  /// currently the [LineChartDataContainer] and the [VerticalBarChartDataContainer].
+  /// currently the [LineChartDataContainerCL] and the [VerticalBarChartDataContainerCL].
   void _drawPointPresentersColumns(ui.Canvas canvas);
 
   /// Paints grid lines, then paints [PointPresentersColumns]
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-last-last-last-done :   super.paint(canvas);
-    // todo-00-last-last-last-done :   return;
-    // todo-00-last-last-last-done : }
+    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-remove :   super.paint(canvas);
+    // todo-00-switch-remove :   return;
+    // todo-00-switch-remove : }
 
     _paintGridLines(canvas);
     _drawPointPresentersColumns(canvas);
@@ -1047,7 +1029,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
   void _lextrPointsColumns(NewModel chartData) {
-    // todo-00-last-last-last-last-done : chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer);
+    // ChartRootContainer, cast to CL version
     chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
   }
 
@@ -1068,8 +1050,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
 ///
 /// The only role is to implement the abstract method of the baseclass,
 /// [paint] and [_drawPointPresentersColumns].
-class VerticalBarChartDataContainer extends DataContainerCL {
-  VerticalBarChartDataContainer({
+class VerticalBarChartDataContainerCL extends DataContainerCL {
+  VerticalBarChartDataContainerCL({
     required ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,
@@ -1113,8 +1095,8 @@ class VerticalBarChartDataContainer extends DataContainerCL {
 ///
 /// The only role is to implement the abstract method of the baseclass,
 /// [paint] and [drawDataPointPresentersColumns].
-class LineChartDataContainer extends DataContainerCL {
-  LineChartDataContainer({
+class LineChartDataContainerCL extends DataContainerCL {
+  LineChartDataContainerCL({
     required ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,
@@ -1575,7 +1557,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  // todo-00-last-last-last-last-done : void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
   void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
     int col = 0;
     for (PointsColumn column in this) {

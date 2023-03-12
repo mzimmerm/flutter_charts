@@ -11,7 +11,6 @@ import '../view_maker.dart';
 import '../model/data_model_new.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 
-// todo-00-last-last-done : class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainerCL {
 class NewChartRootContainer extends container_common_new.ChartAreaContainer {
 
   NewChartRootContainer({
@@ -79,45 +78,18 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer {
     );
   }
 
-  /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
-  /// which is never set on instances of this [ChartRootContainer].
-  @override
-  bool get isRoot => true;
-
-  /// Number of columns in the [DataContainer].
-
   /// todo-00-! The members are only needed during layout of deeper children (e.g., NewHBarPointContainer) to access the members' sizes or constraints
   ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
-  /// todo-00-later : change those to new containers - or remove them entirely :  All below declare the old containers. remove when completely separated, make this NewXContainer etc
-  /// todo-00-later : these containers are never used in the NEW NewChartRootContainer. Maybe comment them out??
-/* todo-00-last-last-done : converted members to new auto layout
-  late LegendContainer legendContainer;
-  late old_container.XContainerCL xContainer;
-  late old_container.YContainerCL yContainer;
-  late old_container.YContainerCL yContainerFirst;
-  late old_container.DataContainerCL dataContainer;
-*/
   late LegendContainer legendContainer;
   covariant late NewXContainer xContainer;
   covariant late NewYContainer yContainer;
   covariant late NewYContainer yContainerFirst;
   covariant late NewDataContainer dataContainer;
 
-  /// ##### Subclasses - aware members.
-
-/* todo-00-last-last-done :
-  // --------------- overrides to implement legacy vvvvv
+  /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
+  /// which is never set on instances of this [ChartRootContainer].
   @override
-  late bool isStacked;
-  @override
-  double get xGridStep => throw UnimplementedError();
-  @override
-  List<double> get xTickXs => throw UnimplementedError();
-  @override
-  List<double> get yTickYs => throw UnimplementedError();
-  // --------------- overrides to implement legacy ^^^^^
- */
-
+  bool get isRoot => true;
 }

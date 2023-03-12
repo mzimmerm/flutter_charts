@@ -18,7 +18,6 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
-// todo-00-last-last-done : class NewVerticalBarChartRootContainer extends NewChartRootContainer implements old_bar_container.VerticalBarChartRootContainerCL {
 class NewVerticalBarChartRootContainer extends NewChartRootContainer {
 
   NewVerticalBarChartRootContainer({

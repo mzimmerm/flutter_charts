@@ -20,7 +20,6 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 /// object which makes instances of [LinePointPresenter]s,
 /// which are, in turn, used to present each data value.
 
-// todo-00-last-last-done : class NewLineChartRootContainer extends NewChartRootContainer implements old_line_container.LineChartRootContainerCL {
 class NewLineChartRootContainer extends NewChartRootContainer {
   NewLineChartRootContainer({
     required LegendContainer    legendContainer,

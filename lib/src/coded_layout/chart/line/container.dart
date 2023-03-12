@@ -22,8 +22,6 @@ import 'presenter.dart'; // OLD
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [LineAndHotspotPointPresenter]s,
 /// which are, in turn, used to present each data value.
-// todo-00-last-last-done : class LineChartRootContainerCL extends ChartRootContainerCL {
-// todo-00-last-last-progress : was : class LineChartRootContainerCL extends ChartRootContainerCL implements NewLineChartRootContainer {
 class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
   LineChartRootContainerCL({
     required LegendContainer legendContainer,

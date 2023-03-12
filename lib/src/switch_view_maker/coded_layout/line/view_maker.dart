@@ -26,7 +26,6 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
   }
 
   @override
-  // todo-00-last-last-done :   LineChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
   LineChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var xContainer = makeViewForDomainAxis();
@@ -34,7 +33,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-last-last-last-done : assert(isUseOldDataContainer == true);
+    // todo-00-switch-remove : assert(isUseOldDataContainer == true);
 
     return LineChartRootContainerCL(
       legendContainer: legendContainer,
@@ -52,17 +51,11 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   DataContainerCL makeViewForDataContainer() {
-    // todo-00-last-last-last-done : assert(isUseOldDataContainer == true);
-    // todo-00-last-last : rename to CL
-    return LineChartDataContainer(
+    // todo-00-switch-remove : assert(isUseOldDataContainer == true);
+    return LineChartDataContainerCL(
       chartViewMaker: this,
     );
   }
-
-/* todo-00-last-last-last-last-last-done : maybe a fix for CL line chart?
-  @override
-  bool get extendAxisToOrigin => true;
-*/
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///

@@ -17,7 +17,6 @@ import 'src/util/examples_descriptor.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
-import 'package:flutter_charts/src/switch_view_maker/auto_layout/bar/view_maker.dart';
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
@@ -958,7 +957,6 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        // todo-00-last-last-last-last-done : SwitchLineChartViewMaker lineChartViewMaker = SwitchLineChartViewMaker(
         SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.switchLineConstruct(
           chartData: chartData,
           isStacked: false,
@@ -973,7 +971,6 @@ class _ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        // todo-00-last-last-last-last-done : SwitchVerticalBarChartViewMaker verticalBarChartViewMaker = SwitchVerticalBarChartViewMaker(
         SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.switchBarConstruct(
           chartData: chartData,
           isStacked: false,

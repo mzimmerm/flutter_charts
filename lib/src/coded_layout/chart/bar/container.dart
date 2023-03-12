@@ -22,8 +22,6 @@ import 'presenter.dart'; // OLD
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
-// todo-00-last-last-done : class VerticalBarChartRootContainerCL extends ChartRootContainerCL {
-// todo-00-last-last-progress : was : class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewVerticalBarChartRootContainer {
 class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
   VerticalBarChartRootContainerCL({
     required LegendContainer legendContainer,

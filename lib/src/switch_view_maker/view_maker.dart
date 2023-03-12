@@ -27,7 +27,8 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
 
-  // todo-00-last-last-last-last-last-last-done : to the end, adding factory constructors
+  /// Factory switch returns instances of auto-layout or coded_layout versions of view maker
+  /// for vertical bar chart.
   factory SwitchChartViewMaker.switchBarConstruct({
     required model.NewModel chartData,
     bool isStacked = false,
@@ -51,6 +52,8 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     }
   }
 
+  /// Factory switch returns instances of auto-layout or coded_layout versions of view maker
+  /// for line chart.
   factory SwitchChartViewMaker.switchLineConstruct({
     required model.NewModel chartData,
     bool isStacked = false,

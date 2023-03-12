@@ -13,7 +13,6 @@ class VerticalBarChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
-    // todo-00-last-last-last-last : required SwitchVerticalBarChartViewMaker verticalBarChartViewMaker,
     required ChartViewMaker verticalBarChartViewMaker,
   }) : super(
           chartViewMaker: verticalBarChartViewMaker,

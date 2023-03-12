@@ -7,7 +7,6 @@ import 'package:logger/logger.dart' as logger;
 // view_maker imports
 
 // this level or equivalent
-import '../coded_layout/chart/container.dart' as container;
 import 'container_new/data_container_new.dart' as data_container_new;
 import 'container_new/container_common_new.dart' as container_common_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
@@ -60,7 +59,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     this.xContainerLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
-    // todo-00-last-last-last-done : moved to Switch : isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
     // Copy options also on this [ViewMaker] from Model.options
     chartOptions = chartData.chartOptions;
 
@@ -68,7 +66,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-00!!-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-00-last-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -126,7 +124,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Because it can be recreated and re-set in [paint], it is not final;
   ///   it's children, [legendContainer], etc are also not final.
-  // todo-00-last-last-done :  late container.ChartRootContainerCL chartRootContainer;
   late root_container_new.NewChartRootContainer chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],
@@ -143,12 +140,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
   strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-
-  /// Controls whether to use the old manual layout containers, or the new,
-  /// auto-layout containersSet from a commend line
-  /// switch --dart-define=USE_OLD_DATA_CONTAINER=false/true.
-  /// Find usages to see where old/new code differs.
-  // todo-00-last-last-last-done : late final bool isUseOldDataContainer;
 
   /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.
