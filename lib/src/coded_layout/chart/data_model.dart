@@ -8,7 +8,7 @@ import '../../chart/options.dart';
 import '../../chart/model/data_model_new.dart';
 
 /// Manages Chart Data.
-@Deprecated('Use NewModel instead.')
+@Deprecated('Use ChartModel instead.')
 class ChartData {
   /// Data in rows.
   ///

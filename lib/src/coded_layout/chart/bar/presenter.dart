@@ -25,7 +25,7 @@ class VerticalBarPointPresenter extends PointPresenter {
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartViewMaker.chartData.dataRowsColors;
+    List<ui.Color> dataRowsColors = chartViewMaker.chartModel.dataRowsColors;
     dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;

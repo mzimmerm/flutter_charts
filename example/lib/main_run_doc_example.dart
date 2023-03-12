@@ -25,7 +25,7 @@ void main() {
 /// ```
 Widget chartToRun() {
   LabelLayoutStrategy? xContainerLabelLayoutStrategy;
-  NewModel chartData;
+  ChartModel chartModel;
   ChartOptions chartOptions = const ChartOptions();
   // Set option which will ask to start Y axis at data minimum.
   // Even though startYAxisAtDataMinRequested set to true, will not be granted on bar chart
@@ -34,7 +34,7 @@ Widget chartToRun() {
       extendAxisToOriginRequested: false, // should have no effect on Stacked charts!
     ),
   );
-  chartData = NewModel(
+  chartModel = ChartModel(
     dataRows: const [
       [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
       [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
@@ -47,7 +47,7 @@ Widget chartToRun() {
     chartOptions: chartOptions,
   );
   var lineChartViewMaker = SwitchLineChartViewMaker(
-    chartData: chartData,
+    chartModel: chartModel,
     isStacked: false,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );

@@ -14,11 +14,11 @@ import '../../view_maker_cl.dart'; // OLD
 
 class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
   SwitchLineChartViewMakerCL({
-    required NewModel chartData,
+    required ChartModel chartModel,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: false, // only supported for now for line chart
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
@@ -42,7 +42,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
       yContainer: yContainer,
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
-      chartData: chartData,
+      chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

@@ -60,7 +60,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewMaker.chartOptions;
 
-    List<String> dataRowsLegends = chartViewMaker.chartData.dataRowsLegends;
+    List<String> dataRowsLegends = chartViewMaker.chartModel.dataRowsLegends;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
@@ -149,8 +149,8 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
           label: dataRowsLegends[index],
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartViewMaker.chartData.dataRowsColors
-                .elementAt(index % chartViewMaker.chartData.dataRowsColors.length)),
+            ..color = chartViewMaker.chartModel.dataRowsColors
+                .elementAt(index % chartViewMaker.chartModel.dataRowsColors.length)),
           options: options,
         ),
     ];

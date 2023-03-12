@@ -1,12 +1,8 @@
 // this level base libraries or equivalent
 //import '../container.dart' as container;
 import '../container_layouter_base.dart' as container_base;
-//import '../model/data_model_new.dart' as model;
 import '../view_maker.dart' as view_maker;
-//import '../layouter_one_dimensional.dart';
 import '../../container/container_key.dart';
-//import '../../util/util_dart.dart';
-//import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
 
 /// Base class which manages, lays out, offsets, and paints
@@ -51,12 +47,12 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
     constraintsWeight: constraintsWeight,
   );
 
-  /// The instance of [ChartViewMaker] which makes (produces) instances of
-  /// the view root for all [ChartAreaContainer]s, the [ChartRootContainer].
+  /// The instance of [ChartViewMaker] which makes (produces) the chart view:
+  /// both the view root, the [ChartRootContainer], and all [ChartAreaContainer]s inside.
   ///
   /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
   /// to reach data model, as well as the view.
-  // todo-00-last-last-done : final view_maker.ChartViewMaker chartViewMaker; NO CHANGE - COULD MAKE COVARIANT BUT THEN NOT FINAL
+  // todo-00-last-00 : can we move this on a CL class if only needed by legacy?
   final view_maker.ChartViewMaker chartViewMaker;
 
   @override
@@ -69,7 +65,6 @@ abstract class ChartAreaContainer extends container_base.BoxContainer {
 /// [ChartAreaContainer] which provides ability to connect [LabelLayoutStrategy] to [BoxContainer].
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
-//  todo-00-last-done : AxisContainer is OLD : abstract class AdjustableLabelsChartAreaContainer extends AxisContainer implements AdjustableLabels {
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
 

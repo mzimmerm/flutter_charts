@@ -49,7 +49,7 @@ import 'bar/presenter.dart' as bar_presenters;
 /// The lifecycle of [ChartRootContainerCL] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-abstract class ChartRootContainerCL extends ChartAreaContainer implements NewChartRootContainer {
+abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartRootContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
@@ -73,7 +73,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements NewCha
     required this.yContainerFirst,
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
-    required NewModel chartData,
+    required ChartModel chartModel,
     required this.isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
@@ -322,7 +322,7 @@ mixin PixelRangeProvider on ChartAreaContainer {
   ///      - For the [XContainerCL], the [axisPixelsRange] is currently UNUSED.
   ///
   ///  2. The difference between [axisPixelsRange] min and max is the height constraint
-  ///     on [NewDataContainer]!
+  ///     on [DataContainer]!
   ///
   ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
   ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
@@ -340,7 +340,7 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class YContainerCL extends AxisContainerCL implements NewYContainer {
+class YContainerCL extends AxisContainerCL implements YContainer {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -512,7 +512,7 @@ class YContainerCL extends AxisContainerCL implements NewYContainer {
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements NewXContainer {
+class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements XContainer {
 
   /// Constructs the container that holds X labels.
   ///
@@ -769,7 +769,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainerCL extends ChartAreaContainer implements NewDataContainer {
+abstract class DataContainerCL extends ChartAreaContainer implements DataContainer {
 
   /// Constructs instance from [ChartViewMaker].
   ///
@@ -787,9 +787,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   /// to calculate extrapolating, and also here in [DataContainerCL.layout] to create
   /// [PointPresentersColumns] instance.
   ///
-  /// Moved here on [DataContainerCL] from [NewModel]. While this is strictly speaking a model legacy coded_layout
+  /// Moved here on [DataContainerCL] from [ChartModel]. While this is strictly speaking a model legacy coded_layout
   /// system, the only use is on this [DataContainerCL] so it is a good place to hold it.
-  // todo-00-last-last-done : moved to [DataContainerCL]
   late PointsColumns pointsColumns;
 
 
@@ -974,12 +973,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     
     // 1. From the [ChartData] model, create the 'data container' (the [PointsColumns])
     //    which represent the list of columns on chart.
-    //    Set the  [PointsColumns] instance on [chartViewMaker.chartData.pointsColumns].
+    //    Set the  [PointsColumns] instance on [chartViewMaker.chartModel.pointsColumns].
     //    The coordinates in [PointsColumns] are relative - 0 based
-    // todo-00-last-last-done : chartViewMaker.chartData.pointsColumns = PointsColumns(
     pointsColumns = PointsColumns(
       chartViewMaker: chartViewMaker,
-      // todo-00-last-last-done : pointPresenterCreator: chartViewMaker.pointPresenterCreator,
       pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
       isStacked: chartViewMaker.isStacked,
       caller: this,
@@ -989,10 +986,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     // Scale the [pointsColumns] to the [YContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
-    _lextrPointsColumns(chartViewMaker.chartData);
+    _lextrPointsColumns(chartViewMaker.chartModel);
     
     // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
-    // todo-00-last-last-done : chartViewMaker.chartData.pointsColumns.applyParentOffset(this, offset);
     pointsColumns.applyParentOffset(this, offset);
 
     // 4. Create the 'view maker', represented here by [PointPresentersColumns],
@@ -1000,10 +996,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
     //    Note: The 'view maker' [PointPresentersColumns] is created from the [PointsColumns],
     //          'data container'.
     pointPresentersColumns = PointPresentersColumns(
-      // todo-00-last-last-done : pointsColumns: chartViewMaker.chartData.pointsColumns,
       pointsColumns: pointsColumns,
       chartViewMaker: chartViewMaker,
-      // todo-00-last-last-done : pointPresenterCreator: chartViewMaker.pointPresenterCreator,
       pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
     );
   }
@@ -1051,9 +1045,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements NewDataCont
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
-  void _lextrPointsColumns(NewModel chartData) {
+  void _lextrPointsColumns(ChartModel chartModel) {
     // ChartRootContainer, cast to CL version
-    // todo-00-last-last-done : chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
     pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
   }
 
@@ -1333,7 +1326,7 @@ class StackableValuePoint {
     required DataRangeLabelInfosGenerator yLabelsGenerator,
   }) {
     // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in yLabelsGenerator
-    // were calculated using the NEW [NewModel]
+    // were calculated using the NEW [ChartModel]
 
     YContainerCL yContainerCL = chartViewMaker.chartRootContainer.yContainer as YContainerCL;
     double axisPixelsYMin = yContainerCL.axisPixelsRange.min;
@@ -1499,7 +1492,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.dataRows] values in
-  /// the passed [chartViewMaker.chartData].
+  /// the passed [chartViewMaker.chartModel].
   PointsColumns({
     required this.chartViewMaker,
     required PointPresenterCreator pointPresenterCreator,
@@ -1508,12 +1501,12 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   })  : _isStacked = isStacked,
         _caller = caller,
         super(growable: true) {
-    _createStackableValuePointsFromChartData(chartViewMaker.chartData);
+    _createStackableValuePointsFromChartData(chartViewMaker.chartModel);
   }
 
   /// Constructs internals of this object, the [PointsColumns].
   ///
-  /// Transposes data passed as rows in [chartData.dataRows]
+  /// Transposes data passed as rows in [chartModel.dataRows]
   /// to [_valuePointArrInRows] and to [_valuePointArrInColumns].
   ///
   /// Creates links on "this column" to "successor in stack on the right",
@@ -1521,18 +1514,18 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(NewModel chartData) {
+  void _createStackableValuePointsFromChartData(ChartModel chartModel) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
-        List.filled(chartData.dataRows[0].length, null);
-    for (int col = 0; col < chartData.dataRows[0].length; col++) {
+        List.filled(chartModel.dataRows[0].length, null);
+    for (int col = 0; col < chartModel.dataRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }
 
     // Data points managed row.  Internal only, should be refactored away.
     List<List<StackableValuePoint>> valuePointArrInRows = List.empty(growable: true);
 
-    for (int row = 0; row < chartData.dataRows.length; row++) {
-      List<num> dataRow = chartData.dataRows[row];
+    for (int row = 0; row < chartModel.dataRows.length; row++) {
+      List<num> dataRow = chartModel.dataRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
       valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < dataRow.length; col++) {
@@ -1597,7 +1590,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   /// Makes this [PointsColumns] object a [BoxContainer] - like class,
   ///
-  /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewMaker.chartData] by the [offset],
+  /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewMaker.chartModel] by the [offset],
   /// presumable calle from parent [DataContainerCL].
   ///
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer

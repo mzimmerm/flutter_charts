@@ -26,11 +26,11 @@ import '../chart/iterative_layout_strategy.dart' as strategy;
 ///
 abstract class SwitchChartViewMaker extends ChartViewMaker {
   SwitchChartViewMaker ({
-    required model.NewModel chartData,
+    required model.ChartModel chartModel,
     bool isStacked = false,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super (
-  chartData: chartData,
+  chartModel: chartModel,
   isStacked: isStacked,
   xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
@@ -38,7 +38,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   /// Factory switch returns instances of auto-layout or coded_layout versions of view maker
   /// for vertical bar chart.
   factory SwitchChartViewMaker.switchBarConstruct({
-    required model.NewModel chartData,
+    required model.ChartModel chartModel,
     bool isStacked = false,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) {
@@ -47,13 +47,13 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
 
     if (isUseOldDataContainer) {
       return SwitchVerticalBarChartViewMakerCL(
-        chartData: chartData,
+        chartModel: chartModel,
         isStacked: isStacked,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     } else {
       return SwitchVerticalBarChartViewMaker(
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
@@ -63,7 +63,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   /// Factory switch returns instances of auto-layout or coded_layout versions of view maker
   /// for line chart.
   factory SwitchChartViewMaker.switchLineConstruct({
-    required model.NewModel chartData,
+    required model.ChartModel chartModel,
     bool isStacked = false,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) {
@@ -72,13 +72,13 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
 
     if (isUseOldDataContainer) {
       return SwitchLineChartViewMakerCL(
-        chartData: chartData,
+        chartModel: chartModel,
         isStacked: isStacked,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     } else {
       return SwitchLineChartViewMaker(
-        chartData: chartData,
+        chartModel: chartModel,
         isStacked: isStacked,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );

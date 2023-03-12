@@ -18,11 +18,11 @@ import '../../view_maker.dart'; // NEW SWITCH
 /// See [ChartViewMaker] for help.
 class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   SwitchLineChartViewMaker({
-    required NewModel chartData,
+    required ChartModel chartModel,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-    chartData: chartData,
+    chartModel: chartModel,
     isStacked: false, // only supported for now for line chart
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   ) {
@@ -31,7 +31,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  NewLineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var xContainer = makeViewForDomainAxis();
     var yContainerFirst = makeViewForYContainerFirst();
@@ -40,14 +40,14 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
     // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
-    return NewLineChartRootContainer(
+    return LineChartRootContainer(
       legendContainer: legendContainer,
       xContainer: xContainer,
       yContainerFirst: yContainerFirst,
       yContainer: yContainer,
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
-      chartData: chartData,
+      chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -55,10 +55,10 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   }
 
   @override
-  NewDataContainer makeViewForDataContainer() {
+  DataContainer makeViewForDataContainer() {
     // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
-    return NewLineChartDataContainer(
+    return LineChartDataContainer(
       chartViewMaker: this,
     );
   }

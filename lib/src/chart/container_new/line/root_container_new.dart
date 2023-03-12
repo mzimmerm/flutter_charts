@@ -10,15 +10,15 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 
 
 /// The container-hierarchy root container of the line chart.
-class NewLineChartRootContainer extends NewChartRootContainer {
-  NewLineChartRootContainer({
+class LineChartRootContainer extends ChartRootContainer {
+  LineChartRootContainer({
     required LegendContainer    legendContainer,
-    required NewXContainer      xContainer,
-    required NewYContainer      yContainerFirst,
-    required NewYContainer      yContainer,
-    required NewDataContainer   dataContainer,
+    required XContainer      xContainer,
+    required YContainer      yContainerFirst,
+    required YContainer      yContainer,
+    required DataContainer   dataContainer,
     required ChartViewMaker  chartViewMaker,
-    required NewModel        chartData,
+    required ChartModel        chartModel,
     required ChartOptions    chartOptions,
     required bool            isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -29,7 +29,7 @@ class NewLineChartRootContainer extends NewChartRootContainer {
     yContainer: yContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {

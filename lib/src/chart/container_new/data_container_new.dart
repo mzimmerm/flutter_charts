@@ -11,9 +11,9 @@ import '../options.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
-class NewDataContainer extends container_common_new.ChartAreaContainer {
+class DataContainer extends container_common_new.ChartAreaContainer {
 
-  NewDataContainer({
+  DataContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,
@@ -39,7 +39,7 @@ class NewDataContainer extends container_common_new.ChartAreaContainer {
           crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
           children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
             chartViewMaker,
-            chartViewMaker.chartData.crossSeriesPointsList,
+            chartViewMaker.chartModel.crossSeriesPointsList,
           ),
         ),
       ),
@@ -48,10 +48,10 @@ class NewDataContainer extends container_common_new.ChartAreaContainer {
 
 }
 
-class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {
-  model.NewCrossSeriesPointsModel backingDataCrossSeriesPointsModel;
+class CrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {
+  model.CrossSeriesPointsModel backingDataCrossSeriesPointsModel;
 
-  NewCrossSeriesPointsContainer({
+  CrossSeriesPointsContainer({
     required ChartViewMaker chartViewMaker,
     required this.backingDataCrossSeriesPointsModel,
     List<BoxContainer>? children,
@@ -66,11 +66,11 @@ class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContai
   );
 }
 
-class NewPointContainer extends container_common_new.ChartAreaContainer {
-  model.NewPointModel newPointModel;
+class PointContainer extends container_common_new.ChartAreaContainer {
+  model.PointModel pointModel;
 
-  NewPointContainer({
-    required this.newPointModel,
+  PointContainer({
+    required this.pointModel,
     required ChartViewMaker chartViewMaker,
     List<BoxContainer>? children,
     ContainerKey? key,
@@ -86,27 +86,27 @@ class NewPointContainer extends container_common_new.ChartAreaContainer {
 /// todo-00-last-00 : For some new containers (those that need to be sized from values to pixels),
 ///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
 ///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
-///                          For children of NewDataContainer, it will be NewDataContainer.constraints.
+///                          For children of DataContainer, it will be DataContainer.constraints.
 ///                          For children of YContainer, it will be YContainer.constraints (???)
 ///                          Generally it must be an object that is known at layout time, and will not change - for example last cell in table,
-class NewHBarPointContainer extends NewPointContainer {
+class HBarPointContainer extends PointContainer {
 
   /// The rectangle representing the value.
   ///
-  /// It's height represents [newPointModel.dataValue] extrapolated from the value range to the
+  /// It's height represents [pointModel.dataValue] extrapolated from the value range to the
   /// pixel height available for data in the vertical direction.
   ///
   /// It's size should be calculated in [layout], and used in [paint];
   late final ui.Size _rectangleSize;
 
-  NewHBarPointContainer({
-    required model.NewPointModel newPointModel,
+  HBarPointContainer({
+    required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
     // todo-00!! Do we need children and key? LineSegmentContainer does not have it.
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
-    newPointModel: newPointModel,
+    pointModel: pointModel,
     chartViewMaker: chartViewMaker,
     children: children,
     key: key,
@@ -120,12 +120,12 @@ class NewHBarPointContainer extends NewPointContainer {
     // Rectangle width is from constraints
     double width = constraints.width;
 
-    // Rectangle height is Y extrapolated from newPointModel.dataValue using chartRootContainer.yLabelsGenerator
+    // Rectangle height is Y extrapolated from pointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
     // todo-00-last-00 : Using the ownerDataContainerConstraints, and the padGroup this deep is VERY SUSPECT.
     //                   WE NEED TO USE A KIND OF 'CONSTRAINTS-TO-WHICH-DATA-EXPAND,
-    //                   ON NewXContainer, NewYContainer and NewDataContainer.
+    //                   ON NewXContainer, NewYContainer and DataContainer.
     //                   BASICALLY WE NEED TO KNOW THE EXACT CONTAINER IN THE HIERARCHY,
     //                   TO WHICH DATA WILL EXPAND, SO WE CAN ENSURE THEY ARE THE SAME SIZE
     //                   BUT HOW TO DO THIS ??? PERHAPS WE NEED AN ARTIFICIAL MARKER ON ALL LAYOUTERS, WHICH
@@ -155,9 +155,9 @@ class NewHBarPointContainer extends NewPointContainer {
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
     // We convert data to positive positive size, the direction above/below axis is determined by layouters.
-    double height = lextr.applyAsLength(newPointModel.dataValue.abs());
+    double height = lextr.applyAsLength(pointModel.dataValue.abs());
 
-    // print('height=$height, value=${newPointModel.dataValue.abs()}, '
+    // print('height=$height, value=${pointModel.dataValue.abs()}, '
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
     //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
@@ -170,9 +170,9 @@ class NewHBarPointContainer extends NewPointContainer {
 
     ui.Rect rect = offset & _rectangleSize;
 
-    // Rectangle color should be from newPointModel's color.
+    // Rectangle color should be from pointModel's color.
     ui.Paint paint = ui.Paint();
-    paint.color = newPointModel.color;
+    paint.color = pointModel.color;
 
     canvas.drawRect(rect, paint);
   }

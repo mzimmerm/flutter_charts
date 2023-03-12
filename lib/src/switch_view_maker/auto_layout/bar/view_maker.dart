@@ -17,11 +17,11 @@ import '../../view_maker.dart'; // NEW SWITCH
 /// See [ChartViewMaker] for help.
 class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
   SwitchVerticalBarChartViewMaker({
-    required NewModel chartData,
+    required ChartModel chartModel,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-    chartData: chartData,
+    chartModel: chartModel,
     isStacked: true, // only supported for now for bar chart
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   ) {
@@ -30,7 +30,7 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  NewVerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var xContainer = makeViewForDomainAxis();
     var yContainerFirst = makeViewForYContainerFirst();
@@ -39,14 +39,14 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
 
     // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
-    return NewVerticalBarChartRootContainer(
+    return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
       xContainer: xContainer,
       yContainerFirst: yContainerFirst,
       yContainer: yContainer,
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
-      chartData: chartData,
+      chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -54,10 +54,10 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
   }
 
   @override
-  NewDataContainer makeViewForDataContainer() {
+  DataContainer makeViewForDataContainer() {
     // todo-00-switch-remove : assert(isUseOldDataContainer == false);
 
-    return NewVerticalBarChartDataContainer(
+    return VerticalBarChartDataContainer(
       chartViewMaker: this,
     );
   }

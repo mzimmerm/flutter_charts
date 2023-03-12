@@ -399,7 +399,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = firstLinked(); ; element = element.next) {
-        // e.g. newPointContainerList.add(element.generateViewChildrenEtc());
+        // e.g. pointContainerList.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasNext) {
           break;
@@ -416,7 +416,7 @@ mixin DoubleLinkedOwner<E> {
 
     if (hasLinkedElements) {
       for (E element = lastLinked(); ; element = element.previous) {
-        // e.g. newPointContainerList.add(element.generateViewChildrenEtc());
+        // e.g. pointContainerList.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasPrevious) {
           break;
@@ -2048,7 +2048,7 @@ class TableLayoutCellDefiner {
   // Late final constraints, can be pre-set by client OR set during [layout],
   // this is especially useful for the first layed out: e.g. YContainer,
   // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
-  // THE NewChartRootContainer AND the TableLayouter must add children in build,
+  // THE ChartRootContainer AND the TableLayouter must add children in build,
   // because only then TableLayouter has constraints set!!!
   /// If set, expresses constraints on the member [cellContainer].
   ///

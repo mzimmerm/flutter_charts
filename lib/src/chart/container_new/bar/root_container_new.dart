@@ -9,16 +9,16 @@ import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// The container-hierarchy root container of the vertical bar chart.
-class NewVerticalBarChartRootContainer extends NewChartRootContainer {
+class VerticalBarChartRootContainer extends ChartRootContainer {
 
-  NewVerticalBarChartRootContainer({
+  VerticalBarChartRootContainer({
     required LegendContainer legendContainer,
-    required NewXContainer xContainer,
-    required NewYContainer yContainerFirst,
-    required NewYContainer yContainer,
-    required NewDataContainer dataContainer,
+    required XContainer xContainer,
+    required YContainer yContainerFirst,
+    required YContainer yContainer,
+    required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
-    required NewModel chartData,
+    required ChartModel chartModel,
     required ChartOptions chartOptions,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -29,7 +29,7 @@ class NewVerticalBarChartRootContainer extends NewChartRootContainer {
           yContainer: yContainer,
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );

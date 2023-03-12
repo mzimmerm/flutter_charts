@@ -17,7 +17,7 @@ import 'presenter.dart'; // OLD
 
 
 /// The container-hierarchy root container of the vertical bar chart in the coded_layout legacy version.
-class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
+class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
   VerticalBarChartRootContainerCL({
     required LegendContainer legendContainer,
     required XContainerCL      xContainer,
@@ -25,7 +25,7 @@ class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements Ne
     required YContainerCL      yContainer,
     required DataContainerCL   dataContainer,
     required ChartViewMaker  chartViewMaker,
-    required NewModel        chartData,
+    required ChartModel        chartModel,
     required ChartOptions    chartOptions,
     required bool            isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -36,11 +36,10 @@ class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements Ne
     yContainer: yContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    // todo-00-last-last-done : (chartViewMaker as SwitchChartViewMakerCL) : chartViewMaker.pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 

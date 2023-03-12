@@ -13,11 +13,11 @@ import '../coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use i
 abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
 
   SwitchChartViewMakerCL({
-    required model.NewModel chartData,
+    required model.ChartModel chartModel,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
-    chartData: chartData,
+    chartModel: chartModel,
     isStacked: isStacked,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );
@@ -27,7 +27,6 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
   /// rectangles for the bar chart, and so on).
   ///
   /// See [PointPresenterCreator] and [PointPresenter] for more details.
-  // todo-00-last-last resolve moved from ChartViewMaker
   late presenter.PointPresenterCreator pointPresenterCreator; // equivalent of NEW ChartViewMaker in OLD layout
 
   /// Overridden view makers for chart areas.

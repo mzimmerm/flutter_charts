@@ -22,8 +22,8 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
 
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
-  final model.NewPointModel pointFrom;
-  final model.NewPointModel pointTo;
+  final model.PointModel pointFrom;
+  final model.PointModel pointTo;
   final ui.Paint linePaint;
   final container_base.LayoutAxis constraintsSplitAxis;
 

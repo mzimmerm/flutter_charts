@@ -17,7 +17,7 @@ import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLay
 import 'presenter.dart'; // OLD
 
 /// The container-hierarchy root container of the line chart in the coded_layout legacy version.
-class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
+class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
   LineChartRootContainerCL({
     required LegendContainer legendContainer,
     required XContainerCL xContainer,
@@ -25,7 +25,7 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartR
     required YContainerCL yContainer,
     required DataContainerCL dataContainer,
     required ChartViewMaker chartViewMaker,
-    required NewModel chartData,
+    required ChartModel chartModel,
     required bool isStacked,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
@@ -36,11 +36,10 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements NewChartR
           yContainer: yContainer,
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
-          chartData: chartData,
+          chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
-    // todo-00-last-last-done : (chartViewMaker as SwitchChartViewMakerCL) : chartViewMaker.pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }
 }

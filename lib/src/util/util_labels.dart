@@ -17,7 +17,7 @@ import 'util_dart.dart' as util_dart;
 /// During construction, decides how many labels will be created, and generates points on which the labels
 /// will be placed (these points are also values of the labels).
 ///
-/// All values, including the [AxisLabelInfo]s are calculated using [NewModel].
+/// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
 ///
 /// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 ///
@@ -54,7 +54,7 @@ class DataRangeLabelInfosGenerator {
 
   DataRangeLabelInfosGenerator({
     required this.chartViewMaker, // todo-00-last-done : added as a temporary to test old vs new
-    required NewModel dataModel,
+    required ChartModel dataModel,
     required this.dataRangeDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
@@ -73,7 +73,7 @@ class DataRangeLabelInfosGenerator {
     //   (which may be an envelop around values, for example if we want to always start at 0),
     //   then creates [_labelInfos] labels evenly distributed in the [dataRange] interval.
     // Both local [dataEnvelope] and member [dataRange]
-    //   are **not-extrapolated && transformed** data from [NewModelPoint].
+    //   are **not-extrapolated && transformed** data from [ChartModelPoint].
     if (userLabels != null) {
       switch(dataRangeDependency) {
         case DataRangeDependency.independentData:
@@ -159,8 +159,8 @@ class DataRangeLabelInfosGenerator {
 
   /// The numerical range of data.
   ///
-  /// Calculated in the constructor, from [NewModelPoint]s.
-  /// as the merged outer interval of generated labels and [NewModelPoint] values.
+  /// Calculated in the constructor, from [ChartModelPoint]s.
+  /// as the merged outer interval of generated labels and [ChartModelPoint] values.
   ///
   /// This [Interval] is displayed on the axis pixel domain [AxisContainer.axisPixelsRange].
   /// Extrapolation is done between those intervals.

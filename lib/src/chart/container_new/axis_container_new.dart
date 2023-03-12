@@ -12,12 +12,12 @@ import '../options.dart';
 // this level libraries
 import 'container_common_new.dart' as container_common_new;
 
-class NewXContainer extends container_common_new.ChartAreaContainer {
+class XContainer extends container_common_new.ChartAreaContainer {
   /// Constructs the container that holds X labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
-  NewXContainer({
+  XContainer({
     required ChartViewMaker chartViewMaker,
     LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
@@ -63,8 +63,8 @@ class NewXContainer extends container_common_new.ChartAreaContainer {
   }
 }
 
-class NewYContainer extends container_common_new.ChartAreaContainer {
-  NewYContainer({
+class YContainer extends container_common_new.ChartAreaContainer {
+  YContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,

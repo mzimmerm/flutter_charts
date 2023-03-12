@@ -17,8 +17,6 @@ import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
 import '../util/util_labels.dart' as util_labels;
 
-// import '../coded_layout/chart/presenter.dart' as presenter; // todo-00-last-last-done resolve
-
 import 'options.dart' as options;
 import '../morphic/rendering/constraints.dart' as constraints;
 
@@ -27,12 +25,12 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 /// Abstract base class for view makers.
 ///
 /// A view maker is a class that makes (creates, produces, generates) a chart view hierarchy,
-/// starting with a concrete [container.ChartRootContainerCL], with the help of [model.NewModel].
+/// starting with a concrete [container.ChartRootContainerCL], with the help of [model.ChartModel].
 ///
-/// This base view maker has access to [model.NewModel]
+/// This base view maker has access to [model.ChartModel]
 ///
 /// This base view maker holds as members:
-///   - the model in [chartData]
+///   - the model in [chartModel]
 ///   - the label layout strategy in [xContainerLabelLayoutStrategy]
 ///   - the definition whether the chart is stacked in [isStacked].
 ///
@@ -54,15 +52,15 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 abstract class ChartViewMaker extends Object with container_common_new.ChartBehavior {
 
   ChartViewMaker({
-    required this.chartData,
+    required this.chartModel,
     this.isStacked = false,
     this.xContainerLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
     // Copy options also on this [ViewMaker] from Model.options
-    chartOptions = chartData.chartOptions;
+    chartOptions = chartModel.chartOptions;
 
-    // Create [yLabelsGenerator] which depends on both NewModel and ChartRootContainer.
+    // Create [yLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
@@ -72,12 +70,12 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     //                         should be public, but the constructor of it private to the new_model.
     yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
-      dataModel: chartData,
+      dataModel: chartModel,
       dataRangeDependency: model.DataRangeDependency.dependentData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartData.yUserLabels,
+      userLabels: chartModel.yUserLabels,
       isStacked: isStacked,
       isAxisPixelsAndDisplayedValuesInSameDirection: false,
     );
@@ -85,12 +83,12 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // See comment in YContainer constructor
     xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
-      dataModel: chartData,
+      dataModel: chartModel,
       dataRangeDependency: model.DataRangeDependency.independentData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.xContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
-      userLabels: chartData.xUserLabels,
+      userLabels: chartModel.xUserLabels,
       isStacked: isStacked,
       isAxisPixelsAndDisplayedValuesInSameDirection: true,
     );
@@ -99,14 +97,14 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
-  /// After [chartRootContainer] is created and set, This [NewModel] type member [chartData]
-  /// should be placed on the member [chartRootContainer.chartData].
+  /// After [chartRootContainer] is created and set, This [ChartModel] type member [chartModel]
+  /// should be placed on the member [chartRootContainer.chartModel].
 
   /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
-  final model.NewModel chartData;
+  final model.ChartModel chartModel;
 
   /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
-  /// [ChartViewMaker.chartData]'s [ChartOptions].
+  /// [ChartViewMaker.chartModel]'s [ChartOptions].
   late final options.ChartOptions chartOptions;
 
   final bool isStacked;
@@ -124,7 +122,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Because it can be recreated and re-set in [paint], it is not final;
   ///   it's children, [legendContainer], etc are also not final.
-  late root_container_new.NewChartRootContainer chartRootContainer;
+  late root_container_new.ChartRootContainer chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -157,8 +155,8 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // This happens even on re-paint, so can be done multiple times after state changes in the + button.
     chartRootContainer = makeViewRoot(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
 
-    // Only set `chartData.chartViewMaker = this` ONCE. Reason: member chartData is created ONCE, same as this ANCHOR.
-    // To have chartData late final, we have to keep track to only initialize chartData.chartViewMaker = this on first run.
+    // Only set `chartModel.chartViewMaker = this` ONCE. Reason: member chartModel is created ONCE, same as this ANCHOR.
+    // To have chartModel late final, we have to keep track to only initialize chartModel.chartViewMaker = this on first run.
     if (_isFirst) {
       _isFirst = false;
     }
@@ -194,68 +192,68 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
   /// [ChartRootContainer.legendContainer],  [ChartRootContainer.yContainer],
-  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartDataContainer].
+  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartModelContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
   /// Important notes:
-  ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
-  root_container_new.NewChartRootContainer makeViewRoot({required covariant ChartViewMaker chartViewMaker});
+  ///   - This controller (ViewMaker) can access both on ChartRootContainer and ChartModel.
+  root_container_new.ChartRootContainer makeViewRoot({required covariant ChartViewMaker chartViewMaker});
 
   // ##### Methods which create views (containers) for individual chart areas
 
-  /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels]
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
   /// or [container.YContainerCL.labelInfos].
-  axis_container_new.NewXContainer makeViewForDomainAxis() {
-        return axis_container_new.NewXContainer(chartViewMaker: this);
+  axis_container_new.XContainer makeViewForDomainAxis() {
+        return axis_container_new.XContainer(chartViewMaker: this);
   }
 
-  /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels]
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
   /// or labels in [container.YContainerCL.labelInfos].
-  axis_container_new.NewYContainer makeViewForRangeAxis() {
-    return axis_container_new.NewYContainer(chartViewMaker: this);
+  axis_container_new.YContainer makeViewForRangeAxis() {
+    return axis_container_new.YContainer(chartViewMaker: this);
   }
 
-  axis_container_new.NewYContainer makeViewForYContainerFirst() {
-    return axis_container_new.NewYContainer(chartViewMaker: this);
+  axis_container_new.YContainer makeViewForYContainerFirst() {
+    return axis_container_new.YContainer(chartViewMaker: this);
   }
 
-  /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.dataRowsLegends].
   legend_container_new.LegendContainer makeViewForLegendContainer() {
     return legend_container_new.LegendContainer(chartViewMaker: this);
   }
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /// Assumed made from [model.NewModel.crossSeriesPointsList], presents all data in the data area.
-  data_container_new.NewDataContainer makeViewForDataContainer();
+  /// Assumed made from [model.ChartModel.crossSeriesPointsList], presents all data in the data area.
+  data_container_new.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
-  /// Assumed made from [model.NewModel.crossSeriesPointsList].
+  /// Assumed made from [model.ChartModel.crossSeriesPointsList].
   ///
   /// Should be invoked inside [makeViewForDataArea], each child in the returned list
-  /// should be made from one element of [model.NewModel.crossSeriesPointsList],
-  /// which is instance of [model.NewCrossSeriesPointsModel].
+  /// should be made from one element of [model.ChartModel.crossSeriesPointsList],
+  /// which is instance of [model.CrossSeriesPointsModel].
   ///
-  /// Original name: generateViewChildren_Of_NewDataContainer_As_NewCrossSeriesPointsContainer_List
-  List<data_container_new.NewCrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
+  /// Original name: generateViewChildren_Of_DataContainer_As_CrossSeriesPointsContainer_List
+  List<data_container_new.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
         view_maker.ChartViewMaker chartViewMaker,
-        List<model.NewCrossSeriesPointsModel> crossSeriesPointsList,
+        List<model.CrossSeriesPointsModel> crossSeriesPointsList,
   ) {
-    List<data_container_new.NewCrossSeriesPointsContainer> chartColumns = [];
-    // Iterate the dataModel down, creating NewCrossSeriesPointsContainer, then NewPointContainer and return
+    List<data_container_new.CrossSeriesPointsContainer> chartColumns = [];
+    // Iterate the dataModel down, creating CrossSeriesPointsContainer, then PointContainer and return
 
-    for (model.NewCrossSeriesPointsModel crossSeriesPoints in chartData.crossSeriesPointsList) {
-      // NewCrossSeriesPointsContainer crossSeriesPointsContainer =
+    for (model.CrossSeriesPointsModel crossSeriesPoints in chartModel.crossSeriesPointsList) {
+      // CrossSeriesPointsContainer crossSeriesPointsContainer =
       chartColumns.add(
-        data_container_new.NewCrossSeriesPointsContainer(
+        data_container_new.CrossSeriesPointsContainer(
           chartViewMaker: chartViewMaker,
           backingDataCrossSeriesPointsModel: crossSeriesPoints,
           children: [makeViewForDataAreaCrossSeriesPoints_Layouter(chartViewMaker, crossSeriesPoints)],
           // Give all view columns the same weight along main axis -
-          //   results in same width of each [NewCrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
+          //   results in same width of each [CrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
         ),
       );
@@ -263,59 +261,49 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return chartColumns;
   }
 
-  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(view_maker.ChartViewMaker chartViewMaker, model.NewCrossSeriesPointsModel crossSeriesPoints) {
+  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(view_maker.ChartViewMaker chartViewMaker, model.CrossSeriesPointsModel crossSeriesPoints) {
     return container_base.Column(
           children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(chartViewMaker, crossSeriesPoints).reversed.toList(growable: false),
         );
   }
 
-  /// Generates [NewPointContainer] view from each [NewPointModel]
-  /// and collects the views in a list of [NewPointContainer]s which is returned.
+  /// Generates [PointContainer] view from each [PointModel]
+  /// and collects the views in a list of [PointContainer]s which is returned.
   ///
-  /// Original name: generateViewChildren_Of_NewCrossSeriesPointsContainer_As_NewPointContainer_List
-  List<data_container_new.NewPointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
+  /// Original name: generateViewChildren_Of_CrossSeriesPointsContainer_As_PointContainer_List
+  List<data_container_new.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
         view_maker.ChartViewMaker chartViewMaker,
-        model.NewCrossSeriesPointsModel crossSeriesPoints,
+        model.CrossSeriesPointsModel crossSeriesPoints,
     ) {
-      List<data_container_new.NewPointContainer> newPointContainerList = [];
+      List<data_container_new.PointContainer> pointContainerList = [];
 
-    // Generates [NewPointContainer] view from each [NewPointModel]
+    // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
       crossSeriesPoints.applyOnAllElements(
-          (model.NewPointModel element, dynamic passedList) {
-        var newPointContainerList = passedList[0];
+          (model.PointModel element, dynamic passedList) {
+        var pointContainerList = passedList[0];
         var chartRootContainer = passedList[1];
-        newPointContainerList.add(makeViewForDataAreaPoint(chartRootContainer, element));
+        pointContainerList.add(makeViewForDataAreaPoint(chartRootContainer, element));
       },
-      [newPointContainerList, chartViewMaker],
+      [pointContainerList, chartViewMaker],
     );
 
-    return newPointContainerList;
+    return pointContainerList;
   }
 
-  /// Generate view for this single leaf [NewPointModel] - a single [NewHBarPointContainer].
+  /// Generate view for this single leaf [PointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  /// Original name: generateViewChildLeaf_Of_NewCrossSeriesPointsContainer_As_NewPointContainer
-  data_container_new.NewPointContainer makeViewForDataAreaPoint(
+  /// Original name: generateViewChildLeaf_Of_CrossSeriesPointsContainer_As_PointContainer
+  data_container_new.PointContainer makeViewForDataAreaPoint(
       view_maker.ChartViewMaker chartViewMaker,
-      model.NewPointModel pointModel,
+      model.PointModel pointModel,
       ) {
-    return data_container_new.NewHBarPointContainer(
-      newPointModel: pointModel,
+    return data_container_new.HBarPointContainer(
+      pointModel: pointModel,
       chartViewMaker: chartViewMaker,
     );
   }
-
-  // todo-010 : This is an opportunity for several extension fo ChartViewMaker, for example, CartesianChartViewMaker, which needs all the above.
-
-  /// Makes pointPresenters, the visuals painted on each chart column that
-  /// represent data, (points and lines for the line chart,
-  /// rectangles for the bar chart, and so on).
-  ///
-  /// See [PointPresenterCreator] and [PointPresenter] for more details.
-  // todo-00-last-last-done resolve moved to SwitchChartViewMakerCL
-  // late presenter.PointPresenterCreator pointPresenterCreator; // equivalent of NEW ChartViewMaker in OLD layout
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';

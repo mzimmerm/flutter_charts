@@ -166,10 +166,10 @@ void main() {
 }
 
 DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> xUserLabels, List<String> dataRowsLegends) {
-  var mockNewModel = _constructMockNewModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends);
+  var mockChartModel = _constructMockChartModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends);
   return DataRangeLabelInfosGenerator(
-    chartViewMaker: MockChartViewMaker(chartData: mockNewModel, isStacked: true,),
-    dataModel: mockNewModel,
+    chartViewMaker: MockChartViewMaker(chartModel: mockChartModel, isStacked: true,),
+    dataModel: mockChartModel,
     dataRangeDependency: DataRangeDependency.dependentData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: options.yContainerOptions.valueToLabel,
@@ -181,10 +181,10 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, C
 
 class MockChartViewMaker extends ChartViewMaker {
   MockChartViewMaker({
-    required NewModel chartData,
+    required ChartModel chartModel,
     required bool isStacked,
 }): super(
-    chartData: chartData,
+    chartModel: chartModel,
     isStacked: true,
 );
 
@@ -199,14 +199,14 @@ class MockChartViewMaker extends ChartViewMaker {
 }
 
 
-MockNewModel _constructMockNewModel(
+MockChartModel _constructMockChartModel(
   ChartOptions options,
   List<List<double>> dataRows,
   List<String> xUserLabels,
   bool extendAxisToOrigin,
   List<String> dataRowsLegends,
 ) {
-  return MockNewModel(
+  return MockChartModel(
       chartOptions: options,
       dataRowsLegends: dataRowsLegends,
       dataRows: dataRows,
@@ -216,7 +216,7 @@ MockNewModel _constructMockNewModel(
 }
 
 void rangeTestCore(
-  NewModel dataModel,
+  ChartModel dataModel,
   List<List<Object>> data,
   ChartOptions options,
   bool extendAxisToOrigin,
@@ -235,7 +235,7 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
-      chartViewMaker: MockChartViewMaker(chartData: dataModel, isStacked: true,),
+      chartViewMaker: MockChartViewMaker(chartModel: dataModel, isStacked: true,),
       dataModel: dataModel,
       dataRangeDependency: DataRangeDependency.dependentData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
@@ -266,8 +266,8 @@ class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavi
   bool get extendAxisToOrigin => false;
 }
 
-class MockNewModel extends NewModel {
-  MockNewModel({
+class MockChartModel extends ChartModel {
+  MockChartModel({
     required dataRows,
     required xUserLabels,
     required dataRowsLegends,

@@ -11,20 +11,20 @@ import '../view_maker.dart';
 import '../model/data_model_new.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 
-class NewChartRootContainer extends container_common_new.ChartAreaContainer {
+class ChartRootContainer extends container_common_new.ChartAreaContainer {
 
-  NewChartRootContainer({
+  ChartRootContainer({
     required this.legendContainer,
     required this.xContainer,
     required this.yContainer,
     required this.yContainerFirst,
     required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
-    required NewModel         chartData,
+    required ChartModel         chartModel,
     required bool             isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(chartViewMaker: chartViewMaker) {
-    logger.Logger().d('    Constructing NewChartRootContainer');
+    logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
 
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
@@ -83,10 +83,10 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer {
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
-  covariant late NewXContainer xContainer;
-  covariant late NewYContainer yContainer;
-  covariant late NewYContainer yContainerFirst;
-  covariant late NewDataContainer dataContainer;
+  covariant late XContainer xContainer;
+  covariant late YContainer yContainer;
+  covariant late YContainer yContainerFirst;
+  covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
   /// which is never set on instances of this [ChartRootContainer].
