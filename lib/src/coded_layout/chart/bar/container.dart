@@ -1,6 +1,11 @@
 // base libraries
 import '../container.dart';
 import '../../../chart/container_new/legend_container_new.dart';
+import '../../../chart/container_new/root_container_new.dart';
+//import '../../../chart/container_new/data_container_new.dart';
+//import '../../../chart/container_new/axis_container_new.dart';
+//import '../../../chart/container_new/line/root_container_new.dart';
+//import '../../../chart/container_new/bar/root_container_new.dart';
 import '../../../chart/model/data_model_new.dart';
 import '../../../chart/view_maker.dart';
 
@@ -17,8 +22,10 @@ import 'presenter.dart'; // OLD
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
-class VerticalBarChartRootContainer extends ChartRootContainerCL {
-  VerticalBarChartRootContainer({
+// todo-00-last-last-done : class VerticalBarChartRootContainerCL extends ChartRootContainerCL {
+// todo-00-last-last-progress : was : class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewVerticalBarChartRootContainer {
+class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements NewChartRootContainer {
+  VerticalBarChartRootContainerCL({
     required LegendContainer legendContainer,
     required XContainerCL      xContainer,
     required YContainerCL      yContainerFirst,

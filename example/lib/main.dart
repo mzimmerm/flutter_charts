@@ -6,19 +6,18 @@
 /// Also, material.dart exports many dart files, including widgets.dart,
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
+import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'dart:io' as io show exit;
-
-// provides: data_model.dart, random_chart_data.dart, line_chart_options.dart
-import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+import 'dart:ui' as ui show Color;
+import 'package:logger/logger.dart';
 
 import 'src/util/examples_descriptor.dart';
 
-import 'dart:ui' as ui show Color;
-
-import 'package:logger/logger.dart';
+import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+import 'package:flutter_charts/src/switch_view_maker/auto_layout/bar/view_maker.dart';
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///
@@ -959,7 +958,8 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        LineChartViewMaker lineChartViewMaker = LineChartViewMaker(
+        // todo-00-last-last-last-last-done : SwitchLineChartViewMaker lineChartViewMaker = SwitchLineChartViewMaker(
+        SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.switchLineConstruct(
           chartData: chartData,
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -973,7 +973,8 @@ class _ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        VerticalBarChartViewMaker verticalBarChartViewMaker = VerticalBarChartViewMaker(
+        // todo-00-last-last-last-last-done : SwitchVerticalBarChartViewMaker verticalBarChartViewMaker = SwitchVerticalBarChartViewMaker(
+        SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.switchBarConstruct(
           chartData: chartData,
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

@@ -1,17 +1,18 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../../coded_layout/chart/container.dart' as old_container;
-
 import 'container_common_new.dart' as container_common_new;
+import 'legend_container_new.dart';
+import 'axis_container_new.dart';
+import 'data_container_new.dart';
 import '../container_layouter_base.dart';
 import '../container_new/axis_corner_container.dart';
-import 'legend_container_new.dart';
 
 import '../view_maker.dart';
 import '../model/data_model_new.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 
-class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainerCL {
+// todo-00-last-last-done : class NewChartRootContainer extends container_common_new.ChartAreaContainer implements old_container.ChartRootContainerCL {
+class NewChartRootContainer extends container_common_new.ChartAreaContainer {
 
   NewChartRootContainer({
     required this.legendContainer,
@@ -91,19 +92,22 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   /// Members that display the Areas of chart.
   /// todo-00-later : change those to new containers - or remove them entirely :  All below declare the old containers. remove when completely separated, make this NewXContainer etc
   /// todo-00-later : these containers are never used in the NEW NewChartRootContainer. Maybe comment them out??
-  @override
+/* todo-00-last-last-done : converted members to new auto layout
   late LegendContainer legendContainer;
-  @override
   late old_container.XContainerCL xContainer;
-  @override
   late old_container.YContainerCL yContainer;
-  @override
   late old_container.YContainerCL yContainerFirst;
-  @override
   late old_container.DataContainerCL dataContainer;
+*/
+  late LegendContainer legendContainer;
+  covariant late NewXContainer xContainer;
+  covariant late NewYContainer yContainer;
+  covariant late NewYContainer yContainerFirst;
+  covariant late NewDataContainer dataContainer;
 
   /// ##### Subclasses - aware members.
 
+/* todo-00-last-last-done :
   // --------------- overrides to implement legacy vvvvv
   @override
   late bool isStacked;
@@ -113,7 +117,7 @@ class NewChartRootContainer extends container_common_new.ChartAreaContainer impl
   List<double> get xTickXs => throw UnimplementedError();
   @override
   List<double> get yTickYs => throw UnimplementedError();
-// --------------- overrides to implement legacy ^^^^^
-
+  // --------------- overrides to implement legacy ^^^^^
+ */
 
 }

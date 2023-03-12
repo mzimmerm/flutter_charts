@@ -1,8 +1,8 @@
 // base libraries
 import '../painter.dart';
+import '../view_maker.dart'; // NEW BASE
 
 // this level
-import 'view_maker.dart';
 
 
 /// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
@@ -14,7 +14,8 @@ class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
   LineChartPainter({
-    required LineChartViewMaker lineChartViewMaker,
+    // todo-00-last-last-last-last : required LineChartViewMaker lineChartViewMaker,
+    required ChartViewMaker lineChartViewMaker,
   }) : super(
           chartViewMaker: lineChartViewMaker,
         );

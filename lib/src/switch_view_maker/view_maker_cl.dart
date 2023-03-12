@@ -1,41 +1,26 @@
-/* todo-00-last-last-last-progress : where to split old/new?
-import 'dart:ui' as ui show Canvas, Size;
-
-import '../../chart/view_maker.dart';
-import '../../chart/painter.dart';
-import 'package:logger/logger.dart' as logger;
-
+// import 'package:logger/logger.dart' as logger;
 // import 'dart:developer' as dart_developer;
 
 // this level or equivalent
-import 'container.dart' as container;
-import '../../chart/container_new/data_container_new.dart' as data_container_new;
-import '../../chart/container_new/container_common_new.dart' as container_common_new;
-import '../../chart/container_new/legend_container_new.dart' as legend_container_new;
-import '../../chart/container_new/axis_container_new.dart' as axis_container_new;
-import 'view_maker.dart' as view_maker;
-import '../../chart/container_layouter_base.dart' as container_base;
-import '../../chart/model/data_model_new.dart' as model;
-import '../../util/util_labels.dart' as util_labels;
-import '../chart/presenter.dart' as presenter; // OLD
+import '../coded_layout/chart/container.dart' as container; // OLD CONTAINER
+import 'view_maker.dart'; // NEW SWITCH
+import '../chart/view_maker.dart'; // NEW
+import '../chart/model/data_model_new.dart' as model;
+import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
-import '../../chart/options.dart' as options;
-import '../../morphic/rendering/constraints.dart' as constraints;
+abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
 
-import '../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-
-abstract class ChartViewMakerCL extends ChartViewMaker {
-
-  ChartViewMakerCL({
-    required this.chartData,
-    this.isStacked = false,
-    this.xContainerLabelLayoutStrategy,
+  SwitchChartViewMakerCL({
+    required model.NewModel chartData,
+    required bool isStacked, // todo-00-last-last : this was = false
+    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
     chartData: chartData,
     isStacked: isStacked,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-  )
+  );
 
+/* // todo-00-last-last-done : this is from super
   late container.ChartRootContainer chartRootContainer;
 
   late util_labels.DataRangeLabelInfosGenerator yLabelsGenerator;
@@ -47,6 +32,7 @@ abstract class ChartViewMakerCL extends ChartViewMaker {
   late final bool isUseOldDataContainer;
 
   bool _isFirst = true;
+
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
 
@@ -74,37 +60,41 @@ abstract class ChartViewMakerCL extends ChartViewMaker {
 
     _debugPrintEnd(isFirstStr);
   }
+ */
 
-  container.ChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker});
+  @override
+  container.ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker});
 
   // ##### Methods which create views (containers) for individual chart areas
 
-  container.XContainer makeViewForDomainAxis() {
-    return isUseOldDataContainer
-        ? container.XContainer(chartViewMaker: this)
-        : axis_container_new.NewXContainer(chartViewMaker: this);
+  @override
+  container.XContainerCL makeViewForDomainAxis() {
+        return container.XContainerCL(chartViewMaker: this);
   }
 
-  container.YContainer makeViewForRangeAxis() {
-    return isUseOldDataContainer
-        ? container.YContainer(chartViewMaker: this)
-        : axis_container_new.NewYContainer(chartViewMaker: this);
+  @override
+  container.YContainerCL makeViewForRangeAxis() {
+        return container.YContainerCL(chartViewMaker: this);
   }
 
-  container.YContainer makeViewForYContainerFirst() {
-    return isUseOldDataContainer
-        ? container.YContainer(chartViewMaker: this)
-        : axis_container_new.NewYContainer(chartViewMaker: this);
+  @override
+  container.YContainerCL makeViewForYContainerFirst() {
+    return container.YContainerCL(chartViewMaker: this);
   }
 
+  /* todo-00-last-last-done : same as in super
+  @override
   legend_container_new.LegendContainer makeViewForLegendContainer() {
     return  isUseOldDataContainer
         ? legend_container_new.LegendContainer(chartViewMaker: this)
         : legend_container_new.LegendContainer(chartViewMaker: this);
   }
+  */
 
-  container.DataContainer makeViewForDataContainer();
+  @override
+  container.DataContainerCL makeViewForDataContainer();
 
+  /* todo-00-last-last-done : same as in super ??
   List<data_container_new.NewCrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
         view_maker.ChartViewMaker chartViewMaker,
         List<model.NewCrossSeriesPointsModel> crossSeriesPointsList,
@@ -174,5 +164,6 @@ abstract class ChartViewMakerCL extends ChartViewMaker {
 
   void _debugPrintEnd(String isFirstStr) {
   }
+  */
 }
-*/
+

@@ -1,8 +1,8 @@
 // base libraries
 import '../painter.dart';
+import '../view_maker.dart'; // NEW BASE
 
 // this level
-import 'view_maker.dart';
 
 /// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
 /// requiring [VerticalBarChartViewMaker] which generates (makes)
@@ -13,7 +13,8 @@ class VerticalBarChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [VerticalBarChartPainter] is initialized with
   /// the [VerticalBarChartContainer].
   VerticalBarChartPainter({
-    required VerticalBarChartViewMaker verticalBarChartViewMaker,
+    // todo-00-last-last-last-last : required SwitchVerticalBarChartViewMaker verticalBarChartViewMaker,
+    required ChartViewMaker verticalBarChartViewMaker,
   }) : super(
           chartViewMaker: verticalBarChartViewMaker,
         );

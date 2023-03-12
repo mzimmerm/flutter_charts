@@ -191,9 +191,9 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMax,
   }) {
     // todo-00-last-done : added as a confirmation
-    if (!chartViewMaker.isUseOldDataContainer) {
-      throw StateError('Only should be called in OLD Layouters');
-    }
+    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done :   throw StateError('Only should be called in OLD Layouters');
+    // todo-00-last-last-last-done : }
 
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]

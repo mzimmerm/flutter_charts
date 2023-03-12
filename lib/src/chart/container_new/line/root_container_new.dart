@@ -6,8 +6,6 @@ import '../legend_container_new.dart';
 import '../../model/data_model_new.dart';
 import '../../view_maker.dart';
 
-import '../../../coded_layout/chart/line/container.dart' as old_line_container;
-
 import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
@@ -21,7 +19,9 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [LinePointPresenter]s,
 /// which are, in turn, used to present each data value.
-class NewLineChartRootContainer extends NewChartRootContainer implements old_line_container.LineChartRootContainer {
+
+// todo-00-last-last-done : class NewLineChartRootContainer extends NewChartRootContainer implements old_line_container.LineChartRootContainerCL {
+class NewLineChartRootContainer extends NewChartRootContainer {
   NewLineChartRootContainer({
     required LegendContainer    legendContainer,
     required NewXContainer      xContainer,

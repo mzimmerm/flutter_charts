@@ -6,8 +6,6 @@ import '../legend_container_new.dart';
 import '../../model/data_model_new.dart';
 import '../../view_maker.dart';
 
-import '../../../coded_layout/chart/bar/container.dart' as old_bar_container;
-
 import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
@@ -20,8 +18,8 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 /// The core override is setting the [pointPresenterCreator] -
 /// object which makes instances of [VerticalBarPointPresenter]s,
 /// which are, in turn, used to present each data value.
-class NewVerticalBarChartRootContainer extends NewChartRootContainer
-    implements old_bar_container.VerticalBarChartRootContainer {
+// todo-00-last-last-done : class NewVerticalBarChartRootContainer extends NewChartRootContainer implements old_bar_container.VerticalBarChartRootContainerCL {
+class NewVerticalBarChartRootContainer extends NewChartRootContainer {
 
   NewVerticalBarChartRootContainer({
     required LegendContainer legendContainer,

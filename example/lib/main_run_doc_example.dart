@@ -46,7 +46,7 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var lineChartViewMaker = LineChartViewMaker(
+  var lineChartViewMaker = SwitchLineChartViewMaker(
     chartData: chartData,
     isStacked: false,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

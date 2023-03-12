@@ -7,7 +7,10 @@ import 'package:logger/logger.dart' as logger;
 // this level or equivalent
 import 'label_container.dart';
 import '../../chart/container_new/container_common_new.dart';
+import '../../chart/container_new/root_container_new.dart';
 import '../../chart/container_new/legend_container_new.dart';
+import '../../chart/container_new/data_container_new.dart';
+import '../../chart/container_new/axis_container_new.dart';
 import '../../chart/model/data_model_new.dart';
 import '../../chart/label_container.dart' as label_container_new;
 import '../../chart/view_maker.dart';
@@ -45,7 +48,8 @@ import 'bar/presenter.dart' as bar_presenters;
 /// The lifecycle of [ChartRootContainerCL] follows the lifecycle of any [BoxContainer], the sequence of
 /// method invocations should be as follows:
 ///   - todo-doc-01 : document here and in [BoxContainer]
-abstract class ChartRootContainerCL extends ChartAreaContainer {
+// todo-00-last-last-done : abstract class ChartRootContainerCL extends ChartAreaContainer {
+abstract class ChartRootContainerCL extends ChartAreaContainer implements NewChartRootContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
@@ -86,11 +90,31 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
   /// Number of columns in the [DataContainerCL].
 
   /// Base Areas of chart.
+  /* todo-00-last-last-done : removed, this is in super, but usages will have to be cast
+  @override
   late LegendContainer legendContainer;
   late XContainerCL xContainer;
   late YContainerCL yContainer;
   late YContainerCL yContainerFirst;
   late DataContainerCL dataContainer;
+
+  // The cast has to be to:
+  //  late NewXContainer xContainer;
+  //  late NewYContainer yContainer;
+  //  late NewYContainer yContainerFirst;
+  //  late NewDataContainer dataContainer;
+  */
+  @override
+  late LegendContainer legendContainer;
+  @override
+  late XContainerCL xContainer;
+  @override
+  late YContainerCL yContainer;
+  @override
+  late YContainerCL yContainerFirst;
+  @override
+  late DataContainerCL dataContainer;
+
 
   /// ##### Subclasses - aware members.
 
@@ -174,9 +198,9 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.layout();
 
-    if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done : if (chartViewMaker.isUseOldDataContainer) {
       yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    }
+    // todo-00-last-last-last-done : }
     // ####### 3. XContainer: Given width of YContainerFirst, constraint, then layout XContainer
 
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
@@ -229,23 +253,23 @@ abstract class ChartRootContainerCL extends ChartAreaContainer {
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
     // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
     BoxContainerConstraints dataContainerBoxConstraints;
-    if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done : if (chartViewMaker.isUseOldDataContainer) {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
             yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - xContainerSize.height,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
-    } else {
-      dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
-          size: ui.Size(
-            constraints.width - yContainerSize.width,
-            // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
-            //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-            yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
-          ));
-      dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
-    }
+    // todo-00-last-last-last-done : } else {
+    // todo-00-last-last-last-done :   dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
+    // todo-00-last-last-last-done :       size: ui.Size(
+    // todo-00-last-last-last-done :         constraints.width - yContainerSize.width,
+    // todo-00-last-last-last-done :         // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
+    // todo-00-last-last-last-done :         //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
+    // todo-00-last-last-last-done :         yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+    // todo-00-last-last-last-done :       ));
+    // todo-00-last-last-last-done :   dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+    // todo-00-last-last-last-done : }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.layout();
@@ -330,7 +354,8 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class YContainerCL extends AxisContainerCL {
+// todo-00-last-last-done : class YContainerCL extends AxisContainerCL {
+class YContainerCL extends AxisContainerCL implements NewYContainer {
 
   /// Constructs the container that holds Y labels.
   ///
@@ -502,7 +527,8 @@ class YContainerCL extends AxisContainerCL {
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
 /// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
+// todo-00-last-last-done : class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider {
+class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements NewXContainer {
 
   /// Constructs the container that holds X labels.
   ///
@@ -759,7 +785,8 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 /// Manages the core chart area which displays and paints (in this order):
 /// - The grid (this includes the X and Y axis).
 /// - Data - as columns of bar chart, line chart, or other chart type
-abstract class DataContainerCL extends ChartAreaContainer {
+// todo-00-last-last-done : abstract class DataContainerCL extends ChartAreaContainer {
+abstract class DataContainerCL extends ChartAreaContainer implements NewDataContainer {
   /// Container of gridlines parallel to X axis.
   ///
   /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
@@ -786,7 +813,8 @@ abstract class DataContainerCL extends ChartAreaContainer {
 
     List<BoxContainer> dataContainerChildren = [];
 
-    ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer;
+    // todo-00-last-last-done : ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer;
+    ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer as ChartRootContainerCL;
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartViewMaker.chartOptions;
@@ -883,10 +911,10 @@ abstract class DataContainerCL extends ChartAreaContainer {
   @override
   void layout() {
 
-    if (!chartViewMaker.isUseOldDataContainer) {
-      super.layout();
-      return;
-    }
+    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done :   super.layout();
+    // todo-00-last-last-last-done :   return;
+    // todo-00-last-last-last-done : }
 
     // OLD Manual layout build. NEW invokes this as part of auto-layout.
     buildAndReplaceChildren();
@@ -909,10 +937,10 @@ abstract class DataContainerCL extends ChartAreaContainer {
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewMaker.isUseOldDataContainer) {
-      super.applyParentOffset(caller, offset);
-      return;
-    }
+    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done :   super.applyParentOffset(caller, offset);
+    // todo-00-last-last-last-done :   return;
+    // todo-00-last-last-last-done : }
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -998,10 +1026,10 @@ abstract class DataContainerCL extends ChartAreaContainer {
   /// Paints grid lines, then paints [PointPresentersColumns]
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewMaker.isUseOldDataContainer) {
-      super.paint(canvas);
-      return;
-    }
+    // todo-00-last-last-last-done : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-last-last-last-done :   super.paint(canvas);
+    // todo-00-last-last-last-done :   return;
+    // todo-00-last-last-last-done : }
 
     _paintGridLines(canvas);
     _drawPointPresentersColumns(canvas);
@@ -1019,7 +1047,8 @@ abstract class DataContainerCL extends ChartAreaContainer {
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
   void _lextrPointsColumns(NewModel chartData) {
-    chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer);
+    // todo-00-last-last-last-last-done : chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer);
+    chartData.pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
   }
 
   /// Optionally paint series in reverse order (first to last,
@@ -1300,8 +1329,9 @@ class StackableValuePoint {
     // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in yLabelsGenerator
     // were calculated using the NEW [NewModel]
 
-    double axisPixelsYMin = chartViewMaker.chartRootContainer.yContainer.axisPixelsRange.min;
-    double axisPixelsYMax = chartViewMaker.chartRootContainer.yContainer.axisPixelsRange.max;
+    YContainerCL yContainerCL = chartViewMaker.chartRootContainer.yContainer as YContainerCL;
+    double axisPixelsYMin = yContainerCL.axisPixelsRange.min;
+    double axisPixelsYMax = yContainerCL.axisPixelsRange.max;
 
     scaledFrom = ui.Offset(
       scaledX,
@@ -1545,6 +1575,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
+  // todo-00-last-last-last-last-done : void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
   void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
     int col = 0;
     for (PointsColumn column in this) {

@@ -1,9 +1,10 @@
 import 'dart:ui' as ui show Canvas, Size;
-
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
+
+// view_maker imports
 
 // this level or equivalent
 import '../coded_layout/chart/container.dart' as container;
@@ -11,10 +12,12 @@ import 'container_new/data_container_new.dart' as data_container_new;
 import 'container_new/container_common_new.dart' as container_common_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
 import 'container_new/axis_container_new.dart' as axis_container_new;
+import 'container_new/root_container_new.dart' as root_container_new;
 import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
 import '../util/util_labels.dart' as util_labels;
+
 import '../coded_layout/chart/presenter.dart' as presenter; // OLD
 
 import 'options.dart' as options;
@@ -57,7 +60,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     this.xContainerLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
-    isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+    // todo-00-last-last-last-done : moved to Switch : isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
     // Copy options also on this [ViewMaker] from Model.options
     chartOptions = chartData.chartOptions;
 
@@ -123,7 +126,8 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Because it can be recreated and re-set in [paint], it is not final;
   ///   it's children, [legendContainer], etc are also not final.
-  late container.ChartRootContainerCL chartRootContainer;
+  // todo-00-last-last-done :  late container.ChartRootContainerCL chartRootContainer;
+  late root_container_new.NewChartRootContainer chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -144,7 +148,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// auto-layout containersSet from a commend line
   /// switch --dart-define=USE_OLD_DATA_CONTAINER=false/true.
   /// Find usages to see where old/new code differs.
-  late final bool isUseOldDataContainer;
+  // todo-00-last-last-last-done : late final bool isUseOldDataContainer;
 
   /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.
@@ -206,43 +210,35 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and NewModel.
-  container.ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker});
+  root_container_new.NewChartRootContainer makeViewRoot({required covariant ChartViewMaker chartViewMaker});
 
   // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.NewModel] member [model.NewModel.xUserLabels]
   /// or [container.YContainerCL.labelInfos].
-  container.XContainerCL makeViewForDomainAxis() {
-    return isUseOldDataContainer
-        ? container.XContainerCL(chartViewMaker: this)
-        : axis_container_new.NewXContainer(chartViewMaker: this);
+  axis_container_new.NewXContainer makeViewForDomainAxis() {
+        return axis_container_new.NewXContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.yUserLabels]
   /// or labels in [container.YContainerCL.labelInfos].
-  container.YContainerCL makeViewForRangeAxis() {
-    return isUseOldDataContainer
-        ? container.YContainerCL(chartViewMaker: this)
-        : axis_container_new.NewYContainer(chartViewMaker: this);
+  axis_container_new.NewYContainer makeViewForRangeAxis() {
+    return axis_container_new.NewYContainer(chartViewMaker: this);
   }
 
-  container.YContainerCL makeViewForYContainerFirst() {
-    return isUseOldDataContainer
-        ? container.YContainerCL(chartViewMaker: this)
-        : axis_container_new.NewYContainer(chartViewMaker: this);
+  axis_container_new.NewYContainer makeViewForYContainerFirst() {
+    return axis_container_new.NewYContainer(chartViewMaker: this);
   }
 
   /// Assumed made from [model.NewModel] member [model.NewModel.dataRowsLegends].
   legend_container_new.LegendContainer makeViewForLegendContainer() {
-    return  isUseOldDataContainer
-        ? legend_container_new.LegendContainer(chartViewMaker: this)
-        : legend_container_new.LegendContainer(chartViewMaker: this);
+    return legend_container_new.LegendContainer(chartViewMaker: this);
   }
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
   /// Assumed made from [model.NewModel.crossSeriesPointsList], presents all data in the data area.
-  container.DataContainerCL makeViewForDataContainer();
+  data_container_new.NewDataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///

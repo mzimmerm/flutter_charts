@@ -1,10 +1,7 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
-import '../../coded_layout/chart/presenter.dart'; // todo-00-last-last-last
-
 import 'container_common_new.dart' as container_common_new;
-import '../../coded_layout/chart/container.dart' as container;
 import '../container_layouter_base.dart';
 import '../model/data_model_new.dart' as model;
 import '../view_maker.dart';
@@ -14,7 +11,8 @@ import '../options.dart';
 import '../../container/container_key.dart';
 import '../../util/util_dart.dart';
 
-class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainerCL {
+// todo-00-last-last-done : class NewDataContainer extends container_common_new.ChartAreaContainer implements container.DataContainerCL {
+class NewDataContainer extends container_common_new.ChartAreaContainer {
 
   NewDataContainer({
     required ChartViewMaker chartViewMaker,
@@ -49,6 +47,7 @@ class NewDataContainer extends container_common_new.ChartAreaContainer implement
     ]);
   }
 
+/* todo-00-last-last-done :
   // --------------- overrides to implement legacy vvvvv
   @override
   PointPresentersColumns get pointPresentersColumns => throw UnimplementedError();
@@ -57,20 +56,7 @@ class NewDataContainer extends container_common_new.ChartAreaContainer implement
   @override
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) => throw UnimplementedError();
   // --------------- overrides to implement legacy ^^^^^
-
-  /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
-  @override
-  _NewSourceYContainerAndYContainerToSinkDataContainer findSourceContainersReturnLayoutResultsToBuildSelf() {
-    return _NewSourceYContainerAndYContainerToSinkDataContainer(
-      dataBarsCount: chartRootContainer.chartViewMaker.chartDataBarsCount,
-    );
-  }
-  */
-
-// void layout() - default
-// void applyParentConstraints - default
-// void applyParentOffset - default
-// void paint(Canvas convas) - default
+ */
 }
 
 class NewCrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {

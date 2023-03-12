@@ -1,22 +1,19 @@
-import 'dart:ui';
-
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
 import '../container_layouter_base.dart';
 import '../container_edge_padding.dart';
 
-import '../../coded_layout/chart/container.dart' as container;
 import '../label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
 import '../options.dart';
-import '../../util/util_dart.dart';
 
 // this level libraries
 import 'container_common_new.dart' as container_common_new;
 
-  class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainerCL {
+  // todo-00-last-last-done : class NewXContainer extends container_common_new.ChartAreaContainer implements container.XContainerCL {
+  class NewXContainer extends container_common_new.ChartAreaContainer {
     /// Constructs the container that holds X labels.
     ///
     /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
@@ -66,7 +63,7 @@ import 'container_common_new.dart' as container_common_new;
       addChildren(children);
     }
 
-
+/* todo-00-last-last-done :
   // --------------- overrides to implement legacy vvvvv
   @override
   Interval get axisPixelsRange => throw UnimplementedError();
@@ -86,9 +83,12 @@ import 'container_common_new.dart' as container_common_new;
   @override
   double get xLabelsMaxHeight => throw UnimplementedError();
   // --------------- overrides to implement legacy ^^^^^
+
+ */
 }
 
-class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainerCL {
+// todo-00-last-last-done : class NewYContainer extends container_common_new.ChartAreaContainer implements container.YContainerCL {
+class NewYContainer extends container_common_new.ChartAreaContainer {
 
   NewYContainer({
     required ChartViewMaker chartViewMaker,
@@ -144,6 +144,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
     addChildren(children);
   }
 
+/* todo-00-last-last-done :
   // --------------- overrides to implement legacy vvvvv
   @override
   Interval get axisPixelsRange => throw StateError('Should not be called for new layouters');
@@ -151,6 +152,7 @@ class NewYContainer extends container_common_new.ChartAreaContainer implements c
   set axisPixelsRange(Interval _) => throw StateError('Should not be called for new layouters');
   @override
   double get yLabelsMaxHeight => throw UnimplementedError();
-// --------------- overrides to implement legacy ^^^^^^
+  // --------------- overrides to implement legacy ^^^^^^
+ */
 }
 
