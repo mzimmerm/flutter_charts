@@ -245,7 +245,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Original name: generateViewChildren_Of_DataContainer_As_CrossSeriesPointsContainer_List
   List<data_container_new.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-    // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
     List<model.CrossSeriesPointsModel> crossSeriesPointsList,
   ) {
     List<data_container_new.CrossSeriesPointsContainer> chartColumns = [];
@@ -255,9 +254,9 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       // CrossSeriesPointsContainer crossSeriesPointsContainer =
       chartColumns.add(
         data_container_new.CrossSeriesPointsContainer(
-          chartViewMaker: this, // todo-00-last-last-done : chartViewMaker,
+          chartViewMaker: this,
           backingDataCrossSeriesPointsModel: crossSeriesPoints,
-          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(/* todo-00-last-last-done chartViewMaker, */ crossSeriesPoints)],
+          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(crossSeriesPoints)],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [CrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -268,11 +267,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   }
 
   container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(
-      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
     model.CrossSeriesPointsModel crossSeriesPoints,
   ) {
     return container_base.Column(
-      children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(/* todo-00-last-last-done : chartViewMaker,*/ crossSeriesPoints)
+      children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(crossSeriesPoints)
           .reversed
           .toList(growable: false),
     );
@@ -283,22 +281,17 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Original name: generateViewChildren_Of_CrossSeriesPointsContainer_As_PointContainer_List
   List<data_container_new.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
-      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
     model.CrossSeriesPointsModel crossSeriesPoints,
   ) {
     List<data_container_new.PointContainer> pointContainerList = [];
-    // ChartViewMaker chartViewMaker = this; // store this under name in closure ; todo-00-last-last-done
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
     crossSeriesPoints.applyOnAllElements(
       (model.PointModel pointModelElm, dynamic passedList) {
-        // todo-00-last-last-done : var pointContainerList = passedList[0];
-        // todo-00-last-last-done : var chartRootContainer = passedList[1];
-        // todo-00-last-last-done : pointContainerList.add(makeViewForDataAreaPoint(/* todo-00-last-last-done : chartRootContainer,*/ pointModelElm));
-        passedList.add(makeViewForDataAreaPoint(/* todo-00-last-last-done : chartRootContainer,*/ pointModelElm));
+        passedList.add(makeViewForDataAreaPoint(pointModelElm));
       },
-      pointContainerList, // todo-00-last-last-done : [pointContainerList, chartViewMaker],
+      pointContainerList,
     );
 
     return pointContainerList;
@@ -309,12 +302,11 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   /// Original name: generateViewChildLeaf_Of_CrossSeriesPointsContainer_As_PointContainer
   data_container_new.PointContainer makeViewForDataAreaPoint(
-      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
     model.PointModel pointModel,
   ) {
     return data_container_new.HBarPointContainer(
       pointModel: pointModel,
-      chartViewMaker: this, // todo-00-last-last-done : chartViewMaker,
+      chartViewMaker: this,
     );
   }
 
