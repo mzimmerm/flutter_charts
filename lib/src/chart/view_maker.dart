@@ -50,7 +50,6 @@ import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 ///   - [container.ChartBehavior.extendAxisToOrigin] is on this Maker,
 ///     as it controls how views behave (although does not control view making).
 abstract class ChartViewMaker extends Object with container_common_new.ChartBehavior {
-
   ChartViewMaker({
     required this.chartModel,
     this.isStacked = false,
@@ -92,7 +91,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       isStacked: isStacked,
       isAxisPixelsAndDisplayedValuesInSameDirection: true,
     );
-
   }
 
   /// ChartData to hold on before member [chartRootContainer] is created late.
@@ -199,14 +197,18 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and ChartModel.
-  root_container_new.ChartRootContainer makeViewRoot({required covariant ChartViewMaker chartViewMaker});
+  root_container_new.ChartRootContainer makeViewRoot({
+    required covariant ChartViewMaker chartViewMaker,
+  });
 
   // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
   /// or [container.YContainerCL.labelInfos].
   axis_container_new.XContainer makeViewForDomainAxis() {
-        return axis_container_new.XContainer(chartViewMaker: this);
+    return axis_container_new.XContainer(
+      chartViewMaker: this,
+    );
   }
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
@@ -216,12 +218,16 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   }
 
   axis_container_new.YContainer makeViewForYContainerFirst() {
-    return axis_container_new.YContainer(chartViewMaker: this);
+    return axis_container_new.YContainer(
+      chartViewMaker: this,
+    );
   }
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.dataRowsLegends].
   legend_container_new.LegendContainer makeViewForLegendContainer() {
-    return legend_container_new.LegendContainer(chartViewMaker: this);
+    return legend_container_new.LegendContainer(
+      chartViewMaker: this,
+    );
   }
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
@@ -239,8 +245,8 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Original name: generateViewChildren_Of_DataContainer_As_CrossSeriesPointsContainer_List
   List<data_container_new.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-        view_maker.ChartViewMaker chartViewMaker,
-        List<model.CrossSeriesPointsModel> crossSeriesPointsList,
+    // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
+    List<model.CrossSeriesPointsModel> crossSeriesPointsList,
   ) {
     List<data_container_new.CrossSeriesPointsContainer> chartColumns = [];
     // Iterate the dataModel down, creating CrossSeriesPointsContainer, then PointContainer and return
@@ -249,9 +255,9 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       // CrossSeriesPointsContainer crossSeriesPointsContainer =
       chartColumns.add(
         data_container_new.CrossSeriesPointsContainer(
-          chartViewMaker: chartViewMaker,
+          chartViewMaker: this, // todo-00-last-last-done : chartViewMaker,
           backingDataCrossSeriesPointsModel: crossSeriesPoints,
-          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(chartViewMaker, crossSeriesPoints)],
+          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(/* todo-00-last-last-done chartViewMaker, */ crossSeriesPoints)],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [CrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -261,10 +267,15 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return chartColumns;
   }
 
-  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(view_maker.ChartViewMaker chartViewMaker, model.CrossSeriesPointsModel crossSeriesPoints) {
+  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(
+      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
+    model.CrossSeriesPointsModel crossSeriesPoints,
+  ) {
     return container_base.Column(
-          children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(chartViewMaker, crossSeriesPoints).reversed.toList(growable: false),
-        );
+      children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(/* todo-00-last-last-done : chartViewMaker,*/ crossSeriesPoints)
+          .reversed
+          .toList(growable: false),
+    );
   }
 
   /// Generates [PointContainer] view from each [PointModel]
@@ -272,20 +283,22 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Original name: generateViewChildren_Of_CrossSeriesPointsContainer_As_PointContainer_List
   List<data_container_new.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
-        view_maker.ChartViewMaker chartViewMaker,
-        model.CrossSeriesPointsModel crossSeriesPoints,
-    ) {
-      List<data_container_new.PointContainer> pointContainerList = [];
+      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
+    model.CrossSeriesPointsModel crossSeriesPoints,
+  ) {
+    List<data_container_new.PointContainer> pointContainerList = [];
+    // ChartViewMaker chartViewMaker = this; // store this under name in closure ; todo-00-last-last-done
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
-      crossSeriesPoints.applyOnAllElements(
-          (model.PointModel element, dynamic passedList) {
-        var pointContainerList = passedList[0];
-        var chartRootContainer = passedList[1];
-        pointContainerList.add(makeViewForDataAreaPoint(chartRootContainer, element));
+    crossSeriesPoints.applyOnAllElements(
+      (model.PointModel pointModelElm, dynamic passedList) {
+        // todo-00-last-last-done : var pointContainerList = passedList[0];
+        // todo-00-last-last-done : var chartRootContainer = passedList[1];
+        // todo-00-last-last-done : pointContainerList.add(makeViewForDataAreaPoint(/* todo-00-last-last-done : chartRootContainer,*/ pointModelElm));
+        passedList.add(makeViewForDataAreaPoint(/* todo-00-last-last-done : chartRootContainer,*/ pointModelElm));
       },
-      [pointContainerList, chartViewMaker],
+      pointContainerList, // todo-00-last-last-done : [pointContainerList, chartViewMaker],
     );
 
     return pointContainerList;
@@ -296,12 +309,12 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   /// Original name: generateViewChildLeaf_Of_CrossSeriesPointsContainer_As_PointContainer
   data_container_new.PointContainer makeViewForDataAreaPoint(
-      view_maker.ChartViewMaker chartViewMaker,
-      model.PointModel pointModel,
-      ) {
+      // todo-00-last-last-done : view_maker.ChartViewMaker chartViewMaker,
+    model.PointModel pointModel,
+  ) {
     return data_container_new.HBarPointContainer(
       pointModel: pointModel,
-      chartViewMaker: chartViewMaker,
+      chartViewMaker: this, // todo-00-last-last-done : chartViewMaker,
     );
   }
 

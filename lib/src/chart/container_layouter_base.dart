@@ -391,15 +391,19 @@ mixin DoubleLinkedOwner<E> {
   }
 
   /// Iterates all owned [DoubleLinked] elements starting with the first,
-  /// and applies the passed function on the passed [object].
-  /// 
-  /// The [object] is passed to the function [useElementWith] as second parameter after the
-  /// processed element.
+  /// and invokes the passed function [useElementWith] with the current element as first parameter,
+  /// and the passed [object] as second parameter.
+  ///
+  /// Motivation: This method forces the function [useElementWith] to 'visit'
+  ///             each element of [DoubleLinked] with an additional [object]
+  ///             which can serve as a collector of results of each 'visit'.
+  ///
   void applyOnAllElements(Function(E, dynamic passedObject) useElementWith, dynamic object) {
 
     if (hasLinkedElements) {
       for (E element = firstLinked(); ; element = element.next) {
-        // e.g. pointContainerList.add(element.generateViewChildrenEtc());
+        // e.g. object is pointContainerList,
+        //      useElementWith is Function with body: {pointContainerList.add(element.generateViewChildrenEtc())};
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasNext) {
           break;
@@ -408,15 +412,11 @@ mixin DoubleLinkedOwner<E> {
     }
   }
 
-  /// Iterates all owned [DoubleLinked] elements starting with the last,
-  /// and applies the passed function on the passed [object].
-  ///
-  /// See [applyOnAllElements] for details.
+  /// Behaves as [applyOnAllElements], except it starts on the last element of the owned [DoubleLinked].
   void applyOnAllElementsReversed(Function(E, dynamic passedObject) useElementWith, dynamic object) {
 
     if (hasLinkedElements) {
       for (E element = lastLinked(); ; element = element.previous) {
-        // e.g. pointContainerList.add(element.generateViewChildrenEtc());
         useElementWith(element, object);
         if (!(element as DoubleLinked).hasPrevious) {
           break;
@@ -1180,6 +1180,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
     // NAMED GENERATIVE super() called implicitly here.
   }
+
+  covariant Object? sandbox;
 
   /// A no-op override of the abstract [BoxLayouter.layout_Post_NotLeaf_PositionChildren].
   ///

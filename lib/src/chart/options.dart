@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' as material show Colors; // any color we 
 import 'dart:math' as math show pi, log, ln10, pow, max;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:flutter_charts/src/chart/container_new/axis_container_new.dart';
 
 // extension libraries
 import 'line/options.dart';
@@ -355,7 +356,22 @@ class LabelCommonOptions {
 */
 }
 
-/// Groups methods that define padding across containers.
+/// Groups methods that define padding common across containers.
+///
+/// Motivation and reason for existence:
+///   Some areas of any chart need to have the same width or height in pixels when shown.
+///   For example, the [YContainer] and [DataContainer] should have the same height into which
+///   y labels, and data y values are lextr-ed (linearly extrapolated).
+///   Such areas, if padded from top or bottom, or from left or right (in this example, top and bottom)
+///   should be padded with the same padding height, otherwise the size in pixels, left out
+///   for [YContainer] and [DataContainer] would not have the same height.
+///   This is where instances of this class, the [ChartPaddingGroup] come in: They define
+///   functions that yield common padding. The names of the functions suggest where such common padding should
+///   be applied:
+///     - [heightPadBottomOfYAndData]
+///     - [heightPadTopOfYAndData]
+///     - [widthPadLeftOfXAndData]
+///     - [widthPadRightOfXAndData]
 ///
 /// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding
 /// to correctly lineup.
