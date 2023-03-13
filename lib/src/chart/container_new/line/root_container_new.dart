@@ -32,8 +32,6 @@ class LineChartRootContainer extends ChartRootContainer {
           chartModel: chartModel,
           isStacked: isStacked,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
-        ) {
-    // OLD gone : chartViewMaker.pointPresenterCreator = LineLeafPointPresenterCreator();
-  }
+        );
 
 }

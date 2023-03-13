@@ -12,7 +12,6 @@ import 'container_new/container_common_new.dart' as container_common_new;
 import 'container_new/legend_container_new.dart' as legend_container_new;
 import 'container_new/axis_container_new.dart' as axis_container_new;
 import 'container_new/root_container_new.dart' as root_container_new;
-import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' as container_base;
 import 'model/data_model_new.dart' as model;
 import '../util/util_labels.dart' as util_labels;
