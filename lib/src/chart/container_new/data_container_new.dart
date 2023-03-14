@@ -35,11 +35,15 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           top: padGroup.heightPadTopOfYAndData(),
           bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-        child: Row(
-          crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-          children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-            chartViewMaker.chartModel.crossSeriesPointsList,
-          ),
+        child: HeightSizerLayouter(
+          children: [
+            Row(
+              crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+              children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
+                chartViewMaker.chartModel.crossSeriesPointsList,
+              ),
+            ),
+          ],
         ),
       ),
     ]);
@@ -88,7 +92,7 @@ class PointContainer extends container_common_new.ChartAreaContainer {
 ///                          For children of DataContainer, it will be DataContainer.constraints.
 ///                          For children of YContainer, it will be YContainer.constraints (???)
 ///                          Generally it must be an object that is known at layout time, and will not change - for example last cell in table,
-class HBarPointContainer extends PointContainer {
+class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
 
   /// The rectangle representing the value.
   ///
@@ -149,6 +153,7 @@ class HBarPointContainer extends PointContainer {
       // HERE WE USE THE KNOWLEDGE THAT THE TOP OF DATA CONTAINER IS A PADDER WITH THIS EXACT PADDING.
       // SEE COMMENTS ABOVE.
       toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
+      // todo-00-last-last-done : toPixelsMax: heightToLextr,
       toPixelsMin: padGroup.heightPadTopOfYAndData(),
     );
 

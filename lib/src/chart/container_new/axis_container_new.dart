@@ -90,27 +90,31 @@ class YContainer extends container_common_new.ChartAreaContainer {
           top: padGroup.heightPadTopOfYAndData(),
           bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-        child: Row(children: [
-          // todo-00-!!!!! add LineSegment for axis line
-          ExternalTicksColumn(
-            mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
-              externalTickAtPosition: ExternalTickAtPosition.childCenter,
-            ),
-            children: [
-              for (var labelInfo in labelsGenerator.labelInfoList)
-                YLabelContainer(
-                  chartViewMaker: chartViewMaker,
-                  label: labelInfo.formattedLabel,
-                  labelTiltMatrix: vector_math.Matrix2.identity(),
-                  // No tilted labels in YContainer
-                  labelStyle: labelStyle,
-                  options: options,
-                  labelInfo: labelInfo,
-                  ownerChartAreaContainer: this,
-                )
-            ],
-          ),
-        ]),
+        child: HeightSizerLayouter(
+          children: [
+            Row(children: [
+              // todo-00-!!!!! add LineSegment for axis line
+              ExternalTicksColumn(
+                mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
+                  externalTickAtPosition: ExternalTickAtPosition.childCenter,
+                ),
+                children: [
+                  for (var labelInfo in labelsGenerator.labelInfoList)
+                    YLabelContainer(
+                      chartViewMaker: chartViewMaker,
+                      label: labelInfo.formattedLabel,
+                      labelTiltMatrix: vector_math.Matrix2.identity(),
+                      // No tilted labels in YContainer
+                      labelStyle: labelStyle,
+                      options: options,
+                      labelInfo: labelInfo,
+                      ownerChartAreaContainer: this,
+                    )
+                ],
+              ),
+            ]),
+          ],
+        ),
       ),
     ];
     addChildren(children);

@@ -7,25 +7,21 @@ import 'package:flutter/services.dart';
 import 'container_new/axis_corner_container.dart';
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
-    show
-    Align,
-    Packing,
-    LengthsPositionerProperties,
-    LayedoutLengthsPositioner,
-    PositionedLineSegments,
-    ConstraintsDistribution;
+    show Align, Packing, LengthsPositionerProperties,
+    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import '../util/util_dart.dart' as util_dart show LineSegment, Interval, ToPixelsExtrapolation1D, transposeRowsToColumns;
-import '../util/util_flutter.dart' as util_flutter show boundingRectOfRects, assertSizeResultsSame;
-import '../util/collection.dart' as custom_collection show CustomList;
+import '../util/util_dart.dart' as util_dart
+    show LineSegment, Interval, ToPixelsExtrapolation1D,
+    transposeRowsToColumns, assertDoubleResultsSame;
+import '../util/util_flutter.dart' as util_flutter
+    show boundingRectOfRects, assertSizeResultsSame;
+import '../util/collection.dart' as custom_collection
+    show CustomList;
 import '../util/extensions_dart.dart';
 import '../container/container_key.dart'
-    show
-    ContainerKey,
-    Keyed,
-    UniqueKeyedObjectsManager;
+    show ContainerKey, Keyed, UniqueKeyedObjectsManager;
 
 abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager, DoubleLinked<BoxContainer>, DoubleLinkedOwner<BoxContainer> {
 
@@ -48,7 +44,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///   1. In the [BoxContainer] constructor, if [__children] are non-null,
   ///      parent is set on all children as `child.parent = this`.
   ///   2. In [BoxContainer.addChildren], [_parent] is set on all passed children.
-  BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this parent
+  BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this' parent
   BoxContainer? get parent => _parent; // todo-01 - only one use. See if needed long term.
 
   /// Manages children of this [BoxContainer].
@@ -201,11 +197,13 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
 
   BoxContainer get root {
     if (_root != null) {
+      // root was cached in _root
       return _root!;
     }
 
     if (_parent == null) {
-      _root = _children[0]._parent; // cannot be 'this' as 'this' is ContainerHiearchy, so go through children, must be one
+      // cannot be 'this' as 'this' is ContainerHierarchy, so go through children, there must be at least one
+      _root = _children[0]._parent;
       return _root!;
     }
 
@@ -214,6 +212,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     while (rootCandidate._parent != null) {
       rootCandidate = rootCandidate._parent!;
     }
+    // cache rootCandidate as _root, and return the cached _root
     _root = rootCandidate;
     return _root!;
   }
@@ -580,6 +579,7 @@ abstract class LayoutableBox {
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
+  // todo-00-doc : document fully, including rules for overriding
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
   ///
@@ -621,6 +621,203 @@ abstract class LayoutableBox {
   ///           set it after return in case it is needed later. Always set just after return from layout.
   void layout();
 }
+
+
+// ---------- Width and Height sizers and layouters vvvvvv -------------------------------------------------------------
+
+/// - todo-00-last-last-progress on this section
+
+/// Intended to be hooked on root sandbox.
+class RootSandboxSizers {
+  // Map with keys to objects which implement [FromConstraintsWidthSizer].
+  // Intent: only have one key 'width' and one key 'height', The idea is that any chart areas should only have
+  // one width and one size - as if there was a table with many columns, but there is one column which cells must have the same width.
+  //                      and many rows, but there is exactly one row where height matters. They intersect on the DataContainer.
+  WidthSizerLayouter? __widthSizer;
+  HeightSizerLayouter? __heightSizer;
+
+  /// Key of this object when used in [BoxContainer.sandbox].
+  static const String keyInSandbox = 'sizers';
+
+  /// If width sizer exists on this object, check if the passed has same width, if not exception
+  ///    else add the passed sizer
+  checkOrSetSizer(FromConstraintsSizerMixin firstOrLaterSizer) {
+
+    FromConstraintsSizerMixin? currentSizer;
+    
+    if (firstOrLaterSizer is WidthSizerLayouter) {
+      currentSizer = __widthSizer;
+    } else if (firstOrLaterSizer is HeightSizerLayouter) {
+      currentSizer = __heightSizer;
+    } else {
+      throw StateError('Unexpected type passed, ${firstOrLaterSizer.runtimeType}');
+    }
+
+    if (currentSizer != null) {
+      util_dart.assertDoubleResultsSame(
+        currentSizer.length,
+        firstOrLaterSizer.length,
+        'Passed width sizer $firstOrLaterSizer differs from width sizer on root sandbox',
+      );
+      return;
+    }
+    if (firstOrLaterSizer is WidthSizerLayouter) {
+      __widthSizer = firstOrLaterSizer;
+    } else if (firstOrLaterSizer is HeightSizerLayouter) {
+      __heightSizer = firstOrLaterSizer;
+    } else {
+      throw StateError('Unexpected type passed, ${firstOrLaterSizer.runtimeType}');
+    }
+  }
+  
+  ///  if width sizer does not exist, exception, otherwise return
+  WidthSizerLayouter get widthSizerEnsured {
+    if (__widthSizer == null) {
+      throw StateError('No width sizer was placed on the sandbox');
+    }
+    return __widthSizer!;
+  }
+
+  HeightSizerLayouter get heightSizerEnsured {
+    if (__heightSizer == null) {
+      throw StateError('No height sizer was placed on the sandbox');
+    }
+    return __heightSizer!;
+  }
+}
+
+/// On behalf of far-away children than implement [FromConstraintsWidthSizerChild]
+///   provides ability to set [lenght] which represents width on [FromConstraintsWidthSizer]
+///   or height on [FromConstraintsHeightSizer].
+///
+/// The [length] is assumed to be in units pixel -
+/// this is the width or height in pixels, to which the far-away children
+/// will linearly extrapolate (lextr) their width or height.
+mixin FromConstraintsSizerMixin on BoxContainer {
+
+  late final double length;
+
+  /// Finds hierarchy-root of this [BoxContainer], ensures both [sandbox] 
+  /// and object [RootSandboxSizers] on key [sandboxSizersKey] exist, then check or set the passed
+  /// [FromConstraintsSizerMixin] onto the [RootSandboxSizers] object.
+  ///
+  /// Should be called in applyParentConstraints.
+  void findOrSetRootSandboxSizersThenCheckOrSetSizer() {
+
+    root.sandbox ??= {};
+
+    RootSandboxSizers sizersInSandbox = RootSandboxSizers();
+    if (root.sandbox!.containsKey(RootSandboxSizers.keyInSandbox)) {
+      sizersInSandbox = root.sandbox![RootSandboxSizers.keyInSandbox];
+    } else {
+      root.sandbox![RootSandboxSizers.keyInSandbox] = sizersInSandbox;
+    }
+    sizersInSandbox.checkOrSetSizer(this);
+  }
+
+}
+
+/// Marker class, marking ability to [findOrSetRootSandboxSizersThenCheckOrSetSizer].
+///
+/// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
+/// and [HeightSizerLayouter] to it.
+abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
+
+  /// The required generative constructor
+  FromConstraintsSizerLayouter({
+    List<BoxContainer>? children,
+  }) : super(
+    children: children,
+  );
+
+}
+
+class WidthSizerLayouter extends FromConstraintsSizerLayouter {
+
+  /// The required generative constructor
+  WidthSizerLayouter({
+    List<BoxContainer>? children,
+  }) : super(
+    children: children,
+  );
+
+  /// Ensures the sizer logic around width and height constraints is applied, then invokes  super
+  /// which stores the passed constraints.
+  @override
+  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
+    length = constraints.width;
+    findOrSetRootSandboxSizersThenCheckOrSetSizer();
+    super.applyParentConstraints(caller, constraints);
+  }
+
+  @override
+  Size get layoutSize {
+    // In the width direction, must increase layoutSize calculated by super to constraints size from length.
+    // If the [super.layoutSize] does not fit into length, display a warning, AND use the bigger non-fitting
+    // [super.layoutSize]. AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller
+    // should warn or throw exception.
+    ui.Size superLayoutSize = super.layoutSize;
+    if (super.layoutSize.width <= length) {
+      return ui.Size(length, superLayoutSize.height);
+    }
+    print('$runtimeType: layoutSize calculated is $superLayoutSize exceeds, in width, the constraint width=$length');
+    return super.layoutSize;
+  }
+}
+
+class HeightSizerLayouter extends FromConstraintsSizerLayouter {
+
+  /// The required generative constructor
+  HeightSizerLayouter({
+    List<BoxContainer>? children,
+  }) : super(
+    children: children,
+  );
+
+  /// Ensures the sizer logic around width and height constraints is applied, then invokes super
+  /// which stores the passed constraints.
+  @override
+  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
+    length = constraints.height;
+    findOrSetRootSandboxSizersThenCheckOrSetSizer();
+    super.applyParentConstraints(caller, constraints);
+  }
+
+  @override
+  Size get layoutSize {
+    // In the height direction, must increase layoutSize calculated by super to constraints size from length.
+    // If the [super.layoutSize] does not fit into length, display a warning, AND use the bigger non-fitting
+    // [super.layoutSize]. AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller
+    // should warn or throw exception.
+    ui.Size superLayoutSize = super.layoutSize;
+    if (super.layoutSize.height <= length) {
+      return ui.Size(superLayoutSize.width, length);
+    }
+    print('$runtimeType: layoutSize calculated is $superLayoutSize exceeds, in height, the constraint height=$length');
+    return super.layoutSize;
+  }
+}
+
+/// Mixin method [widthToLextr] provides the width (set by some far-away parent) to which this instance should lextr.
+mixin WidthSizerLayouterChild on BoxContainer {
+
+  /// Width in pixels of a far-away parent, to which this child's width will linearly extrapolate (lextr).
+  ///
+  /// All nullable fields must be set by now, otherwise error. We do the non-null cast without
+  /// checking. Should be improved to provide good hints to users.
+  double get widthToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__widthSizer!.length;
+}
+
+/// Mixin method [heightToLextr] provides the height (set by some far-away parent) to which this instance should lextr.
+mixin HeightSizerLayouterChild on BoxContainer {
+
+  /// Height in pixels of a far-away parent, to which this child's height will linearly extrapolate (lextr).
+  ///
+  /// See [WidthSizerLayouterChild] for details.
+  double get heightToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__heightSizer!.length;
+}
+
+// ---------- Width and Height sizers and layouters ^^^^^^ -------------------------------------------------------------
 
 // ---------- Non-positioning BoxLayouter and BoxContainer -------------------------------------------------------------
 
@@ -1181,7 +1378,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // NAMED GENERATIVE super() called implicitly here.
   }
 
-  covariant Object? sandbox;
+  Map? sandbox;
 
   /// A no-op override of the abstract [BoxLayouter.layout_Post_NotLeaf_PositionChildren].
   ///
@@ -1253,7 +1450,8 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
 
   /// Paints a yellow-and-black warning rectangle about this BoxLayouter overflowing root constraints.
   void paintWarningIfLayoutOverflows(ui.Canvas canvas) {
-    // Find a way to find constraints on top container - ~get topContainerConstraints~, and access them from any BoxContainer
+    // Find constraints on top container - [get topContainerConstraints],
+    //   and access them from any BoxContainer.
     BoxContainerConstraints rootConstraints = root.constraints;
     ui.Offset rootOffset = root.offset;
     ui.Rect rootConstraintsMaxRect = rootOffset & rootConstraints.maxSize; // assume constraints full box with maxSize
@@ -1400,7 +1598,7 @@ abstract class PositioningBoxLayouter extends BoxContainer {
 
 /// Layouter which is NOT allowed to offset it's children, or only offset with zero offset.
 abstract class NonPositioningBoxLayouter extends BoxContainer {
-  /// The required unnamed constructor
+  /// The required generative constructor
   NonPositioningBoxLayouter({
     List<BoxContainer>? children,
   }) : super(
