@@ -185,38 +185,69 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     // replaceChildrenWith(_children);
   }
 
-
-  /// Set children list
-  // set _children(List<BoxContainer> children) { __children = children; }
-
   bool get isRoot => _parent == null;
 
   bool get isLeaf => __children.isEmpty;
 
   BoxContainer? _root;
 
+  /// Obtain hierarchy-root of this [BoxContainerHierarchy] node, and cache the hierarchy-root
+  /// as [_root] along the path.
   BoxContainer get root {
+    if (_parent == null) {
+      return this as BoxContainer;
+    }
     if (_root != null) {
       // root was cached in _root
       return _root!;
     }
 
     if (_parent == null) {
-      // cannot be 'this' as 'this' is ContainerHierarchy, so go through children, there must be at least one
+      // This hierarchy-node is root
+      // We cannot set `_root = this` as 'this' is ContainerHierarchy, so find this reference
+      //   among children's parent, there must be at least one child of this node;
       _root = _children[0]._parent;
       return _root!;
     }
 
+    // My _parent, set as rootCandidate
     BoxContainer rootCandidate = _parent!;
 
     while (rootCandidate._parent != null) {
+      // My _parent == rootCandidate.
+      // Optimization: If previously cached as _root on my _parent, use _root as my root as well.
+      if (rootCandidate._root != null) {
+        _root = rootCandidate._root;
+        return _root!;
+      }
       rootCandidate = rootCandidate._parent!;
     }
-    // cache rootCandidate as _root, and return the cached _root
+    // We iterated all the way to root, and no node had a cached _root.
+    // Cache rootCandidate as _root, and return the cached _root.
+    // But before, propagate the cached _root to all parents for next time use.
+    print(' ### get root: No cached _root found all the way to actual hierarchy-root.');
+    __propagateRootCacheUp(rootCandidate);
     _root = rootCandidate;
     return _root!;
   }
 
+  /// Assumed to be called on this node when looking for a hierarchy-root,
+  /// no cached root [_root] was found all the way to the top.
+  ///
+  /// In this situation, to speed up future calls to [root], we cache the
+  /// root as [_root] on all nodes from this node all the way to actual hierarchy-root.
+  __propagateRootCacheUp(BoxContainer cachedRoot) {
+    // Walk back up from this node, using _parent to indicate hierarchy-root
+    BoxContainer rootCandidate = _parent!;
+    while (rootCandidate._parent != null) {
+      if (rootCandidate._root != null) {
+        throw StateError('__propagateRootCacheUp: Unexpected already cached root ${rootCandidate._root} '
+            'during caching on rootCandidate=$rootCandidate ');
+      }
+      rootCandidate._root = cachedRoot;
+      rootCandidate = rootCandidate._parent!;
+    }
+  }
 
   /// Implementation of [DoubleLinkedOwner.allElements]
   @override
@@ -625,9 +656,9 @@ abstract class LayoutableBox {
 
 // ---------- Width and Height sizers and layouters vvvvvv -------------------------------------------------------------
 
-/// - todo-00-last-last-progress on this section
-
-/// Intended to be hooked on root sandbox.
+/// Holds on to width and height sizers used somewhere in the container-hierarchy.
+///
+/// Intended to be placed on root [BoxContainer.sandbox] using key [keyInSandbox].
 class RootSandboxSizers {
   // Map with keys to objects which implement [FromConstraintsWidthSizer].
   // Intent: only have one key 'width' and one key 'height', The idea is that any chart areas should only have
@@ -702,7 +733,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
   /// [FromConstraintsSizerMixin] onto the [RootSandboxSizers] object.
   ///
   /// Should be called in applyParentConstraints.
-  void findOrSetRootSandboxSizersThenCheckOrSetSizer() {
+  void findOrSetRootSandboxSizersThenCheckOrSetThisSizer() {
 
     root.sandbox ??= {};
 
@@ -717,7 +748,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 
 }
 
-/// Marker class, marking ability to [findOrSetRootSandboxSizersThenCheckOrSetSizer].
+/// Marker class, marking ability to [findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
@@ -746,7 +777,7 @@ class WidthSizerLayouter extends FromConstraintsSizerLayouter {
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     length = constraints.width;
-    findOrSetRootSandboxSizersThenCheckOrSetSizer();
+    findOrSetRootSandboxSizersThenCheckOrSetThisSizer();
     super.applyParentConstraints(caller, constraints);
   }
 
@@ -779,7 +810,7 @@ class HeightSizerLayouter extends FromConstraintsSizerLayouter {
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     length = constraints.height;
-    findOrSetRootSandboxSizersThenCheckOrSetSizer();
+    findOrSetRootSandboxSizersThenCheckOrSetThisSizer();
     super.applyParentConstraints(caller, constraints);
   }
 

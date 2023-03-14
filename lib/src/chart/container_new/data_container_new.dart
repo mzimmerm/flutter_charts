@@ -146,22 +146,24 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
 
     var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
 
+    // Using the pixel height [heightToLextr] of the owner data container,
+    //   which coordinates in self are always 0-based, lextr the data value to the data container pixel coordinates.
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      // HERE WE USE THE KNOWLEDGE THAT THE TOP OF DATA CONTAINER IS A PADDER WITH THIS EXACT PADDING.
-      // SEE COMMENTS ABOVE.
-      /* todo-00-last-last-done KEEP as example of working without HeightSizer
+      /* KEEP as example of working without HeightSizer
       var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
       toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
       toPixelsMin: padGroup.heightPadTopOfYAndData(),
       */
-      toPixelsMax: heightToLextr,
       toPixelsMin: 0.0,
+      toPixelsMax: heightToLextr,
     );
 
-    // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
-    // We convert data to positive positive size, the direction above/below axis is determined by layouters.
+    // Extrapolate the absolute value of data to height of the rectangle
+    // (height represents the data value lextr-ed to data container pixels).
+    // We convert data to positive size, the direction above/below axis is determined by the layouters
+    //   in which the bars are located.
     double height = lextr.applyAsLength(pointModel.dataValue.abs());
 
     // print('height=$height, value=${pointModel.dataValue.abs()}, '
