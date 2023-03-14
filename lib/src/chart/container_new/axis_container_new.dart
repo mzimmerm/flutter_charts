@@ -35,28 +35,34 @@ class XContainer extends container_common_new.ChartAreaContainer {
     );
 
     List<BoxContainer> children = [
-      Column(children: [
-        // todo-00-!!!!! add LineSegment for axis line
-        ExternalTicksRow(
-          mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
-            externalTickAtPosition: ExternalTickAtPosition.childCenter,
-          ),
-          children: [
-            for (var labelInfo in labelsGenerator.labelInfoList)
-              // todo-00-last-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
-              XLabelContainer(
-                chartViewMaker: chartViewMaker,
-                label: labelInfo.formattedLabel,
-                labelTiltMatrix: vector_math.Matrix2.identity(),
-                // No tilted labels in YContainer
-                labelStyle: labelStyle,
-                options: options,
-                labelInfo: labelInfo,
-                ownerChartAreaContainer: this,
-              )
-          ],
-        ),
-      ]),
+      //region Description
+      WidthSizerLayouter(
+        children: [
+          Column(children: [
+            // todo-00-!!!!! add LineSegment for axis line
+            ExternalTicksRow(
+              mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
+                externalTickAtPosition: ExternalTickAtPosition.childCenter,
+              ),
+              children: [
+                for (var labelInfo in labelsGenerator.labelInfoList)
+                  // todo-00-last-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  XLabelContainer(
+                    chartViewMaker: chartViewMaker,
+                    label: labelInfo.formattedLabel,
+                    labelTiltMatrix: vector_math.Matrix2.identity(),
+                    // No tilted labels in YContainer
+                    labelStyle: labelStyle,
+                    options: options,
+                    labelInfo: labelInfo,
+                    ownerChartAreaContainer: this,
+                  )
+              ],
+            ),
+          ]),
+        ],
+      ),
+      //endregion
     ];
 
     addChildren(children);

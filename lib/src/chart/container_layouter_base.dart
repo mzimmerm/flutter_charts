@@ -688,7 +688,10 @@ class RootSandboxSizers {
       util_dart.assertDoubleResultsSame(
         currentSizer.length,
         firstOrLaterSizer.length,
-        'Passed width sizer $firstOrLaterSizer differs from width sizer on root sandbox',
+        'Passed width sizer $firstOrLaterSizer differs from width sizer on root sandbox. '
+        'Likely reason: Multiple [WidthSizerLayouter]s were placed in the container hierarchy, '
+        'but the position is in places where the widths of the constraints passed to them is not the same.'
+        'It may equivalently apply to multiple [HeightSizerLayouter]s.',
       );
       return;
     }
