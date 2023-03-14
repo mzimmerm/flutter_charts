@@ -143,7 +143,6 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
     //                      - This extension will override applyParentConstraint, where it will take the height, width, or both
     //                        and set it on root of container hierarchy on member Size pixelsScope.
     //                      - todo-00-last-00 : finish this thought and implementation
-    var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
 
     var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
 
@@ -152,9 +151,13 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
       fromValuesMax: yDataRange.max,
       // HERE WE USE THE KNOWLEDGE THAT THE TOP OF DATA CONTAINER IS A PADDER WITH THIS EXACT PADDING.
       // SEE COMMENTS ABOVE.
+      /* todo-00-last-last-done KEEP as example of working without HeightSizer
+      var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
       toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
-      // todo-00-last-last-done : toPixelsMax: heightToLextr,
       toPixelsMin: padGroup.heightPadTopOfYAndData(),
+      */
+      toPixelsMax: heightToLextr,
+      toPixelsMin: 0.0,
     );
 
     // Extrapolate the absolute value of data to height of the rectangle, representing the value in pixels.
