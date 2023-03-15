@@ -162,7 +162,7 @@ export 'src/chart/model/data_model_new.dart';
 export 'src/chart/iterative_layout_strategy.dart';
 export 'src/chart/options.dart';
 
-export 'src/util/random_chart_data.dart';
+export 'src/chart/model/random_chart_data.dart';
 export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
 export 'src/util/util_labels.dart';

@@ -54,7 +54,6 @@ class XContainer extends container_common_new.ChartAreaContainer {
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in YContainer
                     labelStyle: labelStyle,
-                    // todo-00-last-last-done : options: options,
                     labelInfo: labelInfo,
                     ownerChartAreaContainer: this,
                   )
@@ -113,7 +112,6 @@ class YContainer extends container_common_new.ChartAreaContainer {
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in YContainer
                       labelStyle: labelStyle,
-                      // todo-00-last-last-done : options: options,
                       labelInfo: labelInfo,
                       ownerChartAreaContainer: this,
                     )

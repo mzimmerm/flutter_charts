@@ -309,7 +309,6 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
-      // todo-00-last-last-done : options: _options,
     );
 
     if (doPadIndAndLabel) {

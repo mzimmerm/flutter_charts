@@ -13,8 +13,7 @@ import '../../chart/container_new/legend_container_new.dart';
 import '../../chart/container_new/data_container_new.dart';
 import '../../chart/container_new/axis_container_new.dart';
 import '../../chart/model/data_model_new.dart';
-import '../../chart/label_container.dart' as label_container;
-import '../../chart/chart_label_container.dart' as chart_label_container;
+import '../../chart/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../chart/painter.dart';
 import '../../chart/container_layouter_base.dart'
@@ -392,7 +391,7 @@ class YContainerCL extends AxisContainerCL implements YContainer {
     ChartOptions options = chartViewMaker.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
-    label_container.LabelStyle labelStyle = label_container.LabelStyle(
+    LabelStyle labelStyle = LabelStyle(
       textStyle: options.labelCommonOptions.labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
       textAlign: options.labelCommonOptions.labelTextAlign, // center text
@@ -405,7 +404,6 @@ class YContainerCL extends AxisContainerCL implements YContainer {
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
         labelStyle: labelStyle,
-        // todo-00-last-last-done : options: options,
         labelInfo: labelInfo,
         ownerChartAreaContainer: this,
       );
@@ -441,7 +439,6 @@ class YContainerCL extends AxisContainerCL implements YContainer {
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
     double axisPixelsMax =
         constraints.size.height - (chartViewMaker.chartOptions.dataContainerOptions.dataBottomTickHeight);
-    // todo-00-last-last-done : constraints.size.height - (chartViewMaker.chartOptions.xContainerOptions.xBottomTickHeight);
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
@@ -565,7 +562,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 
     ChartOptions options = chartViewMaker.chartOptions;
     List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
-    label_container.LabelStyle labelStyle = _styleForLabels(options);
+    LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the XLabelContainers along X in _gridStepWidth increments.
@@ -576,7 +573,6 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
         label: xUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
         labelStyle: labelStyle,
-        // todo-00-last-last-done : options: options,
         // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
         labelInfo: chartViewMaker.xLabelsGenerator.labelInfoList[xIndex],
         ownerChartAreaContainer: this,
@@ -668,7 +664,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
         : _xLabelContainers.map((xLabelContainer) => xLabelContainer.layoutSize.height).reduce(math.max);
   }
 
-  label_container.LabelStyle _styleForLabels(ChartOptions options) {
+  LabelStyle _styleForLabels(ChartOptions options) {
     // Use widgets.TextStyle obtained from ChartOptions and "extend it" as a copy, so a 
     //   (potentially modified) TextStyle from Options is used in all places in flutter_charts.
 
@@ -677,7 +673,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
     );
 
     // Initially all [LabelContainer]s share same text style object from options.
-    label_container.LabelStyle labelStyle = label_container.LabelStyle(
+    LabelStyle labelStyle = LabelStyle(
       textStyle: labelTextStyle,
       textDirection: options.labelCommonOptions.labelTextDirection,
       textAlign: options.labelCommonOptions.labelTextAlign, // center text

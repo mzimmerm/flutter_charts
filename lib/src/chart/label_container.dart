@@ -1,16 +1,11 @@
-import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
+import 'package:flutter/widgets.dart' as widgets show TextStyle, TextPainter;
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
-import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
-import 'view_maker.dart' as view_maker;
 import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
-import 'options.dart' show ChartOptions;
-import '../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 import '../util/geometry.dart' as geometry;
-import '../util/util_labels.dart' show AxisLabelInfo;
 // import '../util/util_dart.dart' as util_dart;
 
 /// Mixin allows [ChartLabelContainer] extend [ChartAreaContainer]
@@ -41,8 +36,6 @@ mixin LabelContainerMixin on BoxContainer {
   /// that is, the envelope is in label container (and textPainter)
   /// local coordinates.
   late geometry.EnvelopedRotatedRect _tiltedLabelEnvelope;
-
-  // todo-00-last-last-done : final ChartOptions _options;
 
   /// Position where paint starts painting the label, expressed
   /// in the coordinate system in which this [_tiltedLabelEnvelope.envelopeRect] topLeft
@@ -124,7 +117,6 @@ mixin LabelContainerMixin on BoxContainer {
     textPainter.paint(canvas, offsetOfPotentiallyRotatedLabel);
   }
 
-/* todo-00-last-last-done */
   /// This override is essentially semi-manual layout for it's class [ChartLabelContainer],
   ///   which allows to calculate several layout related values.
   ///
@@ -143,7 +135,7 @@ mixin LabelContainerMixin on BoxContainer {
     _layoutLogicToSetMemberMaxSizeForTextLayout();
 
     // Call manual layout - the returned sizeAndOverflow contains layoutSize in item1
-    Tuple2 sizeAndOverflow = layoutAndCheckOverflowInTextDirection();
+    Tuple2 sizeAndOverflow = _layoutAndCheckOverflowInTextDirection();
     // Set the layout size for parent to know how big this manually layed out label is.
     layoutSize = sizeAndOverflow.item1;
   }
@@ -166,8 +158,6 @@ mixin LabelContainerMixin on BoxContainer {
 
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints();
 
-/* */
-
   // ##### Internal methods
 
   /// Lays out for later painting, the member [_label] text
@@ -189,7 +179,7 @@ mixin LabelContainerMixin on BoxContainer {
   ///     the subsequent `textPainter.paint(canvas)` call paints the label
   ///     **as always cropped to it's allocated size [_labelMaxWidth]**.
   /// - [_isOverflowingInLabelDirection] can be asked but this is information only.
-  Tuple2<ui.Size, bool> layoutAndCheckOverflowInTextDirection() {
+  Tuple2<ui.Size, bool> _layoutAndCheckOverflowInTextDirection() {
     textPainter.layout();
 
     bool isOverflowingHorizontally = false;

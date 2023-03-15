@@ -1,8 +1,4 @@
-// import 'package:flutter/widgets.dart' as widgets show TextStyle, TextSpan, TextPainter;
-// import 'package:flutter_charts/flutter_charts.dart';
-// import 'package:tuple/tuple.dart' show Tuple2;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
-// import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
 import 'container.dart' show AxisContainerCL, PixelRangeProvider;
@@ -10,10 +6,6 @@ import '../../chart/container_new/container_common_new.dart' as container_common
 import '../../chart/label_container.dart';
 import '../../chart/chart_label_container.dart';
 import '../../chart/view_maker.dart' as view_maker;
-// import '../../chart/container_layouter_base.dart' show LayoutableBox, BoxLayouter;
-// todo-00-last-last-done : import '../../chart/options.dart' show ChartOptions;
-// import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
-// import '../../util/geometry.dart' as geometry;
 import '../../util/util_labels.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
@@ -30,7 +22,6 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    // todo-00-last-last-done : required ChartOptions options,
     required AxisLabelInfo labelInfo,
     required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
@@ -38,7 +29,6 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
         label: label,
         labelTiltMatrix: labelTiltMatrix,
         labelStyle: labelStyle,
-    // todo-00-last-last-done : options: options,
         labelInfo: labelInfo,
         ownerChartAreaContainer: ownerChartAreaContainer,
       );
@@ -117,7 +107,6 @@ class YLabelContainerCL extends AxisLabelContainerCL {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    // todo-00-last-last-done : required ChartOptions options,
     required AxisLabelInfo labelInfo,
     required AxisContainerCL ownerChartAreaContainer,
   }) : super(
@@ -125,7 +114,6 @@ class YLabelContainerCL extends AxisLabelContainerCL {
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,
-    // todo-00-last-last-done : options:         options,
     labelInfo:       labelInfo,
     ownerChartAreaContainer: ownerChartAreaContainer,
   );
@@ -139,7 +127,6 @@ class XLabelContainerCL extends AxisLabelContainerCL {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-    // todo-00-last-last-done : required ChartOptions options,
     required AxisLabelInfo labelInfo,
     required container_common_new.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
@@ -147,7 +134,6 @@ class XLabelContainerCL extends AxisLabelContainerCL {
     label:           label,
     labelTiltMatrix: labelTiltMatrix,
     labelStyle:      labelStyle,
-    // todo-00-last-last-done : options:         options,
     labelInfo:       labelInfo,
     ownerChartAreaContainer: ownerChartAreaContainer,
   );
