@@ -6,17 +6,18 @@
 /// Also, material.dart exports many dart files, including widgets.dart,
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
-import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
-import 'src/util/examples_descriptor.dart';
-
 import 'package:flutter_charts/flutter_charts.dart';
+
+import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+
+import 'src/util/examples_descriptor.dart';
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
 ///

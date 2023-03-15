@@ -1,6 +1,5 @@
 import 'dart:ui' as ui show Size, Offset, Rect, Canvas;
 import 'dart:math' as math show max;
-import 'package:flutter_charts/src/switch_view_maker/view_maker_cl.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:logger/logger.dart' as logger;
@@ -31,6 +30,8 @@ import '../../util/collection.dart' as custom_collection show CustomList;
 import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
 //import '../chart/layouter_one_dimensional.dart';
 import '../../chart/iterative_layout_strategy.dart' as strategy;
+
+import '../../switch_view_maker/view_maker_cl.dart';
 
 // extension libraries
 import 'line/presenter.dart' as line_presenters;

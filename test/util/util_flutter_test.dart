@@ -1,6 +1,7 @@
 import 'package:test/test.dart'; // Dart test package
-import 'package:flutter_charts/src/util/util_flutter.dart';
 import 'dart:ui' as ui show Rect;
+
+import 'package:flutter_charts/src/util/util_flutter.dart';
 
 void main() {
   test('outerRectangle - test creating outer rectangle from a list of rectangles', () {

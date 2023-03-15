@@ -1,10 +1,11 @@
+// Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
+// import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
+import 'package:test/test.dart';
+
 import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
     show Align, LayedoutLengthsPositioner, LengthsPositionerProperties, Packing, PositionedLineSegments;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 
-// Needed if we want to use isAssertionError or throwsAssertionError, otherwise same as test.dart.
-// import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
-import 'package:test/test.dart';
 
 main() {
   List<double> lengths = [5.0, 10.0, 15.0];
