@@ -130,33 +130,16 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
     // Rectangle height is Y extrapolated from pointModel.dataValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
-    // todo-00-last-00 : Using the ownerDataContainerConstraints, and the padGroup this deep is VERY SUSPECT.
-    //                   WE NEED TO USE A KIND OF 'CONSTRAINTS-TO-WHICH-DATA-EXPAND,
-    //                   ON NewXContainer, NewYContainer and DataContainer.
-    //                   BASICALLY WE NEED TO KNOW THE EXACT CONTAINER IN THE HIERARCHY,
-    //                   TO WHICH DATA WILL EXPAND, SO WE CAN ENSURE THEY ARE THE SAME SIZE
-    //                   BUT HOW TO DO THIS ??? PERHAPS WE NEED AN ARTIFICIAL MARKER ON ALL LAYOUTERS, WHICH
-    //                   IF SET, RUN A HOOK IN THEIR LAYOUT - ONCE CONSTRAINT IS SET ON SUCH CONTAINER,
-    //                   IT WILL SET A SPECIAL MEMBER ON ROOT FOR DATA CONTAINER DATA AVAILABLE HEIGHT AND WIDTH,
-    //                   WHICH ALSO DRIVE X AND YCONTAINER DATA AVAILABLE HEIGHT AND WIDTH ???
-    //
-    //                   ANOTHER OPTION IS TO USE THE EXTERNAL TICKS **RANGE** FOR X AND Y; AND SAME FOR DATA CONTAINER
-    //                   BUT AGAin, details ???
-    //
-    // Decided on solution: - Add a 'void' extension to BoxContainer, called DataPixelsScope (enum: height, width, heightAndWidth)
-    //                      - This extension will override applyParentConstraint, where it will take the height, width, or both
-    //                        and set it on root of container hierarchy on member Size pixelsScope.
-    //                      - todo-00-last-00 : finish this thought and implementation
-
-    var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
-
-    // Using the pixel height [heightToLextr] of the owner data container,
-    //   which coordinates in self are always 0-based, lextr the data value to the data container pixel coordinates.
+    // Using the pixel height [heightToLextr] of the [HeightSizerLayouter] (which wraps tightly the data container),
+    //   lextr the data value to the [HeightSizerLayouter] pixel [length] (=[heightToLextr]) coordinates.
+    //   Note: coordinates in self are always 0-based, so the [toPixelMin],
+    //         which we lextr to in [HeightSizerLayouter], is 0.
     var lextr = ToPixelsExtrapolation1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
       /* KEEP as example of working without HeightSizer
       var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
+      var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
       toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
       toPixelsMin: padGroup.heightPadTopOfYAndData(),
       */

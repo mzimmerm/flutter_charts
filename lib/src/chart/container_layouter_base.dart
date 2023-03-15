@@ -703,8 +703,8 @@ class RootSandboxSizers {
       throw StateError('Unexpected type passed, ${firstOrLaterSizer.runtimeType}');
     }
   }
-  
-  ///  if width sizer does not exist, exception, otherwise return
+
+  /// Returns width sizer if exists, otherwise exception.
   WidthSizerLayouter get widthSizerEnsured {
     if (__widthSizer == null) {
       throw StateError('No width sizer was placed on the sandbox');
@@ -712,6 +712,7 @@ class RootSandboxSizers {
     return __widthSizer!;
   }
 
+  /// Returns height sizer if exists, otherwise exception.
   HeightSizerLayouter get heightSizerEnsured {
     if (__heightSizer == null) {
       throw StateError('No height sizer was placed on the sandbox');
@@ -764,6 +765,40 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
     children: children,
   );
 
+  /// Helper for [layoutSize], calculates and returns [layoutSize] which is
+  /// increased, in the Sizer direction, to the full available [constraints],
+  /// and keeps the super layoutSize in the cross direction
+  ui.Size layoutSizeIncreasedToLength({required bool isWidthMain}) {
+    // In the main direction (e.g. width), must increase layoutSize calculated by super
+    // to the constraints size from this Sizer's [length].
+    // If the [super.layoutSize] does not fit into this Sizer's [length], display a warning,
+    // AND use the bigger non-fitting [super.layoutSize].
+    // AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller should warn or throw exception.
+    ui.Size superLayoutSize = super.layoutSize;
+    if (isWidthMain) {
+      if (super.layoutSize.width <= length) {
+        return ui.Size(length, superLayoutSize.height);
+      }
+    } else {
+      // Height is the direction
+      if (super.layoutSize.height <= length) {
+        return ui.Size(superLayoutSize.width, length);
+      }
+    }
+    print('$runtimeType: layoutSize calculated is $superLayoutSize exceeds, in width, the constraint width=$length');
+    return super.layoutSize;
+  }
+
+  /// Ensures the sizer logic around width and height constraints is applied, then invokes super
+  /// which stores the passed constraints.
+  /// The sizer logic is applied by invoking [findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
+  @override
+  void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
+    // length = constraints.width or height called in extension
+    findOrSetRootSandboxSizersThenCheckOrSetThisSizer();
+    super.applyParentConstraints(caller, constraints);
+  }
+
 }
 
 class WidthSizerLayouter extends FromConstraintsSizerLayouter {
@@ -775,27 +810,17 @@ class WidthSizerLayouter extends FromConstraintsSizerLayouter {
     children: children,
   );
 
-  /// Ensures the sizer logic around width and height constraints is applied, then invokes  super
-  /// which stores the passed constraints.
+  /// Sets [length] from the passed [BoxContainerConstraints.width], then calls super
+  /// which ensures the sizer logic is applied.
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     length = constraints.width;
-    findOrSetRootSandboxSizersThenCheckOrSetThisSizer();
-    super.applyParentConstraints(caller, constraints);
+    super.applyParentConstraints(caller, constraints); // on FromConstraintsSizerLayouter
   }
 
   @override
   Size get layoutSize {
-    // In the width direction, must increase layoutSize calculated by super to constraints size from length.
-    // If the [super.layoutSize] does not fit into length, display a warning, AND use the bigger non-fitting
-    // [super.layoutSize]. AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller
-    // should warn or throw exception.
-    ui.Size superLayoutSize = super.layoutSize;
-    if (super.layoutSize.width <= length) {
-      return ui.Size(length, superLayoutSize.height);
-    }
-    print('$runtimeType: layoutSize calculated is $superLayoutSize exceeds, in width, the constraint width=$length');
-    return super.layoutSize;
+    return layoutSizeIncreasedToLength(isWidthMain: true);
   }
 }
 
@@ -813,42 +838,39 @@ class HeightSizerLayouter extends FromConstraintsSizerLayouter {
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     length = constraints.height;
-    findOrSetRootSandboxSizersThenCheckOrSetThisSizer();
     super.applyParentConstraints(caller, constraints);
   }
 
   @override
   Size get layoutSize {
-    // In the height direction, must increase layoutSize calculated by super to constraints size from length.
-    // If the [super.layoutSize] does not fit into length, display a warning, AND use the bigger non-fitting
-    // [super.layoutSize]. AFTER, IN [__layout_Post_AssertSizeInsideConstraints] the caller
-    // should warn or throw exception.
-    ui.Size superLayoutSize = super.layoutSize;
-    if (super.layoutSize.height <= length) {
-      return ui.Size(superLayoutSize.width, length);
-    }
-    print('$runtimeType: layoutSize calculated is $superLayoutSize exceeds, in height, the constraint height=$length');
-    return super.layoutSize;
+    return layoutSizeIncreasedToLength(isWidthMain: false);
   }
+
 }
 
-/// Mixin method [widthToLextr] provides the width (set by some far-away parent) to which this instance should lextr.
+/// Should be applied on children of [WidthSizerLayouter].
+/// The mixin method [widthToLextr] provides the width (set by some far-away parent) to which this instance should lextr.
 mixin WidthSizerLayouterChild on BoxContainer {
 
   /// Width in pixels of a far-away parent, to which this child's width will linearly extrapolate (lextr).
   ///
   /// All nullable fields must be set by now, otherwise error. We do the non-null cast without
   /// checking. Should be improved to provide good hints to users.
-  double get widthToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__widthSizer!.length;
+  // todo-00-last-last-remove : double get widthToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__widthSizer!.length;
+  double get widthToLextr =>
+      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsured.length;
 }
 
+/// Should be applied on children of [HeightSizerLayouter].
 /// Mixin method [heightToLextr] provides the height (set by some far-away parent) to which this instance should lextr.
 mixin HeightSizerLayouterChild on BoxContainer {
 
   /// Height in pixels of a far-away parent, to which this child's height will linearly extrapolate (lextr).
   ///
   /// See [WidthSizerLayouterChild] for details.
-  double get heightToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__heightSizer!.length;
+  // todo-00-last-last-remove : double get heightToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__heightSizer!.length;
+  double get heightToLextr =>
+      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsured.length;
 }
 
 // ---------- Width and Height sizers and layouters ^^^^^^ -------------------------------------------------------------
