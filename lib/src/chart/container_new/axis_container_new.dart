@@ -5,6 +5,7 @@ import '../container_layouter_base.dart';
 import '../container_edge_padding.dart';
 
 import '../label_container.dart';
+import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
 import '../options.dart';
@@ -53,7 +54,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in YContainer
                     labelStyle: labelStyle,
-                    options: options,
+                    // todo-00-last-last-done : options: options,
                     labelInfo: labelInfo,
                     ownerChartAreaContainer: this,
                   )
@@ -112,7 +113,7 @@ class YContainer extends container_common_new.ChartAreaContainer {
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in YContainer
                       labelStyle: labelStyle,
-                      options: options,
+                      // todo-00-last-last-done : options: options,
                       labelInfo: labelInfo,
                       ownerChartAreaContainer: this,
                     )

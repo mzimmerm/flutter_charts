@@ -856,7 +856,6 @@ mixin WidthSizerLayouterChild on BoxContainer {
   ///
   /// All nullable fields must be set by now, otherwise error. We do the non-null cast without
   /// checking. Should be improved to provide good hints to users.
-  // todo-00-last-last-remove : double get widthToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__widthSizer!.length;
   double get widthToLextr =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsured.length;
 }
@@ -868,7 +867,6 @@ mixin HeightSizerLayouterChild on BoxContainer {
   /// Height in pixels of a far-away parent, to which this child's height will linearly extrapolate (lextr).
   ///
   /// See [WidthSizerLayouterChild] for details.
-  // todo-00-last-last-remove : double get heightToLextr => (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).__heightSizer!.length;
   double get heightToLextr =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsured.length;
 }
@@ -2641,7 +2639,7 @@ class TableLayoutDefiner {
   ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
   ///   - next is the [cellsAlignerDefiner]
   ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  ///   todo-00!!! : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  ///   todo-00!!!! : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   ///                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);

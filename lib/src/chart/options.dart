@@ -138,13 +138,6 @@ class LegendOptions {
 class XContainerOptions {
   final bool isXContainerShown;
 
-  /// Length of the ticks around the grid rectangle.
-  ///
-  /// Each tick indicates a center of a label (X on the top and bottom,
-  /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
-  final double xBottomTickHeight;
-
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
   final double xLabelsPadTB;
 
@@ -153,7 +146,6 @@ class XContainerOptions {
 
   const XContainerOptions({
     this.isXContainerShown = true,
-    this.xBottomTickHeight = 6.0, // todo-00!!!!! move to DataContainerOptions and name dataBottomTickHeight
     this.xLabelsPadTB = 6.0,
     this.xLabelsPadLR = 40.0,
   });
@@ -185,20 +177,6 @@ class YContainerOptions {
   /// This option allows to toggle it.
   final bool isYGridlinesShown;
 
-  /// Length of the ticks around the grid rectangle.
-  ///
-  /// Each tick indicates a center of a label (X on the top and bottom,
-  /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
-  final double yLeftTickWidth; // todo-00!!!!! move to DataContainerOptions and name dataLeftTickWidth
-
-  /// Length of the ticks around the grid rectangle.
-  ///
-  /// Each tick indicates a center of a label (X on the top and bottom,
-  /// Y on the left and right)
-  /// Auto layout can increase these lengths, to fit labels below them.
-  final double yRightTickWidth; // todo-00!!!!! move to DataContainerOptions and name dataRightTickWidth
-
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
   final double yLabelsPadTB;
 
@@ -211,8 +189,6 @@ class YContainerOptions {
   const YContainerOptions({
     this.isYContainerShown = true,
     this.isYGridlinesShown = true,
-    this.yLeftTickWidth = 6.0,
-    this.yRightTickWidth = 6.0,
     this.yLabelsPadTB = 40.0,
     this.yLabelsPadLR = 6.0,
     this.yLabelUnits = '',
@@ -294,8 +270,32 @@ class DataContainerOptions {
   /// If not allowed, the request is rejected, and data start at 0.
   final bool extendAxisToOriginRequested;
 
+  /// Length of the ticks around the grid rectangle.
+  ///
+  /// Each tick indicates a center of a label (X on the top and bottom,
+  /// Y on the left and right)
+  /// Auto layout can increase these lengths, to fit labels below them.
+  final double dataBottomTickHeight;
+
+  /// Length of the ticks around the grid rectangle.
+  ///
+  /// Each tick indicates a center of a label (X on the top and bottom,
+  /// Y on the left and right)
+  /// Auto layout can increase these lengths, to fit labels below them.
+  final double dataLeftTickWidth;
+
+  /// Length of the ticks around the grid rectangle.
+  ///
+  /// Each tick indicates a center of a label (X on the top and bottom,
+  /// Y on the left and right)
+  /// Auto layout can increase these lengths, to fit labels below them.
+  final double dataRightTickWidth;
+
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),
+    this.dataBottomTickHeight = 6.0,
+    this.dataLeftTickWidth = 6.0,
+    this.dataRightTickWidth = 6.0,
     this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
     this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
     this.extendAxisToOriginRequested = true,
@@ -392,7 +392,7 @@ class ChartPaddingGroup {
   double heightPadBottomOfYAndData() {
     return math.max(
         fromChartOptions.labelCommonOptions.estimatedHorizontalLabelHeight,
-        fromChartOptions.xContainerOptions.xBottomTickHeight,
+        fromChartOptions.dataContainerOptions.dataBottomTickHeight,
     );
   }
 
@@ -406,14 +406,14 @@ class ChartPaddingGroup {
   double widthPadLeftOfXAndData() {
     return math.max(
       0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
-      fromChartOptions.yContainerOptions.yLeftTickWidth,
+      fromChartOptions.dataContainerOptions.dataLeftTickWidth,
     );
   }
 
   double widthPadRightOfXAndData() {
     return math.max(
       0.0, // No label protrusion assumed : fromChartOptions.labelCommonOptions.estimatedHorizontalLabelWidth,
-      fromChartOptions.yContainerOptions.yRightTickWidth,
+      fromChartOptions.dataContainerOptions.dataRightTickWidth,
     );
   }
 }

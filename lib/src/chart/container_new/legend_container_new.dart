@@ -5,6 +5,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import 'container_common_new.dart' as container_common_new show ChartAreaContainer;
 //import '../container.dart' as container;
 import '../label_container.dart' as label_container;
+import '../chart_label_container.dart' as chart_label_container;
 import '../container_edge_padding.dart' as container_edge_padding;
 import '../container_alignment.dart' as container_alignment;
 import '../container_layouter_base.dart' as container_base;
@@ -219,7 +220,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
 
   /// Creates child of this [LegendItemContainer] a [container_base.Row] with two containers:
   ///   - the [LegendIndicatorRectContainer] which is a color square indicator for data series,
-  ///   - the [label_container.LabelContainer] which describes the series.
+  ///   - the [chart_label_container.ChartLabelContainer] which describes the series.
   ///
   List<container_base.BoxContainer> _createChildrenOfLegendItemContainer() {
 
@@ -303,12 +304,12 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
-    var label = label_container.LabelContainer(
+    var label = chart_label_container.ChartLabelContainer(
       chartViewMaker: chartViewMaker,
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
-      options: _options,
+      // todo-00-last-last-done : options: _options,
     );
 
     if (doPadIndAndLabel) {

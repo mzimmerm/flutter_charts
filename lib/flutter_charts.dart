@@ -150,7 +150,7 @@ export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
 export 'src/chart/bar/options.dart';
 export 'src/chart/bar/container_new.dart';
-export 'src/chart/label_container.dart';
+export 'src/chart/chart_label_container.dart';
 export 'src/chart/view_maker.dart';
 export 'src/chart/container_new/axis_container_new.dart';
 export 'src/chart/container_new/axis_corner_container.dart';
