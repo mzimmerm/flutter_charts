@@ -1,9 +1,9 @@
 // base libraries
-import '../root_container_new.dart';
-import '../axis_container_new.dart';
-import '../data_container_new.dart';
-import '../legend_container_new.dart';
-import '../../model/data_model_new.dart';
+import '../root_container.dart';
+import '../axis_container.dart';
+import '../data_container.dart';
+import '../legend_container.dart';
+import '../../model/data_model.dart';
 import '../../view_maker.dart';
 import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;

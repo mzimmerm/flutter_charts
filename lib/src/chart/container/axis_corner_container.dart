@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Rect, Offset, Canvas, Paint;
 import 'package:flutter/material.dart' as material show Colors;
 
 // base libraries
-import '../container_layouter_base.dart';
+import '../../morphic/container/container_layouter_base.dart';
 
 // import '../container.dart' as container;
 // import '../chart_label_container.dart' as label_container;
@@ -11,8 +11,8 @@ import '../view_maker.dart' as view_maker;
 // import '../iterative_layout_strategy.dart' as strategy;
 
 // this level libraries
-// import '../container_new/axis_container_new.dart' as container_new;
-import '../container_new/container_common_new.dart' as container_common_new;
+// import '../container_new/axis_container.dart' as container_new;
+import '../container/container_common.dart' as container_common_new;
 
 class AxisCornerContainer extends container_common_new.ChartAreaContainer {
   AxisCornerContainer({

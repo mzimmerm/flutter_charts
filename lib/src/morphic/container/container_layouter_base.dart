@@ -4,23 +4,22 @@ import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
 
 // this level or equivalent
-import 'container_new/axis_corner_container.dart';
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
     show Align, Packing, LengthsPositionerProperties,
     LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
-import '../morphic/rendering/constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import '../util/extensions_flutter.dart' show SizeExtension, RectExtension;
-import '../util/util_dart.dart' as util_dart
+import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
+import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
+import '../../util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsExtrapolation1D,
     transposeRowsToColumns, assertDoubleResultsSame;
-import '../util/util_flutter.dart' as util_flutter
+import '../../util/util_flutter.dart' as util_flutter
     show boundingRectOfRects, assertSizeResultsSame;
-import '../util/collection.dart' as custom_collection
+import '../../util/collection.dart' as custom_collection
     show CustomList;
-import '../util/extensions_dart.dart';
-import '../container/container_key.dart'
+import '../../util/extensions_dart.dart';
+import 'container_key.dart'
     show ContainerKey, Keyed, UniqueKeyedObjectsManager;
 
 abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManager, DoubleLinked<BoxContainer>, DoubleLinkedOwner<BoxContainer> {

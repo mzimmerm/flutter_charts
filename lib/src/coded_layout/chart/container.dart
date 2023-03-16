@@ -6,16 +6,16 @@ import 'package:logger/logger.dart' as logger;
 
 // this level or equivalent
 import 'label_container.dart';
-import '../../chart/container_new/container_common_new.dart';
-import '../../chart/container_new/root_container_new.dart';
-import '../../chart/container_new/legend_container_new.dart';
-import '../../chart/container_new/data_container_new.dart';
-import '../../chart/container_new/axis_container_new.dart';
-import '../../chart/model/data_model_new.dart';
-import '../../chart/label_container.dart';
+import '../../chart/container/container_common.dart';
+import '../../chart/container/root_container.dart';
+import '../../chart/container/legend_container.dart';
+import '../../chart/container/data_container.dart';
+import '../../chart/container/axis_container.dart';
+import '../../chart/model/data_model.dart';
+import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../chart/painter.dart';
-import '../../chart/container_layouter_base.dart'
+import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     LayoutableBox;
 //import 'container_alignment.dart';
@@ -27,7 +27,7 @@ import '../../util/util_dart.dart';
 import '../../util/util_labels.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 //import '../container/container_key.dart';
-import '../../morphic/rendering/constraints.dart' show BoxContainerConstraints;
+import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
 //import '../chart/layouter_one_dimensional.dart';
 import '../../chart/iterative_layout_strategy.dart' as strategy;
 
@@ -185,9 +185,9 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
     yContainerFirst.layout();
 
-    // todo-00-switch-remove : if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove : if (chartViewMaker.isUseOldDataContainer) {
       yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : }
     // ####### 3. XContainer: Given width of YContainerFirst, constraint, then layout XContainer
 
     ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
@@ -240,23 +240,23 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
     // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
     BoxContainerConstraints dataContainerBoxConstraints;
-    // todo-00-switch-remove : if (chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove : if (chartViewMaker.isUseOldDataContainer) {
       dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
           size: ui.Size(
             constraints.width - yContainerSize.width,
             yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - xContainerSize.height,
           ));
       dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
-    // todo-00-switch-remove : } else {
-    // todo-00-switch-remove :   dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
-    // todo-00-switch-remove :       size: ui.Size(
-    // todo-00-switch-remove :         constraints.width - yContainerSize.width,
-    // todo-00-switch-remove :         // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
-    // todo-00-switch-remove :         //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
-    // todo-00-switch-remove :         yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
-    // todo-00-switch-remove :       ));
-    // todo-00-switch-remove :   dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : } else {
+    // todo-00-switch-done-remove :   dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
+    // todo-00-switch-done-remove :       size: ui.Size(
+    // todo-00-switch-done-remove :         constraints.width - yContainerSize.width,
+    // todo-00-switch-done-remove :         // todo-010 : height does not matter, why??? Can be e.g. 0.0, then the Column layout overflows but still produces result
+    // todo-00-switch-done-remove :         //                Reason: bug in PositionedLineSegments layoutLengths(), see todo-010 in _positionTightOrLooseLineSegmentFor
+    // todo-00-switch-done-remove :         yContainer.layoutSize.height, // todo-old-00-done-keep : cannot ask for axisPixelsRange : yContainer.axisPixelsRange.max - yContainer.axisPixelsRange.min,
+    // todo-00-switch-done-remove :       ));
+    // todo-00-switch-done-remove :   dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height); // todo-old-00-done-keep : cannot ask for axisPixelsRange : ui.Offset(yContainerSize.width, legendContainerSize.height + yContainer.axisPixelsRange.min);
+    // todo-00-switch-done-remove : }
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.layout();
@@ -911,10 +911,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   @override
   void layout() {
 
-    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-switch-remove :   super.layout();
-    // todo-00-switch-remove :   return;
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove :   super.layout();
+    // todo-00-switch-done-remove :   return;
+    // todo-00-switch-done-remove : }
 
     // OLD Manual layout build. NEW invokes this as part of auto-layout.
     buildAndReplaceChildren();
@@ -937,10 +937,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-switch-remove :   super.applyParentOffset(caller, offset);
-    // todo-00-switch-remove :   return;
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove :   super.applyParentOffset(caller, offset);
+    // todo-00-switch-done-remove :   return;
+    // todo-00-switch-done-remove : }
 
     // Move all container atomic elements - lines, labels, circles etc
     _xGridLinesContainer.applyParentOffset(this, offset);
@@ -1026,10 +1026,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Paints grid lines, then paints [PointPresentersColumns]
   @override
   void paint(ui.Canvas canvas) {
-    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-switch-remove :   super.paint(canvas);
-    // todo-00-switch-remove :   return;
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove :   super.paint(canvas);
+    // todo-00-switch-done-remove :   return;
+    // todo-00-switch-done-remove : }
 
     _paintGridLines(canvas);
     _drawPointPresentersColumns(canvas);

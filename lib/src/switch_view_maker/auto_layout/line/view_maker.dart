@@ -2,13 +2,12 @@ import 'package:logger/logger.dart' as logger;
 
 
 // base libraries
-import '../../../chart/container_new/line/root_container_new.dart';
-//import '../../../chart/container_new/bar/root_container_new.dart';
-import '../../../chart/container_new/data_container_new.dart';
+import '../../../chart/container/line/root_container.dart';
+import '../../../chart/container/data_container.dart';
 import '../../../chart/view_maker.dart';
-import '../../../chart/model/data_model_new.dart';
+import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../../../chart/line/container_new.dart'; // NEW BASE
+import '../../../chart/line/container.dart'; // NEW BASE
 
 // this level: switch/auto_layout/bar
 import '../../view_maker.dart'; // NEW SWITCH
@@ -38,7 +37,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
 
     return LineChartRootContainer(
       legendContainer: legendContainer,
@@ -56,7 +55,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
   @override
   DataContainer makeViewForDataContainer() {
-    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
 
     return LineChartDataContainer(
       chartViewMaker: this,

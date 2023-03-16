@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' show immutable;
 
-import '../chart/container_layouter_base.dart';
+import 'container_layouter_base.dart';
 
 /// [ContainerKey] is a unique identifier of a [BoxContainer].
 ///

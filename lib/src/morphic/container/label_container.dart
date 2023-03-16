@@ -5,7 +5,7 @@ import 'dart:ui' as ui show TextAlign, TextDirection, Canvas, Offset, Size;
 
 // this level or equivalent
 import 'container_layouter_base.dart' show BoxContainer, BoxLayouter, LayoutableBox;
-import '../util/geometry.dart' as geometry;
+import '../../util/geometry.dart' as geometry;
 // import '../util/util_dart.dart' as util_dart;
 
 /// Mixin allows [ChartLabelContainer] extend [ChartAreaContainer]

@@ -5,7 +5,7 @@
 import '../coded_layout/chart/container.dart' as container; // OLD CONTAINER
 import 'view_maker.dart'; // NEW SWITCH
 import '../chart/view_maker.dart'; // NEW
-import '../chart/model/data_model_new.dart' as model;
+import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 import '../coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch

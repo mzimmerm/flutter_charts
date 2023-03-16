@@ -5,7 +5,7 @@ import 'dart:ui' as ui show Color;
 import '../../chart/options.dart';
 
 // NEW
-import '../../chart/model/data_model_new.dart';
+import '../../chart/model/data_model.dart';
 
 /// Manages Chart Data.
 @Deprecated('Use ChartModel instead.')

@@ -1,14 +1,14 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
-import 'container_common_new.dart' as container_common_new;
-import '../container_layouter_base.dart';
-import '../model/data_model_new.dart' as model;
+import 'container_common.dart' as container_common_new;
+import '../../morphic/container/container_layouter_base.dart';
+import '../model/data_model.dart' as model;
 import '../view_maker.dart';
-import '../container_edge_padding.dart';
-import '../layouter_one_dimensional.dart';
+import '../../morphic/container/container_edge_padding.dart';
+import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
-import '../../container/container_key.dart';
+import '../../morphic/container/container_key.dart';
 import '../../util/util_dart.dart';
 
 class DataContainer extends container_common_new.ChartAreaContainer {

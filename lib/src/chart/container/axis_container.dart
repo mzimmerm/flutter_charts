@@ -1,17 +1,17 @@
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
-import '../container_layouter_base.dart';
-import '../container_edge_padding.dart';
+import '../../morphic/container/container_layouter_base.dart';
+import '../../morphic/container/container_edge_padding.dart';
 
-import '../label_container.dart';
+import '../../morphic/container/label_container.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
 import '../options.dart';
 
 // this level libraries
-import 'container_common_new.dart' as container_common_new;
+import 'container_common.dart' as container_common_new;
 
 class XContainer extends container_common_new.ChartAreaContainer {
   /// Constructs the container that holds X labels.

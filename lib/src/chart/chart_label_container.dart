@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart' as widgets show TextSpan, TextPainter;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
-import 'label_container.dart';
-import 'container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
+import '../morphic/container/label_container.dart';
+import 'container/container_common.dart' as container_common_new show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'options.dart' show ChartOptions;
 import '../util/util_labels.dart' show AxisLabelInfo;

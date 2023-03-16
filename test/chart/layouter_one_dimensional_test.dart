@@ -2,7 +2,7 @@
 // import 'package:flutter_test/flutter_test.dart' as flutter_test show throwsAssertionError;
 import 'package:test/test.dart';
 
-import 'package:flutter_charts/src/chart/layouter_one_dimensional.dart'
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart'
     show Align, LayedoutLengthsPositioner, LengthsPositionerProperties, Packing, PositionedLineSegments;
 import 'package:flutter_charts/src/util/util_dart.dart' show LineSegment;
 

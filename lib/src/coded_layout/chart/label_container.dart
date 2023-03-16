@@ -2,8 +2,8 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
 import 'container.dart' show AxisContainerCL, PixelRangeProvider;
-import '../../chart/container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
-import '../../chart/label_container.dart';
+import '../../chart/container/container_common.dart' as container_common_new show ChartAreaContainer;
+import '../../morphic/container/label_container.dart';
 import '../../chart/chart_label_container.dart';
 import '../../chart/view_maker.dart' as view_maker;
 import '../../util/util_labels.dart' show AxisLabelInfo;
@@ -85,7 +85,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
     // so we can calculate this label pixel position IN THE XContainer / YContainer
     // and place it on [parentOffsetTick]
     var labelsGenerator = ownerChartAreaContainer.chartViewMaker.yLabelsGenerator;
-    // todo-00-switch-remove : assert (chartViewMaker.isUseOldDataContainer == true);
+    // todo-00-switch-done-remove : assert (chartViewMaker.isUseOldDataContainer == true);
 
     parentOffsetTick = labelsGenerator.lextrValueToPixels(
       value: labelInfo.dataValue.toDouble(),

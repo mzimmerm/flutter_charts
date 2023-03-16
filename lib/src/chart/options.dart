@@ -5,8 +5,8 @@ import 'package:flutter/widgets.dart' as widgets show TextStyle;
 import 'package:flutter/foundation.dart' show immutable;
 
 // extension libraries
-import 'container_new/container_common_new.dart';
-import 'container_new/axis_container_new.dart';
+import 'container/container_common.dart';
+import 'container/axis_container.dart';
 import 'line/options.dart';
 import 'bar/options.dart';
 

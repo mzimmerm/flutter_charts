@@ -1,11 +1,11 @@
 import 'dart:math' as math show min, max, pow;
 
 // import '../../flutter_charts.dart';
-import '../chart/container_layouter_base.dart';
-import '../chart/model/data_model_new.dart';
+import '../morphic/container/container_layouter_base.dart';
+import '../chart/model/data_model.dart';
 import '../chart/options.dart';
 import '../chart/view_maker.dart';
-import '../chart/layouter_one_dimensional.dart'
+import '../morphic/container/layouter_one_dimensional.dart'
     show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 
 import 'util_dart.dart' as util_dart;
@@ -190,9 +190,9 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
-    // todo-00-switch-remove : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-switch-remove :   throw StateError('Only should be called in OLD Layouters');
-    // todo-00-switch-remove : }
+    // todo-00-switch-done-remove : if (!chartViewMaker.isUseOldDataContainer) {
+    // todo-00-switch-done-remove :   throw StateError('Only should be called in OLD Layouters');
+    // todo-00-switch-done-remove : }
 
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]

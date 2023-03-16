@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 // this level or equivalent
 import 'container_layouter_base.dart' show BoxLayouter, ExternalTicksLayoutProvider, ExternalTickAtPosition;
-import '../util/util_dart.dart' as util_dart show LineSegment, Interval;
+import '../../util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
 /// (imagined as ordered line segments) on a line.

@@ -1,14 +1,14 @@
 import 'package:logger/logger.dart' as logger;
 
-import 'container_common_new.dart' as container_common_new;
-import 'legend_container_new.dart';
-import 'axis_container_new.dart';
-import 'data_container_new.dart';
-import '../container_layouter_base.dart';
-import '../container_new/axis_corner_container.dart';
+import 'container_common.dart' as container_common_new;
+import 'legend_container.dart';
+import 'axis_container.dart';
+import 'data_container.dart';
+import '../../morphic/container/container_layouter_base.dart';
+import '../container/axis_corner_container.dart';
 
 import '../view_maker.dart';
-import '../model/data_model_new.dart';
+import '../model/data_model.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 
 class ChartRootContainer extends container_common_new.ChartAreaContainer {

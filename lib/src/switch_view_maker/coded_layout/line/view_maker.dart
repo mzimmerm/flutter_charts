@@ -3,7 +3,7 @@ import 'package:logger/logger.dart' as logger;
 // base libraries
 import '../../../chart/view_maker.dart';
 import '../../../coded_layout/chart/container.dart';
-import '../../../chart/model/data_model_new.dart';
+import '../../../chart/model/data_model.dart';
 
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
@@ -33,7 +33,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-switch-remove : assert(isUseOldDataContainer == true);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == true);
 
     return LineChartRootContainerCL(
       legendContainer: legendContainer,
@@ -51,7 +51,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   DataContainerCL makeViewForDataContainer() {
-    // todo-00-switch-remove : assert(isUseOldDataContainer == true);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == true);
     return LineChartDataContainerCL(
       chartViewMaker: this,
     );

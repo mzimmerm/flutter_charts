@@ -1,13 +1,13 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../../../chart/container_new/data_container_new.dart';
+import '../../../chart/container/data_container.dart';
 
 // base libraries
 import '../../../chart/view_maker.dart';
-import '../../../chart/container_new/bar/root_container_new.dart';
-import '../../../chart/model/data_model_new.dart';
+import '../../../chart/container/bar/root_container.dart';
+import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../../../chart/bar/container_new.dart';
+import '../../../chart/bar/container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../view_maker.dart'; // NEW SWITCH
@@ -37,7 +37,7 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
 
     return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
@@ -55,7 +55,7 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
 
   @override
   DataContainer makeViewForDataContainer() {
-    // todo-00-switch-remove : assert(isUseOldDataContainer == false);
+    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
 
     return VerticalBarChartDataContainer(
       chartViewMaker: this,

@@ -7,17 +7,17 @@ import 'package:logger/logger.dart' as logger;
 // view_maker imports
 
 // this level or equivalent
-import 'container_new/data_container_new.dart' as data_container_new;
-import 'container_new/container_common_new.dart' as container_common_new;
-import 'container_new/legend_container_new.dart' as legend_container_new;
-import 'container_new/axis_container_new.dart' as axis_container_new;
-import 'container_new/root_container_new.dart' as root_container_new;
-import 'container_layouter_base.dart' as container_base;
-import 'model/data_model_new.dart' as model;
+import 'container/data_container.dart' as data_container;
+import 'container/container_common.dart' as container_common_new;
+import 'container/legend_container.dart' as legend_container;
+import 'container/axis_container.dart' as axis_container;
+import 'container/root_container.dart' as root_container;
+import '../morphic/container/container_layouter_base.dart' as container_base;
+import 'model/data_model.dart' as model;
 import '../util/util_labels.dart' as util_labels;
 
 import 'options.dart' as options;
-import '../morphic/rendering/constraints.dart' as constraints;
+import '../morphic/container/constraints.dart' as constraints;
 
 import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
@@ -119,7 +119,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Because it can be recreated and re-set in [paint], it is not final;
   ///   it's children, [legendContainer], etc are also not final.
-  late root_container_new.ChartRootContainer chartRootContainer;
+  late root_container.ChartRootContainer chartRootContainer;
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -196,7 +196,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and ChartModel.
-  root_container_new.ChartRootContainer makeViewRoot({
+  root_container.ChartRootContainer makeViewRoot({
     required covariant ChartViewMaker chartViewMaker,
   });
 
@@ -204,27 +204,27 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
   /// or [container.YContainerCL.labelInfos].
-  axis_container_new.XContainer makeViewForDomainAxis() {
-    return axis_container_new.XContainer(
+  axis_container.XContainer makeViewForDomainAxis() {
+    return axis_container.XContainer(
       chartViewMaker: this,
     );
   }
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
   /// or labels in [container.YContainerCL.labelInfos].
-  axis_container_new.YContainer makeViewForRangeAxis() {
-    return axis_container_new.YContainer(chartViewMaker: this);
+  axis_container.YContainer makeViewForRangeAxis() {
+    return axis_container.YContainer(chartViewMaker: this);
   }
 
-  axis_container_new.YContainer makeViewForYContainerFirst() {
-    return axis_container_new.YContainer(
+  axis_container.YContainer makeViewForYContainerFirst() {
+    return axis_container.YContainer(
       chartViewMaker: this,
     );
   }
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.dataRowsLegends].
-  legend_container_new.LegendContainer makeViewForLegendContainer() {
-    return legend_container_new.LegendContainer(
+  legend_container.LegendContainer makeViewForLegendContainer() {
+    return legend_container.LegendContainer(
       chartViewMaker: this,
     );
   }
@@ -232,7 +232,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
   /// Assumed made from [model.ChartModel.crossSeriesPointsList], presents all data in the data area.
-  data_container_new.DataContainer makeViewForDataContainer();
+  data_container.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
@@ -243,16 +243,16 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// which is instance of [model.CrossSeriesPointsModel].
   ///
   /// Original name: generateViewChildren_Of_DataContainer_As_CrossSeriesPointsContainer_List
-  List<data_container_new.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
+  List<data_container.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
     List<model.CrossSeriesPointsModel> crossSeriesPointsList,
   ) {
-    List<data_container_new.CrossSeriesPointsContainer> chartColumns = [];
+    List<data_container.CrossSeriesPointsContainer> chartColumns = [];
     // Iterate the dataModel down, creating CrossSeriesPointsContainer, then PointContainer and return
 
     for (model.CrossSeriesPointsModel crossSeriesPoints in chartModel.crossSeriesPointsList) {
       // CrossSeriesPointsContainer crossSeriesPointsContainer =
       chartColumns.add(
-        data_container_new.CrossSeriesPointsContainer(
+        data_container.CrossSeriesPointsContainer(
           chartViewMaker: this,
           backingDataCrossSeriesPointsModel: crossSeriesPoints,
           children: [makeViewForDataAreaCrossSeriesPoints_Layouter(crossSeriesPoints)],
@@ -279,10 +279,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// and collects the views in a list of [PointContainer]s which is returned.
   ///
   /// Original name: generateViewChildren_Of_CrossSeriesPointsContainer_As_PointContainer_List
-  List<data_container_new.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
+  List<data_container.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
     model.CrossSeriesPointsModel crossSeriesPoints,
   ) {
-    List<data_container_new.PointContainer> pointContainerList = [];
+    List<data_container.PointContainer> pointContainerList = [];
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
@@ -300,10 +300,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   /// Original name: generateViewChildLeaf_Of_CrossSeriesPointsContainer_As_PointContainer
-  data_container_new.PointContainer makeViewForDataAreaPoint(
+  data_container.PointContainer makeViewForDataAreaPoint(
     model.PointModel pointModel,
   ) {
-    return data_container_new.HBarPointContainer(
+    return data_container.HBarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
     );

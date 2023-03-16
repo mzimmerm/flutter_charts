@@ -7,7 +7,7 @@ import 'auto_layout/bar/view_maker.dart'; // NEW MAKER BAR
 import 'coded_layout/line/view_maker.dart'; // OLD MAKER LINE
 import 'coded_layout/bar/view_maker.dart'; // OLD MAKER BAR
 
-import '../chart/model/data_model_new.dart' as model;
+import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy;
 
 /// Classes (the only classes) that know about both new auto layout and old coded_layout

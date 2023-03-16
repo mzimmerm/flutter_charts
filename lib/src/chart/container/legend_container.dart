@@ -2,17 +2,17 @@ import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level base libraries or equivalent
-import 'container_common_new.dart' as container_common_new show ChartAreaContainer;
+import 'container_common.dart' as container_common_new show ChartAreaContainer;
 //import '../container.dart' as container;
-import '../label_container.dart' as label_container;
+import '../../morphic/container/label_container.dart' as label_container;
 import '../chart_label_container.dart' as chart_label_container;
-import '../container_edge_padding.dart' as container_edge_padding;
-import '../container_alignment.dart' as container_alignment;
-import '../container_layouter_base.dart' as container_base;
-//import '../model/data_model_new.dart' as model;
+import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
+import '../../morphic/container/container_alignment.dart' as container_alignment;
+import '../../morphic/container/container_layouter_base.dart' as container_base;
+//import '../model/data_model.dart' as model;
 import '../view_maker.dart' as view_maker;
 import '../options.dart' as chart_options;
-import '../layouter_one_dimensional.dart';
+import '../../morphic/container/layouter_one_dimensional.dart';
 //import '../../container/container_key.dart';
 //import '../../util/util_dart.dart';
 //import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;

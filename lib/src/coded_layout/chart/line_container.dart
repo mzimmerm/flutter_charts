@@ -2,8 +2,8 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 // this level
 
-import '../../chart/container_layouter_base.dart' show LayoutableBox;
-import '../../chart/container_new/container_common_new.dart' as container_common_new show ChartAreaContainer;
+import '../../morphic/container/container_layouter_base.dart' show LayoutableBox;
+import '../../chart/container/container_common.dart' as container_common_new show ChartAreaContainer;
 import '../../chart/view_maker.dart';
 
 

@@ -1,13 +1,13 @@
 // base libraries
 import '../../../switch_view_maker/view_maker_cl.dart';
 import '../container.dart';
-import '../../../chart/container_new/legend_container_new.dart';
-import '../../../chart/container_new/root_container_new.dart';
-//import '../../../chart/container_new/data_container_new.dart';
-//import '../../../chart/container_new/axis_container_new.dart';
-//import '../../../chart/container_new/line/root_container_new.dart';
-//import '../../../chart/container_new/bar/root_container_new.dart';
-import '../../../chart/model/data_model_new.dart';
+import '../../../chart/container/legend_container.dart';
+import '../../../chart/container/root_container.dart';
+//import '../../../chart/container_new/data_container.dart';
+//import '../../../chart/container_new/axis_container.dart';
+//import '../../../chart/container_new/line/root_container.dart';
+//import '../../../chart/container_new/bar/root_container.dart';
+import '../../../chart/model/data_model.dart';
 import '../../../chart/view_maker.dart';
 import '../../../chart/options.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
