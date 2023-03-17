@@ -231,33 +231,33 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /// Assumed made from [model.ChartModel.crossSeriesPointsList], presents all data in the data area.
+  /// Assumed made from [model.ChartModel.crossPointsList], presents all data in the data area.
   data_container.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
-  /// Assumed made from [model.ChartModel.crossSeriesPointsList].
+  /// Assumed made from [model.ChartModel.crossPointsList].
   ///
   /// Should be invoked inside [makeViewForDataArea], each child in the returned list
-  /// should be made from one element of [model.ChartModel.crossSeriesPointsList],
-  /// which is instance of [model.CrossSeriesPointsModel].
+  /// should be made from one element of [model.ChartModel.crossPointsList],
+  /// which is instance of [model.CrossPointsModel].
   ///
-  /// Original name: generateViewChildren_Of_DataContainer_As_CrossSeriesPointsContainer_List
-  List<data_container.CrossSeriesPointsContainer> makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-    List<model.CrossSeriesPointsModel> crossSeriesPointsList,
+  /// Original name: generateViewChildren_Of_DataContainer_As_CrossPointsContainer_List
+  List<data_container.CrossPointsContainer> makeViewsForDataAreaBars_As_CrossPoints_List(
+    List<model.CrossPointsModel> crossPointsList,
   ) {
-    List<data_container.CrossSeriesPointsContainer> chartColumns = [];
-    // Iterate the dataModel down, creating CrossSeriesPointsContainer, then PointContainer and return
+    List<data_container.CrossPointsContainer> chartColumns = [];
+    // Iterate the dataModel down, creating CrossPointsContainer, then PointContainer and return
 
-    for (model.CrossSeriesPointsModel crossSeriesPoints in chartModel.crossSeriesPointsList) {
-      // CrossSeriesPointsContainer crossSeriesPointsContainer =
+    for (model.CrossPointsModel crossPoints in chartModel.crossPointsList) {
+      // CrossPointsContainer crossPointsContainer =
       chartColumns.add(
-        data_container.CrossSeriesPointsContainer(
+        data_container.CrossPointsContainer(
           chartViewMaker: this,
-          backingDataCrossSeriesPointsModel: crossSeriesPoints,
-          children: [makeViewForDataAreaCrossSeriesPoints_Layouter(crossSeriesPoints)],
+          backingDataCrossPointsModel: crossPoints,
+          children: [makeViewForDataAreaCrossPoints_Layouter(crossPoints)],
           // Give all view columns the same weight along main axis -
-          //   results in same width of each [CrossSeriesPointsContainer] as owner will be Row (main axis is horizontal)
+          //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
         ),
       );
@@ -265,11 +265,11 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return chartColumns;
   }
 
-  container_base.BoxContainer makeViewForDataAreaCrossSeriesPoints_Layouter(
-    model.CrossSeriesPointsModel crossSeriesPoints,
+  container_base.BoxContainer makeViewForDataAreaCrossPoints_Layouter(
+    model.CrossPointsModel crossPoints,
   ) {
     return container_base.Column(
-      children: makeViewsForDataAreaCrossSeriesPoints_As_PointList(crossSeriesPoints)
+      children: makeViewsForDataAreaCrossPoints_As_PointList(crossPoints)
           .reversed
           .toList(growable: false),
     );
@@ -278,15 +278,15 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Generates [PointContainer] view from each [PointModel]
   /// and collects the views in a list of [PointContainer]s which is returned.
   ///
-  /// Original name: generateViewChildren_Of_CrossSeriesPointsContainer_As_PointContainer_List
-  List<data_container.PointContainer> makeViewsForDataAreaCrossSeriesPoints_As_PointList(
-    model.CrossSeriesPointsModel crossSeriesPoints,
+  /// Original name: generateViewChildren_Of_CrossPointsContainer_As_PointContainer_List
+  List<data_container.PointContainer> makeViewsForDataAreaCrossPoints_As_PointList(
+    model.CrossPointsModel crossPoints,
   ) {
     List<data_container.PointContainer> pointContainerList = [];
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
-    crossSeriesPoints.applyOnAllElements(
+    crossPoints.applyOnAllElements(
       (model.PointModel pointModelElm, dynamic passedList) {
         passedList.add(makeViewForDataAreaPoint(pointModelElm));
       },
@@ -299,7 +299,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Generate view for this single leaf [PointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  /// Original name: generateViewChildLeaf_Of_CrossSeriesPointsContainer_As_PointContainer
+  /// Original name: generateViewChildLeaf_Of_CrossPointsContainer_As_PointContainer
   data_container.PointContainer makeViewForDataAreaPoint(
     model.PointModel pointModel,
   ) {

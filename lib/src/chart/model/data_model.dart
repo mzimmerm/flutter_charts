@@ -50,11 +50,11 @@ class ChartModel {
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
-    // Here, create one [ChartModelSeries] for each data row, and add to member [crossSeriesPointsList]
+    // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
     int columnIndex = 0;
     for (List<double> valuesColumn in _valuesColumns) {
-      crossSeriesPointsList.add(
-        CrossSeriesPointsModel(
+      crossPointsList.add(
+        CrossPointsModel(
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex++,
@@ -65,8 +65,8 @@ class ChartModel {
 
   // NEW CODE =============================================================
 
-  /// List of crossSeriesPoints in the model .
-  final List<CrossSeriesPointsModel> crossSeriesPointsList = [];
+  /// List of crossPoints in the model .
+  final List<CrossPointsModel> crossPointsList = [];
 
   /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -79,7 +79,7 @@ class ChartModel {
   ///     [PointModel._stackedNegativeDataValue] is used.
   ///   - For  [isStacked] false, the min and max is taken from [PointModel._dataValue] is used.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [CrossSeriesPointsModel] first, but could go
+  /// Implementation detail: maximum and minimum is calculated column-wise [CrossPointsModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
   Interval dataValuesInterval({
@@ -87,14 +87,14 @@ class ChartModel {
   }) {
     if (isStacked) {
       return Interval(
-        // reduce, not fold: crossSeriesPointsList.fold(0.0, ((double previous, CrossSeriesPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        crossSeriesPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
-        crossSeriesPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
+        // reduce, not fold: crossPointsList.fold(0.0, ((double previous, CrossPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        crossPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
+        crossPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );
     } else {
       return Interval(
-        crossSeriesPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
-        crossSeriesPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
+        crossPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
+        crossPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
       );
     }
   }
@@ -199,7 +199,7 @@ class ChartModel {
 
 }
 
-/// todo-done-last-3 : Note: CrossSeriesPointsModel replaces PointsColumn
+/// todo-done-last-3 : Note: CrossPointsModel replaces PointsColumn
 ///
 /// Represents a list of cross-series data values, in the [ChartModel].
 ///
@@ -211,10 +211,10 @@ class ChartModel {
 ///   - We can also consider the list of data values represented by
 ///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
-class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
+class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Constructor. todo-doc-01
-  CrossSeriesPointsModel({
+  CrossPointsModel({
     required List<double> valuesColumn,
     required ChartModel dataModel,
     required int columnIndex,
@@ -224,13 +224,13 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     for (double dataValue in valuesColumn) {
-      var point = PointModel(dataValue: dataValue, ownerCrossSeriesPointsList: this, rowIndex: rowIndex);
-      _points.add(point);
+      var point = PointModel(dataValue: dataValue, ownerCrossPointsList: this, rowIndex: rowIndex);
+      _crossPoints.add(point);
       rowIndex++;
     }
-    // When all points in this crossSeriesPoints are constructed and added to [_points], we can double-link the points.
+    // When all points in this crossPoints are constructed and added to [_points], we can double-link the points.
     // We just need one point to start - provided by [DoubleLinkedOwner.firstLinked].
-    if (_points.isNotEmpty) {
+    if (_crossPoints.isNotEmpty) {
       firstLinked().linkAll();
     }
     // Once the owned DoubleLinked data points are linked, we can do iteration operations of them, such as stacking.
@@ -266,18 +266,18 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Get the stacked value of this column of points - the sum of all
 
-  /// Owner [ChartModel] to which this [CrossSeriesPointsModel] belongs by existence in
-  /// [ChartModel.crossSeriesPointsList].
+  /// Owner [ChartModel] to which this [CrossPointsModel] belongs by existence in
+  /// [ChartModel.crossPointsList].
   ///
   final ChartModel _dataModel;
   ChartModel get dataModel => _dataModel;
 
-  /// Index of this column (crossSeriesPoints list) in the [ChartModel.crossSeriesPointsList].
+  /// Index of this column (crossPoints list) in the [ChartModel.crossPointsList].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
-  /// The data values of this column are stored in the [_points] list,
+  /// The data values of this column are stored in the [_crossPoints] list,
   /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
@@ -285,17 +285,17 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   ///   -  [ChartModel.byRowColors]
   final int _columnIndex;
 
-  /// Points of this column (crossSeriesPoints).
+  /// Points of this column (crossPoints).
   ///
   /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
   /// owned by this [DoubleLinkedOwner]. 
-  /// At the same time, the points are all [PointModel] in this column (crossSeriesPoints list).
-  final List<PointModel> _points = [];
+  /// At the same time, the points are all [PointModel] in this column (crossPoints list).
+  final List<PointModel> _crossPoints = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
   /// the owned [DoubleLinked] instances of [PointModel].
   @override
-  Iterable<PointModel> allElements() => _points;
+  Iterable<PointModel> allElements() => _crossPoints;
 
   /// Returns height of this column in terms of data values on points, separately for positive and negative.
   ///
@@ -310,22 +310,22 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   //double __stackedNegative(PointModel point) => point._stackedNegativeDataValue;
 
   double __maxOnPoints(double Function(PointModel) getNumFromPoint) {
-    return __applyFoldableOnPoints(getNumFromPoint, math.max);
+    return __applyFolderOnPoints(getNumFromPoint, math.max);
   }
 
   double __minOnPoints(double Function(PointModel) getNumFromPoint) {
-    return __applyFoldableOnPoints(getNumFromPoint, math.min);
+    return __applyFolderOnPoints(getNumFromPoint, math.min);
   }
 
-  /// Apply the fold performed by [foldable] (double, double) => double function,
+  /// Apply the fold performed by [folder] (double, double) => double function,
   /// on some double values from the owned [allElements] which are [DoubleLinked] and [PointModel]s.
   ///
   /// The double values are pulled from each [PointModel]
   /// using the [getNumFromPoint] (PointModel) => double function.
   ///
-  double __applyFoldableOnPoints(
+  double __applyFolderOnPoints(
     double Function(PointModel) getNumFromPoint,
-    double Function(double, double) foldable,
+    double Function(double, double) folder,
   ) {
     _DoubleValue result = _DoubleValue();
     applyOnAllElements(
@@ -333,7 +333,7 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
         if (!point.hasPrevious) {
           result.value = getNumFromPoint(point);
         } else {
-          result.value = foldable(result.value as double, getNumFromPoint(point));
+          result.value = folder(result.value as double, getNumFromPoint(point));
         }
         // print('result = ${result.value}');
       },
@@ -347,8 +347,8 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
 ///
 /// Notes:
-///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerCrossSeriesPointsList]
-///     which in turn has access to [ChartModel] through it's member [CrossSeriesPointsModel._dataModel].
+///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerCrossPointsList]
+///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._dataModel].
 ///     THIS ACCESS IS CURRENTLY UNUSED
 ///
 class PointModel extends Object with DoubleLinked {
@@ -357,17 +357,17 @@ class PointModel extends Object with DoubleLinked {
   // todo-doc-01
   PointModel({
     required double dataValue,
-    required this.ownerCrossSeriesPointsList,
+    required this.ownerCrossPointsList,
     required int rowIndex,
-  })  : _dataValue = ownerCrossSeriesPointsList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
+  })  : _dataValue = ownerCrossPointsList._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
         _rowIndex = rowIndex {
     // The ownerSeries is ChartModelSeries which is DoubleLinkedOwner
     // of all [PointModel]s, managed by [DoubleLinkedOwner.allElements]
-    doubleLinkedOwner = ownerCrossSeriesPointsList;
-    // By the time a PointModel is constructed, DataModel and it's ownerCrossSeriesPointsList INDEXES are configured
+    doubleLinkedOwner = ownerCrossPointsList;
+    // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
     assertDoubleResultsSame(
-      ownerCrossSeriesPointsList._dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossSeriesPointsList.dataModel._valuesRows[_rowIndex][ownerCrossSeriesPointsList._columnIndex])
+      ownerCrossPointsList._dataModel.chartOptions.dataContainerOptions
+          .yTransform(ownerCrossPointsList.dataModel._valuesRows[_rowIndex][ownerCrossPointsList._columnIndex])
           .toDouble(),
       _dataValue,
     );
@@ -380,7 +380,7 @@ class PointModel extends Object with DoubleLinked {
   ///
   /// This [_dataValue] point is created from the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [_rowIndex]
-  ///   - column at the [ownerCrossSeriesPointsList] index [CrossSeriesPointsModel._columnIndex].
+  ///   - column at the [ownerCrossPointsList] index [CrossPointsModel._columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double _dataValue;
 
@@ -391,15 +391,15 @@ class PointModel extends Object with DoubleLinked {
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossSeriesPointsModel._points] index [_rowIndex].
+  /// Also, this point object is kept in [CrossPointsModel._crossPoints] index [_rowIndex].
   ///
   /// See [_dataValue] for details of the column index from which this point was created.
   final int _rowIndex;
 
-  /// References the data column (crossSeriesPoints list) this point belongs to
-  CrossSeriesPointsModel ownerCrossSeriesPointsList;
+  /// References the data column (crossPoints list) this point belongs to
+  CrossPointsModel ownerCrossPointsList;
 
-  ui.Color get color => ownerCrossSeriesPointsList._dataModel._byRowColors[_rowIndex];
+  ui.Color get color => ownerCrossPointsList._dataModel._byRowColors[_rowIndex];
 
 }
 

@@ -41,8 +41,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
               children: [
                 Row(
                   crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-                  children: chartViewMaker.makeViewsForDataAreaBars_As_CrossSeriesPoints_List(
-                    chartViewMaker.chartModel.crossSeriesPointsList,
+                  children: chartViewMaker.makeViewsForDataAreaBars_As_CrossPoints_List(
+                    chartViewMaker.chartModel.crossPointsList,
                   ),
                 ),
               ],
@@ -55,12 +55,12 @@ class DataContainer extends container_common_new.ChartAreaContainer {
 
 }
 
-class CrossSeriesPointsContainer extends container_common_new.ChartAreaContainer {
-  model.CrossSeriesPointsModel backingDataCrossSeriesPointsModel;
+class CrossPointsContainer extends container_common_new.ChartAreaContainer {
+  model.CrossPointsModel backingDataCrossPointsModel;
 
-  CrossSeriesPointsContainer({
+  CrossPointsContainer({
     required ChartViewMaker chartViewMaker,
-    required this.backingDataCrossSeriesPointsModel,
+    required this.backingDataCrossPointsModel,
     List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
