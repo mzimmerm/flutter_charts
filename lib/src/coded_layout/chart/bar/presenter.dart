@@ -11,7 +11,7 @@ import '../../../chart/view_maker.dart';
 /// See [PointPresenter].
 class VerticalBarPointPresenter extends PointPresenter {
   late ui.Rect presentedRect;
-  late ui.Paint dataRowPaint;
+  late ui.Paint valuesRowPaint;
 
   VerticalBarPointPresenter({
     required StackableValuePoint point,
@@ -24,9 +24,9 @@ class VerticalBarPointPresenter extends PointPresenter {
           chartViewMaker: chartViewMaker,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
-    dataRowPaint = ui.Paint();
-    List<ui.Color> dataRowsColors = chartViewMaker.chartModel.dataRowsColors;
-    dataRowPaint.color = dataRowsColors[rowIndex % dataRowsColors.length];
+    valuesRowPaint = ui.Paint();
+    List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
+    valuesRowPaint.color = byRowColors[rowIndex % byRowColors.length];
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;

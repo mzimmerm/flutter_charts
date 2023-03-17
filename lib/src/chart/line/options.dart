@@ -11,7 +11,7 @@ class LineChartOptions {
   /// Paint for the inner circle on line chart.
   /// Using common paint object for all circles, we
   /// force all circles to look the same.
-  /// todo 3 - consider per dataRow control.
+  /// todo 3 - consider per valuesRow control.
   final ui.Color hotspotInnerPaintColor;
 
   final ui.Color hotspotOuterPaintColor;
@@ -19,7 +19,7 @@ class LineChartOptions {
   /// Width of the line connecting the circles on line chart.
   /// Paint for one series. Using one option for all series, we
   /// force all series width the same.
-  /// todo 3 - consider per dataRow width instances.
+  /// todo 3 - consider per valuesRow width instances.
   final double lineStrokeWidth;
 
   /// Constructor with default values.

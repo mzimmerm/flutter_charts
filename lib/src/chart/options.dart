@@ -99,7 +99,7 @@ class LegendOptions {
   final bool isLegendContainerShown;
 
   // Series color indicator size - the "Series color indicator"
-  // is the square that shows the color of each dataRow (color of lines or bars)
+  // is the square that shows the color of each valuesRow (color of lines or bars)
   // together with data series name (legend name).
 
   /// Margin on the left/right of the [LegendContainer]
@@ -111,7 +111,7 @@ class LegendOptions {
   /// Between each legend item pairs (indicator + label)
   final double betweenLegendItemsPadding;
 
-  /// Width of the colored square, indicator of each dataRow
+  /// Width of the colored square, indicator of each valuesRow
   final double legendColorIndicatorWidth;
 
   /// Between square indicator, to label
@@ -230,7 +230,7 @@ class DataContainerOptions {
   /// label width along X axis, which displays the bars (grouped or stacked).
   final double gridStepWidthPortionUsedByAtomicPointPresenter;
 
-  /// Controls the order in which the painter paints the [DeprecatedChartData.dataRows].
+  /// Controls the order in which the painter paints the [DeprecatedChartData.valuesRows].
   ///
   /// Motivation: On the line chart, if two data rows have same values,
   /// the "last painted value wins". This option helps to change the data rows
@@ -238,7 +238,7 @@ class DataContainerOptions {
   /// While so far only makes a difference on the line chart, this is defined
   /// as a common option in case there is some future overlap use on other
   /// chart types.
-  final DataRowsPaintingOrder dataRowsPaintingOrder;
+  final DataRowsPaintingOrder valuesRowsPaintingOrder;
 
   /// The transformation function which is always applied on y data before data are added to the chart internals.
   ///
@@ -298,7 +298,7 @@ class DataContainerOptions {
     this.dataLeftTickWidth = 6.0,
     this.dataRightTickWidth = 6.0,
     this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
-    this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
+    this.valuesRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
     this.extendAxisToOriginRequested = true,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,

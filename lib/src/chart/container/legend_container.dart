@@ -3,19 +3,14 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level base libraries or equivalent
 import 'container_common.dart' as container_common_new show ChartAreaContainer;
-//import '../container.dart' as container;
 import '../../morphic/container/label_container.dart' as label_container;
 import '../chart_label_container.dart' as chart_label_container;
 import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
 import '../../morphic/container/container_alignment.dart' as container_alignment;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-//import '../model/data_model.dart' as model;
 import '../view_maker.dart' as view_maker;
 import '../options.dart' as chart_options;
 import '../../morphic/container/layouter_one_dimensional.dart';
-//import '../../container/container_key.dart';
-//import '../../util/util_dart.dart';
-//import '../../util/util_labels.dart' show DataRangeLabelInfosGenerator;
 
 /// Lays out the legend area for the chart.
 ///
@@ -61,7 +56,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewMaker.chartOptions;
 
-    List<String> dataRowsLegends = chartViewMaker.chartModel.dataRowsLegends;
+    List<String> byRowLegends = chartViewMaker.chartModel.byRowLegends;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
@@ -73,7 +68,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
 
     container_base.BoxContainer childLayout;
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
-    var children = _legendItems(dataRowsLegends, labelStyle, options);
+    var children = _legendItems(byRowLegends, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         childLayout = container_base.Column(
@@ -138,20 +133,20 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   }
 
   List<container_base.BoxContainer> _legendItems(
-      List<String> dataRowsLegends,
+      List<String> byRowLegends,
       label_container.LabelStyle labelStyle,
       chart_options.ChartOptions options,
       ) {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
-      for (int index = 0; index < dataRowsLegends.length; index++)
+      for (int index = 0; index < byRowLegends.length; index++)
         LegendItemContainer(
           chartViewMaker: chartViewMaker,
-          label: dataRowsLegends[index],
+          label: byRowLegends[index],
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartViewMaker.chartModel.dataRowsColors
-                .elementAt(index % chartViewMaker.chartModel.dataRowsColors.length)),
+            ..color = chartViewMaker.chartModel.byRowColors
+                .elementAt(index % chartViewMaker.chartModel.byRowColors.length)),
           options: options,
         ),
     ];

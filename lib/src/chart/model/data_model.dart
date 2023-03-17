@@ -31,31 +31,31 @@ class ChartModel {
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
   ChartModel({
-    required dataRows,
+    required valuesRows,
     required this.xUserLabels,
-    required dataRowsLegends,
+    required byRowLegends,
     required this.chartOptions,
     this.yUserLabels,
-    List<ui.Color>? dataRowsColors,
+    List<ui.Color>? byRowColors,
   })  :
-        // Initializing of non-nullable _dataRowsColors which is a non-required argument
+        // Initializing of non-nullable _byRowColors which is a non-required argument
         // must be in the initializer list by a non-member function (member methods only in constructor)
-        _dataRows = dataRows,
-        _dataRowsLegends = dataRowsLegends,
-        _dataRowsColors = dataRowsColors ?? dataRowsDefaultColors(dataRows.length) {
+        _valuesRows = valuesRows,
+        _byRowLegends = byRowLegends,
+        _byRowColors = byRowColors ?? byRowDefaultColors(valuesRows.length) {
     logger.Logger().d('Constructing ChartModel');
     validate();
 
-    _dataBars = transposeRowsToColumns(_dataRows);
+    _valuesColumns = transposeRowsToColumns(_valuesRows);
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossSeriesPointsList]
     int columnIndex = 0;
-    for (List<double> dataBar in _dataBars) {
+    for (List<double> valuesColumn in _valuesColumns) {
       crossSeriesPointsList.add(
         CrossSeriesPointsModel(
-          dataBar: dataBar,
+          valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex++,
         ),
@@ -99,7 +99,7 @@ class ChartModel {
     }
   }
 
-  /// Returns the interval that envelopes all data values in [ChartModel.dataRows], possibly extended to 0.
+  /// Returns the interval that envelopes all data values in [ChartModel.valuesRows], possibly extended to 0.
   ///
   /// The [isStacked] controls whether the interval is created from values in [PointModel._dataValue]
   /// or the stacked values [PointModel._stackedPositiveDataValue] and
@@ -122,32 +122,32 @@ class ChartModel {
   // OLD CODE =============================================================
   // Legacy stuff below
 
-  // _dataRows[columnIndex][rowIndex]
+  // _valuesRows[columnIndex][rowIndex]
   /// Data in rows.
   ///
   /// Each row of data represents one data series.
-  /// Legends per row are managed by [_dataRowsLegends].
+  /// Legends per row are managed by [_byRowLegends].
   ///
-  final List<List<double>> _dataRows;
-  List<List<double>> get dataRows => _dataRows;
+  final List<List<double>> _valuesRows;
+  List<List<double>> get valuesRows => _valuesRows;
 
   /// Data reorganized from rows to columns.
-  late final List<List<double>> _dataBars;
-  List<List<double>> get dataBars => _dataBars;
+  late final List<List<double>> _valuesColumns;
+  List<List<double>> get valuesColumns => _valuesColumns;
 
   /// Labels on independent (X) axis.
   ///
   /// It is assumed labels are defined, by the client
   /// and their number is the same as number of points
-  /// in each row in [_dataRows].
+  /// in each row in [_valuesRows].
   final List<String> xUserLabels;
 
-  /// The legends for each row in [_dataRows].
+  /// The legends for each row in [_valuesRows].
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
-  final List<String> _dataRowsLegends;
-  List<String> get dataRowsLegends => _dataRowsLegends;
+  final List<String> _byRowLegends;
+  List<String> get byRowLegends => _byRowLegends;
 
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
@@ -158,36 +158,36 @@ class ChartModel {
   final List<String>? yUserLabels;
 
   /// Colors corresponding to each data row (series) in [ChartModel].
-  final List<ui.Color> _dataRowsColors;
-  List<ui.Color> get dataRowsColors => _dataRowsColors;
+  final List<ui.Color> _byRowColors;
+  List<ui.Color> get byRowColors => _byRowColors;
 
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
-  List<double> get flatten => _dataRows.expand((element) => element).toList();
+  List<double> get flatten => _valuesRows.expand((element) => element).toList();
   double get dataYMax => flatten.reduce(math.max);
   double get dataYMin => flatten.reduce(math.min);
 
   void validate() {
     //                      But that would require ChartOptions available in ChartModel.
-    if (!(dataRows.length == dataRowsLegends.length)) {
-      throw StateError('The number of legend labels provided in parameter "dataRowsLegends", '
-          'does not equal the number of data rows provided in parameter "dataRows":\n'
-          'Detail reason: Row legend labels must be provided in parameter "dataRowsLegends", '
+    if (!(valuesRows.length == byRowLegends.length)) {
+      throw StateError('The number of legend labels provided in parameter "byRowLegends", '
+          'does not equal the number of data rows provided in parameter "valuesRows":\n'
+          'Detail reason: Row legend labels must be provided in parameter "byRowLegends", '
           'and their number must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of dataRows: ${dataRows.length}] != [number of dataRowsLegends: ${dataRowsLegends.length}].\n'
-          'To fix this: provide ${dataRows.length} "dataRowsLegends".');
+          '   [number of valuesRows: ${valuesRows.length}] != [number of byRowLegends: ${byRowLegends.length}].\n'
+          'To fix this: provide ${valuesRows.length} "byRowLegends".');
     }
-    if (!(dataRows.length == dataRowsColors.length)) {
-      throw StateError('The number of legend colors provided in parameter "dataRowsColors", '
-          'does not equal the number of data rows provided in parameter "dataRows":\n'
-          'Detail reason: If not provided in "dataRowsColors", legend colors are generated. '
-          'If the parameter "dataRowsColors" is provided, '
+    if (!(valuesRows.length == byRowColors.length)) {
+      throw StateError('The number of legend colors provided in parameter "byRowColors", '
+          'does not equal the number of data rows provided in parameter "valuesRows":\n'
+          'Detail reason: If not provided in "byRowColors", legend colors are generated. '
+          'If the parameter "byRowColors" is provided, '
           'the number of colors must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of dataRows: ${dataRows.length}] != [number of dataRowsColors: ${dataRowsColors.length}].\n'
-          'To fix this: provide ${dataRows.length} "dataRowsColors".');
+          '   [number of valuesRows: ${valuesRows.length}] != [number of byRowColors: ${byRowColors.length}].\n'
+          'To fix this: provide ${valuesRows.length} "byRowColors".');
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
@@ -209,21 +209,21 @@ class ChartModel {
 ///   - The list of data values in this object represent one column in the 2D array (cross-series values),
 ///     oriented 'top-to-bottom'.
 ///   - We can also consider the list of data values represented by
-///     this object to be created by diagonal transpose of the [ChartModel._dataRows] and
+///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
 class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Constructor. todo-doc-01
   CrossSeriesPointsModel({
-    required List<double> dataBar,
+    required List<double> valuesColumn,
     required ChartModel dataModel,
     required int columnIndex,
   })
       : _dataModel = dataModel,
         _columnIndex = columnIndex {
-    // Construct data points from the passed [dataRow] and add each point to member _points
+    // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
-    for (double dataValue in dataBar) {
+    for (double dataValue in valuesColumn) {
       var point = PointModel(dataValue: dataValue, ownerCrossSeriesPointsList: this, rowIndex: rowIndex);
       _points.add(point);
       rowIndex++;
@@ -274,15 +274,15 @@ class CrossSeriesPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Index of this column (crossSeriesPoints list) in the [ChartModel.crossSeriesPointsList].
   ///
-  /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.dataRows].
-  /// Also indexes one row, left-to-right, in the `transpose(ChartModel.dataRows)`.
+  /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
+  /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
   /// The data values of this column are stored in the [_points] list,
-  /// values and order as in top-to-bottom column in [ChartModel.dataRows].
+  /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
-  ///   -  [ChartModel.dataRowsLegends]
-  ///   -  [ChartModel.dataRowsColors]
+  ///   -  [ChartModel.byRowLegends]
+  ///   -  [ChartModel.byRowColors]
   final int _columnIndex;
 
   /// Points of this column (crossSeriesPoints).
@@ -367,7 +367,7 @@ class PointModel extends Object with DoubleLinked {
     // By the time a PointModel is constructed, DataModel and it's ownerCrossSeriesPointsList INDEXES are configured
     assertDoubleResultsSame(
       ownerCrossSeriesPointsList._dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossSeriesPointsList.dataModel._dataRows[_rowIndex][ownerCrossSeriesPointsList._columnIndex])
+          .yTransform(ownerCrossSeriesPointsList.dataModel._valuesRows[_rowIndex][ownerCrossSeriesPointsList._columnIndex])
           .toDouble(),
       _dataValue,
     );
@@ -376,9 +376,9 @@ class PointModel extends Object with DoubleLinked {
   // ===================== NEW CODE ============================================
 
   /// The original (transformed, not-extrapolated) data value from one data item
-  /// in the two dimensional, rows first, [ChartModel.dataRows].
+  /// in the two dimensional, rows first, [ChartModel.valuesRows].
   ///
-  /// This [_dataValue] point is created from the [ChartModel.dataRows] using the indexes:
+  /// This [_dataValue] point is created from the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [_rowIndex]
   ///   - column at the [ownerCrossSeriesPointsList] index [CrossSeriesPointsModel._columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
@@ -389,7 +389,7 @@ class PointModel extends Object with DoubleLinked {
   late final double _stackedPositiveDataValue;
   late final double _stackedNegativeDataValue;
 
-  /// Refers to the row index in [ChartModel.dataRows] from which this point was created.
+  /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
   /// Also, this point object is kept in [CrossSeriesPointsModel._points] index [_rowIndex].
   ///
@@ -399,7 +399,7 @@ class PointModel extends Object with DoubleLinked {
   /// References the data column (crossSeriesPoints list) this point belongs to
   CrossSeriesPointsModel ownerCrossSeriesPointsList;
 
-  ui.Color get color => ownerCrossSeriesPointsList._dataModel._dataRowsColors[_rowIndex];
+  ui.Color get color => ownerCrossSeriesPointsList._dataModel._byRowColors[_rowIndex];
 
 }
 
@@ -421,29 +421,29 @@ enum DataRangeDependency {
 /// Sets up colors for legends, first several explicitly, rest randomly.
 ///
 /// This is used if user does not set colors.
-List<ui.Color> dataRowsDefaultColors(int dataRowsCount) {
+List<ui.Color> byRowDefaultColors(int valuesRowsCount) {
   List<ui.Color> rowsColors = List.empty(growable: true);
 
-  if (dataRowsCount >= 1) {
+  if (valuesRowsCount >= 1) {
     rowsColors.add(material.Colors.yellow);
   }
-  if (dataRowsCount >= 2) {
+  if (valuesRowsCount >= 2) {
     rowsColors.add(material.Colors.green);
   }
-  if (dataRowsCount >= 3) {
+  if (valuesRowsCount >= 3) {
     rowsColors.add(material.Colors.blue);
   }
-  if (dataRowsCount >= 4) {
+  if (valuesRowsCount >= 4) {
     rowsColors.add(material.Colors.black);
   }
-  if (dataRowsCount >= 5) {
+  if (valuesRowsCount >= 5) {
     rowsColors.add(material.Colors.grey);
   }
-  if (dataRowsCount >= 6) {
+  if (valuesRowsCount >= 6) {
     rowsColors.add(material.Colors.orange);
   }
-  if (dataRowsCount > 6) {
-    for (int i = 3; i < dataRowsCount; i++) {
+  if (valuesRowsCount > 6) {
+    for (int i = 3; i < valuesRowsCount; i++) {
       int colorHex = math.Random().nextInt(0xFFFFFF);
       int opacityHex = 0xFF;
       rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));

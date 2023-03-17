@@ -222,7 +222,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     );
   }
 
-  /// Assumed made from [model.ChartModel] member [model.ChartModel.dataRowsLegends].
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.byRowLegends].
   legend_container.LegendContainer makeViewForLegendContainer() {
     return legend_container.LegendContainer(
       chartViewMaker: this,

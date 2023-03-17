@@ -176,10 +176,10 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
 
 /* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
 class _NewSourceYContainerAndYContainerToSinkDataContainer {
-  final int dataBarsCount;
+  final int valuesColumnsCount;
 
   _NewSourceYContainerAndYContainerToSinkDataContainer({
-    required this.dataBarsCount,
+    required this.valuesColumnsCount,
   });
 }
 */

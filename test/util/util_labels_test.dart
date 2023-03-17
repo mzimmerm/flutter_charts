@@ -59,10 +59,10 @@ void main() {
     
     var extendAxisToOrigin = true;
     var xUserLabels = ['1', '2', '3'];
-    var dataRowsLegends = ['Legend of row 1'];
+    var byRowLegends = ['Legend of row 1'];
 
-    var dataRows = [[1.0, 22.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    var valuesRows = [[1.0, 22.0, 333.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, 0.0);
@@ -71,8 +71,8 @@ void main() {
     expect(labelInfoList[3].dataValue, 300.0);
 
 
-    dataRows = [[-1.0, -22.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    valuesRows = [[-1.0, -22.0, -333.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, -300.0);
@@ -80,8 +80,8 @@ void main() {
     expect(labelInfoList[2].dataValue, -100.0);
     expect(labelInfoList[3].dataValue, 0.0);
 
-    dataRows = [[22.0, 10.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    valuesRows = [[22.0, 10.0, -333.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].dataValue, -300.0);
@@ -90,8 +90,8 @@ void main() {
     expect(labelInfoList[3].dataValue, 0.0);
     expect(labelInfoList[4].dataValue, 100.0);
 
-    dataRows = [[-22.0, -10.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    valuesRows = [[-22.0, -10.0, 333.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].dataValue, -100.0);
@@ -100,8 +100,8 @@ void main() {
     expect(labelInfoList[3].dataValue, 200.0);
     expect(labelInfoList[4].dataValue, 300.0);
 
-    dataRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, ['1', '2', '3', '4'], dataRowsLegends);
+    valuesRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, ['1', '2', '3', '4'], byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].dataValue, -1000.0);
@@ -109,8 +109,8 @@ void main() {
     expect(labelInfoList[2].dataValue, 1000.0);
     expect(labelInfoList[3].dataValue, 2000.0);
 
-    dataRows = [[-1000.0, 0.0, 1000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, dataRows, xUserLabels, dataRowsLegends);
+    valuesRows = [[-1000.0, 0.0, 1000.0]];
+    labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].dataValue, -1000.0);
@@ -137,7 +137,7 @@ void main() {
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelInfosGenerator'],
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelInfosGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin, dataRowsLegends, xUserLabels);
+  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, xUserLabels);
   // });
   //
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -158,14 +158,14 @@ void main() {
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelInfosGenerator'],
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelInfosGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin, dataRowsLegends, xUserLabels);
+  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, xUserLabels);
   // });
 
 
 }
 
-DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> xUserLabels, List<String> dataRowsLegends) {
-  var mockChartModel = _constructMockChartModel(options, dataRows, xUserLabels, extendAxisToOrigin, dataRowsLegends);
+DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
+  var mockChartModel = _constructMockChartModel(options, valuesRows, xUserLabels, extendAxisToOrigin, byRowLegends);
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(chartModel: mockChartModel, isStacked: true,),
     dataModel: mockChartModel,
@@ -200,17 +200,17 @@ class MockChartViewMaker extends ChartViewMaker {
 
 MockChartModel _constructMockChartModel(
   ChartOptions options,
-  List<List<double>> dataRows,
+  List<List<double>> valuesRows,
   List<String> xUserLabels,
   bool extendAxisToOrigin,
-  List<String> dataRowsLegends,
+  List<String> byRowLegends,
 ) {
   return MockChartModel(
       chartOptions: options,
-      dataRowsLegends: dataRowsLegends,
-      dataRows: dataRows,
+      byRowLegends: byRowLegends,
+      valuesRows: valuesRows,
       xUserLabels: xUserLabels,
-      dataRowsColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
+      byRowColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
     );
 }
 
@@ -219,16 +219,16 @@ void rangeTestCore(
   List<List<Object>> data,
   ChartOptions options,
   bool extendAxisToOrigin,
-  List<String> dataRowsLegends,
+  List<String> byRowLegends,
   List<String> xUserLabels,
 ) {
-  for (var dataRow in data) {
-    // List<double> dataYsForRange = dataRow[0] as List<double>;
-    // double axisYMin = dataRow[1] as double;
-    // double axisYMax = dataRow[2] as double;
-    List<double> expectedLabels = dataRow[3] as List<double>;
-    // double expectedDataEnvelopMin = dataRow[4] as double;
-    // double expectedDataEnvelopMax = dataRow[5] as double;
+  for (var valuesRow in data) {
+    // List<double> dataYsForRange = valuesRow[0] as List<double>;
+    // double axisYMin = valuesRow[1] as double;
+    // double axisYMax = valuesRow[2] as double;
+    List<double> expectedLabels = valuesRow[3] as List<double>;
+    // double expectedDataEnvelopMin = valuesRow[4] as double;
+    // double expectedDataEnvelopMax = valuesRow[5] as double;
 
     // Reversing min max in makeLabelsGeneratorWithLabelInfosFromDataYsOnScale why is this needed?
     //         In data, min is > max, so this is the correct thing,
@@ -267,19 +267,19 @@ class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavi
 
 class MockChartModel extends ChartModel {
   MockChartModel({
-    required dataRows,
+    required valuesRows,
     required xUserLabels,
-    required dataRowsLegends,
+    required byRowLegends,
     required chartOptions,
     List<String>? yUserLabels,
-    List<ui.Color>? dataRowsColors,
+    List<ui.Color>? byRowColors,
   }) : super(
-    dataRows: dataRows,
+    valuesRows: valuesRows,
     xUserLabels: xUserLabels,
-    dataRowsLegends: dataRowsLegends,
+    byRowLegends: byRowLegends,
     chartOptions: chartOptions,
     yUserLabels: yUserLabels,
-    dataRowsColors: dataRowsColors,
+    byRowColors: byRowColors,
   );
 
 }

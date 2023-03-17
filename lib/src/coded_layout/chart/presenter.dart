@@ -94,7 +94,7 @@ class PointPresentersColumn {
       PointPresenter pointPresenter = pointPresenterCreator.createPointPresenter(
         point: point,
         nextRightColumnValuePoint: nextRightColumnValuePoint,
-        rowIndex: point.dataRowIndex,
+        rowIndex: point.valuesRowIndex,
         chartViewMaker: chartViewMaker,
       );
       toPointPresenters.add(pointPresenter);

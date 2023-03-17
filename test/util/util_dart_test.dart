@@ -90,17 +90,17 @@ void main() {
       [-70.0, -40.0, -20.0,      8.0, 413.42857142857144,  1021.5714285714286],
       [0.0, -40.0, -20.0,        8.0, 413.42857142857144,  -397.428571428571434],
     ];
-    for (var dataRow in data) {
-      // print('$dataRow');
+    for (var valuesRow in data) {
+      // print('$valuesRow');
       expect(
         isCloserThanEpsilon(
             DomainExtrapolation1D(
-              fromDomainStart: dataRow[1],
-              fromDomainEnd: dataRow[2],
-              toDomainStart: dataRow[4],
-              toDomainEnd: dataRow[3],
-            ).apply(dataRow[0]),
-            dataRow[5]
+              fromDomainStart: valuesRow[1],
+              fromDomainEnd: valuesRow[2],
+              toDomainStart: valuesRow[4],
+              toDomainEnd: valuesRow[3],
+            ).apply(valuesRow[0]),
+            valuesRow[5]
         ),
         true,
       );
@@ -203,16 +203,16 @@ void main() {
       [-70.0, -40.0, -20.0, 413.42857142857144, 8.0, 1021.5714285714286],
       [0.0, -40.0, -20.0, 413.42857142857144, 8.0, -397.428571428571434],
     ];
-    for (var dataRow in data) {
+    for (var valuesRow in data) {
       expect(
         extrapolateValue(
-          value: dataRow[0],
-          fromDomainMin: dataRow[1],
-          fromDomainMax: dataRow[2],
-          toDomainNewMax: dataRow[3],
-          toDomainNewMin: dataRow[4],
+          value: valuesRow[0],
+          fromDomainMin: valuesRow[1],
+          fromDomainMax: valuesRow[2],
+          toDomainNewMax: valuesRow[3],
+          toDomainNewMin: valuesRow[4],
         ),
-        dataRow[5],
+        valuesRow[5],
       );
     }
   });

@@ -35,12 +35,12 @@ Widget chartToRun() {
     ),
   );
   chartModel = ChartModel(
-    dataRows: const [
+    valuesRows: const [
       [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
       [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
     ],
     xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    dataRowsLegends: const [
+    byRowLegends: const [
       'Off zero 1',
       'Off zero 2',
     ],

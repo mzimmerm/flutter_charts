@@ -507,14 +507,14 @@ class _ExampleWidgetCreator {
           options: chartOptions,
         );
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
           xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Spring',
             'Summer',
             'Fall',
@@ -522,20 +522,20 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        // chartModel.dataRowsDefaultColors(); // if not set, called in constructor
+        // chartModel.valuesRowsDefaultColors(); // if not set, called in constructor
         break;
 
       case ExamplesEnum.ex31SomeNegativeValues:
         // Example shows a mix of positive and negative data values.
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [2000.0, 1800.0, 2200.0, 2300.0, 1700.0, 1800.0],
             [1100.0, 1000.0, 1200.0, 800.0, 700.0, 800.0],
             [0.0, 100.0, -200.0, 150.0, -100.0, -150.0],
             [-800.0, -400.0, -300.0, -400.0, -200.0, -250.0],
           ],
           xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Big Corp',
             'Medium Corp',
             'Print Shop',
@@ -556,12 +556,12 @@ class _ExampleWidgetCreator {
           ),
         );
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
           ],
           xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Off zero 1',
             'Off zero 2',
           ],
@@ -580,12 +580,12 @@ class _ExampleWidgetCreator {
           ),
         );
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],
             [-35.0, -40.0, -20.0, -25.0, -30.0, -20.0],
           ],
           xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Off zero 1',
             'Off zero 2',
           ],
@@ -630,12 +630,12 @@ class _ExampleWidgetCreator {
           );
         // Then proceed as usual
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
           ],
           xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Font Test Series1',
             'Font Test Series2',
           ],
@@ -647,14 +647,14 @@ class _ExampleWidgetCreator {
         chartOptions = const ChartOptions.noLabels();
 
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
             [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
           xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Spring',
             'Summer',
             'Fall',
@@ -667,30 +667,30 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
-        //   When setting Y labels by user, the dataRows value extrapolate
+        //   When setting Y labels by user, the valuesRows value extrapolate
         //   is irrelevant. User can use for example interval <0, 1>,
         //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
         //   The only thing that matters is  the relative values in the data Rows.
         // Current implementation sets
-        //   the minimum of dataRows range (1.0 in this example)
+        //   the minimum of valuesRows range (1.0 in this example)
         //     on the level of the first Y Label ("Low" in this example),
-        //   and the maximum  of dataRows range (10.0 in this example)
+        //   and the maximum  of valuesRows range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [9.0, 4.0, 3.0, 9.0],
             [7.0, 6.0, 7.0, 6.0],
             [4.0, 9.0, 6.0, 8.0],
             [3.0, 9.0, 10.0, 1.0],
           ],
           xUserLabels: const ['Speed', 'Readability', 'Level of Novel', 'Usage'],
-          dataRowsColors: const [
+          byRowColors: const [
             Colors.blue,
             Colors.yellow,
             Colors.green,
             Colors.amber,
           ],
-          dataRowsLegends: const ['Java', 'Dart', 'Python', 'Newspeak'],
+          byRowLegends: const ['Java', 'Dart', 'Python', 'Newspeak'],
           yUserLabels: const [
             'Low',
             'Medium',
@@ -710,20 +710,20 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           // each column should add to same number. everything else is relative.
-          dataRows: const [
+          valuesRows: const [
             [-9.0, -8.0, -8.0, -5.0, -8.0],
             [-1.0, -2.0, -4.0, -1.0, -1.0],
             [7.0, 8.0, 7.0, 11.0, 9.0],
             [3.0, 2.0, 1.0, 3.0, 3.0],
           ],
           xUserLabels: const ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             '-2% or less',
             '-2% to 0%',
             '0% to +2%',
             'more than +2%',
           ],
-          dataRowsColors: const [
+          byRowColors: const [
             Colors.red,
             Colors.grey,
             Colors.greenAccent,
@@ -741,12 +741,12 @@ class _ExampleWidgetCreator {
           ),
         );
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [10.0, 600.0, 1000000.0],
             [20.0, 1000.0, 1500000.0],
           ],
           xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Spring',
             'Summer',
           ],
@@ -758,12 +758,12 @@ class _ExampleWidgetCreator {
         // Example with side effects cannot be simply pasted to your code, as the _ExampleSideEffects is private
         // This example shows the result with sufficient space to show all labels
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
           xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Owl count',
             'Hawk count',
           ],
@@ -777,12 +777,12 @@ class _ExampleWidgetCreator {
         // This example shows the result with sufficient space to show all labels, but not enough to be horizontal;
         // The iterative layout strategy makes the labels to tilt but show fully.
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
           xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Owl count',
             'Hawk count',
           ],
@@ -796,12 +796,12 @@ class _ExampleWidgetCreator {
         // This example shows the result with sufficient space to show all labels, not even tilted;
         // The iterative layout strategy causes some labels to be skipped.
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
           xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Owl count',
             'Hawk count',
           ],
@@ -815,12 +815,12 @@ class _ExampleWidgetCreator {
       // This example shows the result with sufficient space to show all labels, not even tilted;
       // The iterative layout strategy causes more labels to be skipped.
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
           xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Owl count',
             'Hawk count',
           ],
@@ -836,9 +836,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -850,9 +850,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -864,9 +864,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -878,9 +878,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -892,9 +892,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -907,9 +907,9 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
@@ -922,30 +922,30 @@ class _ExampleWidgetCreator {
         );
 
         chartModel = ChartModel(
-          dataRows: animalsDefaultData,
+          valuesRows: animalsDefaultData,
           xUserLabels: animalsXUserLabels,
-          dataRowsLegends: animalsDataRowsLegends,
+          byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
         break;
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
-        /// Currently, setting [ChartDate.dataRows] requires to also set all of
-        /// [chartModel.xUserLabels], [chartModel.dataRowsLegends], [chartModel.dataRowsColors]
+        /// Currently, setting [ChartDate.valuesRows] requires to also set all of
+        /// [chartModel.xUserLabels], [chartModel.byRowLegends], [chartModel.byRowColors]
         // Fix was: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
         chartModel = ChartModel(
-          dataRows: const [
+          valuesRows: const [
             [0.0, 0.0, 0.0],
           ],
           // Note: When ChartData is defined,
-          //       ALL OF  xUserLabels,  dataRowsLegends, dataRowsColors
+          //       ALL OF  xUserLabels,  byRowLegends, byRowColors
           //       must be set by client
           xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
-          dataRowsLegends: const [
+          byRowLegends: const [
             'Row 1',
           ],
-          dataRowsColors: const [
+          byRowColors: const [
             Colors.blue,
           ],
           chartOptions: chartOptions,

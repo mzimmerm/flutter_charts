@@ -8,19 +8,19 @@ import 'data_model.dart';
 ///
 class RandomChartData extends ChartModel {
   RandomChartData({
-    required dataRows,
+    required valuesRows,
     required xUserLabels,
-    required dataRowsLegends,
+    required byRowLegends,
     required chartOptions,
     yUserLabels,
-    dataRowsColors,
+    byRowColors,
   }) : super(
-          dataRows: dataRows,
+          valuesRows: valuesRows,
           xUserLabels: xUserLabels,
-          dataRowsLegends: dataRowsLegends,
+          byRowLegends: byRowLegends,
           chartOptions: chartOptions,
           yUserLabels: yUserLabels,
-          dataRowsColors: dataRowsColors,
+          byRowColors: byRowColors,
         );
 
   // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartData(args) constructor.
@@ -37,14 +37,14 @@ class RandomChartData extends ChartModel {
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapDataYs = false,
-    dataRowsColors,
+    byRowColors,
   }) : this(
-          dataRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
+          valuesRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
           xUserLabels: randomDataXLabels(numXLabels),
-          dataRowsLegends: randomDataRowsLegends(numDataRows),
+          byRowLegends: randomDataRowsLegends(numDataRows),
           chartOptions: chartOptions,
           yUserLabels: randomDataYLabels(useUserProvidedYLabels),
-          dataRowsColors: dataRowsColors,
+          byRowColors: byRowColors,
         );
 }
 
@@ -52,29 +52,29 @@ class RandomChartData extends ChartModel {
 ///
 /// This is used if user does not set legends.
 /// This should be kept in sync with colors below.
-List<String> randomDataRowsLegends(int dataRowsCount) {
+List<String> randomDataRowsLegends(int valuesRowsCount) {
   List<String> defaultLegends = List.empty(growable: true);
 
-  if (dataRowsCount >= 1) {
+  if (valuesRowsCount >= 1) {
     defaultLegends.add('YELLOW' /*' with really long description'*/);
   }
-  if (dataRowsCount >= 2) {
+  if (valuesRowsCount >= 2) {
     defaultLegends.add('GREEN');
   }
-  if (dataRowsCount >= 3) {
+  if (valuesRowsCount >= 3) {
     defaultLegends.add('BLUE');
   }
-  if (dataRowsCount >= 4) {
+  if (valuesRowsCount >= 4) {
     defaultLegends.add('BLACK');
   }
-  if (dataRowsCount >= 5) {
+  if (valuesRowsCount >= 5) {
     defaultLegends.add('GREY');
   }
-  if (dataRowsCount >= 6) {
+  if (valuesRowsCount >= 6) {
     defaultLegends.add('ORANGE');
   }
-  if (dataRowsCount > 6) {
-    for (int i = 3; i < dataRowsCount; i++) {
+  if (valuesRowsCount > 6) {
+    for (int i = 3; i < valuesRowsCount; i++) {
       // todo-1 when large value is generated, it paints outside canvas, fix.
       int number = math.Random().nextInt(10000);
       defaultLegends.add('OTHER  ${number.toString()}');
@@ -100,7 +100,7 @@ List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
 }
 
 List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDataYs) {
-  List<List<double>> dataRows = List.empty(growable: true);
+  List<List<double>> valuesRows = List.empty(growable: true);
 
   double scale = 200.0;
 
@@ -110,7 +110,7 @@ List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDat
   double pushUpStep = overlapDataYs ? 0.0 : maxDataY.toDouble();
 
   for (int rowIndex = 0; rowIndex < numDataRows; rowIndex++) {
-    dataRows.add(_randomDataOneRow(
+    valuesRows.add(_randomDataOneRow(
       rgen: rgen,
       max: maxDataY,
       pushUpBy: (rowIndex - 1) * pushUpStep,
@@ -118,7 +118,7 @@ List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDat
       numXLabels: numXLabels,
     ));
   }
-  return dataRows;
+  return valuesRows;
 }
 
 List<double> _randomDataOneRow({
@@ -128,9 +128,9 @@ List<double> _randomDataOneRow({
   required double scale,
   required int numXLabels,
 }) {
-  List<double> dataRow = List.empty(growable: true);
+  List<double> valuesRow = List.empty(growable: true);
   for (int i = 0; i < numXLabels; i++) {
-    dataRow.add((rgen.nextInt(max) + pushUpBy) * scale);
+    valuesRow.add((rgen.nextInt(max) + pushUpBy) * scale);
   }
-  return dataRow;
+  return valuesRow;
 }

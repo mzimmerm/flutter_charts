@@ -1053,10 +1053,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
   ///
-  /// See [DataContainerOptions.dataRowsPaintingOrder].
+  /// See [DataContainerOptions.valuesRowsPaintingOrder].
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
     var options = chartViewMaker.chartOptions;
-    if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
+    if (options.dataContainerOptions.valuesRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       pointPresenters = pointPresenters.reversed.toList();
     }
     return pointPresenters;
@@ -1091,7 +1091,7 @@ class VerticalBarChartDataContainerCL extends DataContainerCL {
         bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
-          presenterCast.dataRowPaint,
+          presenterCast.valuesRowPaint,
         );
       }
 
@@ -1101,7 +1101,7 @@ class VerticalBarChartDataContainerCL extends DataContainerCL {
         bar_presenters.VerticalBarPointPresenter presenterCast = pointPresenter as bar_presenters.VerticalBarPointPresenter;
         canvas.drawRect(
           presenterCast.presentedRect,
-          presenterCast.dataRowPaint,
+          presenterCast.valuesRowPaint,
         );
       }
     }
@@ -1192,14 +1192,14 @@ class GridLinesContainer extends ChartAreaContainer {
 }
 
 
-/// Represents one Y numeric value in the [DeprecatedChartData.dataRows],
+/// Represents one Y numeric value in the [DeprecatedChartData.valuesRows],
 /// with added information about the X coordinate (display coordinate).
 ///
 /// Instances are stacked if [isStacked] is true.
 ///
 /// The members can be grouped in three groups.
 ///
-/// 1. The [xLabel], [dataRowIndex] and [predecessorPoint] are initial variables along with [dataY].
+/// 1. The [xLabel], [valuesRowIndex] and [predecessorPoint] are initial variables along with [dataY].
 ///
 /// 2. The [fromY] and [toY] and [dataY] are data-values representing this point's numeric value.
 ///   *This group's members do NOT change under [applyParentOffset] as they represent data, not coordinates;*
@@ -1222,7 +1222,7 @@ class StackableValuePoint {
   StackableValuePoint({
     required this.xLabel,
     required this.dataY,
-    required this.dataRowIndex,
+    required this.valuesRowIndex,
     required this.chartViewMaker,
     this.predecessorPoint,
   })  : isStacked = false,
@@ -1245,7 +1245,7 @@ class StackableValuePoint {
 
   /// The index of this point in the [PointsColumn] containing this point in it's
   /// [PointsColumn.stackableValuePoints] list.
-  late final int dataRowIndex; // series index
+  late final int valuesRowIndex; // series index
 
   /// The predecessor point in the [PointsColumn] containing this point in it's [PointsColumn.stackableValuePoints] list.
   StackableValuePoint? predecessorPoint;
@@ -1377,7 +1377,7 @@ class StackableValuePoint {
       chartViewMaker: chartViewMaker,
       xLabel: xLabel,
       dataY: dataY,
-      dataRowIndex: dataRowIndex,
+      valuesRowIndex: valuesRowIndex,
       predecessorPoint: predecessorPoint,
     );
 
@@ -1394,13 +1394,13 @@ class StackableValuePoint {
 
 /// Represents a column of [StackableValuePoint]s, with support for both stacked and non-stacked charts.
 ///
-/// Corresponds to one column of data from [DeprecatedChartData.dataRows], ready for presentation by [PointPresenter]s.
+/// Corresponds to one column of data from [DeprecatedChartData.valuesRows], ready for presentation by [PointPresenter]s.
 ///
 /// The
 /// - unstacked (such as in the line chart),  in which case it manages
-///   [stackableValuePoints] that have values from [DeprecatedChartData.dataRows].
+///   [stackableValuePoints] that have values from [DeprecatedChartData.valuesRows].
 /// - stacked (such as in the bar chart), in which case it manages
-///   [stackableValuePoints] that have values added up from [DeprecatedChartData.dataRows].
+///   [stackableValuePoints] that have values added up from [DeprecatedChartData.valuesRows].
 ///
 /// Negative and positive points must be stacked separately,
 /// to support correctly displayed stacked values above and below zero.
@@ -1468,9 +1468,9 @@ class PointsColumn {
   }
 }
 
-/// A list of [PointsColumn] instances, created from user data rows [DeprecatedChartData.dataRows].
+/// A list of [PointsColumn] instances, created from user data rows [DeprecatedChartData.valuesRows].
 ///
-/// Represents the chart data created from the [DeprecatedChartData.dataRows], but is an internal format suitable for
+/// Represents the chart data created from the [DeprecatedChartData.valuesRows], but is an internal format suitable for
 /// presenting by the chart [PointPresenter] instances.
 ///
 /// Passed to the [PointPresenter] instances, which use this instance's data to
@@ -1491,7 +1491,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   final LayoutableBox _caller;
 
-  /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.dataRows] values in
+  /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.valuesRows] values in
   /// the passed [chartViewMaker.chartModel].
   PointsColumns({
     required this.chartViewMaker,
@@ -1506,7 +1506,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   /// Constructs internals of this object, the [PointsColumns].
   ///
-  /// Transposes data passed as rows in [chartModel.dataRows]
+  /// Transposes data passed as rows in [chartModel.valuesRows]
   /// to [_valuePointArrInRows] and to [_valuePointArrInColumns].
   ///
   /// Creates links on "this column" to "successor in stack on the right",
@@ -1516,21 +1516,21 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// The currently processed point is (potentially) stacked on it's predecessor.
   void _createStackableValuePointsFromChartData(ChartModel chartModel) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
-        List.filled(chartModel.dataRows[0].length, null);
-    for (int col = 0; col < chartModel.dataRows[0].length; col++) {
+        List.filled(chartModel.valuesRows[0].length, null);
+    for (int col = 0; col < chartModel.valuesRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }
 
     // Data points managed row.  Internal only, should be refactored away.
     List<List<StackableValuePoint>> valuePointArrInRows = List.empty(growable: true);
 
-    for (int row = 0; row < chartModel.dataRows.length; row++) {
-      List<num> dataRow = chartModel.dataRows[row];
+    for (int row = 0; row < chartModel.valuesRows.length; row++) {
+      List<num> valuesRow = chartModel.valuesRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
       valuePointArrInRows.add(pointsRow);
-      for (int col = 0; col < dataRow.length; col++) {
+      for (int col = 0; col < valuesRow.length; col++) {
         // yTransform data before placing data point on StackableValuePoint.
-        num colValue = chartViewMaker.chartOptions.dataContainerOptions.yTransform(dataRow[col]);
+        num colValue = chartViewMaker.chartOptions.dataContainerOptions.yTransform(valuesRow[col]);
 
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
@@ -1538,7 +1538,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
             chartViewMaker: chartViewMaker,
             xLabel: 'initial',
             dataY: colValue.toDouble(),
-            dataRowIndex: row,
+            valuesRowIndex: row,
             predecessorPoint: rowOfPredecessorPoints[col]);
 
         pointsRow.add(thisPoint); // Grow the row with thisPoint
@@ -1615,7 +1615,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Use in containers for unstacked charts (e.g. line chart)
   List<double> flattenUnstackedPointsDataYs() {
-    // todo 1 replace with expand like in: dataRows.expand((i) => i).toList()
+    // todo 1 replace with expand like in: valuesRows.expand((i) => i).toList()
     List<double> flat = [];
     for (PointsColumn column in this) {
       for (StackableValuePoint point in column.stackableValuePoints) {
