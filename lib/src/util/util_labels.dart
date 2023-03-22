@@ -55,7 +55,7 @@ class DataRangeLabelInfosGenerator {
   DataRangeLabelInfosGenerator({
     required this.chartViewMaker, // todo-00-last-done : added as a temporary to test old vs new
     required ChartModel dataModel,
-    required this.dataRangeDependency,
+    required this.dataDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
@@ -75,8 +75,8 @@ class DataRangeLabelInfosGenerator {
     // Both local [dataEnvelope] and member [dataRange]
     //   are **not-extrapolated && transformed** data from [ChartModelPoint].
     if (userLabels != null) {
-      switch(dataRangeDependency) {
-        case DataRangeDependency.independentData:
+      switch(dataDependency) {
+        case DataDependency.independentData:
           // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
           //   the interval is, once the pixels range on the axis is available,
           //   it will be lextr-ed to the pixel range.
@@ -89,8 +89,8 @@ class DataRangeLabelInfosGenerator {
             pointPositionInSegment: util_dart.LineSegmentPosition.center,
           );
           break;
-        case DataRangeDependency.dependentData:
-          // This REALLY only needed for legacy to work
+        case DataDependency.dependentData:
+          // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
           dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
@@ -135,8 +135,13 @@ class DataRangeLabelInfosGenerator {
 
   final ChartViewMaker chartViewMaker; // todo-00-last-done : added as a temporary to test old vs new
 
-  /// Describes if this [DataRangeLabelInfosGenerator] is for dependent or independent data.
-  final DataRangeDependency dataRangeDependency;
+  /// Describes if this [DataRangeLabelInfosGenerator] instance is for dependent or independent data.
+  ///
+  /// [DataDependency.dependentData] determines this instance is for dependent data,
+  /// [DataDependency.independentData] determines this instance is for independent data.
+  ///
+  /// The significance of dependent/independent is
+  final DataDependency dataDependency;
 
   /// Describes labels - their values and String values.
   /// Important note: [_AxisLabelInfos] should NOT be part of model,

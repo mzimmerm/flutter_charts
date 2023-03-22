@@ -53,7 +53,7 @@ class ChartModel {
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
     int columnIndex = 0;
     for (List<double> valuesColumn in _valuesColumns) {
-      crossPointsList.add(
+      crossPointsModelList.add(
         CrossPointsModel(
           valuesColumn: valuesColumn,
           dataModel: this,
@@ -65,8 +65,9 @@ class ChartModel {
 
   // NEW CODE =============================================================
 
-  /// List of crossPoints in the model .
-  final List<CrossPointsModel> crossPointsList = [];
+  /// List of crossPoints in the model. Represents one bar-set in the chart.
+  /// The bar-set is a single bar in stacked bar chart, several grouped bars for non-stacked bar chart.
+  final List<CrossPointsModel> crossPointsModelList = [];
 
   /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -88,13 +89,13 @@ class ChartModel {
     if (isStacked) {
       return Interval(
         // reduce, not fold: crossPointsList.fold(0.0, ((double previous, CrossPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
-        crossPointsList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
-        crossPointsList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
+        crossPointsModelList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
+        crossPointsModelList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );
     } else {
       return Interval(
-        crossPointsList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
-        crossPointsList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
+        crossPointsModelList.map((pointsColumn) => pointsColumn._minPointValue).toList().reduce(math.min),
+        crossPointsModelList.map((pointsColumn) => pointsColumn._maxPointValue).toList().reduce(math.max),
       );
     }
   }
@@ -201,7 +202,7 @@ class ChartModel {
 
 /// todo-done-last-3 : Note: CrossPointsModel replaces PointsColumn
 ///
-/// Represents a list of cross-series data values, in the [ChartModel].
+/// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values.
 ///
 /// As we consider the [ChartModel] to represent a 2D array 'rows first', in other words,
 /// 'one data series is a row', with rows (each-series) ordered 'top-to-bottom',
@@ -223,6 +224,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
         _columnIndex = columnIndex {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
+    // todo-00-last-last-last : there is another todo to build _positiveCrossPoints and _negativeCrossPoints.
+    //   create those positive/negative lists, they must have same length as _crossPoints.
     for (double dataValue in valuesColumn) {
       var point = PointModel(dataValue: dataValue, ownerCrossPointsList: this, rowIndex: rowIndex);
       _crossPoints.add(point);
@@ -267,12 +270,12 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Get the stacked value of this column of points - the sum of all
 
   /// Owner [ChartModel] to which this [CrossPointsModel] belongs by existence in
-  /// [ChartModel.crossPointsList].
+  /// [ChartModel.crossPointsModelList].
   ///
   final ChartModel _dataModel;
   ChartModel get dataModel => _dataModel;
 
-  /// Index of this column (crossPoints list) in the [ChartModel.crossPointsList].
+  /// Index of this column (crossPoints list) in the [ChartModel.crossPointsModelList].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
@@ -291,6 +294,15 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// owned by this [DoubleLinkedOwner]. 
   /// At the same time, the points are all [PointModel] in this column (crossPoints list).
   final List<PointModel> _crossPoints = [];
+
+  // todo-00-last-last-last : add _positiveCrossPoints (includes 0), and _negativeCrossPoints
+  //  they should be build in constructor in this loop:
+  //  for (double dataValue in valuesColumn) {
+  //    var point = PointModel(dataValue: dataValue, ownerCrossPointsList: this, rowIndex: rowIndex);
+  //    _crossPoints.add(point);
+  //     todo-00-last-last-last : if point.value positive, add to _positiveCrossPoints, else add to _negativeCrossPoints
+  //    rowIndex++;
+  //  }
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
   /// the owned [DoubleLinked] instances of [PointModel].
@@ -409,7 +421,7 @@ class _DoubleValue {
   double value = 0.0;
 }
 
-enum DataRangeDependency {
+enum DataDependency {
   independentData,
   dependentData,
 }

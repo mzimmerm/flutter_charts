@@ -39,12 +39,21 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
+                // region Description todo-00-last-last
+                // Instead of a single Row of chartViewMaker.makeViewsForDataAreaBars_As_CrossPoints_List,
+                //   add a Align.start column with two Rows. First row has positive crossPoints_List, second row has negative CrossPoints_List.
+                // The constraints on the two Column elements are in the ratio of length of interval
+                //   (0 to yLabelsGenerator.dataRange.max) (positive column 1)
+                // to length of interval
+                //   (yLabelsGenerator.dataRange.min to 0) (negative column 2).
                 Row(
                   crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-                  children: chartViewMaker.makeViewsForDataAreaBars_As_CrossPoints_List(
-                    chartViewMaker.chartModel.crossPointsList,
+                  // todo-00-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
+                  children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
+                    chartViewMaker.chartModel.crossPointsModelList,
                   ),
                 ),
+                // endregion
               ],
             ),
           ],
@@ -56,11 +65,10 @@ class DataContainer extends container_common_new.ChartAreaContainer {
 }
 
 class CrossPointsContainer extends container_common_new.ChartAreaContainer {
-  model.CrossPointsModel backingDataCrossPointsModel;
 
   CrossPointsContainer({
     required ChartViewMaker chartViewMaker,
-    required this.backingDataCrossPointsModel,
+    required this.crossPointsModel,
     List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
@@ -71,6 +79,9 @@ class CrossPointsContainer extends container_common_new.ChartAreaContainer {
     key: key,
     constraintsWeight: constraintsWeight,
   );
+
+  /// Model backing this container.
+  model.CrossPointsModel crossPointsModel;
 }
 
 class PointContainer extends container_common_new.ChartAreaContainer {
