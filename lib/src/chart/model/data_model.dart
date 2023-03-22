@@ -53,6 +53,7 @@ class ChartModel {
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
     int columnIndex = 0;
     for (List<double> valuesColumn in _valuesColumns) {
+      // todo-00-last-last-last-last : should we create the positive / negative here????
       crossPointsModelList.add(
         CrossPointsModel(
           valuesColumn: valuesColumn,
@@ -89,6 +90,7 @@ class ChartModel {
     if (isStacked) {
       return Interval(
         // reduce, not fold: crossPointsList.fold(0.0, ((double previous, CrossPointsModel pointsColumn) => math.min(previous, pointsColumn._stackedNegativeValue))),
+        // todo-00-last-00 : allow to process an empty list: add extension reduceOrElse, which will return an empty list, and eventually Interval(0,0).
         crossPointsModelList.map((pointsColumn) => pointsColumn._stackedNegativeValue).toList().reduce(math.min),
         crossPointsModelList.map((pointsColumn) => pointsColumn._stackedPositiveValue).toList().reduce(math.max),
       );

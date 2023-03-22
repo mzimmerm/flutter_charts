@@ -948,7 +948,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // draw vertical grid
     _yGridLinesContainer.applyParentOffset(this, offset);
 
-    // Create, layout, then offset, the 'data container' replacement - the PointPresentersColumns.
+    // Create, layout, then offset, the 'data container' replacement - the [PointPresentersColumns].
     // The [PointsColumns] and [PointPresentersColumns] are the OLD NOT EXACTLY EQUIVALENT manual way of creating
     // model [PointsColumns] which is created, and layed out by extrapolating,
     // and container [PointPresentersColumns] which is painted.
