@@ -13,16 +13,19 @@ extension SizeExtension on ui.Size {
     return ui.Size(width + other.width, height + other.height);
   }
 
-  /// Returns a Size with [width] and [height] being self [width] and [height]
-  /// decreased with [other] width and height, but not becoming negative.
+  /// Returns a Size which [ui.Size.width] and [ui.Size.height] is self [width] and [height]
+  /// shortened with [other]'s width and height.
   ///
-  /// If any returned size would become negative, it is collapsed to 0.0 instead.
+  /// More precisely, the returned size's [ui.Size.width] is equal to `this.width - other.width`
+  /// but not becoming negative.  An equivalent statement applies to the returned [ui.Size.height].
+  ///
+  /// If any returned size length would become negative, it is set to `0.0` instead.
   ui.Size deflateWithSize(ui.Size other) {
     return ui.Size(math.max(width - other.width, 0.0), math.max(height - other.height, 0.0));
   }
 
-  /// Returns a Size with [width] and [height] being self [width] and [height]
-  /// multiplied by [other] width and height.
+  /// Returns a Size which [ui.Size.width] and [ui.Size.height] is self [width] and [height]
+  /// multiplied by [other]'s width and height.
   ui.Size multiplySidesBy(ui.Size other) {
     return ui.Size(width * other.width, height * other.height);
   }

@@ -13,6 +13,9 @@ import 'container/legend_container.dart' as legend_container;
 import 'container/axis_container.dart' as axis_container;
 import 'container/root_container.dart' as root_container;
 import '../morphic/container/container_layouter_base.dart' as container_base;
+// import '../morphic/container/container_edge_padding.dart';
+import '../morphic/container/layouter_one_dimensional.dart';
+
 import 'model/data_model.dart' as model;
 import '../util/util_labels.dart' as util_labels;
 
@@ -245,6 +248,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
     List<model.CrossPointsModel> crossPointsModelList,
+    Align columnPointsAlign, // todo-00-last-last : rename to crossPointsAlign
   ) {
     List<data_container.CrossPointsContainer> chartBars = [];
     // Iterate the [chartModel] across series (column wise), create one [CrossPointsContainer] (chartBar)
@@ -258,7 +262,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         data_container.CrossPointsContainer(
           chartViewMaker: this,
           crossPointsModel: crossPointsModel,
-          children: [makeViewForDataContainer_BarLayouter(crossPointsModel)],
+          children: [makeViewForDataContainer_BarLayouter(crossPointsModel, columnPointsAlign),],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -270,8 +274,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   container_base.BoxContainer makeViewForDataContainer_BarLayouter(
     model.CrossPointsModel crossPointsModel,
+    Align columnPointsAlign,
   ) {
     return container_base.Column(
+      mainAxisAlign: columnPointsAlign,
       children: makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(crossPointsModel)
           .reversed
           .toList(growable: false),

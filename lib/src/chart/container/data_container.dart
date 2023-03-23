@@ -39,13 +39,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                // region Description todo-00-last-last
-                // Instead of a single Row of chartViewMaker.makeViewsForDataAreaBars_As_CrossPoints_List,
+                // region Description todo-00-last-last-last-last - divide weights on Column in ratio of length of interval
+                //                 //   (0 to yLabelsGenerator.dataRange.max) (positive column 1)
+                //                 // to length of interval
+                //                 //   (yLabelsGenerator.dataRange.min to 0) (negative column 2).
+                // Instead of a single Row of chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List,
                 //   add a Align.start column with two Rows. First row has positive crossPoints_List, second row has negative CrossPoints_List.
-                // The constraints on the two Column elements are in the ratio of length of interval
-                //   (0 to yLabelsGenerator.dataRange.max) (positive column 1)
-                // to length of interval
-                //   (yLabelsGenerator.dataRange.min to 0) (negative column 2).
+                // The constraints on the two Column children are in the ratio described above ^
+                /*
                 Row(
                   crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
                   // todo-00-last-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
@@ -53,11 +54,34 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     chartViewMaker.chartModel.crossPointsModelPositiveList,
                   ),
                 ),
-                // endregion
-              ],
-            ),
-          ],
-        ),
+                */
+                // todo-00-last-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
+
+                Column(
+                  children: [
+                    Row(
+                      crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+                      children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
+                        chartViewMaker.chartModel.crossPointsModelPositiveList,
+                        Align.start,
+                      ),
+                    ),
+/* todo-00-last-last-last put back, but figure out how to deal with empty rows and columns
+                    Row(
+                      crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+                      children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
+                        chartViewMaker.chartModel.crossPointsModelNegativeList,
+                        Align.start,
+                      ),
+                   ),
+*/
+                  // endregion
+                  ],
+               ),
+            ],
+          ),
+        ],
+      ),
       ),
     ]);
   }

@@ -478,7 +478,8 @@ class ConstraintsWeight {
     this.weight = 0,
   });
 
-  final int weight;
+  // todo-00-last-last-done : final int weight;
+  final double weight;
 
   static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
 
@@ -507,7 +508,8 @@ class ConstraintsWeights {
 
   bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
 
-  List<int> get intWeightList {
+  // todo-00-last-last-done : List<int> get doubleWeightList {
+  List<double> get doubleWeightList {
     if (!allDefined) {
       throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
     }
@@ -518,7 +520,8 @@ class ConstraintsWeights {
   ///
   /// Before invoking, should invoke [allDefined] to check if all siblings have a defined
   /// (non 0, non negative, non-default) weight.
-  int get sum {
+  // todo-00-last-last-done : int get sum {
+  double get sum {
     if (!allDefined) {
       throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
     }
@@ -1840,9 +1843,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       // Create divided constraints for children according to defined weights
       List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
         divideIntoCount: children.length,
-        divideStrategy: ConstraintsDistribution.intWeights,
+        divideStrategy: ConstraintsDistribution.doubleWeights,
         layoutAxis:  mainLayoutAxis,
-        intWeights: childrenWeights.intWeightList,
+        doubleWeights: childrenWeights.doubleWeightList,
       );
 
       assert (childrenConstraints.length == children.length);
@@ -1926,9 +1929,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       //   creating [greedyChildrenConstraints].
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
-        divideStrategy: ConstraintsDistribution.intWeights,
+        divideStrategy: ConstraintsDistribution.doubleWeights,
         layoutAxis: mainLayoutAxis,
-        intWeights: _greedyChildren.map((child) => child.greed).toList(),
+        doubleWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
 
       // Apply on greedyChildren their newly weight-divided greedyChildrenConstraints
@@ -2740,7 +2743,8 @@ class TableLayouter extends PositioningBoxLayouter {
       throw StateError('cellDefinersTable $cellDefinersTable and cellsTable $cellsTable must be same length.');
     }
 
-    // Check if this object is configured correctly
+    // Check if this object is configured correctly, by checking the sequences contain all numbers
+    // from 0 to tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1
     Set<int> collectedSequences = {};
 
     // Pick one of the arrays and iterate it row-wise then column-wise,
@@ -3125,15 +3129,6 @@ class TableLayouter extends PositioningBoxLayouter {
       }
     }
 
-    /* KEEP
-    for (int row = 0; row < cellsTable.length; row++) {
-      List<BoxContainer> cellsRow = cellsTable[row];
-      for (int column = 0; column < cellsRow.length; column++) {
-        BoxContainer cell = cellsRow[column];
-        cell.applyParentOffset(this, positionedRectsInMe[row * numRows + column].topLeft);
-      }
-    }
-    */
   }
 
 }
@@ -3153,7 +3148,9 @@ class TableLayouter extends PositioningBoxLayouter {
 /// layoutSize is set to the calculated [_greedySizeAlongGreedyAxis].
 ///
 class Greedy extends NonPositioningBoxLayouter {
-  final int greed;
+
+  // todo-00-last-last-done : final int greed;
+  final double greed;
 
   Greedy({
     this.greed = 1,

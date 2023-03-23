@@ -85,8 +85,8 @@ enum Align {
 /// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
 /// describes that a given constraint should create multiple constraints that are the same.
 enum ConstraintsDistribution {
-  evenly, // todo-013 : deprecate and remove. Rely on children to all set intWeights=1 instead
-  intWeights,
+  evenly, // todo-013 : deprecate and remove. Rely on children to all set doubleWeights=1 instead
+  doubleWeights,
   noDivide,
 }
 

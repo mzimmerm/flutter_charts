@@ -164,24 +164,27 @@ abstract class BoundingBoxesBase {
     required int divideIntoCount,
     required ConstraintsDistribution divideStrategy,
     required LayoutAxis layoutAxis,
-    List<int>? intWeights,
+    // todo-00-last-last-done : List<int>? doubleWeights,
+    List<double>? doubleWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
-    late final int sumIntWeights;
+     // todo-00-last-last-done : late final int sumDoubleWeights;
+    late final double sumDoubleWeights;
 
-    if (divideStrategy == ConstraintsDistribution.intWeights && intWeights == null) {
-      throw StateError('intWeights only applicable for ConstraintsDistribution.ratio');
+    if (divideStrategy == ConstraintsDistribution.doubleWeights && doubleWeights == null) {
+      throw StateError('doubleWeights only applicable for ConstraintsDistribution.ratio');
     }
 
     if ((divideStrategy == ConstraintsDistribution.evenly ||
             divideStrategy == ConstraintsDistribution.evenly) &&
-        intWeights != null) {
-      throw StateError('intWeights not applicable for ConstraintsDistribution.evenly or noDivide');
+        doubleWeights != null) {
+      throw StateError('doubleWeights not applicable for ConstraintsDistribution.evenly or noDivide');
     }
 
-    if (intWeights != null) {
-      assert(intWeights.length == divideIntoCount);
-      sumIntWeights = intWeights.fold<int>(0, (previousValue, element) => previousValue + element);
+    if (doubleWeights != null) {
+      assert(doubleWeights.length == divideIntoCount);
+      // todo-00-last-last-done : sumDoubleWeights = doubleWeights.fold<int>(0, (previousValue, element) => previousValue + element);
+      sumDoubleWeights = doubleWeights.fold<double>(0, (previousValue, element) => previousValue + element);
     }
 
     switch (divideStrategy) {
@@ -211,21 +214,22 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDistribution.intWeights:
+      case ConstraintsDistribution.doubleWeights:
         List<BoundingBoxesBase> fractions = [];
-        for (int intWeight in intWeights!) {
+        // todo-00-last-last-done : for (int doubleWeight in doubleWeights!) {
+        for (var doubleWeight in doubleWeights!) {
           switch (layoutAxis) {
             case LayoutAxis.horizontal:
-              minWidth = minSize.width * (1.0 * intWeight) / sumIntWeights;
+              minWidth = minSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
               minHeight = minSize.height;
-              maxWidth = maxSize.width * (1.0 * intWeight) / sumIntWeights;
+              maxWidth = maxSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
               maxHeight = maxSize.height;
               break;
             case LayoutAxis.vertical:
               minWidth = minSize.width;
-              minHeight = minSize.height * (1.0 * intWeight) / sumIntWeights;
+              minHeight = minSize.height * (1.0 * doubleWeight) / sumDoubleWeights;
               maxWidth = maxSize.width;
-              maxHeight = maxSize.height * (1.0 * intWeight) / sumIntWeights;
+              maxHeight = maxSize.height * (1.0 * doubleWeight) / sumDoubleWeights;
               break;
           }
           var fraction = cloneWith(

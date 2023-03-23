@@ -224,6 +224,14 @@ class ChartModel {
 
 }
 
+/// On behalf of [CrossPointsModel], represents the sign of the values of [PointModel] points
+/// which should be added to the [CrossPointsModel].
+///
+/// Motivation: In order to display both negative and positive values on the bar chart or line chart,
+///             the [ChartModel] manages the positive and negative values separately in
+///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
+///             This enum supports creating and later using (processing, view making) the positive and negative
+///             bars separately.
 enum CrossPointsModelPointsSigns {
   positiveOr0,
   negative,
@@ -386,24 +394,13 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// At the same time, the points are all [PointModel] in this positive or negative column (crossPoints list).
   final List<PointModel> _crossPoints = [];
 
-  // todo-00-last-last-last : add _positiveCrossPoints (includes 0), and _negativeCrossPoints
-  //  they should be build in constructor in this loop:
-  //  for (double dataValue in valuesColumn) {
-  //    var point = PointModel(dataValue: dataValue, ownerCrossPointsList: this, rowIndex: rowIndex);
-  //    _crossPoints.add(point);
-  //     todo-00-last-last-last : if point.value positive, add to _positiveCrossPoints, else add to _negativeCrossPoints
-  //    rowIndex++;
-  //  }
-
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
   /// the owned [DoubleLinked] instances of [PointModel].
   @override
   Iterable<PointModel> allElements() => _crossPoints;
 
 
-  /// Returns value-height of this column from data values on points.
-  ///
-  /// todo-00-last-last-last-progress
+  /// Returns value-height of this column from (transformed, non-extrapolated) data values of points.
   double get _stackedValue {
     switch (crossPointsModelPointsSigns) {
       case CrossPointsModelPointsSigns.any:
@@ -471,7 +468,7 @@ class PointModel extends Object with DoubleLinked {
     // of all [PointModel]s, managed by [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerCrossPointsModel;
     // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
-    // todo-00-last-last-last : add more asserts on values without the yTransform if possible. Maybe use reverse? Mayve this is too much?
+    // todo-00-last-last : add more asserts on values without the yTransform if possible. Maybe use reverse? Mayve this is too much?
     assertDoubleResultsSame(
       ownerCrossPointsModel._dataModel.chartOptions.dataContainerOptions
           .yTransform(ownerCrossPointsModel.dataModel._valuesRows[_rowIndex][_columnIndex])
