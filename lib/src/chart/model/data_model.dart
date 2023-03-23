@@ -183,6 +183,7 @@ class ChartModel {
   final ChartOptions chartOptions;
 
   // todo-00-last-00-performance : cache valuesMax/Min
+  // todo-00-last-last : make all methods private if possible
   List<double> get flatten => _valuesRows.expand((element) => element).toList();
   double get valuesMin => flatten.reduce(math.min);
   double get valuesMax => flatten.reduce(math.max);
@@ -237,8 +238,7 @@ enum CrossPointsModelPointsSigns {
   negative,
   any,
 }
-/// todo-done-last-3 : Note: CrossPointsModel replaces PointsColumn
-///
+
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
 /// which are all either positive (non-negative to be precise) or negative, depending on the
 /// passed [crossPointsModelPointsSigns].
@@ -251,6 +251,9 @@ enum CrossPointsModelPointsSigns {
 ///   - We can also consider the list of data values represented by
 ///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
+///
+/// Note: [CrossPointsModel] replaces [PointsColumn].
+///
 class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Constructor. todo-doc-01

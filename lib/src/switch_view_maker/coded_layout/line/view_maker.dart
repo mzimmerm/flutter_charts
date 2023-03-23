@@ -49,7 +49,6 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   DataContainerCL makeViewForDataContainer() {
-    // todo-00-switch-done-remove : assert(isUseOldDataContainer == true);
     return LineChartDataContainerCL(
       chartViewMaker: this,
     );

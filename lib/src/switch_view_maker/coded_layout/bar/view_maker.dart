@@ -49,7 +49,6 @@ class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   DataContainerCL makeViewForDataContainer() {
-    // todo-00-switch-done-remove : assert(isUseOldDataContainer == true);
     return VerticalBarChartDataContainerCL(
       chartViewMaker: this,
     );

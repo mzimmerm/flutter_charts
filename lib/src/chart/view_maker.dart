@@ -249,6 +249,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
     List<model.CrossPointsModel> crossPointsModelList,
     Align columnPointsAlign, // todo-00-last-last : rename to crossPointsAlign
+      bool isReversed,
   ) {
     List<data_container.CrossPointsContainer> chartBars = [];
     // Iterate the [chartModel] across series (column wise), create one [CrossPointsContainer] (chartBar)
@@ -262,7 +263,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         data_container.CrossPointsContainer(
           chartViewMaker: this,
           crossPointsModel: crossPointsModel,
-          children: [makeViewForDataContainer_BarLayouter(crossPointsModel, columnPointsAlign),],
+          children: [makeViewForDataContainer_BarLayouter(crossPointsModel, columnPointsAlign, isReversed),],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -275,12 +276,17 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   container_base.BoxContainer makeViewForDataContainer_BarLayouter(
     model.CrossPointsModel crossPointsModel,
     Align columnPointsAlign,
+    bool isReversed,
   ) {
+    var children =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(crossPointsModel);
+    if (isReversed) {
+      children = children.reversed.toList(growable: false);
+    } else {
+      children = children.toList(growable: false);
+    }
     return container_base.Column(
       mainAxisAlign: columnPointsAlign,
-      children: makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(crossPointsModel)
-          .reversed
-          .toList(growable: false),
+      children: children,
     );
   }
 

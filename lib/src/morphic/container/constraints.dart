@@ -164,11 +164,9 @@ abstract class BoundingBoxesBase {
     required int divideIntoCount,
     required ConstraintsDistribution divideStrategy,
     required LayoutAxis layoutAxis,
-    // todo-00-last-last-done : List<int>? doubleWeights,
     List<double>? doubleWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
-     // todo-00-last-last-done : late final int sumDoubleWeights;
     late final double sumDoubleWeights;
 
     if (divideStrategy == ConstraintsDistribution.doubleWeights && doubleWeights == null) {
@@ -183,7 +181,6 @@ abstract class BoundingBoxesBase {
 
     if (doubleWeights != null) {
       assert(doubleWeights.length == divideIntoCount);
-      // todo-00-last-last-done : sumDoubleWeights = doubleWeights.fold<int>(0, (previousValue, element) => previousValue + element);
       sumDoubleWeights = doubleWeights.fold<double>(0, (previousValue, element) => previousValue + element);
     }
 
@@ -216,7 +213,6 @@ abstract class BoundingBoxesBase {
         return List.from(fractions, growable: false);
       case ConstraintsDistribution.doubleWeights:
         List<BoundingBoxesBase> fractions = [];
-        // todo-00-last-last-done : for (int doubleWeight in doubleWeights!) {
         for (var doubleWeight in doubleWeights!) {
           switch (layoutAxis) {
             case LayoutAxis.horizontal:

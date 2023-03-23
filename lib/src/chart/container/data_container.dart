@@ -60,21 +60,23 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                 Column(
                   children: [
                     Row(
+                      mainAxisConstraintsWeight: ConstraintsWeight(weight: chartViewMaker.yLabelsGenerator.oneBasedPortionOfPositiveValuesLength()),
                       crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
                         chartViewMaker.chartModel.crossPointsModelPositiveList,
                         Align.start,
+                        true,
                       ),
                     ),
-/* todo-00-last-last-last put back, but figure out how to deal with empty rows and columns
                     Row(
-                      crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+                      mainAxisConstraintsWeight: ConstraintsWeight(weight: chartViewMaker.yLabelsGenerator.oneBasedPortionOfNegativeValuesLength()),
+                      crossAxisAlign: Align.start, // cross axis is default matrjoska, non-default start aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
                         chartViewMaker.chartModel.crossPointsModelNegativeList,
                         Align.start,
+                        false,
                       ),
                    ),
-*/
                   // endregion
                   ],
                ),

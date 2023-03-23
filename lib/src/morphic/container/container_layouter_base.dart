@@ -478,7 +478,6 @@ class ConstraintsWeight {
     this.weight = 0,
   });
 
-  // todo-00-last-last-done : final int weight;
   final double weight;
 
   static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
@@ -508,7 +507,6 @@ class ConstraintsWeights {
 
   bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
 
-  // todo-00-last-last-done : List<int> get doubleWeightList {
   List<double> get doubleWeightList {
     if (!allDefined) {
       throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
@@ -520,7 +518,6 @@ class ConstraintsWeights {
   ///
   /// Before invoking, should invoke [allDefined] to check if all siblings have a defined
   /// (non 0, non negative, non-default) weight.
-  // todo-00-last-last-done : int get sum {
   double get sum {
     if (!allDefined) {
       throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
@@ -3149,7 +3146,6 @@ class TableLayouter extends PositioningBoxLayouter {
 ///
 class Greedy extends NonPositioningBoxLayouter {
 
-  // todo-00-last-last-done : final int greed;
   final double greed;
 
   Greedy({

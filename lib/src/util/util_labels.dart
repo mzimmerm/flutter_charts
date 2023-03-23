@@ -1,6 +1,5 @@
 import 'dart:math' as math show min, max, pow;
 
-// import '../../flutter_charts.dart';
 import '../morphic/container/container_layouter_base.dart';
 import '../chart/model/data_model.dart';
 import '../chart/options.dart';
@@ -9,7 +8,6 @@ import '../morphic/container/layouter_one_dimensional.dart'
     show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 
 import 'util_dart.dart' as util_dart;
-// import 'util_labels.dart' as util_labels;
 
 // todo-doc-01 documentation fix, this is old
 /// Generates label values from data values, and allows label manipulation: transform, format, extrapolate to axis pixels.
@@ -50,8 +48,6 @@ class DataRangeLabelInfosGenerator {
   /// Constructor calculates the following members:
   ///   - [dataRange]
   ///   - [_labelInfos]
-
-
   DataRangeLabelInfosGenerator({
     required this.chartViewMaker, // todo-00-done : added as a temporary to test old vs new
     required ChartModel dataModel,
@@ -390,6 +386,35 @@ class DataRangeLabelInfosGenerator {
     return labels;
   }
 
+  /// Calculates the 1-based portion of the
+  double oneBasedPortionOfPositiveValuesLength() {
+    if (dataRange.min >= dataRange.max) {
+      // Arbitrary portion if interval is collapsed
+      if (dataRange.max < 0.0) {
+        return 0.0;
+      } else if (dataRange.max >= 0.0) {
+        return 1.0;
+      }
+      throw StateError('Invalid dataRange=$dataRange');
+    }
+
+    if (dataRange.max < 0.0) {
+      // dataRange purely negative
+      return 0.0;
+    } else if (dataRange.min >= 0.0) {
+      // dataRange purely positive or 0
+      return 1.0;
+    }
+
+    if (!(dataRange.min < 0.0 && dataRange.max > 0.0)) {
+      throw StateError('Internal error: Invalid assumption of dataRange=$dataRange');
+    }
+    return dataRange.max / (dataRange.max - dataRange.min);
+  }
+
+  double oneBasedPortionOfNegativeValuesLength() {
+    return 1.0 - oneBasedPortionOfPositiveValuesLength();
+  }
 }
 
 /// The [AxisLabelInfo] is a holder for one label,
