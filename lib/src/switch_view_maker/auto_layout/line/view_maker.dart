@@ -37,8 +37,6 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
-
     return LineChartRootContainer(
       legendContainer: legendContainer,
       xContainer: xContainer,

@@ -53,7 +53,7 @@ class DataRangeLabelInfosGenerator {
 
 
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // todo-00-last-done : added as a temporary to test old vs new
+    required this.chartViewMaker, // todo-00-done : added as a temporary to test old vs new
     required ChartModel dataModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
@@ -133,7 +133,7 @@ class DataRangeLabelInfosGenerator {
 
   }
 
-  final ChartViewMaker chartViewMaker; // todo-00-last-done : added as a temporary to test old vs new
+  final ChartViewMaker chartViewMaker; // todo-00-done : added as a temporary to test old vs new
 
   /// Describes if this [DataRangeLabelInfosGenerator] instance is for dependent or independent data.
   ///
@@ -195,9 +195,6 @@ class DataRangeLabelInfosGenerator {
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
-    // todo-00-switch-done-remove : if (!chartViewMaker.isUseOldDataContainer) {
-    // todo-00-switch-done-remove :   throw StateError('Only should be called in OLD Layouters');
-    // todo-00-switch-done-remove : }
 
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]

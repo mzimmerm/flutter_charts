@@ -37,8 +37,6 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
     var yContainer = makeViewForRangeAxis();
     var dataContainer = makeViewForDataContainer();
 
-    // todo-00-switch-done-remove : assert(isUseOldDataContainer == false);
-
     return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
       xContainer: xContainer,

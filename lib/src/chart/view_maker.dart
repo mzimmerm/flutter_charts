@@ -252,7 +252,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
     // todo-00-last-last : distinguish chartModel.crossPointsList and chartModel.negativeCrossPointsList
     //                    this should be one method using a param 'positive', 'negative'
-    // todo-00-last-done : use param : for (model.CrossPointsModel crossPointsModel in chartModel.crossPointsList) {
     for (model.CrossPointsModel crossPointsModel in crossPointsModelList) {
       // CrossPointsContainer crossPointsContainer =
       chartBars.add(
