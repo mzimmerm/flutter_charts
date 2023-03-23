@@ -80,7 +80,7 @@ class DataRangeLabelInfosGenerator {
           // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
           //   the interval is, once the pixels range on the axis is available,
           //   it will be lextr-ed to the pixel range.
-          // We COULD return the same dataValuesInterval(isStacked: isStacked) but
+          // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
           dataEnvelope = const util_dart.Interval(0.0, 100.0);
           transformedLabelValues = _placeLabelPointsInInterval(
@@ -93,14 +93,14 @@ class DataRangeLabelInfosGenerator {
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
-          dataEnvelope = dataModel.dataValuesInterval(isStacked: isStacked);
+          dataEnvelope = dataModel.valuesInterval(isStacked: isStacked);
           double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
           transformedLabelValues =
               List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
           break;
       }
     } else {
-      dataEnvelope = dataModel.extendedDataValuesInterval(
+      dataEnvelope = dataModel.extendedValuesInterval(
         extendAxisToOrigin: extendAxisToOrigin,
         isStacked: isStacked,
       );

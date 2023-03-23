@@ -19,7 +19,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-00-last-01 : why do we construct in buildAndReplaceChildre here, but in constuctor in NewYContainer???
+  // todo-00-last-01 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
 
@@ -50,7 +50,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                   crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
                   // todo-00-last-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
                   children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
-                    chartViewMaker.chartModel.crossPointsModelList,
+                    chartViewMaker.chartModel.crossPointsModelPositiveList,
                   ),
                 ),
                 // endregion
@@ -101,12 +101,8 @@ class PointContainer extends container_common_new.ChartAreaContainer {
 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// todo-00-last-00 : For some new containers (those that need to be sized from values to pixels),
-///                          add an interface that expresses: This is the provided of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate
-///                          Maybe the interface should provide: direction (vertical, horizontal), boolean verticalProvided, horizontal provided, and Size - valued object for each direction (if boolean says so)
-///                          For children of DataContainer, it will be DataContainer.constraints.
-///                          For children of YContainer, it will be YContainer.constraints (???)
-///                          Generally it must be an object that is known at layout time, and will not change - for example last cell in table,
+/// It implements the mixin [HeightSizerLayouterChild] which expresses that this is the provided
+/// of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate the height.
 class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
 
   /// The rectangle representing the value.

@@ -231,16 +231,17 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Abstract method constructs and returns the concrete [DataContainer] instance,
   /// for the chart type (line, bar) determined by this concrete [ChartRootContainer].
-  /// Assumed made from [model.ChartModel.crossPointsModelList], presents all data in the data area.
+  /// Assumed made from [model.ChartModel.crossPointsModelPositiveList], presents all data in the data area.
   data_container.DataContainer makeViewForDataContainer();
 
   /// Makes a view showing all bars of data points.
   ///
-  /// Assumed made from [model.ChartModel.crossPointsModelList].
+  /// Assumed made from [model.ChartModel.crossPointsModelPositiveList] OR [model.ChartModel.crossPointsModelNegativeList].
   ///
   /// Should be invoked inside [makeViewForDataArea], each child in the returned list
-  /// should be made from one element of [model.ChartModel.crossPointsModelList],
-  /// which is instance of [model.CrossPointsModel].
+  /// should be made from one element of model [model.ChartModel.crossPointsModelPositiveList] OR
+  /// the  [model.ChartModel.crossPointsModelNegativeList],
+  /// which are instances of [model.CrossPointsModel].
   ///
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
     List<model.CrossPointsModel> crossPointsModelList,
@@ -251,7 +252,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
     // todo-00-last-last : distinguish chartModel.crossPointsList and chartModel.negativeCrossPointsList
     //                    this should be one method using a param 'positive', 'negative'
-    // todo-00-last-last-done : use param : for (model.CrossPointsModel crossPointsModel in chartModel.crossPointsList) {
+    // todo-00-last-done : use param : for (model.CrossPointsModel crossPointsModel in chartModel.crossPointsList) {
     for (model.CrossPointsModel crossPointsModel in crossPointsModelList) {
       // CrossPointsContainer crossPointsContainer =
       chartBars.add(

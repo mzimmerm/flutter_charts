@@ -47,6 +47,7 @@ echo This runs an integration [drive] screenshot create test first, followed by 
 tool/test/integration_test_validate_screenshots.sh ex30AnimalsBySeasonWithLabelLayoutStrategy
 tool/test/integration_test_validate_screenshots.sh ex35AnimalsBySeasonNoLabelsShown
 tool/test/integration_test_validate_screenshots.sh ex40LanguagesWithYOrdinalUserLabelsAndUserColors
+tool/test/integration_test_validate_screenshots.sh ex52AnimalsBySeasonLogarithmicScale
 # tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration2
 tool/test/integration_test_validate_screenshots.sh ex60LabelsIteration3
 tool/test/integration_test_validate_screenshots.sh ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose
@@ -55,7 +56,7 @@ tool/test/integration_test_validate_screenshots.sh ex72AnimalsBySeasonLegendIsRo
 # tool/test/integration_test_validate_screenshots.sh ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight
 # tool/test/integration_test_validate_screenshots.sh ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy
 # tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
-# tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
+tool/test/integration_test_validate_screenshots.sh ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned
 
 echo
 echo -------------------------------------
