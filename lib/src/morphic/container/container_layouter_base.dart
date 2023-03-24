@@ -15,7 +15,7 @@ import '../../util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsExtrapolation1D,
     transposeRowsToColumns, assertDoubleResultsSame;
 import '../../util/util_flutter.dart' as util_flutter
-    show boundingRectOfRects, assertSizeResultsSame;
+    show boundingRect, assertSizeResultsSame;
 import '../../util/collection.dart' as custom_collection
     show CustomList;
 import '../../util/extensions_dart.dart';
@@ -1245,27 +1245,31 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Important Definition:
   ///   If a method name has 'PositionChildren' in it's name, it means:
   ///    - It is invoked on a node that is a parent (so self = parent)
-  ///    - The method should do the following:
-  ///      - Arrange for self to ask children their layout sizes. Children MUST have already
-  ///        been recursively layed out!! (Likely by invoking child.layout recursively).
-  ///      - Arrange for self to use children layout sizes and it's positioning algorithm
-  ///        to calculate (but NOT set) children positions (offsets) in itself
-  ///        returning a list of rectangles, one for each child
+  ///
+  /// Important implementation notes and rules:
+  ///
+  ///    - Self should ask children their layout sizes. Children MUST have already
+  ///      been recursively layed out!! (Likely by invoking child.layout recursively).
+  ///    - Self should use children layout sizes and it's positioning algorithm
+  ///      to calculate (but NOT set) children positions (offsets) in itself
+  ///      returning a list of rectangles, one for each child in the passed [children],
+  ///      in the same order.
+  ///    - If there are no children, an empty [List] should be returned.
   ///
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children);
 
   /// An abstract method of the default [layout] which role is to
   /// offset the [children] by the pre-calculated offsets [positionedRectsInMe] .
   ///
-  /// Important override notes and rules for [_layout_Post_NotLeaf_OffsetChildren] on extensions:
+  /// Important implementation notes and rules:
   ///
-  ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset]
-  ///     for all children in argument [children] and apply the [Rect.topLeft]
-  ///     offset from the passed [positionedRectsInMe].
-  ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op.
-  ///
-  /// First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
-  /// which is a list of layed out rectangles [List<ui.Rect>] of [children].
+  ///   - Positioning extensions should invoke [BoxLayouter.applyParentOffset] on each child in
+  ///     the passed [children], in list order, and offset each child by top-left
+  ///     of each [positionedRectsInMe] in same order.
+  ///     See [PositioningBoxLayouter._layout_Post_NotLeaf_OffsetChildren].
+  ///   - Non-positioning extensions (notably BoxContainer) should make this a no-op - empty body.
+  ///   - First argument should be the result of [layout_Post_NotLeaf_PositionChildren],
+  ///     which is a list of layed out rectangles [List<ui.Rect>] of the passed [children] in [children] order.
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children);
 
   /// The responsibility of [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
@@ -1279,7 +1283,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// This "bounding rectangle of all positioned children" is calculated from the passed [positionedChildrenRects],
   /// which is the result of preceding invocation of [layout_Post_NotLeaf_PositionChildren].
   ///
-  /// The bounding rectangle of all positioned children, is calculated by [util_flutter.boundingRectOfRects].
+  /// The bounding rectangle of all positioned children, is calculated by [util_flutter.boundingRect].
   ///
   /// Note:  The [layoutSize] CAN be calculated using one of two equivalent methods:
   ///        1. Query all my children for offsets and sizes, create each child rectangle,
@@ -1300,7 +1304,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 
     ui.Rect positionedChildrenOuterRect = util_flutter
-        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+        .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
     __layout_Post_Assert_Layedout_Rects(positionedChildrenRects, positionedChildrenOuterRect);
 
@@ -1323,7 +1327,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     assert(!isLeaf);
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+        .boundingRect(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
     util_flutter.assertSizeResultsSame(childrenOuterRectangle.size, positionedChildrenOuterRect.size);
     return positionedChildrenOuterRect;
   }
@@ -1391,7 +1395,13 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
 ///
 /// Children are either passed, or created in constructor body. Show example.
 ///
-abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter implements LayoutableBox, Keyed, UniqueKeyedObjectsManager {
+abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
+    implements
+        LayoutableBox,
+        Keyed,
+        UniqueKeyedObjectsManager,
+        DoubleLinked<BoxContainer>,
+        DoubleLinkedOwner<BoxContainer>  {
   /// Default generative constructor.
   BoxContainer({
     // todo-013 : can key and children be required, final, and non nullable?
@@ -1431,6 +1441,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter imple
     // NAMED GENERATIVE super() called implicitly here.
   }
 
+  /// Free map which any node in the [BoxContainerHierarchy] can use to exchange information.
+  ///
+  /// This practice should be limited to only populate [sandbox] on [BoxContainerHierarchy.root].
   Map? sandbox;
 
   /// A no-op override of the abstract [BoxLayouter.layout_Post_NotLeaf_PositionChildren].
@@ -1628,6 +1641,10 @@ abstract class PositioningBoxLayouter extends BoxContainer {
           constraintsWeight: constraintsWeight,
         );
 
+  // todo-00-last-done : added override of BoxContainerHierarchy.isLeaf
+  @override
+  bool get isLeaf => false;
+
   /// Applies the offsets given with the passed [positionedRectsInMe]
   /// on the passed [LayoutableBox]es [children].
   ///
@@ -1657,6 +1674,10 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   }) : super(
     children: children,
   );
+
+  // todo-00-last-done : added override of BoxContainerHierarchy.isLeaf
+  @override
+  bool get isLeaf => false;
 
   /// Override for non-positioning:
   /// Does not apply any offsets on the it's children (passed in [layout] internals.
@@ -1812,7 +1833,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     for (var child in _greedyChildren) {
       child.layout();
     }
-    // Step 2. and 3. is a base class method unchanged.
+    // Step 2. and 3. is calling base [BoxLayouter] method unchanged.
     _layout_Post_IfLeaf_SetSize_IfNotLeaf_PositionThenOffsetChildren_ThenSetSize_Finally_AssertSizeInsideConstraints();
     // } else {
     //   // Working processing for no greedy children present. Maybe we can reuse some code with the above?
@@ -1836,8 +1857,8 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
         constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
             .toList());
     if (childrenWeights.allDefined) {
+      // If all children have weights defined, give children constraints divided according to defined weights
       assert (childrenWeights.constraintsWeightList.length == children.length);
-      // Create divided constraints for children according to defined weights
       List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
         divideIntoCount: children.length,
         divideStrategy: ConstraintsDistribution.doubleWeights,
@@ -1852,6 +1873,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
         _children[i].applyParentConstraints(this, childrenConstraints[i] as BoxContainerConstraints);
       }
     } else {
+      // Else give all children full self constraints.
       // This code is the same as super implementation in [BoxLayouter]
       for (var child in children) {
         child.applyParentConstraints(this, constraints);
@@ -1915,7 +1937,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       // We create [nonGreedyBoundingRect] that envelope the NonGreedy children, tightly layed out
       // in the Column/Row direction. This is effectively a pre-positioning of children is self
       List<ui.Rect> positionedRectsInMe = layout_Post_NotLeaf_PositionChildren(_nonGreedyChildren);
-      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRectOfRects(positionedRectsInMe);
+      ui.Rect nonGreedyBoundingRect = util_flutter.boundingRect(positionedRectsInMe);
       assert(nonGreedyBoundingRect.topLeft == ui.Offset.zero);
 
       // Create new constraints ~constraintsRemainingForGreedy~ which is a difference between
@@ -2134,7 +2156,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 
     ui.Rect positionedChildrenOuterRect = util_flutter
-        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+        .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
     __layout_Post_Assert_Layedout_Rects(positionedChildrenRects, positionedChildrenOuterRect);
 
@@ -3169,10 +3191,10 @@ class Greedy extends NonPositioningBoxLayouter {
     //  - In the cross-axis direction, take on the layout size of children outer rectangle, as
     //    ih the default implementation.
     ui.Rect positionedChildrenBoundingRect =  util_flutter
-        .boundingRectOfRects(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
+        .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
     // childrenOuterRectangle is ONLY needed for asserts. Can be removed for performance.
     ui.Rect childrenOuterRectangle = util_flutter
-        .boundingRectOfRects(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
+        .boundingRect(_children.map((BoxLayouter child) => child._boundingRectangle()).toList(growable: false));
     assert(childrenOuterRectangle.size == positionedChildrenBoundingRect.size);
 
     ui.Size greedySize = constraints.maxSize; // use the portion of this size along main axis

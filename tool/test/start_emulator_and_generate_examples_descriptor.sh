@@ -22,6 +22,7 @@
 #          generated program 
 
 exampleEnum=$1
+chartTypeEnum=$2
 
 # This is the AVD emulator we request to exist
 emulator_used="Nexus_6_API_33"
@@ -63,7 +64,7 @@ examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_pro
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
 echo Running 'dart run example/lib/src/util/examples_descriptor.dart'
 echo   to create $examples_descriptor_generated_program
-dart run example/lib/src/util/examples_descriptor.dart "$exampleEnum" > $examples_descriptor_generated_program
+dart run example/lib/src/util/examples_descriptor.dart "$exampleEnum" "$chartTypeEnum" > $examples_descriptor_generated_program
 
 chmod u+x $examples_descriptor_generated_program
 

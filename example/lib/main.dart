@@ -194,7 +194,7 @@ class MyHomePageState extends State<MyHomePage> {
   //      This serves as a lasso that enforces callers to set the non-null.
   //      But why Dart would not use the initialized value?
 
-  /// Get the example to run from environment variable.
+  /// Get the example to run from environment variables.
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.

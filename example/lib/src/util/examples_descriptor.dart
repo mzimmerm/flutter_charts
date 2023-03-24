@@ -27,7 +27,17 @@ void main(List<String> args) {
   if (args.isNotEmpty && args[0].trim().isNotEmpty) {
     // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
     ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
-    exampleDescriptor = ExamplesDescriptor(exampleRequested: exampleToRun);
+    exampleDescriptor = ExamplesDescriptor(
+      exampleRequested: exampleToRun,
+    );
+    if (args.length >= 2 && args[1].trim().isNotEmpty) {
+      // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
+      ExamplesChartTypeEnum chartTypeRequested = args[1].asEnum(ExamplesChartTypeEnum.values);
+      exampleDescriptor = ExamplesDescriptor(
+        exampleRequested: exampleToRun,
+        chartTypeRequested: chartTypeRequested,
+      );
+    }
   }
   exampleDescriptor.asCommandLine();
 }
@@ -89,8 +99,9 @@ enum ExamplesChartTypeEnum {
 class ExamplesDescriptor {
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;
+  ExamplesChartTypeEnum? chartTypeRequested;
 
-  ExamplesDescriptor({this.exampleRequested});
+  ExamplesDescriptor({this.exampleRequested, this.chartTypeRequested});
 
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     //
@@ -165,8 +176,13 @@ class ExamplesDescriptor {
   /// Present this descriptor is a format suitable to run as a test from command line.
   ///
   void asCommandLine() {
-    List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun =
-        exampleRequested == null ? _allowed : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
+    List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun = exampleRequested == null
+        ? _allowed
+        : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
+
+    combosToRun = chartTypeRequested == null
+        ? combosToRun
+        : combosToRun.where((tuple) => tuple.item2 == chartTypeRequested).toList();
 
     if (combosToRun.isEmpty) {
       throw StateError('No examples requested to run are defined in examples_descriptor.');

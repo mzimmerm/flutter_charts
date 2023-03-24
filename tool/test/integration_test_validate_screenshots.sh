@@ -25,6 +25,7 @@ fi
 
 if [[ -n "$1" ]]; then
   exampleEnum=$1
+  chartTypeEnum=$2
   echo
   echo -------------------------------------
   echo Assuming you asking to run only one test, given by ExamplesEnum: "$exampleEnum"
@@ -51,14 +52,14 @@ echo         and generates program \"tmp/examples_descriptor_generated_program_$
 echo         that contains command lines to test each example one after another in step 2.
 #   This program can run either integration test (flutter driver) or the app (flutter run), depending on parameters.
 # See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
-source tool/test/start_emulator_and_generate_examples_descriptor.sh "$exampleEnum"
+source tool/test/start_emulator_and_generate_examples_descriptor.sh "$exampleEnum" "$chartTypeEnum"
 echo Will run "$examples_descriptor_generated_program".
 echo
 examples_descriptor_generated_program=$examples_descriptor_generated_program
 
 echo
 echo -------------------------------------
-echo Step 2: Running screenshot-generating integration test \"flutter drive\"
+echo Step 2: Running SCREENSHOTS-GENERATING integration tests \"flutter drive\" on \"$examples_descriptor_generated_program\".
 echo         on file \"screenshot_create_test.dart\".
 echo         This generates screenshots for all examples,
 echo         by running the tmp program \"$examples_descriptor_generated_program\"
@@ -70,7 +71,7 @@ bash -x "$examples_descriptor_generated_program" \
 
 echo
 echo -------------------------------------
-echo Step 3: Running screenshot-validating widget test \"flutter test\".
+echo Step 3: Running SCREENSHOTS-VALIDATING widget tests \"flutter test\" on \"$examples_descriptor_generated_program\".
 echo         It validates, one by one, that the screenshots generated in Step 2 tests are unchanged.
 echo
 bash -x "$examples_descriptor_generated_program" \
