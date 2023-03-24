@@ -390,6 +390,14 @@ class DataRangeLabelInfosGenerator {
   ///
   /// The length is lextr equivalent to pixels used up by positive axis. The returned value is in interval <0.0, 1.0>.
   /// 0.0 value represents there are no positive values, 1.0 represents there are only positive or zero values.
+  ///
+  /// Motivation: When data on chart have and show both positive and negative values,
+  ///             the [DataContainer.buildAndReplaceChildren] show the positive and negative
+  ///             axis in a [Column] layouter; the first (top) column elements shows positives,
+  ///             the second (bottom) column elements shows negatives. We need to assign weight
+  ///             to the top and bottom in the ratio of the positive and negative axis lengths.
+  ///             This method [portionOfPositiveRange] and [portionOfNegativeRange] serves as the [Column]
+  ///             positive and negative weight.
   double portionOfPositiveRange() {
     if (dataRange.min >= dataRange.max) {
       // Arbitrary portion if interval is collapsed

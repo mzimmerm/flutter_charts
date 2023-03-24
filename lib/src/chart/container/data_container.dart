@@ -41,6 +41,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                 // Column first Row lays out positives, second Row negatives
                 Column(
                   children: [
+                    // Row with columns of positive values
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
                         weight: chartViewMaker.yLabelsGenerator.portionOfPositiveRange(),
@@ -52,6 +53,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                         isPointsReversed: true,
                       ),
                     ),
+                    // Row with columns of negative values
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
                           weight: chartViewMaker.yLabelsGenerator.portionOfNegativeRange()),

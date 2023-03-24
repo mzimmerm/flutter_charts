@@ -281,17 +281,17 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
   }) {
-    var children =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
+    var pointContainers =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
         crossPointsModel: crossPointsModel,
     );
     if (isPointsReversed) {
-      children = children.reversed.toList(growable: false);
+      pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
-      children = children.toList(growable: false);
+      pointContainers = pointContainers.toList(growable: false);
     }
     return container_base.Column(
       mainAxisAlign: pointsLayouterAlign,
-      children: children,
+      children: pointContainers,
     );
   }
 

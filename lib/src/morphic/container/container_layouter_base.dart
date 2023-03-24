@@ -1641,7 +1641,13 @@ abstract class PositioningBoxLayouter extends BoxContainer {
           constraintsWeight: constraintsWeight,
         );
 
-  // todo-00-last-done : added override of BoxContainerHierarchy.isLeaf
+  /// Override parent [isLeaf] as false, to express that layouters are not leafs,
+  /// even if the default [BoxContainerHierarchy.isLeaf] implementation ` __children.isEmpty`
+  /// is true.
+  ///
+  /// Layouters need to process correctly a situation with no children present,
+  /// by creating in layout methods such as [_layout_Post_NotLeaf_SetSize_FromPositionedChildren],
+  /// an origin-based point-size rectangle `positionedChildrenOuterRect` - which is the source for the [layoutSize].
   @override
   bool get isLeaf => false;
 
@@ -1675,7 +1681,9 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
     children: children,
   );
 
-  // todo-00-last-done : added override of BoxContainerHierarchy.isLeaf
+  /// Override parent [isLeaf] as false, to express that layouters are not leafs.
+  ///
+  /// See [PositioningBoxLayouter] for details.
   @override
   bool get isLeaf => false;
 
