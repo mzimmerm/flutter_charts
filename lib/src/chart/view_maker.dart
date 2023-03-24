@@ -1,4 +1,6 @@
 import 'dart:ui' as ui show Canvas, Size;
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
+
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
 
@@ -281,14 +283,21 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
   }) {
-    var pointContainers =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
-        crossPointsModel: crossPointsModel,
-    );
+    // Get point containers, and wrap each in a Padder, narrowing the bars
+    var pointContainers = makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
+      crossPointsModel: crossPointsModel,
+    ).map((pointContainer) =>
+        container_base.Padder(
+          edgePadding: const EdgePadding.withSides(start: 6.0, end: 6.0),
+          child: pointContainer,)
+    ).toList();
+
     if (isPointsReversed) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
       pointContainers = pointContainers.toList(growable: false);
     }
+
     return container_base.Column(
       mainAxisAlign: pointsLayouterAlign,
       children: pointContainers,
