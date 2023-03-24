@@ -34,7 +34,7 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-00-last-02 will go away when we use YContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-00-next-02 will go away when we use YContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );

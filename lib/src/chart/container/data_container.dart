@@ -19,17 +19,16 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-00-last-01 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
+  // todo-00-next-01 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
-
     var options = chartViewMaker.chartOptions;
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
-    // todo-00!! move this up when higher containers converted to new.
     addChildren([
+      // Pad DataContainer on top and bottom from options. Children are height and width sizers
       Padder(
         edgePadding: EdgePadding.withSides(
           top: padGroup.heightPadTopOfYAndData(),
@@ -39,55 +38,39 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                // region Description todo-00-last-last-last-last - divide weights on Column in ratio of length of interval
-                //                 //   (0 to yLabelsGenerator.dataRange.max) (positive column 1)
-                //                 // to length of interval
-                //                 //   (yLabelsGenerator.dataRange.min to 0) (negative column 2).
-                // Instead of a single Row of chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List,
-                //   add a Align.start column with two Rows. First row has positive crossPoints_List, second row has negative CrossPoints_List.
-                // The constraints on the two Column children are in the ratio described above ^
-                /*
-                Row(
-                  crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
-                  // todo-00-last-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
-                  children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
-                    chartViewMaker.chartModel.crossPointsModelPositiveList,
-                  ),
-                ),
-                */
-                // todo-00-last-last-last : create separate methods makeViewsForDataContainer_Bars_As_Positive_CrossPointsContainer_List, same for negative
-
+                // Column first Row lays out positives, second Row negatives
                 Column(
                   children: [
                     Row(
-                      mainAxisConstraintsWeight: ConstraintsWeight(weight: chartViewMaker.yLabelsGenerator.oneBasedPortionOfPositiveValuesLength()),
-                      crossAxisAlign: Align.end, // cross axis is default matrjoska, non-default end aligned.
+                      mainAxisConstraintsWeight: ConstraintsWeight(
+                        weight: chartViewMaker.yLabelsGenerator.portionOfPositiveRange(),
+                      ),
+                      crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
-                        chartViewMaker.chartModel.crossPointsModelPositiveList,
-                        Align.start,
-                        true,
+                        crossPointsModelList: chartViewMaker.chartModel.crossPointsModelPositiveList,
+                        pointsLayouterAlign: Align.start,
+                        isPointsReversed: true,
                       ),
                     ),
                     Row(
-                      mainAxisConstraintsWeight: ConstraintsWeight(weight: chartViewMaker.yLabelsGenerator.oneBasedPortionOfNegativeValuesLength()),
-                      crossAxisAlign: Align.start, // cross axis is default matrjoska, non-default start aligned.
+                      mainAxisConstraintsWeight: ConstraintsWeight(
+                          weight: chartViewMaker.yLabelsGenerator.portionOfNegativeRange()),
+                      crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
-                        chartViewMaker.chartModel.crossPointsModelNegativeList,
-                        Align.start,
-                        false,
+                        crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,
+                        pointsLayouterAlign: Align.start,
+                        isPointsReversed: false,
                       ),
-                   ),
-                  // endregion
+                    ),
                   ],
-               ),
-            ],
-          ),
-        ],
-      ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     ]);
   }
-
 }
 
 class CrossPointsContainer extends container_common_new.ChartAreaContainer {

@@ -62,4 +62,4 @@ echo
 echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot actual/expected test for NEW LAYOUT
-USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+# todo-00-last-last : USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

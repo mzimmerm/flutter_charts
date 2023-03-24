@@ -65,7 +65,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-00-last-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-00-next-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -239,31 +239,34 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Makes a view showing all bars of data points.
   ///
-  /// Assumed made from [model.ChartModel.crossPointsModelPositiveList] OR [model.ChartModel.crossPointsModelNegativeList].
+  /// Assumed to be passed the [model.ChartModel.crossPointsModelPositiveList]
+  /// OR [model.ChartModel.crossPointsModelNegativeList].
   ///
-  /// Should be invoked inside [makeViewForDataArea], each child in the returned list
-  /// should be made from one element of model [model.ChartModel.crossPointsModelPositiveList] OR
-  /// the  [model.ChartModel.crossPointsModelNegativeList],
-  /// which are instances of [model.CrossPointsModel].
+  /// Each child in the returned list should be made from one element of the model
+  /// [model.ChartModel.crossPointsModelPositiveList] OR the [model.ChartModel.crossPointsModelNegativeList] -
+  /// both are instances of [model.CrossPointsModel].
   ///
-  List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
-    List<model.CrossPointsModel> crossPointsModelList,
-    Align columnPointsAlign, // todo-00-last-last : rename to crossPointsAlign
-      bool isReversed,
-  ) {
+  List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars_As_CrossPointsContainer_List({
+    required List<model.CrossPointsModel> crossPointsModelList,
+    required Align pointsLayouterAlign,
+    required bool isPointsReversed,
+  }) {
     List<data_container.CrossPointsContainer> chartBars = [];
-    // Iterate the [chartModel] across series (column wise), create one [CrossPointsContainer] (chartBar)
-    //   from each cross-series, add the chartBar to a list of chartBars, which is returned.
+    // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
+    //   creates a [CrossPointsContainer] (chartBar) from each cross-series, adds the chartBar
+    //   to the [chartBars] list, which is returned.
 
-    // todo-00-last-last : distinguish chartModel.crossPointsList and chartModel.negativeCrossPointsList
-    //                    this should be one method using a param 'positive', 'negative'
     for (model.CrossPointsModel crossPointsModel in crossPointsModelList) {
-      // CrossPointsContainer crossPointsContainer =
       chartBars.add(
         data_container.CrossPointsContainer(
           chartViewMaker: this,
           crossPointsModel: crossPointsModel,
-          children: [makeViewForDataContainer_BarLayouter(crossPointsModel, columnPointsAlign, isReversed),],
+          children: [
+            makeViewForDataContainer_BarLayouter(
+                crossPointsModel: crossPointsModel,
+                pointsLayouterAlign: pointsLayouterAlign,
+                isPointsReversed: isPointsReversed),
+          ],
           // Give all view columns the same weight along main axis -
           //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
           constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
@@ -273,19 +276,21 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return chartBars;
   }
 
-  container_base.BoxContainer makeViewForDataContainer_BarLayouter(
-    model.CrossPointsModel crossPointsModel,
-    Align columnPointsAlign,
-    bool isReversed,
-  ) {
-    var children =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(crossPointsModel);
-    if (isReversed) {
+  container_base.BoxContainer makeViewForDataContainer_BarLayouter({
+    required model.CrossPointsModel crossPointsModel,
+    required Align pointsLayouterAlign,
+    required bool isPointsReversed,
+  }) {
+    var children =  makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
+        crossPointsModel: crossPointsModel,
+    );
+    if (isPointsReversed) {
       children = children.reversed.toList(growable: false);
     } else {
       children = children.toList(growable: false);
     }
     return container_base.Column(
-      mainAxisAlign: columnPointsAlign,
+      mainAxisAlign: pointsLayouterAlign,
       children: children,
     );
   }
@@ -293,16 +298,18 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Generates [PointContainer] view from each [PointModel]
   /// and collects the views in a list of [PointContainer]s which is returned.
   ///
-  List<data_container.PointContainer> makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List(
-    model.CrossPointsModel crossPointsModel,
-  ) {
+  List<data_container.PointContainer> makeViewsForDataContainer_CrossPointsModel_As_PointContainer_List({
+    required model.CrossPointsModel crossPointsModel,
+  }) {
     List<data_container.PointContainer> pointContainerList = [];
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
     crossPointsModel.applyOnAllElements(
       (model.PointModel pointModelElm, dynamic passedList) {
-        passedList.add(makeViewForDataArea_PointModel_As_PointContainer(pointModelElm));
+        passedList.add(makeViewForDataArea_PointModel_As_PointContainer(
+          pointModel: pointModelElm,
+        ));
       },
       pointContainerList,
     );
@@ -313,9 +320,9 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Generate view for this single leaf [PointModel] - a single [NewHBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  data_container.PointContainer makeViewForDataArea_PointModel_As_PointContainer(
-    model.PointModel pointModel,
-  ) {
+  data_container.PointContainer makeViewForDataArea_PointModel_As_PointContainer({
+    required model.PointModel pointModel,
+  }) {
     return data_container.HBarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,

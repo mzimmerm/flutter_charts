@@ -386,8 +386,11 @@ class DataRangeLabelInfosGenerator {
     return labels;
   }
 
-  /// Calculates the 1-based portion of the
-  double oneBasedPortionOfPositiveValuesLength() {
+  /// Calculates the 1-based portion of the length used by positive range.
+  ///
+  /// The length is lextr equivalent to pixels used up by positive axis. The returned value is in interval <0.0, 1.0>.
+  /// 0.0 value represents there are no positive values, 1.0 represents there are only positive or zero values.
+  double portionOfPositiveRange() {
     if (dataRange.min >= dataRange.max) {
       // Arbitrary portion if interval is collapsed
       if (dataRange.max < 0.0) {
@@ -412,8 +415,9 @@ class DataRangeLabelInfosGenerator {
     return dataRange.max / (dataRange.max - dataRange.min);
   }
 
-  double oneBasedPortionOfNegativeValuesLength() {
-    return 1.0 - oneBasedPortionOfPositiveValuesLength();
+  /// Remainder to 1.0 of [portionOfPositiveRange]. See [portionOfPositiveRange] for details.
+  double portionOfNegativeRange() {
+    return 1.0 - portionOfPositiveRange();
   }
 }
 

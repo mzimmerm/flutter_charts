@@ -146,7 +146,7 @@ mixin LabelContainerMixin on BoxContainer {
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-00-last-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-00-next-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       // todo-01 : fix this as not dealing with width < 0 brings issues further

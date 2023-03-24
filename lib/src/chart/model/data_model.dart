@@ -33,28 +33,26 @@ class ChartModel {
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
   ChartModel({
-    required valuesRows,
+    required this.valuesRows,
     required this.xUserLabels,
-    required byRowLegends,
+    required this.byRowLegends,
     required this.chartOptions,
     this.yUserLabels,
     List<ui.Color>? byRowColors,
   })  :
-        // Initializing of non-nullable _byRowColors which is a non-required argument
-        // must be in the initializer list by a non-member function (member methods only in constructor)
-        _valuesRows = valuesRows,
-        _byRowLegends = byRowLegends,
-        _byRowColors = byRowColors ?? byRowDefaultColors(valuesRows.length) {
+        // Initializing of non-nullable final byRowColors which is a non-required argument
+        // must be done in initialized by a non-member function (member methods only in constructor body)
+        byRowColors = byRowColors ?? byRowDefaultColors(valuesRows.length) {
     logger.Logger().d('Constructing ChartModel');
     validate();
 
-    _valuesColumns = transposeRowsToColumns(_valuesRows);
+    valuesColumns = transposeRowsToColumns(valuesRows);
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
     int columnIndex = 0;
-    for (List<double> valuesColumn in _valuesColumns) {
+    for (List<double> valuesColumn in valuesColumns) {
       crossPointsModelPositiveList.add(
         CrossPointsModel(
           valuesColumn: valuesColumn,
@@ -111,8 +109,8 @@ class ChartModel {
     } else {
       // Non-Stacked values can just use values from DataModel [_valuesRows] transformed values.  
       return Interval(
-        transformedValuesMin,
-        transformedValuesMax,
+        _transformedValuesMin,
+        _transformedValuesMax,
       );
     }
   }
@@ -144,14 +142,12 @@ class ChartModel {
   /// Data in rows.
   ///
   /// Each row of data represents one data series.
-  /// Legends per row are managed by [_byRowLegends].
+  /// Legends per row are managed by [byRowLegends].
   ///
-  final List<List<double>> _valuesRows;
-  List<List<double>> get valuesRows => _valuesRows;
+  final List<List<double>> valuesRows;
 
   /// Data reorganized from rows to columns.
-  late final List<List<double>> _valuesColumns;
-  List<List<double>> get valuesColumns => _valuesColumns;
+  late final List<List<double>> valuesColumns;
 
   /// Labels on independent (X) axis.
   ///
@@ -164,8 +160,7 @@ class ChartModel {
   ///
   /// One Legend String per row.
   /// Alternative name would be "series names".
-  final List<String> _byRowLegends;
-  List<String> get byRowLegends => _byRowLegends;
+  final List<String> byRowLegends;
 
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
@@ -176,22 +171,20 @@ class ChartModel {
   final List<String>? yUserLabels;
 
   /// Colors corresponding to each data row (series) in [ChartModel].
-  final List<ui.Color> _byRowColors;
-  List<ui.Color> get byRowColors => _byRowColors;
+  final List<ui.Color> byRowColors;
 
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
-  // todo-00-last-00-performance : cache valuesMax/Min
-  // todo-00-last-last : make all methods private if possible
-  List<double> get flatten => _valuesRows.expand((element) => element).toList();
-  double get valuesMin => flatten.reduce(math.min);
-  double get valuesMax => flatten.reduce(math.max);
+  // todo-00-next-00-performance : cache valuesMax/Min ond also _flatten
+  List<double> get _flatten => valuesRows.expand((element) => element).toList();
+  double get _valuesMin => _flatten.reduce(math.min);
+  // double get _valuesMax => _flatten.reduce(math.max);
 
-  double get transformedValuesMin =>
-      flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
-  double get transformedValuesMax =>
-      flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
+  double get _transformedValuesMin =>
+      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.min);
+  double get _transformedValuesMax =>
+      _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
 
   void validate() {
@@ -217,7 +210,7 @@ class ChartModel {
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
-      if (!(valuesMin > 0.0)) {
+      if (!(_valuesMin > 0.0)) {
         throw StateError('Using logarithmic Y scale requires only positive Y data');
       }
     }
@@ -256,24 +249,25 @@ enum CrossPointsModelPointsSigns {
 ///
 class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
-  /// Constructor. todo-doc-01
+  /// Constructs a model for one bar of points.
+  ///
+  /// The [valuesColumn] is a cross-series (column-wise) list of data values.
+  /// The [dataModel] is the [DataModel] underlying the [CrossPointsModel] instance being created.
+  /// The [columnIndex] is index of the [valuesColumn] in the [dataModel].
+  /// The [crossPointsModelPointsSigns] specifies whether positive or negative values
+  /// are placed in the [CrossPointsModel] instance being created.
   CrossPointsModel({
     required List<double> valuesColumn,
-    // todo-00-last-last : make dataModel final and get replace _dataModel with dataModel
-    required ChartModel dataModel,
-    // todo-00-last-last : make columnIndex final and get replace _columnIndex with columnIndex
-    required int columnIndex,
+    required this.dataModel,
+    required this.columnIndex,
     required this.crossPointsModelPointsSigns
-  })
-      : _dataModel = dataModel,
-        _columnIndex = columnIndex {
+  }) {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
     //   - positive and negative values of the [valuesColumn] are separated to their own [_crossPoints].
     for (double dataValue in valuesColumn) {
       if (__isValueMySign(
-        // crossPointsModelPointsSigns: crossPointsModelPointsSigns,
         value: dataValue,
       )) {
         var point = PointModel(
@@ -300,9 +294,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     }
   }
 
-  /// Checks if the sign of a double is the required sign.
+  /// Checks if the sign of a double is the sign required by this instance of [CrossPointsModel].
   bool __isValueMySign({
-    // required CrossPointsModelPointsSigns crossPointsModelPointsSigns,
     required double value,
   }) {
     switch (crossPointsModelPointsSigns) {
@@ -333,45 +326,13 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
       }
     }
 
-  /* KEEP for a bit
-  double get _stackedPositiveValue => __maxOnPoints((PointModel point) => point._stackedPositiveDataValue);
-  double get _stackedNegativeValue => __minOnPoints((PointModel point) => point._stackedNegativeDataValue);
-  double get _minPointValue         => __minOnPoints((PointModel point) => point._dataValue);
-  double get _maxPointValue         => __maxOnPoints((PointModel point) => point._dataValue);
-
-  late final double _stackedPositiveDataValue;
-  late final double _stackedNegativeDataValue;
-
-  __stackPoints(PointModel point, unused) {
-    if (point.hasPrevious) {
-      if (point._dataValue < 0.0) {
-        point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue + point._dataValue;
-        point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue;
-      } else {
-        point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue + point._dataValue;
-        point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue;
-      }
-    } else {
-      // first element
-      if (point._dataValue < 0.0) {
-        point._stackedNegativeDataValue = point._dataValue;
-        point._stackedPositiveDataValue = 0.0;
-      } else {
-        point._stackedNegativeDataValue = 0.0;
-        point._stackedPositiveDataValue = point._dataValue;
-      }
-    }
-  }
-  */
-    
   /// Get the stacked value of this column of points - the sum of all
 
   /// Owner [ChartModel] to which this [CrossPointsModel] belongs by existence in
   ///  [ChartModel.crossPointsModelPositiveList] AND
   ///  the  [ChartModel.crossPointsModelNegativeList] .
   ///
-  final ChartModel _dataModel;
-  ChartModel get dataModel => _dataModel;
+  final ChartModel dataModel;
 
   /// Index of this column (crossPoints list) in the [ChartModel.crossPointsModelPositiveList] AND
   /// the  [ChartModel.crossPointsModelNegativeList].
@@ -385,7 +346,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// This is needed to access the legacy arrays such as:
   ///   -  [ChartModel.byRowLegends]
   ///   -  [ChartModel.byRowColors]
-  final int _columnIndex;
+  final int columnIndex;
 
   /// todo-00-doc
   late final CrossPointsModelPointsSigns crossPointsModelPointsSigns;
@@ -448,6 +409,37 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     return result.value;
   }
 
+  /* KEEP for a bit
+  double get _stackedPositiveValue => __maxOnPoints((PointModel point) => point._stackedPositiveDataValue);
+  double get _stackedNegativeValue => __minOnPoints((PointModel point) => point._stackedNegativeDataValue);
+  double get _minPointValue         => __minOnPoints((PointModel point) => point._dataValue);
+  double get _maxPointValue         => __maxOnPoints((PointModel point) => point._dataValue);
+
+  late final double _stackedPositiveDataValue;
+  late final double _stackedNegativeDataValue;
+
+  __stackPoints(PointModel point, unused) {
+    if (point.hasPrevious) {
+      if (point._dataValue < 0.0) {
+        point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue + point._dataValue;
+        point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue;
+      } else {
+        point._stackedPositiveDataValue = point.previous._stackedPositiveDataValue + point._dataValue;
+        point._stackedNegativeDataValue = point.previous._stackedNegativeDataValue;
+      }
+    } else {
+      // first element
+      if (point._dataValue < 0.0) {
+        point._stackedNegativeDataValue = point._dataValue;
+        point._stackedPositiveDataValue = 0.0;
+      } else {
+        point._stackedNegativeDataValue = 0.0;
+        point._stackedPositiveDataValue = point._dataValue;
+      }
+    }
+  }
+  */
+
 }
 
 /// Represents one data point. Replaces the legacy [StackableValuePoint].
@@ -465,16 +457,15 @@ class PointModel extends Object with DoubleLinked {
     required double dataValue,
     required this.ownerCrossPointsModel,
     required int rowIndex,
-  })  : _dataValue = ownerCrossPointsModel._dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
+  })  : _dataValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(dataValue).toDouble(),
         _rowIndex = rowIndex {
     // The ownerSeries is ChartModelSeries which is DoubleLinkedOwner
     // of all [PointModel]s, managed by [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerCrossPointsModel;
     // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
-    // todo-00-last-last : add more asserts on values without the yTransform if possible. Maybe use reverse? Mayve this is too much?
     assertDoubleResultsSame(
-      ownerCrossPointsModel._dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossPointsModel.dataModel._valuesRows[_rowIndex][_columnIndex])
+      ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
+          .yTransform(ownerCrossPointsModel.dataModel.valuesRows[_rowIndex][_columnIndex])
           .toDouble(),
       _dataValue,
     );
@@ -509,12 +500,12 @@ class PointModel extends Object with DoubleLinked {
   /// Getter of the column index in the owner [ownerCrossPointsModel].
   ///
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel._columnIndex].
-  int get _columnIndex => ownerCrossPointsModel._columnIndex;
+  int get _columnIndex => ownerCrossPointsModel.columnIndex;
 
   /// References the data column (crossPoints list) this point belongs to
   CrossPointsModel ownerCrossPointsModel;
 
-  ui.Color get color => ownerCrossPointsModel._dataModel._byRowColors[_rowIndex];
+  ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[_rowIndex];
 
 }
 

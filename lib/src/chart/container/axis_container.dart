@@ -47,7 +47,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
               ),
               children: [
                 for (var labelInfo in labelsGenerator.labelInfoList)
-                  // todo-00-last-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  // todo-00-next-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   XLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
