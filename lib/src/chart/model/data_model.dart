@@ -453,6 +453,8 @@ class PointModel extends Object with DoubleLinked {
 
   // ===================== CONSTRUCTOR ============================================
   // todo-doc-01
+  // todo-00-last-last : rename dataValue to depValue
+  // todo-00-last-last : add indepValue - BUT THIS MAY BE HARD TO ACHIEVE AND ACTUALLY SET IN CODE.
   PointModel({
     required double dataValue,
     required this.ownerCrossPointsModel,

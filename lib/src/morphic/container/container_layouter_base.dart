@@ -1217,22 +1217,22 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Positions the passed [children] in rectangles which are relative to, and inside [constraints]
   /// of this layouter, according to this layouter rules.
   ///
-  /// Returns the rectangles in the same order as [_children].
-  ///
-  /// For example, for a [Column] layout with [Packing.loose] and [Align.center], the returned
-  /// rectangles will be centered inside the [constraints]' [Size],
-  /// and loosely fill the [Size].
-  ///
   /// The reason [children] are passed (rather than using a member [BoxContainerHierarchy._children])
   /// is that some [BoxLayouter] derived classes may need to invoke this on a subset of children.
   ///
+  /// Must return `List<ui.Rect>`, positioned according to the layouter rules,
+  /// in the same order as the passed [children]. The rectangle origin placed relative
+  /// to the layouter instance, in the order of [children].
+  ///
+  /// todo-00-review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
+  /// It can ignore the passed [children] and position member [_children],
+  /// but then, the offset children method [_layout_Post_NotLeaf_OffsetChildren] must be overridden
+  /// to do the same (act on member [_children] rather than the passed [children]).
+  ///
+  /// For example, for a [Column] layout with main axis [Packing.loose] and [Align.center], the returned
+  /// rectangles will be vertically centered inside the [constraints], and loosely fill the [Size.height].
+  ///
   /// Abstract in [BoxLayouter] and no-op in [BoxContainer] (where it applies zero offset to children).
-  ///
-  /// Implementations should lay out children of self [BoxLayouter],
-  /// and return [List<ui.Rect>], a list of rectangles [List<ui.Rect>]
-  /// where children will be placed relative to the invoker, in the order of the passed [children].
-  /// If no [children] are passed, the implementation should use all member [_children].
-  ///
   ///
   /// On a leaf node, implementations should return an empty list.
   ///
@@ -1464,7 +1464,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
   }
 
-  /// Implementation of the abstract default [_layout_Post_NotLeaf_OffsetChildren]
+  /// Implementation of the abstract [BoxLayouter._layout_Post_NotLeaf_OffsetChildren]
   /// invoked in the default [layout].
   ///
   /// This class, as a non-positioning container should make this a no-op,
@@ -1712,7 +1712,7 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 
 /// Intermediate layout class uses the main/cross axis properties concept, but keeps layout from it's superclass.
 ///
-/// Extensions are intended to split to external ticks layoter and rolling layouter.
+/// Extensions are intended to split to external ticks layouter and rolling layouter.
 abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   MainAndCrossAxisBoxLayouter({
     required List<BoxContainer> children,
@@ -1896,7 +1896,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// where children will be placed relative to the invoker,
   /// in the order of the passed [children].
   ///
-  /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
+  /// See super [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for requirements and definitions.
   ///
   /// Implementation detail:
   ///   - The processing is calling the [LayedoutLengthsPositioner.positionLengths], method.
@@ -3402,9 +3402,9 @@ class Aligner extends PositioningBoxLayouter {
     layoutSize = _selfLayoutSizeFromChild(positionedChildrenRects[0].size);
   }
 
-  /// Positions child in self, delegated to [_offsetChildInSelf].
+  /// Positions child in self, delegated to [AlignmentTransform.childOffsetWhenAlignmentApplied].
   ///
-  /// See [_offsetChildInSelf] for details
+  /// See  [AlignmentTransform.childOffsetWhenAlignmentApplied] for details.
   ///
   /// Used in overridden [layout_Post_NotLeaf_PositionChildren] to position child in this [Aligner].
   ui.Rect _positionChildInSelf({

@@ -288,6 +288,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       crossPointsModel: crossPointsModel,
     ).map((pointContainer) =>
         container_base.Padder(
+          // todo-00-last : Is there an option for sizes? Try to use Aligner instead of Padder, and use gridStepWidthPortionUsedByAtomicPointPresenter to express gap in terms of percentage
           edgePadding: const EdgePadding.withSides(start: 6.0, end: 6.0),
           child: pointContainer,)
     ).toList();

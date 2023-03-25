@@ -158,9 +158,9 @@ class Alignment {
 /// Transform object provides a way to calculate offset
 /// of a small Rectangle (or Size) inside a larger Rectangle (or Size).
 ///
-/// Explaining the context better. Let's assume we have a rectangle,
+/// Explaining the context better. Let's assume we have a small rectangle,
 /// with sides of length `width` and `height`. From this rectangle, we can create
-/// a bigger rectangle, by *fixing them at the top-left point*, and stretching
+/// a bigger rectangle, by *making the rectangles top-left points the same*, and stretching
 /// the rectangle into a bigger one (fully containing the smaller), by giving the bigger one
 /// sides sized `width * childWidthBy` and `height * childHeightBy`.
 ///
