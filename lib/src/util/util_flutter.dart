@@ -10,7 +10,6 @@ import 'dart:ui' as ui show Rect, Size;
 /// Returns the smallest rectangle which contains all passed [rectangles].
 ///
 /// If the [rectangles] list is empty, an origin-based, zero-sized rectangle is returned.
-// todo-00-last-done : added orElse to return point rectangle if no rectangles are passed
 ui.Rect boundingRect(List<ui.Rect> rectangles, /*{double Function()? orElse}*/) {
   return ui.Rect.fromLTRB(
     rectangles.map((ui.Rect rectangle) => rectangle.left).reduceOrElse(math.min, orElse: () => 0.0), // left

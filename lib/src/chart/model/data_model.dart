@@ -468,21 +468,13 @@ class PointModel extends Object with DoubleLinked {
     required double outputValue,
     required this.ownerCrossPointsModel,
     required this.rowIndex,
-     // todo-00-last-last  required int rowIndex,
-  })  // todo-00-last-last-done : outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble()
-  { // todo-00-last-last-done : _rowIndex = rowIndex {
+  }) {
     // The ownerSeries is ChartModelSeries which is DoubleLinkedOwner
     // of all [PointModel]s, managed by [DoubleLinkedOwner.allElements]
     doubleLinkedOwner = ownerCrossPointsModel;
     this.outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble();
     // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
 
-    /* todo-00-last-last-done
-    assertDoubleResultsSame(
-      ownerCrossPointsModel.dataModel.valuesRows[rowIndex][columnIndex],
-      outputValue,
-    );
-    */
     assertDoubleResultsSame(
       ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
           .yTransform(ownerCrossPointsModel.dataModel.valuesRows[rowIndex][columnIndex])
@@ -513,8 +505,6 @@ class PointModel extends Object with DoubleLinked {
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   late final double outputValue;
 
-  // todo-00-last-last-done : removed the private _outputValue : double get outputValue => _outputValue;
-
   /// Stacked (transformed, not-extrapolated) data value.
   /// 
   /// Calculated assuming this [PointModel] is a member of [DoubleLinkedOwner] such as [CrossPointsModel],
@@ -538,7 +528,6 @@ class PointModel extends Object with DoubleLinked {
 
   ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
 
-  // todo-00-last-last-done (keep comment)
   /// Once the x labels are established, either as [xUserLabels] or generated, clients can
   ///  ask for the inputValue corresponding to this [PointModel]'s [outputValue].
   Object get inputValue => ownerCrossPointsModel.dataModel.xUserLabels[columnIndex];

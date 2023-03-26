@@ -513,10 +513,6 @@ class AxisLabelInfo {
   /// In non-transferred (e.g. non-log) charts, this is equal to [_rawOutputValue].
   ///
   /// This is the value shown on the chart, before any scaling to pixel value.
-/* todo-00-last-last-done
-  final num outputValue;
-  double get outputValue => outputValue.toDouble();
-*/
   final double outputValue;
 
   /// Label showing on the Y axis; typically a value with unit.
