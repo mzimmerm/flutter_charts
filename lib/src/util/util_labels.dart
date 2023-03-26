@@ -117,7 +117,7 @@ class DataRangeLabelInfosGenerator {
     List<AxisLabelInfo> labelInfos = transformedLabelValues
         .map((transformedLabelValue) =>
         AxisLabelInfo(
-          dataValue: transformedLabelValue,
+          outputValue: transformedLabelValue,
           labelsGenerator: this,
         ))
         .toList();
@@ -226,7 +226,7 @@ class DataRangeLabelInfosGenerator {
     // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
     return ExternalTicksLayoutProvider(
-      tickValues: labelInfoList.map((labelInfo) => labelInfo.dataValue).toList(growable: false),
+      tickValues: labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false),
       tickValuesDomain: dataRange,
       isAxisPixelsAndDisplayedValuesInSameDirection: isAxisPixelsAndDisplayedValuesInSameDirection,
       externalTickAtPosition: externalTickAtPosition,
@@ -436,11 +436,11 @@ class DataRangeLabelInfosGenerator {
 /// It does not hold anything at all to do with UI - no layout sizes of labels in particular.
 ///
 /// The values used and shown on the chart undergo the following processing:
-///    1. [_rawDataValue] -- using [DataContainerOptions.yTransform] (or [DataContainerOptions.xTransform])
-///       ==> [_dataValue] (transformed)
-///    2. [_dataValue]    -- using [DataRangeLabelInfosGenerator.lextrValueToPixels]
+///    1. [_rawOutputValue] -- using [DataContainerOptions.yTransform] (or [DataContainerOptions.xTransform])
+///       ==> [outputValue] (transformed)
+///    2. [outputValue]    -- using [DataRangeLabelInfosGenerator.lextrValueToPixels]
 ///       ==> [parentOffsetTick]
-///    3. [_rawDataValue] -- using formatted String-value
+///    3. [_rawOutputValue] -- using formatted String-value
 ///       ==> [_formattedLabel]
 ///
 /// todo-01-doc below finish documentation, this stuff is old, and simplify
@@ -448,30 +448,30 @@ class DataRangeLabelInfosGenerator {
 /// or [DataRangeLabelInfosGenerator._valueToLabel] for chart-generated labels.
 ///
 /// There are four values each [AxisLabelInfo] manages:
-/// 1. The [_rawDataValue] : The value of dependent (y) variable in data, given by
+/// 1. The [_rawOutputValue] : The value of dependent (y) variable in data, given by
 ///   the [DataRangeLabelInfosGenerator._mergedLabelYsIntervalWithdataEnvelope].
 ///   - This value is **not-transformed && not-extrapolated**.
 ///   - This value is in the interval extended from the interval of minimum and maximum data values (x or y)
 ///     to the interval of the displayed labels. The reason is the chart may show axis lines and labels
 ///     beyond the strict interval between minimum and maximum in data.
 ///   - This value is created in the generative constructor's [AxisLabelInfo]
-///     initializer list from the [transformedDataValue].
-/// 2. The [_dataValue] : The [_rawDataValue] after transformation by the [DataContainerOptions.yTransform]
+///     initializer list from the [transformedOutputValue].
+/// 2. The [outputValue] : The [_rawOutputValue] after transformation by the [DataContainerOptions.yTransform]
 ///   function.
 ///   - This value is **not-extrapolated && transformed**
-///   - This value is same as [_rawDataValue] if the [DataContainerOptions.yTransform]
+///   - This value is same as [_rawOutputValue] if the [DataContainerOptions.yTransform]
 ///     is an identity (this is the default behavior). See [lib/chart/options.dart].
 ///   - This value is passed in the primary generative constructor [AxisLabelInfo].
-/// 3. The [parentOffsetTick] :  Equals to the **transformed && extrapolated** dataValue, in other words
+/// 3. The [parentOffsetTick] :  Equals to the **transformed && extrapolated** outputValue, in other words
 ///   ```dart
-///    _axisValue = labelsGenerator.scaleY(value: transformedDataValue.toDouble());
+///    _axisValue = labelsGenerator.scaleY(value: transformedOutputValue.toDouble());
 ///   ```
-///   It is created as extrapolated [_dataValue], in the [PointsColumns]
+///   It is created as extrapolated [outputValue], in the [PointsColumns]
 ///   where the extrapolation is from the Y data and labels envelop to the Y axis envelop.
 ///   - This value is **transformed and extrapolated**.
 ///   - This value is obtained as follows
 ///     ```dart
-///        _axisValue = labelsGenerator.scaleY(value: transformedDataValue.toDouble());
+///        _axisValue = labelsGenerator.scaleY(value: transformedOutputValue.toDouble());
 ///        // which does
 ///        return extrapolateValue(
 ///            value: value.toDouble(),
@@ -480,7 +480,7 @@ class DataRangeLabelInfosGenerator {
 ///            toDomainMin: _axisYMin,
 ///            toDomainMax: _axisYMax);
 ///     ```
-/// 4. The [_formattedLabel] : The formatted String-value of [_rawDataValue].
+/// 4. The [_formattedLabel] : The formatted String-value of [_rawOutputValue].
 ///
 /// Note: The **not-transformed && extrapolated** value is NOT used - does not make sense.
 ///
@@ -491,12 +491,13 @@ class AxisLabelInfo {
   /// Constructs from value at the label, holding on the owner [labelsGenerator],
   /// which provides data range corresponding to axis range.
   AxisLabelInfo({
-    required num dataValue,
+    // todo-00-last-last : required num outputValue,
+    required this.outputValue,
     required DataRangeLabelInfosGenerator labelsGenerator,
-  })  : _dataValue = dataValue,
+  })  : // todo-00-last-last : outputValue = outputValue,
         _labelsGenerator = labelsGenerator {
     var yInverseTransform = _labelsGenerator._inverseTransform;
-    _rawDataValue = yInverseTransform(_dataValue);
+    _rawOutputValue = yInverseTransform(outputValue);
   }
 
   final DataRangeLabelInfosGenerator _labelsGenerator;
@@ -504,16 +505,19 @@ class AxisLabelInfo {
   /// Not-extrapolated and not-transformed label value.
   ///
   /// This is only used in labels display, never to calculate or display data values.
-  /// All data values calculations are using the [_dataValue].
-  late final num _rawDataValue;
+  /// All data values calculations are using the [outputValue].
+  late final num _rawOutputValue;
 
-  /// The transformed [_rawDataValue].
+  /// The transformed [_rawOutputValue].
   ///
-  /// In non-transferred (e.g. non-log) charts, this is equal to [_rawDataValue].
+  /// In non-transferred (e.g. non-log) charts, this is equal to [_rawOutputValue].
   ///
   /// This is the value shown on the chart, before any scaling to pixel value.
-  final num _dataValue;
-  double get dataValue => _dataValue.toDouble();
+/* todo-00-last-last-done
+  final num outputValue;
+  double get outputValue => outputValue.toDouble();
+*/
+  final double outputValue;
 
   /// Label showing on the Y axis; typically a value with unit.
   ///
@@ -523,8 +527,8 @@ class AxisLabelInfo {
 
   @override
   String toString() {
-    return ' dataValue=$_rawDataValue,'
-        ' transformedDataValue=$_dataValue,'
+    return ' outputValue=$_rawOutputValue,'
+        ' transformedOutputValue=$outputValue,'
         ' _formattedLabel=$_formattedLabel,';
   }
 }
@@ -552,7 +556,7 @@ class _AxisLabelInfos {
       if (userLabels != null) {
         labelInfo._formattedLabel = userLabels[i];
       } else {
-        labelInfo._formattedLabel = labelsGenerator._valueToLabel(labelInfo._rawDataValue);
+        labelInfo._formattedLabel = labelsGenerator._valueToLabel(labelInfo._rawOutputValue);
       }
     }
   }

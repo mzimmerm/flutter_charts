@@ -68,7 +68,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
   /// Uses the [YContainerCL.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
-  /// lextr the [labelInfo] value [AxisLabelInfo.dataValue] and places the result on [parentOffsetTick].
+  /// lextr the [labelInfo] value [AxisLabelInfo.outputValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
@@ -87,7 +87,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
     var labelsGenerator = ownerChartAreaContainer.chartViewMaker.yLabelsGenerator;
 
     parentOffsetTick = labelsGenerator.lextrValueToPixels(
-      value: labelInfo.dataValue.toDouble(),
+      value: labelInfo.outputValue.toDouble(),
       axisPixelsMin: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
       axisPixelsMax: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
     );

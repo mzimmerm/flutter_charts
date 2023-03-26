@@ -8,8 +8,8 @@ import '../model/data_model.dart' as model;
 import '../../util/util_labels.dart' as util_labels;
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-/// todo-00-last IMPLEMENT EVERYTHING BELOW:
-///   0. Add ChartPoint class, extends Offset, names are indepValue, depValue, for dx and dy
+/// todo-00-last-last-progress IMPLEMENT EVERYTHING BELOW:
+///   0. Add ChartPoint class, extends Offset, names are inputValue, outputValue, for dx and dy
 ///   1. Add LineSegmentContainer members - this assumes the container is placed inside Row or Column layouter:
 ///     - mainLayoutAxis : LayoutAxis.horizontal/vertical : main axis along which the IMMEDIATE parent Row or Column layout (MainAndCross container): horizontal for Row, vertical for Column
 ///     - independentAxis : LayoutAxis.horizontal/vertical : horizontal if independent values show horizontally (default, X)
@@ -17,22 +17,22 @@ import '../../util/util_labels.dart' as util_labels;
 ///   2. Allowed combination of mainLayoutAxis and independentAxis
 ///      - mainLayoutAxis = vertical (column), independentAxis = horizontal (horizontal bar chart, line chart)         call this combination enum ChartOrientation.column
 ///      - mainLayoutAxis = horizontal (row),  independentAxis = vertical   (vertical bar chart, inverted line chart)  call this combination enum ChartOrientation.row
-///   3. Rules for layout of indepValue and depValue values - all 'normal' situations
-///     - Motivation: any ChartPoint, originally representing data indepValue and depValue values,
+///   3. Rules for layout of inputValue and outputValue values - all 'normal' situations
+///     - Motivation: any ChartPoint, originally representing data inputValue and outputValue values,
 ///       can live in a SegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
 ///       DURING LAYOUT, THE SegmentContainer  WILL CHANGE THE ChartPoint POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
 ///       (the SegmentContainer will position the ChartPoint in layout_Post_NotLeaf_PositionChildren) ???
-///   4. Rules for lextr-ing of indepValue and depValue values
+///   4. Rules for lextr-ing of inputValue and outputValue values
 ///     4.1 independent values: ChartPoint component is lextr-ed to constraints width (or height)
-///       4.11 ChartOrientation.column: indepValue lextr-ed to constraints.width
-///       4.12 ChartOrientation.row:    indepValue lextr-ed to constraints.height
+///       4.11 ChartOrientation.column: inputValue lextr-ed to constraints.width
+///       4.12 ChartOrientation.row:    inputValue lextr-ed to constraints.height
 ///     4.2 dependent values:   ChartPoint component is lextr-ed, to the available Sizer height (or width)
-///       4.21 ChartOrientation.column: indepValue lextr-ed to Sizer.height  (dataRange on  dependent axis)
-///       4.22 ChartOrientation.row:    indepValue lextr-ed to Sizer.width   (dataRange on  dependent axis - SAME)
+///       4.21 ChartOrientation.column: inputValue lextr-ed to Sizer.height  (dataRange on  dependent axis)
+///       4.22 ChartOrientation.row:    inputValue lextr-ed to Sizer.width   (dataRange on  dependent axis - SAME)
 ///    5. Rules for how ChartPoint changes after lextr:
-///       - ChartOrientation.column: ChartPoint(indepValue, depValue) => pixel ChartPoint(4.11: lextr indepValue to constraints.width, 4.21 lextr depValue   to Sizer.height)
-///       - ChartOrientation.row:    ChartPoint(indepValue, depValue) => pixel ChartPoint(4.22: lextr depValue to Sizer.width,         4.12 lextr indepValue to constraints.height)
-///       - basically , in row orientation, the indepValue value becomes lextr depValue when converted to pixels.
+///       - ChartOrientation.column: ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.11: lextr inputValue to constraints.width, 4.21 lextr outputValue   to Sizer.height)
+///       - ChartOrientation.row:    ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.22: lextr outputValue to Sizer.width,         4.12 lextr inputValue to constraints.height)
+///       - basically , in row orientation, the inputValue value becomes lextr outputValue when converted to pixels.
 ///    6. place 0. 3,4,5 to chart_point.dart. 1 to LineSegmentContainer, 2. to chart_orientation.dart
 class LineSegmentContainer extends container_common_new.ChartAreaContainer {
 
@@ -89,12 +89,12 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
         pixelFromX = 0;
         pixelToX = constraints.width;
         pixelFromY = labelInfosGenerator.lextrValueToPixels(
-          value: pointFrom.dataValue,
+          value: pointFrom.outputValue,
           axisPixelsMin: 0.0,
           axisPixelsMax: constraints.height,
         );
         pixelToY = labelInfosGenerator.lextrValueToPixels(
-          value: pointTo.dataValue,
+          value: pointTo.outputValue,
           axisPixelsMin: 0.0,
           axisPixelsMax: constraints.height,
         );
@@ -105,12 +105,12 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
         pixelFromY = 0;
         pixelToY = constraints.height;
         pixelFromX = labelInfosGenerator.lextrValueToPixels(
-          value: pointFrom.dataValue,
+          value: pointFrom.outputValue,
           axisPixelsMin: 0.0,
           axisPixelsMax: constraints.width,
         );
         pixelToX = labelInfosGenerator.lextrValueToPixels(
-          value: pointTo.dataValue,
+          value: pointTo.outputValue,
           axisPixelsMin: 0.0,
           axisPixelsMax: constraints.width,
         );

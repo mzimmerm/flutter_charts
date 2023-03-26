@@ -65,57 +65,57 @@ void main() {
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].dataValue, 0.0);
-    expect(labelInfoList[1].dataValue, 100.0);
-    expect(labelInfoList[2].dataValue, 200.0);
-    expect(labelInfoList[3].dataValue, 300.0);
+    expect(labelInfoList[0].outputValue, 0.0);
+    expect(labelInfoList[1].outputValue, 100.0);
+    expect(labelInfoList[2].outputValue, 200.0);
+    expect(labelInfoList[3].outputValue, 300.0);
 
 
     valuesRows = [[-1.0, -22.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].dataValue, -300.0);
-    expect(labelInfoList[1].dataValue, -200.0);
-    expect(labelInfoList[2].dataValue, -100.0);
-    expect(labelInfoList[3].dataValue, 0.0);
+    expect(labelInfoList[0].outputValue, -300.0);
+    expect(labelInfoList[1].outputValue, -200.0);
+    expect(labelInfoList[2].outputValue, -100.0);
+    expect(labelInfoList[3].outputValue, 0.0);
 
     valuesRows = [[22.0, 10.0, -333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
-    expect(labelInfoList[0].dataValue, -300.0);
-    expect(labelInfoList[1].dataValue, -200.0);
-    expect(labelInfoList[2].dataValue, -100.0);
-    expect(labelInfoList[3].dataValue, 0.0);
-    expect(labelInfoList[4].dataValue, 100.0);
+    expect(labelInfoList[0].outputValue, -300.0);
+    expect(labelInfoList[1].outputValue, -200.0);
+    expect(labelInfoList[2].outputValue, -100.0);
+    expect(labelInfoList[3].outputValue, 0.0);
+    expect(labelInfoList[4].outputValue, 100.0);
 
     valuesRows = [[-22.0, -10.0, 333.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
-    expect(labelInfoList[0].dataValue, -100.0);
-    expect(labelInfoList[1].dataValue, 0.0);
-    expect(labelInfoList[2].dataValue, 100.0);
-    expect(labelInfoList[3].dataValue, 200.0);
-    expect(labelInfoList[4].dataValue, 300.0);
+    expect(labelInfoList[0].outputValue, -100.0);
+    expect(labelInfoList[1].outputValue, 0.0);
+    expect(labelInfoList[2].outputValue, 100.0);
+    expect(labelInfoList[3].outputValue, 200.0);
+    expect(labelInfoList[4].outputValue, 300.0);
 
     valuesRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, ['1', '2', '3', '4'], byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
-    expect(labelInfoList[0].dataValue, -1000.0);
-    expect(labelInfoList[1].dataValue, 0.0);
-    expect(labelInfoList[2].dataValue, 1000.0);
-    expect(labelInfoList[3].dataValue, 2000.0);
+    expect(labelInfoList[0].outputValue, -1000.0);
+    expect(labelInfoList[1].outputValue, 0.0);
+    expect(labelInfoList[2].outputValue, 1000.0);
+    expect(labelInfoList[3].outputValue, 2000.0);
 
     valuesRows = [[-1000.0, 0.0, 1000.0]];
     labelsGenerator = dataRangeLabelsGenerator(extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 3);
-    expect(labelInfoList[0].dataValue, -1000.0);
-    expect(labelInfoList[1].dataValue, 0.0);
-    expect(labelInfoList[2].dataValue, 1000.0);
+    expect(labelInfoList[0].outputValue, -1000.0);
+    expect(labelInfoList[1].outputValue, 0.0);
+    expect(labelInfoList[2].outputValue, 1000.0);
 
   });
 
@@ -248,7 +248,7 @@ void rangeTestCore(
     expect(labelsGenerator.labelInfoList.length, expectedLabels.length);
     for (int i = 0; i < labelsGenerator.labelInfoList.length; i++) {
       expect(
-        labelsGenerator.labelInfoList[i].dataValue,
+        labelsGenerator.labelInfoList[i].outputValue,
         expectedLabels[i],
       );
     }

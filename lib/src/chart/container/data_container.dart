@@ -118,7 +118,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
 
   /// The rectangle representing the value.
   ///
-  /// It's height represents [pointModel.dataValue] extrapolated from the value range to the
+  /// It's height represents [pointModel.outputValue] extrapolated from the value range to the
   /// pixel height available for data in the vertical direction.
   ///
   /// It's size should be calculated in [layout], and used in [paint];
@@ -145,7 +145,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
     // Rectangle width is from constraints
     double width = constraints.width;
 
-    // Rectangle height is Y extrapolated from pointModel.dataValue using chartRootContainer.yLabelsGenerator
+    // Rectangle height is Y extrapolated from pointModel.outputValue using chartRootContainer.yLabelsGenerator
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
     // Using the pixel height [heightToLextr] of the [HeightSizerLayouter] (which wraps tightly the data container),
@@ -169,9 +169,9 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
     // (height represents the data value lextr-ed to data container pixels).
     // We convert data to positive size, the direction above/below axis is determined by the layouters
     //   in which the bars are located.
-    double height = lextr.applyAsLength(pointModel.dataValue.abs());
+    double height = lextr.applyAsLength(pointModel.outputValue.abs());
 
-    // print('height=$height, value=${pointModel.dataValue.abs()}, '
+    // print('height=$height, value=${pointModel.outputValue.abs()}, '
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
     //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
