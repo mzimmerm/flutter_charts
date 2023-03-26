@@ -9,14 +9,14 @@ import '../../util/util_labels.dart' as util_labels;
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 /// todo-00-last-last-progress IMPLEMENT EVERYTHING BELOW:
-///   0. Add ChartPoint class, extends Offset, names are inputValue, outputValue, for dx and dy
+///   0. DD Add ChartPoint class, extends Offset, names are inputValue, outputValue, for dx and dy
 ///   1. Add LineSegmentContainer members - this assumes the container is placed inside Row or Column layouter:
 ///     - mainLayoutAxis : LayoutAxis.horizontal/vertical : main axis along which the IMMEDIATE parent Row or Column layout (MainAndCross container): horizontal for Row, vertical for Column
-///     - independentAxis : LayoutAxis.horizontal/vertical : horizontal if independent values show horizontally (default, X)
-///     - chartOrientation : see point 2. , exception otherwise
-///   2. Allowed combination of mainLayoutAxis and independentAxis
-///      - mainLayoutAxis = vertical (column), independentAxis = horizontal (horizontal bar chart, line chart)         call this combination enum ChartOrientation.column
-///      - mainLayoutAxis = horizontal (row),  independentAxis = vertical   (vertical bar chart, inverted line chart)  call this combination enum ChartOrientation.row
+///     - inputAxis : LayoutAxis.horizontal/vertical : horizontal if independent values show horizontally (default, X)
+///     - chartSeriesOrientation : see point 2. , exception otherwise
+///   2. DD [ChartSeriesOrientation] enum Allowed combination of mainLayoutAxis and inputAxis
+///      - mainLayoutAxis = vertical (column), inputAxis = horizontal (horizontal bar chart, line chart)         call this combination enum ChartSeriesOrientation.column
+///      - mainLayoutAxis = horizontal (row),  inputAxis = vertical   (vertical bar chart, inverted line chart)  call this combination enum ChartSeriesOrientation.row
 ///   3. Rules for layout of inputValue and outputValue values - all 'normal' situations
 ///     - Motivation: any ChartPoint, originally representing data inputValue and outputValue values,
 ///       can live in a SegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
@@ -24,19 +24,20 @@ import '../../util/util_labels.dart' as util_labels;
 ///       (the SegmentContainer will position the ChartPoint in layout_Post_NotLeaf_PositionChildren) ???
 ///   4. Rules for lextr-ing of inputValue and outputValue values
 ///     4.1 independent values: ChartPoint component is lextr-ed to constraints width (or height)
-///       4.11 ChartOrientation.column: inputValue lextr-ed to constraints.width
-///       4.12 ChartOrientation.row:    inputValue lextr-ed to constraints.height
+///       4.11 ChartSeriesOrientation.column: inputValue lextr-ed to constraints.width
+///       4.12 ChartSeriesOrientation.row:    inputValue lextr-ed to constraints.height
 ///     4.2 dependent values:   ChartPoint component is lextr-ed, to the available Sizer height (or width)
-///       4.21 ChartOrientation.column: inputValue lextr-ed to Sizer.height  (dataRange on  dependent axis)
-///       4.22 ChartOrientation.row:    inputValue lextr-ed to Sizer.width   (dataRange on  dependent axis - SAME)
+///       4.21 ChartSeriesOrientation.column: inputValue lextr-ed to Sizer.height  (dataRange on  dependent axis)
+///       4.22 ChartSeriesOrientation.row:    inputValue lextr-ed to Sizer.width   (dataRange on  dependent axis - SAME)
 ///    5. Rules for how ChartPoint changes after lextr:
-///       - ChartOrientation.column: ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.11: lextr inputValue to constraints.width, 4.21 lextr outputValue   to Sizer.height)
-///       - ChartOrientation.row:    ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.22: lextr outputValue to Sizer.width,         4.12 lextr inputValue to constraints.height)
+///       - ChartSeriesOrientation.column: ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.11: lextr inputValue to constraints.width, 4.21 lextr outputValue   to Sizer.height)
+///       - ChartSeriesOrientation.row:    ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.22: lextr outputValue to Sizer.width,         4.12 lextr inputValue to constraints.height)
 ///       - basically , in row orientation, the inputValue value becomes lextr outputValue when converted to pixels.
-///    6. place 0. 3,4,5 to chart_point.dart. 1 to LineSegmentContainer, 2. to chart_orientation.dart
+///    6. place 0. 3,4,5 to chart_point.dart. 1 to LineSegmentContainer, 2. to chart / container_common.dart
 class LineSegmentContainer extends container_common_new.ChartAreaContainer {
 
   LineSegmentContainer({
+    required this.chartSeriesOrientation,
     required this.pointFrom,
     required this.pointTo,
     required this.linePaint,
@@ -45,6 +46,9 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
   }) : super(
     chartViewMaker: chartViewMaker
   );
+
+  /// Orientation of the chart: either with input axis (x axis) horizontal or vertical.
+  final container_common_new.ChartSeriesOrientation chartSeriesOrientation;
 
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.

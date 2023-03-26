@@ -27,7 +27,8 @@ version: 0.5.1
 #               sdk means Dart sdk version.
 #               opt in to dart null safety - sdk >=2.12.0
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
+  # todo-00-last-last-done : enabling enhanced enums : sdk: '>=2.15.0 <3.0.0'
 
 # See https://www.dartlang.org/tools/pub/dependencies for dependency syntax,
 #   including how to depend on package on GitHub or local server.
