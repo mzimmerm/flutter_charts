@@ -116,47 +116,5 @@ abstract class ChartBehavior {
   bool get extendAxisToOrigin;
 }
 
-// todo-00-last-progress
-/// Describes display orientation of axes and data on a chart.
-///
-/// Motivation:
-///   For almost all chart types (at least for line chart and bar chart),
-///   the same data can be presented using two equivalent views:
-///   1. View where the independent axis (x axis, input axis) is shown horizontally,
-///      and values across series shown vertically, in columns, potentially stacked;
-///   2. A 'inverted' view where the independent axis (x axis, input axis) is shown vertically,
-///      and values across series shown horizontally, in rows, potentially 'horizontally stacked'.
-///
-/// This enum can be used as a single parameter which controls the orientation of the chart view
-/// as 1. or 2. above. The name is taken from the 'stacking' or 'data showing' direction, the [mainLayoutAxis].
-///
-/// The names [column] and [row] are taken from the 'across series stacking direction'.
-///
-/// In all 'regular' situations, there are only two allowed combination of mainLayoutAxis and inputAxis
-///      - column: mainLayoutAxis = vertical (column) ; inputAxis = horizontal (horizontal bar chart, line chart)
-///      - row:    mainLayoutAxis = horizontal (row)  ; inputAxis = vertical  (vertical bar chart, inverted line chart)
-enum ChartSeriesOrientation {
-  column(
-    mainLayoutAxis: container_base.LayoutAxis.vertical,
-    inputAxis: container_base.LayoutAxis.horizontal,
-  ),
-  row(
-    mainLayoutAxis: container_base.LayoutAxis.horizontal,
-    inputAxis: container_base.LayoutAxis.vertical,
-  );
-
-  const ChartSeriesOrientation({
-    required this.mainLayoutAxis, // across series 'stacking' direction
-    required this.inputAxis, // x axis direction
-    });
-
-  /// Describes the data series showing direction as horizontal or vertical.
-  final container_base.LayoutAxis mainLayoutAxis;
-
-  /// Describes the direction display of the input axis (other terms: x axis, axis with independent data)
-  /// as horizontal or vertical.
-  final container_base.LayoutAxis inputAxis;
-
-}
 
 

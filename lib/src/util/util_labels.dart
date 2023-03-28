@@ -56,7 +56,7 @@ class DataRangeLabelInfosGenerator {
     required Function valueToLabel,
     required Function inverseTransform,
     required bool isStacked,
-    required this.isAxisPixelsAndDisplayedValuesInSameDirection,
+    required this.isPixelsAndValuesSameDirection,
     List<String>? userLabels,
   })  :
         _valueToLabel = valueToLabel,
@@ -168,7 +168,7 @@ class DataRangeLabelInfosGenerator {
   late final util_dart.Interval dataRange;
 
   // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
-  final bool isAxisPixelsAndDisplayedValuesInSameDirection;
+  final bool isPixelsAndValuesSameDirection;
 
   /// The function converts value to label.
   ///
@@ -196,7 +196,7 @@ class DataRangeLabelInfosGenerator {
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
+      if (!isPixelsAndValuesSameDirection) {
         pixels = axisPixelsMax;
       } else {
         pixels = axisPixelsMin;
@@ -210,7 +210,7 @@ class DataRangeLabelInfosGenerator {
       fromValuesMax: dataRange.max,
       toPixelsMin: axisPixelsMin,
       toPixelsMax: axisPixelsMax,
-      doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
+      doInvertToDomain: !isPixelsAndValuesSameDirection,
     ).apply(value);
   }
 
@@ -228,7 +228,7 @@ class DataRangeLabelInfosGenerator {
     return ExternalTicksLayoutProvider(
       tickValues: labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false),
       tickValuesDomain: dataRange,
-      isAxisPixelsAndDisplayedValuesInSameDirection: isAxisPixelsAndDisplayedValuesInSameDirection,
+      isPixelsAndValuesSameDirection: isPixelsAndValuesSameDirection,
       externalTickAtPosition: externalTickAtPosition,
     );
   }

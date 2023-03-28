@@ -2,38 +2,14 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 import 'container_common.dart' as container_common_new;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
+import '../../morphic/container/chart_support/chart_series_orientation.dart' as chart_orientation;
 import '../view_maker.dart' as view_maker;
 // import '../container.dart' as container;
 import '../model/data_model.dart' as model;
 import '../../util/util_labels.dart' as util_labels;
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-/// todo-00-last-last-progress IMPLEMENT EVERYTHING BELOW:
-///   0. DD Add ChartPoint class, extends Offset, names are inputValue, outputValue, for dx and dy
-///   1. Add LineSegmentContainer members - this assumes the container is placed inside Row or Column layouter:
-///     - mainLayoutAxis : LayoutAxis.horizontal/vertical : main axis along which the IMMEDIATE parent Row or Column layout (MainAndCross container): horizontal for Row, vertical for Column
-///     - inputAxis : LayoutAxis.horizontal/vertical : horizontal if independent values show horizontally (default, X)
-///     - chartSeriesOrientation : see point 2. , exception otherwise
-///   2. DD [ChartSeriesOrientation] enum Allowed combination of mainLayoutAxis and inputAxis
-///      - mainLayoutAxis = vertical (column), inputAxis = horizontal (horizontal bar chart, line chart)         call this combination enum ChartSeriesOrientation.column
-///      - mainLayoutAxis = horizontal (row),  inputAxis = vertical   (vertical bar chart, inverted line chart)  call this combination enum ChartSeriesOrientation.row
-///   3. Rules for layout of inputValue and outputValue values - all 'normal' situations
-///     - Motivation: any ChartPoint, originally representing data inputValue and outputValue values,
-///       can live in a SegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
-///       DURING LAYOUT, THE SegmentContainer  WILL CHANGE THE ChartPoint POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
-///       (the SegmentContainer will position the ChartPoint in layout_Post_NotLeaf_PositionChildren) ???
-///   4. Rules for lextr-ing of inputValue and outputValue values
-///     4.1 independent values: ChartPoint component is lextr-ed to constraints width (or height)
-///       4.11 ChartSeriesOrientation.column: inputValue lextr-ed to constraints.width
-///       4.12 ChartSeriesOrientation.row:    inputValue lextr-ed to constraints.height
-///     4.2 dependent values:   ChartPoint component is lextr-ed, to the available Sizer height (or width)
-///       4.21 ChartSeriesOrientation.column: inputValue lextr-ed to Sizer.height  (dataRange on  dependent axis)
-///       4.22 ChartSeriesOrientation.row:    inputValue lextr-ed to Sizer.width   (dataRange on  dependent axis - SAME)
-///    5. Rules for how ChartPoint changes after lextr:
-///       - ChartSeriesOrientation.column: ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.11: lextr inputValue to constraints.width, 4.21 lextr outputValue   to Sizer.height)
-///       - ChartSeriesOrientation.row:    ChartPoint(inputValue, outputValue) => pixel ChartPoint(4.22: lextr outputValue to Sizer.width,         4.12 lextr inputValue to constraints.height)
-///       - basically , in row orientation, the inputValue value becomes lextr outputValue when converted to pixels.
-///    6. place 0. 3,4,5 to chart_point.dart. 1 to LineSegmentContainer, 2. to chart / container_common.dart
+/// todo-00-last-last-progress IMPLEMENT
 class LineSegmentContainer extends container_common_new.ChartAreaContainer {
 
   LineSegmentContainer({
@@ -41,23 +17,21 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
     required this.pointFrom,
     required this.pointTo,
     required this.linePaint,
-    required this.constraintsSplitAxis,
     required view_maker.ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker
   );
 
-  /// Orientation of the chart: either with input axis (x axis) horizontal or vertical.
-  final container_common_new.ChartSeriesOrientation chartSeriesOrientation;
-
+  /// Orientation of the chart bars: horizontal or vertical.
+  final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
   final model.PointModel pointFrom;
   final model.PointModel pointTo;
   final ui.Paint linePaint;
-  final container_base.LayoutAxis constraintsSplitAxis;
 
   /// Coordinates of the layed out pixel values.
+  // todo-00-last : use PointOffset instead of Offset
   late final ui.Offset _pixelPointFrom;
   late final ui.Offset _pixelPointTo;
 
@@ -80,13 +54,24 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
     //   - in the [constraintsSplitAxis]-cross direction, by extrapolating their value
     double pixelFromX, pixelFromY, pixelToX, pixelToY;
 
-    // Which labels generator to use for scaling? That depends on which axis is 'independent'
+    // Which labels generator to use for scaling? That depends on which axis is 'input(independent)'
     //   - switch constraints are split along
     //     - horizontal, parent is Row    by definition. We ASSUME dependent axis is Y, use it's extrapolation
     //     - vertical,   parent is Column by definition. We ASSUME dependent axis is X, use it's extrapolation
     util_labels.DataRangeLabelInfosGenerator labelInfosGenerator;
 
-    switch(constraintsSplitAxis) {
+    container_base.LayoutAxis chartPointsMainLayoutAxis = chartSeriesOrientation.mainLayoutAxis;
+
+    /// Motivation for for lextr-ing Point inputValue and outputValue in context of chart and ChartSeriesOrientation.
+    ///   In 'normal' situations, any PointOffset, originally representing data inputValue and outputValue values,
+    ///       can live in a LineSegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
+    ///       DURING LAYOUT, THE LineSegmentContainer  WILL CHANGE THE PointOffset POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
+    ///       (the LineSegmentContainer will position the PointOffset in layout_Post_NotLeaf_PositionChildren) ???
+
+    // todo-00-last-last: Replace with Point.lextrInContextOf but KEEP this for reference
+    //   create PointOffset from PointModel
+    //   set _pixelPointFrom and To
+    switch(chartPointsMainLayoutAxis) {
       case container_base.LayoutAxis.horizontal:
         // Assuming Row, X is constraints.width, Y is extrapolating value to constraints.height
         labelInfosGenerator = chartViewMaker.yLabelsGenerator;
@@ -104,7 +89,7 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
         );
         break;
       case container_base.LayoutAxis.vertical:
-      // Assuming Row, Y is constraints.height, X is extrapolating value to constraints.width
+        // Assuming Column, Y is constraints.height, X is extrapolating value to constraints.width
         labelInfosGenerator = chartViewMaker.xLabelsGenerator;
         pixelFromY = 0;
         pixelToY = constraints.height;
@@ -124,7 +109,7 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
     _pixelPointFrom = ui.Offset(pixelFromX, pixelFromY);
     _pixelPointTo = ui.Offset(pixelToX, pixelToY);
 
-    layoutSize = constraints.size; // todo-00!! is this right?
+    layoutSize = constraints.size; // todo-00-last : This is likely WRONG
   }
 
   /// Override method in superclass [Container].
@@ -146,3 +131,4 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
     buildAndReplaceChildrenDefault();
   }
 }
+

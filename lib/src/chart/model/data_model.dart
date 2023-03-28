@@ -54,6 +54,12 @@ class ChartModel {
     int columnIndex = 0;
     for (List<double> valuesColumn in valuesColumns) {
       crossPointsModelPositiveList.add(
+        // todo-00-last-last : add parameter numColumns; that way we know how many columns,
+        //                     and later in CrossPointsModel we can divide interval (0, 1) to numColumns portions,
+        //                     and both CrossPointsModel and .PointModel will get inputValueInUnitInterval members which can be used for lexing.
+        // todo-00-last-last : ALSO, SOMEHOW, X DataRangeLabelInfosGenerator must set dataRange to 0, 1.
+        // todo-00-last-last : what data range does X DataRangeLabelInfosGenerator use now??????
+
         CrossPointsModel(
           valuesColumn: valuesColumn,
           dataModel: this,

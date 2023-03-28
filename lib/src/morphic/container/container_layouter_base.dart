@@ -3436,7 +3436,7 @@ class Aligner extends PositioningBoxLayouter {
 ///   - [tickValuesDomain] is the interval in which the relative positions [tickValues] are.
 ///     [tickValuesDomain] must include all [tickValues];
 ///     it's boundaries may be larger than the envelope of all [tickValues]
-///   - [isAxisPixelsAndDisplayedValuesInSameDirection] defines whether the axis pixel positions and [tickValues]
+///   - [isPixelsAndValuesSameDirection] defines whether the axis pixel positions and [tickValues]
 ///     are run in the same direction.
 ///   - [externalTickAtPosition] the information what point on the child should be placed at the tick value:
 ///     child's start, center, or end. This is expressed by [ExternalTickAtPosition.childStart] etc.
@@ -3452,7 +3452,7 @@ class ExternalTicksLayoutProvider {
   ExternalTicksLayoutProvider({
     required this.tickValues,
     required this.tickValuesDomain,
-    required this.isAxisPixelsAndDisplayedValuesInSameDirection,
+    required this.isPixelsAndValuesSameDirection,
     required this.externalTickAtPosition,
 });
 
@@ -3474,7 +3474,7 @@ class ExternalTicksLayoutProvider {
   /// [ExternalTicksBoxLayouter].
   late final util_dart.Interval tickPixelsDomain;
 
-  final bool isAxisPixelsAndDisplayedValuesInSameDirection;
+  final bool isPixelsAndValuesSameDirection;
 
   final ExternalTickAtPosition externalTickAtPosition;
 
@@ -3490,7 +3490,7 @@ class ExternalTicksLayoutProvider {
   ///                 minimum is less than maximum.
   ///                 When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
   ///                 the vertical pixels axis is always ordered top-to-bottom
-  ///                 The [isAxisPixelsAndDisplayedValuesInSameDirection] should be set as follows:
+  ///                 The [isPixelsAndValuesSameDirection] should be set as follows:
   ///                   - On the horizontal axis:
   ///                     - If we want the [tickValues] be displayed left-to-right, set it to [true] (default).
   ///                     - Else set it to [false]
@@ -3499,12 +3499,12 @@ class ExternalTicksLayoutProvider {
   ///                     - Else set it to [false]
   ///
   List<double> lextrValuesToPixels() {
-    /* todo-00! Maybe something like this is needed
+    /* todo-00! Maybe something like this is needed for the special case of collapsed-to-origin Interval
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (!isAxisPixelsAndDisplayedValuesInSameDirection) {
+      if (!isPixelsAndValuesSameDirection) {
         pixels = axisPixelsMax;
       } else {
         pixels = axisPixelsMin;
@@ -3519,7 +3519,7 @@ class ExternalTicksLayoutProvider {
               fromValuesMax: tickValuesDomain.max,
               toPixelsMin: tickPixelsDomain.min,
               toPixelsMax: tickPixelsDomain.max,
-              doInvertToDomain: !isAxisPixelsAndDisplayedValuesInSameDirection,
+              doInvertToDomain: !isPixelsAndValuesSameDirection,
             ).apply(value))
         .toList();
   }

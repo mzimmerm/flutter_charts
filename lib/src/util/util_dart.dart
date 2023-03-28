@@ -420,8 +420,8 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
     required double fromValuesMax,
     required double toPixelsMin,
     required double toPixelsMax,
-    bool doInvertToDomain = false,
-  }) : _doInvertToDomain = doInvertToDomain, super(
+    this.doInvertToDomain = false,
+  }) : super(
     fromDomainStart: fromValuesMin,
     fromDomainEnd: fromValuesMax,
     toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
@@ -432,11 +432,11 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
     }
   }
 
-  final bool _doInvertToDomain;
+  final bool doInvertToDomain;
 
   @override
   String toString() {
-    return '${super.toString()}, _doInvertToDomain=$_doInvertToDomain';
+    return '${super.toString()}, _doInvertToDomain=$doInvertToDomain';
   }
 }
 
