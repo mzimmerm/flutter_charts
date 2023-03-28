@@ -1,6 +1,7 @@
 import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
 // import 'package:flutter/cupertino.dart';
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:logger/logger.dart' as logger;
 import 'package:flutter/material.dart' as material show Colors;
 
@@ -55,12 +56,6 @@ class ChartModel {
     int columnIndex = 0;
     for (List<double> valuesColumn in valuesColumns) {
       crossPointsModelPositiveList.add(
-        // todo-00-last-last : add parameter numDataModelColumns; that way we know how many columns,
-        //                     and later in CrossPointsModel we can divide interval [ChartModel] to numColumns portions,
-        //                     and both CrossPointsModel and .PointModel will get inputValueInUnitInterval members which can be used for lexing.
-        // todo-00-last-last : ALSO, SOMEHOW, X DataRangeLabelInfosGenerator must set dataRange to 0, 1.
-        // todo-00-last-last : what data range does X DataRangeLabelInfosGenerator use now??????
-
         CrossPointsModel(
           valuesColumn: valuesColumn,
           dataModel: this,
@@ -272,6 +267,9 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
   /// The [dataModel] is the [DataModel] underlying the [CrossPointsModel] instance being created.
   /// The [columnIndex] is index of the [valuesColumn] in the [dataModel].
+  /// The [numDataModelColumns] allows to later calculate this point's input value using [inputValueWithInputRange],
+  ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
+  ///   instance.
   /// The [pointsSigns] specifies whether positive or negative values
   ///   are placed in the [CrossPointsModel] instance being created.
   CrossPointsModel({
@@ -353,7 +351,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view maker,
   /// we can use the [_numDataModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
   /// to calculate this value
-  double inputValueWith({required Interval dataRange}) {
+  double inputValueWithInputRange({required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator}) {
+    Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
     double columnWidth = (dataRange.length / _numDataModelColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
@@ -569,20 +568,30 @@ class PointModel extends Object with DoubleLinked {
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
   int get columnIndex => ownerCrossPointsModel.columnIndex;
 
+  int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
+
   /// Calculates inputValue-position of this [PointModel] instance.
   ///
   /// Delegated to [ownerCrossPointsModel].
-  double inputValueWith({required Interval dataRange}) {
-    return ownerCrossPointsModel.inputValueWith(dataRange: dataRange);
+  double inputValueWithInputRange({required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator}) {
+    return ownerCrossPointsModel.inputValueWithInputRange(dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator);
   }
 
-  int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
+  /// Once the x labels are established, either as [xUserLabels] or generated, clients can
+  ///  ask for the label.
+  Object get xUserLabel => ownerCrossPointsModel.dataModel.xUserLabels[columnIndex];
 
   ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
 
-  /// Once the x labels are established, either as [xUserLabels] or generated, clients can
-  ///  ask for the inputValue corresponding to this [PointModel]'s [outputValue].
-  Object get inputValue => ownerCrossPointsModel.dataModel.xUserLabels[columnIndex];
+  PointOffset pointOffsetWithInputRange({
+    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+  }) =>
+      PointOffset(
+        inputValue: inputValueWithInputRange(
+          dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
+        ),
+        outputValue: outputValue,
+      );
 }
 
 // -------------------- Helper classes

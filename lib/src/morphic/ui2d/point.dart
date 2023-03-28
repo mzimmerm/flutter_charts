@@ -46,8 +46,10 @@ class PointOffset extends Offset {
     required BoxContainerConstraints constraintsOnImmediateOwner,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
-    required HeightSizerLayouter     heightSizerLayouter,
-    required WidthSizerLayouter      widthSizerLayouter
+    required double                  heightToLextr,
+    required double                  widthToLextr,
+    // required HeightSizerLayouter     heightSizerLayouter,
+    // required WidthSizerLayouter      widthSizerLayouter,
   }) {
     ChartSeriesOrientation orientation = chartSeriesOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -70,7 +72,7 @@ class PointOffset extends Offset {
           fromValuesMin: outputDataRange.min,
           fromValuesMax: outputDataRange.max,
           toPixelsMin: 0.0,
-          toPixelsMax: heightSizerLayouter.length,
+          toPixelsMax: heightToLextr,
           doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
         ).apply(outputValue);
         break;
@@ -80,7 +82,7 @@ class PointOffset extends Offset {
           fromValuesMin: outputDataRange.min,
           fromValuesMax: outputDataRange.max,
           toPixelsMin: 0.0,
-          toPixelsMax: widthSizerLayouter.length,
+          toPixelsMax: widthToLextr,
           doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
         ).apply(outputValue);
         // 1.1.2:

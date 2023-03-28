@@ -1,16 +1,21 @@
 import 'dart:ui' as ui show Offset, Paint, Canvas;
 
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
+
 import 'container_common.dart' as container_common_new;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_series_orientation.dart' as chart_orientation;
 import '../view_maker.dart' as view_maker;
 // import '../container.dart' as container;
 import '../model/data_model.dart' as model;
-import '../../util/util_labels.dart' as util_labels;
+// import '../../util/util_labels.dart' as util_labels;
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 /// todo-00-last-last-progress IMPLEMENT
-class LineSegmentContainer extends container_common_new.ChartAreaContainer {
+class LineSegmentContainer extends container_common_new.ChartAreaContainer
+    with container_base.HeightSizerLayouterChild,
+      container_base.WidthSizerLayouterChild
+{
 
   LineSegmentContainer({
     required this.chartSeriesOrientation,
@@ -47,8 +52,44 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    // The switch below takes care of the pixel positioning aka layout.
+    // The code here takes care of the pixel positioning aka layout.
 
+    /// Motivation for for lextr-ing Point inputValue and outputValue in context of chart and ChartSeriesOrientation.
+    ///   In 'normal' situations, any PointOffset, originally representing data inputValue and outputValue values,
+    ///       can live in a LineSegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
+    ///       DURING LAYOUT, THE LineSegmentContainer  WILL CHANGE THE PointOffset POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
+    ///       (the LineSegmentContainer will position the PointOffset in layout_Post_NotLeaf_PositionChildren) ???
+
+    // todo-00-last-last: Replace with Point.lextrInContextOf but KEEP this for reference
+    //   create PointOffset from PointModel
+    //   set _pixelPointFrom and To
+    PointOffset fromPointOffset = pointFrom.pointOffsetWithInputRange(
+        dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
+    );
+    PointOffset toPointOffset = pointTo.pointOffsetWithInputRange(
+      dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
+    );
+    _pixelPointFrom = fromPointOffset.lextrInContextOf(
+        chartSeriesOrientation: chartSeriesOrientation,
+        constraintsOnImmediateOwner: constraints, // todo-00-last-last : THIS IS NOT RIGHT !!! NEED THE ROW CONSTRAINT??? MAYBE IT'S RIGHT??? constraintsOnImmediateOwner,
+        inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
+        outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+        heightToLextr: heightToLextr,
+        widthToLextr: widthToLextr,
+    );
+    _pixelPointTo = toPointOffset.lextrInContextOf(
+      chartSeriesOrientation: chartSeriesOrientation,
+      constraintsOnImmediateOwner: constraints, // todo-00-last-last : THIS IS NOT RIGHT !!! NEED THE ROW CONSTRAINT??? MAYBE IT'S RIGHT??? constraintsOnImmediateOwner,
+      inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
+      outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+      heightToLextr: heightToLextr,
+      widthToLextr: widthToLextr,
+    );
+
+
+    layoutSize = constraints.size; // todo-00-last-last : This is likely WRONG - SHOULD BE SOME KIND OF min/max across _pixelPointFrom, _pixelPointTo
+
+    /* KEEP for now
     // layout the [pointFrom] and [pointTo] to pixels, by positioning:
     //   - in the [constraintsSplitAxis],      direction, on the constraints border
     //   - in the [constraintsSplitAxis]-cross direction, by extrapolating their value
@@ -62,15 +103,6 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
 
     container_base.LayoutAxis chartPointsMainLayoutAxis = chartSeriesOrientation.mainLayoutAxis;
 
-    /// Motivation for for lextr-ing Point inputValue and outputValue in context of chart and ChartSeriesOrientation.
-    ///   In 'normal' situations, any PointOffset, originally representing data inputValue and outputValue values,
-    ///       can live in a LineSegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
-    ///       DURING LAYOUT, THE LineSegmentContainer  WILL CHANGE THE PointOffset POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
-    ///       (the LineSegmentContainer will position the PointOffset in layout_Post_NotLeaf_PositionChildren) ???
-
-    // todo-00-last-last: Replace with Point.lextrInContextOf but KEEP this for reference
-    //   create PointOffset from PointModel
-    //   set _pixelPointFrom and To
     switch(chartPointsMainLayoutAxis) {
       case container_base.LayoutAxis.horizontal:
         // Assuming Row, X is constraints.width, Y is extrapolating value to constraints.height
@@ -105,11 +137,9 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer {
         );
         break;
     }
-
     _pixelPointFrom = ui.Offset(pixelFromX, pixelFromY);
     _pixelPointTo = ui.Offset(pixelToX, pixelToY);
-
-    layoutSize = constraints.size; // todo-00-last : This is likely WRONG
+    */
   }
 
   /// Override method in superclass [Container].

@@ -585,7 +585,8 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
     ChartOptions options = chartViewMaker.chartOptions;
 
     // Purely artificial on XContainer for now, we are taking labels from data, or user, NOT generating range.
-    axisPixelsRange = const Interval(0.0, 200.0);
+    // todo-00-done : axisPixelsRange = const Interval(0.0, 200.0);
+    axisPixelsRange = chartViewMaker.chartModel.dataRangeWhenNonNumericLabels;
 
     List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
     double       yTicksWidth =

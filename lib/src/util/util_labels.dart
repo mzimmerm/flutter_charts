@@ -78,7 +78,8 @@ class DataRangeLabelInfosGenerator {
           //   it will be lextr-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          dataEnvelope = const util_dart.Interval(0.0, 100.0);
+          // todo-00-last-done : dataEnvelope = const util_dart.Interval(0.0, 100.0);
+          dataEnvelope = chartViewMaker.chartModel.dataRangeWhenNonNumericLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
@@ -491,10 +492,9 @@ class AxisLabelInfo {
   /// Constructs from value at the label, holding on the owner [labelsGenerator],
   /// which provides data range corresponding to axis range.
   AxisLabelInfo({
-    // todo-00-last-last : required num outputValue,
     required this.outputValue,
     required DataRangeLabelInfosGenerator labelsGenerator,
-  })  : // todo-00-last-last : outputValue = outputValue,
+  })  :
         _labelsGenerator = labelsGenerator {
     var yInverseTransform = _labelsGenerator._inverseTransform;
     _rawOutputValue = yInverseTransform(outputValue);
