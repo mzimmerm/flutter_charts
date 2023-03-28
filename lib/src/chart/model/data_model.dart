@@ -51,11 +51,12 @@ class ChartModel {
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
+    int numDataModelColumns = valuesColumns.length;
     int columnIndex = 0;
     for (List<double> valuesColumn in valuesColumns) {
       crossPointsModelPositiveList.add(
-        // todo-00-last-last : add parameter numColumns; that way we know how many columns,
-        //                     and later in CrossPointsModel we can divide interval (0, 1) to numColumns portions,
+        // todo-00-last-last : add parameter numDataModelColumns; that way we know how many columns,
+        //                     and later in CrossPointsModel we can divide interval [ChartModel] to numColumns portions,
         //                     and both CrossPointsModel and .PointModel will get inputValueInUnitInterval members which can be used for lexing.
         // todo-00-last-last : ALSO, SOMEHOW, X DataRangeLabelInfosGenerator must set dataRange to 0, 1.
         // todo-00-last-last : what data range does X DataRangeLabelInfosGenerator use now??????
@@ -64,6 +65,7 @@ class ChartModel {
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex,
+          numDataModelColumns: numDataModelColumns,
           pointsSigns: CrossPointsModelPointsSigns.positiveOr0,
         ),
       );
@@ -72,6 +74,7 @@ class ChartModel {
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex,
+          numDataModelColumns: numDataModelColumns,
           pointsSigns: CrossPointsModelPointsSigns.negative,
         ),
       );
@@ -141,6 +144,15 @@ class ChartModel {
     );
   }
 
+  /// Data range used when labels are non-numeric.
+  ///
+  /// Motivation:
+  ///   When labels for input values or output values are non-numeric or cannot be
+  ///   converted to numeric, there must still be some way to lextr values to pixels.
+  ///   This member provides a default 'from' range for such lextr-ing.
+  ///
+  final Interval dataRangeWhenNonNumericLabels = const Interval(0.0, 100.0);
+
   // OLD CODE =============================================================
   // Legacy stuff below
 
@@ -182,7 +194,7 @@ class ChartModel {
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
-  // todo-00-next-00-performance : cache valuesMax/Min ond also _flatten
+  // todo-01-next-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => valuesRows.expand((element) => element).toList();
   double get _valuesMin => _flatten.reduce(math.min);
   // double get _valuesMax => _flatten.reduce(math.max);
@@ -266,8 +278,9 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required List<double> valuesColumn,
     required this.dataModel,
     required this.columnIndex,
+    required numDataModelColumns,
     required this.pointsSigns
-  }) {
+  }) : _numDataModelColumns = numDataModelColumns {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
@@ -300,9 +313,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     }
   }
 
-  /// Owner [ChartModel] to which this [CrossPointsModel] belongs by existence in
-  ///  [ChartModel.crossPointsModelPositiveList] AND
-  ///  the  [ChartModel.crossPointsModelNegativeList] .
+  /// Owner [ChartModel] to which this [CrossPointsModel] bar belongs by existence in
+  ///  [ChartModel.crossPointsModelPositiveList] AND the [ChartModel.crossPointsModelNegativeList].
   ///
   final ChartModel dataModel;
 
@@ -320,7 +332,33 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   ///   -  [ChartModel.byRowColors]
   final int columnIndex;
 
-  /// todo-00-doc
+  /// Number of column-wise elements the owner [ChartModel] has.
+  ///
+  /// Same as size of [ChartModel.crossPointsModelPositiveList] AND the [ChartModel.crossPointsModelNegativeList].
+  /// It is provided early in constructor of this [CrossPointsModel],
+  /// so it can be used before these two lists are fully constructed and populated with
+  /// instances of [CrossPointsModel].
+  ///
+  /// This is also accessible by [PointModel]
+  final int _numDataModelColumns;
+
+  /// Calculates inputValue-position (x-position, independent value position) of
+  /// instances of this [CrossPointsModel] and it's [PointModel] elements.
+  ///
+  /// The value is in the middle of the column - there are [_numDataModelColumns] columns that
+  /// divide the [dataRange].
+  ///
+  /// Note: So this is offset from start and end of the Interval.
+  ///
+  /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view maker,
+  /// we can use the [_numDataModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
+  /// to calculate this value
+  double inputValueWith({required Interval dataRange}) {
+    double columnWidth = (dataRange.length / _numDataModelColumns);
+    return (columnWidth * columnIndex) + (columnWidth / 2);
+  }
+
+  /// todo-01-doc
   late final CrossPointsModelPointsSigns pointsSigns;
 
   /// Points of this positive or negative column (crossPoints).
@@ -511,11 +549,8 @@ class PointModel extends Object with DoubleLinked {
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   late final double outputValue;
 
-  /// Stacked (transformed, not-extrapolated) data value.
-  /// 
-  /// Calculated assuming this [PointModel] is a member of [DoubleLinkedOwner] such as [CrossPointsModel],
-  /// uniquely either .
-  late final double _stackedOutputValue;
+  /// References the data column (crossPoints list) this point belongs to
+  CrossPointsModel ownerCrossPointsModel;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
@@ -524,13 +559,24 @@ class PointModel extends Object with DoubleLinked {
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
+  /// Stacked (transformed, not-extrapolated) data value.
+  /// 
+  /// Calculated assuming this [PointModel] is a unique member of [DoubleLinkedOwner] such as [CrossPointsModel].
+  late final double _stackedOutputValue;
+
   /// Getter of the column index in the owner [ownerCrossPointsModel].
   ///
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
   int get columnIndex => ownerCrossPointsModel.columnIndex;
 
-  /// References the data column (crossPoints list) this point belongs to
-  CrossPointsModel ownerCrossPointsModel;
+  /// Calculates inputValue-position of this [PointModel] instance.
+  ///
+  /// Delegated to [ownerCrossPointsModel].
+  double inputValueWith({required Interval dataRange}) {
+    return ownerCrossPointsModel.inputValueWith(dataRange: dataRange);
+  }
+
+  int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
 
   ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
 
@@ -545,6 +591,7 @@ class _DoubleValue {
   double value = 0.0;
 }
 
+// todo-01-next : rename to inputValues, outputValues, but check if it is already enum for it
 enum DataDependency {
   independentData,
   dependentData,

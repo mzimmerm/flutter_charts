@@ -40,14 +40,14 @@ class XContainer extends container_common_new.ChartAreaContainer {
       WidthSizerLayouter(
         children: [
           Column(children: [
-            // todo-00-!!!!! add LineSegment for axis line
+            // todo-00 add LineSegment for axis line
             ExternalTicksRow(
               mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
               children: [
                 for (var labelInfo in labelsGenerator.labelInfoList)
-                  // todo-00-next-02 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  // todo-02-next : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   XLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
@@ -99,7 +99,7 @@ class YContainer extends container_common_new.ChartAreaContainer {
         child: HeightSizerLayouter(
           children: [
             Row(children: [
-              // todo-00-!!!!! add LineSegment for axis line
+              // todo-01 add LineSegment for axis line
               ExternalTicksColumn(
                 mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,

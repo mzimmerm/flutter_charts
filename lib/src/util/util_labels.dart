@@ -18,7 +18,7 @@ import 'util_dart.dart' as util_dart;
 /// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
 ///
 /// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
-///
+/// todo-01-next : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -49,7 +49,7 @@ class DataRangeLabelInfosGenerator {
   ///   - [dataRange]
   ///   - [_labelInfos]
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // todo-00-done : added as a temporary to test old vs new
+    required this.chartViewMaker, // todo-done : added as a temporary to test old vs new
     required ChartModel dataModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
@@ -129,7 +129,7 @@ class DataRangeLabelInfosGenerator {
 
   }
 
-  final ChartViewMaker chartViewMaker; // todo-00-done : added as a temporary to test old vs new
+  final ChartViewMaker chartViewMaker; // todo-done : added as a temporary to test old vs new
 
   /// Describes if this [DataRangeLabelInfosGenerator] instance is for dependent or independent data.
   ///
@@ -443,7 +443,7 @@ class DataRangeLabelInfosGenerator {
 ///    3. [_rawOutputValue] -- using formatted String-value
 ///       ==> [_formattedLabel]
 ///
-/// todo-01-doc below finish documentation, this stuff is old, and simplify
+/// todo-02-doc below finish documentation, this stuff is old, and simplify
 /// The last mapping in item 3. is using either `toString` if [DataRangeLabelInfosGenerator.userLabels] are used,
 /// or [DataRangeLabelInfosGenerator._valueToLabel] for chart-generated labels.
 ///

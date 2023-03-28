@@ -60,7 +60,7 @@ class ChartLabelContainer extends container_common_new.ChartAreaContainer with L
       ),
       textDirection: labelStyle.textDirection,
       textAlign: labelStyle.textAlign,
-      // center in available space todo-01 textScaleFactor does nothing ??
+      // center in available space todo-02 textScaleFactor does nothing ??
       textScaleFactor: labelStyle.textScaleFactor,
       // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     );
@@ -82,7 +82,7 @@ class ChartLabelContainer extends container_common_new.ChartAreaContainer with L
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
-    // todo-00-next-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-01-next-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;

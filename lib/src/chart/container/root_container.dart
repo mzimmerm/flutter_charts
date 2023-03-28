@@ -30,11 +30,11 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
-    // todo-00-doc : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
+    // todo-01-doc : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
     TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-00-next-02 will go away when we use YContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-01 will go away when we use YContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );
@@ -78,7 +78,7 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     );
   }
 
-  /// todo-00-! The members are only needed during layout of deeper children (e.g., NewHBarPointContainer) to access the members' sizes or constraints
+  /// todo-01-last The members are only needed during layout of deeper children (e.g., NewHBarPointContainer) to access the members' sizes or constraints
   ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.

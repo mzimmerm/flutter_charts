@@ -44,7 +44,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///      parent is set on all children as `child.parent = this`.
   ///   2. In [BoxContainer.addChildren], [_parent] is set on all passed children.
   BoxContainer? _parent; // null. will be set to non-null when addChild(this) is called on this' parent
-  BoxContainer? get parent => _parent; // todo-01 - only one use. See if needed long term.
+  BoxContainer? get parent => _parent; // todo-02 - only one use. See if needed long term.
 
   /// Manages children of this [BoxContainer].
   ///
@@ -74,7 +74,6 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   /// Appends all children passed in [addedChildren] to existing [_children],
   /// changes all [addedChildren] member [_parent] to self, and ensures unique
   /// keys among all [_children].
-  /// todo-03 : can/should we move this method and all children manipulation to [BoxContainerHierarchy]?
   void addChildren(List<BoxContainer> addedChildren) {
     // Establish a 'nextSibling' linked list from __children to addedChildren, before [addedChildren]
     // are added to [__children];
@@ -134,7 +133,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///   the sequence of method invocations of such object should be as follows
   ///   ``` dart
   ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
-  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-00-doc documentation is not right
+  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-01-doc documentation is not right
   ///     3.  instance.layout();
   ///     4.  instance.applyParentOffset(this, instanceParentOffset);
   ///   ```
@@ -556,7 +555,7 @@ abstract class LayoutableBox {
   ///                So maybe setter could be here, getter also here
   ui.Size get layoutSize;
 
-  // todo-013 : should this be private as changes are performed by the 'apply' method?
+  // todo-023 : should this be private as changes are performed by the 'apply' method?
   ui.Offset get offset;
 
   /// Moves this [LayoutableBox] by [offset], ensuring the invocation is by [_parent] in the [BoxContainerHierarchy].
@@ -609,7 +608,7 @@ abstract class LayoutableBox {
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
-  // todo-00-doc : document fully, including rules for overriding
+  // todo-01-doc : document fully, including rules for overriding
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
   ///
@@ -647,7 +646,7 @@ abstract class LayoutableBox {
   ///
   /// Misc less important notes:
   ///   1. Can we make layoutSize result of layout (INSTEAD OF VOID)  and not store on layout?
-  ///     - NO, because ??? todo-013 : layoutSize member: Make still available as late final on BoxLayouter,
+  ///     - NO, because ??? todo-023 : layoutSize member: Make still available as late final on BoxLayouter,
   ///           set it after return in case it is needed later. Always set just after return from layout.
   void layout();
 }
@@ -934,7 +933,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// Set late in [layout], once the layout size is known after all children were layed out.
   /// Extensions of [BoxLayouter] should not generally override, even with their own layout.
   ///
-  /// todo-03 : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
+  /// todo-04-last : should layoutSize, and perhaps offset, be moved as separate getter/setter onto LayoutableBox? Certainly layoutSize should be!
   @override
   late final ui.Size layoutSize;
 
@@ -1224,7 +1223,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// in the same order as the passed [children]. The rectangle origin placed relative
   /// to the layouter instance, in the order of [children].
   ///
-  /// todo-00-review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
+  /// todo-01-review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
   /// It can ignore the passed [children] and position member [_children],
   /// but then, the offset children method [_layout_Post_NotLeaf_OffsetChildren] must be overridden
   /// to do the same (act on member [_children] rather than the passed [children]).
@@ -1404,7 +1403,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
         DoubleLinkedOwner<BoxContainer>  {
   /// Default generative constructor.
   BoxContainer({
-    // todo-013 : can key and children be required, final, and non nullable?
+    // todo-023 : can key and children be required, final, and non nullable?
     ContainerKey? key,
     List<BoxContainer>? children,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
@@ -1737,7 +1736,7 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
 
   LayoutAxis mainLayoutAxis = LayoutAxis.horizontal;
 
-  // todo-013 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
+  // todo-023 : mainAxisLayoutProperties and crossAxisLayoutProperties could be private
   //            so noone overrides their 'packing: Packing.tight, align: Align.start'
   /// Properties of layout on main axis.
   ///
@@ -2205,7 +2204,7 @@ class ExternalTicksRow extends ExternalTicksBoxLayouter {
 class ExternalTicksColumn extends ExternalTicksBoxLayouter {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    // todo-00!! provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-01-next provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2436,12 +2435,12 @@ class TableLayoutCellDefiner {
 /// all other cells being layed out are given (smaller) constraints, assuming the 'minimum size of one cell'
 /// is taken away.
 ///
-/// todo-00-doc fix docs
+/// todo-01-doc fix docs
 /// The method by which the minimum Size is defined can be one of:
 ///   - providing minimum width and height for the cell
 /// or a [BoxContainer] which produces constraints upon a 'test layout' for
 /// a cell in [TableLayouter] - that is, minimum constraints for the cell defined by [TableLayoutCellDefiner].
-/// todo-00-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
+/// todo-01-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
 ///
 /// Part of [TableLayoutDefiner], which will ensure the provided constraint
 ///
@@ -2449,7 +2448,7 @@ class TableLayoutCellDefiner {
 ///             or a column - row width or column height, or both.
 ///             This class helps to express this need, either by specifying a minimum size directly,
 ///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
-/// How is this motivation implemented?  todo-00-doc
+/// How is this motivation implemented?  todo-01-doc
 ///
 class TableLayoutCellMinSizer {
   TableLayoutCellMinSizer.fromMinima({
@@ -2539,7 +2538,7 @@ class TableLayoutCellMinSizer {
       enforcedMinLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
       assert(preLayoutCellToGainMinima != null);
-      // todo-00! : parent == this will fail. Maybe allow apply to ignore.
+      // todo-01-next : parent == this will fail. Maybe allow apply to ignore.
       // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima as LayoutableBox, preLayoutCellConstraints!);
       preLayoutCellToGainMinima!.layout();
       enforcedMinLayoutSize = preLayoutCellToGainMinima!.layoutSize;
@@ -2656,7 +2655,7 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
-  /// todo-00-next-performance : optimize, find it in cellDefinersTable instead !!!!
+  /// todo-01-next-performance : optimize, find it in cellDefinersTable instead !!!!
   TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cellDefiner) => cellDefiner.row == row && cellDefiner.column == column,
@@ -2668,7 +2667,7 @@ class TableLayoutDefiner {
   ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
   ///   - next is the [cellsAlignerDefiner]
   ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  ///   todo-00!!!! : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  ///   todo-01-next : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   ///                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);
@@ -2824,7 +2823,6 @@ class TableLayouter extends PositioningBoxLayouter {
     numRows = tableLayoutDefiner.numRows;
     numColumns = tableLayoutDefiner.numColumns;
 
-    // todo-00-later : Replace asserts with exceptions, and add better messages.
     assert(collectedSequences.length == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns);
     assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
     assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns - 1);
@@ -3056,7 +3054,7 @@ class TableLayouter extends PositioningBoxLayouter {
         // as long as we pass the Align on the corresponding axis
         var mainAxisLayoutProperties = LengthsPositionerProperties(
           align: cellDefiner.horizontalAlign!,
-          packing: Packing.tight, // todo-00-later Write a test. This should not matter for one child!
+          packing: Packing.tight, // todo-02 Write a test. This should not matter for one child!
         );
         var crossAxisLayoutProperties = LengthsPositionerProperties(
           align: cellDefiner.verticalAlign!,
@@ -3499,7 +3497,7 @@ class ExternalTicksLayoutProvider {
   ///                     - Else set it to [false]
   ///
   List<double> lextrValuesToPixels() {
-    /* todo-00! Maybe something like this is needed for the special case of collapsed-to-origin Interval
+    /* todo-02 Maybe something like this is needed for the special case of collapsed-to-origin Interval
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
@@ -3625,7 +3623,7 @@ class _MainAndCrossPositionedSegments {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
       lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(crossLayoutAxis, children),
       lengthsPositionerProperties: crossAxisLayoutProperties,
-      // todo-010 : Investigate : If we use, instead of 0.0,
+      // todo-020 : Investigate : If we use, instead of 0.0,
       //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
       //                 if legend starts with column, the legend column is on the left of the chart
       //                 if legend starts with row   , the legend row    is on the bottom of the chart
@@ -3742,7 +3740,6 @@ class _MainAndCrossPositionedSegments {
   vector_math.Matrix2 get transformMatrix => _transformMatrix;
 
   /// Tilt may apply to the whole [BoxContainer].
-  /// todo-2 unused? move to base class? similar to offset?
   void applyParentTransformMatrix(vector_math.Matrix2 transformMatrix) {
     if (transformMatrix == vector_math.Matrix2.identity()) return;
     _transformMatrix = _transformMatrix * transformMatrix;

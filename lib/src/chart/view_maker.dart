@@ -67,7 +67,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-00-next-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-01-next-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -288,7 +288,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       crossPointsModel: crossPointsModel,
     ).map((pointContainer) =>
         container_base.Padder(
-          // todo-00-last : Is there an option for sizes? Try to use Aligner instead of Padder, and use gridStepWidthPortionUsedByAtomicPointPresenter to express gap in terms of percentage
+          // todo-01 : Is there an option for sizes? Try to use Aligner instead of Padder, and use gridStepWidthPortionUsedByAtomicPointPresenter to express gap in terms of percentage
           edgePadding: const EdgePadding.withSides(start: 6.0, end: 6.0),
           child: pointContainer,)
     ).toList();

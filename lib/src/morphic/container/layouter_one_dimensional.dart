@@ -66,7 +66,7 @@ enum Packing {
   ///
   loose,
 
-  // todo-00!! with this Packing, ANY ALIGNMENT DOES NOT MAKE SENSE. MAYBE WE INTRODUCE Align.externalTicksDefined and add a validate method that only allows
+  // todo-02 with this Packing, ANY ALIGNMENT DOES NOT MAKE SENSE. MAYBE WE INTRODUCE Align.externalTicksDefined and add a validate method that only allows
   externalTicksProvided,
 }
 
@@ -85,7 +85,7 @@ enum Align {
 /// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
 /// describes that a given constraint should create multiple constraints that are the same.
 enum ConstraintsDistribution {
-  evenly, // todo-013 : deprecate and remove. Rely on children to all set doubleWeights=1 instead
+  evenly, // todo-023 : deprecate and remove. Rely on children to all set doubleWeights=1 instead
   doubleWeights,
   noDivide,
 }
@@ -385,7 +385,7 @@ class LayedoutLengthsPositioner {
       previousSegment = const util_dart.LineSegment(0.0, 0.0);
     }
     Tuple2<double, double> startOffsetAndRightPad = getStartOffset(isFirstLength);
-    // todo-010 : The processing of result startOffsetAndRightPad MUST be different for Align.end, so there must be some
+    // todo-020 : The processing of result startOffsetAndRightPad MUST be different for Align.end, so there must be some
     //             switch .. case added for all Alignments. This is the reason of a bug where Align.end does not work correctly,
     //             although it is hidden, as the result now is satisfactory, despite setting isOverflow true on the result.
     //             ALSO A QUESTION: ALIGN.END, DOES IT MEAN FIRST LENGTH IS AT THE END? SHOULD NOT BE - START AND END SHOULD BE THE SAME ORDER.!!
@@ -563,7 +563,7 @@ class PositionedLineSegments {
   /// Envelope of the layed out [lineSegments].
   ///
   /// This will become the [BoxLayouter.layoutSize] along the layout axis.
-  // todo-00-next-01 : how is this actually used ?? Why is width 0.0?? It must work but how?
+  // todo-02-next : how is this actually used ?? Why is width 0.0?? It must work but how?
   ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
   /// Returns copy of this instance's [lineSegments] that are reversed and

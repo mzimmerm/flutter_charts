@@ -158,7 +158,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
   @override
   void layout() {
     buildAndReplaceChildren();
-    // todo-013 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    // todo-023 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip) {

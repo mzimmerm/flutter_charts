@@ -1056,7 +1056,6 @@ class VerticalBarChartDataContainerCL extends DataContainerCL {
     PointPresentersColumns pointPresentersColumns = this.pointPresentersColumns;
 
     for (PointPresentersColumn pointPresentersColumn in pointPresentersColumns) {
-      // todo-2 do not repeat loop, collapse to one construct
 
       var positivePointPresenterList = pointPresentersColumn.positivePointPresenters;
       positivePointPresenterList = optionalPaintOrderReverse(positivePointPresenterList);

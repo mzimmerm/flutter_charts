@@ -19,7 +19,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-00-next-01 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
+  // todo-01-next : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
     var options = chartViewMaker.chartOptions;
@@ -127,7 +127,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
   HBarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
-    // todo-00!! Do we need children and key? LineSegmentContainer does not have it.
+    // todo-01 Do we need children and key? LineSegmentContainer does not have it.
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(

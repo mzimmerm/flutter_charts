@@ -103,7 +103,7 @@ class Poly {
   }
 }
 
-// todo-010: multiple things:
+// todo-020: multiple things:
 //    - replace num with double,  parametrize with T instead so it works for both
 //    - make const constructor
 //    - add tests
