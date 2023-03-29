@@ -600,10 +600,9 @@ class _DoubleValue {
   double value = 0.0;
 }
 
-// todo-01-next : rename to inputValues, outputValues, but check if it is already enum for it
 enum DataDependency {
-  independentData,
-  dependentData,
+  inputData,
+  outputData,
 }
 
 // -------------------- Functions

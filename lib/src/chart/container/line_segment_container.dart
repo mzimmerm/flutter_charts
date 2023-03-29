@@ -1,4 +1,5 @@
-import 'dart:ui' as ui show Offset, Paint, Canvas;
+import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
+import 'dart:math' as math show max;
 
 import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 
@@ -11,13 +12,12 @@ import '../model/data_model.dart' as model;
 // import '../../util/util_labels.dart' as util_labels;
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-/// todo-00-last-last-progress IMPLEMENT
-class LineSegmentContainer extends container_common_new.ChartAreaContainer
+class LineBetweenPointModelsContainer extends container_common_new.ChartAreaContainer
     with container_base.HeightSizerLayouterChildMixin,
       container_base.WidthSizerLayouterChildMixin
 {
 
-  LineSegmentContainer({
+  LineBetweenPointModelsContainer({
     required this.chartSeriesOrientation,
     required this.pointFrom,
     required this.pointTo,
@@ -36,35 +36,36 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer
   final ui.Paint linePaint;
 
   /// Coordinates of the layed out pixel values.
-  // todo-00-last : use PointOffset instead of Offset
-  late final ui.Offset _pixelPointFrom;
-  late final ui.Offset _pixelPointTo;
+  late final PointOffset _pixelPointFrom;
+  late final PointOffset _pixelPointTo;
 
 
   // #####  Implementors of method in superclass [BoxContainer].
 
-  /// Implementor of method in superclass [BoxContainer].
+  /// Overrides [layout] by lextr-transforming the data-valued [PointModel]s [pointFrom] and [pointTo],
+  /// into their pixel equivalents [PointOffset]s [_pixelPointFrom] and [_pixelPointTo].
   ///
-  /// Ensure [layoutSize] is set.
-  /// Note that because this leaf container overrides [layout] here,
-  /// it does not need to override [layout_Post_Leaf_SetSize_FromInternals].
+  /// The
+  ///
+  /// Ensures the [layoutSize] is set as the maximum value of [_pixelPointFrom] and [_pixelPointTo] in the
+  /// parent layouter main direction, and the [constraints] component in the parent layouter cross-direction.
+  ///
+  /// Important notes:
+  ///
+  ///   - We MUST ASSUME this [LineBetweenPointModelsContainer] was placed into a Row or Column without specifying weights on self;
+  ///     Such Row or Column layouters pass their full constraints to children (instances of this [LineBetweenPointModelsContainer]).
+  //      As a consequence, `this.constraints == constraintsOnImmediateOwner`!
+  ///   - As this leaf container overrides [layout] here, it does not need to
+  ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
   @override
   void layout() {
     buildAndReplaceChildren();
 
-    // The code here takes care of the pixel positioning aka layout.
+    // Code here takes care of the pixel positioning of the points, aka layout.
 
-    /// Motivation for for lextr-ing Point inputValue and outputValue in context of chart and ChartSeriesOrientation.
-    ///   In 'normal' situations, any PointOffset, originally representing data inputValue and outputValue values,
-    ///       can live in a LineSegmentContainer which NORMALLY lives within a  MainAndCross (Row, Column) container.
-    ///       DURING LAYOUT, THE LineSegmentContainer  WILL CHANGE THE PointOffset POSITION (valuer) BY LEXTR OR USING THE LAYOUTER.
-    ///       (the LineSegmentContainer will position the PointOffset in layout_Post_NotLeaf_PositionChildren) ???
-
-    // todo-00-last-last: Replace with Point.lextrInContextOf but KEEP this for reference
-    //   create PointOffset from PointModel
-    //   set _pixelPointFrom and To
-    // Pull the position (pointOffset) of the [pointFrom] and [pointTo]. The points are both on x axis so far.
-    // Later, we will lextr the pointOffsets to their pixel values.
+    // Pull the offset (from and toPointOffset) from the [pointFrom] and [pointTo]. The points are both on x axis
+    //   so far, so xLabelsGenerator is user as full inputRange for both from/to points.
+    // Just after, we lextr the pointOffsets to their pixel values.
     PointOffset fromPointOffset = pointFrom.pointOffsetWithInputRange(
         dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
     );
@@ -75,10 +76,7 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer
     // Lextr the pointOffsets to their pixel values using [lextrInContextOf].
     // The method  takes into account chart orientation, which may cause the x and y (input and output) values
     //   to flip (invert) during the lextr.
-    // Passing [this.constraints] is correct here, as we MUST assume this [LineSegmentContainer]
-    //   was placed into a Row or Column without specifying weights on self - such Row or Column
-    //   layouters pass their full constraints to children (instances of this [LineSegmentContainer]).
-    // So, `this.constraints == constraintsOnImmediateOwner`!
+    // Passing [this.constraints] is correct here, see [layout] documentation.
     _pixelPointFrom = fromPointOffset.lextrInContextOf(
         chartSeriesOrientation: chartSeriesOrientation,
         constraintsOnImmediateOwner: constraints,
@@ -96,60 +94,21 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer
       widthToLextr: widthToLextr,
     );
 
+    // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child
+    //   of a non-stacked [LineChart] with hierarchy-parent being [Column] or [Row] with [mainAxisLayout=matrjoska,end]
+    //   all sibling [LineSegmentContainer]s overlap and grow from end. Then the [layoutSize] in the main direction
+    //   of parent is the max length in that direction. In the cross-direction, it is the same as constraint size.
+    layoutSize = _layoutSize;
 
-    layoutSize = constraints.size; // todo-00-last-last : This is likely WRONG - SHOULD BE SOME KIND OF min/max across _pixelPointFrom, _pixelPointTo
+  }
 
-    /* KEEP for now
-    // layout the [pointFrom] and [pointTo] to pixels, by positioning:
-    //   - in the [constraintsSplitAxis],      direction, on the constraints border
-    //   - in the [constraintsSplitAxis]-cross direction, by extrapolating their value
-    double pixelFromX, pixelFromY, pixelToX, pixelToY;
-
-    // Which labels generator to use for scaling? That depends on which axis is 'input(independent)'
-    //   - switch constraints are split along
-    //     - horizontal, parent is Row    by definition. We ASSUME dependent axis is Y, use it's extrapolation
-    //     - vertical,   parent is Column by definition. We ASSUME dependent axis is X, use it's extrapolation
-    util_labels.DataRangeLabelInfosGenerator labelInfosGenerator;
-
-    container_base.LayoutAxis chartPointsMainLayoutAxis = chartSeriesOrientation.mainLayoutAxis;
-
-    switch(chartPointsMainLayoutAxis) {
-      case container_base.LayoutAxis.horizontal:
-        // Assuming Row, X is constraints.width, Y is extrapolating value to constraints.height
-        labelInfosGenerator = chartViewMaker.yLabelsGenerator;
-        pixelFromX = 0;
-        pixelToX = constraints.width;
-        pixelFromY = labelInfosGenerator.lextrValueToPixels(
-          value: pointFrom.outputValue,
-          axisPixelsMin: 0.0,
-          axisPixelsMax: constraints.height,
-        );
-        pixelToY = labelInfosGenerator.lextrValueToPixels(
-          value: pointTo.outputValue,
-          axisPixelsMin: 0.0,
-          axisPixelsMax: constraints.height,
-        );
-        break;
-      case container_base.LayoutAxis.vertical:
-        // Assuming Column, Y is constraints.height, X is extrapolating value to constraints.width
-        labelInfosGenerator = chartViewMaker.xLabelsGenerator;
-        pixelFromY = 0;
-        pixelToY = constraints.height;
-        pixelFromX = labelInfosGenerator.lextrValueToPixels(
-          value: pointFrom.outputValue,
-          axisPixelsMin: 0.0,
-          axisPixelsMax: constraints.width,
-        );
-        pixelToX = labelInfosGenerator.lextrValueToPixels(
-          value: pointTo.outputValue,
-          axisPixelsMin: 0.0,
-          axisPixelsMax: constraints.width,
-        );
-        break;
+  ui.Size get _layoutSize {
+    switch(chartSeriesOrientation) {
+      case chart_orientation.ChartSeriesOrientation.column:
+        return ui.Size(constraints.width, math.max(_pixelPointFrom.outputValue, _pixelPointTo.outputValue));
+      case chart_orientation.ChartSeriesOrientation.row:
+        return ui.Size(math.max(_pixelPointFrom.inputValue, _pixelPointTo.inputValue), constraints.height);
     }
-    _pixelPointFrom = ui.Offset(pixelFromX, pixelFromY);
-    _pixelPointTo = ui.Offset(pixelToX, pixelToY);
-    */
   }
 
   /// Override method in superclass [Container].

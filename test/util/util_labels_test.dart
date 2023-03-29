@@ -169,7 +169,7 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(bool extendAxisToOrigin, C
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(chartModel: mockChartModel, isStacked: true,),
     dataModel: mockChartModel,
-    dataDependency: DataDependency.dependentData,
+    dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: options.yContainerOptions.valueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
@@ -236,7 +236,7 @@ void rangeTestCore(
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
       chartViewMaker: MockChartViewMaker(chartModel: dataModel, isStacked: true,),
       dataModel: dataModel,
-      dataDependency: DataDependency.dependentData,
+      dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,

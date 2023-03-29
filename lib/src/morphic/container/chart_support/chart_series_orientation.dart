@@ -1,6 +1,5 @@
 import '../container_layouter_base.dart' as container_base;
 
-// todo-00-last-progress
 /// Describes display orientation of axes and data on a chart.
 ///
 /// Motivation:

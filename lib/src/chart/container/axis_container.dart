@@ -3,8 +3,8 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 // base libraries
 import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_edge_padding.dart';
-
 import '../../morphic/container/label_container.dart';
+import '../../morphic/container/chart_support/chart_series_orientation.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
@@ -12,6 +12,7 @@ import '../options.dart';
 
 // this level libraries
 import 'container_common.dart' as container_common_new;
+import 'line_segment_container.dart';
 
 class XContainer extends container_common_new.ChartAreaContainer {
   /// Constructs the container that holds X labels.
@@ -41,6 +42,15 @@ class XContainer extends container_common_new.ChartAreaContainer {
         children: [
           Column(children: [
             // todo-00 add LineSegment for axis line
+/*
+            LineSegmentContainer(
+              chartSeriesOrientation: ChartSeriesOrientation.column,
+              pointFrom: pointFrom,
+              pointTo: pointTo,
+              linePaint: linePaint,
+              chartViewMaker: chartViewMaker,
+            ),
+*/
             ExternalTicksRow(
               mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,

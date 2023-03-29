@@ -72,13 +72,12 @@ class DataRangeLabelInfosGenerator {
     //   are **not-extrapolated && transformed** data from [ChartModelPoint].
     if (userLabels != null) {
       switch(dataDependency) {
-        case DataDependency.independentData:
+        case DataDependency.inputData:
           // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
           //   the interval is, once the pixels range on the axis is available,
           //   it will be lextr-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          // todo-00-last-done : dataEnvelope = const util_dart.Interval(0.0, 100.0);
           dataEnvelope = chartViewMaker.chartModel.dataRangeWhenNonNumericLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
@@ -86,7 +85,7 @@ class DataRangeLabelInfosGenerator {
             pointPositionInSegment: util_dart.LineSegmentPosition.center,
           );
           break;
-        case DataDependency.dependentData:
+        case DataDependency.outputData:
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
@@ -134,8 +133,8 @@ class DataRangeLabelInfosGenerator {
 
   /// Describes if this [DataRangeLabelInfosGenerator] instance is for dependent or independent data.
   ///
-  /// [DataDependency.dependentData] determines this instance is for dependent data,
-  /// [DataDependency.independentData] determines this instance is for independent data.
+  /// [DataDependency.outputData] determines this instance is for dependent data,
+  /// [DataDependency.inputData] determines this instance is for independent data.
   ///
   /// The significance of dependent/independent is
   final DataDependency dataDependency;

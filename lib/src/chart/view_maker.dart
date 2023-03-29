@@ -74,7 +74,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
-      dataDependency: model.DataDependency.dependentData,
+      dataDependency: model.DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
@@ -87,7 +87,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
-      dataDependency: model.DataDependency.independentData,
+      dataDependency: model.DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.xContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
