@@ -310,6 +310,9 @@ class DomainExtrapolation1D {
     required double toDomainEnd,
   })
       :
+        // Allow the TO domain to be collapsed, but not the FROM domain, which is in denominator -
+        //  DomainExtrapolation1D.apply would not be a function.
+        assert (fromDomainStart != fromDomainEnd),
         _fromDomainStart = fromDomainStart,
         _fromDomainEnd = fromDomainEnd,
         _toDomainStart = toDomainStart,
@@ -317,7 +320,10 @@ class DomainExtrapolation1D {
         _domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart),
         _fromMoveOriginBy = fromDomainStart,
         _toMoveOriginBy = -1 * toDomainStart {
-    assert (fromDomainStart != fromDomainEnd && toDomainStart != toDomainEnd);
+    if (isCloserThanEpsilon(toDomainStart, toDomainEnd)) {
+      print( ' ###### to domain is collapsed or closer than epsilon: '
+          'toDomainStart $_toDomainStart == toDomainEnd = $_toDomainEnd');
+    }
   }
 
   /// First point of the 'from' domain. If larger than [_fromDomainEnd], represents reversed direction.
@@ -427,9 +433,14 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
     toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
     toDomainEnd: doInvertToDomain ? toPixelsMin : toPixelsMax,
   ) {
-    if (!(fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax)) {
+    // Allow the TO domain to be collapsed, but not the FROM domain, which is in denominator in super.
+    if (!(fromValuesMin < fromValuesMax)) {
       throw StateError('$runtimeType: fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax is NOT true on $this.');
     }
+    if (!(toPixelsMin < toPixelsMax))  {
+      print(' ##### $runtimeType: TO domain is collapsed: toPixelsMin < toPixelsMax is NOT true on $this.');
+    }
+
   }
 
   final bool doInvertToDomain;

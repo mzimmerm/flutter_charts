@@ -11,43 +11,50 @@ import '../view_maker.dart' as view_maker;
 import '../model/data_model.dart' as model;
 // import '../../util/util_labels.dart' as util_labels;
 
-/// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-class LineBetweenPointModelsContainer extends container_common_new.ChartAreaContainer
+/// Leaf container lays out and draws a line segment between [fromPointOffset] and [toPointOffset] using [linePaint].
+///
+/// The  [fromPointOffset] and [toPointOffset] are late, and SHOULD be set in the constructor;
+/// MUST be set before [layout] is called.
+///
+/// The nullability of [fromPointOffset] and [toPointOffset] is an awkward lip service to
+/// straightforward extensibility of this class where these members can be replaced by [model.PointModel] in extensions,
+/// notable the [LineBetweenPointModelsContainer].
+class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaContainer
     with container_base.HeightSizerLayouterChildMixin,
-      container_base.WidthSizerLayouterChildMixin
-{
+        container_base.WidthSizerLayouterChildMixin {
 
-  LineBetweenPointModelsContainer({
+  LineBetweenPointOffsetsContainer({
+    this.fromPointOffset,
+    this.toPointOffset,
     required this.chartSeriesOrientation,
-    required this.pointFrom,
-    required this.pointTo,
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
   }) : super(
-    chartViewMaker: chartViewMaker
+      chartViewMaker: chartViewMaker
   );
 
   /// Orientation of the chart bars: horizontal or vertical.
   final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
-  final model.PointModel pointFrom;
-  final model.PointModel pointTo;
+  late final PointOffset? fromPointOffset;
+  late final PointOffset? toPointOffset;
   final ui.Paint linePaint;
 
   /// Coordinates of the layed out pixel values.
-  late final PointOffset _pixelPointFrom;
-  late final PointOffset _pixelPointTo;
-
+  ///
+  /// NOT final, as offset is manipulated by [applyParentOffset];
+  late PointOffset _fromOffsetPixels;
+  late PointOffset _toOffsetPixels;
 
   // #####  Implementors of method in superclass [BoxContainer].
 
-  /// Overrides [layout] by lextr-transforming the data-valued [PointModel]s [pointFrom] and [pointTo],
-  /// into their pixel equivalents [PointOffset]s [_pixelPointFrom] and [_pixelPointTo].
+  /// Overrides [layout] by lextr-transforming the data-valued [PointModel]s [fromPointOffset] and [toPointOffset],
+  /// into their pixel equivalents [PointOffset]s [_fromOffsetPixels] and [_toOffsetPixels].
   ///
   /// The
   ///
-  /// Ensures the [layoutSize] is set as the maximum value of [_pixelPointFrom] and [_pixelPointTo] in the
+  /// Ensures the [layoutSize] is set as the maximum value of [_fromOffsetPixels] and [_toOffsetPixels] in the
   /// parent layouter main direction, and the [constraints] component in the parent layouter cross-direction.
   ///
   /// Important notes:
@@ -61,31 +68,24 @@ class LineBetweenPointModelsContainer extends container_common_new.ChartAreaCont
   void layout() {
     buildAndReplaceChildren();
 
-    // Code here takes care of the pixel positioning of the points, aka layout.
+    assert(fromPointOffset != null);
+    assert(toPointOffset != null);
 
-    // Pull the offset (from and toPointOffset) from the [pointFrom] and [pointTo]. The points are both on x axis
-    //   so far, so xLabelsGenerator is user as full inputRange for both from/to points.
-    // Just after, we lextr the pointOffsets to their pixel values.
-    PointOffset fromPointOffset = pointFrom.pointOffsetWithInputRange(
-        dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
-    );
-    PointOffset toPointOffset = pointTo.pointOffsetWithInputRange(
-      dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
-    );
+    // Code here takes care of the pixel positioning of the points, aka layout.
 
     // Lextr the pointOffsets to their pixel values using [lextrInContextOf].
     // The method  takes into account chart orientation, which may cause the x and y (input and output) values
     //   to flip (invert) during the lextr.
     // Passing [this.constraints] is correct here, see [layout] documentation.
-    _pixelPointFrom = fromPointOffset.lextrInContextOf(
-        chartSeriesOrientation: chartSeriesOrientation,
-        constraintsOnImmediateOwner: constraints,
-        inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
-        outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
-        heightToLextr: heightToLextr,
-        widthToLextr: widthToLextr,
+    _fromOffsetPixels = fromPointOffset!.lextrInContextOf(
+      chartSeriesOrientation: chartSeriesOrientation,
+      constraintsOnImmediateOwner: constraints,
+      inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
+      outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+      heightToLextr: heightToLextr,
+      widthToLextr: widthToLextr,
     );
-    _pixelPointTo = toPointOffset.lextrInContextOf(
+    _toOffsetPixels = toPointOffset!.lextrInContextOf(
       chartSeriesOrientation: chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
@@ -105,9 +105,9 @@ class LineBetweenPointModelsContainer extends container_common_new.ChartAreaCont
   ui.Size get _layoutSize {
     switch(chartSeriesOrientation) {
       case chart_orientation.ChartSeriesOrientation.column:
-        return ui.Size(constraints.width, math.max(_pixelPointFrom.outputValue, _pixelPointTo.outputValue));
+        return ui.Size(constraints.width, math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue));
       case chart_orientation.ChartSeriesOrientation.row:
-        return ui.Size(math.max(_pixelPointFrom.inputValue, _pixelPointTo.inputValue), constraints.height);
+        return ui.Size(math.max(_fromOffsetPixels.inputValue, _toOffsetPixels.inputValue), constraints.height);
     }
   }
 
@@ -116,13 +116,13 @@ class LineBetweenPointModelsContainer extends container_common_new.ChartAreaCont
   void applyParentOffset(container_base.LayoutableBox caller, ui.Offset offset) {
     super.applyParentOffset(caller, offset);
 
-    _pixelPointFrom += offset;
-    _pixelPointTo += offset;
+    _fromOffsetPixels += offset;
+    _toOffsetPixels += offset;
   }
 
   @override
   void paint(ui.Canvas canvas) {
-    canvas.drawLine(_pixelPointFrom, _pixelPointTo, linePaint);
+    canvas.drawLine(_fromOffsetPixels, _toOffsetPixels, linePaint);
   }
 
   @override
@@ -131,3 +131,38 @@ class LineBetweenPointModelsContainer extends container_common_new.ChartAreaCont
   }
 }
 
+/// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
+class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
+
+  LineBetweenPointModelsContainer({
+    required this.fromPointModel,
+    required this.toPointModel,
+    required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
+    required ui.Paint linePaint,
+    required view_maker.ChartViewMaker chartViewMaker,
+  }) : super(
+    chartSeriesOrientation: chartSeriesOrientation,
+      linePaint: linePaint,
+      chartViewMaker: chartViewMaker
+  );
+
+  /// Model contains the transformed, non-extrapolated values of the point where the line starts.
+  ///
+  /// This member [fromPointModel] replaces the super [LineBetweenPointOffsetsContainer.fromPointOffset],
+  /// in the sense that it yields the super  [LineBetweenPointOffsetsContainer.fromPointOffset]
+  /// via this instance getter [fromPointOffset].
+  final model.PointModel fromPointModel;
+  final model.PointModel toPointModel;
+
+  /// Override of parent from and to offsets. In parent, they are set in constructor,
+  /// in this extension, they are pulled from the [model.PointModel] from and to members.
+  ///
+  /// Pulls the offset (from and toPointOffset) from the [fromPointModel] and [toPointModel].
+  /// Both points are on x axis, so xLabelsGenerator is used as input dataRange for both from/to points.
+  @override
+  PointOffset get fromPointOffset =>
+      fromPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+  @override
+  PointOffset get toPointOffset =>
+      toPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+}

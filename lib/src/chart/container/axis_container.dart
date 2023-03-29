@@ -5,6 +5,7 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_series_orientation.dart';
+import '../../morphic/ui2d/point.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
@@ -39,18 +40,21 @@ class XContainer extends container_common_new.ChartAreaContainer {
     List<BoxContainer> children = [
       //region Description
       WidthSizerLayouter(
+//        children : [
+//          HeightSizerLayouter(
         children: [
           Column(children: [
-            // todo-00 add LineSegment for axis line
-/*
-            LineSegmentContainer(
+            // todo-00-last-progress adding LineSegment for axis line
+
+            LineBetweenPointOffsetsContainer(
               chartSeriesOrientation: ChartSeriesOrientation.column,
-              pointFrom: pointFrom,
-              pointTo: pointTo,
-              linePaint: linePaint,
+              fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
+              toPointOffset: const PointOffset(inputValue: 100.0, outputValue: 0.0),
+              linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
               chartViewMaker: chartViewMaker,
             ),
-*/
+
+
             ExternalTicksRow(
               mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
@@ -71,6 +75,9 @@ class XContainer extends container_common_new.ChartAreaContainer {
             ),
           ]),
         ],
+//          ),
+//    ],
+
       ),
       //endregion
     ];

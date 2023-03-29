@@ -706,19 +706,21 @@ class RootSandboxSizers {
   }
 
   /// Returns width sizer if exists, otherwise exception.
-  WidthSizerLayouter get widthSizerEnsured {
+  double get widthSizerEnsuredLength {
     if (__widthSizer == null) {
-      throw StateError('No width sizer was placed on the sandbox');
+      print(' ######### No width sizer was placed on the sandbox, returning 0 width');
+      return 0.0;
     }
-    return __widthSizer!;
+    return __widthSizer!.length;
   }
 
   /// Returns height sizer if exists, otherwise exception.
-  HeightSizerLayouter get heightSizerEnsured {
+  double get heightSizerEnsuredLength {
     if (__heightSizer == null) {
-      throw StateError('No height sizer was placed on the sandbox');
+      print(' ######### No height sizer was placed on the sandbox, returning 0 lenhth');
+      return 0.0;
     }
-    return __heightSizer!;
+    return __heightSizer!.length;
   }
 }
 
@@ -912,7 +914,7 @@ mixin WidthSizerLayouterChildMixin on BoxContainer {
   ///   - The
   /// We do the non-null cast without checking. Should be improved to provide good hints to users.
   double get widthToLextr =>
-      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsured.length;
+      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsuredLength;
 }
 
 /// Mixin should be applied on container-hierarchy-children of [HeightSizerLayouter].
@@ -925,7 +927,7 @@ mixin HeightSizerLayouterChildMixin on BoxContainer {
   ///
   /// See [WidthSizerLayouterChildMixin.widthToLextr] for details.
   double get heightToLextr =>
-      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsured.length;
+      (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsuredLength;
 }
 
 // ---------- Width and Height sizers and layouters ^ ------------------------------------------------------------------

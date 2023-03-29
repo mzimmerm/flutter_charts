@@ -1,12 +1,13 @@
-import 'dart:ui' as ui show Paint, PaintingStyle;
+// import 'dart:ui' as ui show Paint, PaintingStyle;
 
 // this level or equivalent
 import 'container.dart';
 import '../../chart/view_maker.dart';
-import '../../chart/options.dart';
+// import '../../chart/options.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 
-// todo-1 refactor - can this be a behavior?
+// todo-00-last-done : moved to options
+/*
 ui.Paint gridLinesPaint(ChartOptions options) {
   ui.Paint paint = ui.Paint();
   paint.color = options.dataContainerOptions.gridLinesColor;
@@ -15,6 +16,7 @@ ui.Paint gridLinesPaint(ChartOptions options) {
 
   return paint;
 }
+*/
 
 /// The visual element representing one data value on the chart.
 ///

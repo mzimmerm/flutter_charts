@@ -1,4 +1,5 @@
-import 'dart:ui' as ui show Color, TextDirection, TextAlign;
+import 'dart:ui' as ui
+    show Color, Paint, PaintingStyle, TextDirection, TextAlign;
 import 'package:flutter/material.dart' as material show Colors; // any color we can use is from here, more descriptive
 import 'dart:math' as math show pi, log, ln10, pow, max;
 import 'package:flutter/widgets.dart' as widgets show TextStyle;
@@ -291,6 +292,16 @@ class DataContainerOptions {
   /// Y on the left and right)
   /// Auto layout can increase these lengths, to fit labels below them.
   final double dataRightTickWidth;
+
+  // todo-00-last-done : moved here from presenter.dart
+  ui.Paint gridLinesPaint() {
+    ui.Paint paint = ui.Paint();
+    paint.color = gridLinesColor;
+    paint.style = ui.PaintingStyle.stroke;
+    paint.strokeWidth = 1.0;
+
+    return paint;
+  }
 
   const DataContainerOptions({
     this.gridLinesColor = material.Colors.grey, // const ui.Color(0xFF9E9E9E),

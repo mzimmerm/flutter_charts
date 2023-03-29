@@ -8,7 +8,7 @@ import '../container/container_layouter_base.dart';
 import '../container/chart_support/chart_series_orientation.dart';
 
 class PointOffset extends Offset {
-  PointOffset({
+  const PointOffset({
     required double inputValue,
     required double outputValue,
   }) : super(inputValue, outputValue);
@@ -18,7 +18,10 @@ class PointOffset extends Offset {
   double get inputValue => dx;
   double get outputValue => dy;
   @override
-  PointOffset operator +(Offset other) => PointOffset(inputValue: other.dx, outputValue: other.dy);
+  PointOffset operator +(Offset other) => PointOffset(
+        inputValue: inputValue + other.dx,
+        outputValue: outputValue + other.dy,
+      );
 
   Offset get asOffset => Offset(inputValue, outputValue);
 
@@ -67,7 +70,7 @@ class PointOffset extends Offset {
 
     switch (orientation) {
       case ChartSeriesOrientation.column:
-        // 1.1.1:
+      // 1.1.1:
         inputPixels = ToPixelsExtrapolation1D(
           fromValuesMin: inputDataRange.min,
           fromValuesMax: inputDataRange.max,
@@ -85,7 +88,7 @@ class PointOffset extends Offset {
         ).apply(outputValue);
         break;
       case ChartSeriesOrientation.row:
-        // 1.2.2:
+      // 1.2.2:
         inputPixels = ToPixelsExtrapolation1D(
           fromValuesMin: outputDataRange.min,
           fromValuesMax: outputDataRange.max,
@@ -95,8 +98,8 @@ class PointOffset extends Offset {
         ).apply(outputValue);
         // 1.1.2:
         outputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: outputDataRange.min,
-          fromValuesMax: outputDataRange.max,
+          fromValuesMin: inputDataRange.min,
+          fromValuesMax: inputDataRange.max,
           toPixelsMin: 0.0,
           toPixelsMax: constraints.height,
           doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
@@ -110,4 +113,83 @@ class PointOffset extends Offset {
     );
   }
 
+
+  /* todo-00-last : KEEP FOR NOW
+  PointOffset lextrColumnInContextOf({
+    required ChartSeriesOrientation  chartSeriesOrientation,
+    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required Interval                inputDataRange,
+    required Interval                outputDataRange,
+    required double                  heightToLextr,
+  }) {
+    assert (chartSeriesOrientation == ChartSeriesOrientation.column);
+
+    ChartSeriesOrientation orientation = chartSeriesOrientation;
+    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+
+    double inputPixels = 0.0;
+    double outputPixels = 0.0;
+
+        // 1.1.1:
+        inputPixels = ToPixelsExtrapolation1D(
+          fromValuesMin: inputDataRange.min,
+          fromValuesMax: inputDataRange.max,
+          toPixelsMin: 0.0,
+          toPixelsMax: constraints.width,
+          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
+        ).apply(inputValue);
+        // 1.2.1:
+        outputPixels = ToPixelsExtrapolation1D(
+          fromValuesMin: outputDataRange.min,
+          fromValuesMax: outputDataRange.max,
+          toPixelsMin: 0.0,
+          toPixelsMax: heightToLextr,
+          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
+        ).apply(outputValue);
+
+    return PointOffset(
+      inputValue: inputPixels,
+      outputValue: outputPixels,
+    );
+  }
+
+  PointOffset lextrRowInContextOf({
+    required ChartSeriesOrientation  chartSeriesOrientation,
+    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required Interval                inputDataRange,
+    required Interval                outputDataRange,
+    required double                  widthToLextr,
+  }) {
+    assert (chartSeriesOrientation == ChartSeriesOrientation.row);
+
+    ChartSeriesOrientation orientation = chartSeriesOrientation;
+    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+
+    double inputPixels = 0.0;
+    double outputPixels = 0.0;
+
+      // 1.2.2:
+        inputPixels = ToPixelsExtrapolation1D(
+          fromValuesMin: outputDataRange.min,
+          fromValuesMax: outputDataRange.max,
+          toPixelsMin: 0.0,
+          toPixelsMax: widthToLextr,
+          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
+        ).apply(outputValue);
+        // 1.1.2:
+        outputPixels = ToPixelsExtrapolation1D(
+          fromValuesMin: inputDataRange.min,
+          fromValuesMax: inputDataRange.max,
+          toPixelsMin: 0.0,
+          toPixelsMax: constraints.height,
+          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
+        ).apply(inputValue);
+
+    return PointOffset(
+      inputValue: inputPixels,
+      outputValue: outputPixels,
+    );
+  }
+
+ */
 }
