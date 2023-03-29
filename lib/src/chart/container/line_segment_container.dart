@@ -13,8 +13,8 @@ import '../model/data_model.dart' as model;
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 /// todo-00-last-last-progress IMPLEMENT
 class LineSegmentContainer extends container_common_new.ChartAreaContainer
-    with container_base.HeightSizerLayouterChild,
-      container_base.WidthSizerLayouterChild
+    with container_base.HeightSizerLayouterChildMixin,
+      container_base.WidthSizerLayouterChildMixin
 {
 
   LineSegmentContainer({
@@ -63,15 +63,25 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer
     // todo-00-last-last: Replace with Point.lextrInContextOf but KEEP this for reference
     //   create PointOffset from PointModel
     //   set _pixelPointFrom and To
+    // Pull the position (pointOffset) of the [pointFrom] and [pointTo]. The points are both on x axis so far.
+    // Later, we will lextr the pointOffsets to their pixel values.
     PointOffset fromPointOffset = pointFrom.pointOffsetWithInputRange(
         dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
     );
     PointOffset toPointOffset = pointTo.pointOffsetWithInputRange(
       dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
     );
+
+    // Lextr the pointOffsets to their pixel values using [lextrInContextOf].
+    // The method  takes into account chart orientation, which may cause the x and y (input and output) values
+    //   to flip (invert) during the lextr.
+    // Passing [this.constraints] is correct here, as we MUST assume this [LineSegmentContainer]
+    //   was placed into a Row or Column without specifying weights on self - such Row or Column
+    //   layouters pass their full constraints to children (instances of this [LineSegmentContainer]).
+    // So, `this.constraints == constraintsOnImmediateOwner`!
     _pixelPointFrom = fromPointOffset.lextrInContextOf(
         chartSeriesOrientation: chartSeriesOrientation,
-        constraintsOnImmediateOwner: constraints, // todo-00-last-last : THIS IS NOT RIGHT !!! NEED THE ROW CONSTRAINT??? MAYBE IT'S RIGHT??? constraintsOnImmediateOwner,
+        constraintsOnImmediateOwner: constraints,
         inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
         outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
         heightToLextr: heightToLextr,
@@ -79,7 +89,7 @@ class LineSegmentContainer extends container_common_new.ChartAreaContainer
     );
     _pixelPointTo = toPointOffset.lextrInContextOf(
       chartSeriesOrientation: chartSeriesOrientation,
-      constraintsOnImmediateOwner: constraints, // todo-00-last-last : THIS IS NOT RIGHT !!! NEED THE ROW CONSTRAINT??? MAYBE IT'S RIGHT??? constraintsOnImmediateOwner,
+      constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,

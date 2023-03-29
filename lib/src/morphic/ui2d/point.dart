@@ -16,7 +16,14 @@ class PointOffset extends Offset {
   double get inputValue => dx;
   double get outputValue => dy;
 
-
+  /// Lextr this point to it's pixel scale.
+  ///
+  /// This takes into account chart orientation [chartSeriesOrientation], which may cause the x and y (input and output)
+  /// values to flip (invert) during the lextr.
+  ///
+  /// todo-01-doc : document all parameters
+  ///
+  /// If the [chartSeriesOrientation]
   /// 1. Rules for lextr-ing of inputValue and outputValue values of PointOffset
   ///   1.1 inputValue: PointOffset component is lextr-ed to constraints width (or height)
   ///     1.1.1 ChartSeriesOrientation.column: inputValue lextr-ed to constraints.width

@@ -651,17 +651,20 @@ abstract class LayoutableBox {
   void layout();
 }
 
+// ---------- Width and Height sizers and layouters v ------------------------------------------------------------------
 
-// ---------- Width and Height sizers and layouters vvvvvv -------------------------------------------------------------
-
-/// Holds on to width and height sizers used somewhere in the container-hierarchy.
+/// Holds on to width and height sizers, instances of [WidthSizerLayouter] and [HeightSizerLayouter],
+/// present in the container-hierarchy.
 ///
-/// Intended to be placed on root [BoxContainer.sandbox] using key [keyInSandbox].
+/// Intended to be placed on root [BoxContainer.sandbox] using the key [keyInSandbox].
+///
+/// See [FromConstraintsSizerMixin] for the roles of the [WidthSizerLayouter] and [HeightSizerLayouter] sizers.
+///
 class RootSandboxSizers {
   // Map with keys to objects which implement [FromConstraintsWidthSizer].
-  // Intent: only have one key 'width' and one key 'height', The idea is that any chart areas should only have
-  // one width and one size - as if there was a table with many columns, but there is one column which cells must have the same width.
-  //                      and many rows, but there is exactly one row where height matters. They intersect on the DataContainer.
+  // Intent: only have one key for 'width' and one key 'height', The idea is that any chart areas should only have
+  // one width and one height member - as if there was a table with many columns,
+  // but there is one column which cells must have the same width. and many rows, but there is exactly one row where height matters. They intersect on the DataContainer.
   WidthSizerLayouter? __widthSizer;
   HeightSizerLayouter? __heightSizer;
 
@@ -719,13 +722,41 @@ class RootSandboxSizers {
   }
 }
 
-/// On behalf of far-away children than implement [FromConstraintsWidthSizerChild]
-///   provides ability to set [lenght] which represents width on [FromConstraintsWidthSizer]
-///   or height on [FromConstraintsHeightSizer].
+/// Mixed into [FromConstraintsSizerLayouter] and further into [WidthSizerLayouter] and [HeightSizerLayouter],
+/// provides, on behalf of any far-away child that is a [WidthSizerLayouterChildMixin] or [HeightSizerLayouterChildMixin]
+///   (currently only the [LineSegmentContainer]), the following roles:
+///
+///     - Single method [findOrSetRootSandboxSizersThenCheckOrSetThisSizer] provides the ability to find
+///       or create [RootSandboxSizers] on the [BoxContainer.root]'s [BoxContainer.sandbox]
+///       on the key [RootSandboxSizers.keyInSandbox], and place itself as [RootSandboxSizers.__widthSizer] or
+///       [RootSandboxSizers.__heightSizer].
+///     - Single member [length] provides the ability to hold on the mixed layouter width or height,
+///       for a later retrieval by the [WidthSizerLayouterChildMixin] or [HeightSizerLayouterChildMixin],
+///       using their method [WidthSizerLayouterChildMixin.widthToLextr] or [HeightSizerLayouterChildMixin.heightToLextr].
+///
+/// In addition, any mixing class should do the following:
+///   - Use the full width or height component of its [BoxContainer.constraints] to set its [layoutSize]
+///     likely by implementing [layoutSize] as:
+///     ```dart
+///       Size get layoutSize {
+///           return layoutSizeIncreasedToLength(isWidthMain: false);
+///        }
+///     ```
+///   - Setting the [length] member to the full width or height component of its [], likely in
+///     ```dart
+///     void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
+///       length = constraints.height;
+///       super.applyParentConstraints(caller, constraints);
+///     }
+///     ```
+///
+/// The [length] represents width on [WidthSizerLayouter] or height on [HeightSizerLayouter].
 ///
 /// The [length] is assumed to be in units pixel -
 /// this is the width or height in pixels, to which the far-away children
-/// will linearly extrapolate (lextr) their width or height.
+/// will linearly extrapolate (lextr) their width or height.  In other words,
+/// the far-away children will fill the [length] in the appropriate direction.
+///
 mixin FromConstraintsSizerMixin on BoxContainer {
 
   late final double length;
@@ -750,7 +781,9 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 
 }
 
-/// Marker class, marking ability to [findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
+/// Base class of sizers layouters, which provides the ability to find and set
+/// itself on the sandbox, by calling the mixed in method
+/// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
@@ -822,6 +855,8 @@ class WidthSizerLayouter extends FromConstraintsSizerLayouter {
   }
 }
 
+/// Concrete [FromConstraintsSizerLayouter] allows to use up
+/// full height component of [constraints], and set the height on the [length] member.
 class HeightSizerLayouter extends FromConstraintsSizerLayouter {
 
   /// The required generative constructor
@@ -831,14 +866,17 @@ class HeightSizerLayouter extends FromConstraintsSizerLayouter {
     children: children,
   );
 
-  /// Ensures the sizer logic around width and height constraints is applied, then invokes super
-  /// which stores the passed constraints.
+  /// Uses it's full [constraints] height component to set it's [length] (on class-hierarchy parent),
+  /// then invokes super which stores the passed constraints.
+  ///
+  /// The above ensures the sizer logic around height constraints is applied.
   @override
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints) {
     length = constraints.height;
     super.applyParentConstraints(caller, constraints);
   }
 
+  /// Ensures the height component of [layoutSize] uses the full height of [constraints].
   @override
   Size get layoutSize {
     return layoutSizeIncreasedToLength(isWidthMain: false);
@@ -846,30 +884,51 @@ class HeightSizerLayouter extends FromConstraintsSizerLayouter {
 
 }
 
-/// Should be applied on children of [WidthSizerLayouter].
-/// The mixin method [widthToLextr] provides the width (set by some far-away parent) to which this instance should lextr.
-mixin WidthSizerLayouterChild on BoxContainer {
+/// Mixin should be applied on any container-hierarchy-child of a far-away parent [WidthSizerLayouter],
+///   where the child *need to know and fill part or the whole of the parent's width*.
+///
+/// The phrase *need to know and fill part or the whole of the parent's width*,
+///   means that the child will lextr to (use up part of) the width [widthToLextr]
+///   set by the parent.
+///
+/// This mixin method [widthToLextr] finds the far-away parent's width to which
+///   this child instance should lextr to.
+mixin WidthSizerLayouterChildMixin on BoxContainer {
 
-  /// Width in pixels of a far-away parent, to which this child's width will linearly extrapolate (lextr).
+  /// Width in pixels of a far-away parent, a [WidthSizerLayouter],
+  ///   which this child's width will use partly or fully, most likely by lextr-ing it's
+  ///   value width to the [widthToLextr] pixel width.
   ///
-  /// All nullable fields must be set by now, otherwise error. We do the non-null cast without
-  /// checking. Should be improved to provide good hints to users.
+  /// The lextr-ed result is in the coordinates of the far-away parent, in the sense that
+  ///   if this child [layoutSize] width component is set to [widthToLextr],
+  ///   and no parents between the child and the far-away parent extend the layout width,
+  ///   the container hierarchy between the far-away parent and this child
+  ///   will fill exactly, the far-away parent's [layoutSize] width component.
+  ///
+  /// All fields on the root needed to obtain the resul must be set by now, otherwise error:
+  ///   - root's [BoxContainerHierarchy.sandbox] map
+  ///   - a key [RootSandboxSizers.keyInSandbox] must have a value in the root's sandbox
+  ///     which is instance of [WidthSizerLayouter]
+  ///   - The
+  /// We do the non-null cast without checking. Should be improved to provide good hints to users.
   double get widthToLextr =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsured.length;
 }
 
-/// Should be applied on children of [HeightSizerLayouter].
-/// Mixin method [heightToLextr] provides the height (set by some far-away parent) to which this instance should lextr.
-mixin HeightSizerLayouterChild on BoxContainer {
+/// Mixin should be applied on container-hierarchy-children of [HeightSizerLayouter].
+///
+/// See [WidthSizerLayouterChildMixin] for details; everything related to width on [WidthSizerLayouterChildMixin]
+/// documentation applies to height on this class's documentation.
+mixin HeightSizerLayouterChildMixin on BoxContainer {
 
-  /// Height in pixels of a far-away parent, to which this child's height will linearly extrapolate (lextr).
+  /// Height in pixels of a far-away parent to which this instance will be lextr-ed.
   ///
-  /// See [WidthSizerLayouterChild] for details.
+  /// See [WidthSizerLayouterChildMixin.widthToLextr] for details.
   double get heightToLextr =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsured.length;
 }
 
-// ---------- Width and Height sizers and layouters ^^^^^^ -------------------------------------------------------------
+// ---------- Width and Height sizers and layouters ^ ------------------------------------------------------------------
 
 // ---------- Non-positioning BoxLayouter and BoxContainer -------------------------------------------------------------
 

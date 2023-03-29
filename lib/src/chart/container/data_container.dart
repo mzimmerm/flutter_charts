@@ -112,9 +112,9 @@ class PointContainer extends container_common_new.ChartAreaContainer {
 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// It implements the mixin [HeightSizerLayouterChild] which expresses that this is the provided
+/// It implements the mixin [HeightSizerLayouterChildMixin] which expresses that this is the provided
 /// of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate the height.
-class HBarPointContainer extends PointContainer with HeightSizerLayouterChild {
+class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMixin {
 
   /// The rectangle representing the value.
   ///
