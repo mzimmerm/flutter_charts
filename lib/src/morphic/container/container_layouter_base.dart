@@ -12,7 +12,7 @@ import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../../util/util_dart.dart' as util_dart
-    show LineSegment, Interval, ToPixelsExtrapolation1D,
+    show LineSegment, Interval, ToPixelsLTransform1D,
     transposeRowsToColumns, assertDoubleResultsSame;
 import '../../util/util_flutter.dart' as util_flutter
     show boundingRect, assertSizeResultsSame;
@@ -2265,7 +2265,7 @@ class ExternalTicksRow extends ExternalTicksBoxLayouter {
 class ExternalTicksColumn extends ExternalTicksBoxLayouter {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    // todo-01-next provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-011 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2599,7 +2599,7 @@ class TableLayoutCellMinSizer {
       enforcedMinLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
       assert(preLayoutCellToGainMinima != null);
-      // todo-01-next : parent == this will fail. Maybe allow apply to ignore.
+      // todo-011 : parent == this will fail. Maybe allow apply to ignore.
       // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima as LayoutableBox, preLayoutCellConstraints!);
       preLayoutCellToGainMinima!.layout();
       enforcedMinLayoutSize = preLayoutCellToGainMinima!.layoutSize;
@@ -2716,7 +2716,7 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
-  /// todo-01-next-performance : optimize, find it in cellDefinersTable instead !!!!
+  /// todo-011-performance : optimize, find it in cellDefinersTable instead !!!!
   TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cellDefiner) => cellDefiner.row == row && cellDefiner.column == column,
@@ -2728,7 +2728,7 @@ class TableLayoutDefiner {
   ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
   ///   - next is the [cellsAlignerDefiner]
   ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  ///   todo-01-next : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  ///   todo-011 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   ///                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);
@@ -3573,7 +3573,7 @@ class ExternalTicksLayoutProvider {
     */
     
     return tickValues
-        .map((double value) => util_dart.ToPixelsExtrapolation1D(
+        .map((double value) => util_dart.ToPixelsLTransform1D(
               fromValuesMin: tickValuesDomain.min,
               fromValuesMax: tickValuesDomain.max,
               toPixelsMin: tickPixelsDomain.min,

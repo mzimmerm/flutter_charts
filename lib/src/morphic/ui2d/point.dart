@@ -1,7 +1,7 @@
 
 import 'dart:ui' show Offset;
 
-import '../../util/util_dart.dart' show Interval, ToPixelsExtrapolation1D;
+import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 import '../container/container_layouter_base.dart';
 
@@ -39,13 +39,6 @@ class PointOffset extends Offset {
   );
 
   Offset get asOffset => Offset(inputValue, outputValue);
-
-  // todo-00-last-last-progress : Add a method that creates new ranges from same sign portions for
-  //         inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
-  //       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
-  //      - first, return full range, and incorporate to existing code
-  //      - next, return only same-sign-portion of ranges for fromPointOffset, toPointOffset.
-
 
   /// Lextr this [PointOffset] to it's pixel scale.
   ///
@@ -177,7 +170,7 @@ class PointOffset extends Offset {
     fromValuesRange = portion.fromValuesPortion;
     toPixelsRange = portion.toPixelsPortion;
 
-    double inputPixels     = ToPixelsExtrapolation1D(
+    double inputPixels     = ToPixelsLTransform1D(
       fromValuesMin: fromValuesRange.min,
       fromValuesMax: fromValuesRange.max,
       toPixelsMin: toPixelsRange.min,
@@ -187,83 +180,6 @@ class PointOffset extends Offset {
 
     return inputPixels;
   }
-  /* todo-00-last : KEEP FOR NOW
-  PointOffset lextrColumnInContextOf({
-    required ChartSeriesOrientation  chartSeriesOrientation,
-    required BoxContainerConstraints constraintsOnImmediateOwner,
-    required Interval                inputDataRange,
-    required Interval                outputDataRange,
-    required double                  heightToLextr,
-  }) {
-    assert (chartSeriesOrientation == ChartSeriesOrientation.column);
-
-    ChartSeriesOrientation orientation = chartSeriesOrientation;
-    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
-
-    double inputPixels = 0.0;
-    double outputPixels = 0.0;
-
-        // 1.1.1:
-        inputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: inputDataRange.min,
-          fromValuesMax: inputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: constraints.width,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
-        ).apply(inputValue);
-        // 1.2.1:
-        outputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: outputDataRange.min,
-          fromValuesMax: outputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: heightToLextr,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
-        ).apply(outputValue);
-
-    return PointOffset(
-      inputValue: inputPixels,
-      outputValue: outputPixels,
-    );
-  }
-
-  PointOffset lextrRowInContextOf({
-    required ChartSeriesOrientation  chartSeriesOrientation,
-    required BoxContainerConstraints constraintsOnImmediateOwner,
-    required Interval                inputDataRange,
-    required Interval                outputDataRange,
-    required double                  widthToLextr,
-  }) {
-    assert (chartSeriesOrientation == ChartSeriesOrientation.row);
-
-    ChartSeriesOrientation orientation = chartSeriesOrientation;
-    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
-
-    double inputPixels = 0.0;
-    double outputPixels = 0.0;
-
-      // 1.2.2:
-        inputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: outputDataRange.min,
-          fromValuesMax: outputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: widthToLextr,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
-        ).apply(outputValue);
-        // 1.1.2:
-        outputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: inputDataRange.min,
-          fromValuesMax: inputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: constraints.height,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
-        ).apply(inputValue);
-
-    return PointOffset(
-      inputValue: inputPixels,
-      outputValue: outputPixels,
-    );
-  }
- */
 }
 
 /// Helper class mutates [fromValuesRange] and [toPixelsRange] for lextr-ing only using

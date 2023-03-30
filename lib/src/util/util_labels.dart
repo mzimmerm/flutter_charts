@@ -18,7 +18,7 @@ import 'util_dart.dart' as util_dart;
 /// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
 ///
 /// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
-/// todo-01-next : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
+/// todo-011 : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -205,7 +205,7 @@ class DataRangeLabelInfosGenerator {
     }
     // lextr the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
     // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
-    return util_dart.ToPixelsExtrapolation1D(
+    return util_dart.ToPixelsLTransform1D(
       fromValuesMin: dataRange.min,
       fromValuesMax: dataRange.max,
       toPixelsMin: axisPixelsMin,

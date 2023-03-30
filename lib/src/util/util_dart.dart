@@ -294,7 +294,7 @@ enum LineSegmentPosition {
 
 /// Encapsulates the concept of linear transformations in 1D.
 ///
-/// The unnamed generative constructor [LinearTransform1D] creates a transformation which,
+/// The unnamed generative constructor [LTransform1D] creates a transformation which,
 /// applied on a value, first extrapolates the value by the factor [_scaleBy],
 /// then translates by the translation amount is [_moveOriginBy].
 ///
@@ -313,12 +313,12 @@ enum LineSegmentPosition {
 ///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-/// todo-00 : rename to LTransform1D. Add tests for easier refactoring
-class LinearTransform1D {
+/// todo-00 : Add tests for easier refactoring
+class LTransform1D {
   final double _scaleBy;
   final double _moveOriginBy;
 
-  const LinearTransform1D({
+  const LTransform1D({
     required scaleBy,
     required moveOriginBy,
   }) : _scaleBy = scaleBy, _moveOriginBy = moveOriginBy;
@@ -327,7 +327,7 @@ class LinearTransform1D {
   /// all points on the axis by the multiplying [_scaleBy] factor.
   ///
   /// Origin (double 0.0) is the fixed point, of [scaleAtOrigin].
-  const LinearTransform1D.scaleAtOrigin({
+  const LTransform1D.scaleAtOrigin({
     required scaleBy,
   }) : this(scaleBy: scaleBy, moveOriginBy: 0.0,);
 
@@ -335,7 +335,7 @@ class LinearTransform1D {
   /// all points on the axis with origin as the fixed point by the additive [_moveOriginBy] value.
   ///
   /// This transform has no fixed point (so no 'origin' in the name).
-  const LinearTransform1D.moveOriginBy({
+  const LTransform1D.moveOriginBy({
     required moveAmount,
   }) : this(scaleBy: 1.0, moveOriginBy: moveAmount,);
 
@@ -346,7 +346,7 @@ class LinearTransform1D {
   /// ```
   ///    LinearTransform1D.scaleAtOrigin(-1.0)
   /// ```
-  const LinearTransform1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
+  const LTransform1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
 
 
   /// Default transformation first scales, then translates the passed [fromValue].
@@ -392,11 +392,11 @@ class LinearTransform1D {
 ///      ```
 ///
 /// Notes:
-///   - This does not extend [LinearTransform1D]; however, any [DomainExtrapolation1D]
-///     can be replaced with two suitably chosen [LinearTransform1D] applied consequently.
-/// todo-00: Rename DomainLTransform1D. Add tests, then extend from LinearTransform1D. Also remove _domainStretch, this is parent _scaleBy
-class DomainExtrapolation1D {
-  DomainExtrapolation1D({
+///   - This does not extend [LTransform1D]; however, any [DomainLTransform1D]
+///     can be replaced with two suitably chosen [LTransform1D] applied consequently.
+/// todo-00: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
+class DomainLTransform1D {
+  DomainLTransform1D({
     required double fromDomainStart,
     required double fromDomainEnd,
     required double toDomainStart,
@@ -425,7 +425,7 @@ class DomainExtrapolation1D {
   final double _toDomainStart;
   final double _toDomainEnd;
 
-  /// This is the scaling factor, equivalent to [LinearTransform1D._scaleBy].
+  /// This is the scaling factor, equivalent to [LTransform1D._scaleBy].
   final double _domainStretch;
   /// 'from' domain is translated by moving origin by this number;
   /// this causes `value` in 'from' domain to be `value - _fromMoveOriginBy` in 'to' domain.
@@ -452,9 +452,9 @@ class DomainExtrapolation1D {
   ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
   ///
   double apply(double fromValue) {
-    double movedInFrom = LinearTransform1D.moveOriginBy(moveAmount: _fromDomainStart).apply(fromValue);
-    double scaled = LinearTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(movedInFrom);
-    double scaledAndMovedInTo = LinearTransform1D.moveOriginBy(moveAmount: -1 * _toDomainStart).apply(scaled);
+    double movedInFrom = LTransform1D.moveOriginBy(moveAmount: _fromDomainStart).apply(fromValue);
+    double scaled = LTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(movedInFrom);
+    double scaledAndMovedInTo = LTransform1D.moveOriginBy(moveAmount: -1 * _toDomainStart).apply(scaled);
 
     double result = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
 
@@ -494,7 +494,7 @@ class DomainExtrapolation1D {
   }
 }
 
-/// Extension of [DomainExtrapolation1D] which makes the assumption that both 'from' domain
+/// Extension of [DomainLTransform1D] which makes the assumption that both 'from' domain
 /// and 'to' domain are in the same direction, in the sense that
 ///
 ///   ```dart
@@ -518,9 +518,9 @@ class DomainExtrapolation1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-00 : Rename to ToPixelsLTransform1D. Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
-class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
-  ToPixelsExtrapolation1D({
+/// todo-00 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
+class ToPixelsLTransform1D extends DomainLTransform1D {
+  ToPixelsLTransform1D({
     required double fromValuesMin,
     required double fromValuesMax,
     required double toPixelsMin,

@@ -189,7 +189,7 @@ class ChartModel {
   /// Chart options which may affect data validation.
   final ChartOptions chartOptions;
 
-  // todo-01-next-performance : cache valuesMax/Min ond also _flatten
+  // todo-011-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => valuesRows.expand((element) => element).toList();
   double get _valuesMin => _flatten.reduce(math.min);
   // double get _valuesMax => _flatten.reduce(math.max);

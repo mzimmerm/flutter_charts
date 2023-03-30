@@ -5,7 +5,7 @@ import '../../lib/src/util/util_dart.dart';
 void main() {
   test('extrapolateValue - test linear scaling utility', () {
     
-    expect(ToPixelsExtrapolation1D(
+    expect(ToPixelsLTransform1D(
       fromValuesMin: 1.0,
       fromValuesMax: 2.0,
       toPixelsMin: 10.0,
@@ -94,7 +94,7 @@ void main() {
       // print('$valuesRow');
       expect(
         isCloserThanEpsilon(
-            DomainExtrapolation1D(
+            DomainLTransform1D(
               fromDomainStart: valuesRow[1],
               fromDomainEnd: valuesRow[2],
               toDomainStart: valuesRow[4],

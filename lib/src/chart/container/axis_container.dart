@@ -38,25 +38,9 @@ class XContainer extends container_common_new.ChartAreaContainer {
     );
 
     List<BoxContainer> children = [
-      //region Description
       WidthSizerLayouter(
-//        children : [
-//          HeightSizerLayouter(
         children: [
           Column(children: [
-            // todo-00-last-progress adding LineSegment for axis line
-
-
-            LineBetweenPointOffsetsContainer(
-              chartSeriesOrientation: ChartSeriesOrientation.column,
-              fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
-              toPointOffset: const PointOffset(inputValue: 100.0, outputValue: 0.0),
-              linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-              chartViewMaker: chartViewMaker,
-            ),
-
-
-
             ExternalTicksRow(
               mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
@@ -77,11 +61,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
             ),
           ]),
         ],
-//          ),
-//    ],
-
       ),
-      //endregion
     ];
 
     addChildren(children);

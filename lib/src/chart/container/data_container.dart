@@ -22,7 +22,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-01-next : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
+  // todo-011 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
   @override
   void buildAndReplaceChildren() {
     var options = chartViewMaker.chartOptions;
@@ -62,7 +62,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     //Row(
                     //  mainAxisConstraintsWeight: const ConstraintsWeight(weight: 0.0),
                     //  children: [
-                        LineBetweenPointOffsetsContainer( // could also place in Row with main weight=0.0
+                        LineBetweenPointOffsetsContainer( // could also place in Row with main constraints weight=0.0
                           chartSeriesOrientation: ChartSeriesOrientation.column,
                           fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
                           toPointOffset: const PointOffset(inputValue: 100.0, outputValue: 0.0),
@@ -173,7 +173,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     //   lextr the data value to the [HeightSizerLayouter] pixel [length] (=[heightToLextr]) coordinates.
     //   Note: coordinates in self are always 0-based, so the [toPixelMin],
     //         which we lextr to in [HeightSizerLayouter], is 0.
-    var lextr = ToPixelsExtrapolation1D(
+    var lextr = ToPixelsLTransform1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
       /* KEEP as example of working without HeightSizer
