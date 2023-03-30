@@ -58,7 +58,6 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     ),
                     // todo-00-last-progress adding LineSegment for axis line
 
-/*
                     Row(
                       mainAxisConstraintsWeight: const ConstraintsWeight(weight: 0.0),
                       children: [
@@ -71,7 +70,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                         ),
                       ],
                     ),
-*/
+
 
                     // Row with columns of negative values
                     Row(

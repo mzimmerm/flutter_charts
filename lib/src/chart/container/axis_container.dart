@@ -47,6 +47,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
             // todo-00-last-progress adding LineSegment for axis line
 
 
+/*
             LineBetweenPointOffsetsContainer(
               chartSeriesOrientation: ChartSeriesOrientation.column,
               fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
@@ -54,6 +55,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
               linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
               chartViewMaker: chartViewMaker,
             ),
+*/
 
 
 

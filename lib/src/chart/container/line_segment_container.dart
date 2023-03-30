@@ -108,12 +108,23 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   }
 
   ui.Size get _layoutSize {
+/* todo-00-last-last-done : KEEP THE SECONG FOR NOW core of the issue all along
     switch(chartSeriesOrientation) {
       case chart_orientation.ChartSeriesOrientation.column:
         return ui.Size(constraints.width, math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue));
       case chart_orientation.ChartSeriesOrientation.row:
         return ui.Size(math.max(_fromOffsetPixels.inputValue, _toOffsetPixels.inputValue), constraints.height);
     }
+
+    return ui.Size(
+        (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue ).abs(),
+        math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue),
+    );
+*/
+    return ui.Size(
+      (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue).abs(),
+      (_toOffsetPixels.outputValue - _fromOffsetPixels.outputValue).abs(),
+    );
   }
 
   /// Override method in superclass [Container].
