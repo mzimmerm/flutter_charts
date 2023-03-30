@@ -467,7 +467,7 @@ class DomainExtrapolation1D {
   /// extrapolated from a segment with [length] size in the 'from' domain.
   ///
   /// Negative lengths are supported. Direction matters - that means, a segment of a positive length can
-  /// turn into a negative length.
+  /// turn into a negative length. if the [_domainStretch] is negative (this means inverted domain directions).
   double applyAsLength(double length) {
     return length * _domainStretch;
   }
