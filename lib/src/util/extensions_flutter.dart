@@ -122,7 +122,7 @@ extension RectExtension on ui.Rect {
   ///
   /// Used to show overlapping / protruding portion of the layout.
   ui.Rect closestIntersectWith(ui.Rect other) {
-    // todo-04 : if other contains this, and is just bigger,
+    // todo-04 : if other contains this, and other is just bigger,
     //           we want to return only some piece in the direction where other overflows this.
     //           currently we essentially return this overlap other, which spans the full width of this.
     if (overlaps(other)) {
@@ -158,9 +158,16 @@ extension RectExtension on ui.Rect {
       }
     }
 
-    assert (overlaps(other));
+    // todo-00-last-done : do not assert, continue running after : assert (overlaps(other));
+    if (!overlaps(other)) {
+      print(' ########## closestIntersectWith: This rectangle $this does NOT overlap at all rectangle other = $other.');
+    }
     ui.Rect intersection = intersect(other);
-    assert (intersection.width >= widthIntersect);
+    // todo-00-last-done : do not assert, continue running after : assert (intersection.width >= widthIntersect);
+    if (!(intersection.width >= widthIntersect)) {
+      print(' ########## closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.'
+          'intersection = $intersection, widthIntersect=$widthIntersect');
+    }
     // assert (intersection.height >= heightIntersect);
 
     return intersection;

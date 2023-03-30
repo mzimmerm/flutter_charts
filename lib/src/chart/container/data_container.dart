@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
+import '../../morphic/container/chart_support/chart_series_orientation.dart';
+import '../../morphic/ui2d/point.dart';
 import 'container_common.dart' as container_common_new;
 import '../../morphic/container/container_layouter_base.dart';
 import '../model/data_model.dart' as model;
@@ -10,6 +12,7 @@ import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
 import '../../morphic/container/container_key.dart';
 import '../../util/util_dart.dart';
+import 'line_segment_container.dart';
 
 class DataContainer extends container_common_new.ChartAreaContainer {
 
@@ -44,7 +47,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     // Row with columns of positive values
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
-                        weight: chartViewMaker.yLabelsGenerator.portionOfPositiveRange(),
+                        weight: chartViewMaker.yLabelsGenerator.dataRange.ratioOfPositivePortion(),
                       ),
                       crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
@@ -53,10 +56,27 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                         isPointsReversed: true,
                       ),
                     ),
+                    // todo-00-last-progress adding LineSegment for axis line
+
+/*
+                    Row(
+                      mainAxisConstraintsWeight: const ConstraintsWeight(weight: 0.0),
+                      children: [
+                        LineBetweenPointOffsetsContainer(
+                          chartSeriesOrientation: ChartSeriesOrientation.column,
+                          fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
+                          toPointOffset: const PointOffset(inputValue: 100.0, outputValue: 0.0),
+                          linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+                          chartViewMaker: chartViewMaker,
+                        ),
+                      ],
+                    ),
+*/
+
                     // Row with columns of negative values
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
-                          weight: chartViewMaker.yLabelsGenerator.portionOfNegativeRange()),
+                          weight: chartViewMaker.yLabelsGenerator.dataRange.ratioOfNegativePortion()),
                       crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
                         crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,

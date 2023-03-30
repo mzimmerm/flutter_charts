@@ -6,18 +6,6 @@ import '../../chart/view_maker.dart';
 // import '../../chart/options.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 
-// todo-00-last-done : moved to options
-/*
-ui.Paint gridLinesPaint(ChartOptions options) {
-  ui.Paint paint = ui.Paint();
-  paint.color = options.dataContainerOptions.gridLinesColor;
-  paint.style = ui.PaintingStyle.stroke;
-  paint.strokeWidth = 1.0;
-
-  return paint;
-}
-*/
-
 /// The visual element representing one data value on the chart.
 ///
 /// It serves the same role as view - the [BoxContainer] - in the auto-layout version.

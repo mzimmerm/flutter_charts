@@ -708,7 +708,7 @@ class RootSandboxSizers {
   /// Returns width sizer if exists, otherwise exception.
   double get widthSizerEnsuredLength {
     if (__widthSizer == null) {
-      print(' ######### No width sizer was placed on the sandbox, returning 0 width');
+      print(' ######### No width sizer was placed on the sandbox, returning 0 width.');
       return 0.0;
     }
     return __widthSizer!.length;
@@ -717,7 +717,7 @@ class RootSandboxSizers {
   /// Returns height sizer if exists, otherwise exception.
   double get heightSizerEnsuredLength {
     if (__heightSizer == null) {
-      print(' ######### No height sizer was placed on the sandbox, returning 0 lenhth');
+      print(' ######### No height sizer was placed on the sandbox, returning 0 height.');
       return 0.0;
     }
     return __heightSizer!.length;
@@ -1595,7 +1595,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
       // paint the protrudingInThisDirection rectangle
       canvas.drawRect(
         protrudingInThisDirection,
-        ui.Paint()..color = material.Colors.black,
+        ui.Paint()..color = material.Colors.grey.withOpacity(0.5),
       );
     }
   }

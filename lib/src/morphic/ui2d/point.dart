@@ -11,9 +11,12 @@ class PointOffset extends Offset {
   const PointOffset({
     required double inputValue,
     required double outputValue,
+    this.isLextrIntoValueSignPortion = true,
   }) : super(inputValue, outputValue);
 
   PointOffset.fromOffset(Offset offset) : this(inputValue: offset.dx, outputValue: offset.dy);
+
+  final bool isLextrIntoValueSignPortion;
 
   double get inputValue => dx;
   double get outputValue => dy;
@@ -22,8 +25,20 @@ class PointOffset extends Offset {
         inputValue: inputValue + other.dx,
         outputValue: outputValue + other.dy,
       );
+  @override
+  PointOffset operator -(Offset other) => PointOffset(
+    inputValue: inputValue - other.dx,
+    outputValue: outputValue - other.dy,
+  );
 
   Offset get asOffset => Offset(inputValue, outputValue);
+
+  // todo-00-last-last-progress : Add a method that creates new ranges from same sign portions for
+  //         inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
+  //       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+  //      - first, return full range, and incorporate to existing code
+  //      - next, return only same-sign-portion of ranges for fromPointOffset, toPointOffset.
+
 
   /// Lextr this [PointOffset] to it's pixel scale.
   ///
@@ -59,8 +74,6 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    // required HeightSizerLayouter     heightSizerLayouter,
-    // required WidthSizerLayouter      widthSizerLayouter,
   }) {
     ChartSeriesOrientation orientation = chartSeriesOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -68,42 +81,63 @@ class PointOffset extends Offset {
     double inputPixels = 0.0;
     double outputPixels = 0.0;
 
+    Interval fromValuesRange;
+    Interval toPixelsRange;
+    bool doInvertDomain;
+    double lextredValue;
+
     switch (orientation) {
       case ChartSeriesOrientation.column:
-      // 1.1.1:
+        // 1.1.1:
+        fromValuesRange = inputDataRange;
+        toPixelsRange   = Interval(0.0, constraints.width);
+        doInvertDomain  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
+        lextredValue    = inputValue;
         inputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: inputDataRange.min,
-          fromValuesMax: inputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: constraints.width,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
-        ).apply(inputValue);
+          fromValuesMin: fromValuesRange.min,
+          fromValuesMax: fromValuesRange.max,
+          toPixelsMin: toPixelsRange.min,
+          toPixelsMax: toPixelsRange.max,
+          doInvertToDomain: doInvertDomain,
+        ).apply(lextredValue);
         // 1.2.1:
+        fromValuesRange = outputDataRange;
+        toPixelsRange   = Interval(0.0, heightToLextr);
+        doInvertDomain  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
+        lextredValue    = outputValue;
         outputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: outputDataRange.min,
-          fromValuesMax: outputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: heightToLextr,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
-        ).apply(outputValue);
+          fromValuesMin: fromValuesRange.min,
+          fromValuesMax: fromValuesRange.max,
+          toPixelsMin: toPixelsRange.min,
+          toPixelsMax: toPixelsRange.max,
+          doInvertToDomain: doInvertDomain,
+        ).apply(lextredValue);
         break;
       case ChartSeriesOrientation.row:
       // 1.2.2:
-        inputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: outputDataRange.min,
-          fromValuesMax: outputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: widthToLextr,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal),
-        ).apply(outputValue);
+        fromValuesRange = outputDataRange;
+        toPixelsRange   = Interval(0.0, widthToLextr);
+        doInvertDomain  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
+        lextredValue    = outputValue;
+        inputPixels     = ToPixelsExtrapolation1D(
+          fromValuesMin: fromValuesRange.min,
+          fromValuesMax: fromValuesRange.max,
+          toPixelsMin: toPixelsRange.min,
+          toPixelsMax: toPixelsRange.max,
+          doInvertToDomain: doInvertDomain,
+        ).apply(lextredValue);
         // 1.1.2:
+        fromValuesRange = inputDataRange;
+        toPixelsRange   = Interval(0.0, constraints.height);
+        doInvertDomain  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
+        lextredValue    = inputValue;
         outputPixels = ToPixelsExtrapolation1D(
-          fromValuesMin: inputDataRange.min,
-          fromValuesMax: inputDataRange.max,
-          toPixelsMin: 0.0,
-          toPixelsMax: constraints.height,
-          doInvertToDomain: !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical),
-        ).apply(inputValue);
+          fromValuesMin: fromValuesRange.min,
+          fromValuesMax: fromValuesRange.max,
+          toPixelsMin: toPixelsRange.min,
+          toPixelsMax: toPixelsRange.max,
+          doInvertToDomain: doInvertDomain,
+        ).apply(lextredValue);
         break;
     }
 
@@ -112,8 +146,6 @@ class PointOffset extends Offset {
       outputValue: outputPixels,
     );
   }
-
-
   /* todo-00-last : KEEP FOR NOW
   PointOffset lextrColumnInContextOf({
     required ChartSeriesOrientation  chartSeriesOrientation,
@@ -192,4 +224,33 @@ class PointOffset extends Offset {
   }
 
  */
+}
+
+/// Helper class mutates [fromInterval] and [toInterval] for lextr-ing only using
+/// the portions corresponding to sign of [fromValue];
+class _FromAndToPortionForValue {
+  _FromAndToPortionForValue({
+    required this.fromValue,
+    required this.fromInterval,
+    required this.toInterval,
+    required this.isLextrIntoValueSignPortion,
+  }) {
+    if (isLextrIntoValueSignPortion) {
+      fromIntervalPortion = fromInterval.sameSignPortionOrExceptionForValue(fromValue);
+      toIntervalPortion = fromInterval.ratioPortionOfPositiveOtherForValueOrException(toInterval, fromValue);
+      } else {
+        // 0.0 <= fromValue
+      fromIntervalPortion = fromInterval;
+      toIntervalPortion = toInterval;
+      }
+    }
+
+  final double fromValue;
+  final Interval fromInterval;
+  final Interval toInterval;
+  final bool isLextrIntoValueSignPortion;
+
+  late final Interval fromIntervalPortion;
+  late final Interval toIntervalPortion;
+
 }

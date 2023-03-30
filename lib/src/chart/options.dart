@@ -293,7 +293,6 @@ class DataContainerOptions {
   /// Auto layout can increase these lengths, to fit labels below them.
   final double dataRightTickWidth;
 
-  // todo-00-last-done : moved here from presenter.dart
   ui.Paint gridLinesPaint() {
     ui.Paint paint = ui.Paint();
     paint.color = gridLinesColor;

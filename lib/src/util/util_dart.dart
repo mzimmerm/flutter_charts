@@ -117,6 +117,17 @@ class Interval {
   final bool includesMin;
   final bool includesMax;
 
+
+  double get length {
+
+    if ( min > max) {
+      throw StateError('Interval min is after max in $this');
+    }
+    return max - min;
+  }
+
+  double get center => (max + min) / 2;
+
   bool includes(num comparable) {
     // before - read as: if negative, true, if zero test for includes, if positive, false.
     int beforeMin = comparable.compareTo(min);
@@ -130,6 +141,10 @@ class Interval {
     if (beforeMax == 0 && includesMax) return true;
 
     return false;
+  }
+
+  bool isIntersects(Interval other) {
+    return includes(other.min) || includes(other.max);
   }
 
   /// Returns [true] if the passed [other] is inside self.
@@ -146,16 +161,89 @@ class Interval {
       ? otherIntervals.fold(this, (previousInterval, interval) => previousInterval.merge(interval))
       : this;
 
-
-  double get length {
-
-    if ( min > max) {
-      throw StateError('Interval min is after max in $this');
+  /// Calculates portion of the length in the positive values.
+  ///
+  /// Result is always in interval <0.0, 1.0>.
+  ///
+  /// 0.0 value represents there are only negative values,
+  /// 1.0 represents there are only positive or zero values.
+  ///
+  /// Motivation: Used during lextr related to data ranges.
+  double ratioOfPositivePortion() {
+    if (min >= max) {
+      // Arbitrary portion if interval is collapsed
+      if (max < 0.0) {
+        return 0.0;
+      } else if (max >= 0.0) {
+        return 1.0;
+      }
+      throw StateError('Invalid interval=$this');
     }
-    return max - min;
+
+    if (max <= 0.0) {
+      // dataRange negative or 0
+      return 0.0;
+    } else if (min >= 0.0) {
+      // dataRange purely positive or 0
+      return 1.0;
+    }
+
+    assert(min < 0.0 && 0.0 < max);
+
+    // Here min < 0.0 && 0.0 < max
+    return max / (max - min);
   }
 
-  double get center => (max + min) / 2;
+  /// Calculates portion of the length in the negative values.
+  ///
+  /// Result is always in interval <0.0, 1.0>.
+  ///
+  /// Same as the remainder to 1.0 of [ratioOfPositivePortion]. See [ratioOfPositivePortion] for details.
+  double ratioOfNegativePortion() {
+    return 1.0 - ratioOfPositivePortion();
+  }
+
+  Interval intersectionOr(Interval other, LineSegmentPosition orPosition,) {
+    if (!isIntersects(other)) {
+      switch (orPosition) {
+        case LineSegmentPosition.min:
+          return Interval(min, min);
+        case LineSegmentPosition.max:
+          return Interval(max, max);
+        case LineSegmentPosition.center:
+          return Interval(center, center);
+      }
+    }
+    // There is an intersection
+    return Interval(math.max(min, other.min), math.min(max, other.max));
+  }
+
+  Interval intersectionOrException(Interval other) {
+    if (!isIntersects(other)) {
+      throw StateError('Intervals this=$this and other=$other do not intersect');
+    }
+    // There is an intersection
+    return Interval(math.max(min, other.min), math.min(max, other.max));
+  }
+  Interval get positivePortionOrException => intersectionOrException(const Interval(0.0, double.infinity));
+  Interval get negativePortionOrException => intersectionOrException(const Interval(double.negativeInfinity, 0.0));
+
+  Interval sameSignPortionOrExceptionForValue(double value) {
+    if (value < 0.0) {
+      return negativePortionOrException;
+    }
+    return positivePortionOrException;
+  }
+
+  /// Assumes other starts at 0.0
+  Interval ratioPortionOfPositiveOtherForValueOrException(Interval other, double value) {
+    assert (other.min == 0.0);
+    assert (length > 0.0);
+    if (value < 0.0) {
+      return Interval(other.min, other.max * (negativePortionOrException.length / length));
+    }
+    return Interval(other.min, other.max * (positivePortionOrException.length / length));
+  }
 
   @override
   String toString() {

@@ -29,6 +29,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     required this.chartSeriesOrientation,
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
+    this.isLextrIntoValueSignPortion = true,
   }) : super(
       chartViewMaker: chartViewMaker
   );
@@ -47,7 +48,11 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   late PointOffset _fromOffsetPixels;
   late PointOffset _toOffsetPixels;
 
-  // #####  Implementors of method in superclass [BoxContainer].
+  /// Controls whether layout lextr uses full portion (both positive and negative portion) of lextr-from range,
+  /// or just the portion that has the same sign as the point value.
+  final bool isLextrIntoValueSignPortion;
+
+  // ##### Full [layout] override.
 
   /// Overrides [layout] by lextr-transforming the data-valued [PointModel]s [fromPointOffset] and [toPointOffset],
   /// into their pixel equivalents [PointOffset]s [_fromOffsetPixels] and [_toOffsetPixels].
