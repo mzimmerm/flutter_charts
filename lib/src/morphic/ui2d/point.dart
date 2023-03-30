@@ -263,7 +263,6 @@ class PointOffset extends Offset {
       outputValue: outputPixels,
     );
   }
-
  */
 }
 

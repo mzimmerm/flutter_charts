@@ -1574,7 +1574,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     }
   }
 
-  /// Paints a yellow-and-black warning rectangle about this BoxLayouter overflowing root constraints.
+  /// Paints a yellow-and-black (currentl grey) warning rectangle about this [BoxLayouter] overflowing root constraints.
   void paintWarningIfLayoutOverflows(ui.Canvas canvas) {
     // Find constraints on top container - [get topContainerConstraints],
     //   and access them from any BoxContainer.

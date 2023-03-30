@@ -190,7 +190,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     // (height represents the data value lextr-ed to data container pixels).
     // We convert data to positive size, the direction above/below axis is determined by the layouters
     //   in which the bars are located.
-    double height = lextr.applyAsLength(pointModel.outputValue.abs());
+    double height = lextr.applyOnlyScaleOnLength(pointModel.outputValue.abs());
 
     // print('height=$height, value=${pointModel.outputValue.abs()}, '
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'

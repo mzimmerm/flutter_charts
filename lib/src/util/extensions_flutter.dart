@@ -158,12 +158,13 @@ extension RectExtension on ui.Rect {
       }
     }
 
-    // todo-00-last-done : do not assert, continue running after : assert (overlaps(other));
+    // Check for overlap assumption, but continue running after overlap, so the rest of the layout and paint continues
     if (!overlaps(other)) {
       print(' ########## closestIntersectWith: This rectangle $this does NOT overlap at all rectangle other = $other.');
     }
     ui.Rect intersection = intersect(other);
-    // todo-00-last-done : do not assert, continue running after : assert (intersection.width >= widthIntersect);
+    // Check for intersection assumption that is needed to correctly paint the warning rectangle,
+    //   but continue even if the assumption fails.
     if (!(intersection.width >= widthIntersect)) {
       print(' ########## closestIntersectWith: !(intersection.width >= widthIntersect) was INCORRECTLY true.'
           'intersection = $intersection, widthIntersect=$widthIntersect');

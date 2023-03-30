@@ -313,7 +313,7 @@ enum LineSegmentPosition {
 ///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-
+/// todo-00 : rename to LTransform1D. Add tests for easier refactoring
 class LinearTransform1D {
   final double _scaleBy;
   final double _moveOriginBy;
@@ -324,7 +324,9 @@ class LinearTransform1D {
   }) : _scaleBy = scaleBy, _moveOriginBy = moveOriginBy;
 
   /// Constructs transformation which scales (stretches or compresses),
-  /// all points on the axis with origin as the fixed point, by the multiplying [_scaleBy] factor.
+  /// all points on the axis by the multiplying [_scaleBy] factor.
+  ///
+  /// Origin (double 0.0) is the fixed point, of [scaleAtOrigin].
   const LinearTransform1D.scaleAtOrigin({
     required scaleBy,
   }) : this(scaleBy: scaleBy, moveOriginBy: 0.0,);
@@ -347,7 +349,10 @@ class LinearTransform1D {
   const LinearTransform1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
 
 
-  /// Default transformation first scales, then translates all points.
+  /// Default transformation first scales, then translates the passed [fromValue].
+  ///
+  /// Equivalent to scaling the coordinate system by [_scaleBy],
+  /// then translating (moving) origin by [_moveOriginBy].
   ///
   /// Note that extrapolating may include inversion during scaling.
   double apply(double fromValue) {
@@ -389,7 +394,7 @@ class LinearTransform1D {
 /// Notes:
 ///   - This does not extend [LinearTransform1D]; however, any [DomainExtrapolation1D]
 ///     can be replaced with two suitably chosen [LinearTransform1D] applied consequently.
-///
+/// todo-00: Rename DomainLTransform1D. Add tests, then extend from LinearTransform1D. Also remove _domainStretch, this is parent _scaleBy
 class DomainExtrapolation1D {
   DomainExtrapolation1D({
     required double fromDomainStart,
@@ -420,7 +425,7 @@ class DomainExtrapolation1D {
   final double _toDomainStart;
   final double _toDomainEnd;
 
-  ///
+  /// This is the scaling factor, equivalent to [LinearTransform1D._scaleBy].
   final double _domainStretch;
   /// 'from' domain is translated by moving origin by this number;
   /// this causes `value` in 'from' domain to be `value - _fromMoveOriginBy` in 'to' domain.
@@ -464,11 +469,15 @@ class DomainExtrapolation1D {
   }
 
   /// Returns the size of a segment in the 'to' domain
-  /// extrapolated from a segment with [length] size in the 'from' domain.
+  /// scaled from a segment with [length] size in the 'from' domain.
+  ///
+  /// This method's name, 'applyOnlyScaleOnLength', and the parameter name, 'length', is used to express
+  /// the use pattern of this method: It should be used in situations where we only care about
+  /// length change between the value domain and the pixel domain, not about change in position.
   ///
   /// Negative lengths are supported. Direction matters - that means, a segment of a positive length can
   /// turn into a negative length. if the [_domainStretch] is negative (this means inverted domain directions).
-  double applyAsLength(double length) {
+  double applyOnlyScaleOnLength(double length) {
     return length * _domainStretch;
   }
 
@@ -494,20 +503,22 @@ class DomainExtrapolation1D {
 /// which is also the precondition.
 ///
 /// Exists solely for reading clarity when used in an application that needs to
-/// extrapolate data values to pixels, to clear which parameters ore values and which are pixels.
+/// extrapolate data values to pixels, to be clear which parameters ore values and which are pixels.
 ///
 /// However, it also provides ability to invert the extrapolation, by setting [doInvertToDomain] to true,
 /// which causes the extrapolation to behave as if
 ///   ```dart
 ///    (toPixelsMin > toPixelsMax) == true; // Note min is GREATER than max
 ///   ```
-///  [doInvertToDomain] default is [false].
-///  Setting [doInvertToDomain] to [true] is useful if the 'to' domain represents the Y axis and
-///  we are *extrapolating data values*, as smaller data values end up showing on larger pixel values.
+///
+///  [doInvertToDomain] default is [false]. Setting [doInvertToDomain] to [true] is useful
+///  if the 'to' domain represents the Y axis and  we are *extrapolating data values*,
+///  as smaller data values end up showing on larger pixel values.
 ///  However, when we are *extrapolating sizes* (which is technically *scaling sizes*),
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
+/// todo-00 : Rename to ToPixelsLTransform1D. Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
 class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
   ToPixelsExtrapolation1D({
     required double fromValuesMin,
@@ -521,16 +532,24 @@ class ToPixelsExtrapolation1D extends DomainExtrapolation1D {
     toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
     toDomainEnd: doInvertToDomain ? toPixelsMin : toPixelsMax,
   ) {
-    // Allow the TO domain to be collapsed, but not the FROM domain, which is in denominator in super.
+    assert(fromValuesMin < fromValuesMax && toPixelsMin <= toPixelsMax);
+    
+    // Allow the TO pixels domain to be collapsed, but not the FROM values domain, which is in the denominator of [_scaleBy] in super.
     if (!(fromValuesMin < fromValuesMax)) {
-      throw StateError('$runtimeType: fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax is NOT true on $this.');
+      throw StateError('$runtimeType: fromValuesMin=$fromValuesMin < fromValuesMax=$fromValuesMax NOT true on $this.');
     }
-    if (!(toPixelsMin < toPixelsMax))  {
-      print(' ##### $runtimeType: TO domain is collapsed: toPixelsMin < toPixelsMax is NOT true on $this.');
+    if (!(toPixelsMin <= toPixelsMax)) {
+      throw StateError('$runtimeType: toPixelsMin=$toPixelsMin <= toPixelsMax=$toPixelsMax NOT true on $this.');
+    }
+    if (toPixelsMin == toPixelsMax)  {
+      print(' ##### $runtimeType: TO domain is COLLAPSED: '
+          'toPixelsMin=$toPixelsMin == toPixelsMax=$toPixelsMax TRUE on $this.');
     }
 
   }
 
+  /// Explicitly invert domains, which are assumed in the same direction,
+  /// due to the precondition `fromValuesMin < fromValuesMax && toPixelsMin <= toPixelsMax`
   final bool doInvertToDomain;
 
   @override

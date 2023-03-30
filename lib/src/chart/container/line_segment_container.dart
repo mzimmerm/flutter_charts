@@ -107,20 +107,17 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
 
   }
 
+  /// Internal calculation of [layoutSize] returns the [ui.Size] of this container.
+  ///
+  /// The size is already oriented correctly by taking into account the [chart_orientation.ChartSeriesOrientation],
+  /// because the underlying [_fromOffsetPixels] and [_toOffsetPixels] have done the same in the [layout] implementation.
   ui.Size get _layoutSize {
-/* todo-00-last-last-done : KEEP THE SECONG FOR NOW core of the issue all along
-    switch(chartSeriesOrientation) {
-      case chart_orientation.ChartSeriesOrientation.column:
-        return ui.Size(constraints.width, math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue));
-      case chart_orientation.ChartSeriesOrientation.row:
-        return ui.Size(math.max(_fromOffsetPixels.inputValue, _toOffsetPixels.inputValue), constraints.height);
-    }
-
+    /* KEEP for now
     return ui.Size(
         (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue ).abs(),
         math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue),
     );
-*/
+    */
     return ui.Size(
       (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue).abs(),
       (_toOffsetPixels.outputValue - _fromOffsetPixels.outputValue).abs(),
