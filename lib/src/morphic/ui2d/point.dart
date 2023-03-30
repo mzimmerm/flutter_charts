@@ -183,7 +183,7 @@ class PointOffset extends Offset {
       toPixelsMin: toPixelsRange.min,
       toPixelsMax: toPixelsRange.max,
       doInvertToDomain: doInvertDomain,
-    ).apply(fromValue);
+    ).applyOnlyScaleOnLength(fromValue);
 
     return inputPixels;
   }

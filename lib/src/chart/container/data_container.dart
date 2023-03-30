@@ -58,20 +58,20 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     ),
                     // todo-00-last-progress adding LineSegment for axis line
 
-/*
-                    Row(
-                      mainAxisConstraintsWeight: const ConstraintsWeight(weight: 0.0),
-                      children: [
-                        LineBetweenPointOffsetsContainer(
+
+                    //Row(
+                    //  mainAxisConstraintsWeight: const ConstraintsWeight(weight: 0.0),
+                    //  children: [
+                        LineBetweenPointOffsetsContainer( // could also place in Row with main weight=0.0
                           chartSeriesOrientation: ChartSeriesOrientation.column,
                           fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
                           toPointOffset: const PointOffset(inputValue: 100.0, outputValue: 0.0),
                           linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                           chartViewMaker: chartViewMaker,
                         ),
-                      ],
-                    ),
-*/
+                    //  ],
+                    //),
+
 
 
                     // Row with columns of negative values
