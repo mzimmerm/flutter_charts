@@ -394,6 +394,48 @@ class LTransform1D {
 /// Notes:
 ///   - This does not extend [LTransform1D]; however, any [DomainLTransform1D]
 ///     can be replaced with two suitably chosen [LTransform1D] applied consequently.
+///   - DomainLTransform1D (DLT)
+///
+///     - DLT definition:
+///              ```
+///              Given: domainStretch = (_toDomainEnd - _toDomainStart) / (_fromDomainEnd - _fromDomainStart)
+///              DLT(fromValue) = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
+///              ```
+///
+///     - Facts about DLT be shown by using the above definition:
+///
+///       - Lemma 1 : 'linearity lemma' : DLT is a linear transform
+///              ```
+///              DLT(A * (a1 + a2)) == A * (DLT(a1) + DLT(a2))
+///              ```
+///          - Easy to prove by substituting A, a1, a2 to the DLT definition
+///
+///       - Lemma 2 : 'fixed points lemma' : DLT has start and end points fixed - they map into each other.
+///              ```
+///                // 'fixed points lemma'
+///                DLT(fromStart) == toStart
+///                DLT(fromEnd) == toEnd
+///              ```
+///          - Easy to prove by substituting start and end to the DLT definition
+///          - Lemma 2 'fixed points lemma' is NOT a consequence of linearity, but a consequence of the DLT definition.
+///
+///       - Lemma: Taking a point in the middle of the 'from' domain
+///            (in the geometrical sense, no matter start and end values),
+///            is transformed to the middle of the 'to' domain, in the same geometrical sense.
+///
+///            Lemma, stated formally:
+///            ```
+///              DLT(1/2 (fromStart + fromEnd)) == 1/2 * (toStart + toEnd)
+///            ```
+///
+///            Note: Lemma is a consequence of definition of DLT, via Lemma 1 and Lemma 2
+///
+///              Proof of Lemma: For x = 1/2 (fromStart + fromEnd):
+///              ```
+///                DLT(x) = DLT(1/2 (fromStart + fromEnd))  = // Use Lemma 1, linearity
+///                  1/2 * (DLT(fromStart) + DLT(fromEnd)) =  // Use Lemma 2, fixed points
+///                  1/2 * (toStart + toEnd)
+///              ```
 /// todo-010: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
 class DomainLTransform1D {
   DomainLTransform1D({
