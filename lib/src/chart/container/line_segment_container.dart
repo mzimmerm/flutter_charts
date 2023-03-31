@@ -179,14 +179,21 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   final model.PointModel fromPointModel;
   final model.PointModel toPointModel;
 
-  /// Override of parent from and to offsets. In parent, they are set in constructor,
-  /// in this extension, they are pulled from the [model.PointModel] from and to members.
+  /// Override of parent from offset, the [fromPointOffset].
   ///
-  /// Pulls the offset (from and toPointOffset) from the [fromPointModel] and [toPointModel].
-  /// Both points are on x axis, so xLabelsGenerator is used as input dataRange for both from/to points.
+  /// In parent, [fromPointOffset] is set in the constructor; in this extension, if is pulled from
+  /// the [model.PointModel]'s [fromPointModel].
+  ///
+  /// Calculates [fromPointOffset] from the [fromPointModel], using
+  ///   - for [PointOffset.inputValue], the data range from the [chartViewMaker.xLabelsGenerator] and
+  ///     [fromPointModel]'s column index.
+  ///   - for [PointOffset.outputValue], the [fromPointModel]'s input value [model.PointModel.outputValue] directly.
+  ///
+  /// Both points are on x axis, so the xLabelsGenerator is used as input dataRange for both from/to points.
   @override
   PointOffset get fromPointOffset =>
       fromPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+  /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
       toPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);

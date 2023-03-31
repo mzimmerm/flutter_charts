@@ -571,7 +571,21 @@ class PointModel extends Object with DoubleLinked {
 
   int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
 
-  /// Calculates inputValue-position of this [PointModel] instance.
+  /// Calculates inputValue-position (x value) of this [PointModel] instance.
+  ///
+  /// Motivation:
+  ///
+  ///   Input values (x values) of data model [PointModel] are ofter non-numeric,
+  ///   and are defined by [ChartModel.xUserLabels] or similar approach.
+  ///   However, for the purpose of displaying a container with a [PointModel],
+  ///   we want to assign the [PointModel] an inputValue, which can be lextr-ed to
+  ///   it's pixel position.  However, assigning an inputValue by itself does not help;
+  ///   To lextr inputValue to some pixel value, we need to affix the inputValue
+  ///   to a range. This method, [inputValueWithInputRange] does just that:
+  ///   Given the passed [dataRangeLabelInfosGenerator] which contains data range
+  ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue
+  ///   of this [PointModel] by dividing the data range into equal portions,
+  ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
   /// Delegated to [ownerCrossPointsModel].
   double inputValueWithInputRange({required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator}) {

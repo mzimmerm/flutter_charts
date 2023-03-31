@@ -6,6 +6,7 @@ import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_series_orientation.dart';
 //import '../../morphic/ui2d/point.dart';
+import '../../morphic/ui2d/point.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
@@ -109,7 +110,6 @@ class YContainer extends container_common_new.ChartAreaContainer {
         child: HeightSizerLayouter(
           children: [
             Row(children: [
-              // todo-01 add LineSegment for axis line
               ExternalTicksColumn(
                 mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
@@ -126,6 +126,16 @@ class YContainer extends container_common_new.ChartAreaContainer {
                       ownerChartAreaContainer: this,
                     )
                 ],
+              ),
+              // todo-00-last-progress  add LineSegment for axis line
+              AxisLineContainer(
+                fromPointOffset:
+                    const PointOffset(inputValue: 0.0, outputValue: -1000.0, isLextrOnlyToValueSignPortion: false,), // labelsGenerator.dataRange.min),
+                toPointOffset: const PointOffset(inputValue: 0.0, outputValue: 3400.0, isLextrOnlyToValueSignPortion: false,), // labelsGenerator.dataRange.max),
+                linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+                chartViewMaker: chartViewMaker,
+                isLextrOnlyToValueSignPortion: false,
+                chartSeriesOrientation: ChartSeriesOrientation.column,
               ),
             ]),
           ],
