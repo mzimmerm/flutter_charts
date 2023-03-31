@@ -7,13 +7,13 @@ import '../container/container_layouter_base.dart';
 
 import '../container/chart_support/chart_series_orientation.dart';
 
-class PointOffset extends Offset {
-  const PointOffset({
+class PointOffsetOrig20230331 extends Offset {
+  const PointOffsetOrig20230331({
     required double inputValue,
     required double outputValue,
   }) : super(inputValue, outputValue);
 
-  PointOffset.fromOffset(Offset offset)
+  PointOffsetOrig20230331.fromOffset(Offset offset)
       : this(
           inputValue: offset.dx,
           outputValue: offset.dy,
@@ -22,12 +22,12 @@ class PointOffset extends Offset {
   double get inputValue => dx;
   double get outputValue => dy;
   @override
-  PointOffset operator +(Offset other) => PointOffset(
+  PointOffsetOrig20230331 operator +(Offset other) => PointOffsetOrig20230331(
         inputValue: inputValue + other.dx,
         outputValue: outputValue + other.dy,
       );
   @override
-  PointOffset operator -(Offset other) => PointOffset(
+  PointOffsetOrig20230331 operator -(Offset other) => PointOffsetOrig20230331(
     inputValue: inputValue - other.dx,
     outputValue: outputValue - other.dy,
   );
@@ -61,7 +61,7 @@ class PointOffset extends Offset {
   ///        - inputPixels  <= lextr outputValue to WidthSizer.length
   ///        - outputPixels <= lextr inputValue  to constraints.height
   ///
-  PointOffset lextrInContextOf({
+  PointOffsetOrig20230331 lextrInContextOf({
     required ChartSeriesOrientation  chartSeriesOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
     required Interval                inputDataRange,
@@ -146,7 +146,7 @@ class PointOffset extends Offset {
         break;
     }
 
-    return PointOffset(
+    return PointOffsetOrig20230331(
       inputValue: inputPixels,
       outputValue: outputPixels,
     );
@@ -163,7 +163,7 @@ class PointOffset extends Offset {
     required bool     isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     assert (toPixelsRange.min == 0.0);
-    var portion = _FromAndToPortionForFromValue(
+    var portion = _FromAndToPortionForFromValueOrig20230331(
       fromValue: fromValue,
       fromValuesRange: fromValuesRange,
       toPixelsRange: toPixelsRange,
@@ -192,8 +192,8 @@ class PointOffset extends Offset {
 
 /// Helper class mutates [fromValuesRange] and [toPixelsRange] for lextr-ing only using
 /// the portions corresponding to sign of [fromValue];
-class _FromAndToPortionForFromValue {
-  _FromAndToPortionForFromValue({
+class _FromAndToPortionForFromValueOrig20230331 {
+  _FromAndToPortionForFromValueOrig20230331({
     required this.fromValue,
     required this.fromValuesRange,
     required this.toPixelsRange,
