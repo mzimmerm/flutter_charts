@@ -77,6 +77,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     required super.linePaint,
     required super.chartViewMaker,
     super.isLextrOnlyToValueSignPortion = true,
+    super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
 
@@ -129,13 +130,13 @@ class YContainer extends container_common_new.ChartAreaContainer {
               ),
               // todo-00-last-progress  add LineSegment for axis line
               AxisLineContainer(
-                fromPointOffset:
-                    const PointOffset(inputValue: 0.0, outputValue: -1000.0, isLextrOnlyToValueSignPortion: false,), // labelsGenerator.dataRange.min),
-                toPointOffset: const PointOffset(inputValue: 0.0, outputValue: 3400.0, isLextrOnlyToValueSignPortion: false,), // labelsGenerator.dataRange.max),
+                fromPointOffset: PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.min),
+                toPointOffset:   PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.max),
+                chartSeriesOrientation: ChartSeriesOrientation.column,
                 linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                 chartViewMaker: chartViewMaker,
                 isLextrOnlyToValueSignPortion: false,
-                chartSeriesOrientation: ChartSeriesOrientation.column,
+                isLextrUseSizerInsteadOfConstraint: true,
               ),
             ]),
           ],

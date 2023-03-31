@@ -42,6 +42,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
     this.isLextrOnlyToValueSignPortion = true,
+    this.isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
       chartViewMaker: chartViewMaker
   );
@@ -60,9 +61,20 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   late PointOffset _fromOffsetPixels;
   late PointOffset _toOffsetPixels;
 
-  /// Controls whether layout lextr uses full portion (both positive and negative portion) of lextr-from range,
-  /// or just the portion that has the same sign as the point value.
+  /// Controls whether layout lextr on points uses the full portion (both positive and negative portion)
+  /// of lextr-from range, or only the portion that has the same sign as the point value.
   final bool isLextrOnlyToValueSignPortion;
+
+  /// Controls whether layout lextr on points, when setting pixel ranges, uses the full length of sizer
+  /// such as [container_base.HeightSizerLayouter] or uses constraints from
+  /// the parent Row or Column container.
+  ///
+  ///   - if false (default): constraints width or height from the parent Row or Column container
+  ///     is used to set pixel range.
+  ///   - if true           : [container_base.HeightSizerLayouterChildMixin.heightToLextr]
+  ///     is used to set pixel range.
+  ///
+  final bool isLextrUseSizerInsteadOfConstraint;
 
   // ##### Full [layout] override.
 
@@ -101,6 +113,8 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
+      isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+      isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrInContextOf(
       chartSeriesOrientation: chartSeriesOrientation,
@@ -109,6 +123,8 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
+      isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+      isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child
@@ -158,18 +174,21 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
-
   LineBetweenPointModelsContainer({
     required this.fromPointModel,
     required this.toPointModel,
     required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
+    isLextrOnlyToValueSignPortion = true,
+    isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
-    chartSeriesOrientation: chartSeriesOrientation,
-      linePaint: linePaint,
-      chartViewMaker: chartViewMaker
-  );
+          chartSeriesOrientation: chartSeriesOrientation,
+          linePaint: linePaint,
+          chartViewMaker: chartViewMaker,
+          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+        );
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
   ///

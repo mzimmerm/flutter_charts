@@ -859,6 +859,9 @@ class WidthSizerLayouter extends FromConstraintsSizerLayouter {
 
 /// Concrete [FromConstraintsSizerLayouter] allows to use up
 /// full height component of [constraints], and set the height on the [length] member.
+///
+/// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
+/// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.heightToLextr] member.
 class HeightSizerLayouter extends FromConstraintsSizerLayouter {
 
   /// The required generative constructor
