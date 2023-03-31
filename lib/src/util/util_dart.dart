@@ -313,7 +313,7 @@ enum LineSegmentPosition {
 ///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-/// todo-00 : Add tests for easier refactoring
+/// todo-010 : Add tests for easier refactoring
 class LTransform1D {
   final double _scaleBy;
   final double _moveOriginBy;
@@ -394,7 +394,7 @@ class LTransform1D {
 /// Notes:
 ///   - This does not extend [LTransform1D]; however, any [DomainLTransform1D]
 ///     can be replaced with two suitably chosen [LTransform1D] applied consequently.
-/// todo-00: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
+/// todo-010: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
 class DomainLTransform1D {
   DomainLTransform1D({
     required double fromDomainStart,
@@ -518,7 +518,7 @@ class DomainLTransform1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-00 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
+/// todo-010 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
 class ToPixelsLTransform1D extends DomainLTransform1D {
   ToPixelsLTransform1D({
     required double fromValuesMin,

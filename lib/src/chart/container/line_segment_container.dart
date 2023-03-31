@@ -1,5 +1,4 @@
 import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
-import 'dart:math' as math show max;
 
 import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 
@@ -23,13 +22,26 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     with container_base.HeightSizerLayouterChildMixin,
         container_base.WidthSizerLayouterChildMixin {
 
+  /// Constructs container from start and end points, the chart orientation, paint to paint the line,
+  /// and a default choice that [layout] assumes to split scaling into positive and negative portion.
+  ///
+  /// Example:
+  /// ```dart
+  ///   LineBetweenPointOffsetsContainer( // could also place in Row with main constraints weight=0.0
+  ///     chartSeriesOrientation: ChartSeriesOrientation.column,
+  ///     fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
+  ///     toPointOffset: PointOffset(inputValue: chartViewMaker.chartModel.dataRangeWhenStringLabels.max, outputValue: 0.0),
+  ///     linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+  ///     chartViewMaker: chartViewMaker,
+  ///   ),
+  /// ```
   LineBetweenPointOffsetsContainer({
     this.fromPointOffset,
     this.toPointOffset,
     required this.chartSeriesOrientation,
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
-    this.isLextrIntoValueSignPortion = true,
+    this.isLextrOnlyToValueSignPortion = true,
   }) : super(
       chartViewMaker: chartViewMaker
   );
@@ -50,7 +62,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
 
   /// Controls whether layout lextr uses full portion (both positive and negative portion) of lextr-from range,
   /// or just the portion that has the same sign as the point value.
-  final bool isLextrIntoValueSignPortion;
+  final bool isLextrOnlyToValueSignPortion;
 
   // ##### Full [layout] override.
 

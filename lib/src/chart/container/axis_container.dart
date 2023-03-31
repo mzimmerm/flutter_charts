@@ -5,7 +5,7 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_series_orientation.dart';
-import '../../morphic/ui2d/point.dart';
+//import '../../morphic/ui2d/point.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 import '../iterative_layout_strategy.dart';
@@ -66,6 +66,17 @@ class XContainer extends container_common_new.ChartAreaContainer {
 
     addChildren(children);
   }
+}
+
+class AxisLineContainer extends LineBetweenPointOffsetsContainer {
+  AxisLineContainer({
+    super.fromPointOffset,
+    super.toPointOffset,
+    super.chartSeriesOrientation = ChartSeriesOrientation.column,
+    required super.linePaint,
+    required super.chartViewMaker,
+    super.isLextrOnlyToValueSignPortion = true,
+  });
 }
 
 class YContainer extends container_common_new.ChartAreaContainer {

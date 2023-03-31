@@ -78,7 +78,7 @@ class DataRangeLabelInfosGenerator {
           //   it will be lextr-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          dataEnvelope = chartViewMaker.chartModel.dataRangeWhenNonNumericLabels;
+          dataEnvelope = chartViewMaker.chartModel.dataRangeWhenStringLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
