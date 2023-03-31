@@ -129,14 +129,15 @@ class YContainer extends container_common_new.ChartAreaContainer {
                 ],
               ),
               // todo-00-last-progress  add LineSegment for axis line
+              // Y axis line to the right of labels
               AxisLineContainer(
                 fromPointOffset: PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.min),
                 toPointOffset:   PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.max),
                 chartSeriesOrientation: ChartSeriesOrientation.column,
                 linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                 chartViewMaker: chartViewMaker,
-                isLextrOnlyToValueSignPortion: false,
-                isLextrUseSizerInsteadOfConstraint: true,
+                isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)
+                isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
               ),
             ]),
           ],

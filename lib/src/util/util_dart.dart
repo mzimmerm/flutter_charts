@@ -228,7 +228,7 @@ class Interval {
   Interval get positivePortionOrException => intersectionOrException(const Interval(0.0, double.infinity));
   Interval get negativePortionOrException => intersectionOrException(const Interval(double.negativeInfinity, 0.0));
 
-  Interval sameSignPortionOrExceptionForValue(double value) {
+  Interval portionForSignOfValue(double value) {
     if (value < 0.0) {
       return negativePortionOrException;
     }
@@ -236,7 +236,7 @@ class Interval {
   }
 
   /// Assumes other starts at 0.0
-  Interval ratioPortionOfPositiveOtherForValueOrException(Interval other, double value) {
+  Interval portionOfIntervalAsMyPosNegRatio(Interval other, double value) {
     assert (other.min == 0.0);
     assert (length > 0.0);
     if (value < 0.0) {

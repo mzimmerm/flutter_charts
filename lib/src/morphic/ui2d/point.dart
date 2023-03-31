@@ -206,8 +206,8 @@ class _FromAndToPortionForFromValue {
     required this.isLextrOnlyToValueSignPortion,
   }) {
     if (isLextrOnlyToValueSignPortion) {
-      fromValuesPortion = fromValuesRange.sameSignPortionOrExceptionForValue(fromValue);
-      toPixelsPortion = fromValuesRange.ratioPortionOfPositiveOtherForValueOrException(toPixelsRange, fromValue);
+      fromValuesPortion = fromValuesRange.portionForSignOfValue(fromValue);
+      toPixelsPortion = fromValuesRange.portionOfIntervalAsMyPosNegRatio(toPixelsRange, fromValue);
     } else {
       // 0.0 <= fromValue
       fromValuesPortion = fromValuesRange;
