@@ -90,7 +90,7 @@ class PointOffsetOrig20230331 extends Offset {
         doInvertDomain1  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
         fromValue1       = inputValue;
         
-        inputPixels = lextrFromValueInContext(
+        inputPixels = lextrToPixelsFromValueInContext(
           fromValue: fromValue1,
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
@@ -105,7 +105,7 @@ class PointOffsetOrig20230331 extends Offset {
         doInvertDomain2  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
         fromValue2       = outputValue;
 
-        outputPixels    = lextrFromValueInContext(
+        outputPixels    = lextrToPixelsFromValueInContext(
           fromValue: fromValue2,
           fromValuesRange: fromValuesRange2,
           toPixelsRange: toPixelsRange2,
@@ -121,7 +121,7 @@ class PointOffsetOrig20230331 extends Offset {
         doInvertDomain1  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
         fromValue1       = outputValue;
 
-        inputPixels     = lextrFromValueInContext(
+        inputPixels     = lextrToPixelsFromValueInContext(
           fromValue: fromValue1,
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
@@ -135,7 +135,7 @@ class PointOffsetOrig20230331 extends Offset {
         doInvertDomain2  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
         fromValue2       = inputValue;
 
-        outputPixels    = lextrFromValueInContext(
+        outputPixels    = lextrToPixelsFromValueInContext(
           fromValue: fromValue2,
           fromValuesRange: fromValuesRange2,
           toPixelsRange: toPixelsRange2,
@@ -154,7 +154,7 @@ class PointOffsetOrig20230331 extends Offset {
 
   /// Lextr [fromValue] taking into account value and pixel range, domain invert, and whether
   /// to use only the portion of from range that has same sign as inputValue
-  double lextrFromValueInContext({
+  double lextrToPixelsFromValueInContext({
     required double   fromValue,
     required Interval fromValuesRange,
     required Interval toPixelsRange,

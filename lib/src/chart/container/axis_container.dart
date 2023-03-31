@@ -16,59 +16,6 @@ import '../options.dart';
 import 'container_common.dart' as container_common_new;
 import 'line_segment_container.dart';
 
-class XContainer extends container_common_new.ChartAreaContainer {
-  /// Constructs the container that holds X labels.
-  ///
-  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
-  /// all available horizontal space, and only use necessary vertical space.
-  XContainer({
-    required ChartViewMaker chartViewMaker,
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  }) : super(
-          chartViewMaker: chartViewMaker,
-        ) {
-    var options = chartViewMaker.chartOptions;
-    var labelsGenerator = chartViewMaker.xLabelsGenerator;
-
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelCommonOptions.labelTextStyle,
-      textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.labelCommonOptions.labelTextAlign, // center text
-      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-    );
-
-    List<BoxContainer> children = [
-      WidthSizerLayouter(
-        children: [
-          Column(children: [
-            ExternalTicksRow(
-              mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
-                externalTickAtPosition: ExternalTickAtPosition.childCenter,
-              ),
-              children: [
-                for (var labelInfo in labelsGenerator.labelInfoList)
-                  // todo-02-next : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
-                  XLabelContainer(
-                    chartViewMaker: chartViewMaker,
-                    label: labelInfo.formattedLabel,
-                    labelTiltMatrix: vector_math.Matrix2.identity(),
-                    // No tilted labels in YContainer
-                    labelStyle: labelStyle,
-                    labelInfo: labelInfo,
-                    ownerChartAreaContainer: this,
-                  )
-              ],
-            ),
-          ]),
-        ],
-      ),
-    ];
-
-    addChildren(children);
-  }
-}
-
 class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
     super.fromPointOffset,
@@ -117,6 +64,60 @@ class AxisLineContainerOrig20230331 extends LineBetweenPointOffsetsContainer {
                     ),
  */
 
+class XContainer extends container_common_new.ChartAreaContainer {
+  /// Constructs the container that holds X labels.
+  ///
+  /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
+  /// all available horizontal space, and only use necessary vertical space.
+  XContainer({
+    required ChartViewMaker chartViewMaker,
+    LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+  }) : super(
+          chartViewMaker: chartViewMaker,
+        ) {
+    var options = chartViewMaker.chartOptions;
+    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
+    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    LabelStyle labelStyle = LabelStyle(
+      textStyle: options.labelCommonOptions.labelTextStyle,
+      textDirection: options.labelCommonOptions.labelTextDirection,
+      textAlign: options.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+    List<BoxContainer> children = [
+      WidthSizerLayouter(
+        children: [
+          Column(children: [
+            ExternalTicksRow(
+              mainAxisExternalTicksLayoutProvider: xLabelsGenerator.asExternalTicksLayoutProvider(
+                externalTickAtPosition: ExternalTickAtPosition.childCenter,
+              ),
+              children: [
+                for (var labelInfo in xLabelsGenerator.labelInfoList)
+                  // todo-02-next : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  XLabelContainer(
+                    chartViewMaker: chartViewMaker,
+                    label: labelInfo.formattedLabel,
+                    labelTiltMatrix: vector_math.Matrix2.identity(),
+                    // No tilted labels in YContainer
+                    labelStyle: labelStyle,
+                    labelInfo: labelInfo,
+                    ownerChartAreaContainer: this,
+                  )
+              ],
+            ),
+          ]),
+        ],
+      ),
+    ];
+
+    addChildren(children);
+  }
+}
+
 class YContainer extends container_common_new.ChartAreaContainer {
   YContainer({
     required ChartViewMaker chartViewMaker,
@@ -124,7 +125,8 @@ class YContainer extends container_common_new.ChartAreaContainer {
           chartViewMaker: chartViewMaker,
         ) {
     var options = chartViewMaker.chartOptions;
-    var labelsGenerator = chartViewMaker.yLabelsGenerator;
+    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -148,11 +150,11 @@ class YContainer extends container_common_new.ChartAreaContainer {
           children: [
             Row(children: [
               ExternalTicksColumn(
-                mainAxisExternalTicksLayoutProvider: labelsGenerator.asExternalTicksLayoutProvider(
+                mainAxisExternalTicksLayoutProvider: yLabelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [
-                  for (var labelInfo in labelsGenerator.labelInfoList)
+                  for (var labelInfo in yLabelsGenerator.labelInfoList)
                     YLabelContainer(
                       chartViewMaker: chartViewMaker,
                       label: labelInfo.formattedLabel,
@@ -167,9 +169,9 @@ class YContainer extends container_common_new.ChartAreaContainer {
               // todo-00-last-progress  add LineSegment for axis line
               // Y axis line to the right of labels
               AxisLineContainer(
-                fromPointOffset: PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.min),
-                toPointOffset:   PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.max),
-                chartSeriesOrientation: ChartSeriesOrientation.column,
+                fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
+                toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
+                chartSeriesOrientation: ChartSeriesOrientation.row,
                 linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                 chartViewMaker: chartViewMaker,
                 isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)

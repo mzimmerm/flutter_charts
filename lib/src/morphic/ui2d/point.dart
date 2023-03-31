@@ -1,7 +1,6 @@
-
 import 'dart:ui' show Offset;
 
-import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
+import '../../util/util_dart.dart' show DomainLTransform1D, Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 import '../container/container_layouter_base.dart';
 
@@ -89,8 +88,8 @@ class PointOffset extends Offset {
         toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
         doInvertDomain1  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
         fromValue1       = inputValue;
-        
-        inputPixels = lextrFromValueInContext(
+
+        inputPixels = lextrToPixelsFromValueInContext(
           fromValue: fromValue1,
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
@@ -105,7 +104,7 @@ class PointOffset extends Offset {
         doInvertDomain2  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
         fromValue2       = outputValue;
 
-        outputPixels    = lextrFromValueInContext(
+        outputPixels    = lextrToPixelsFromValueInContext(
           fromValue: fromValue2,
           fromValuesRange: fromValuesRange2,
           toPixelsRange: toPixelsRange2,
@@ -115,13 +114,20 @@ class PointOffset extends Offset {
         );
         break;
       case ChartSeriesOrientation.row:
-      // 1.2.2:
+        // 1.2.2:
         fromValuesRange1 = outputDataRange;
-        toPixelsRange1   = Interval(0.0, widthToLextr);
-        doInvertDomain1  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
-        fromValue1       = outputValue;
+        toPixelsRange1   = Interval(0.0, heightToLextr);
+        doInvertDomain1  = true; // todo-00-last-done : !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
+        // for position of inputValue in inputDataRange(x), find corresponding position in outputDataRange(y)
+        // this new position will be transformed to pixels on the output(y)
+        fromValue1 = DomainLTransform1D(
+          fromDomainStart: inputDataRange.min,
+          fromDomainEnd: inputDataRange.max,
+          toDomainStart: outputDataRange.min,
+          toDomainEnd: outputDataRange.max,
+        ).apply(inputValue);
 
-        inputPixels     = lextrFromValueInContext(
+        outputPixels     = lextrToPixelsFromValueInContext(
           fromValue: fromValue1,
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
@@ -129,13 +135,20 @@ class PointOffset extends Offset {
           isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
           isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
+
         // 1.1.2:
         fromValuesRange2 = inputDataRange;
-        toPixelsRange2   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
-        doInvertDomain2  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
-        fromValue2       = inputValue;
-
-        outputPixels    = lextrFromValueInContext(
+        toPixelsRange2   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        doInvertDomain2  = false; // todo-00-last-done : !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
+        // for position of outputValue in outputDataRange, find corresponding position in inputDataRange
+        // this new position will be transformed to pixels in the input (x)
+        fromValue2 =  DomainLTransform1D(
+          fromDomainStart: outputDataRange.min,
+          fromDomainEnd: outputDataRange.max,
+          toDomainStart: inputDataRange.min,
+          toDomainEnd: inputDataRange.max,
+        ).apply(outputValue);
+        inputPixels    = lextrToPixelsFromValueInContext(
           fromValue: fromValue2,
           fromValuesRange: fromValuesRange2,
           toPixelsRange: toPixelsRange2,
@@ -154,7 +167,7 @@ class PointOffset extends Offset {
 
   /// Lextr [fromValue] taking into account value and pixel range, domain invert, and whether
   /// to use only the portion of from range that has same sign as inputValue
-  double lextrFromValueInContext({
+  double lextrToPixelsFromValueInContext({
     required double   fromValue,
     required Interval fromValuesRange,
     required Interval toPixelsRange,
