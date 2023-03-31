@@ -86,7 +86,7 @@ class PointOffset extends Offset {
         // 1.1.1:
         fromValuesRange1 = inputDataRange;
         toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
-        doInvertDomain1  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
+        doInvertDomain1  = false;
         fromValue1       = inputValue;
 
         inputPixels = lextrToPixelsFromValueInContext(
@@ -100,8 +100,8 @@ class PointOffset extends Offset {
 
         // 1.2.1:
         fromValuesRange2 = outputDataRange;
-        toPixelsRange2   = Interval(0.0, heightToLextr);
-        doInvertDomain2  = !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
+        toPixelsRange2   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
+        doInvertDomain2  = false;
         fromValue2       = outputValue;
 
         outputPixels    = lextrToPixelsFromValueInContext(
@@ -117,7 +117,7 @@ class PointOffset extends Offset {
         // 1.2.2:
         fromValuesRange1 = outputDataRange;
         toPixelsRange1   = Interval(0.0, heightToLextr);
-        doInvertDomain1  = true; // todo-00-last-done : !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.horizontal);
+        doInvertDomain1  = true; // inverted domain
         // for position of inputValue in inputDataRange(x), find corresponding position in outputDataRange(y)
         // this new position will be transformed to pixels on the output(y)
         fromValue1 = DomainLTransform1D(
@@ -139,7 +139,7 @@ class PointOffset extends Offset {
         // 1.1.2:
         fromValuesRange2 = inputDataRange;
         toPixelsRange2   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
-        doInvertDomain2  = false; // todo-00-last-done : !orientation.isPixelsAndValuesSameDirectionFor(lextrToRangeOrientation: LayoutAxis.vertical);
+        doInvertDomain2  = false;
         // for position of outputValue in outputDataRange, find corresponding position in inputDataRange
         // this new position will be transformed to pixels in the input (x)
         fromValue2 =  DomainLTransform1D(
@@ -176,6 +176,9 @@ class PointOffset extends Offset {
     required bool     isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     assert (toPixelsRange.min == 0.0);
+    // todo-010 : this is assumed false at all times. But KEEP THE isLextrOnlyToValueSignPortion VARIABLES FOR NOW
+    assert (isLextrOnlyToValueSignPortion == false);
+
     var portion = _FromAndToPortionForFromValue(
       fromValue: fromValue,
       fromValuesRange: fromValuesRange,

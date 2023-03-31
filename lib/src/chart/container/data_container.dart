@@ -28,6 +28,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
   void buildAndReplaceChildren() {
     var options = chartViewMaker.chartOptions;
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
+    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -48,7 +50,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     // Row with columns of positive values
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
-                        weight: chartViewMaker.yLabelsGenerator.dataRange.ratioOfPositivePortion(),
+                        weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
                       ),
                       crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
@@ -60,17 +62,17 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     // todo-00-last-progress adding LineSegment for axis line
                     // X axis line. Could place in Row with main constraints weight=0.0
                     AxisLineContainer(
-                        fromPointOffset:
-                            PointOffset(inputValue: chartViewMaker.xLabelsGenerator.dataRange.min, outputValue: 0.0),
-                        toPointOffset:
-                            PointOffset(inputValue: chartViewMaker.xLabelsGenerator.dataRange.max, outputValue: 0.0),
-                        linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-                        chartViewMaker: chartViewMaker,
+                      fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
+                      toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
+                      linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+                      chartViewMaker: chartViewMaker,
+                      isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)
+                      isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
                     ),
                     // Row with columns of negative values
                     Row(
                       mainAxisConstraintsWeight:
-                          ConstraintsWeight(weight: chartViewMaker.yLabelsGenerator.dataRange.ratioOfNegativePortion()),
+                          ConstraintsWeight(weight: yLabelsGenerator.dataRange.ratioOfNegativePortion()),
                       crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
                         crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,
