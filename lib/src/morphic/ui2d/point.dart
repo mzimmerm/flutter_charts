@@ -67,7 +67,7 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    required bool                    isLextrOnlyToValueSignPortion, // default true
+    required bool                    isLextrOnlyToValueSignPortion, // default false
     required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     ChartSeriesOrientation orientation = chartSeriesOrientation;
@@ -172,11 +172,11 @@ class PointOffset extends Offset {
     required Interval fromValuesRange,
     required Interval toPixelsRange,
     required bool     doInvertDomain,
-    required bool     isLextrOnlyToValueSignPortion, // default true
+    required bool     isLextrOnlyToValueSignPortion, // default false
     required bool     isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     assert (toPixelsRange.min == 0.0);
-    // todo-010 : this is assumed false at all times. But KEEP THE isLextrOnlyToValueSignPortion VARIABLES FOR NOW
+    // todo-010 : assumed false at all times. But KEEP THE isLextrOnlyToValueSignPortion VARIABLES FOR NOW
     assert (isLextrOnlyToValueSignPortion == false);
 
     var portion = _FromAndToPortionForFromValue(
@@ -216,6 +216,7 @@ class _FromAndToPortionForFromValue {
     required this.isLextrOnlyToValueSignPortion,
   }) {
     if (isLextrOnlyToValueSignPortion) {
+      // todo-010 : DEAD END, because condition assumed false at all times. But KEEP THE isLextrOnlyToValueSignPortion VARIABLES FOR NOW
       fromValuesPortion = fromValuesRange.portionForSignOfValue(fromValue);
       toPixelsPortion = fromValuesRange.portionOfIntervalAsMyPosNegRatio(toPixelsRange, fromValue);
     } else {

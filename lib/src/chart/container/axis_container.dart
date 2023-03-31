@@ -23,7 +23,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.chartSeriesOrientation = ChartSeriesOrientation.column,
     required super.linePaint,
     required super.chartViewMaker,
-    super.isLextrOnlyToValueSignPortion = true,
+    super.isLextrOnlyToValueSignPortion = false,
     super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
@@ -35,7 +35,7 @@ class AxisLineContainerOrig20230331 extends LineBetweenPointOffsetsContainer {
     super.chartSeriesOrientation = ChartSeriesOrientation.column,
     required super.linePaint,
     required super.chartViewMaker,
-    super.isLextrOnlyToValueSignPortion = true,
+    super.isLextrOnlyToValueSignPortion = false,
     super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }

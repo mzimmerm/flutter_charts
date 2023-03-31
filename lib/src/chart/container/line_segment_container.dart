@@ -41,7 +41,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     required this.chartSeriesOrientation,
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
-    this.isLextrOnlyToValueSignPortion = true,
+    this.isLextrOnlyToValueSignPortion = false,
     this.isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
       chartViewMaker: chartViewMaker
@@ -180,7 +180,7 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
     required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
-    isLextrOnlyToValueSignPortion = true,
+    isLextrOnlyToValueSignPortion = false,
     isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
           chartSeriesOrientation: chartSeriesOrientation,
