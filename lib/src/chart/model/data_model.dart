@@ -146,7 +146,6 @@ class ChartModel {
   ///   converted to numeric, there must still be some way to lextr values to pixels.
   ///   This member provides a default 'from' range for such lextr-ing.
   ///
-  // todo-00-last : incorporate to be clear what depends on it
   final Interval dataRangeWhenStringLabels = const Interval(0.0, 100.0);
 
   // OLD CODE =============================================================

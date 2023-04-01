@@ -166,15 +166,17 @@ class YContainer extends container_common_new.ChartAreaContainer {
                     )
                 ],
               ),
-              // todo-00-last-progress  add LineSegment for axis line
               // Y axis line to the right of labels
               AxisLineContainer(
+                // Note: Here we use the magic of PointOffset transforms to define a HORIZONTAL line, which after
+                //       PointOffset transforms becomes VERTICAL due to the transpose of coordinates.
+                //       See documentation in [PointOffset.lextrInContextOf] row section for details.
                 fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
                 toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
                 chartSeriesOrientation: ChartSeriesOrientation.row,
                 linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                 chartViewMaker: chartViewMaker,
-                isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)
+                // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
                 isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
               ),
             ]),

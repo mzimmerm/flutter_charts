@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
 //import '../../morphic/container/chart_support/chart_series_orientation.dart';
+import '../../morphic/container/chart_support/chart_series_orientation.dart';
 import '../../morphic/ui2d/point.dart';
 import 'axis_container.dart';
 import 'container_common.dart' as container_common_new;
@@ -59,14 +60,20 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                         isPointsReversed: true,
                       ),
                     ),
-                    // todo-00-last-progress adding LineSegment for axis line
                     // X axis line. Could place in Row with main constraints weight=0.0
                     AxisLineContainer(
-                      fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
-                      toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
+                      // Note: Reason for setting the outputValue to output (y) range MAX: We want the output
+                      //       HORIZONTAL LINE on y coordinates of the transformed PointOffset to be 0.0,
+                      //       inside the AxisLineContainer, which will also be layoutSize.height=0.
+                      //       ChartSeriesOrientation.column achieves that starting with Y dataRange.max, as that
+                      //       maps to pixel min = 0.
+                      //       See documentation in [PointOffset.lextrInContextOf] column section for details.
+                      fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
+                      toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
+                      chartSeriesOrientation: ChartSeriesOrientation.column,
                       linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                       chartViewMaker: chartViewMaker,
-                      isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)
+                      // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
                       isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
                     ),
                     // Row with columns of negative values
