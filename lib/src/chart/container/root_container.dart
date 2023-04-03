@@ -78,7 +78,7 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     );
   }
 
-  /// todo-01-last The members are only needed during layout of deeper children (e.g., NewHBarPointContainer) to access the members' sizes or constraints
+  /// todo-01-last The members are only needed during layout of deeper children (e.g., NewVBarPointContainer) to access the members' sizes or constraints
   ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.

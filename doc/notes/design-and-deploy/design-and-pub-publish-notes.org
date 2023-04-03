@@ -1768,7 +1768,7 @@ We also add a 'convenience' application support that allows to *give name* to Bo
 Options are NOT a singleton. Multiple charts may be used in an application, each with a different ChartOptions
 
 
-** IN-PROGRESS-NOW 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
+** DONE 8. REST Containers 2. : ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter - convert to BoxContainers~
 
 
 *** DONE Where possible, Make sure paint and apply methods use the default implementation that iterates on children NOT on members
@@ -1792,40 +1792,7 @@ Classes:
   - [X] VerticalBarChartDataContainer
   
   
-*** IN-PROGRESS-NOW Create a *completely new* BoxContainers for everything. For now, keep ~PointPresenter~ s and related.
-
-tomorrow - Sunday :
-
-In TableCellDefiner, add isOverflown (hmm, maybe separate width, height
-
-In TableDefiner, add two 1D Lists:
-rowHeights, columnWidths
-
- Add layout methods around post, overriding the method that creates the rectangles. Instead, this section will create rectangles one by one for each cell
-
-for row in rows
-   rowHeights = row, find max height of layoutSize on cells not overflown. max constraint height on cells overflown
-   this will be the height of constraint on all rows 
-  same for Columns
-
-Now position all children within table
-internalHeigthOffset = 0
-internalWidthOffset = 0
-
-for row in  rows
-      
-   new column, internalWidthOffset = 0
-  for column in columns
-     get constraint from rowHeights columnWidths
-      call the _M class method to get the rectangle
-
-      offset the rectangle by (internalWidthOffset, internalHeigthOffset)
-
-   before next column, internalWidthOffset += thisRowWidth from columnsWidths
-  
-before next row, row, internalHeigthOffset += thisRowHeight from rowHeights
-
-END SUNDAy
+*** DONE Create a *completely new* BoxContainers for everything. For now, keep ~PointPresenter~ s and related.
 
 Todos and steps
 
@@ -1874,204 +1841,15 @@ Todos and steps
   - [X] in build, NOT constructor, ~addChildren([Column(children: legendContainer, tableLayouter,])~
   - [X] ~member TableLayouter~
   - [X] ~member LegendContainer~
-- [ ] in code
-  - [ ] ~where? in makeChartRootContainer?~
-  - [ ] 
-  - [ ] ~legendContainer = create it~
-  - [ ] ~create XContainer, YContainer, DataContainer, EmptyContainer~
-  - [ ] ~create tableLayouterCellsYDEX, a TableLayouterCells object with 4 cells, in 2x2 arrangement as follows~
-    - [ ] placing Y on 0,0 Data on 0,1  Empty on 1,0 and X on 1,1
-    - [ ] configure row, column, layoutSequence, nextCellInLayoutSequence on each cell
-  - [ ] ~create NewChartRootContainer, pass~
-    - [ ] ~legendContainer: legendContainer~
-    - [ ] ~tableLayouter: TableLayouter(childrenTable: [[yContainer, dataContainer], [emptyContainer], [xContainer]], tableLayouterCells: tableLayouterCellsYDEX,)~
-      - the constructor should add them as column, also will create the rest of the hierarchy..
-  - [ ] this should be IT!
-
     
 Notes or Later:
 
-- [ ] Keep model-like objects: ~PointsColumn~,  ~PointsColumns~,  ~StackableValuePoint~,  ~~,  ~~,  ~~, 
-- [ ] Keep presented objects:  ~PointPresenter~,  ~PointPresenterCreator~,  ~PointPresentersColumn~,  ~PointPresentersColumns~, ~VerticalBarPointPresenter~,  ~VerticalBarLeafPointPresenterCreator~
-- [ ] Create new objects from ~DataContainer~ down in a new library ~new_data_container.dart~, classes from bottom:
-- [ ] ~NewValueContainer~, ~NewValuesColumnContainer~, ~NewValuesColumnsContainer~ - the last is equivalent to ~DataContainer~
-- [ ] change anything using ~DataContainer~ to use ~ValuesColumnsContainer~ - what is it?
-- [ ]
-- [ ] In code and comments, review use of 'position' - it should mean 'extrapolated to pixels'
-- [ ] In code and comments, selectively replace 'transform' to 'extrapolat'. 
-- [ ] In code and comments, review use of 'scal' and replace with 'extrapolat' - there should be rare use of 'scal', only when both domain and range start with 0 and parameters such as 'scaleBy'
-- [ ] Renames : DataRange etc => DataScope (means it can be dependend or independend)
-- [ ] In the lextr methods, if the result is pixels, we can call it Codomain
-  - [ ] ChartRootLayouter
+- [X] Keep model-like objects: ~PointsColumn~,  ~PointsColumns~,  ~StackableValuePoint~,  ~~,  ~~,  ~~, 
+- [X] Keep presented objects:  ~PointPresenter~,  ~PointPresenterCreator~,  ~PointPresentersColumn~,  ~PointPresentersColumns~, ~VerticalBarPointPresenter~,  ~VerticalBarLeafPointPresenterCreator~
+- [X] Create new objects from ~DataContainer~ down in a new library ~new_data_container.dart~, classes from bottom:
+- [X] ~NewValueContainer~, ~NewValuesColumnContainer~, ~NewValuesColumnsContainer~ - the last is equivalent to ~DataContainer~
  
-
--------------
-Later: Rename: constraints.size. to constraints.
-
-
-Stored snippets
-
-#+name: TableLayoutDefiner-link
-#+begin_src dart
-  /// Use the user-requested [TableLayoutCellDefiner.layoutSequence]s on cell definers,
-  /// to link cell definers in [cellDefinersRows] in order of layout.
-  void _linkCellDefinersInLayoutSequence() {
-
-   TableLayoutCellDefiner cellDefiner = flatOrderedCellDefiners.first;
-   TableLayoutCellDefiner? next;
-   while ((next = cellDefiner.nextCellDefinerInLayoutSequence) != null) {
-     cellDefiner.nextCellDefinerInLayoutSequence = next;
-   }  
-  }
-#+end_src
-
-#+name: TableLayouter-resequenceChildren
-#+begin_src dart
- /// Resequence children in order specified by the [TableLayoutDefiner] member [tableLayoutDefiner]
-  List<BoxContainer> _resequenceChildren() {
-    /// Resequence children in order specified by the [TableLayoutDefiner] member [tableLayoutDefiner]
-    List<BoxContainer> resequencedCells = [];
-    TableLayoutCellDefiner element = tableLayoutDefiner.firstCellDefinerToLayout;
-    TableLayoutCellDefiner? next;
-    do {
-      resequencedCells.add(element.cellForThisDefiner);
-      next = element.nextCellDefinerInLayoutSequence;
-    } while (next != null);
-    
-    assert (resequencedCells.length == _children.length);
-    assert (resequencedCells.length == tableLayoutDefiner.numRows * tableLayoutDefiner.numColumns);
-    return resequencedCells;
-  }
-#+end_src
-
-#+name: validateLengthsUsingReduce
-#+begin_src dart
-  void TableLayoutDefiner-validate {
-    // Method: Reducer iterates and gives access to previous result and element.
-    //         Set previous result to previous, so we have previous and element
-    cellDefinersRows.reduceOrElse((previousElement, thisElement) {
-        if (previousElement.length != thisElement.length) {
-          throw StateError('Lengths to not match: ${previousElement.length}, ${thisElement.length}');
-        }
-      },
-      orElse: () => []);
-  }
-#+end_src
-
-#+name: TableCellDefiner-validate
-#+begin_src dart
-
-    void _validate() {
-
-    // Check if this object is configured correctly
-    Set<int> collectedSequences = {};
-
-    // todo-00-last : incorporate to crossvalidate
-    for (int row = 0; row < cellDefinersRows.length; row++){
-      if (cellDefinersRows[row].length != numRows) {
-        throw StateError('cellDefinersRows $cellDefinersRows not configured correctly');
-      }
-
-      List<TableLayoutCellDefiner> currentColumn = cellDefinersRows[row];
-      List<TableLayoutCellDefiner>? previousColumn;
-      for (int column = 0; column < currentColumn.length; column++){
-        // Validate current
-        TableLayoutCellDefiner currentCellDefiner = currentColumn[column];
-        if (currentCellDefiner.row != row || currentCellDefiner.column != column) {
-          throw StateError('Cell definer $currentCellDefiner not configured correctly');
-        }
-
-        // Collect layoutSequences and make sure they go from 0 to numColumns * numRows
-        collectedSequences.add(currentCellDefiner.layoutSequence);
-
-        // Validations all rows must have the same length
-        if (previousColumn != null) {
-          if (previousColumn.length != currentColumn.length || previousColumn.length != numColumns) {
-            throw StateError('Lengths to not match: ${previousColumn.length}, ${currentColumn.length}, $numColumns');
-          }
-        }
-
-        // this column is now previous
-        previousColumn = currentColumn;
-      }
-    }
-
-    assert(collectedSequences.length == numRows * numColumns);
-    assert(collectedSequences.reduceOrElse(math.min, orElse: () => 0) == 0);
-    assert(collectedSequences.reduceOrElse(math.max, orElse: () => 0) == numRows * numColumns - 1);
-  }
-#+end_src
-
-#+name: TableLayoutCellsDefiner-another-validate-and-set
-#+begin_src dart
-
-    void _validataAndSetCellsOnDefiner() {
-    // todo-00-last-last-last
-    // use the _validate code to do something similar. First validate cellsTable
-    // Check if this object is configured correctly
-
-    for (int row = 0; row < cellsTable.length; row++){
-
-      List<BoxContainer> currentColumn = cellsTable[row];
-      // List<BoxContainer>? previousColumn;
-      for (int column = 0; column < currentColumn.length; column++){
-        // Validate current
-        BoxContainer currentCell = currentColumn[column];
-
-        // Late here, initialize fields on each cell definer.
-        tableLayoutDefiner.cellDefinersRows[row][column].row = row;
-        tableLayoutDefiner.cellDefinersRows[row][column].column = column;
-        tableLayoutDefiner.cellDefinersRows[row][column].cellForThisDefiner = currentCell;
-
-        // this column is now previous
-        // previousColumn = currentColumn;
-      }
-    }
-  }
-#+end_src
-*** HOLD Notes on ~Presenters~ to ~BoxContainers~ conversion
-
-- [ ] All classes that are currently "container like" (extend ListBase) but do not extend Container, extend from Container. Must add 
-  - [ ] First experiment on ~PresentersColumns~
-- [ ] Find where Presenters get their internal values set
-  - They are set in constructors, which are created during layout() of parents
-  - For example, VerticalBarPresener constructor, all values (that is offsets) are established in Contructory, NOT in layout!
-- [ ] Replace the above sites with calls to layout(maxSize: internal values from existing code);
-- [ ] Convert to Containers
-  - [ ] ~Presenter - VerticalBarPresenter, LineAndHotspotPresenter~
-    - At which point does presenter gets size? ~when Presenter is created, it is passed StackableValuePoint, which contains the sizes~
-    - VerticalBarPresenter({required StackableValuePoint point,
-      - presentedRect = new ui.Rect.fromPoints(barLeftTop, barRightBottom); // so this is where the size is set!!!
-    - LineAndHotspotpresenter
-      - LineAndHotspotPresenter({  required StackableValuePoint point,
-      - toPoint ??= fromPoint;
-      - lineContainer = new LineContainer(
-        lineFrom: fromPoint,
-        lineTo: toPoint,
-        linePaint: rowDataPaint..strokeWidth = options.lineStrokeWidth);
-      - offsetPoint = fromPoint; // point is the left (from) end of the line
-      - innerPaint = options.hotspotInnerPaint;
-      - outerPaint = options.hotspotOuterPaint;
-      - innerRadius = options.hotspotInnerRadius;
-      - outerRadius = options.hotspotOuterRadius;
-  - ~LineContainer (passed and living in LineAndHotspotPresenter) already extends Container!!~
-    - class LineContainer extends flutter_charts_container.Container
-  - ~ALL DRAWING ON CANVAS ARE ALREADY IN cONTAINERS. BUT THERE ARE OTHER OBJECTS IN BETWEEEN THOSE PAINTING CONTAINERS, ARE THOSE IN-BETWEEN ARE NOT CONTAINERS. WE HAVE TO CONVERT IN-BETWEEN TO CONTAINERS AS WELL~
-    - ~The problem is, the presenters do not "paint/draw" themselves, but are drawn in parents~
-      - ~VerticalBarChartDataContainer._drawDataPresentersColumns~
-    - ~BUT WHERE ARE THE POSITIONS OF THE PRESENTORS INSIDES CALCULATED??~
-      - ~CALCULATED IN ChartContainer.layout -> DataContainer.applyParentOffset -> DataContainer.setupPresentersColumns -> new PresentersColumns(pointsColumns: parentContainer.pointsColumns,~ 
-      - So the calculation and drawing both happens in parents, NOT presenters.
- 
-- [ ] ~CONVERT THE IN-BETWEENS TO CONTAINERS, AND ITERATE THE layout and paint calls~
-  - [ ] PointsColumn
-  - [ ] PointsColumns
-  - [ ] NOT StackableValuePoint
-  - [ ] May need a special extension of Containers for some of the above.
-
-    
-
-** LATER 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
+** IN-PROGRESS-NOW 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
 
   
 ** TODO 10. ~Containers to MORPHS~

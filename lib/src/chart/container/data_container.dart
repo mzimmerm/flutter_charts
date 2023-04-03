@@ -137,7 +137,8 @@ class PointContainer extends container_common_new.ChartAreaContainer {
 ///
 /// It implements the mixin [HeightSizerLayouterChildMixin] which expresses that this is the provided
 /// of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate the height.
-class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMixin {
+// todo-00 rename to BarPointContainer, usable in both column and row bar chart
+class VBarPointContainer extends PointContainer with HeightSizerLayouterChildMixin {
 
   /// The rectangle representing the value.
   ///
@@ -147,7 +148,7 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
   /// It's size should be calculated in [layout], and used in [paint];
   late final ui.Size _rectangleSize;
 
-  HBarPointContainer({
+  VBarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
     // todo-01 Do we need children and key? LineSegmentContainer does not have it.
@@ -160,10 +161,11 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     key: key,
   );
 
+  /// Full [layout] implementation calculates and set the final [_rectangleSize],
+  /// the width and height of the Rectangle that represents data as pixels.
   @override
   void layout() {
     buildAndReplaceChildren();
-    // Calculate [_indicatorSize], the width and height of the Rectangle that represents data:
 
     // Rectangle width is from constraints
     double width = constraints.width;
@@ -198,6 +200,8 @@ class HBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
     //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
+    // todo-00 : calculate using PointModel -> PointOffset using the standard method which returns offsetPixels,
+    // see also LineBetweenPointOffsetsContainer. Use the PointOffset.barPointSize!
     _rectangleSize = ui.Size(width, height);
 
     layoutSize = _rectangleSize;

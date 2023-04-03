@@ -327,13 +327,13 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return pointContainerList;
   }
 
-  /// Generate view for this single leaf [PointModel] - a single [NewHBarPointContainer].
+  /// Generate view for this single leaf [PointModel] - a single [NewVBarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   data_container.PointContainer makeViewForDataArea_PointModel_As_PointContainer({
     required model.PointModel pointModel,
   }) {
-    return data_container.HBarPointContainer(
+    return data_container.VBarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
     );

@@ -222,6 +222,11 @@ class PointOffset extends Offset {
         break;
     }
 
+    // todo-00 : also figure out and store a barPointSize, which represents the HBar or VBar representing the point,
+    //            automatically due to the row or column orientation.
+    //           - in one direction, it will be outputPixels (column) or inputPixels (row)
+    //           - in the cross direction, it will be width of the constraints (column) or height of constraints (row)
+    //           - it can be used to get the rectangle representing the bar in VBarPointContainer
     return PointOffset(
       inputValue: inputPixels,
       outputValue: outputPixels,
