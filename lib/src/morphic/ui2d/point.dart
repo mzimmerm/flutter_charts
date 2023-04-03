@@ -227,6 +227,99 @@ class PointOffset extends Offset {
     //           - in one direction, it will be outputPixels (column) or inputPixels (row)
     //           - in the cross direction, it will be width of the constraints (column) or height of constraints (row)
     //           - it can be used to get the rectangle representing the bar in VBarPointContainer
+
+    /*
+      /// Size of the rectangle which represents one value point on either horizontal bar or vertical bar, depending on chart orientation
+      final ui.Size barPointRectSize;
+
+    double barPointRectWidth, barPointRectHeight;
+    switch (orientation) {
+      case ChartSeriesOrientation.column:
+        fromValuesRange1 = inputDataRange;
+        toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+
+        barPointRectWidth = toPixelsRange
+
+
+        doInvertDomain1  = false;
+        fromValue1       = inputValue;
+
+        inputPixels = lextrToPixelsFromValueInContext(
+          fromValue: fromValue1,
+          fromValuesRange: fromValuesRange1,
+          toPixelsRange: toPixelsRange1,
+          doInvertDomain: doInvertDomain1,
+          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+        );
+
+        // 1.2.1:
+        fromValuesRange2 = outputDataRange;
+        toPixelsRange2   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
+        doInvertDomain2  = true;
+        fromValue2       = outputValue;
+
+        outputPixels    = lextrToPixelsFromValueInContext(
+          fromValue: fromValue2,
+          fromValuesRange: fromValuesRange2,
+          toPixelsRange: toPixelsRange2,
+          doInvertDomain: doInvertDomain2,
+          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+        );
+        break;
+      case ChartSeriesOrientation.row:
+        // 1.2.2:
+        fromValuesRange1 = outputDataRange;
+        toPixelsRange1   = Interval(0.0, heightToLextr);
+        doInvertDomain1  = true; // inverted domain
+        // for position of inputValue in inputDataRange(x), FIRST find corresponding position in outputDataRange(y)
+        // this new position will be transformed to pixels on the output(y)
+        fromValue1 = DomainLTransform1D(
+          fromDomainStart: inputDataRange.min,
+          fromDomainEnd: inputDataRange.max,
+          toDomainStart: outputDataRange.min,
+          toDomainEnd: outputDataRange.max,
+        ).apply(inputValue);
+
+        outputPixels     = lextrToPixelsFromValueInContext(
+          fromValue: fromValue1,
+          fromValuesRange: fromValuesRange1,
+          toPixelsRange: toPixelsRange1,
+          doInvertDomain: doInvertDomain1,
+          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+        );
+
+        // 1.1.2:
+        fromValuesRange2 = inputDataRange;
+        toPixelsRange2   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        doInvertDomain2  = false;
+        // for position of outputValue in outputDataRange, FIRST find corresponding position in inputDataRange
+        // this new position will be transformed to pixels in the input (x)
+        fromValue2 =  DomainLTransform1D(
+          fromDomainStart: outputDataRange.min,
+          fromDomainEnd: outputDataRange.max,
+          toDomainStart: inputDataRange.min,
+          toDomainEnd: inputDataRange.max,
+        ).apply(outputValue);
+        inputPixels    = lextrToPixelsFromValueInContext(
+          fromValue: fromValue2,
+          fromValuesRange: fromValuesRange2,
+          toPixelsRange: toPixelsRange2,
+          doInvertDomain: doInvertDomain2,
+          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
+          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+        );
+        break;
+    }
+
+
+
+     */
+
+
+
     return PointOffset(
       inputValue: inputPixels,
       outputValue: outputPixels,
