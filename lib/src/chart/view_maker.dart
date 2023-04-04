@@ -308,7 +308,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    // todo-00 : pull out as method ? this will become ChartOrientationLayouter LayouterLevel3
+    // todo-00 : pull out as method ? this will become ChartEmbedLevel.level3Bar
     return container_base.Column(
       mainAxisAlign: pointsLayouterAlign,
       children: pointContainers,

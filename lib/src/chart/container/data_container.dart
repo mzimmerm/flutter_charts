@@ -31,6 +31,16 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
     var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
+    var chartSeriesOrientation = chart_orientation.ChartSeriesOrientation.column;
+    DataRangeLabelInfosGenerator labelsGeneratorAlongSeries;
+    switch(chartSeriesOrientation) {
+      case chart_orientation.ChartSeriesOrientation.column:
+        labelsGeneratorAlongSeries = yLabelsGenerator;
+        break;
+      case chart_orientation.ChartSeriesOrientation.row:
+        labelsGeneratorAlongSeries = xLabelsGenerator;
+        break;
+    }
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -53,7 +63,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     // todo-00 : pull out as method ? this will become ChartEmbedLevel.level2Bars
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
-                        weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
+                        weight: labelsGeneratorAlongSeries.dataRange.ratioOfPositivePortion(),
                       ),
                       crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars(
@@ -63,27 +73,15 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       ),
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
-                    AxisLineContainer(
-                      // Creating a horizontal line between inputValue x min and x max, with outputValue y max.
-                      // The reason for using y max: We want to paint HORIZONTAL line with 0 thickness, so
-                      //   the layoutSize.height of the AxisLineContainer must be 0.
-                      // That means, the AxisLineContainer INNER y pixel coordinates of both end points
-                      //   must be 0 after all transforms.
-                      // To achieve the 0 inner y pixel coordinates after all transforms, we need to start at the point
-                      //   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
-                      // See documentation in [PointOffset.lextrInContextOf] column section for details.
-                      fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
-                      toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
-                      chartSeriesOrientation: chart_orientation.ChartSeriesOrientation.column,
-                      linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+                    XAxisLineContainer(
+                      xLabelsGenerator: xLabelsGenerator,
+                      yLabelsGenerator: yLabelsGenerator,
                       chartViewMaker: chartViewMaker,
-                      // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
-                      isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
                     ),
                     // Row with columns of negative values
                     Row(
                       mainAxisConstraintsWeight:
-                          ConstraintsWeight(weight: yLabelsGenerator.dataRange.ratioOfNegativePortion()),
+                          ConstraintsWeight(weight: labelsGeneratorAlongSeries.dataRange.ratioOfNegativePortion()),
                       crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
                       children: chartViewMaker.makeViewsForDataContainer_Bars(
                         crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,
@@ -100,6 +98,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
       ),
     ]);
   }
+
 }
 
 class CrossPointsContainer extends container_common_new.ChartAreaContainer {
