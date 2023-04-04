@@ -4,7 +4,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
-import '../../morphic/container/chart_support/chart_series_orientation.dart';
+import '../../morphic/container/chart_support/chart_orientation.dart';
 //import '../../morphic/ui2d/point.dart';
 import '../../morphic/ui2d/point.dart';
 import '../chart_label_container.dart';
@@ -27,42 +27,6 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
-
-class AxisLineContainerOrig20230331 extends LineBetweenPointOffsetsContainer {
-  AxisLineContainerOrig20230331({
-    super.fromPointOffset,
-    super.toPointOffset,
-    super.chartSeriesOrientation = ChartSeriesOrientation.column,
-    required super.linePaint,
-    required super.chartViewMaker,
-    super.isLextrOnlyToValueSignPortion = false,
-    super.isLextrUseSizerInsteadOfConstraint = false,
-  });
-}
-/* KEEP :
-  AxisLineContainerOrig20230331 called as:
-
-              // Y axis line to the right of labels
-              AxisLineContainerOrig20230331(
-                fromPointOffset: PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.min),
-                toPointOffset:   PointOffset(inputValue: 0.0, outputValue: labelsGenerator.dataRange.max),
-                chartSeriesOrientation: ChartSeriesOrientation.column,
-                linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-                chartViewMaker: chartViewMaker,
-                isLextrOnlyToValueSignPortion: false, // Lextr from full Y range (negative + positive portion)
-                isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
-              ),
-
-                    // X axis line. Could place in Row with main constraints weight=0.0
-                    AxisLineContainerOrig20230331(
-                        fromPointOffset:
-                            PointOffset(inputValue: chartViewMaker.xLabelsGenerator.dataRange.min, outputValue: 0.0),
-                        toPointOffset:
-                            PointOffset(inputValue: chartViewMaker.xLabelsGenerator.dataRange.max, outputValue: 0.0),
-                        linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-                        chartViewMaker: chartViewMaker,
-                    ),
- */
 
 class XContainer extends container_common_new.ChartAreaContainer {
   /// Constructs the container that holds X labels.

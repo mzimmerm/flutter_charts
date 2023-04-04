@@ -3,7 +3,7 @@ import 'dart:ui' show Offset, Size;
 import '../../util/util_dart.dart' show DomainLTransform1D, Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 // import '../container/container_layouter_base.dart';
-import '../container/chart_support/chart_series_orientation.dart';
+import '../container/chart_support/chart_orientation.dart';
 
 /// Like [Offset] but in addition, can manage lextr-ing inside chart to chart value domains and pixel domains,
 /// utilizing [lextrToPixelsMaybeTransposeInContextOf] which returns a new [PointOffset] in pixels, created from this [PointOffset]'s

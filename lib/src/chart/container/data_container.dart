@@ -1,8 +1,8 @@
 import 'dart:ui' as ui show Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
-//import '../../morphic/container/chart_support/chart_series_orientation.dart';
-import '../../morphic/container/chart_support/chart_series_orientation.dart' as chart_orientation;
+//import '../../morphic/container/chart_support/chart_orientation.dart';
+import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
 import 'axis_container.dart';
@@ -46,11 +46,11 @@ class DataContainer extends container_common_new.ChartAreaContainer {
             WidthSizerLayouter(
               children: [
                 // Column first Row lays out positives, second Row negatives, X axis line between them
-                // todo-00-next : pull out as method ? this will become ChartOrientationLayouter LayouterLevel1
+                // todo-00 : pull out as method ? this will become ChartEmbedLevel.level1PositiveNegativeArea
                 Column(
                   children: [
                     // Row with columns of positive values
-                    // todo-00-next : pull out as method ? this will become ChartOrientationLayouter LayouterLevel2
+                    // todo-00 : pull out as method ? this will become ChartEmbedLevel.level2Bars
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
                         weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
@@ -64,12 +64,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     AxisLineContainer(
-                      // Note: Reason for setting the outputValue to output (y) range MAX: We want the output
-                      //       HORIZONTAL LINE on y coordinates of the transformed PointOffset to be 0.0,
-                      //       inside the AxisLineContainer, which will also be layoutSize.height=0.
-                      //       ChartSeriesOrientation.column achieves that starting with Y dataRange.max, as that
-                      //       maps to pixel min = 0.
-                      //       See documentation in [PointOffset.lextrInContextOf] column section for details.
+                      // Creating a horizontal line between inputValue x min and x max, with outputValue y max.
+                      // The reason for using y max: We want to paint HORIZONTAL line with 0 thickness, so
+                      //   the layoutSize.height of the AxisLineContainer must be 0.
+                      // That means, the AxisLineContainer INNER y pixel coordinates of both end points
+                      //   must be 0 after all transforms.
+                      // To achieve the 0 inner y pixel coordinates after all transforms, we need to start at the point
+                      //   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
+                      // See documentation in [PointOffset.lextrInContextOf] column section for details.
                       fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
                       toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
                       chartSeriesOrientation: chart_orientation.ChartSeriesOrientation.column,

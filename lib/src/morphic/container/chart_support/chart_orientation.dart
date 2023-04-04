@@ -29,8 +29,8 @@ enum ChartSeriesOrientation {
   );
 
   const ChartSeriesOrientation({
-    required this.mainLayoutAxis, // across series 'stacking' orientation
-    required this.inputAxis, // x axis orientation
+    required this.mainLayoutAxis, // orientation along which outputValues (across series values) are displayed
+    required this.inputAxis, // orientation of axis where inputValues (independent values, x values) are displayed
   });
 
   /// Describes how the data series is oriented in view - horizontally or vertically.
@@ -62,5 +62,17 @@ enum ChartSeriesOrientation {
     // for row,    and pixels axis vertical,   return true
     return (inputAxis == lextrToRangeOrientation);
   }
-
 }
+
+/// Represents the level on a chart for which layout is performed.
+///
+/// The deepest level (highest integer) is the leaf level [level3Bar], representing a container
+/// of multiple point presenters; Each point presenter presents one point (one value) of data -
+/// this presenter may be a rectangle on a bar chart, a hotspot dot on a linear chart.
+///
+enum ChartEmbedLevel {
+  level1PositiveNegativeArea,
+  level2Bars,
+  level3Bar,
+}
+

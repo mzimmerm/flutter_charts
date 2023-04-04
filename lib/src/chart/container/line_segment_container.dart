@@ -4,7 +4,7 @@ import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 
 import 'container_common.dart' as container_common_new;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../../morphic/container/chart_support/chart_series_orientation.dart' as chart_orientation;
+import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
 import '../view_maker.dart' as view_maker;
 // import '../container.dart' as container;
 import '../model/data_model.dart' as model;

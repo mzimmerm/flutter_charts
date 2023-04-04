@@ -1,31 +1,27 @@
 import 'dart:ui' as ui show Canvas, Size;
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_series_orientation.dart';
-import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
 
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
 
-// view_maker imports
+import '../morphic/container/chart_support/chart_orientation.dart';
+import '../morphic/container/container_edge_padding.dart';
+import '../morphic/container/container_layouter_base.dart' as container_base;
+// import '../morphic/container/container_edge_padding.dart';
+import '../morphic/container/layouter_one_dimensional.dart';
+import '../morphic/container/constraints.dart' as constraints;
 
 // this level or equivalent
+import 'model/data_model.dart' as model;
+import 'options.dart' as options;
 import 'container/data_container.dart' as data_container;
 import 'container/container_common.dart' as container_common_new;
 import 'container/legend_container.dart' as legend_container;
 import 'container/axis_container.dart' as axis_container;
 import 'container/root_container.dart' as root_container;
-import '../morphic/container/container_layouter_base.dart' as container_base;
-// import '../morphic/container/container_edge_padding.dart';
-import '../morphic/container/layouter_one_dimensional.dart';
-
-import 'model/data_model.dart' as model;
-import '../util/util_labels.dart' as util_labels;
-
-import 'options.dart' as options;
-import '../morphic/container/constraints.dart' as constraints;
-
 import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import '../util/util_labels.dart' as util_labels;
 
 /// Abstract base class for view makers.
 ///
@@ -312,7 +308,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    // todo-00-next : pull out as method ? this will become ChartOrientationLayouter LayouterLevel3
+    // todo-00 : pull out as method ? this will become ChartOrientationLayouter LayouterLevel3
     return container_base.Column(
       mainAxisAlign: pointsLayouterAlign,
       children: pointContainers,
@@ -350,8 +346,61 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
-      chartSeriesOrientation: ChartSeriesOrientation.column, // todo-00-next generalize to row
+      chartSeriesOrientation: ChartSeriesOrientation.column, // todo-00 generalize to row
     );
+  }
+
+  // todo-00-progress
+  container_base.RollingBoxLayouter? makeViewForDataArea_LevelLayouter({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartEmbedLevel chartEmbedLevel,
+    required List<container_base.BoxContainer> children,
+    Align? mainAxisAlign,
+    Packing? mainAxisPacking,
+    Align? crossAxisAlign,
+    Packing? crossAxisPacking,
+    container_base.ConstraintsWeight mainAxisConstraintsWeight = container_base.ConstraintsWeight.defaultWeight,
+
+  }) {
+    switch (chartEmbedLevel) {
+      case ChartEmbedLevel.level1PositiveNegativeArea:
+        return chartSeriesOrientation == ChartSeriesOrientation.column ?
+        container_base.Column(children: children,)
+        :
+        container_base.Row(children: children,);
+      case ChartEmbedLevel.level2Bars:
+        return chartSeriesOrientation == ChartSeriesOrientation.column ?
+        container_base.Row(
+          mainAxisConstraintsWeight: container_base.ConstraintsWeight(
+            weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
+          ),
+          crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
+          children: makeViewsForDataContainer_Bars(
+            crossPointsModelList: chartModel.crossPointsModelPositiveList,
+            pointsLayouterAlign: Align.start,
+            isPointsReversed: true,
+          ),
+        )
+        :
+            // todo-00 finish
+        container_base.Column(
+          mainAxisConstraintsWeight: container_base.ConstraintsWeight(
+            weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
+          ),
+          crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
+          children: makeViewsForDataContainer_Bars(
+            crossPointsModelList: chartModel.crossPointsModelPositiveList,
+            pointsLayouterAlign: Align.start,
+            isPointsReversed: true,
+          ),
+        );
+      case ChartEmbedLevel.level3Bar:
+        // todo-00 finish
+        return chartSeriesOrientation == ChartSeriesOrientation.column ?
+        null
+            :
+        null;
+    }
   }
 
   String _debugPrintBegin() {
