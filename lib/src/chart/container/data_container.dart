@@ -45,16 +45,18 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                // Column first Row lays out positives, second Row negatives
+                // Column first Row lays out positives, second Row negatives, X axis line between them
+                // todo-00-next : pull out as method ? this will become ChartOrientationLayouter LayouterLevel1
                 Column(
                   children: [
                     // Row with columns of positive values
+                    // todo-00-next : pull out as method ? this will become ChartOrientationLayouter LayouterLevel2
                     Row(
                       mainAxisConstraintsWeight: ConstraintsWeight(
                         weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
                       ),
                       crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
-                      children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
+                      children: chartViewMaker.makeViewsForDataContainer_Bars(
                         crossPointsModelList: chartViewMaker.chartModel.crossPointsModelPositiveList,
                         pointsLayouterAlign: Align.start,
                         isPointsReversed: true,
@@ -81,7 +83,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       mainAxisConstraintsWeight:
                           ConstraintsWeight(weight: yLabelsGenerator.dataRange.ratioOfNegativePortion()),
                       crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
-                      children: chartViewMaker.makeViewsForDataContainer_Bars_As_CrossPointsContainer_List(
+                      children: chartViewMaker.makeViewsForDataContainer_Bars(
                         crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,
                         pointsLayouterAlign: Align.start,
                         isPointsReversed: false,
@@ -118,7 +120,7 @@ class CrossPointsContainer extends container_common_new.ChartAreaContainer {
   model.CrossPointsModel crossPointsModel;
 }
 
-class PointContainer extends container_common_new.ChartAreaContainer {
+abstract class PointContainer extends container_common_new.ChartAreaContainer {
 
   PointContainer({
     required this.pointModel,
