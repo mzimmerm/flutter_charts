@@ -1,9 +1,10 @@
-import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
+import 'dart:ui' as ui show Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
 //import '../../morphic/container/chart_support/chart_series_orientation.dart';
-import '../../morphic/container/chart_support/chart_series_orientation.dart';
+import '../../morphic/container/chart_support/chart_series_orientation.dart' as chart_orientation;
 import '../../morphic/ui2d/point.dart';
+import '../../util/util_labels.dart';
 import 'axis_container.dart';
 import 'container_common.dart' as container_common_new;
 import '../../morphic/container/container_layouter_base.dart';
@@ -13,7 +14,6 @@ import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
 import '../../morphic/container/container_key.dart';
-import '../../util/util_dart.dart';
 //import 'line_segment_container.dart';
 
 class DataContainer extends container_common_new.ChartAreaContainer {
@@ -70,7 +70,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       //       See documentation in [PointOffset.lextrInContextOf] column section for details.
                       fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
                       toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
-                      chartSeriesOrientation: ChartSeriesOrientation.column,
+                      chartSeriesOrientation: chart_orientation.ChartSeriesOrientation.column,
                       linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
                       chartViewMaker: chartViewMaker,
                       // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
@@ -119,11 +119,11 @@ class CrossPointsContainer extends container_common_new.ChartAreaContainer {
 }
 
 class PointContainer extends container_common_new.ChartAreaContainer {
-  model.PointModel pointModel;
 
   PointContainer({
     required this.pointModel,
     required ChartViewMaker chartViewMaker,
+    required this.chartSeriesOrientation,
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
@@ -131,32 +131,33 @@ class PointContainer extends container_common_new.ChartAreaContainer {
     children: children,
     key: key,
   );
+
+  /// The [PointModel] presented by this container.
+  model.PointModel pointModel;
+
+  /// Orientation of the chart bars: horizontal or vertical.
+  final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
 }
 
+/// Container presents it's [pointModel] as a point on a line, or a rectangle in a bar chart.
+///
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
-/// It implements the mixin [HeightSizerLayouterChildMixin] which expresses that this is the provided
-/// of 'toPixelsMax', 'toPixelsMin' - basically the domain (scope) to which we extrapolate the height.
-// todo-00 rename to BarPointContainer, usable in both column and row bar chart
-class VBarPointContainer extends PointContainer with HeightSizerLayouterChildMixin {
+/// It implements the mixins [WidthSizerLayouterChildMixin] and [HeightSizerLayouterChildMixin]
+/// needed to lextr the [pointModel] to a position on the chart.
+class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
 
-  /// The rectangle representing the value.
-  ///
-  /// It's height represents [pointModel.outputValue] extrapolated from the value range to the
-  /// pixel height available for data in the vertical direction.
-  ///
-  /// It's size should be calculated in [layout], and used in [paint];
-  late final ui.Size _rectangleSize;
-
-  VBarPointContainer({
+  BarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
+    required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     // todo-01 Do we need children and key? LineSegmentContainer does not have it.
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     pointModel: pointModel,
     chartViewMaker: chartViewMaker,
+    chartSeriesOrientation: chartSeriesOrientation,
     children: children,
     key: key,
   );
@@ -167,10 +168,40 @@ class VBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
   void layout() {
     buildAndReplaceChildren();
 
-    // Rectangle width is from constraints
-    double width = constraints.width;
+    DataRangeLabelInfosGenerator xLabelsGenerator = chartViewMaker.xLabelsGenerator;
+    DataRangeLabelInfosGenerator yLabelsGenerator = chartViewMaker.yLabelsGenerator;
 
-    // Rectangle height is Y extrapolated from pointModel.outputValue using chartRootContainer.yLabelsGenerator
+    // Create PointOffset from this [pointModel] by giving it a range,
+    // positions the [pointModel] on the x axis on it's label x coordinate.
+    // The [pointOffset] can be lextr-ed to it's target value depending on chart direction.
+    PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
+          dataRangeLabelInfosGenerator: xLabelsGenerator,
+        );
+    PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
+      chartSeriesOrientation: chartSeriesOrientation,
+      constraintsOnImmediateOwner: constraints,
+      inputDataRange: xLabelsGenerator.dataRange,
+      outputDataRange: yLabelsGenerator.dataRange,
+      heightToLextr: heightToLextr,
+      widthToLextr: widthToLextr,
+      isLextrOnlyToValueSignPortion: false,
+      isLextrUseSizerInsteadOfConstraint: false,
+    );
+
+    // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
+    // which is the size of the rectangle presenting the point.
+    // The offset, [pixelPointOffset] is used in line chart
+
+    // The layoutSize is also the size of the rectangle, which, when positioned
+    // by the parent layouter, presents the value of the [pointModel] on a bar chart.
+    layoutSize = pixelPointOffset.barPointRectSize;
+  }
+
+
+/* todo-010 - KEEP for now
+  void layout() {
+    buildAndReplaceChildren();
+
     Interval yDataRange = chartViewMaker.yLabelsGenerator.dataRange;
 
     // Using the pixel height [heightToLextr] of the [HeightSizerLayouter] (which wraps tightly the data container),
@@ -180,12 +211,12 @@ class VBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     var lextr = ToPixelsLTransform1D(
       fromValuesMin: yDataRange.min,
       fromValuesMax: yDataRange.max,
-      /* KEEP as example of working without HeightSizer
-      var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
-      var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
-      toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
-      toPixelsMin: padGroup.heightPadTopOfYAndData(),
-      */
+      // KEEP as example of working without HeightSizer
+      // var ownerDataContainerConstraints = chartViewMaker.chartRootContainer.dataContainer.constraints;
+      // var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
+      // toPixelsMax: ownerDataContainerConstraints.size.height - padGroup.heightPadBottomOfYAndData(),
+      // toPixelsMin: padGroup.heightPadTopOfYAndData(),
+
       toPixelsMin: 0.0,
       toPixelsMax: heightToLextr,
     );
@@ -200,16 +231,16 @@ class VBarPointContainer extends PointContainer with HeightSizerLayouterChildMix
     //     'dataRange.min=${yLabelsGenerator.dataRange.min}, dataRange.max=${yLabelsGenerator.dataRange.max}'
     //     'yContainer.axisPixelsRange.min=${yContainer.axisPixelsRange.min}, yContainer.axisPixelsRange.max=${yContainer.axisPixelsRange.max}');
 
-    // todo-00 : calculate using PointModel -> PointOffset using the standard method which returns offsetPixels,
-    // see also LineBetweenPointOffsetsContainer. Use the PointOffset.barPointSize!
-    _rectangleSize = ui.Size(width, height);
+    _rectangleSize = ui.Size(constraints.width, height);
 
     layoutSize = _rectangleSize;
   }
+*/
+
 
   @override paint(ui.Canvas canvas) {
 
-    ui.Rect rect = offset & _rectangleSize;
+    ui.Rect rect = offset & layoutSize;
 
     // Rectangle color should be from pointModel's color.
     ui.Paint paint = ui.Paint();

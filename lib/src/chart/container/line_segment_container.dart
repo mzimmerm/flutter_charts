@@ -63,6 +63,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
 
   /// Controls whether layout lextr on points uses the full portion (both positive and negative portion)
   /// of lextr-from range, or only the portion that has the same sign as the point value.
+  // // todo-010 : This should be removed
   final bool isLextrOnlyToValueSignPortion;
 
   /// Controls whether layout lextr on points, when setting pixel ranges, uses the full length of sizer
@@ -106,7 +107,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     // The method  takes into account chart orientation, which may cause the x and y (input and output) values
     //   to flip (invert) during the lextr.
     // Passing [this.constraints] is correct here, see [layout] documentation.
-    _fromOffsetPixels = fromPointOffset!.lextrInContextOf(
+    _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
       chartSeriesOrientation: chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
@@ -116,7 +117,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
-    _toOffsetPixels = toPointOffset!.lextrInContextOf(
+    _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
       chartSeriesOrientation: chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
@@ -210,10 +211,12 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   ///
   /// Both points are on x axis, so the xLabelsGenerator is used as input dataRange for both from/to points.
   @override
-  PointOffset get fromPointOffset =>
-      fromPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+  PointOffset get fromPointOffset => fromPointModel.asPointOffsetOnInputRange(
+        dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
+      );
+
   /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
-      toPointModel.pointOffsetWithInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+      toPointModel.asPointOffsetOnInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
 }

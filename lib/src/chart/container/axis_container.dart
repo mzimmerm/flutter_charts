@@ -77,7 +77,7 @@ class XContainer extends container_common_new.ChartAreaContainer {
         ) {
     var options = chartViewMaker.chartOptions;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+    // var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(

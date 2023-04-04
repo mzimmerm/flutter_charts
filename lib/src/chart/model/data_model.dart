@@ -61,7 +61,7 @@ class ChartModel {
           dataModel: this,
           columnIndex: columnIndex,
           numDataModelColumns: numDataModelColumns,
-          pointsSigns: CrossPointsModelPointsSigns.positiveOr0,
+          pointsSign: CrossPointsModelPointsSign.positiveOr0,
         ),
       );
       crossPointsModelNegativeList.add(
@@ -70,7 +70,7 @@ class ChartModel {
           dataModel: this,
           columnIndex: columnIndex,
           numDataModelColumns: numDataModelColumns,
-          pointsSigns: CrossPointsModelPointsSigns.negative,
+          pointsSign: CrossPointsModelPointsSign.negative,
         ),
       );
 
@@ -183,10 +183,13 @@ class ChartModel {
   ///
   final List<String>? yUserLabels;
 
-  /// Colors corresponding to each data row (series) in [ChartModel].
+  /// Colors representing each data row (series) in [ChartModel].
   final List<ui.Color> byRowColors;
 
-  /// Chart options which may affect data validation.
+  /// Chart options of this [ChartModel].
+  ///
+  /// Motivation: [ChartModel] needs this member as options
+  /// affect data transforms and validations.
   final ChartOptions chartOptions;
 
   // todo-011-performance : cache valuesMax/Min ond also _flatten
@@ -239,7 +242,7 @@ class ChartModel {
 ///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
 ///             This enum supports creating and later using (processing, view making) the positive and negative
 ///             bars separately.
-enum CrossPointsModelPointsSigns {
+enum CrossPointsModelPointsSign {
   positiveOr0,
   negative,
   any,
@@ -247,7 +250,7 @@ enum CrossPointsModelPointsSigns {
 
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
 /// which are all either positive (non-negative to be precise) or negative, depending on the
-/// passed [pointsSigns].
+/// passed [pointsSign].
 ///
 /// As we consider the [ChartModel] to represent a 2D array 'rows first', in other words,
 /// 'one data series is a row', with rows (each-series) ordered 'top-to-bottom',
@@ -267,17 +270,17 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
   /// The [dataModel] is the [DataModel] underlying the [CrossPointsModel] instance being created.
   /// The [columnIndex] is index of the [valuesColumn] in the [dataModel].
-  /// The [numDataModelColumns] allows to later calculate this point's input value using [inputValueWithInputRange],
+  /// The [numDataModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
-  /// The [pointsSigns] specifies whether positive or negative values
+  /// The [pointsSign] specifies whether positive or negative values
   ///   are placed in the [CrossPointsModel] instance being created.
   CrossPointsModel({
     required List<double> valuesColumn,
     required this.dataModel,
     required this.columnIndex,
     required numDataModelColumns,
-    required this.pointsSigns
+    required this.pointsSign
   }) : _numDataModelColumns = numDataModelColumns {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
@@ -351,20 +354,30 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view maker,
   /// we can use the [_numDataModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
   /// to calculate this value
-  double inputValueWithInputRange({required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator}) {
+  double inputValueOnInputRange({
+    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+  }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
     double columnWidth = (dataRange.length / _numDataModelColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
-  /// todo-01-doc
-  late final CrossPointsModelPointsSigns pointsSigns;
+  /// Sign that all [PointModel]s in this [CrossPointsModel] must have.
+  ///
+  /// Sign is represented by [CrossPointsModelPointsSign].
+  ///
+  /// Motivation: The model of any chart maintains separate member for positive and negative values
+  ///             in the same cross-series data column in [ChartModel] - the [crossPointsModelPositiveList]
+  ///             and the [crossPointsModelNegativeList]. This member allows to separate
+  ///             values in each cross-series data column into the positives and negatives.
+  late final CrossPointsModelPointsSign pointsSign;
 
   /// Points of this positive or negative column (crossPoints).
   ///
-  /// The points are needed to provide the [allElements], the list of all [DoubleLinked] elements
-  /// owned by this [DoubleLinkedOwner]. 
-  /// At the same time, the points are all [PointModel] in this positive or negative column (crossPoints list).
+  /// The points are needed to provide the [allElements] method, which answers the list of
+  /// all [DoubleLinked] elements owned by this [DoubleLinkedOwner].
+  /// At the same time, the points are all [PointModel] in this positive or negative column
+  /// (crossPoints list).
   final List<PointModel> _crossPoints = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
@@ -372,22 +385,22 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   @override
   Iterable<PointModel> allElements() => _crossPoints;
 
-  /// Checks if the sign of a double is the sign required by this instance of [CrossPointsModel].
+  /// Checks if the sign of a the passed [value] is the sign required by this instance of [CrossPointsModel].
   ///
   /// Motivation: In the context of a charting framework, any series positive and negative
   ///             values are split and kept separate in model and in view containers,
   ///             using separate instances of positive and negative [CrossPointsModel]s,
   ///             in [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
-  ///             This method is a helper to performs the separation based on [pointsSigns].
+  ///             This method is a helper to performs the separation based on [pointsSign].
   bool __isValueMySign({
     required double value,
   }) {
-    switch (pointsSigns) {
-      case CrossPointsModelPointsSigns.any:
+    switch (pointsSign) {
+      case CrossPointsModelPointsSign.any:
         return true;
-      case CrossPointsModelPointsSigns.positiveOr0:
+      case CrossPointsModelPointsSign.positiveOr0:
         return (value >= 0.0);
-      case CrossPointsModelPointsSigns.negative:
+      case CrossPointsModelPointsSign.negative:
         return (value < 0.0);
     }
   }
@@ -398,9 +411,9 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// which is the backing list of this [DoubleLinkedOwner]'s  [allElements].
   ///
   /// Only makes practical sense if all [_crossPoints] are either positive or negative,
-  /// see [CrossPointsModelPointsSigns].
+  /// see [CrossPointsModelPointsSign].
   __stackPoints(PointModel point, unused) {
-    assert(pointsSigns != CrossPointsModelPointsSigns.any);
+    assert(pointsSign != CrossPointsModelPointsSign.any);
 
     if (point.hasPrevious) {
       point._stackedOutputValue = point.previous._stackedOutputValue + point.outputValue;
@@ -412,12 +425,12 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Returns value-height of this column from (transformed, non-extrapolated) data values of points.
   double get _stackedValue {
-    switch (pointsSigns) {
-      case CrossPointsModelPointsSigns.any:
+    switch (pointsSign) {
+      case CrossPointsModelPointsSign.any:
         throw StateError('Cannot stack value on CrossPointsModel with mixed signs');
-      case CrossPointsModelPointsSigns.positiveOr0:
+      case CrossPointsModelPointsSign.positiveOr0:
         return __maxOnPoints((PointModel point) => point._stackedOutputValue);
-      case CrossPointsModelPointsSigns.negative:
+      case CrossPointsModelPointsSign.negative:
         return __minOnPoints((PointModel point) => point._stackedOutputValue);
     }
   }
@@ -576,19 +589,23 @@ class PointModel extends Object with DoubleLinked {
   ///
   ///   Input values (x values) of data model [PointModel] are ofter non-numeric,
   ///   and are defined by [ChartModel.xUserLabels] or similar approach.
-  ///   However, for the purpose of displaying a container with a [PointModel],
+  ///   However, for the purpose of displaying a container representing a [PointModel],
   ///   we want to assign the [PointModel] an inputValue, which can be lextr-ed to
   ///   it's pixel position.  However, assigning an inputValue by itself does not help;
   ///   To lextr inputValue to some pixel value, we need to affix the inputValue
-  ///   to a range. This method, [inputValueWithInputRange] does just that:
-  ///   Given the passed [dataRangeLabelInfosGenerator] which contains data range
+  ///   to a range. This method, [inputValueOnInputRange] does just that:
+  ///   Given the passed [dataRangeLabelInfosGenerator], using its data range
   ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue
   ///   of this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
   /// Delegated to [ownerCrossPointsModel].
-  double inputValueWithInputRange({required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator}) {
-    return ownerCrossPointsModel.inputValueWithInputRange(dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator);
+  double inputValueOnInputRange({
+    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+  }) {
+    return ownerCrossPointsModel.inputValueOnInputRange(
+      dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
+    );
   }
 
   /// Once the x labels are established, either as [xUserLabels] or generated, clients can
@@ -597,11 +614,11 @@ class PointModel extends Object with DoubleLinked {
 
   ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
 
-  PointOffset pointOffsetWithInputRange({
+  PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) =>
       PointOffset(
-        inputValue: inputValueWithInputRange(
+        inputValue: inputValueOnInputRange(
           dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
         ),
         outputValue: outputValue,

@@ -1,4 +1,5 @@
 import 'dart:ui' as ui show Canvas, Size;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_series_orientation.dart';
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
 
 import 'painter.dart';
@@ -333,9 +334,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   data_container.PointContainer makeViewForDataArea_PointModel_As_PointContainer({
     required model.PointModel pointModel,
   }) {
-    return data_container.VBarPointContainer(
+    return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
+      chartSeriesOrientation: ChartSeriesOrientation.column, // todo-00-next generalize to row
     );
   }
 
