@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Rect, Paint, Canvas;
 
 // this level base libraries or equivalent
 //import '../../morphic/container/chart_support/chart_orientation.dart';
-import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
+import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
 import 'axis_container.dart';
@@ -31,16 +31,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
     var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    var chartSeriesOrientation = chart_orientation.ChartSeriesOrientation.column;
-    DataRangeLabelInfosGenerator labelsGeneratorAlongSeries;
-    switch(chartSeriesOrientation) {
-      case chart_orientation.ChartSeriesOrientation.column:
-        labelsGeneratorAlongSeries = yLabelsGenerator;
-        break;
-      case chart_orientation.ChartSeriesOrientation.row:
-        labelsGeneratorAlongSeries = xLabelsGenerator;
-        break;
-    }
+    // todo-00-last-progress
+    var chartSeriesOrientation = ChartSeriesOrientation.column;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -56,21 +48,18 @@ class DataContainer extends container_common_new.ChartAreaContainer {
             WidthSizerLayouter(
               children: [
                 // Column first Row lays out positives, second Row negatives, X axis line between them
-                // todo-00 : pull out as method ? this will become ChartEmbedLevel.level1PositiveNegativeArea
-                Column(
+                // Column(
+                _buildLevel1PosNegAreasContainerAsRowOrColumn (
+                  chartSeriesOrientation: chartSeriesOrientation,
                   children: [
                     // Row with columns of positive values
                     // todo-00 : pull out as method ? this will become ChartEmbedLevel.level2Bars
-                    Row(
-                      mainAxisConstraintsWeight: ConstraintsWeight(
-                        weight: labelsGeneratorAlongSeries.dataRange.ratioOfPositivePortion(),
-                      ),
-                      crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
-                      children: chartViewMaker.makeViewsForDataContainer_Bars(
-                        crossPointsModelList: chartViewMaker.chartModel.crossPointsModelPositiveList,
-                        pointsLayouterAlign: Align.start,
-                        isPointsReversed: true,
-                      ),
+                    _buildLevel2BarsContainerAsRowOrColumn(
+                      chartSeriesOrientation:           chartSeriesOrientation,
+                      crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.positiveOr0,
+                      chartViewMaker:                   chartViewMaker,
+                      xLabelsGenerator:                 xLabelsGenerator,
+                      yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     XAxisLineContainer(
@@ -79,6 +68,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       chartViewMaker: chartViewMaker,
                     ),
                     // Row with columns of negative values
+                    _buildLevel2BarsContainerAsRowOrColumn(
+                      chartSeriesOrientation:           chartSeriesOrientation,
+                      crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.negative,
+                      chartViewMaker:                   chartViewMaker,
+                      xLabelsGenerator:                 xLabelsGenerator,
+                      yLabelsGenerator:                 yLabelsGenerator,
+                    ),
+                    /* KEEP for now
                     Row(
                       mainAxisConstraintsWeight:
                           ConstraintsWeight(weight: labelsGeneratorAlongSeries.dataRange.ratioOfNegativePortion()),
@@ -88,7 +85,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                         pointsLayouterAlign: Align.start,
                         isPointsReversed: false,
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
               ],
@@ -97,6 +94,98 @@ class DataContainer extends container_common_new.ChartAreaContainer {
         ),
       ),
     ]);
+  }
+
+  RollingBoxLayouter _buildLevel1PosNegAreasContainerAsRowOrColumn ({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required List<BoxContainer>                       children,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return Column(
+          children: children,
+        );
+      case ChartSeriesOrientation.row:
+        return Row(
+          children: children,
+        );
+    }
+  }
+
+
+  /// For column chart, ([ChartSeriesOrientation.column]), build row    of (column) bars
+  /// For row    chart, ([ChartSeriesOrientation.row])     build column of (row)    bars
+  ///
+  /// Either are build for only positive or only negative values,
+  /// depending on
+  RollingBoxLayouter _buildLevel2BarsContainerAsRowOrColumn({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required model.CrossPointsModelPointsSign         crossPointsModelPointsSign,
+    required ChartViewMaker                           chartViewMaker,
+    required DataRangeLabelInfosGenerator             xLabelsGenerator,
+    required DataRangeLabelInfosGenerator             yLabelsGenerator,
+  }) {
+
+    DataRangeLabelInfosGenerator labelsGeneratorAcrossSeries;
+
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        labelsGeneratorAcrossSeries = yLabelsGenerator;
+        break;
+      case ChartSeriesOrientation.row:
+        labelsGeneratorAcrossSeries = xLabelsGenerator;
+        break;
+    }
+
+    double ratioOfPositiveOrNegativePortion;
+    bool isPointsReversed;
+    Align crossAxisAlign;
+    List<model.CrossPointsModel> crossPointsModels;
+
+    switch(crossPointsModelPointsSign) {
+      case model.CrossPointsModelPointsSign.positiveOr0:
+        crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
+        ratioOfPositiveOrNegativePortion = labelsGeneratorAcrossSeries.dataRange.ratioOfPositivePortion();
+        isPointsReversed = true;
+        crossAxisAlign = Align.end;
+        break;
+      case model.CrossPointsModelPointsSign.negative:
+        crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
+        ratioOfPositiveOrNegativePortion = labelsGeneratorAcrossSeries.dataRange.ratioOfNegativePortion();
+        isPointsReversed = false;
+        crossAxisAlign = Align.start;
+        break;
+      case model.CrossPointsModelPointsSign.any:
+        throw StateError('Invalid sign in this context.');
+    }
+
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return Row(
+          mainAxisConstraintsWeight: ConstraintsWeight(
+            weight: ratioOfPositiveOrNegativePortion,
+          ),
+          crossAxisAlign: crossAxisAlign,
+          children: chartViewMaker.makeViewsForDataContainer_Bars(
+            crossPointsModelList: crossPointsModels,
+            pointsLayouterAlign: Align.start,
+            isPointsReversed: isPointsReversed,
+          ),
+        );
+      case ChartSeriesOrientation.row:
+        // todo-00-progress - finish
+        return Column(
+          mainAxisConstraintsWeight: ConstraintsWeight(
+            weight: ratioOfPositiveOrNegativePortion,
+          ),
+          crossAxisAlign: crossAxisAlign,
+          children: chartViewMaker.makeViewsForDataContainer_Bars(
+            crossPointsModelList: crossPointsModels,
+            pointsLayouterAlign: Align.start,
+            isPointsReversed: isPointsReversed,
+          ),
+        );
+    }
   }
 
 }
@@ -139,7 +228,7 @@ abstract class PointContainer extends container_common_new.ChartAreaContainer {
   model.PointModel pointModel;
 
   /// Orientation of the chart bars: horizontal or vertical.
-  final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
+  final ChartSeriesOrientation chartSeriesOrientation;
 }
 
 /// Container presents it's [pointModel] as a point on a line, or a rectangle in a bar chart.
@@ -153,7 +242,7 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
   BarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
-    required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
+    required ChartSeriesOrientation chartSeriesOrientation,
     // todo-01 Do we need children and key? LineSegmentContainer does not have it.
     List<BoxContainer>? children,
     ContainerKey? key,

@@ -106,6 +106,11 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// [ChartViewMaker.chartModel]'s [ChartOptions].
   late final options.ChartOptions chartOptions;
 
+  // todo-00 : where to place the definition which chart type (column, row) are we building??
+
+  // todo-00-last-progress:
+  final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.column;
+
   final bool isStacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
@@ -308,11 +313,19 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    // todo-00 : pull out as method ? this will become ChartEmbedLevel.level3Bar
-    return container_base.Column(
+    // todo-00 : pull out as method .. WHY IS THIS IN VIEW MAKED, AND SIMILAR CODE IN data_container.dart??  this will become ChartEmbedLevel.level3Bar
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+      return container_base.Column(
       mainAxisAlign: pointsLayouterAlign,
       children: pointContainers,
     );
+      case ChartSeriesOrientation.row:
+        return container_base.Row(
+          mainAxisAlign: pointsLayouterAlign,
+          children: pointContainers,
+        );
+  }
   }
 
   /// Generates [PointContainer] view from each [PointModel]
@@ -346,11 +359,11 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
-      chartSeriesOrientation: ChartSeriesOrientation.column, // todo-00 generalize to row
+      chartSeriesOrientation: chartSeriesOrientation, // ChartSeriesOrientation.column, // todo-00 generalize to row
     );
   }
 
-  // todo-00-progress
+  // todo-00-progress - this is DEAD end. building individual levels separately.
   container_base.RollingBoxLayouter? makeViewForDataArea_LevelLayouter({
     required ChartSeriesOrientation chartSeriesOrientation,
     required ChartEmbedLevel chartEmbedLevel,
