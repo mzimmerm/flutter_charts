@@ -106,10 +106,30 @@ class DataContainer extends container_common_new.ChartAreaContainer {
       case ChartSeriesOrientation.column:
         return Column(
           children: children,
+
+/* default
+          Align mainAxisAlign = Align.start,
+          Packing mainAxisPacking = Packing.tight,
+          Align crossAxisAlign = Align.start,
+          Packing crossAxisPacking = Packing.matrjoska,
+          ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+*/
         );
       case ChartSeriesOrientation.row:
         return Row(
           children: children,
+          // mainAxisAlign: Align.end,
+          // crossAxisAlign: Align.end,
+// todo-00-last-progress
+/* default
+          Align mainAxisAlign = Align.start,
+          Packing mainAxisPacking = Packing.tight,
+          Align crossAxisAlign = Align.center,
+          Packing crossAxisPacking = Packing.matrjoska,
+          ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+*/
+
+
         );
     }
   }
@@ -164,12 +184,20 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
+          /* default
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+           */
           mainAxisConstraintsWeight: ConstraintsWeight(
             weight: ratioOfPositiveOrNegativePortion,
           ),
           crossAxisAlign: crossAxisAlign,
           children: chartViewMaker.makeViewsForDataContainer_Bars(
             crossPointsModelList: crossPointsModels,
+            // todo-00-last-last-experiment : why is this start??? It should be end : pointsLayouterAlign: Align.start,
             pointsLayouterAlign: Align.start,
             isPointsReversed: isPointsReversed,
           ),

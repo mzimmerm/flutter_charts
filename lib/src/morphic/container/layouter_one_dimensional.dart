@@ -159,6 +159,7 @@ class LayedoutLengthsPositioner {
   /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
+    // todo-00-next : should we assert only positive or 0 lengths?
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
@@ -409,29 +410,38 @@ class LayedoutLengthsPositioner {
     double start, end, freePadding;
     switch (lengthsPositionerProperties.align) {
       case Align.start:
-        freePadding = _freePadding;
+      // todo-00-last-last-done : set freePadding = 0.0 : freePadding = _freePadding;
+        freePadding = 0.0;
         start = 0.0;
         end = length;
+        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.center:
         freePadding = _freePadding / 2;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
+        totalPositionedLengthIncludesPadding = _maxLength + 2 * freePadding;
         break;
       case Align.centerExpand:
         freePadding = 0.0; // for centerExpand, no free padding
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
+        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.end:
-        freePadding = _freePadding;
+        // todo-00-last-last-done : set freePadding = 0.0 : freePadding = _freePadding;
+        // Matrjoska should always behave tight:
+        //   - no space offset from the start or end
+        //   - no space between lengths (this is obvious property of matrjoska)
+        freePadding = 0.0;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
+        totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
     }
-    totalPositionedLengthIncludesPadding = _maxLength + _freePadding;
+    // todo-00-last-last-done : moved to individual conditions : totalPositionedLengthIncludesPadding = _maxLength + _freePadding;
 
     return util_dart.LineSegment(start, end);
   }

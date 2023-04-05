@@ -284,6 +284,7 @@ class DataRangeLabelInfosGenerator {
       ),
       lengthsConstraint: interval.length,
     ).positionLengths();
+    // todo-00-next ^^ Call to positionLengths() is questionable. Should this be done using layout? BASICALLY THIS FEEDS OFF THE 1D LENGTHS LAYOUT DEEP INTO IT'S GUTS.
 
     switch(pointPositionInSegment) {
       case util_dart.LineSegmentPosition.min:

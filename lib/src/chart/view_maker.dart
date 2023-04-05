@@ -311,23 +311,60 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    // todo-00 : added switch (done)
-    //           - pull out as method .. this must become ChartEmbedLevel.level3Bar
-    //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
-    //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
-    //
-    switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
-      return container_base.Column(
-      mainAxisAlign: pointsLayouterAlign,
-      children: pointContainers,
+    return _buildLevel3PointsBar(
+      chartSeriesOrientation: chartSeriesOrientation,
+      pointsLayouterAlign: pointsLayouterAlign,
+      pointContainers: pointContainers,
     );
+
+    /* todo-00-done
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return container_base.Column(
+          mainAxisAlign: pointsLayouterAlign,
+          children: pointContainers,
+        );
       case ChartSeriesOrientation.row:
         return container_base.Row(
           mainAxisAlign: pointsLayouterAlign,
           children: pointContainers,
         );
+    }
+    */
   }
+
+  // todo-00 :
+  //           - done - added switch
+  //           - done - pulled out as method, for ChartEmbedLevel.level3Bar
+  //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
+  //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
+  //
+  container_base.RollingBoxLayouter _buildLevel3PointsBar(
+      {
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required Align pointsLayouterAlign,
+    // Padded PointContainer : required List<data_container.PointContainer> pointContainers,
+    required List<container_base.Padder> pointContainers,
+  }) {
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return container_base.Column(
+          /* default
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+           */
+          mainAxisAlign: pointsLayouterAlign,
+          children: pointContainers,
+        );
+      case ChartSeriesOrientation.row:
+        return container_base.Row(
+          mainAxisAlign: pointsLayouterAlign,
+          children: pointContainers,
+        );
+    }
   }
 
   /// Generates [PointContainer] view from each [PointModel]
@@ -365,61 +402,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       chartSeriesOrientation: chartSeriesOrientation,
     );
   }
-
-  /*
-  // todo-00 done - added and removed. Delete this, this is DEAD end. building individual levels separately.
-  container_base.RollingBoxLayouter? makeViewForDataArea_LevelLayouter({
-    required ChartSeriesOrientation chartSeriesOrientation,
-    required ChartEmbedLevel chartEmbedLevel,
-    required List<container_base.BoxContainer> children,
-    Align? mainAxisAlign,
-    Packing? mainAxisPacking,
-    Align? crossAxisAlign,
-    Packing? crossAxisPacking,
-    container_base.ConstraintsWeight mainAxisConstraintsWeight = container_base.ConstraintsWeight.defaultWeight,
-
-  }) {
-    switch (chartEmbedLevel) {
-      case ChartEmbedLevel.level1PositiveNegativeArea:
-        return chartSeriesOrientation == ChartSeriesOrientation.column ?
-        container_base.Column(children: children,)
-        :
-        container_base.Row(children: children,);
-      case ChartEmbedLevel.level2Bars:
-        return chartSeriesOrientation == ChartSeriesOrientation.column ?
-        container_base.Row(
-          mainAxisConstraintsWeight: container_base.ConstraintsWeight(
-            weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
-          ),
-          crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
-          children: makeViewsForDataContainer_Bars(
-            crossPointsModelList: chartModel.crossPointsModelPositiveList,
-            pointsLayouterAlign: Align.start,
-            isPointsReversed: true,
-          ),
-        )
-        :
-            // FINISH THIS
-        container_base.Column(
-          mainAxisConstraintsWeight: container_base.ConstraintsWeight(
-            weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
-          ),
-          crossAxisAlign: Align.end, // cross default is matrjoska, non-default end aligned.
-          children: makeViewsForDataContainer_Bars(
-            crossPointsModelList: chartModel.crossPointsModelPositiveList,
-            pointsLayouterAlign: Align.start,
-            isPointsReversed: true,
-          ),
-        );
-      case ChartEmbedLevel.level3Bar:
-        // FINISH THIS
-        return chartSeriesOrientation == ChartSeriesOrientation.column ?
-        null
-            :
-        null;
-    }
-  }
-  */
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';

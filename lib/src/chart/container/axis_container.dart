@@ -4,7 +4,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
-import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
+import '../../morphic/container/chart_support/chart_orientation.dart';
 //import '../../morphic/ui2d/point.dart';
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
@@ -22,7 +22,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.fromPointOffset,
     super.toPointOffset,
     // todo-00 : AxisLineContainer should ALWAYS use column, so I think  this should be removed
-    super.chartSeriesOrientation = chart_orientation.ChartSeriesOrientation.column,
+    super.chartSeriesOrientation = ChartSeriesOrientation.column,
     required super.linePaint,
     required super.chartViewMaker,
     super.isLextrOnlyToValueSignPortion = false,
@@ -46,7 +46,7 @@ class XAxisLineContainer extends AxisLineContainer {
   }) : super(
   fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
   toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
-  chartSeriesOrientation: chart_orientation.ChartSeriesOrientation.column,
+  chartSeriesOrientation: ChartSeriesOrientation.column,
   linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
   chartViewMaker: chartViewMaker,
   // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
@@ -69,7 +69,7 @@ class YAxisLineContainer extends AxisLineContainer {
 
   fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
   toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
-  chartSeriesOrientation: chart_orientation.ChartSeriesOrientation.row,
+  chartSeriesOrientation: ChartSeriesOrientation.row,
   linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
   chartViewMaker: chartViewMaker,
   // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
