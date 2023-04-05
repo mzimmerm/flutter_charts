@@ -31,7 +31,9 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
     var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    // todo-00-last-progress
+    // todo-00
+    //    - added chartSeriesOrientation (done)
+    //    - FIND A METHOD TO SET AND PROPAGATE chartSeriesOrientation. MAYBE IT IS ON VERY TOP BARCHART (BARCHARTPAINTER?)
     var chartSeriesOrientation = ChartSeriesOrientation.column;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
@@ -53,7 +55,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                   chartSeriesOrientation: chartSeriesOrientation,
                   children: [
                     // Row with columns of positive values
-                    // todo-00 : pull out as method ? this will become ChartEmbedLevel.level2Bars
+                    // todo-00 : done : pulled method equivalent to ChartEmbedLevel.level2Bars
                     _buildLevel2BarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,
                       crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.positiveOr0,
@@ -173,7 +175,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           ),
         );
       case ChartSeriesOrientation.row:
-        // todo-00-progress - finish
+        // todo-00-finish this. So far, I just changed Row to Column
         return Column(
           mainAxisConstraintsWeight: ConstraintsWeight(
             weight: ratioOfPositiveOrNegativePortion,

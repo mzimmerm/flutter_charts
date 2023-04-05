@@ -182,8 +182,6 @@ class PointOffset extends Offset {
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
           doInvertDomain: doInvertDomain1,
-          // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
-          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
         inputPixels = inputValuePixels.fromValueOnAxisPixels;
 
@@ -193,21 +191,73 @@ class PointOffset extends Offset {
         doInvertDomain2  = true;
         fromValue2       = outputValue;
 
-        var outputValuePixels    = _lextrFromValueToPixelsOnSameAxis(
+        var fromValueOutputPixels    = _lextrFromValueToPixelsOnSameAxis(
           fromValue: fromValue2,
           fromValuesRange: fromValuesRange2,
           toPixelsRange: toPixelsRange2,
           doInvertDomain: doInvertDomain2,
-          // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
-          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
-        outputPixels =  outputValuePixels.fromValueOnAxisPixels;
+        outputPixels =  fromValueOutputPixels.fromValueOnAxisPixels;
 
         // Width and height of
         barPointRectWidth  = toPixelsRange1.length;
-        barPointRectHeight = outputValuePixels.fromValueLengthInPixels;
+        barPointRectHeight = fromValueOutputPixels.fromValueLengthInPixels;
 
         break;
+      case ChartSeriesOrientation.row:
+      // todo-00-last : to convert between column chart and row chart in 2D
+      //                    is equivalent to diagonal transpose ALL POINTS IN 2D EXCEPT LABEL DIRECTION around Diagonal.LeftToRightUp
+      //                    such transpose is equivalent to flipping (transposing) coordinates: x -> y, y -> x
+      //                    LETS PREFIX THE NAMES OF TRANSPOSED VARIABLES WITH 'iotrp' for 'input/output transpose of positive values to positive values.
+      //                    Notes:
+      //                      - Transpose around Diagonal.LeftToRightDown is equivalent to : x -> -y, y -> -x, would be named iotrn
+      //                      - Rotation around z axis by 90 degrees clockwise is equivalent to : x -> -y, y -> x, would be named iorotqc for 'io rotation by a quarter circle clockwise.
+      //                Naming used in code:
+      //                    point=this=(input, output) -> iotrpPoint
+      //                    inputDataRange             -> iotrpOutputDataRange (this is just a rename, but make a copy)
+      //                    outputDataRange            -> iotrpInputDataRange
+      //
+        // Transpose all points in chart around [Diagonal.leftToRightUp].
+        // This changes the chart from vertical bar chart to horizontal bar chart.
+        // 1.2.2:
+        Interval iotrpOutputDataRange = Interval.from(inputDataRange);
+        Interval iotrpInputDataRange = Interval.from(outputDataRange);
+        PointOffset iotrpPoint = PointOffset(inputValue: outputValue, outputValue: inputValue);
+
+        fromValuesRange1 = outputDataRange;
+        toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
+        doInvertDomain1  = true; // inverted domain
+        fromValue1 = iotrpPoint.outputValue;
+
+        var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: fromValue1,
+          fromValuesRange: iotrpOutputDataRange,
+          toPixelsRange: toPixelsRange1,
+          doInvertDomain: doInvertDomain1,
+        );
+        outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
+
+        // 1.1.2:
+        fromValuesRange2 = inputDataRange;
+        toPixelsRange2   = Interval(0.0, widthToLextr);
+        doInvertDomain2  = false;
+        fromValue2 = iotrpPoint.inputValue;
+
+        var fromValueInputPixels = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: fromValue2,
+          fromValuesRange: iotrpInputDataRange,
+          toPixelsRange: toPixelsRange2,
+          doInvertDomain: doInvertDomain2,
+        );
+        inputPixels = fromValueInputPixels.fromValueOnAxisPixels;
+
+        barPointRectWidth  = fromValueInputPixels.fromValueLengthInPixels;
+        barPointRectHeight = toPixelsRange1.length;
+
+        break;
+
+        /*
+
       case ChartSeriesOrientation.row:
         // Transpose all points in chart around [Diagonal.leftToRightUp].
         // This changes the chart from vertical bar chart to horizontal bar chart.
@@ -224,7 +274,7 @@ class PointOffset extends Offset {
           toDomainEnd: outputDataRange.max,
         ).apply(inputValue);
 
-        var outputValuePixels = _lextrFromValueToPixelsOnSameAxis(
+        var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
           fromValue: fromValue1,
           fromValuesRange: fromValuesRange1,
           toPixelsRange: toPixelsRange1,
@@ -232,7 +282,7 @@ class PointOffset extends Offset {
           // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
           isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
-        outputPixels = outputValuePixels.fromValueOnAxisPixels;
+        outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
 
         // 1.1.2:
         fromValuesRange2 = inputDataRange;
@@ -260,6 +310,8 @@ class PointOffset extends Offset {
         barPointRectHeight = toPixelsRange1.length;
 
         break;
+
+        */
     }
 
     PointOffset pointOffsetPixels = PointOffset(
@@ -287,7 +339,7 @@ class PointOffset extends Offset {
     required Interval toPixelsRange,
     required bool     doInvertDomain,
     // todo-010 : KEEP for now : required bool     isLextrOnlyToValueSignPortion, // default false
-    required bool     isLextrUseSizerInsteadOfConstraint, // default false
+    // todo-010 : KEEP for now : required bool     isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     assert (toPixelsRange.min == 0.0);
     // todo-010 : KEEP for now : assert (isLextrOnlyToValueSignPortion == false);

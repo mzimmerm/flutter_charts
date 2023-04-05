@@ -112,11 +112,12 @@ class Poly {
 class Interval {
   const Interval(this.min, this.max, [this.includesMin = true, this.includesMax = true]);
 
+  Interval.from(Interval other) : this(other.min, other.max);
+
   final double min;
   final double max;
   final bool includesMin;
   final bool includesMax;
-
 
   double get length {
 
@@ -203,6 +204,10 @@ class Interval {
     return 1.0 - ratioOfPositivePortion();
   }
 
+  /// If this [Interval] intersects with the passed [other] interval,
+  /// returns a new interval which is an intersection of this interval with the passed interval;
+  /// Otherwise, returns an Interval which is collapsed on the single point of my range, specified
+  /// by [orPosition].
   Interval intersectionOr(Interval other, LineSegmentPosition orPosition,) {
     if (!isIntersects(other)) {
       switch (orPosition) {

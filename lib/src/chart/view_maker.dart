@@ -106,9 +106,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// [ChartViewMaker.chartModel]'s [ChartOptions].
   late final options.ChartOptions chartOptions;
 
-  // todo-00 : where to place the definition which chart type (column, row) are we building??
-
-  // todo-00-last-progress:
+  // todo-00 : added chartSeriesOrientation temporarily. where to place the definition which chart type (column, row) are we building, so it propagates all the way??
   final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.column;
 
   final bool isStacked;
@@ -313,7 +311,11 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    // todo-00 : pull out as method .. WHY IS THIS IN VIEW MAKED, AND SIMILAR CODE IN data_container.dart??  this will become ChartEmbedLevel.level3Bar
+    // todo-00 : added switch (done)
+    //           - pull out as method .. this must become ChartEmbedLevel.level3Bar
+    //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
+    //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
+    //
     switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
       return container_base.Column(
@@ -359,11 +361,13 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
-      chartSeriesOrientation: chartSeriesOrientation, // ChartSeriesOrientation.column, // todo-00 generalize to row
+      // todo-00 done : v changed from hardcoded ChartSeriesOrientation.column. Now picked up from ViewMaker
+      chartSeriesOrientation: chartSeriesOrientation,
     );
   }
 
-  // todo-00-progress - this is DEAD end. building individual levels separately.
+  /*
+  // todo-00 done - added and removed. Delete this, this is DEAD end. building individual levels separately.
   container_base.RollingBoxLayouter? makeViewForDataArea_LevelLayouter({
     required ChartSeriesOrientation chartSeriesOrientation,
     required ChartEmbedLevel chartEmbedLevel,
@@ -395,7 +399,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
           ),
         )
         :
-            // todo-00 finish
+            // FINISH THIS
         container_base.Column(
           mainAxisConstraintsWeight: container_base.ConstraintsWeight(
             weight: yLabelsGenerator.dataRange.ratioOfPositivePortion(),
@@ -408,13 +412,14 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
           ),
         );
       case ChartEmbedLevel.level3Bar:
-        // todo-00 finish
+        // FINISH THIS
         return chartSeriesOrientation == ChartSeriesOrientation.column ?
         null
             :
         null;
     }
   }
+  */
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';
