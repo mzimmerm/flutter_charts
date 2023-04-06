@@ -107,7 +107,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   late final options.ChartOptions chartOptions;
 
   // todo-00 : added chartSeriesOrientation temporarily. where to place the definition which chart type (column, row) are we building, so it propagates all the way??
-  final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.column;
+  final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.row;
 
   final bool isStacked;
 
@@ -295,13 +295,22 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
   }) {
+    EdgePadding pointRectSidePad;
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        pointRectSidePad = const EdgePadding.withSides(start: 6.0, end: 6.0);
+        break;
+      case ChartSeriesOrientation.row:
+        pointRectSidePad = const EdgePadding.withSides(top: 6.0, bottom: 6.0);
+        break;
+    }
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModels(
       crossPointsModel: crossPointsModel,
     ).map((pointContainer) =>
         container_base.Padder(
           // todo-01 : Is there an option for sizes? Try to use Aligner instead of Padder, and use gridStepWidthPortionUsedByAtomicPointPresenter to express gap in terms of percentage
-          edgePadding: const EdgePadding.withSides(start: 6.0, end: 6.0),
+          edgePadding: pointRectSidePad,
           child: pointContainer,)
     ).toList();
 
@@ -361,6 +370,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         );
       case ChartSeriesOrientation.row:
         return container_base.Row(
+          mainAxisAlign: Align.start,      // pointsLayouterAlign, // passed Align.start from _buildLevel2 // todo-00-last-done
+          mainAxisPacking: Packing.tight,  // todo-00-last-done
+          crossAxisAlign: Align.start,     // todo-00-last-done
+          children: pointContainers,
           /* default
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
@@ -369,9 +382,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
 
            */
-          // added and removed : crossAxisAlign: Align.start,
-          mainAxisAlign: pointsLayouterAlign,
-          children: pointContainers,
         );
     }
   }

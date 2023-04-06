@@ -219,40 +219,36 @@ class PointOffset extends Offset {
       //
         // Transpose all points in chart around [Diagonal.leftToRightUp].
         // This changes the chart from vertical bar chart to horizontal bar chart.
-        // 1.2.2:
+        // Transform 1 : iotrp transform: (in, out) -> (iotrpIn=out, iotrpOut=in)
         Interval iotrpOutputDataRange = Interval.from(inputDataRange);
         Interval iotrpInputDataRange = Interval.from(outputDataRange);
         PointOffset iotrpPoint = PointOffset(inputValue: outputValue, outputValue: inputValue);
 
-        fromValuesRange1 = outputDataRange;
-        toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
-        doInvertDomain1  = true; // inverted domain
-        fromValue1 = iotrpPoint.outputValue;
-
+        // 1.2.2:
+        // Transform 2 : iotrpOut -> pixels on vertical y axis (verticalPixels)
+        var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
         var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue1,
+          fromValue: iotrpPoint.outputValue,
           fromValuesRange: iotrpOutputDataRange,
-          toPixelsRange: toPixelsRange1,
-          doInvertDomain: doInvertDomain1,
+          toPixelsRange: verticalPixelsRange,
+          doInvertDomain: true,
         );
         outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
 
         // 1.1.2:
-        fromValuesRange2 = inputDataRange;
-        toPixelsRange2   = Interval(0.0, widthToLextr);
-        doInvertDomain2  = false;
-        fromValue2 = iotrpPoint.inputValue;
+        // Transform 2 : iotrpIn -> pixels on horizontal x axis (horizontalPixels)
+        var horizontalPixelsRange   = Interval(0.0, widthToLextr);
 
         var fromValueInputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue2,
+          fromValue: iotrpPoint.inputValue,
           fromValuesRange: iotrpInputDataRange,
-          toPixelsRange: toPixelsRange2,
-          doInvertDomain: doInvertDomain2,
+          toPixelsRange: horizontalPixelsRange,
+          doInvertDomain: false,
         );
         inputPixels = fromValueInputPixels.fromValueOnAxisPixels;
 
         barPointRectWidth  = fromValueInputPixels.fromValueLengthInPixels;
-        barPointRectHeight = toPixelsRange1.length;
+        barPointRectHeight = verticalPixelsRange.length;
 
         break;
 

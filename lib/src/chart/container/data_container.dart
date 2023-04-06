@@ -34,7 +34,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     // todo-00
     //    - added chartSeriesOrientation (done)
     //    - FIND A METHOD TO SET AND PROPAGATE chartSeriesOrientation. MAYBE IT IS ON VERY TOP BARCHART (BARCHARTPAINTER?)
-    var chartSeriesOrientation = ChartSeriesOrientation.column;
+    var chartSeriesOrientation = ChartSeriesOrientation.row;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -64,11 +64,13 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
+/* todo-00-last-done-keep
                     XAxisLineContainer(
                       xLabelsGenerator: xLabelsGenerator,
                       yLabelsGenerator: yLabelsGenerator,
                       chartViewMaker: chartViewMaker,
                     ),
+*/
                     // Row with columns of negative values
                     _buildLevel2BarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,
@@ -118,8 +120,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
       case ChartSeriesOrientation.row:
         return Row(
           children: children,
-          // mainAxisAlign: Align.end,
-          // crossAxisAlign: Align.end,
+          mainAxisAlign: Align.start, // todo-00-done-added - no difference
+          crossAxisAlign: Align.start,// todo-00-done-added - no difference
 // todo-00-last-progress
 /* default
           Align mainAxisAlign = Align.start,

@@ -22,7 +22,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.fromPointOffset,
     super.toPointOffset,
     // todo-00 : AxisLineContainer should ALWAYS use column, so I think  this should be removed
-    super.chartSeriesOrientation = ChartSeriesOrientation.column,
+    super.chartSeriesOrientation = ChartSeriesOrientation.row,
     required super.linePaint,
     required super.chartViewMaker,
     super.isLextrOnlyToValueSignPortion = false,
@@ -180,11 +180,13 @@ class YContainer extends container_common_new.ChartAreaContainer {
                 ],
               ),
               // Y axis line to the right of labels
+/*  todo-00-last-done-keep
               YAxisLineContainer(
                 xLabelsGenerator: xLabelsGenerator,
                 yLabelsGenerator: yLabelsGenerator,
                 chartViewMaker: chartViewMaker,
               ),
+*/
             ]),
           ],
         ),
