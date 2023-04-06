@@ -410,14 +410,17 @@ class LayedoutLengthsPositioner {
     double start, end, freePadding;
     switch (lengthsPositionerProperties.align) {
       case Align.start:
-      // todo-00-last-last-done : set freePadding = 0.0 : freePadding = _freePadding;
+        // matrjoska does not do any padding, for Start or End, only Center
+        //   - no space offset from the start or end
+        //   - no space between lengths (this is obvious property of matrjoska)
         freePadding = 0.0;
         start = 0.0;
         end = length;
         totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.center:
-        freePadding = _freePadding / 2;
+        // todo-00-last-last-last : // matrjoska does not do any padding, for Start or End, or Center : freePadding = _freePadding / 2;
+        freePadding = 0.0; // = _freePadding / 2;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
@@ -431,17 +434,13 @@ class LayedoutLengthsPositioner {
         totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.end:
-        // todo-00-last-last-done : set freePadding = 0.0 : freePadding = _freePadding;
-        // Matrjoska should always behave tight:
-        //   - no space offset from the start or end
-        //   - no space between lengths (this is obvious property of matrjoska)
+        // matrjoska does not do any padding, for Start or End, only Center
         freePadding = 0.0;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
         totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
     }
-    // todo-00-last-last-done : moved to individual conditions : totalPositionedLengthIncludesPadding = _maxLength + _freePadding;
 
     return util_dart.LineSegment(start, end);
   }

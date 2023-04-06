@@ -74,6 +74,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Column(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.loose,
+          // todo-00-last-last-last ???? NOT ADDING, BUT SHOULD THIS BE ADDED SIMILAR TO ROW?? crossAxisAlign: Align.start, // todo-00-last-last-last : added
           children: children,
         );
         break;
@@ -82,6 +83,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Column(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // todo-00-last-last-last ???? NOT ADDING, BUT SHOULD THIS BE ADDED SIMILAR TO ROW?? crossAxisAlign: Align.start, // todo-00-last-last-last : added
           children: children,
         );
         break;
@@ -89,6 +91,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Row(
           mainAxisAlign: Align.center,
           mainAxisPacking: Packing.loose,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -97,6 +100,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -109,6 +113,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
           //       If we wanted to center the LegendItem inside of container_base.Greedy, wrap the inside into Center.
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -117,6 +122,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -125,6 +131,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
         childLayout = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -232,6 +239,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.loose,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -240,6 +248,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -247,6 +256,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.end,
           mainAxisPacking: Packing.loose,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -255,6 +265,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -263,6 +274,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -273,6 +285,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -283,6 +296,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
         layoutChild = container_base.Row(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          // crossAxisAlign: Align.start, // todo-00-last-last : added and removed - better fix was matrjoska with default center is used, but no free padding in matrjoska. So matrjoska starts at start , or ends at end, or is centered
           children: children,
         );
         break;
@@ -305,7 +319,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
     );
-
+    // todo-00-last-next : why is else between two different bools????
     if (doPadIndAndLabel) {
       container_edge_padding.EdgePadding edgePadding = const container_edge_padding.EdgePadding(
         start: 3,

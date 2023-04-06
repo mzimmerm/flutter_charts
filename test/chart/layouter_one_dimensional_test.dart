@@ -94,7 +94,7 @@ main() {
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
-      // todo-00-last-last-done : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      // matrjoska does not do any padding, for Start or End, only Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
       expect(segments.totalPositionedLengthIncludesPadding, 15.0);
       expect(segments.isOverflown, false);
     });
@@ -126,7 +126,8 @@ main() {
 
     test('LayedoutLengthsPositioner.layout() Matrjoska Center, total length more than required', () {
       PositionedLineSegments segments = matrjoskaCenterTotalLength27Added12.positionLengths();
-      const double halfOfFreePadding = 6.0;
+      // matrjoska does not do any padding, for Start or End, or Center : const double halfOfFreePadding = 6.0;
+      const double halfOfFreePadding = 0.0;
 
       expect(segments.lineSegments.length, 3);
       // Compared to no total length enforced, move everything by halfOfFreePadding to the end.
@@ -134,7 +135,8 @@ main() {
       expect(segments.lineSegments[0], const LineSegment(5.0 + halfOfFreePadding, 10.0 + halfOfFreePadding));
       expect(segments.lineSegments[1], const LineSegment(2.5 + halfOfFreePadding, 12.5 + halfOfFreePadding));
       expect(segments.lineSegments[2], const LineSegment(0.0 + halfOfFreePadding, 15.0 + halfOfFreePadding));
-      expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      // matrjoska does not do any padding, for Start or End, or Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      expect(segments.totalPositionedLengthIncludesPadding, 15.0);
       expect(segments.isOverflown, false);
     });
   });
@@ -163,10 +165,9 @@ main() {
       expect(segments.isOverflown, true);
    });
 
-    // todo-00-last-last : problem: It looks like Matrjoska + End, when given loose constraints, creates padding. I THINK MATRJOCKA SHOULD ALWAYS BE TIGHT - NO PADDING ADDED
     test('LayedoutLengthsPositioner.layout() Matrjoska End, total length more than required', () {
       PositionedLineSegments segments = matrjoskaEndTotalLength27Added12.positionLengths();
-      // todo-00-last-last-done : matrjoska does not do any padding, ever : const double fullFreePadding = 12.0;
+      // matrjoska does not do any padding, for Start or End, only Center : const double fullFreePadding = 12.0;
       const double fullFreePadding = 0.0;
 
       expect(segments.lineSegments.length, 3);
@@ -175,7 +176,7 @@ main() {
       expect(segments.lineSegments[0], const LineSegment(10.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], const LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
-      // todo-00-last-last-done : no free padding used for Matrjoska+Start or + End : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      // matrjoska does not do any padding, for Start or End, only Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
       expect(segments.totalPositionedLengthIncludesPadding, 15.0);
       expect(segments.isOverflown, false);
     });
@@ -338,7 +339,7 @@ main() {
       const double fullFreePadding = 12.0;
 
       expect(segments.lineSegments.length, 3);
-      // Compared to no total length enforced, move everything by fullFreePadding to the end
+      // Compared to no total length enforced, put fullFreePadding at the Start.
       expect(segments.lineSegments[0], const LineSegment(0.0 + fullFreePadding, 5.0 + fullFreePadding));
       expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], const LineSegment(15.0 + fullFreePadding, 30.0 + fullFreePadding));

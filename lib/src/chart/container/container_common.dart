@@ -30,7 +30,8 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy,
 /// This extension of  [BoxContainer] has the added ability
 /// to access the container's parent, which is handled by
 /// [chartViewMaker].
-abstract class ChartAreaContainer extends container_base.BoxContainer {
+// todo-00-last-last-last : changed to NonPositioning, which always partly was with BoxContainer : abstract class ChartAreaContainer extends container_base.BoxContainer {
+abstract class ChartAreaContainer extends container_base.PositioningBoxContainer {
 
   /// Constructs instance, by providing (this derived class required) [chartViewMaker].
   ///

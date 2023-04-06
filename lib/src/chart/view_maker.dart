@@ -356,11 +356,20 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
            */
-          mainAxisAlign: pointsLayouterAlign,
+          mainAxisAlign: pointsLayouterAlign, // set way up to Align.start : todo-00-last : I think must get it work with Align.end
           children: pointContainers,
         );
       case ChartSeriesOrientation.row:
         return container_base.Row(
+          /* default
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+
+           */
+          // added and removed : crossAxisAlign: Align.start,
           mainAxisAlign: pointsLayouterAlign,
           children: pointContainers,
         );
