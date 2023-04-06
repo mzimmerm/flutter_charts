@@ -69,7 +69,6 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
           tableLayoutDefiner: TableLayoutDefiner.defaultRowWiseForTableSize(
             numRows: 2,
             numColumns: 1,
-            // added and removed : verticalAlign: Align.start, // todo-00-last-last-last : MAY NOT BE NEEDED : added to make sure LegendContainer starts children from top, not center
           ),
           cellsTable: [
             [legendContainer],

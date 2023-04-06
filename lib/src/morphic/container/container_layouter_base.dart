@@ -1366,19 +1366,18 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
 
-    // todo-00-last-last-last : added for debugging
-    if (this is Row) {
-      print('this is row');
-    }
-
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
     __layout_Post_Assert_Layedout_Rects(positionedChildrenRects, positionedChildrenOuterRect);
 
-    // todo-00-last-last-last : layoutSize = positionedChildrenOuterRect.size;
-    // changed to include free padding from one_dimensional layout. ONLY HACK FOR LEFT OR CENTER.
-    //             THIS SHOULD BE DONE PROPERLY BY RETURNING LINE SEGMENTS THAT DISTINGUISH PADDING FROM LENGTHS, AND SMART FOLLOWUP PROCESSING
+    // The original code
+    //     layoutSize = positionedChildrenOuterRect.size;
+    // causes layoutSize to not include bounding Offset of children, if children were created using Row or Column
+    // layout with freePadding. This is a hack to include free padding on the left from one_dimensional layout;
+    // The hack works because this self layouter always starts at 0,0,0,0. Probably only works for Align.left or Align.center.
+    // todo-01 : Perhaps can be fixed properly by one_dimensional layouter returning line segments DISTINGUISH PADDING FROM LENGTHS,
+    //   and some follow up processing. See [__convertMainAndCrossSegmentsToRect] and context around.
     ui.Rect positionedChildrenOuterRectIncludingFreePadding = util_flutter.boundingRect(
       [
         const ui.Rect.fromLTWH(0.0, 0.0, 0.0, 0.0),
@@ -1712,26 +1711,14 @@ mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
 abstract class PositioningBoxContainer extends BoxContainer {
   /// The required unnamed constructor
   PositioningBoxContainer({
-    ContainerKey? key, // todo-00-last-last-last : added
+    ContainerKey? key,
     List<BoxContainer>? children,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
-          key: key,  // todo-00-last-last-last : added
+          key: key,
           children: children,
           constraintsWeight: constraintsWeight,
         );
-
-  /*
-  /// Override parent [isLeaf] as false, to express that layouters are not leafs,
-  /// even if the default [BoxContainerHierarchy.isLeaf] implementation ` __children.isEmpty`
-  /// is true.
-  ///
-  /// Layouters need to process correctly a situation with no children present,
-  /// by creating in layout methods such as [_layout_Post_NotLeaf_SetSize_FromPositionedChildren],
-  /// an origin-based point-size rectangle `positionedChildrenOuterRect` - which is the source for the [layoutSize].
-  @override
-  bool get isLeaf => false;
-  */
 
   /// Applies the offsets given with the passed [positionedRectsInMe]
   /// on the passed [LayoutableBox]es [children].
@@ -1742,13 +1729,8 @@ abstract class PositioningBoxContainer extends BoxContainer {
   ///
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-    // todo-00-last-last : added for debugging
-    if (this is Padder) {
-      print('this is padder');
-    }
     assert(positionedRectsInMe.length == children.length);
-    // todo-00-last-last-last : added, as in BoxLayouter : _offset += offset; : AND MAYBE ALSO POSITION SKIP?
-    // added and removed : _offset += offset;
+    // todo-00-next : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
@@ -1763,11 +1745,11 @@ abstract class PositioningBoxContainer extends BoxContainer {
 abstract class PositioningBoxLayouter extends PositioningBoxContainer {
   /// The required unnamed constructor
   PositioningBoxLayouter({
-    ContainerKey? key, // todo-00-last-last-last : added
+    ContainerKey? key,
     List<BoxContainer>? children,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
-    key: key,  // todo-00-last-last-last : added
+    key: key,
     children: children,
     constraintsWeight: constraintsWeight,
   );
@@ -1781,30 +1763,6 @@ abstract class PositioningBoxLayouter extends PositioningBoxContainer {
   /// an origin-based point-size rectangle `positionedChildrenOuterRect` - which is the source for the [layoutSize].
   @override
   bool get isLeaf => false;
-  /*
-
-  /// Applies the offsets given with the passed [positionedRectsInMe]
-  /// on the passed [LayoutableBox]es [children].
-  ///
-  /// The [positionedRectsInMe] are obtained by this [Layouter]'s
-  /// extensions using [layout_Post_NotLeaf_PositionChildren].
-  ///
-  ///
-  @override
-  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-    assert(positionedRectsInMe.length == children.length);
-    // todo-00-last-last-last : added, as in BoxLayouter : _offset += offset; : AND MAYBE ALSO POSITION SKIP?
-    _offset += offset;
-    for (int i = 0; i < positionedRectsInMe.length; i++) {
-      children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
-    }
-  }
-
-  @override
-  void buildAndReplaceChildren() {
-    buildAndReplaceChildrenDefault();
-  }
-  */
 }
 
 /// Layouter which is NOT allowed to offset it's children, or only offset with zero offset.
@@ -1826,10 +1784,6 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   /// Does not apply any offsets on the it's children (passed in [layout] internals.
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-    // todo-00-last-last : added for debugging
-    if (this is Padder) {
-      print('this is padder');
-    }
   }
 
   /// Override for non-positioning:
@@ -2303,7 +2257,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-// todo-00-last-next : is this same impl as in BoxLayouter? If so, why?
+// todo-00 : is this same impl as in BoxLayouter? If so, why? can we usify it?
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -2738,12 +2692,10 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
+                // todo-00-next : we probably want to add the first 2 lines :, if set in caller, should be set here!!
                 // horizontalAlign: horizontalAlign,
                 // verticalAlign: verticalAlign,
                 // cellConstraints: null,
-                  // added and removed 2 lines : todo-00-last-last-last : MAY NOT BE NEEDED : added the propagated alignments, NOT YET CONSTRAINTs
-                //  horizontalAlign: horizontalAlign,
-                //  verticalAlign: verticalAlign,
               ),
             ));
 
@@ -3284,10 +3236,6 @@ class TableLayouter extends PositioningBoxLayouter {
   /// the rectangles 1D list to 2D children is for corresponding rectangle and child
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-    // todo-00-last-last : added for debugging
-    if (this is Padder) {
-      print('this is padder');
-    }
     assert(positionedRectsInMe.length == numRows * numColumns);
 
     List<List<TableLayoutCellDefiner>> cellDefinersTable = tableLayoutDefiner.cellDefinersTable;
@@ -3772,14 +3720,6 @@ class _MainAndCrossPositionedSegments {
     LayedoutLengthsPositioner crossAxisLayedoutLengthsPositioner = LayedoutLengthsPositioner(
       lengths: parentBoxLayouter.layoutSizesOfChildrenSubsetAlongAxis(crossLayoutAxis, children),
       lengthsPositionerProperties: crossAxisLayoutProperties,
-      // todo-020 : Investigate : If we use, instead of 0.0,
-      //                 the logical lengthsConstraintAlongLayoutAxis: constraints.maxLengthAlongAxis(axisPerpendicularTo(mainLayoutAxis)), AND
-      //                 if legend starts with column, the legend column is on the left of the chart
-      //                 if legend starts with row   , the legend row    is on the bottom of the chart
-      //                 Probably need to address when the whole chart is layed out using the new layouter.
-      //                 The 0.0 forces that in the cross-direction (horizontal or vertical),
-      //                 we provide zero length constraint, so no length padding.
-      // todo-00-last-last-last : lengthsConstraint: 0.0, // constraints.maxLengthAlongAxis(crossLayoutAxis),
       lengthsConstraint: parentConstraints.maxLengthAlongAxis(crossLayoutAxis),
     );
 

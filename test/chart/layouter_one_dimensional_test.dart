@@ -94,7 +94,7 @@ main() {
       expect(segments.lineSegments[0], const LineSegment(0.0, 5.0));
       expect(segments.lineSegments[1], const LineSegment(0.0, 10.0));
       expect(segments.lineSegments[2], const LineSegment(0.0, 15.0));
-      // matrjoska does not do any padding, for Start or End, only Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      // matrjoska does not do any padding, for Start or End, or Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
       expect(segments.totalPositionedLengthIncludesPadding, 15.0);
       expect(segments.isOverflown, false);
     });
@@ -167,7 +167,7 @@ main() {
 
     test('LayedoutLengthsPositioner.layout() Matrjoska End, total length more than required', () {
       PositionedLineSegments segments = matrjoskaEndTotalLength27Added12.positionLengths();
-      // matrjoska does not do any padding, for Start or End, only Center : const double fullFreePadding = 12.0;
+      // matrjoska does not do any padding, for Start or End, or Center : const double fullFreePadding = 12.0;
       const double fullFreePadding = 0.0;
 
       expect(segments.lineSegments.length, 3);
@@ -176,7 +176,7 @@ main() {
       expect(segments.lineSegments[0], const LineSegment(10.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[1], const LineSegment(5.0 + fullFreePadding, 15.0 + fullFreePadding));
       expect(segments.lineSegments[2], const LineSegment(0.0 + fullFreePadding, 15.0 + fullFreePadding));
-      // matrjoska does not do any padding, for Start or End, only Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
+      // matrjoska does not do any padding, for Start or End, or Center : expect(segments.totalPositionedLengthIncludesPadding, 27.0);
       expect(segments.totalPositionedLengthIncludesPadding, 15.0);
       expect(segments.isOverflown, false);
     });

@@ -410,17 +410,17 @@ class LayedoutLengthsPositioner {
     double start, end, freePadding;
     switch (lengthsPositionerProperties.align) {
       case Align.start:
-        // matrjoska does not do any padding, for Start or End, only Center
+        // matrjoska does not do any padding, for Start or End, or Center
         //   - no space offset from the start or end
         //   - no space between lengths (this is obvious property of matrjoska)
         freePadding = 0.0;
-        start = 0.0;
+        start = freePadding;
         end = length;
         totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.center:
-        // todo-00-last-last-last : // matrjoska does not do any padding, for Start or End, or Center : freePadding = _freePadding / 2;
-        freePadding = 0.0; // = _freePadding / 2;
+        // matrjoska does not do any padding, for Start or End, or Center : freePadding = _freePadding / 2;
+        freePadding = 0.0;
         double matrjoskaInnerRoomLeft = (_maxLength - length) / 2;
         start = freePadding + matrjoskaInnerRoomLeft;
         end = freePadding + matrjoskaInnerRoomLeft + length;
@@ -434,7 +434,7 @@ class LayedoutLengthsPositioner {
         totalPositionedLengthIncludesPadding = _maxLength + freePadding;
         break;
       case Align.end:
-        // matrjoska does not do any padding, for Start or End, only Center
+        // matrjoska does not do any padding, for Start or End, or Center
         freePadding = 0.0;
         start = freePadding + _maxLength - length;
         end = freePadding + _maxLength;
