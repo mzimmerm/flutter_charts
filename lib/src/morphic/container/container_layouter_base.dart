@@ -982,6 +982,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   late final ConstraintsWeight constraintsWeight;
 
+  // todo-00-last : this getter is not used, why?
   ConstraintsWeights get childrenWeights =>
       ConstraintsWeights.from(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
 
@@ -1528,7 +1529,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
   /// it returns rectangles around each child's existing offset and size.
   ///
   /// The follow up method [_layout_Post_NotLeaf_OffsetChildren] uses the returned rectangles
-  /// and applies this layouter's parent offset on the children.
+  /// and applies this layouter parent offset on the children.
   ///
   /// See the invoking [_layout_Post_NotLeaf_PositionThenOffsetChildren_ThenSetSize].
   ///
@@ -1781,12 +1782,6 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
   bool get isLeaf => false;
 
   /// Override for non-positioning:
-  /// Does not apply any offsets on the it's children (passed in [layout] internals.
-  @override
-  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
-  }
-
-  /// Override for non-positioning:
   /// Does not need to calculate position of children in self, as it will not apply offsets anyway.
   @override
   List<ui.Rect> layout_Post_NotLeaf_PositionChildren(List<LayoutableBox> children) {
@@ -1795,6 +1790,12 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
     // and setting layoutSize using the returned value
     // (which would fail, unless replaced with looking at children offsets)
     return children.map((LayoutableBox child) => child.offset & child.layoutSize).toList(growable: false);
+  }
+
+  /// Override for non-positioning:
+  /// Does not apply any offsets on the it's children (passed in [layout] internals.
+  @override
+  void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
   }
 
   @override
@@ -1958,6 +1959,10 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     ConstraintsWeights childrenWeights = ConstraintsWeights.from(
         constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
             .toList());
+    // todo-00-last-last : Change default weight to be negative one. Change this logic to be enough for one weight to be defined : > -1.
+    //                          if at least one is defined, consider 'someDefined': Divide constraints between defined in the ratio,
+    //                          give undefined the full constraints. Also this needs to work well with greedy.
+    //
     if (childrenWeights.allDefined) {
       // If all children have weights defined, give children constraints divided according to defined weights
       assert (childrenWeights.constraintsWeightList.length == children.length);

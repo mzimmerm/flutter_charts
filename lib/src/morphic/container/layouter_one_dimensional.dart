@@ -79,6 +79,21 @@ enum Align {
   end,
 }
 
+/// todo-00-last-last : make Align extended enum, and add this method
+Align otherEndAlign(Align align) {
+  switch(align) {
+    case Align.start:
+      return Align.end;
+    case Align.end:
+      return Align.start;
+    case Align.center:
+    case Align.centerExpand:
+      throw StateError('Invalid use here.');
+  }
+}
+
+
+
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
 ///

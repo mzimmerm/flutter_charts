@@ -22,7 +22,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.fromPointOffset,
     super.toPointOffset,
     // todo-00 : AxisLineContainer should ALWAYS use column, so I think  this should be removed
-    super.chartSeriesOrientation = ChartSeriesOrientation.row,
+    super.chartSeriesOrientation = ChartSeriesOrientation.column,
     required super.linePaint,
     required super.chartViewMaker,
     super.isLextrOnlyToValueSignPortion = false,

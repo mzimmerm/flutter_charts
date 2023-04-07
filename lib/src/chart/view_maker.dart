@@ -107,7 +107,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   late final options.ChartOptions chartOptions;
 
   // todo-00 : added chartSeriesOrientation temporarily. where to place the definition which chart type (column, row) are we building, so it propagates all the way??
-  final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.row;
+  final ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.column;
 
   final bool isStacked;
 
@@ -250,6 +250,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
     required List<model.CrossPointsModel> crossPointsModelList,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
   }) {
@@ -262,6 +263,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       chartBars.add(
         makeViewForDataContainer_Bar(
           crossPointsModel: crossPointsModel,
+          crossPointsModelPointsSign: crossPointsModelPointsSign,
           pointsLayouterAlign: pointsLayouterAlign,
           isPointsReversed: isPointsReversed,
         ),
@@ -272,6 +274,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   data_container.CrossPointsContainer makeViewForDataContainer_Bar({
     required model.CrossPointsModel crossPointsModel,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
     }) {
@@ -281,6 +284,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         children: [
           makeViewForDataContainer_BarLayouter(
               crossPointsModel: crossPointsModel,
+              crossPointsModelPointsSign: crossPointsModelPointsSign,
               pointsLayouterAlign: pointsLayouterAlign,
               isPointsReversed: isPointsReversed),
         ],
@@ -292,6 +296,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   container_base.BoxContainer makeViewForDataContainer_BarLayouter({
     required model.CrossPointsModel crossPointsModel,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
     required Align pointsLayouterAlign,
     required bool isPointsReversed,
   }) {
@@ -320,8 +325,9 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       pointContainers = pointContainers.toList(growable: false);
     }
 
-    return _buildLevel3PointsBar(
+    return _buildLevel3PointsBarAsRowOrColumn(
       chartSeriesOrientation: chartSeriesOrientation,
+      crossPointsModelPointsSign: crossPointsModelPointsSign,
       pointsLayouterAlign: pointsLayouterAlign,
       pointContainers: pointContainers,
     );
@@ -348,18 +354,32 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
   //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
   //
-  container_base.RollingBoxLayouter _buildLevel3PointsBar(
+  container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn(
       {
+        // todo-00-last-last-last-last : Start with finding one place that flips row/column chart orientation.
     required ChartSeriesOrientation chartSeriesOrientation,
-    required Align pointsLayouterAlign,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
+    required Align pointsLayouterAlign, // todo-00-last-last : is this used and how?
     // Padded PointContainer : required List<data_container.PointContainer> pointContainers,
     required List<container_base.Padder> pointContainers,
   }) {
+    Align mainAxisAlign;
+    switch(crossPointsModelPointsSign) {
+      case model.CrossPointsModelPointsSign.positiveOr0:
+        mainAxisAlign = Align.end;
+        break;
+      case model.CrossPointsModelPointsSign.negative:
+        mainAxisAlign = Align.start;
+        break;
+      case model.CrossPointsModelPointsSign.any:
+        throw StateError('unused value.');
+        break;
+    }
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return container_base.Column(
           /* default
-    Align mainAxisAlign = Align.start,
+    Align mainAxisAlign = Align.start, // todo-00-last-last-last : make mainAxisAlign: mainAxisAlign explicit. But comment both start would work. This just makes it clear.
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -370,8 +390,10 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         );
       case ChartSeriesOrientation.row:
         return container_base.Row(
-          mainAxisAlign: Align.start,      // pointsLayouterAlign, // passed Align.start from _buildLevel2 // todo-00-last-done
-          mainAxisPacking: Packing.tight,  // todo-00-last-done
+          // todo-00-last-last-last : do not do the otherEndAlign calcs here, pass them, as they must be same as 2 layouters up crossAxisAlign - so just use them, suitably named
+          //      ALIGN TO PUSH NEGATIVES AND POSITIVES TOGETHER.
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          // mainAxisPacking: Packing.tight,  // todo-00-last-done
           crossAxisAlign: Align.start,     // todo-00-last-done
           children: pointContainers,
           /* default
@@ -385,7 +407,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
         );
     }
   }
-
+  
   /// Generates [PointContainer] view from each [PointModel]
   /// and collects the views in a list of [PointContainer]s which is returned.
   ///
