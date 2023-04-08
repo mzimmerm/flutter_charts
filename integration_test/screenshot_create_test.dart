@@ -80,7 +80,7 @@ void main() {
   // Normally, we can do just
   //   IntegrationTestWidgetsFlutterBinding.ensureInitialized()
   // But if we want access to the binding, we can do something like:
-  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized() as IntegrationTestWidgetsFlutterBinding;
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized(); // todo-00-last-last-last-done : as IntegrationTestWidgetsFlutterBinding;
 
   testWidgets('screenshot', (WidgetTester tester) async {
     // Find the command-line provided enums which define chart data, options and type to use in the example app.

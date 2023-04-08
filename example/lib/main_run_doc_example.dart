@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 
 /// Example app for flutter_charts, which shows one concrete chart,
-/// which is the widget returned from [chartToRun].
+/// the widget returned from [chartToRun].
 ///
 /// Intended as a simple app that runs example code from README.md,
 /// by replacing the contents of [chartToRun] with example code pasted from README.md.
@@ -48,6 +49,7 @@ Widget chartToRun() {
   );
   var lineChartViewMaker = SwitchLineChartViewMaker(
     chartModel: chartModel,
+    chartSeriesOrientation: ChartSeriesOrientation.column,
     isStacked: false,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
   );

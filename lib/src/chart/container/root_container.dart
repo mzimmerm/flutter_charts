@@ -10,7 +10,7 @@ import '../container/axis_corner_container.dart';
 import '../view_maker.dart';
 import '../model/data_model.dart';
 import '../iterative_layout_strategy.dart' as strategy;
-import '../../morphic/container/layouter_one_dimensional.dart';
+// import '../../morphic/container/layouter_one_dimensional.dart';
 
 class ChartRootContainer extends container_common_new.ChartAreaContainer {
 

@@ -1,6 +1,6 @@
 import 'dart:ui' show Offset, Size;
 
-import '../../util/util_dart.dart' show DomainLTransform1D, Interval, ToPixelsLTransform1D;
+import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 // import '../container/container_layouter_base.dart';
 import '../container/chart_support/chart_orientation.dart';

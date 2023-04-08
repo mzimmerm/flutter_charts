@@ -3,7 +3,7 @@ import 'package:tuple/tuple.dart';
 import 'dart:ui' as ui;
 
 // this level or equivalent
-import 'container_layouter_base.dart' show BoxLayouter, ExternalTicksLayoutProvider, ExternalTickAtPosition;
+import 'container_layouter_base.dart';
 import '../../util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
@@ -70,7 +70,30 @@ enum Packing {
   externalTicksProvided,
 }
 
-/// Represents alignment of children during layouts.
+/// Represents alignment of children along one dimension (orientation) during layouts,
+///   in the dimension of the alignment; the dimension of the alignment is typically
+///   defined as a 'main axis' / 'cross axis' of the layouter or 'horizontal axis' and 'vertical axis' of the layouter.
+///
+/// Layouters may or may not define alignment. Most layouters do define alignment, and if they do,
+/// they must define alignment in both 2D dimensions (orientations).
+/// Some layouters use the term 'horizontal axis' and 'vertical axis', others use the term 'main axis' and 'cross axis'.
+/// Examples:
+///   - [TableLayouter] define orientation alignments in members [TableLayouter.horizontalAlign]
+///     and [TableLayouter.verticalAlign] and corresponding construction parameters names.
+///   - [MainAndCrossAxisBoxLayouter] and extensions define orientation alignments in construction parameters names
+///     `mainAxisAlign` and `crossAxisAlign`.
+///
+/// [Packing] is a related concept which describes how the positioned 1D segments are placed in 1D relative
+/// to each other. We describe the positioned 1D segments as 'group of segments'.
+///
+///   - For [Packing.tight] and [Packing.loose], the alignment describes the position of the group of segments
+///     in one dimension of [BoxLayouter.constraints] - in other words, alignment describes how the whole group of segments
+///     is aligned in constraints. In those packing(s), there may be a free space between the start of constraints
+///     and start of the group of segments (equivalent at the end).
+///   - For [Packing.matrjoska], the alignment describes the position INSIDE the group of segments. There is no free space
+///     between the start of constraints and the start of the group of segments - the group of segments is always aligned
+///     at the start of the constraints.
+///
 enum Align {
   start,
   center,

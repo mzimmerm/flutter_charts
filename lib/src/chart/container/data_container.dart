@@ -34,7 +34,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     // todo-00
     //    - added chartSeriesOrientation (done)
     //    - FIND A METHOD TO SET AND PROPAGATE chartSeriesOrientation. MAYBE IT IS ON VERY TOP BARCHART (BARCHARTPAINTER?)
-    var chartSeriesOrientation = ChartSeriesOrientation.column;
+    var chartSeriesOrientation = chartViewMaker.chartSeriesOrientation; // todo-00-last-last-last-last-done : review ChartSeriesOrientation.column;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -206,7 +206,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
             crossPointsModelList: crossPointsModels,
             crossPointsModelPointsSign: crossPointsModelPointsSign,
             // todo-00-last-last-experiment : why is this start??? It should be end : pointsLayouterAlign: Align.start,
-            pointsLayouterAlign: Align.start,
+            // todo-00-last-last pointsLayouterAlign: Align.start,
             isPointsReversed: isPointsReversed,
           ),
         );
@@ -227,7 +227,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
           children: chartViewMaker.makeViewsForDataContainer_Bars(
             crossPointsModelList: crossPointsModels,
             crossPointsModelPointsSign: crossPointsModelPointsSign,
-            pointsLayouterAlign: Align.start,
+            // todo-00-last-last pointsLayouterAlign: Align.start,
             isPointsReversed: isPointsReversed,
           ),
         );

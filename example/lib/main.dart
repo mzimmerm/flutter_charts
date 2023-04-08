@@ -6,6 +6,7 @@
 /// Also, material.dart exports many dart files, including widgets.dart,
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tuple/tuple.dart' show Tuple2;
 import 'dart:io' as io show exit;
@@ -16,6 +17,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+// import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 
 import 'src/util/examples_descriptor.dart';
 
@@ -443,6 +445,19 @@ class _ExampleWidgetCreator {
 
   /// Tuple which describes the example
   Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
+  var animalsDefaultData = const [
+    [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
+    [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
+    [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
+    [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
+  ];
+  var animalsXUserLabels = const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
+  var animalsDataRowsLegends = const [
+    'Spring',
+    'Summer',
+    'Fall',
+    'Winter',
+  ];
 
   /// Support for each example manipulate it's environment - the widgets in main.dart outside the chart.
   ///
@@ -958,7 +973,8 @@ class _ExampleWidgetCreator {
 
     switch (chartTypeToShow) {
       case ExamplesChartTypeEnum.lineChart:
-        SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.switchLineConstruct(
+        SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
+          chartSeriesOrientation: ChartSeriesOrientation.column,
           chartModel: chartModel,
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -972,8 +988,9 @@ class _ExampleWidgetCreator {
         chartToRun = lineChart;
         break;
       case ExamplesChartTypeEnum.verticalBarChart:
-        SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.switchBarConstruct(
+        SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
+          chartSeriesOrientation: ChartSeriesOrientation.row, // transpose column/row
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
@@ -992,17 +1009,4 @@ class _ExampleWidgetCreator {
     return chartToRun;
   }
 
-  var animalsDefaultData = const [
-    [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
-    [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
-    [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
-    [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
-  ];
-  var animalsXUserLabels = const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'];
-  var animalsDataRowsLegends = const [
-    'Spring',
-    'Summer',
-    'Fall',
-    'Winter',
-  ];
 }

@@ -10,15 +10,18 @@ import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLay
 // this level
 import '../../../coded_layout/chart/bar/container.dart';
 
+import '../../../morphic/container/chart_support/chart_orientation.dart';
 import '../../view_maker_cl.dart'; // OLD
 
 class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
   SwitchVerticalBarChartViewMakerCL({
     required ChartModel chartModel,
+    required ChartSeriesOrientation chartSeriesOrientation,
     required bool isStacked,
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartModel: chartModel,
+          chartSeriesOrientation: chartSeriesOrientation,
           isStacked: true, // only supported for now for bar chart
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         ) {
