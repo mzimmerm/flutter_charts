@@ -242,7 +242,6 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
-      // todo-00-last-last-last-done chartViewMaker: MockChartViewMaker(chartModel: dataModel, isStacked: true,),
       chartViewMaker: MockChartViewMaker(
         chartModel: dataModel,
         chartSeriesOrientation: ChartSeriesOrientation.column,

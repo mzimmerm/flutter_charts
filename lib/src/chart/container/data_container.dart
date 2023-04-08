@@ -31,10 +31,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
     var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    // todo-00
-    //    - added chartSeriesOrientation (done)
-    //    - FIND A METHOD TO SET AND PROPAGATE chartSeriesOrientation. MAYBE IT IS ON VERY TOP BARCHART (BARCHARTPAINTER?)
-    var chartSeriesOrientation = chartViewMaker.chartSeriesOrientation; // todo-00-last-last-last-last-done : review ChartSeriesOrientation.column;
+    var chartSeriesOrientation = chartViewMaker.chartSeriesOrientation;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -55,7 +52,6 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                   chartSeriesOrientation: chartSeriesOrientation,
                   children: [
                     // Row with columns of positive values
-                    // todo-00 : done : pulled method equivalent to ChartEmbedLevel.level2Bars
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,
                       crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.positiveOr0,
@@ -64,7 +60,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
-/* todo-00-last-done-keep
+/* todo-00-last-last-last
                     XAxisLineContainer(
                       xLabelsGenerator: xLabelsGenerator,
                       yLabelsGenerator: yLabelsGenerator,
@@ -108,30 +104,15 @@ class DataContainer extends container_common_new.ChartAreaContainer {
       case ChartSeriesOrientation.column:
         return Column(
           children: children,
-
-/* default
-          Align mainAxisAlign = Align.start,
-          Packing mainAxisPacking = Packing.tight,
-          Align crossAxisAlign = Align.start,
-          Packing crossAxisPacking = Packing.matrjoska,
-          ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
-*/
+          // Default. Both start and end work, as pos+neg fill whole area. Same applies fro crossAxisAlign, not set.
+          mainAxisAlign: Align.start,
         );
       case ChartSeriesOrientation.row:
         return Row(
-          children: children.reversed.toList(), // todo-00-done-added reversed
-          mainAxisAlign: Align.end, // todo-00-done-added - start pulls bars to the left end to the right
-          // crossAxisAlign: Align.end,// todo-00-done-added - start, end, center : no real difference
-// todo-00-last-progress
-/* default
-          Align mainAxisAlign = Align.start,
-          Packing mainAxisPacking = Packing.tight,
-          Align crossAxisAlign = Align.center,
-          Packing crossAxisPacking = Packing.matrjoska,
-          ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
-*/
-
-
+          // Reverse children compared to Column
+          children: children.reversed.toList(),
+          // Both start and end work, as pos+neg fill whole area. So use opposite of what Column uses.
+          mainAxisAlign: Align.end,
         );
     }
   }
@@ -157,16 +138,15 @@ class DataContainer extends container_common_new.ChartAreaContainer {
         labelsGeneratorAcrossSeries = yLabelsGenerator;
         break;
       case ChartSeriesOrientation.row:
-        // todo-00-last-last-last : done : maybe remove this section, and use y to define the ratio.  labelsGeneratorAcrossSeries = xLabelsGenerator;
+        // todo-00-last-last :  remove this section, and use y to define the ratio.  labelsGeneratorAcrossSeries = xLabelsGenerator;
         labelsGeneratorAcrossSeries = yLabelsGenerator;
         break;
     }
 
     double ratioOfPositiveOrNegativePortion;
     bool isPointsReversed;
-    // todo-00-last-last-last : clarify main and cross, what they should be in all situations
-    Align crossAxisAlign;
     Align mainAxisAlign;
+    Align crossAxisAlign;
     List<model.CrossPointsModel> crossPointsModels;
 
     switch(crossPointsModelPointsSign) {
@@ -174,8 +154,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
         ratioOfPositiveOrNegativePortion = labelsGeneratorAcrossSeries.dataRange.ratioOfPositivePortion();
         isPointsReversed = true;
-        mainAxisAlign = Align.end; // main does not really matter here. cross aligns to put negative and positive together.
-        crossAxisAlign = Align.end;
+        mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
+        crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
@@ -191,43 +171,27 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
-          /* default
-    Align mainAxisAlign = Align.start,
-    Packing mainAxisPacking = Packing.tight,
-    Align crossAxisAlign = Align.center,
-    Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
-           */
           mainAxisConstraintsWeight: ConstraintsWeight(
             weight: ratioOfPositiveOrNegativePortion,
           ),
+          mainAxisAlign: mainAxisAlign,
           crossAxisAlign: crossAxisAlign,
           children: chartViewMaker.makeViewsForDataContainer_Bars(
             crossPointsModelList: crossPointsModels,
-            crossPointsModelPointsSign: crossPointsModelPointsSign,
-            // todo-00-last-last-experiment : why is this start??? It should be end : pointsLayouterAlign: Align.start,
-            // todo-00-last-last pointsLayouterAlign: Align.start,
+            barsContainerMainAxisAlign: mainAxisAlign,
             isPointsReversed: isPointsReversed,
           ),
         );
       case ChartSeriesOrientation.row:
-        // todo-00-finish this. So far, I just changed Row to Column
         return Column(
-          /*
-    Align mainAxisAlign = Align.start,
-    Packing mainAxisPacking = Packing.tight,
-    Align crossAxisAlign = Align.start,
-    Packing crossAxisPacking = Packing.matrjoska,
-           */
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-last-added
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          crossAxisAlign: otherEndAlign(crossAxisAlign),
           mainAxisConstraintsWeight: ConstraintsWeight(
             weight: ratioOfPositiveOrNegativePortion,
           ),
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
           children: chartViewMaker.makeViewsForDataContainer_Bars(
             crossPointsModelList: crossPointsModels,
-            crossPointsModelPointsSign: crossPointsModelPointsSign,
-            // todo-00-last-last pointsLayouterAlign: Align.start,
+            barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign),
             isPointsReversed: isPointsReversed,
           ),
         );
@@ -274,6 +238,7 @@ abstract class PointContainer extends container_common_new.ChartAreaContainer {
   model.PointModel pointModel;
 
   /// Orientation of the chart bars: horizontal or vertical.
+  // todo-00-last : why is this set on both DataContainer here and ChartViewMaker???
   final ChartSeriesOrientation chartSeriesOrientation;
 }
 

@@ -71,6 +71,7 @@ enum ChartSeriesOrientation {
 /// of multiple point presenters; Each point presenter presents one point (one value) of data -
 /// this presenter may be a rectangle on a bar chart, a hotspot dot on a linear chart.
 ///
+/// todo-00-next : remove this, unused
 enum ChartEmbedLevel {
   level1PositiveNegativeArea,
   level2Bars,

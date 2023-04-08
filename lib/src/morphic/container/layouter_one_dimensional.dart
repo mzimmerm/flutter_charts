@@ -102,7 +102,7 @@ enum Align {
   end,
 }
 
-/// todo-00-last-last : make Align extended enum, and add this method
+/// todo-00-next : make Align extended enum, and add this method
 Align otherEndAlign(Align align) {
   switch(align) {
     case Align.start:
