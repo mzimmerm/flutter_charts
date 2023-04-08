@@ -1,8 +1,8 @@
-import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
+import 'dart:ui' as ui show Size, Rect, Offset, Paint, Canvas;
 
-import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 
 import 'container_common.dart' as container_common_new;
+import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
 import '../view_maker.dart' as view_maker;
@@ -41,9 +41,11 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     required this.chartSeriesOrientation,
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
+    super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
     this.isLextrOnlyToValueSignPortion = false,
     this.isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
+    // todo-00-last : pull this in as super.chartViewMaker
       chartViewMaker: chartViewMaker
   );
 
@@ -181,12 +183,14 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
     required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
+    container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
     isLextrOnlyToValueSignPortion = false,
     isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
           chartSeriesOrientation: chartSeriesOrientation,
           linePaint: linePaint,
           chartViewMaker: chartViewMaker,
+          constraintsWeight: constraintsWeight,
           isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
           isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );

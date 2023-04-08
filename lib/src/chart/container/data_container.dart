@@ -60,13 +60,13 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
-/* todo-00-last-last-last
+/* todo-00-last-last-last add back */
                     XAxisLineContainer(
                       xLabelsGenerator: xLabelsGenerator,
                       yLabelsGenerator: yLabelsGenerator,
                       chartViewMaker: chartViewMaker,
                     ),
-*/
+
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,

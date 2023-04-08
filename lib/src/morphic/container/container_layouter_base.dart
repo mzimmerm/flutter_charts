@@ -479,7 +479,8 @@ class ConstraintsWeight {
 
   final double weight;
 
-  static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
+  // todo-00-last-last-last-done : static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
+  static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: -1);
 
   @override
   bool operator ==(Object other) {
@@ -504,7 +505,8 @@ class ConstraintsWeights {
      required List<ConstraintsWeight> constraintsWeightList,
   }) : constraintsWeightList = List.from(constraintsWeightList, growable: false);
 
-  bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
+  // todo-00-last-last-last : weight 0.0 is valid weight : bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
+  bool get allDefined => constraintsWeightList.where((element) => element.weight < 0).isEmpty;
 
   List<double> get doubleWeightList {
     if (!allDefined) {
