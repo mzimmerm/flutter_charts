@@ -38,21 +38,15 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   LineBetweenPointOffsetsContainer({
     this.fromPointOffset,
     this.toPointOffset,
-    required this.chartSeriesOrientation,
+    // todo-00-last : assume column, will transform according to ViewMaker : required this.chartSeriesOrientation,
     required this.linePaint,
     this.isLextrUseSizerInsteadOfConstraint = false,
     required super.chartViewMaker,
     super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
   });
-/*
-      : super(
-    // todo-00-last : pull this in as super.chartViewMaker
-      chartViewMaker: chartViewMaker
-  );
-*/
 
   /// Orientation of the chart bars: horizontal or vertical.
-  final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
+  // todo-00-last : assume column, will transform according to ViewMaker : final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
   late final PointOffset? fromPointOffset;
@@ -107,7 +101,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     //   to flip (invert) during the lextr.
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, // todo-00-last-done : using from chartViewMaker :
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
@@ -116,7 +110,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, // todo-00-last-done : using from chartViewMaker :
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
@@ -175,13 +169,13 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   LineBetweenPointModelsContainer({
     required this.fromPointModel,
     required this.toPointModel,
-    required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
+    // todo-00-last : assume column, will transform according to ViewMaker : required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
     container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
     isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
-          chartSeriesOrientation: chartSeriesOrientation,
+    // todo-00-last : assume column, will transform according to ViewMaker : chartSeriesOrientation: chartSeriesOrientation,
           linePaint: linePaint,
           chartViewMaker: chartViewMaker,
           constraintsWeight: constraintsWeight,

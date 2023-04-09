@@ -28,7 +28,6 @@ class PointOffset extends Offset {
   ///
   /// Used to get the rectangle representing the bar in chart [BarPointContainer].
   ///
-  /// todo-010 : make it return, do not keep on state
   late final Size barPointRectSize;
 
   double get inputValue => dx;

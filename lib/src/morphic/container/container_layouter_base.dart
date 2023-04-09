@@ -687,36 +687,39 @@ class RootSandboxSizers {
   static const String keyInSandbox = 'sizers';
 
   /// If width sizer exists on this object, check if the passed has same width, if not exception
-  ///    else add the passed sizer
-  checkOrSetSizer(FromConstraintsSizerMixin firstOrLaterSizer) {
+  ///    else add the passed sizer.
+  ///
+  /// [newSizer] is newSizer.
+  checkOrSetSizer(FromConstraintsSizerMixin newSizer) {
 
     FromConstraintsSizerMixin? currentSizer;
     
-    if (firstOrLaterSizer is WidthSizerLayouter) {
+    if (newSizer is WidthSizerLayouter) {
       currentSizer = __widthSizer;
-    } else if (firstOrLaterSizer is HeightSizerLayouter) {
+    } else if (newSizer is HeightSizerLayouter) {
       currentSizer = __heightSizer;
     } else {
-      throw StateError('Unexpected type passed, ${firstOrLaterSizer.runtimeType}');
+      throw StateError('Unexpected type passed, ${newSizer.runtimeType}');
     }
 
     if (currentSizer != null) {
       util_dart.assertDoubleResultsSame(
         currentSizer.length,
-        firstOrLaterSizer.length,
-        'Passed width sizer $firstOrLaterSizer differs from width sizer on root sandbox. '
-        'Likely reason: Multiple [WidthSizerLayouter]s were placed in the container hierarchy, '
-        'but the position is in places where the widths of the constraints passed to them is not the same.'
-        'It may equivalently apply to multiple [HeightSizerLayouter]s.',
+        newSizer.length,
+        'The root sandbox sizer currentSizer length differs from the newSizer length.\n'
+        'Root currentSizer.length=${currentSizer.length}, newSizer.length=${newSizer.length}.\n'
+        'Current Sizer currentSizer type =${currentSizer.runtimeType}.\n'
+        'Reason: Multiple [WidthSizerLayouter]s or [WidthSizerLayouter]s were placed in the container hierarchy, '
+        'but the positions are in places where the widths of the constraints passed to them are not the same.'
       );
       return;
     }
-    if (firstOrLaterSizer is WidthSizerLayouter) {
-      __widthSizer = firstOrLaterSizer;
-    } else if (firstOrLaterSizer is HeightSizerLayouter) {
-      __heightSizer = firstOrLaterSizer;
+    if (newSizer is WidthSizerLayouter) {
+      __widthSizer = newSizer;
+    } else if (newSizer is HeightSizerLayouter) {
+      __heightSizer = newSizer;
     } else {
-      throw StateError('Unexpected type passed, ${firstOrLaterSizer.runtimeType}');
+      throw StateError('Unexpected type passed, ${newSizer.runtimeType}');
     }
   }
 
@@ -2783,11 +2786,11 @@ class TableLayoutDefiner {
   /// Returns priority-order align for a row and column.
   ///
   /// The priority is:
-  ///   - IF defined, first priority is the cell align level at [TableLayoutCellDefiner.verticalAlign],
-  ///   - next is the [cellsAlignerDefiner]
-  ///   - last is this instance's [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  ///   todo-011 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
-  ///                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
+  ///   - First priority is alignment on the cell level at [TableLayoutCellDefiner.verticalAlign] if not null;
+  ///   - Next priority, is alignment in the definer [cellsAlignerDefiner] if not null
+  ///   - Last priority is this instance's alignment [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
+  //   todo-011 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  //                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);
     if (cellDefiner.verticalAlign != null) {

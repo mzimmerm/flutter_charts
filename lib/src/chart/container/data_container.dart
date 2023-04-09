@@ -212,7 +212,6 @@ abstract class PointContainer extends container_common_new.ChartAreaContainer {
   PointContainer({
     required this.pointModel,
     required ChartViewMaker chartViewMaker,
-    // todo-00-last-done : removed : use from chartViewMaker : required this.chartSeriesOrientation,
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
@@ -223,9 +222,6 @@ abstract class PointContainer extends container_common_new.ChartAreaContainer {
 
   /// The [PointModel] presented by this container.
   model.PointModel pointModel;
-
-  /// Orientation of the chart bars: horizontal or vertical.
-   // todo-00-last-done : removed : use from chartViewMaker : final ChartSeriesOrientation chartSeriesOrientation;
 }
 
 /// Container presents it's [pointModel] as a point on a line, or a rectangle in a bar chart.
@@ -239,13 +235,11 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
   BarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,
-    // todo-00-last-done : use from chartViewMaker : required ChartSeriesOrientation chartSeriesOrientation,
     List<BoxContainer>? children,
     ContainerKey? key,
   }) : super(
     pointModel: pointModel,
     chartViewMaker: chartViewMaker,
-    // todo-00-last-done : added chartViewMaker : chartSeriesOrientation: chartSeriesOrientation,
     children: children,
     key: key,
   );
@@ -266,7 +260,7 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
           dataRangeLabelInfosGenerator: xLabelsGenerator,
         );
     PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, // todo-00-last-done : added chartViewMaker
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: xLabelsGenerator.dataRange,
       outputDataRange: yLabelsGenerator.dataRange,

@@ -318,7 +318,7 @@ enum LineSegmentPosition {
 ///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-/// todo-010 : Add tests for easier refactoring
+/// todo-011 : Add tests for easier refactoring
 class LTransform1D {
   final double _scaleBy;
   final double _moveOriginBy;
@@ -441,7 +441,7 @@ class LTransform1D {
 ///                  1/2 * (DLT(fromStart) + DLT(fromEnd)) =  // Use Lemma 2, fixed points
 ///                  1/2 * (toStart + toEnd)
 ///              ```
-/// todo-010: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
+/// todo-011: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
 class DomainLTransform1D {
   DomainLTransform1D({
     required double fromDomainStart,
@@ -565,7 +565,7 @@ class DomainLTransform1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-010 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
+/// todo-011 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
 class ToPixelsLTransform1D extends DomainLTransform1D {
   ToPixelsLTransform1D({
     required double fromValuesMin,
@@ -655,8 +655,8 @@ bool isCloserThanEpsilon(double d1, double d2) {
 
 void assertDoubleResultsSame(double result, double otherResult, [String callerMessage = '']) {
   if (!isCloserThanEpsilon(result, otherResult)) {
-    throw StateError('Double results do not match. Result was $result, '
-        'Other result was $otherResult. Caller message=$callerMessage');
+    throw StateError('Double results do not match. Result was $result, other result was $otherResult.\n'
+        'Caller message: $callerMessage');
   }
 }
 

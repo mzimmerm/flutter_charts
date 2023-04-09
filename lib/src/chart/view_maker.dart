@@ -65,7 +65,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-011-00-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-0111-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -327,7 +327,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     );
   }
 
-  // todo-00 :
+  // todo-010 :
   //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
   //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
   //
@@ -382,7 +382,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
-      // todo-00-last-done : use from chartViewMaker : chartSeriesOrientation: chartSeriesOrientation,
     );
   }
 

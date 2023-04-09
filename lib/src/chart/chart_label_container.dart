@@ -82,7 +82,7 @@ class ChartLabelContainer extends container_common_new.ChartAreaContainer with L
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
-    // todo-011-01 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-0110 : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
