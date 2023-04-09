@@ -40,13 +40,16 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     this.toPointOffset,
     required this.chartSeriesOrientation,
     required this.linePaint,
-    required view_maker.ChartViewMaker chartViewMaker,
-    super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
     this.isLextrUseSizerInsteadOfConstraint = false,
-  }) : super(
+    required super.chartViewMaker,
+    super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
+  });
+/*
+      : super(
     // todo-00-last : pull this in as super.chartViewMaker
       chartViewMaker: chartViewMaker
   );
+*/
 
   /// Orientation of the chart bars: horizontal or vertical.
   final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;

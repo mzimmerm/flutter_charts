@@ -382,7 +382,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     return data_container.BarPointContainer(
       pointModel: pointModel,
       chartViewMaker: this,
-      chartSeriesOrientation: chartSeriesOrientation,
+      // todo-00-last-done : use from chartViewMaker : chartSeriesOrientation: chartSeriesOrientation,
     );
   }
 

@@ -997,7 +997,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   late final ConstraintsWeight constraintsWeight;
 
-  // todo-00-last : this getter is not used, why? This must be done somewhere manually without this method - find it and replace.
+  // Get the ConstraintsWeights instance from all children. Parents may this to decide distribution of constraints.
   ConstraintsWeights get childrenWeights =>
       ConstraintsWeights.from(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
 
@@ -1971,9 +1971,12 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   ///     this method invokes super implementation equivalent, which distributes self constraints undivided to all children.
   @override
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
+    // In this [RollingLayouter] the passed children are only non-greedy children.
+    // Constraints are distributed only among non-greedy children; the greedy child(ren) will get constraints later.
     ConstraintsWeights childrenWeights = ConstraintsWeights.from(
         constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
             .toList());
+
     // If weights defined on all children, this [RollingBoxLayouter] distributes constraints to children
     //   proportionally to children's weights;
     // Else, all children receive full parent's weight.

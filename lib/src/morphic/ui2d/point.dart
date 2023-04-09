@@ -202,7 +202,7 @@ class PointOffset extends Offset {
 
         break;
       case ChartSeriesOrientation.row:
-      // todo-00-last : to convert between column chart and row chart in 2D
+      // todo-00 : to convert between column chart and row chart in 2D
       //                    is equivalent to diagonal transpose ALL POINTS IN 2D EXCEPT LABEL DIRECTION around Diagonal.LeftToRightUp
       //                    such transpose is equivalent to flipping (transposing) coordinates: x -> y, y -> x
       //                    LETS PREFIX THE NAMES OF TRANSPOSED VARIABLES WITH 'iotrp' for 'input/output transpose of positive values to positive values.
