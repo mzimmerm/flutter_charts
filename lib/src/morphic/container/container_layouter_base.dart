@@ -454,8 +454,12 @@ mixin DoubleLinkedOwner<E> {
   }
 }
 
-/// If set on a [BoxLayouter] instance, when looking at the instance as one of siblings (of a parent),
-/// defines how constraints should be distributed among it's siblings.
+/// When looking at this instance as one of its [BoxContainer]'s siblings, defines the among-all-siblings portion
+/// of [BoxLayouter.constraints] this instance obtains from it's parent [BoxContainer]'s constraints.
+/// during parent's layout process.
+///
+/// While [ConstraintsWeight] is only a hint, every [BoxLayouter] implementation should consider its
+/// container-hierarchy-children's [ConstraintsWeight]s during its [layout].
 ///
 /// The parent of such instance gathers all the children's [ConstraintsWeight]s, and distribute constraints
 /// among it's children (including the said instance) proportionally to their [ConstraintsWeight]s
@@ -474,13 +478,16 @@ mixin DoubleLinkedOwner<E> {
 class ConstraintsWeight {
 
   const ConstraintsWeight({
-    this.weight = 0,
-  });
+    required this.weight,
+  }) : assert (weight >= 0 || weight == _undefinedWeight);
 
+  /// When an instance of [ConstraintsWeight] is set on [BoxContainer], [weight] defines the among-siblings portion
+  /// of the constraints the [BoxContainer] should receive by its container-hierarchy parent during parent's [layout].
   final double weight;
 
-  // todo-00-last-last-last-done : static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: 0);
-  static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: -1);
+  static const double _undefinedWeight = -1;
+
+  static const ConstraintsWeight defaultWeight = ConstraintsWeight(weight: _undefinedWeight);
 
   @override
   bool operator ==(Object other) {
@@ -499,13 +506,19 @@ class ConstraintsWeight {
 
 class ConstraintsWeights {
 
+  /// List of weights, typically created from of all children of a [BoxContainer].
   final List<ConstraintsWeight> constraintsWeightList;
 
   ConstraintsWeights.from({
      required List<ConstraintsWeight> constraintsWeightList,
   }) : constraintsWeightList = List.from(constraintsWeightList, growable: false);
 
-  // todo-00-last-last-last : weight 0.0 is valid weight : bool get allDefined => constraintsWeightList.where((element) => element.weight <= 0).isEmpty;
+  /// Returns [true] if all members of [constraintsWeightList] have a defined [ConstraintsWeight].
+  ///
+  /// A defined weight is any weight >= 0.
+  ///
+  /// If [true], the parent should distribute constraints proportionally to all children's weights,
+  /// which are assumed to have been copied to [constraintsWeightList].
   bool get allDefined => constraintsWeightList.where((element) => element.weight < 0).isEmpty;
 
   List<double> get doubleWeightList {
@@ -984,7 +997,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///
   late final ConstraintsWeight constraintsWeight;
 
-  // todo-00-last : this getter is not used, why?
+  // todo-00-last : this getter is not used, why? This must be done somewhere manually without this method - find it and replace.
   ConstraintsWeights get childrenWeights =>
       ConstraintsWeights.from(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
 
@@ -1961,10 +1974,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     ConstraintsWeights childrenWeights = ConstraintsWeights.from(
         constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
             .toList());
-    // todo-00-last-last : Change default weight to be negative one. Change this logic to be enough for one weight to be defined : > -1.
-    //                          if at least one is defined, consider 'someDefined': Divide constraints between defined in the ratio,
-    //                          give undefined the full constraints. Also this needs to work well with greedy.
-    //
+    // If weights defined on all children, this [RollingBoxLayouter] distributes constraints to children
+    //   proportionally to children's weights;
+    // Else, all children receive full parent's weight.
     if (childrenWeights.allDefined) {
       // If all children have weights defined, give children constraints divided according to defined weights
       assert (childrenWeights.constraintsWeightList.length == children.length);

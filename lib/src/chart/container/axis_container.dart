@@ -23,11 +23,10 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.toPointOffset,
     // todo-00 : AxisLineContainer should ALWAYS use column, so I think  this should be removed
     super.chartSeriesOrientation = ChartSeriesOrientation.column,
-    // ConstraintsWeight must be set, for the pos/neg to create weight-defined constraints when in Column or Row
-    super.constraintsWeight = const ConstraintsWeight(weight: 0), // todo-00-last-last-last-done
+    // For the pos/neg to create weight-defined constraints when in Column or Row, ConstraintsWeight must be set.
+    super.constraintsWeight = const ConstraintsWeight(weight: 0),
     required super.linePaint,
     required super.chartViewMaker,
-    super.isLextrOnlyToValueSignPortion = false,
     super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
@@ -51,7 +50,6 @@ class XAxisLineContainer extends AxisLineContainer {
   chartSeriesOrientation: ChartSeriesOrientation.column,
   linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
   chartViewMaker: chartViewMaker,
-  // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
   isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
   );
 }
@@ -74,7 +72,6 @@ class YAxisLineContainer extends AxisLineContainer {
   chartSeriesOrientation: ChartSeriesOrientation.row,
   linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
   chartViewMaker: chartViewMaker,
-  // isLextrOnlyToValueSignPortion: false, // default : Lextr from full Y range (negative + positive portion)
   isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
   );
 }

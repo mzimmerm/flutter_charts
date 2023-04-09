@@ -66,7 +66,6 @@ class PointOffset extends Offset {
   ///   - [widthToLextr] - equivalent to [heightToLextr]
   ///   - [inputDataRange] is the data value-range on the input domain (1st coordinate, x)
   ///   - [outputDataRange] is the data value-range on the output domain (2nd coordinate, y)
-  ///   - [isLextrOnlyToValueSignPortion] UNUSED CURRENTLY. Default false
   ///   - [isLextrUseSizerInsteadOfConstraint] if true, processing uses [heightToLextr] and [widthToLextr]
   ///      instead of [constraintsOnImmediateOwner] to set height and width of the pixel-domains. Default false.
   ///
@@ -150,10 +149,8 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    required bool                    isLextrOnlyToValueSignPortion, // default false
     required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
-    assert (isLextrOnlyToValueSignPortion == false);
     ChartSeriesOrientation orientation = chartSeriesOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
@@ -251,63 +248,6 @@ class PointOffset extends Offset {
         barPointRectHeight = verticalPixelsRange.length;
 
         break;
-
-        /*
-
-      case ChartSeriesOrientation.row:
-        // Transpose all points in chart around [Diagonal.leftToRightUp].
-        // This changes the chart from vertical bar chart to horizontal bar chart.
-        // 1.2.2:
-        fromValuesRange1 = outputDataRange;
-        toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
-        doInvertDomain1  = true; // inverted domain
-        // for position of inputValue in inputDataRange(x), FIRST find corresponding position in outputDataRange(y)
-        // this new position will be transformed to pixels on the output(y)
-        fromValue1 = DomainLTransform1D(
-          fromDomainStart: inputDataRange.min,
-          fromDomainEnd: inputDataRange.max,
-          toDomainStart: outputDataRange.min,
-          toDomainEnd: outputDataRange.max,
-        ).apply(inputValue);
-
-        var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue1,
-          fromValuesRange: fromValuesRange1,
-          toPixelsRange: toPixelsRange1,
-          doInvertDomain: doInvertDomain1,
-          // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
-          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
-        );
-        outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
-
-        // 1.1.2:
-        fromValuesRange2 = inputDataRange;
-        toPixelsRange2   = Interval(0.0, widthToLextr);
-        doInvertDomain2  = false;
-        // for position of outputValue in outputDataRange, FIRST find corresponding position in inputDataRange
-        // this new position will be transformed to pixels in the input (x)
-        fromValue2 =  DomainLTransform1D(
-          fromDomainStart: outputDataRange.min,
-          fromDomainEnd: outputDataRange.max,
-          toDomainStart: inputDataRange.min,
-          toDomainEnd: inputDataRange.max,
-        ).apply(outputValue);
-        var fromValueInputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue2,
-          fromValuesRange: fromValuesRange2,
-          toPixelsRange: toPixelsRange2,
-          doInvertDomain: doInvertDomain2,
-          // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
-          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
-        );
-        inputPixels = fromValueInputPixels.fromValueOnAxisPixels;
-
-        barPointRectWidth  = fromValueInputPixels.fromValueLengthInPixels;
-        barPointRectHeight = toPixelsRange1.length;
-
-        break;
-
-        */
     }
 
     PointOffset pointOffsetPixels = PointOffset(
@@ -334,17 +274,13 @@ class PointOffset extends Offset {
     required Interval fromValuesRange,
     required Interval toPixelsRange,
     required bool     doInvertDomain,
-    // todo-010 : KEEP for now : required bool     isLextrOnlyToValueSignPortion, // default false
-    // todo-010 : KEEP for now : required bool     isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     assert (toPixelsRange.min == 0.0);
-    // todo-010 : KEEP for now : assert (isLextrOnlyToValueSignPortion == false);
 
     var portion = _FromAndToPortionForFromValue(
       fromValue: fromValue,
       fromValuesRange: fromValuesRange,
       toPixelsRange: toPixelsRange,
-      // todo-010 : KEEP for now : isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
     );
     fromValuesRange = portion.fromValuesPortion;
     toPixelsRange = portion.toPixelsPortion;
@@ -357,13 +293,6 @@ class PointOffset extends Offset {
         doInvertToDomain: doInvertDomain,
     );
     double fromValueOnAxisPixels, fromValueLengthInPixels;
-    /* todo-010 KEEP for now :
-    if (isLextrUseSizerInsteadOfConstraint) {
-      fromValueOnAxisPixels = transform.apply(fromValue);
-    } else {
-      fromValueOnAxisPixels = transform.applyOnlyScaleOnLength(fromValue);
-    }
-    */
     fromValueOnAxisPixels = transform.apply(fromValue);
     fromValueLengthInPixels = transform.applyOnlyScaleOnLength(fromValue).abs();
 
@@ -384,19 +313,7 @@ class _FromAndToPortionForFromValue {
     required this.fromValue,
     required this.fromValuesRange,
     required this.toPixelsRange,
-    // todo-010 : KEEP for now : required this.isLextrOnlyToValueSignPortion,
   }) {
-    /* todo-010 : KEEP for now :
-    if (isLextrOnlyToValueSignPortion) {
-      // todo-010 : DEAD END, because condition assumed false at all times. But KEEP THE isLextrOnlyToValueSignPortion VARIABLES FOR NOW
-      fromValuesPortion = fromValuesRange.portionForSignOfValue(fromValue);
-      toPixelsPortion = fromValuesRange.portionOfIntervalAsMyPosNegRatio(toPixelsRange, fromValue);
-    } else {
-      // 0.0 <= fromValue
-      fromValuesPortion = fromValuesRange;
-      toPixelsPortion = toPixelsRange;
-    }
-    */
     // 0.0 <= fromValue
     fromValuesPortion = fromValuesRange;
     toPixelsPortion = toPixelsRange;
@@ -405,7 +322,6 @@ class _FromAndToPortionForFromValue {
   final double fromValue;
   final Interval fromValuesRange;
   final Interval toPixelsRange;
-  // todo-010 : KEEP for now : final bool isLextrOnlyToValueSignPortion;
 
   late final Interval fromValuesPortion;
   late final Interval toPixelsPortion;

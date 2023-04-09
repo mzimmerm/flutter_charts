@@ -60,7 +60,6 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
-/* todo-00-last-last-last add back */
                     XAxisLineContainer(
                       xLabelsGenerator: xLabelsGenerator,
                       yLabelsGenerator: yLabelsGenerator,
@@ -131,6 +130,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     required DataRangeLabelInfosGenerator             yLabelsGenerator,
   }) {
 
+/* todo-00-last-done
     DataRangeLabelInfosGenerator labelsGeneratorAcrossSeries;
 
     switch(chartSeriesOrientation) {
@@ -138,10 +138,10 @@ class DataContainer extends container_common_new.ChartAreaContainer {
         labelsGeneratorAcrossSeries = yLabelsGenerator;
         break;
       case ChartSeriesOrientation.row:
-        // todo-00-last-last :  remove this section, and use y to define the ratio.  labelsGeneratorAcrossSeries = xLabelsGenerator;
         labelsGeneratorAcrossSeries = yLabelsGenerator;
         break;
     }
+*/
 
     double ratioOfPositiveOrNegativePortion;
     bool isPointsReversed;
@@ -152,14 +152,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     switch(crossPointsModelPointsSign) {
       case model.CrossPointsModelPointsSign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
-        ratioOfPositiveOrNegativePortion = labelsGeneratorAcrossSeries.dataRange.ratioOfPositivePortion();
+        ratioOfPositiveOrNegativePortion = yLabelsGenerator.dataRange.ratioOfPositivePortion();
         isPointsReversed = true;
         mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
-        ratioOfPositiveOrNegativePortion = labelsGeneratorAcrossSeries.dataRange.ratioOfNegativePortion();
+        ratioOfPositiveOrNegativePortion = yLabelsGenerator.dataRange.ratioOfNegativePortion();
         isPointsReversed = false;
         mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
@@ -287,7 +287,6 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
       outputDataRange: yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      isLextrOnlyToValueSignPortion: false,
       isLextrUseSizerInsteadOfConstraint: false,
     );
 

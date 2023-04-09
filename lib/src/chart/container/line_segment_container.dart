@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Size, Rect, Offset, Paint, Canvas;
+import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
 
 
 import 'container_common.dart' as container_common_new;
@@ -42,7 +42,6 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     required this.linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
     super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
-    this.isLextrOnlyToValueSignPortion = false,
     this.isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
     // todo-00-last : pull this in as super.chartViewMaker
@@ -62,11 +61,6 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   /// NOT final, as offset is manipulated by [applyParentOffset];
   late PointOffset _fromOffsetPixels;
   late PointOffset _toOffsetPixels;
-
-  /// Controls whether layout lextr on points uses the full portion (both positive and negative portion)
-  /// of lextr-from range, or only the portion that has the same sign as the point value.
-  // // todo-010 : This should be removed
-  final bool isLextrOnlyToValueSignPortion;
 
   /// Controls whether layout lextr on points, when setting pixel ranges, uses the full length of sizer
   /// such as [container_base.HeightSizerLayouter] or uses constraints from
@@ -116,7 +110,6 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
@@ -126,7 +119,6 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
 
@@ -184,14 +176,12 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
     container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
-    isLextrOnlyToValueSignPortion = false,
     isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
           chartSeriesOrientation: chartSeriesOrientation,
           linePaint: linePaint,
           chartViewMaker: chartViewMaker,
           constraintsWeight: constraintsWeight,
-          isLextrOnlyToValueSignPortion: isLextrOnlyToValueSignPortion,
           isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
 
