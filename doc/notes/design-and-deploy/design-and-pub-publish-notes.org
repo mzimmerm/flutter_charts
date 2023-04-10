@@ -1849,10 +1849,27 @@ Notes or Later:
 - [X] Create new objects from ~DataContainer~ down in a new library ~new_data_container.dart~, classes from bottom:
 - [X] ~NewValueContainer~, ~NewValuesColumnContainer~, ~NewValuesColumnsContainer~ - the last is equivalent to ~DataContainer~
  
-** IN-PROGRESS-NOW 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
+** DONE 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
 
   
-** TODO 10. ~Containers to MORPHS~
+** IN-PROGRESS-NOW 10. ~CURRENT WORK~
+
+1. [X] Finish design with note about class hierarchy of TransposingRoller layouters
+2. [X] Add TransposingRoller.Column, Row between RollingLayouter and Column/Row
+3. [X] Add TransposingRoller.ExternalTicksRow, Column between ExternalTicks and ExternalColumn
+4. [ ] Run all tests in column orientation - because now the new hierarchy is already used
+5. [ ] Add TransposingSizerLayouter.Width, Height between FromConstraintsSizerLayouter and HeightSizerLayouter
+6. [ ] Run all tests in column orientation - because now the new hierarchy is already used
+7. [ ] Start using Transposing in XContainer, YContainer
+8. [ ] Make sure it works in column orientation - Run all tests
+9. [ ] Pull out Padder from YContainer and DataContainer, and add it as in-place wrappers in ChartRootContainer to dataContainer and vertAxisContainer
+10. [ ] NOW THE TRANSPOSE SHOULD WORK IN FULL?
+11. [ ] Run all tests in column orientation
+12. [ ] How is row orientation??
+13. [ ] Start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
+
+   
+** TODO 11. ~Containers to MORPHS~
 
   - [ ] start doing Morph stuff: start with everything is a transform!
 

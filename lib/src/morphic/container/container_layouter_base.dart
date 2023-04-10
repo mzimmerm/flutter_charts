@@ -6,10 +6,11 @@ import 'package:flutter/services.dart';
 // this level or equivalent
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
-    show Align, Packing, LengthsPositionerProperties,
+    show Align, otherEndAlign, Packing, LengthsPositionerProperties,
     LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
+import 'chart_support/chart_orientation.dart' show ChartSeriesOrientation;
 import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../../util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsLTransform1D,
@@ -2104,8 +2105,95 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
 
 }
 
+// todo-00-progress : vvvvvvvv TransposingRoller layouters for Column, Row are between RollingBoxLayouter and Column, Row
+abstract class TransposingRoller extends RollingBoxLayouter {
+  /// 1. Generative constructor forwarding to superclass [RollingBoxLayouter] with same parameters as
+  ///    the superclass constructor; Intended to be called by extensions [Row] and [Column].
+  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  TransposingRoller({
+    required super.children,
+    required super.mainAxisAlign,
+    required super.mainAxisPacking,
+    required super.crossAxisAlign,
+    required super.crossAxisPacking,
+    super.mainAxisConstraintsWeight,
+  });
+
+  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
+  ///    default orientation [ChartSeriesOrientation];
+  ///    todo-00 note : parameters copied from Column constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  factory TransposingRoller.Column({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required List<BoxContainer> children,
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
+    Align crossAxisAlign = Align.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+  }) {
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        // todo-00 note : all factory parameters just listed and passed (except orientation)
+        return Column(
+          children: children,
+          mainAxisAlign: mainAxisAlign,
+          mainAxisPacking: mainAxisPacking,
+          crossAxisAlign: crossAxisAlign,
+          crossAxisPacking: crossAxisPacking,
+          mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+        );
+      case ChartSeriesOrientation.row:
+      // todo-00 note : all factory parameters listed, reversed, and passed (except orientation)
+        return Row(
+          children: children.reversed.toList(), // todo-00 note : reversed
+          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00 note
+          mainAxisPacking: mainAxisPacking,
+          crossAxisAlign: otherEndAlign(crossAxisAlign), // todo-00 note
+          crossAxisPacking: crossAxisPacking,
+          mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+        );
+    }
+  }
+
+  ///    todo-00 note : parameters copied from Row constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  factory TransposingRoller.Row({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required List<BoxContainer> children,
+    Align mainAxisAlign = Align.start,
+    Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+  }) {
+    // todo-00 note : switch is exactly the same as TransposingRoller.Column, except full change row  <-> column and Row <-> Column
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.row:
+        return Row(
+          children: children,
+          mainAxisAlign: mainAxisAlign,
+          mainAxisPacking: mainAxisPacking,
+          crossAxisAlign: crossAxisAlign,
+          crossAxisPacking: crossAxisPacking,
+          mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+        );
+      case ChartSeriesOrientation.column:
+        return Column(
+          children: children.reversed.toList(), // todo-00 note : reversed
+          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00 note
+          mainAxisPacking: mainAxisPacking,
+          crossAxisAlign: otherEndAlign(crossAxisAlign), // todo-00 note
+          crossAxisPacking: crossAxisPacking,
+          mainAxisConstraintsWeight: mainAxisConstraintsWeight,
+        );
+    }
+  }
+}
+// todo-00 : ^^^^^^^^
+
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
-class Row extends RollingBoxLayouter {
+// todo-00 note : inserted Transposing in between : class Row extends RollingBoxLayouter {
+class Row extends TransposingRoller {
   Row({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -2139,7 +2227,8 @@ class Row extends RollingBoxLayouter {
 
 /// Layouter lays out children in a column that keeps extending,
 /// which may overflow if there are too many or too large children.
-class Column extends RollingBoxLayouter {
+// todo-00 note : inserted Transposing in between : class Column extends RollingBoxLayouter {
+class Column extends TransposingRoller {
   Column({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -2299,7 +2388,93 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
 
 }
 
-class ExternalTicksRow extends ExternalTicksBoxLayouter {
+// todo-00-progress : vvvvvvvv TransposingExternalTicks layouters for Column, Row are between RollingBoxLayouter and Column, Row
+abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
+  /// 1. Generative constructor forwarding to superclass [ExternalTicksBoxLayouter] with same parameters as
+  ///    the superclass constructor; Intended to be called by extensions [ExternalTicksRow] and [ExternalTicksColumn].
+  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  TransposingExternalTicks({
+    required super.children,
+    required super.mainAxisAlign,
+    required super.crossAxisAlign,
+    required super.crossAxisPacking,
+    required super.mainAxisExternalTicksLayoutProvider,
+    super.isDistributeConstraintsBasedOnTickSpacing,
+  });
+
+  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
+  ///    default orientation [ChartSeriesOrientation];
+  ///    todo-00 note : parameters copied from the ExternalTicksColumn constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  factory TransposingExternalTicks.Column({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required List<BoxContainer> children,
+    // todo-011 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    Align mainAxisAlign = Align.start,
+    // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.start,
+    Packing crossAxisPacking = Packing.matrjoska,
+    // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+  }) {
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        // todo-00 note : all factory parameters just listed and passed (except orientation)
+        return ExternalTicksColumn(
+          children: children,
+          mainAxisAlign: mainAxisAlign,
+          crossAxisAlign: crossAxisAlign,
+          crossAxisPacking: crossAxisPacking,
+          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+        );
+      case ChartSeriesOrientation.row:
+        return ExternalTicksRow(
+          children: children.reversed.toList(),
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          crossAxisPacking: crossAxisPacking,
+          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+        );
+    }
+  }
+
+  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
+  ///    default orientation [ChartSeriesOrientation];
+  ///    todo-00 note : parameters copied from the ExternalTicksRow constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  factory TransposingExternalTicks.Row({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required List<BoxContainer> children,
+    Align mainAxisAlign = Align.start,
+    // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
+    Align crossAxisAlign = Align.center,
+    Packing crossAxisPacking = Packing.matrjoska,
+    // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
+  }) {
+    // todo-00 note : switch is exactly the same as TransposingRoller.Column, except full change row  <-> column and Row <-> Column
+    switch (chartSeriesOrientation) {
+      case ChartSeriesOrientation.row:
+        return ExternalTicksRow(
+          children: children,
+          mainAxisAlign: mainAxisAlign,
+          crossAxisAlign: crossAxisAlign,
+          crossAxisPacking: crossAxisPacking,
+          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+        );
+      case ChartSeriesOrientation.column:
+        return ExternalTicksColumn(
+          children: children.reversed.toList(),
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          crossAxisPacking: crossAxisPacking,
+          mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
+        );
+    }
+  }
+}
+// todo-00 : ^^^^^^^^
+
+// todo-00 note : inserted Transposing in between : class ExternalTicksRow extends ExternalTicksBoxLayouter {
+class ExternalTicksRow extends TransposingExternalTicks {
   ExternalTicksRow({
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
@@ -2322,7 +2497,8 @@ class ExternalTicksRow extends ExternalTicksBoxLayouter {
   }
 }
 
-class ExternalTicksColumn extends ExternalTicksBoxLayouter {
+// todo-00 note : inserted Transposing in between : class ExternalTicksColumn extends ExternalTicksBoxLayouter {
+class ExternalTicksColumn extends TransposingExternalTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
     // todo-011 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.

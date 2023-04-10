@@ -5,6 +5,7 @@ import 'legend_container.dart';
 import 'axis_container.dart';
 import 'data_container.dart';
 import '../../morphic/container/container_layouter_base.dart';
+import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../container/axis_corner_container.dart';
 
 import '../view_maker.dart';
@@ -31,8 +32,11 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
     //   - layoutSequence,  on each cell as we want
+
+    // [vertAxisDefiner] : Definer for vertical axis container. Vertical axis determines the width
+    //   of the first table column, and also the width left for the remainder of the table.
     // todo-01-doc : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
-    TableLayoutCellDefiner yDefiner = TableLayoutCellDefiner(
+    TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
         cellWidthMinimum: 65.0, // todo-01 will go away when we use YContainerFirst pre-layout
@@ -40,8 +44,10 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
       ),
     );
 
+    // [YDEX_cellDefinersTable] is table with the following order of containers (left to right, top to bottom):
+    //
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
-      [yDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
+      [vertAxisDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 0)],
     ];
 
@@ -54,11 +60,23 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
+    container_common_new.ChartAreaContainer vertAxisContainer, horizAxisContainer;
+    switch(chartViewMaker.chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        vertAxisContainer = yContainer;
+        horizAxisContainer = xContainer;
+        break;
+      case ChartSeriesOrientation.row:
+        vertAxisContainer = xContainer;
+        horizAxisContainer = yContainer;
+        break;
+    }
+
     TableLayouter chartBody = TableLayouter(
       tableLayoutDefiner: tableLayoutDefiner,
       cellsTable: [
-        [yContainer, dataContainer],
-        [axisCornerContainer, xContainer],
+        [vertAxisContainer, dataContainer],
+        [axisCornerContainer, horizAxisContainer],
       ],
     );
 
