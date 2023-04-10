@@ -102,7 +102,7 @@ enum Align {
   end,
 }
 
-/// todo-00-next : make Align extended enum, and add this method
+/// todo-011 : make Align extended enum, and add this method
 Align otherEndAlign(Align align) {
   switch(align) {
     case Align.start:
@@ -197,7 +197,7 @@ class LayedoutLengthsPositioner {
   /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
-    // todo-00-next : should we assert only positive or 0 lengths?
+    // todo-00-next : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,

@@ -17,12 +17,21 @@ import '../options.dart';
 import 'container_common.dart' as container_common_new;
 import 'line_segment_container.dart';
 
+/// Container for line showing a horizontal or vertical axis.
+///
+/// Defined by its end points, [fromPointOffset] and [toPointOffset].
+///
+/// Neither this container, not it's end points specify [ChartSeriesOrientation], as they are defined
+/// in a coordinate system assuming orientation [ChartSeriesOrientation.column].
+/// The orientation is determined by member [chartViewMaker]'s [ChartViewMaker.chartSeriesOrientation];
+/// if orientation is set to [ChartSeriesOrientation.row], the line is transformed to it's row orientation by
+/// transforming the end points [fromPointOffset] and [toPointOffset]
+/// using their [PointOffset.lextrToPixelsMaybeTransposeInContextOf].
+///
 class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
     super.fromPointOffset,
     super.toPointOffset,
-    // todo-00 : AxisLineContainer should ALWAYS use column, so I think  this should be removed
-    // todo-00-last : assume column, will transform according to ViewMaker : super.chartSeriesOrientation = ChartSeriesOrientation.column,
     // For the pos/neg to create weight-defined constraints when in Column or Row, ConstraintsWeight must be set.
     super.constraintsWeight = const ConstraintsWeight(weight: 0),
     required super.linePaint,
@@ -45,13 +54,8 @@ class XAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator yLabelsGenerator,
     required ChartViewMaker chartViewMaker,
   }) : super(
-/* todo-00-last-done-experiment
-  fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
-  toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
-*/
     fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
     toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.max),
-  // todo-00-last : assume column, will transform according to ViewMaker : chartSeriesOrientation: ChartSeriesOrientation.column,
   linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
   chartViewMaker: chartViewMaker,
   isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
@@ -70,24 +74,15 @@ class YAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator yLabelsGenerator,
     required ChartViewMaker chartViewMaker,
   }) : super(
+          fromPointOffset:
+              PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
+          toPointOffset:
+              PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
 
-/* todo-00-last-done : changed row to column, and using coordinates correct in column orientation; they should be transfered with orientation change
-  fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
-  toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.max, outputValue: yLabelsGenerator.dataRange.min),
-  chartSeriesOrientation: ChartSeriesOrientation.row,
-
-  fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
-  toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
-  chartSeriesOrientation: ChartSeriesOrientation.column,
-*/
-    fromPointOffset: PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
-    toPointOffset:   PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
-    // todo-00-last : assume column, will transform according to ViewMaker : chartSeriesOrientation: ChartSeriesOrientation.column,
-
-  linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-  chartViewMaker: chartViewMaker,
-  isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
-  );
+          linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
+          chartViewMaker: chartViewMaker,
+          isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
+        );
 }
 
 class XContainer extends container_common_new.ChartAreaContainer {

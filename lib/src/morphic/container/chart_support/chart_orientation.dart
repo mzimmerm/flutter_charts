@@ -19,7 +19,7 @@ import '../container_layouter_base.dart' as container_base;
 ///      - column: mainLayoutAxis = vertical (column) ; inputAxis = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputAxis = vertical  (vertical bar chart, inverted line chart)
 enum ChartSeriesOrientation {
-  // todo-00-next : rename to ChartOrientation, or ChartCrossSeriesOrientation
+  // todo-00-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
   column(
     mainLayoutAxis: container_base.LayoutAxis.vertical,
     inputAxis: container_base.LayoutAxis.horizontal,
@@ -63,18 +63,5 @@ enum ChartSeriesOrientation {
     // for row,    and pixels axis vertical,   return true
     return (inputAxis == lextrToRangeOrientation);
   }
-}
-
-/// Represents the level on a chart for which layout is performed.
-///
-/// The deepest level (highest integer) is the leaf level [level3Bar], representing a container
-/// of multiple point presenters; Each point presenter presents one point (one value) of data -
-/// this presenter may be a rectangle on a bar chart, a hotspot dot on a linear chart.
-///
-/// todo-00-next : remove this, unused
-enum ChartEmbedLevel {
-  level1PositiveNegativeArea,
-  level2Bars,
-  level3Bar,
 }
 

@@ -1749,7 +1749,7 @@ abstract class PositioningBoxContainer extends BoxContainer {
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == children.length);
-    // todo-00-next : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
+    // todo-010 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
@@ -2144,7 +2144,7 @@ class Column extends RollingBoxLayouter {
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
-    // todo-00-next : why is this start, when Row has Center. THIS SHOULD BE CENTER.
+    // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
     Align crossAxisAlign = Align.start,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
@@ -2717,7 +2717,7 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
-                // todo-00-next : we probably want to add the first 2 lines :, if set in caller, should be set here!!
+                // todo-011-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
                 // horizontalAlign: horizontalAlign,
                 // verticalAlign: verticalAlign,
                 // cellConstraints: null,

@@ -245,7 +245,7 @@ class ChartModel {
 enum CrossPointsModelPointsSign {
   positiveOr0,
   negative,
-  // todo-00-next : remove 'any', not used in any sensible way.
+  // todo-00-refactoring : remove 'any', not used in any sensible way.
   any,
 }
 

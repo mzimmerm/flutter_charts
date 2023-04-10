@@ -15,6 +15,9 @@ import '../model/data_model.dart' as model;
 /// The  [fromPointOffset] and [toPointOffset] are late, and SHOULD be set in the constructor;
 /// MUST be set before [layout] is called.
 ///
+/// Does NOT define [chart_orientation.ChartSeriesOrientation]. Will transform according to member
+/// [view_maker.ChartViewMaker.chartSeriesOrientation].
+///
 /// The nullability of [fromPointOffset] and [toPointOffset] is an awkward lip service to
 /// straightforward extensibility of this class where these members can be replaced by [model.PointModel] in extensions,
 /// notable the [LineBetweenPointModelsContainer].
@@ -38,15 +41,11 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   LineBetweenPointOffsetsContainer({
     this.fromPointOffset,
     this.toPointOffset,
-    // todo-00-last : assume column, will transform according to ViewMaker : required this.chartSeriesOrientation,
     required this.linePaint,
     this.isLextrUseSizerInsteadOfConstraint = false,
     required super.chartViewMaker,
     super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
   });
-
-  /// Orientation of the chart bars: horizontal or vertical.
-  // todo-00-last : assume column, will transform according to ViewMaker : final chart_orientation.ChartSeriesOrientation chartSeriesOrientation;
 
   /// Model contains the transformed, non-extrapolated values of the point where the line starts.
   late final PointOffset? fromPointOffset;
@@ -159,17 +158,19 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
 }
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
+///
+/// Does NOT define [chart_orientation.ChartSeriesOrientation]. Will transform according to member
+/// [view_maker.ChartViewMaker.chartSeriesOrientation].
+///
 class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   LineBetweenPointModelsContainer({
     required this.fromPointModel,
     required this.toPointModel,
-    // todo-00-last : assume column, will transform according to ViewMaker : required chart_orientation.ChartSeriesOrientation chartSeriesOrientation,
     required ui.Paint linePaint,
     required view_maker.ChartViewMaker chartViewMaker,
     container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
     isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
-    // todo-00-last : assume column, will transform according to ViewMaker : chartSeriesOrientation: chartSeriesOrientation,
           linePaint: linePaint,
           chartViewMaker: chartViewMaker,
           constraintsWeight: constraintsWeight,
