@@ -101,7 +101,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     //   to flip (invert) during the lextr.
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, // todo-00-last-done : using from chartViewMaker :
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
@@ -110,7 +110,7 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, // todo-00-last-done : using from chartViewMaker :
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
@@ -132,12 +132,6 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
   /// The size is already oriented correctly by taking into account the [chart_orientation.ChartSeriesOrientation],
   /// because the underlying [_fromOffsetPixels] and [_toOffsetPixels] have done the same in the [layout] implementation.
   ui.Size get _layoutSize {
-    /* KEEP for now
-    return ui.Size(
-        (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue ).abs(),
-        math.max(_fromOffsetPixels.outputValue, _toOffsetPixels.outputValue),
-    );
-    */
     return ui.Size(
       (_toOffsetPixels.inputValue - _fromOffsetPixels.inputValue).abs(),
       (_toOffsetPixels.outputValue - _fromOffsetPixels.outputValue).abs(),
