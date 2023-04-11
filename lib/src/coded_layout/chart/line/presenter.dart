@@ -15,7 +15,7 @@ import '../presenter.dart'; // OLD
 /// to the [offsetPoint] of the [LineAndHotspotPointPresenter]
 /// which is next in the [PointPresentersColumn.pointPresenters] list.
 class LineAndHotspotPointPresenter extends PointPresenter {
-  late LineContainer lineContainer;
+  late LineContainerCL lineContainer;
   late ui.Offset offsetPoint; // offset where the data point will be painted
   late ui.Paint innerPaint;
   late ui.Paint outerPaint;
@@ -44,7 +44,7 @@ class LineAndHotspotPointPresenter extends PointPresenter {
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
-    lineContainer = LineContainer(
+    lineContainer = LineContainerCL(
         chartViewMaker: chartViewMaker,
         lineFrom: fromPoint,
         lineTo: toPoint,

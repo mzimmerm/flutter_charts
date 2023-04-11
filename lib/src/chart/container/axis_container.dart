@@ -85,17 +85,93 @@ class YAxisLineContainer extends AxisLineContainer {
         );
 }
 
-class XContainer extends container_common_new.ChartAreaContainer {
+abstract class TransposingAxisContainer extends  container_common_new.ChartAreaContainer {
+  TransposingAxisContainer({
+    required super.chartViewMaker,
+  }) {
+    _options = chartViewMaker.chartOptions;
+    _yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+    _xLabelsGenerator = chartViewMaker.xLabelsGenerator;
+    _padGroup = ChartPaddingGroup(fromChartOptions: _options);
+
+    // Initially all [LabelContainer]s share same text style object from options.
+    _labelStyle = LabelStyle(
+      textStyle: _options.labelCommonOptions.labelTextStyle,
+      textDirection: _options.labelCommonOptions.labelTextDirection,
+      textAlign: _options.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: _options.labelCommonOptions.labelTextScaleFactor,
+    );
+
+  }
+  late final ChartOptions _options;
+  late final ChartPaddingGroup _padGroup;
+  late final DataRangeLabelInfosGenerator _yLabelsGenerator;
+  late final DataRangeLabelInfosGenerator _xLabelsGenerator;
+  late final LabelStyle _labelStyle;
+
+
+  factory TransposingAxisContainer.Vertical({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartViewMaker chartViewMaker,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return YContainer(chartViewMaker: chartViewMaker, directionWrapperAround: _verticalWrapperAround);
+      case ChartSeriesOrientation.row:
+        return XContainer(chartViewMaker: chartViewMaker, directionWrapperAround: _verticalWrapperAround);
+    }
+  }
+
+  factory TransposingAxisContainer.Horizontal({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartViewMaker chartViewMaker,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return XContainer(chartViewMaker: chartViewMaker, directionWrapperAround: _horizontalWrapperAround);
+      case ChartSeriesOrientation.row:
+        return YContainer(chartViewMaker: chartViewMaker, directionWrapperAround: _horizontalWrapperAround);
+    }
+  }
+
+  static List<BoxContainer> _horizontalWrapperAround(BoxContainer child, ChartPaddingGroup padGroup) {
+    return
+      [
+        WidthSizerLayouter
+          (
+          children: [child],
+        )
+      ];
+  }
+
+  static List<BoxContainer> _verticalWrapperAround(BoxContainer child, ChartPaddingGroup padGroup) {
+    return [
+      // Row contains Column of labels and vertical LineSegment for Y axis
+      Padder(
+        edgePadding: EdgePadding.withSides(
+          top: padGroup.heightPadTopOfYAndData(),
+          bottom: padGroup.heightPadBottomOfYAndData(),
+        ),
+        child: child,
+      ),
+    ];
+  }
+}
+
+// todo-00-done : class XContainer extends container_common_new.ChartAreaContainer {
+class XContainer extends TransposingAxisContainer {
   /// Constructs the container that holds X labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
     required ChartViewMaker chartViewMaker,
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    required List<BoxContainer> Function (BoxContainer, ChartPaddingGroup) directionWrapperAround,
+    // todo-00-done : surprisingly this is not used : LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
+    /* todo-00-last-done
     var options = chartViewMaker.chartOptions;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
     // var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
@@ -108,43 +184,50 @@ class XContainer extends container_common_new.ChartAreaContainer {
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    List<BoxContainer> children = [
-      WidthSizerLayouter(
-        children: [
+    List<BoxContainer> children =
+      [
+        WidthSizerLayouter(
+          children: [
+      */
+    List<BoxContainer> children =
+       directionWrapperAround(
           Column(children: [
             ExternalTicksRow(
-              mainAxisExternalTicksLayoutProvider: xLabelsGenerator.asExternalTicksLayoutProvider(
+              mainAxisExternalTicksLayoutProvider: _xLabelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
               children: [
-                for (var labelInfo in xLabelsGenerator.labelInfoList)
+                for (var labelInfo in _xLabelsGenerator.labelInfoList)
                   // todo-02-next : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   XLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in YContainer
-                    labelStyle: labelStyle,
+                    labelStyle: _labelStyle,
                     labelInfo: labelInfo,
                     ownerChartAreaContainer: this,
                   )
               ],
             ),
-          ]),
-        ],
-      ),
-    ];
+          ],
+         ),
+         _padGroup,
+      );
 
     addChildren(children);
   }
 }
 
-class YContainer extends container_common_new.ChartAreaContainer {
+// todo-00-done : class YContainer extends container_common_new.ChartAreaContainer {
+class YContainer extends TransposingAxisContainer {
   YContainer({
     required ChartViewMaker chartViewMaker,
+    required List<BoxContainer> Function (BoxContainer, ChartPaddingGroup) directionWrapperAround,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
+    /* todo-00-last-done
     var options = chartViewMaker.chartOptions;
     var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
     var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
@@ -161,27 +244,30 @@ class YContainer extends container_common_new.ChartAreaContainer {
 
     List<BoxContainer> children = [
       // Row contains Column of labels and vertical LineSegment for Y axis
-
       Padder(
         edgePadding: EdgePadding.withSides(
           top: padGroup.heightPadTopOfYAndData(),
           bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-        child: HeightSizerLayouter(
+        child:
+    */
+    List<BoxContainer> children =
+       directionWrapperAround(
+        HeightSizerLayouter(
           children: [
             Row(children: [
               ExternalTicksColumn(
-                mainAxisExternalTicksLayoutProvider: yLabelsGenerator.asExternalTicksLayoutProvider(
+                mainAxisExternalTicksLayoutProvider: _yLabelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [
-                  for (var labelInfo in yLabelsGenerator.labelInfoList)
+                  for (var labelInfo in _yLabelsGenerator.labelInfoList)
                     YLabelContainer(
                       chartViewMaker: chartViewMaker,
                       label: labelInfo.formattedLabel,
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in YContainer
-                      labelStyle: labelStyle,
+                      labelStyle: _labelStyle,
                       labelInfo: labelInfo,
                       ownerChartAreaContainer: this,
                     )
@@ -189,16 +275,16 @@ class YContainer extends container_common_new.ChartAreaContainer {
               ),
               // Y axis line to the right of labels
               YAxisLineContainer(
-                xLabelsGenerator: xLabelsGenerator,
-                yLabelsGenerator: yLabelsGenerator,
+                xLabelsGenerator: _xLabelsGenerator,
+                yLabelsGenerator: _yLabelsGenerator,
                 chartViewMaker: chartViewMaker,
               ),
-
             ]),
           ],
         ),
-      ),
-    ];
+        _padGroup,
+       );
+
     addChildren(children);
   }
 }

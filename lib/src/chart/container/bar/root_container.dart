@@ -13,9 +13,14 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
 
   VerticalBarChartRootContainer({
     required LegendContainer legendContainer,
+    /* todo-00-last-done
     required XContainer xContainer,
     required YContainer yContainerFirst,
     required YContainer yContainer,
+    */
+    required TransposingAxisContainer xContainer,
+    required TransposingAxisContainer yContainerFirst,
+    required TransposingAxisContainer yContainer,
     required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,

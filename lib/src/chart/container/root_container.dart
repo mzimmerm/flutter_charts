@@ -102,9 +102,14 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
+  /* todo-00-last-done
   covariant late XContainer xContainer;
   covariant late YContainer yContainer;
   covariant late YContainer yContainerFirst;
+  */
+  covariant late TransposingAxisContainer xContainer;
+  covariant late TransposingAxisContainer yContainer;
+  covariant late TransposingAxisContainer yContainerFirst;
   covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,

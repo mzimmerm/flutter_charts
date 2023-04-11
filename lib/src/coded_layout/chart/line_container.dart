@@ -8,7 +8,7 @@ import '../../chart/view_maker.dart';
 
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-class LineContainer extends container_common_new.ChartAreaContainer {
+class LineContainerCL extends container_common_new.ChartAreaContainer {
   /// Points from which line starts and ends. NOT added to children ATM.
   ui.Offset lineFrom;
   ui.Offset lineTo;
@@ -21,7 +21,7 @@ class LineContainer extends container_common_new.ChartAreaContainer {
   //                         : THIS IS TEMPORARY FOR MANUAL LAYOUT TO SHUFFLE VALUES FROM PARENT LAYOUT
   //                         : (GridLinesContainer, something else??) TO LineContainer.layout()
   /// With manual layout, holds on to the layout value of horizontal or vertical lines,
-  /// between the lifecycle events of [LineContainer]
+  /// between the lifecycle events of [LineContainerCL]
   /// creation in parent [buildAndReplaceChildren]
   /// and it's layout in parent [layout].
   ///
@@ -33,7 +33,7 @@ class LineContainer extends container_common_new.ChartAreaContainer {
   double manualLayedOutToX;
   double manualLayedOutToY;
 
-  LineContainer({
+  LineContainerCL({
     required ChartViewMaker chartViewMaker,
     required this.lineFrom,
     required this.lineTo,

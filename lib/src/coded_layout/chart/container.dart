@@ -822,7 +822,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
         double lineX = isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
-        return LineContainer(
+        return LineContainerCL(
           chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
@@ -840,7 +840,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 
       _yGridLinesContainer.addChildren([
-        LineContainer(
+        LineContainerCL(
           chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           // ui.Offset(lineX, 0.0),
@@ -869,7 +869,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
           // yTickYs create vertical xLineContainers
           // Position the horizontal xGrid at mid-points of labels at yTickY.
       chartRootContainer.yTickYs.map((double yTickY) {
-        return LineContainer(
+        return LineContainerCL(
           chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
@@ -1135,10 +1135,10 @@ class LineChartDataContainerCL extends DataContainerCL {
 ///
 class GridLinesContainer extends ChartAreaContainer {
 
-  /// Construct from children [LineContainer]s.
+  /// Construct from children [LineContainerCL]s.
   GridLinesContainer({
     required ChartViewMaker chartViewMaker,
-    required List<LineContainer>? children,
+    required List<LineContainerCL>? children,
   }) : super(
           children: children,
           chartViewMaker: chartViewMaker,

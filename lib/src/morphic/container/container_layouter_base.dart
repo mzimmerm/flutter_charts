@@ -806,6 +806,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 /// itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
+/// todo-00-last : document basic role of SizerLayouters - it is not clear from this documentation.
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
@@ -853,7 +854,43 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
 
 }
 
-class WidthSizerLayouter extends FromConstraintsSizerLayouter {
+// todo-00-progress : vvvvvvvv TransposingSizer layouters for Width and HeightSizerLayouter, between FromConstraintsSizerLayouter and HeightSizerLayouter
+abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
+  /// 1. Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as
+  ///    the superclass constructor; Intended to be called by extensions [HeightSizerLayouter] and [WidthSizerLayouter].
+  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  TransposingSizerLayouter({
+    super.children,
+  });
+
+  factory TransposingSizerLayouter.Width({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    List<BoxContainer>? children,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return WidthSizerLayouter(children: children);
+      case ChartSeriesOrientation.row:
+        return HeightSizerLayouter(children: children);
+    }
+  }
+
+  factory TransposingSizerLayouter.Height({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    List<BoxContainer>? children,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return HeightSizerLayouter(children: children);
+      case ChartSeriesOrientation.row:
+        return WidthSizerLayouter(children: children);
+    }
+  }
+}
+//                    ^^^^^^
+
+// todo-00 note : inserted Transposing in between : class WidthSizerLayouter extends FromConstraintsSizerLayouter {
+class WidthSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
   WidthSizerLayouter({
@@ -881,7 +918,8 @@ class WidthSizerLayouter extends FromConstraintsSizerLayouter {
 ///
 /// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
 /// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.heightToLextr] member.
-class HeightSizerLayouter extends FromConstraintsSizerLayouter {
+// todo-00 note : inserted Transposing in between : class HeightSizerLayouter extends FromConstraintsSizerLayouter {
+class HeightSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
   HeightSizerLayouter({
