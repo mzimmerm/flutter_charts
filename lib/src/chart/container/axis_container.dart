@@ -133,17 +133,17 @@ abstract class TransposingAxisContainer extends  container_common_new.ChartAreaC
     }
   }
 
-  static List<BoxContainer> _horizontalWrapperAround(BoxContainer child, ChartPaddingGroup padGroup) {
+  static List<BoxContainer> _horizontalWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
     return
       [
         WidthSizerLayouter
           (
-          children: [child],
+          children: children,
         )
       ];
   }
 
-  static List<BoxContainer> _verticalWrapperAround(BoxContainer child, ChartPaddingGroup padGroup) {
+  static List<BoxContainer> _verticalWrapperAround(List<BoxContainer> children, ChartPaddingGroup padGroup) {
     return [
       // Row contains Column of labels and vertical LineSegment for Y axis
       Padder(
@@ -151,7 +151,9 @@ abstract class TransposingAxisContainer extends  container_common_new.ChartAreaC
           top: padGroup.heightPadTopOfYAndData(),
           bottom: padGroup.heightPadBottomOfYAndData(),
         ),
-        child: child,
+        child: HeightSizerLayouter(
+          children: children,
+        ),
       ),
     ];
   }
@@ -164,13 +166,13 @@ class XContainer extends TransposingAxisContainer {
   /// all available horizontal space, and only use necessary vertical space.
   XContainer({
     required ChartViewMaker chartViewMaker,
-    required List<BoxContainer> Function (BoxContainer, ChartPaddingGroup) directionWrapperAround,
+    required List<BoxContainer> Function (List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
     List<BoxContainer> children =
        directionWrapperAround(
-          TransposingRoller.Column(
+          [TransposingRoller.Column(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
             children: [
             TransposingExternalTicks.Row(
@@ -193,7 +195,7 @@ class XContainer extends TransposingAxisContainer {
               ],
             ),
           ],
-         ),
+         )],
          _padGroup,
       );
 
@@ -204,17 +206,15 @@ class XContainer extends TransposingAxisContainer {
 class YContainer extends TransposingAxisContainer {
   YContainer({
     required ChartViewMaker chartViewMaker,
-    required List<BoxContainer> Function (BoxContainer, ChartPaddingGroup) directionWrapperAround,
+    required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
-    List<BoxContainer> children =
-       directionWrapperAround(
-        HeightSizerLayouter(
-          children: [
-            TransposingRoller.Row(
-                chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-                children: [
+    List<BoxContainer> children = directionWrapperAround(
+      [
+      // todo-00-done : HeightSizerLayouter(
+        // todo-00-done :     children: [
+            TransposingRoller.Row(chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
                 mainAxisExternalTicksLayoutProvider: _yLabelsGenerator.asExternalTicksLayoutProvider(
@@ -241,9 +241,10 @@ class YContainer extends TransposingAxisContainer {
               ),
             ]),
           ],
-        ),
-        _padGroup,
-       );
+// todo-00-done :         ),
+// todo-00-done :       ],
+      _padGroup,
+    );
 
     addChildren(children);
   }

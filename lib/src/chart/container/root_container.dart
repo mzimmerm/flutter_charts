@@ -60,6 +60,7 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
+    /* todo-00-done : Already transposed on creation
     container_common_new.ChartAreaContainer vertAxisContainer, horizAxisContainer;
     switch(chartViewMaker.chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
@@ -71,12 +72,20 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
         horizAxisContainer = yContainer;
         break;
     }
-
     TableLayouter chartBody = TableLayouter(
       tableLayoutDefiner: tableLayoutDefiner,
       cellsTable: [
         [vertAxisContainer, dataContainer],
         [axisCornerContainer, horizAxisContainer],
+      ],
+    );
+    */
+
+    TableLayouter chartBody = TableLayouter(
+      tableLayoutDefiner: tableLayoutDefiner,
+      cellsTable: [
+        [yContainer, dataContainer],
+        [axisCornerContainer, xContainer],
       ],
     );
 
