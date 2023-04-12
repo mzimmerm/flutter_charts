@@ -299,7 +299,7 @@
         <entry key="path_provider_foundation">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.1/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.2/lib" />
             </list>
           </value>
         </entry>
@@ -516,7 +516,7 @@
         <entry key="web_socket_channel">
           <value>
             <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-2.3.0/lib" />
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-2.4.0/lib" />
             </list>
           </value>
         </entry>
@@ -595,7 +595,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path-1.8.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider-2.0.14/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.0.24/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.2.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.1.10/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.0.6/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_windows-2.1.5/lib" />
@@ -625,7 +625,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vm_service-9.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/watcher-1.0.2/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-2.3.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-2.4.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webdriver-3.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/webkit_inspection_protocol-1.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/win32-3.1.4/lib" />

@@ -806,7 +806,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 /// itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
-/// todo-00-last : document basic role of SizerLayouters - it is not clear from this documentation.
+/// todo-0100 : document basic role of SizerLayouters - it is not clear from this documentation.
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
@@ -854,11 +854,9 @@ abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter wi
 
 }
 
-// todo-00-progress : vvvvvvvv TransposingSizer layouters for Width and HeightSizerLayouter, between FromConstraintsSizerLayouter and HeightSizerLayouter
 abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
-  /// 1. Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as
-  ///    the superclass constructor; Intended to be called by extensions [HeightSizerLayouter] and [WidthSizerLayouter].
-  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  /// Generative constructor forwarding to superclass [FromConstraintsSizerLayouter] with same parameters as
+  /// the superclass constructor; Intended to be called by extensions [HeightSizerLayouter] and [WidthSizerLayouter].
   TransposingSizerLayouter({
     super.children,
   });
@@ -887,9 +885,7 @@ abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
     }
   }
 }
-//                    ^^^^^^
 
-// todo-00 note : inserted Transposing in between : class WidthSizerLayouter extends FromConstraintsSizerLayouter {
 class WidthSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
@@ -918,7 +914,6 @@ class WidthSizerLayouter extends TransposingSizerLayouter {
 ///
 /// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
 /// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.heightToLextr] member.
-// todo-00 note : inserted Transposing in between : class HeightSizerLayouter extends FromConstraintsSizerLayouter {
 class HeightSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
@@ -2143,11 +2138,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
 
 }
 
-// todo-00-progress : vvvvvvvv TransposingRoller layouters for Column, Row are between RollingBoxLayouter and Column, Row
 abstract class TransposingRoller extends RollingBoxLayouter {
-  /// 1. Generative constructor forwarding to superclass [RollingBoxLayouter] with same parameters as
-  ///    the superclass constructor; Intended to be called by extensions [Row] and [Column].
-  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  /// Generative constructor forwarding to superclass [RollingBoxLayouter] with same parameters as
+  /// the superclass constructor; Intended to be called by extensions [Row] and [Column].
   TransposingRoller({
     required super.children,
     required super.mainAxisAlign,
@@ -2157,9 +2150,10 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     super.mainAxisConstraintsWeight,
   });
 
-  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
-  ///    default orientation [ChartSeriesOrientation];
-  ///    todo-00 note : parameters copied from Column constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  /// [Column] or [Row] producing factory;
+  /// Instance produced for default [ChartSeriesOrientation] is [Column];
+  /// Same parameters as the default produced instance.
+  ///
   factory TransposingRoller.Column({
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
@@ -2172,7 +2166,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
   }) {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
-        // todo-00 note : all factory parameters just listed and passed (except orientation)
         return Column(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2182,19 +2175,21 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
       case ChartSeriesOrientation.row:
-      // todo-00 note : all factory parameters listed, reversed, and passed (except orientation)
+        // All factory parameters listed, reversed, and passed
         return Row(
-          children: children.reversed.toList(), // todo-00 note : reversed
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00 note
+          children: children.reversed.toList(),
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
           mainAxisPacking: mainAxisPacking,
-          crossAxisAlign: otherEndAlign(crossAxisAlign), // todo-00 note
+          crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
     }
   }
 
-  ///    todo-00 note : parameters copied from Row constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  /// See documentation for [TransposingRoller.Column].
+  ///
+  /// This has an equivalent behavior, if we change Column to Row.
   factory TransposingRoller.Row({
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
@@ -2204,7 +2199,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) {
-    // todo-00 note : switch is exactly the same as TransposingRoller.Column, except full change row  <-> column and Row <-> Column
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
@@ -2216,21 +2210,20 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
       case ChartSeriesOrientation.row:
+        // All factory parameters listed, reversed, and passed
         return Column(
-          children: children.reversed.toList(), // todo-00 note : reversed
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00 note
+          children: children.reversed.toList(),
+          mainAxisAlign: otherEndAlign(mainAxisAlign),
           mainAxisPacking: mainAxisPacking,
-          crossAxisAlign: otherEndAlign(crossAxisAlign), // todo-00 note
+          crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
     }
   }
 }
-// todo-00 : ^^^^^^^^
 
 /// Layouter lays out children in a rolling row, which may overflow if there are too many or too large children.
-// todo-00 note : inserted Transposing in between : class Row extends RollingBoxLayouter {
 class Row extends TransposingRoller {
   Row({
     required List<BoxContainer> children,
@@ -2265,7 +2258,6 @@ class Row extends TransposingRoller {
 
 /// Layouter lays out children in a column that keeps extending,
 /// which may overflow if there are too many or too large children.
-// todo-00 note : inserted Transposing in between : class Column extends RollingBoxLayouter {
 class Column extends TransposingRoller {
   Column({
     required List<BoxContainer> children,
@@ -2409,7 +2401,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-// todo-00 : is this same impl as in BoxLayouter? If so, why? can we usify it?
+    // todo-0100 : is this same impl as in BoxLayouter? If so, why? can we just use BoxLayouter impl?
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -2426,11 +2418,9 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
 
 }
 
-// todo-00-progress : vvvvvvvv TransposingExternalTicks layouters for Column, Row are between RollingBoxLayouter and Column, Row
 abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
-  /// 1. Generative constructor forwarding to superclass [ExternalTicksBoxLayouter] with same parameters as
-  ///    the superclass constructor; Intended to be called by extensions [ExternalTicksRow] and [ExternalTicksColumn].
-  ///    todo-00 note : copied from superclass constructor, forwarding parameters to super
+  /// Generative constructor forwarding to superclass [ExternalTicksBoxLayouter] with same parameters as
+  /// the superclass constructor; Intended to be called by extensions [ExternalTicksRow] and [ExternalTicksColumn].
   TransposingExternalTicks({
     required super.children,
     required super.mainAxisAlign,
@@ -2440,9 +2430,10 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     super.isDistributeConstraintsBasedOnTickSpacing,
   });
 
-  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
-  ///    default orientation [ChartSeriesOrientation];
-  ///    todo-00 note : parameters copied from the ExternalTicksColumn constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  /// [ExternalTicksColumn] or [ExternalTicksRow] producing factory;
+  /// Instance produced for default [ChartSeriesOrientation] is [ExternalTicksColumn];
+  /// Same parameters as the default produced instance.
+  ///
   factory TransposingExternalTicks.Column({
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
@@ -2456,7 +2447,6 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   }) {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
-        // todo-00 note : all factory parameters just listed and passed (except orientation)
         return ExternalTicksColumn(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2465,6 +2455,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );
       case ChartSeriesOrientation.row:
+        // All factory parameters listed, reversed, and passed
         return ExternalTicksRow(
           children: children.reversed.toList(),
           mainAxisAlign: otherEndAlign(mainAxisAlign),
@@ -2475,9 +2466,9 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     }
   }
 
-  /// 2. Column or Row producing factory, with parameters same as Column which is the produced instance for
-  ///    default orientation [ChartSeriesOrientation];
-  ///    todo-00 note : parameters copied from the ExternalTicksRow constructor, the instance it produces for default orientation + added chartSeriesOrientation
+  /// See documentation for [TransposingExternalTicks.Column].
+  ///
+  /// This has an equivalent behavior, if we change Column to Row.
   factory TransposingExternalTicks.Row({
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
@@ -2509,9 +2500,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     }
   }
 }
-// todo-00 : ^^^^^^^^
 
-// todo-00 note : inserted Transposing in between : class ExternalTicksRow extends ExternalTicksBoxLayouter {
 class ExternalTicksRow extends TransposingExternalTicks {
   ExternalTicksRow({
     required List<BoxContainer> children,
@@ -2535,7 +2524,6 @@ class ExternalTicksRow extends TransposingExternalTicks {
   }
 }
 
-// todo-00 note : inserted Transposing in between : class ExternalTicksColumn extends ExternalTicksBoxLayouter {
 class ExternalTicksColumn extends TransposingExternalTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
@@ -2559,8 +2547,6 @@ class ExternalTicksColumn extends TransposingExternalTicks {
     mainLayoutAxis = LayoutAxis.vertical;
   }
 }
-
-// --------------------------- vvvvvvvvvv Table
 
 /// If used on [TableLayoutDefiner], it aligns the table cells 'packed towards middle' as much as possible.
 ///
@@ -3493,8 +3479,6 @@ class TableLayouter extends PositioningBoxLayouter {
   }
 
 }
-
-// --------------------------- ^^^^^^^^^^ Table
 
 /// Layouter which asks it's parent [RollingBoxLayouter] to allocate as much space
 /// as possible for it's single child .

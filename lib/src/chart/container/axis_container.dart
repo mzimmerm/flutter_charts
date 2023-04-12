@@ -157,7 +157,6 @@ abstract class TransposingAxisContainer extends  container_common_new.ChartAreaC
   }
 }
 
-// todo-00-done : class XContainer extends container_common_new.ChartAreaContainer {
 class XContainer extends TransposingAxisContainer {
   /// Constructs the container that holds X labels.
   ///
@@ -166,28 +165,9 @@ class XContainer extends TransposingAxisContainer {
   XContainer({
     required ChartViewMaker chartViewMaker,
     required List<BoxContainer> Function (BoxContainer, ChartPaddingGroup) directionWrapperAround,
-    // todo-00-done : surprisingly this is not used : LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
-    /* todo-00-last-done
-    var options = chartViewMaker.chartOptions;
-    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    // var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
-
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelCommonOptions.labelTextStyle,
-      textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.labelCommonOptions.labelTextAlign, // center text
-      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-    );
-
-    List<BoxContainer> children =
-      [
-        WidthSizerLayouter(
-          children: [
-      */
     List<BoxContainer> children =
        directionWrapperAround(
           TransposingRoller.Column(
@@ -221,7 +201,6 @@ class XContainer extends TransposingAxisContainer {
   }
 }
 
-// todo-00-done : class YContainer extends container_common_new.ChartAreaContainer {
 class YContainer extends TransposingAxisContainer {
   YContainer({
     required ChartViewMaker chartViewMaker,
@@ -229,30 +208,6 @@ class YContainer extends TransposingAxisContainer {
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
-    /* todo-00-last-done
-    var options = chartViewMaker.chartOptions;
-    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
-    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-
-    // Initially all [LabelContainer]s share same text style object from options.
-    LabelStyle labelStyle = LabelStyle(
-      textStyle: options.labelCommonOptions.labelTextStyle,
-      textDirection: options.labelCommonOptions.labelTextDirection,
-      textAlign: options.labelCommonOptions.labelTextAlign, // center text
-      textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
-    );
-
-    var padGroup = ChartPaddingGroup(fromChartOptions: options);
-
-    List<BoxContainer> children = [
-      // Row contains Column of labels and vertical LineSegment for Y axis
-      Padder(
-        edgePadding: EdgePadding.withSides(
-          top: padGroup.heightPadTopOfYAndData(),
-          bottom: padGroup.heightPadBottomOfYAndData(),
-        ),
-        child:
-    */
     List<BoxContainer> children =
        directionWrapperAround(
         HeightSizerLayouter(

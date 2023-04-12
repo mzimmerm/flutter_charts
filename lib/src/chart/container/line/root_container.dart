@@ -13,11 +13,6 @@ import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrate
 class LineChartRootContainer extends ChartRootContainer {
   LineChartRootContainer({
     required LegendContainer    legendContainer,
-    /* todo-00-last
-    required XContainer      xContainer,
-    required YContainer      yContainerFirst,
-    required YContainer      yContainer,
-    */
     required TransposingAxisContainer      xContainer,
     required TransposingAxisContainer      yContainerFirst,
     required TransposingAxisContainer      yContainer,

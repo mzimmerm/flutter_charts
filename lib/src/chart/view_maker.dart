@@ -210,13 +210,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
   /// or [container.YContainerCL.labelInfos].
 
-  /* todo-00-last-done
-  axis_container.XContainer makeViewForHorizontalAxis() {
-    return axis_container.XContainer(
-      chartViewMaker: this,
-    );
-  }
-  */
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
     return axis_container.TransposingAxisContainer.Horizontal(
       chartSeriesOrientation: chartSeriesOrientation,
@@ -226,11 +219,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
   /// or labels in [container.YContainerCL.labelInfos].
-  /*  todo-00-last-done
-  axis_container.YContainer makeViewForVerticalAxis() {
-    return axis_container.YContainer(chartViewMaker: this);
-  }
-  */
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
     return axis_container.TransposingAxisContainer.Vertical(
       chartSeriesOrientation: chartSeriesOrientation,
@@ -238,13 +226,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     );
   }
 
-  /* todo-00-last-done
-  axis_container.YContainer makeViewForYContainerFirst() {
-    return axis_container.YContainer(
-      chartViewMaker: this,
-    );
-  }
-  */
   axis_container.TransposingAxisContainer makeViewForYContainerFirst() {
     return axis_container.TransposingAxisContainer.Vertical(
       chartSeriesOrientation: chartSeriesOrientation,
