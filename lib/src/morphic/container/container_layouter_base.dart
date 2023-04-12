@@ -2206,7 +2206,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
   }) {
     // todo-00 note : switch is exactly the same as TransposingRoller.Column, except full change row  <-> column and Row <-> Column
     switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.row:
+      case ChartSeriesOrientation.column:
         return Row(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2215,7 +2215,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
-      case ChartSeriesOrientation.column:
+      case ChartSeriesOrientation.row:
         return Column(
           children: children.reversed.toList(), // todo-00 note : reversed
           mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00 note
@@ -2490,7 +2490,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   }) {
     // todo-00 note : switch is exactly the same as TransposingRoller.Column, except full change row  <-> column and Row <-> Column
     switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.row:
+      case ChartSeriesOrientation.column:
         return ExternalTicksRow(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2498,7 +2498,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );
-      case ChartSeriesOrientation.column:
+      case ChartSeriesOrientation.row:
         return ExternalTicksColumn(
           children: children.reversed.toList(),
           mainAxisAlign: otherEndAlign(mainAxisAlign),

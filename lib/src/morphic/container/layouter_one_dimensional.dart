@@ -110,8 +110,9 @@ Align otherEndAlign(Align align) {
     case Align.end:
       return Align.start;
     case Align.center:
+      return Align.center;
     case Align.centerExpand:
-      throw StateError('Invalid use here.');
+      return Align.center;
   }
 }
 

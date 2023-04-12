@@ -78,7 +78,6 @@ class YAxisLineContainer extends AxisLineContainer {
               PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.min),
           toPointOffset:
               PointOffset(inputValue: xLabelsGenerator.dataRange.min, outputValue: yLabelsGenerator.dataRange.max),
-
           linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewMaker: chartViewMaker,
           isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
@@ -191,8 +190,11 @@ class XContainer extends TransposingAxisContainer {
       */
     List<BoxContainer> children =
        directionWrapperAround(
-          Column(children: [
-            ExternalTicksRow(
+          TransposingRoller.Column(
+            chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+            children: [
+            TransposingExternalTicks.Row(
+              chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
               mainAxisExternalTicksLayoutProvider: _xLabelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
@@ -255,8 +257,11 @@ class YContainer extends TransposingAxisContainer {
        directionWrapperAround(
         HeightSizerLayouter(
           children: [
-            Row(children: [
-              ExternalTicksColumn(
+            TransposingRoller.Row(
+                chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+                children: [
+              TransposingExternalTicks.Column(
+                chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
                 mainAxisExternalTicksLayoutProvider: _yLabelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),

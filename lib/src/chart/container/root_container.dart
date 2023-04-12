@@ -45,7 +45,7 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     );
 
     // [YDEX_cellDefinersTable] is table with the following order of containers (left to right, top to bottom):
-    //
+    //   YContainer, DataContainer, EmptyAxisCornerContainer, XContainer
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
       [vertAxisDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 0)],

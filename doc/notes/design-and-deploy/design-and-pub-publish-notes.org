@@ -1864,21 +1864,21 @@ Notes or Later:
 8. [X] Pull out Padder from XContainer,                       and place it to WrapperFunction _horizontalWrapperAround
 9. [X] Create TransposingAxisContainer, has factory to return YContainer wrapped as for ChartSeriesOrientation.column, XContainer otherwise, Using Wrapper Function _verticalWrapperAround / horizontalWrapperAround
 10. [-] Start using Transposing in XContainer, YContainer
-    1. [X] First Transposing ONLY instead of XContainer, YContainer
-    2. [X] Test all TODO MORNING.
-    3. [ ] Next For Column, Row, ExternalTicksColumn and Row
-    4. [ ] Make sure it works in column orientation - Run all tests
-11. [ ] NOW THE TRANSPOSE SHOULD WORK IN FULL in column orientation, WITH NO CHANGES FROM Row -> Transposing.Row in code
-12. [ ] Run all tests in column orientation
-13. [ ] How is row orientation?? Check it out.
-14. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
+    - [X] First Transposing ONLY XContainer, YContainer
+    - [ ] Test all TODO MORNING.
+    - [X] Next For Column, Row, ExternalTicksColumn and Row
+11. [ ] column orientation: Run all tests in column orientation: Status: XContainer and YContainer use Transposing code IN FULL, BUT ONLY TESTED IN COLUMN MODE.
+12. [ ] row orientation: Check it out. How does it look??
+    - [ ] Probably some issues with transposed X, Y axis? Analyse and debug.
+      - [ ] 
+13. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
     2. [ ] WHERE NOT?
     3. [ ] MAKE CODE CHANGES
-15. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer 
-16. [ ] More steps here, or should all work for both column and row???
-17. [ ] Add tests for PointOffset lextr method
-18. [ ] Replace  PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+14. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer 
+15. [ ] More steps here, or should all work for both column and row???
+16. [ ] Add tests for PointOffset lextr method
+17. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
    
 ** TODO 11. ~Containers to MORPHS~
