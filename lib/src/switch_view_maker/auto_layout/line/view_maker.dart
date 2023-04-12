@@ -35,9 +35,9 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   @override
   LineChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
-    var xContainer = makeViewForDomainAxis();
+    var xContainer = makeViewForHorizontalAxis();
     var yContainerFirst = makeViewForYContainerFirst();
-    var yContainer = makeViewForRangeAxis();
+    var yContainer = makeViewForVerticalAxis();
     var dataContainer = makeViewForDataContainer();
 
     return LineChartRootContainer(

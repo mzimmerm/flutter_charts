@@ -1860,19 +1860,25 @@ Notes or Later:
 4. [X] Run all tests in column orientation - because now the new hierarchy is already used - indirectly
 5. [X] Add TransposingSizerLayouter.Width, Height between FromConstraintsSizerLayouter and HeightSizerLayouter
 6. [X] Run mini tests in column orientation - because now the new hierarchy is already used
-7. [ ] Create VerticalAxisContainer, has factory to return YContainer wrapped as for ChartSeriesOrientation.column, XContainer otherwise. Generative constructo is private
-8. [ ] Pull out Padder AND SizerLayouter from YContainer and DataContainer, and add it as in-place wrappers in ChartRootContainer to dataContainer and vertAxisContainer
-9. [ ] Pull out SizerLayouter from XContainer,  and add it as in-place wrappers in ChartRootContainer to dataContainer and horizAxisContainer
-10. [ ] Start using Transposing in XContainer, YContainer
-11. [ ] Make sure it works in column orientation - Run all tests
-12. [ ] NOW THE TRANSPOSE SHOULD WORK IN FULL in column orientation, WITH NO CHANGES FROM Row -> Transposing.Row in code
-13. [ ] Run all tests in column orientation
-14. [ ] How is row orientation?? Check it out.
-15. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
-16. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer 
-17. [ ] More steps here, or should all work for both column and row???
-18. [ ] Add tests for PointOffset lextr method
-19. [ ] Replace  PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+7. [X] Pull out Padder from YContainer NOT YET DataContainer, and place it to WrapperFunction _verticalWrapperAround
+8. [X] Pull out Padder from XContainer,                       and place it to WrapperFunction _horizontalWrapperAround
+9. [X] Create TransposingAxisContainer, has factory to return YContainer wrapped as for ChartSeriesOrientation.column, XContainer otherwise, Using Wrapper Function _verticalWrapperAround / horizontalWrapperAround
+10. [-] Start using Transposing in XContainer, YContainer
+    1. [X] First Transposing ONLY instead of XContainer, YContainer
+    2. [X] Test all TODO MORNING.
+    3. [ ] Next For Column, Row, ExternalTicksColumn and Row
+    4. [ ] Make sure it works in column orientation - Run all tests
+11. [ ] NOW THE TRANSPOSE SHOULD WORK IN FULL in column orientation, WITH NO CHANGES FROM Row -> Transposing.Row in code
+12. [ ] Run all tests in column orientation
+13. [ ] How is row orientation?? Check it out.
+14. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
+    1. [ ] WHERE YES?
+    2. [ ] WHERE NOT?
+    3. [ ] MAKE CODE CHANGES
+15. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer 
+16. [ ] More steps here, or should all work for both column and row???
+17. [ ] Add tests for PointOffset lextr method
+18. [ ] Replace  PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
    
 ** TODO 11. ~Containers to MORPHS~

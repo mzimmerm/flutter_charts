@@ -38,12 +38,12 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
   container.ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker});
 
   @override
-  container.XContainerCL makeViewForDomainAxis() {
+  container.XContainerCL makeViewForHorizontalAxis() {
         return container.XContainerCL(chartViewMaker: this);
   }
 
   @override
-  container.YContainerCL makeViewForRangeAxis() {
+  container.YContainerCL makeViewForVerticalAxis() {
         return container.YContainerCL(chartViewMaker: this);
   }
 
