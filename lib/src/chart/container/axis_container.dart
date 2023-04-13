@@ -174,6 +174,7 @@ class XContainer extends TransposingAxisContainer {
        directionWrapperAround(
           [TransposingRoller.Column(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+            isMainAlignTransposed: false, // todo-00-last-done : added
             children: [
             TransposingExternalTicks.Row(
               chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -214,7 +215,10 @@ class YContainer extends TransposingAxisContainer {
       [
       // todo-00-done : HeightSizerLayouter(
         // todo-00-done :     children: [
-            TransposingRoller.Row(chartSeriesOrientation: chartViewMaker.chartSeriesOrientation, children: [
+            TransposingRoller.Row(
+                chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+                isMainAlignTransposed: false, // todo-00-last-done : added
+                children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
                 mainAxisExternalTicksLayoutProvider: _yLabelsGenerator.asExternalTicksLayoutProvider(
@@ -234,11 +238,13 @@ class YContainer extends TransposingAxisContainer {
                 ],
               ),
               // Y axis line to the right of labels
+              /* todo-00-KEEP */
               YAxisLineContainer(
                 xLabelsGenerator: _xLabelsGenerator,
                 yLabelsGenerator: _yLabelsGenerator,
                 chartViewMaker: chartViewMaker,
               ),
+              /* */
             ]),
           ],
 // todo-00-done :         ),

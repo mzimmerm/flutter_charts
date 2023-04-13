@@ -60,12 +60,13 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
+                    /* todo-00-KEEP */
                     XAxisLineContainer(
                       xLabelsGenerator: xLabelsGenerator,
                       yLabelsGenerator: yLabelsGenerator,
                       chartViewMaker: chartViewMaker,
                     ),
-
+                    /* */
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,
@@ -74,17 +75,6 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       xLabelsGenerator:                 xLabelsGenerator,
                       yLabelsGenerator:                 yLabelsGenerator,
                     ),
-                    /* KEEP for now
-                    Row(
-                      mainAxisConstraintsWeight:
-                          ConstraintsWeight(weight: labelsGeneratorAlongSeries.dataRange.ratioOfNegativePortion()),
-                      crossAxisAlign: Align.start, // cross default is matrjoska, non-default start aligned.
-                      children: chartViewMaker.makeViewsForDataContainer_Bars(
-                        crossPointsModelList: chartViewMaker.chartModel.crossPointsModelNegativeList,
-                        pointsLayouterAlign: Align.start,
-                        isPointsReversed: false,
-                      ),
-                    ),*/
                   ],
                 ),
               ],
@@ -180,7 +170,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
             crossPointsModelList: crossPointsModels,
             barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign),
             isPointsReversed: isPointsReversed,
-          ),
+          // todo-00-last-done ),
+          ).reversed.toList(),
         );
     }
   }
@@ -289,13 +280,3 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
     canvas.drawRect(rect, paint);
   }
 }
-
-/* KEEP : comment out to allow ChartRootContainer.isUseOldDataContainer
-class _NewSourceYContainerAndYContainerToSinkDataContainer {
-  final int valuesColumnsCount;
-
-  _NewSourceYContainerAndYContainerToSinkDataContainer({
-    required this.valuesColumnsCount,
-  });
-}
-*/

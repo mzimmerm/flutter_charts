@@ -1644,7 +1644,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     }
   }
 
-  /// Paints a yellow-and-black (currentl grey) warning rectangle about this [BoxLayouter] overflowing root constraints.
+  /// Paints a yellow-and-black (currently grey) warning rectangle about this [BoxLayouter] overflowing root constraints.
   void paintWarningIfLayoutOverflows(ui.Canvas canvas) {
     // Find constraints on top container - [get topContainerConstraints],
     //   and access them from any BoxContainer.
@@ -2158,6 +2158,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
+    bool isMainAlignTransposed = true, // todo-00-last-done : added
     Packing mainAxisPacking = Packing.tight,
     // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
     Align crossAxisAlign = Align.start,
@@ -2178,7 +2179,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-last-done : added
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
@@ -2194,6 +2195,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
+    bool isMainAlignTransposed = true, // todo-00-last-done : added
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -2213,7 +2215,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign),
+          mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-last-done : added,
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
