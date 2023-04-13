@@ -170,7 +170,6 @@ class DataContainer extends container_common_new.ChartAreaContainer {
             crossPointsModelList: crossPointsModels,
             barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign),
             isPointsReversed: isPointsReversed,
-          // todo-00-last-done ),
           ).reversed.toList(),
         );
     }

@@ -227,7 +227,7 @@ class PointOffset extends Offset {
           fromValue: iotrpPoint.outputValue,
           fromValuesRange: iotrpOutputDataRange,
           toPixelsRange: verticalPixelsRange,
-          doInvertDomain: true,
+          doInvertDomain: false,
         );
         outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
 
@@ -239,7 +239,7 @@ class PointOffset extends Offset {
           fromValue: iotrpPoint.inputValue,
           fromValuesRange: iotrpInputDataRange,
           toPixelsRange: horizontalPixelsRange,
-          doInvertDomain: false,
+          doInvertDomain: true,
         );
         inputPixels = fromValueInputPixels.fromValueOnAxisPixels;
 
