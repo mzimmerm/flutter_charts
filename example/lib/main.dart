@@ -990,7 +990,7 @@ class _ExampleWidgetCreator {
       case ExamplesChartTypeEnum.verticalBarChart:
         SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
-          chartSeriesOrientation: ChartSeriesOrientation.row, // transpose column/row
+          chartSeriesOrientation: ChartSeriesOrientation.column, // transpose column/row
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
