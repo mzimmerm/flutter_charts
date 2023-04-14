@@ -1,5 +1,7 @@
 import 'dart:math' as math show min, max, pow;
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
+
 import '../morphic/container/container_layouter_base.dart';
 import '../chart/model/data_model.dart';
 import '../chart/options.dart';
@@ -56,7 +58,6 @@ class DataRangeLabelInfosGenerator {
     required Function valueToLabel,
     required Function inverseTransform,
     required bool isStacked,
-    required this.isPixelsAndValuesSameDirection,
     List<String>? userLabels,
   })  :
         _valueToLabel = valueToLabel,
@@ -167,9 +168,6 @@ class DataRangeLabelInfosGenerator {
   /// Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
 
-  // Along the Y axis, label values go up, but axis down. true extrapolate inverses that.
-  final bool isPixelsAndValuesSameDirection;
-
   /// The function converts value to label.
   ///
   /// Assigned from a corresponding function [ChartOptions.yContainerOptions.valueToLabel].
@@ -179,6 +177,12 @@ class DataRangeLabelInfosGenerator {
   ///
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
+
+  /// Given the [chartSeriesOrientation] and [dataDependency], deduce if this [DataRangeLabelInfosGenerator]
+  /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
+  ///
+  /// Returns true if this [DataRangeLabelInfosGenerator] labels will be shown on [LayoutAxis.vertical].
+  bool get isOnHorizontalAxis => chartViewMaker.chartSeriesOrientation.isOnHorizontalAxis(inputOrOutputData: dataDependency);
 
   /// Extrapolates [value] from extended data range [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
@@ -196,7 +200,7 @@ class DataRangeLabelInfosGenerator {
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (!isPixelsAndValuesSameDirection) {
+      if (!isOnHorizontalAxis) {
         pixels = axisPixelsMax;
       } else {
         pixels = axisPixelsMin;
@@ -210,7 +214,7 @@ class DataRangeLabelInfosGenerator {
       fromValuesMax: dataRange.max,
       toPixelsMin: axisPixelsMin,
       toPixelsMax: axisPixelsMax,
-      doInvertToDomain: !isPixelsAndValuesSameDirection,
+      doInvertToDomain: !isOnHorizontalAxis,
     ).apply(value);
   }
 
@@ -225,10 +229,25 @@ class DataRangeLabelInfosGenerator {
     // Return [ExternalTicksLayoutProvider] and provide ticks.
     // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
+    var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
+    // todo-01000 : Move this switch to ChartSeriesOrientation
+    bool isOwnerLayouterDirectionAgainstDisplayOrderDirection;
+    switch(chartViewMaker.chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        isOwnerLayouterDirectionAgainstDisplayOrderDirection = false;
+        break;
+      case ChartSeriesOrientation.row:
+        isOwnerLayouterDirectionAgainstDisplayOrderDirection = true;
+        break;
+    }
+    if (isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
+      tickValues = tickValues.reversed.toList();
+    }
+
     return ExternalTicksLayoutProvider(
-      tickValues: labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false),
+      tickValues: tickValues,
       tickValuesDomain: dataRange,
-      isPixelsAndValuesSameDirection: isPixelsAndValuesSameDirection,
+      isOnHorizontalAxis: isOnHorizontalAxis,
       externalTickAtPosition: externalTickAtPosition,
     );
   }

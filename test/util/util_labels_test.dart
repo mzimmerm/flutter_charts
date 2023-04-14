@@ -180,7 +180,6 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartSeriesOrientation cha
     valueToLabel: options.yContainerOptions.valueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
     isStacked: false,
-    isPixelsAndValuesSameDirection: false,
   );
 }
 
@@ -253,7 +252,6 @@ void rangeTestCore(
       valueToLabel: options.yContainerOptions.valueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
       isStacked: false,
-      isPixelsAndValuesSameDirection: false,
     );
 
 

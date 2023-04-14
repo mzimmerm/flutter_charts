@@ -1,3 +1,4 @@
+import '../../../chart/model/data_model.dart';
 import '../container_layouter_base.dart' as container_base;
 
 /// Describes display orientation of axes and data on a chart.
@@ -15,23 +16,23 @@ import '../container_layouter_base.dart' as container_base;
 ///
 /// The names [column] and [row] are taken from the 'across series stacking orientation'.
 ///
-/// In all 'regular' situations, there are only two allowed combination of mainLayoutAxis and inputAxis
-///      - column: mainLayoutAxis = vertical (column) ; inputAxis = horizontal (horizontal bar chart, line chart)
-///      - row:    mainLayoutAxis = horizontal (row)  ; inputAxis = vertical  (vertical bar chart, inverted line chart)
+/// In all 'regular' situations, there are only two allowed combination of mainLayoutAxis and inputDataAxisOrientation
+///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
+///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartSeriesOrientation {
   // todo-00-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
   column(
     mainLayoutAxis: container_base.LayoutAxis.vertical,
-    inputAxis: container_base.LayoutAxis.horizontal,
+    inputDataAxisOrientation: container_base.LayoutAxis.horizontal,
   ),
   row(
     mainLayoutAxis: container_base.LayoutAxis.horizontal,
-    inputAxis: container_base.LayoutAxis.vertical,
+    inputDataAxisOrientation: container_base.LayoutAxis.vertical,
   );
 
   const ChartSeriesOrientation({
     required this.mainLayoutAxis, // orientation along which outputValues (across series values) are displayed
-    required this.inputAxis, // orientation of axis where inputValues (independent values, x values) are displayed
+    required this.inputDataAxisOrientation, // orientation of axis where inputValues (independent values, x values) are displayed
   });
 
   /// Describes how the data series is oriented in view - horizontally or vertically.
@@ -47,21 +48,38 @@ enum ChartSeriesOrientation {
   ///     are layed out in a [container_base.Column] layouter.
   final container_base.LayoutAxis mainLayoutAxis;
 
-  /// Describes how the input axis (other terms: x axis, axis with independent data)
+  /// Describes how the input axis (other terms: x axis, input data axis, axis with independent data)
   /// is oriented in view - horizontally or vertically.
-  final container_base.LayoutAxis inputAxis;
+  final container_base.LayoutAxis inputDataAxisOrientation;
 
-  /// For this chart orientation, we can look at the axis on which we extrapolate data values
-  /// to pixels, call in [lextrToRangeOrientation] and ask: on the [lextrToRangeOrientation],
-  /// should the lextr invert sign?
-  ///
-  /// This is where this method comes handy.
-  bool isPixelsAndValuesSameDirectionFor({required container_base.LayoutAxis lextrToRangeOrientation}) {
-    // for column, and pixels axis horizontal, return true
-    // for column, and pixels axis vertical,   return false
-    // for row,    and pixels axis horizontal, return false
-    // for row,    and pixels axis vertical,   return true
-    return (inputAxis == lextrToRangeOrientation);
+  /// For a chart orientation represented by this instance, return whether pixels and values are same orientation 
+  /// on an axis which displays [DataDependency] in the passed [inputOrOutputData]
+  /// 
+  /// Motivation: For any chart orientation, and any axis on the chart, we need to know if the data values axis
+  ///   and the pixel axis which displays them, run in the same direction; this knowledge is equivalent to the knowledge whether
+  ///   displayed pixels are on the horizontal or vertical axis. This information is used to extrapolate data values
+  ///   to pixels, on either axis, to answer this question: should the value to pixels lextr invert sign?
+  bool isOnHorizontalAxis({required DataDependency inputOrOutputData}) {
+    // for ChartSeriesOrientation.column, and inputOrOutputData DataDependency.inputData,   return true
+    // for ChartSeriesOrientation.column, and inputOrOutputData DataDependency.outputData,  return false
+    // for ChartSeriesOrientation.row,    and inputOrOutputData DataDependency.inputData,   return false
+    // for ChartSeriesOrientation.row,    and inputOrOutputData DataDependency.outputData,  return true
+    switch(this) {
+      case ChartSeriesOrientation.column:
+        switch (inputOrOutputData) {
+          case DataDependency.inputData:
+            return true;
+          case DataDependency.outputData:
+            return false;
+        }
+      case ChartSeriesOrientation.row:
+        switch (inputOrOutputData) {
+          case DataDependency.inputData:
+            return false;
+          case DataDependency.outputData:
+            return true;
+        }
+    }
   }
 }
 

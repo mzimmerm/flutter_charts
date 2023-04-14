@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Size, Offset, Rect, Canvas, Paint;
 import 'dart:math' as math show Random, min, max;
 import 'package:flutter/material.dart' as material show Colors;
 import 'package:flutter/services.dart';
+import 'package:flutter_charts/flutter_charts.dart';
 
 // this level or equivalent
 import 'container_edge_padding.dart' show EdgePadding;
@@ -2158,7 +2159,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
-    // bool isMainAlignTransposed = true, // todo-00-last-done : added, NOT NEEDED
+    // bool isMainAlignTransposed = true, // todo-00-done : added, NOT NEEDED
     Packing mainAxisPacking = Packing.tight,
     // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
     Align crossAxisAlign = Align.start,
@@ -2179,7 +2180,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-last-done : added NOT NEEDED
+          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-done : added NOT NEEDED
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
@@ -2195,7 +2196,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
-    // bool isMainAlignTransposed = true, // todo-00-last-done : added NOT NEEDED
+    // bool isMainAlignTransposed = true, // todo-00-done : added NOT NEEDED
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -2215,7 +2216,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-last-done : added  NOT NEEDED
+          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-done : added  NOT NEEDED
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
@@ -2380,10 +2381,10 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     //   - the constraints will ALSO become the layout size! See [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
     //     for how the layoutSize is set
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
-    // So, knowing the size to which to lextr, create the range to which the [externalTicksLayoutProvider]
+    // So, knowing the size to which to lextr, create the domain to which the [externalTicksLayoutProvider]
     //   will be lextr-ed, apply the pixel domain on the [externalTicksLayoutProvider], and lextr the ticks to pixels.
     var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
-    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextr(tickPixelsDomainFromOwnerConstraints);
+    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextrTickValuesToPixels(tickPixelsDomainFromOwnerConstraints);
 
     // The set ticks pixel domain to which to lextr, and the ticks lextr MUST be done before layout (positioning) below,
     //   as the positioning works on pixels. ACTUALLY: The ticks pixel domain MUST be set, lextr could
@@ -3755,7 +3756,7 @@ class Aligner extends PositioningBoxLayouter {
 ///   - [tickValuesDomain] is the interval in which the relative positions [tickValues] are.
 ///     [tickValuesDomain] must include all [tickValues];
 ///     it's boundaries may be larger than the envelope of all [tickValues]
-///   - [isPixelsAndValuesSameDirection] defines whether the axis pixel positions and [tickValues]
+///   - [isOnHorizontalAxis] defines whether the axis pixel positions and [tickValues]
 ///     are run in the same direction.
 ///   - [externalTickAtPosition] the information what point on the child should be placed at the tick value:
 ///     child's start, center, or end. This is expressed by [ExternalTickAtPosition.childStart] etc.
@@ -3771,7 +3772,7 @@ class ExternalTicksLayoutProvider {
   ExternalTicksLayoutProvider({
     required this.tickValues,
     required this.tickValuesDomain,
-    required this.isPixelsAndValuesSameDirection,
+    required this.isOnHorizontalAxis,
     required this.externalTickAtPosition,
 });
 
@@ -3793,29 +3794,36 @@ class ExternalTicksLayoutProvider {
   /// [ExternalTicksBoxLayouter].
   late final util_dart.Interval tickPixelsDomain;
 
-  final bool isPixelsAndValuesSameDirection;
+  final bool isOnHorizontalAxis;
 
   final ExternalTickAtPosition externalTickAtPosition;
 
   /// Sets the domain for the ticks in [tickValues]; this is pixel-lextr-equivalent of [tickValuesDomain].
-  void setTickPixelsDomainAndLextr(util_dart.Interval tickPixelsDomainFromOwnerConstraints) {
+  void setTickPixelsDomainAndLextrTickValuesToPixels(util_dart.Interval tickPixelsDomainFromOwnerConstraints) {
     tickPixelsDomain = tickPixelsDomainFromOwnerConstraints;
     tickPixels = lextrValuesToPixels();
   }
 
-  /// Returns tha [tickValues] Linearly extrapolated to the passed [axisPixelsRange].
+  /// Returns tha [tickPixels], calculated as [tickValues] Linearly extrapolated to the passed [axisPixelsRange].
   ///
-  /// Important Note: [tickValues] are always in increasing order, and [axisPixelsRange]
-  ///                 minimum is less than maximum.
-  ///                 When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
-  ///                 the vertical pixels axis is always ordered top-to-bottom
-  ///                 The [isPixelsAndValuesSameDirection] should be set as follows:
-  ///                   - On the horizontal axis:
-  ///                     - If we want the [tickValues] be displayed left-to-right, set it to [true] (default).
-  ///                     - Else set it to [false]
-  ///                   - On the vertical axis:
-  ///                     - If we want the [tickValues] be displayed bottom-to-tom, set it to [false] (default).
-  ///                     - Else set it to [false]
+  /// Important Implementation Notes:
+  ///
+  ///   1. [tickValues] are in increasing order for [ChartSeriesOrientation]
+  ///      value [ChartSeriesOrientation.column], in decreasing order for [ChartSeriesOrientation.row].
+  ///      This is determined by [isOwnerLayouterDirectionAgainstDisplayOrderDirection]; the motivation
+  ///      for this order is for horizontal axis always show numeric labels in increasing order left to right,
+  ///      and for vertical axis always show numeric labels in increasing order bottom to top.
+  ///      The vertical axis for row is complicated : [tickValues] list is reversed to decreasing after their creation
+  ///      from labels, see [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], e.g. [0, 1000, 2000]. This results
+  ///      in corresponding [tickPixels] to be decreasing (e.g. [200, 100, 0]. When layed out on vertical axis (Column),
+  ///      the order, top to bottom, is [200, 100, 0] which is what we want.
+  ///
+  ///   2. [axisPixelsRange] minimum is less than maximum.
+  ///
+  ///   When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
+  ///   the vertical pixels axis is always ordered top-to-bottom
+  ///   The [isOnHorizontalAxis] should be set to true if this [ExternalTicksLayoutProvider] is laying
+  ///   out labels in Row on the horizontal axis, false on the vertical axis.
   ///
   List<double> lextrValuesToPixels() {
     /* todo-02 Maybe something like this is needed for the special case of collapsed-to-origin Interval
@@ -3823,7 +3831,7 @@ class ExternalTicksLayoutProvider {
     // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
-      if (!isPixelsAndValuesSameDirection) {
+      if (!isOnHorizontalAxis) {
         pixels = axisPixelsMax;
       } else {
         pixels = axisPixelsMin;
@@ -3838,7 +3846,7 @@ class ExternalTicksLayoutProvider {
               fromValuesMax: tickValuesDomain.max,
               toPixelsMin: tickPixelsDomain.min,
               toPixelsMax: tickPixelsDomain.max,
-              doInvertToDomain: !isPixelsAndValuesSameDirection,
+              doInvertToDomain: !isOnHorizontalAxis,
             ).apply(value))
         .toList();
   }

@@ -1868,20 +1868,31 @@ Notes or Later:
     - [X] Test all TODO MORNING.
     - [X] Next For Column, Row, ExternalTicksColumn and Row
 11. [X] column orientation: Run all tests in column orientation: Status: XContainer and YContainer use Transposing code IN FULL, BUT ONLY TESTED IN COLUMN MODE.
-12. [ ] row orientation: Check it out - ONLY IN NEW AUTOLAYOUT. How does it look??
-    - [ ] Probably some issues with transposed X, Y axis? Analyse and debug.
-      - [ ] The layouter is outside all bounds. No traces of X or Y labels
-      - [ ] 
-13. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
+12. [X] row orientation: Check it out - ONLY IN NEW AUTOLAYOUT. How does it look??
+    - [X] Probably some issues with transposed X, Y axis? Analyse and debug.
+      - [X] The layouter is outside all bounds. No traces of X or Y labels
+      - [X] In row mode, when outputAxis is Horizontal, the 0.0 label does not match the zero position on axis. 
+      - [X] After several fixes, X and Y axis work in both orientations.
+13. [ ] Run all tests.
+14. [ ] Testing framework speedup: Change the testing framework to only BUILD ONCE then run multiple tests.
+15. [ ] Major but EASY REFACTORING
+    1. [ ] Renames:
+       1. [ ] YContainer -> OutputAxisContainer
+       2. [ ] XContainer -> InputAxisContainer
+       3. [ ] remove all 'new' from .dart file names
+       4. [ ] remove most 'as name' from .dart files imports
+       5. [ ] 
+16. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
     2. [ ] WHERE NOT?
     3. [ ] MAKE CODE CHANGES
-14. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
-15. [ ] More steps here, or should all work for both column and row???
-16. [ ] Work on tests : Change the testing framework to only BUILD ONCE then run multiple tests.
-17. [ ] Add tests for PointOffset lextr method
-18. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+17. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
+18. [ ] More steps here, or should all work for both column and row???
+19. [ ] Add tests for PointOffset lextr method
+20. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+21. [ ] 
 
+  
    
 ** TODO 11. ~Containers to MORPHS~
 

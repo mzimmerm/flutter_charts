@@ -78,7 +78,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
       userLabels: chartModel.yUserLabels,
       isStacked: isStacked,
-      isPixelsAndValuesSameDirection: false,
     );
 
     // See comment in YContainer constructor
@@ -91,7 +90,6 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
       userLabels: chartModel.xUserLabels,
       isStacked: isStacked,
-      isPixelsAndValuesSameDirection: true,
     );
   }
 

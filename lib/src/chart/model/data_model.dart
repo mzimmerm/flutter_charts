@@ -469,7 +469,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     return result.value;
   }
 
-  /* KEEP for a bit
+  /*
   double get _stackedPositiveValue => __maxOnPoints((PointModel point) => point._stackedPositiveOutputValue);
   double get _stackedNegativeValue => __minOnPoints((PointModel point) => point._stackedNegativeOutputValue);
   double get _minPointValue         => __minOnPoints((PointModel point) => point.outputValue);
@@ -632,6 +632,7 @@ class _DoubleValue {
   double value = 0.0;
 }
 
+// todo-00-refactoring : Move to morphic/chart_support
 enum DataDependency {
   inputData,
   outputData,

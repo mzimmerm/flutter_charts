@@ -174,7 +174,7 @@ class XContainer extends TransposingAxisContainer {
        directionWrapperAround(
           [TransposingRoller.Column(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-            // isMainAlignTransposed: false, // todo-00-last-done : added NOT NEEDED, set to false
+            // isMainAlignTransposed: false, // todo-00-done : added NOT NEEDED, set to false
             children: [
             TransposingExternalTicks.Row(
               chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -215,7 +215,7 @@ class YContainer extends TransposingAxisContainer {
       [
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-            // isMainAlignTransposed: false, // todo-00-last-done : added NOT NEEDED
+            // isMainAlignTransposed: false, // todo-00-done : added NOT NEEDED
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -223,6 +223,9 @@ class YContainer extends TransposingAxisContainer {
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [
+                  // [labelInfo] in [labelInfoList] is numerically increasing. Their pixel layout order will be determined
+                  //   by order of ExternalTicksLayoutProvider.tickPixels created and possibly reversed from
+                  //   ExternalTicksLayoutProvider.tickValues. See [_yLabelsGenerator.asExternalTicksLayoutProvider]
                   for (var labelInfo in _yLabelsGenerator.labelInfoList)
                     YLabelContainer(
                       chartViewMaker: chartViewMaker,
