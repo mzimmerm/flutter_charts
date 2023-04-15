@@ -126,7 +126,7 @@ void main() {
     var screenshotPaths = screenshotPathsFor(app.requestedExampleToRun());
     String screenshotPath = screenshotPaths.item2;
 
-    // Build the app.
+    // Build the app and run it on device.
     app.main();
 
     // This is required prior to taking the screenshot (Android only).

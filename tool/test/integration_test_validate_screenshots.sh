@@ -16,19 +16,22 @@
 #          - looks like this:
 #            ```sh
 #             $1 \
-#             --dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration3 \
+#             --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded \
 #             --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart \
 #             --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER \
 #             $2
 #            ```
+# todo-00-last : I THINK $2 IS UNUSED THROUGHOUT, VALIDATE AND REMOVE
 #          - contains one example from 'ExamplesEnum' or the command line to execute.
-#          - provides an argument to an executable $1 which can be 'flutter drive',
+#          - provides an argument to an executable $1 which can be 'flutter drive --driver --target',
 #            so it (the tmp-script-program) can execute its $1 argument by running itself as:
 #              'tmp-script-program flutter drive --target integration_test/screenshot_create_test.dart'
 #            so runs the passed executable appended with the rest of its line, e.g.
 #            ```sh
-#              flutter drive --target integration_test/screenshot_create_test.dart  \
-#                --dart-define=EXAMPLE_TO_RUN=ex60LabelsIteration3  \
+#              flutter drive \
+#                --driver=test_driver/integration_test.dart \
+#                --target=integration_test/screenshot_create_test.dart  \
+#                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
 #                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
 #                --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER  \
 #                $2
@@ -85,6 +88,16 @@ echo Will run "$examples_descriptor_generated_program".
 echo
 examples_descriptor_generated_program=$examples_descriptor_generated_program
 
+# Run integration test which creates screenshot, then validates it. An example of what the bash -x runs:
+#            ```sh
+#              flutter drive \
+#                --driver=test_driver/integration_test.dart \
+#                --target=integration_test/screenshot_create_test.dart  \
+#                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
+#                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
+#                --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER  \
+#                $2
+#            ```
 echo
 echo -------------------------------------
 echo Step 2: Running SCREENSHOTS-GENERATING integration tests \"flutter drive\" on \"$examples_descriptor_generated_program\".
