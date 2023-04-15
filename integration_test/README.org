@@ -1,6 +1,33 @@
 * Integration test in Flutter
 
-Files in this directory which end with '_test.dart' are integration (drive) tests. 
+Files in this directory which end with '_test.dart' are integration (drive) tests.
+
+They are the ~--target~ executed as
+
+#+begin_src: sh
+ "flutter drive" \
+        " --target=integration_test/screenshot_create_test.dart"
+#+end_src
+
+These integration tests programs in ~--target~ are executed ON THE DEVICE, AND COULD BE CALLED ON-DEVICE-TESTS.
+
+Optionally, they can be controlled, from the computer, by another program
+'integration test driver for this integration test', called here ~test_driver/integration_test.dart~.
+
+This 'integration test driver' addressed in ~--driver~ runs on the computer, and controls the program in ~--target~
+running on the device (drive).
+
+The full way to run the integration test program ~screenshot_create_test.dart~, and control it
+from the computer program ~integration_test.dart~ is as follows:
+
+#+begin_src: sh
+ "flutter drive" \
+        " --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"
+#+end_src
+
+Note: The naming of the on-device integration test TARGET and it's on-computer controlling program DRIVER
+      seems backwards, but Flutter seems to insist on it, by making the name 'integration_test.dart' for the DRIVER
+      the default required name.
 
 See the "Testing in Flutter" heading in https://github.com/mzimmerm/flutter_experiments/blob/master/doc/flutter-notes.org for details of Dart unit test, Flutter widget test and Flutter integration test.
 

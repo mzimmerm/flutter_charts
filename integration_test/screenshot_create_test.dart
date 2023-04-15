@@ -1,5 +1,43 @@
 /// Flutter integration (drive) tests creating a screenshot from running app.
 ///
+/// This program, the `screenshot_create_test.dart` in the `--target` parameter, is executed using
+/// the shell command run on computer:
+///
+///  ```sh
+///  "flutter drive" \
+///     " --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"
+///  ```
+/// The `flutter drive` installs the `screenshot_create_test.dart` on the device, and runs it on the device.
+///
+/// The on-device `--target` program `screenshot_create_test.dart`,  is controller during its execution
+/// by the program in the `--driver` parameter, which runs on the computer.
+///
+/// In the configuration of screenshot testing:
+///
+///   - The on-device execution of this `--target` program `screenshot_create_test.dart` contains a line that triggers
+///     a screenshot-take on the device, in this code:
+///     ```dart
+///       await binding.takeScreenshot(screenshotPath);
+///     ```
+///   - The on-computer control, executes the `--driver` program `integration_test.dart` which contains code that captures
+///     the bytes from the screenshot event, and stores the bytes in on-computer image:
+///     ```dart
+///       Future<void> main() async {
+///         await integrationDriver(
+///           onScreenshot: (String screenshotName, List<int> screenshotBytes) async {
+///             final File image = File(screenshotName);
+///             // Write the image as bytes; flush ensures close before dart exit.
+///             image.writeAsBytesSync(screenshotBytes, mode: FileMode.write, flush: true);
+///             if (image.existsSync()) {
+///               return true;
+///             }
+///             // Return false if the screenshot is invalid.
+///             return false;
+///           },
+///         );
+///       }
+///     ```
+///
 /// Running these tests should be followed by tests which compare expected/actual screenshots.
 /// Those screenshot-comparing tests are in [screenshot comparing test file](test/screenshot_check_test.dart).
 
@@ -96,15 +134,23 @@ void main() {
 
     // Trigger a frame.
     await tester.pumpAndSettle();
+
+    // When [binding.takeScreenshot] is called, the [binding] INVOKES the method callback
+    // defined for [onScreenshot:] in [test_driver/integration_test.dart] and passes the callback
+    // the stream of bytes from the screenshot. The callback is executed, and saves the screenshot
+    // bytes to a file specified there - the test_driver framework somehow causes the image saved on
+    // the computer where this test runs (not on the device)
     await binding.takeScreenshot(screenshotPath);
 
-    // We cannot compare the actual/expected screenshots here, because this test (being integration test)
-    //   runs on the device, and any File access is on the device.
+    // We cannot compare the actual/expected screenshots here,
+    //   because this test is integration test (aka 'flutter drive' test)
+    //   and runs on the device, and any File access is on the device (except the magic in integration_test.dart).
     // So, to finish the test and compare actual/expected screenshots, a Flutter regular test (widget test)
     //   named
     //   ```dart
     //     screenshot_check_test.dart
     //   ```
-    //   must be run after this test.
+    //   must be run after this test. This test runs on the computer, and compares files on the computer,
+    //   not on the device.
   });
 }
