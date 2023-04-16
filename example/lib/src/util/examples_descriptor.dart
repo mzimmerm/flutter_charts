@@ -174,7 +174,9 @@ class ExamplesDescriptor {
   }
 
   /// Present this descriptor is a format suitable to run as a test from command line.
-  ///
+  ///   List expandIt = ['1', '2', '3'];
+  ///   List expanded = expandIt.map((item) => [item + 'a', item + 'b']).expand((item) => item).toList();
+  ///   print('expanded = $expanded');
   void asCommandLine() {
     List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun = exampleRequested == null
         ? _allowed

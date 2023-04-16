@@ -52,7 +52,26 @@ enum ChartSeriesOrientation {
   /// is oriented in view - horizontally or vertically.
   final container_base.LayoutAxis inputDataAxisOrientation;
 
-  /// For a chart orientation represented by this instance, return whether pixels and values are same orientation 
+  factory ChartSeriesOrientation.fromString(String orientation) {
+    switch(orientation) {
+      case 'column':
+        return ChartSeriesOrientation.column;
+      case 'row':
+        return ChartSeriesOrientation.row;
+      default:
+        throw StateError('Invalid orientation $orientation for converting String to ChartSeriesOrientation.');
+    }
+  }
+
+  factory ChartSeriesOrientation.fromStringOrDefault(String orientation, ChartSeriesOrientation defaultOrientation) {
+    try {
+      return ChartSeriesOrientation.fromString(orientation);
+    } on StateError {
+      return defaultOrientation;
+    }
+  }
+
+  /// For a chart orientation represented by this instance, return whether pixels and values are same orientation
   /// on an axis which displays [DataDependency] in the passed [inputOrOutputData]
   /// 
   /// Motivation: For any chart orientation, and any axis on the chart, we need to know if the data values axis

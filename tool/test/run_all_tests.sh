@@ -40,11 +40,13 @@ echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot differences tests screenshots validation
 echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
-tool/test/integration_test_validate_screenshots.sh $1
+echo First argument is $1
+tool/test/integration_test_validate_screenshots.sh firstRun ex900ErrorFixUserDataAllZero
+tool/test/integration_test_validate_screenshots.sh nextRun
 
 echo
 echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot actual/expected test for NEW LAYOUT
-USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
-USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh ex31SomeNegativeValues    verticalBarChart
+USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh nextRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+USE_OLD_DATA_CONTAINER=false tool/test/integration_test_validate_screenshots.sh nextRun ex31SomeNegativeValues    verticalBarChart

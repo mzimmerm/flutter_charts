@@ -30,5 +30,13 @@ extension IterableExtension<E> on Iterable<E> {
     }
     throw StateError('Iterable $this has no elements. this=${toList()}');
   }
+}
 
+extension ListExtension<E,T> on List<List<E>> {
+
+  List<E> expandIt() => expand((item) => item).toList();
+
+  List<List> multiplyElementsBy(List<T> multiplyBy) {
+    return map((item) => List.generate(multiplyBy.length, (int index) => [item, multiplyBy[index]])).expand((item) => item).toList();
+  }
 }
