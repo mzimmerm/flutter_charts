@@ -15,10 +15,12 @@
 // then during 'dart run' we get messages such as :
 //    Error: Not found: 'dart:ui'
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
-import '../../../../lib/src/util/util_dart.dart' show enumName;
-import '../../../../lib/src/util/extensions_dart.dart' show StringExtension;
 
-import 'package:tuple/tuple.dart' show Tuple2;
+import '../../../../lib/src/util/util_dart.dart' show enumName;
+import '../../../../lib/src/util/extensions_dart.dart' show StringExtension, expandList, multiplyListElementsBy;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart' show ChartSeriesOrientation;
+
+import 'package:tuple/tuple.dart' show Tuple2, Tuple4;
 
 /// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
 /// that require passing the examples to run or test using the environment variables `--dart-define`.
@@ -169,7 +171,10 @@ class ExamplesDescriptor {
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
   ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only
   ///   one chart type makes sense to be presented.
-  bool exampleComboIsAllowed(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+  bool exampleComboIsAllowed(
+    Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+  ) {
+    // todo-00-last-done : replace with Tuple4 but logic unchanged - does not look at orientation
     return _allowed.any((tuple) => tuple.item1 == exampleComboToRun.item1 && tuple.item2 == exampleComboToRun.item2);
   }
 
@@ -182,6 +187,8 @@ class ExamplesDescriptor {
         ? _allowed
         : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
 
+    // todo-00-last : expand combosToRun with Tuple4 : example, type, orientation, isUseOldDataContainer
+    //   if isUseOldDataContainer, multiply list with ['column'], else with ['column', 'row']
     combosToRun = chartTypeRequested == null
         ? combosToRun
         : combosToRun.where((tuple) => tuple.item2 == chartTypeRequested).toList();
@@ -190,8 +197,28 @@ class ExamplesDescriptor {
       throw StateError('No examples requested to run are defined in examples_descriptor.');
     }
 
-    for (Tuple2 tuple in combosToRun) {
-      print('set -e');
+    // exampleRequested may not be set, we need to know if to run old/new. Pull it from env var again here
+    bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+
+    List orientationsToRun;
+    if (isUseOldDataContainer) {
+      orientationsToRun = [ChartSeriesOrientation.column];
+    } else {
+      orientationsToRun = [ChartSeriesOrientation.column, ChartSeriesOrientation.row];
+    }
+
+    List<Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool>>
+    combos4ToRun = multiplyListElementsBy(combosToRun, orientationsToRun).map((tuple2AndOrientation) =>
+        Tuple4(
+            tuple2AndOrientation[0].item1 as ExamplesEnum,
+            tuple2AndOrientation[0].item2 as ExamplesChartTypeEnum,
+            // todo-00-last-last : this is not used!!! understand this better.
+            tuple2AndOrientation[1] as ChartSeriesOrientation,
+            isUseOldDataContainer,
+            )).toList();
+
+    for (Tuple4 tuple in combos4ToRun) {
+      print('set -o errexit');
       print('echo');
       print('echo');
       print(
@@ -201,6 +228,9 @@ class ExamplesDescriptor {
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
+          // WRONG: This must be picked up when this line is running as flutter drive gen-file : '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
+          '--dart-define=CHART_ORIENTATION=\$CHART_ORIENTATION '
+          // WRONG: This must be picked up when this line is running as flutter drive gen-file : '--dart-define=USE_OLD_DATA_CONTAINER=$isUseOldDataContainer '
           '--dart-define=USE_OLD_DATA_CONTAINER=\$USE_OLD_DATA_CONTAINER '
           '\$2' // ' example/lib/main.dart'
           );
@@ -208,7 +238,9 @@ class ExamplesDescriptor {
   }
 }
 
-bool isExampleWithRandomData(Tuple2<ExamplesEnum, ExamplesChartTypeEnum> exampleComboToRun) {
+bool isExampleWithRandomData(
+  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+) {
   if (enumName(exampleComboToRun.item1).contains('RandomData')) {
     return true;
   }

@@ -2,13 +2,13 @@
 // import 'dart:developer' as dart_developer;
 
 // this level or equivalent
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 
 import '../coded_layout/chart/container.dart' as container; // OLD CONTAINER
 import 'view_maker.dart'; // NEW SWITCH
 import '../chart/view_maker.dart'; // NEW
 import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import '../morphic/container/chart_support/chart_orientation.dart';
 
 import '../coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
 

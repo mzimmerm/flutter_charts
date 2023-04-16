@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter package
 
 import '../morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
-import '../morphic/container/container_layouter_base.dart' as container_base show LayoutAxis;
+import '../morphic/container/container_layouter_base_dart_support.dart' show LayoutAxis;
 
 extension SizeExtension on ui.Size {
 
@@ -31,21 +31,21 @@ extension SizeExtension on ui.Size {
   }
 
   /// Returns  width or height of this [Size] instance along the passed [layoutAxis].
-  double lengthAlong(container_base.LayoutAxis layoutAxis) {
+  double lengthAlong(LayoutAxis layoutAxis) {
     switch (layoutAxis) {
-      case container_base.LayoutAxis.horizontal:
+      case LayoutAxis.horizontal:
         return width;
-      case container_base.LayoutAxis.vertical:
+      case LayoutAxis.vertical:
         return height;
     }
   }
 
   ui.Size fromMySideAlongPassedAxisOtherSideAlongCrossAxis({
     required ui.Size other,
-    required container_base.LayoutAxis axis,
+    required LayoutAxis axis,
   }) {
     // if passed axis is horizontal, use my width, other's height
-    if (axis == container_base.LayoutAxis.horizontal) {
+    if (axis == LayoutAxis.horizontal) {
       return ui.Size(width, other.height);
     } else {
       // else (passed axis is vertical), use my height, other's width

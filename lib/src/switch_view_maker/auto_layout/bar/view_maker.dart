@@ -1,10 +1,10 @@
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:logger/logger.dart' as logger;
 
 import '../../../chart/container/data_container.dart';
 
 // base libraries
 import '../../../chart/view_maker.dart';
+import '../../../morphic/container/chart_support/chart_orientation.dart';
 import '../../../chart/container/bar/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;

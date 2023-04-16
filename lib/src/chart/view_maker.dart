@@ -8,6 +8,7 @@ import 'package:logger/logger.dart' as logger;
 import '../morphic/container/chart_support/chart_orientation.dart';
 import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/container_layouter_base.dart' as container_base;
+import '../morphic/container/container_layouter_base_dart_support.dart';
 // import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/layouter_one_dimensional.dart';
 import '../morphic/container/constraints.dart' as constraints;
@@ -72,7 +73,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
-      dataDependency: model.DataDependency.outputData,
+      dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.yContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
@@ -84,7 +85,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
-      dataDependency: model.DataDependency.inputData,
+      dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: chartOptions.xContainerOptions.valueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,

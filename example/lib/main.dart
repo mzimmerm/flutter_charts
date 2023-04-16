@@ -6,19 +6,19 @@
 /// Also, material.dart exports many dart files, including widgets.dart,
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tuple/tuple.dart' show Tuple2;
+import 'package:tuple/tuple.dart' show Tuple4;
 import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
-// import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 
+// todo-00-last-last : how come we can import without 'package' here?
 import 'src/util/examples_descriptor.dart';
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
@@ -110,7 +110,7 @@ void main() {
 /// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
 ///   to a tuple of enums which describe the example to run, and the chart type to show.
 ///
-Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleToRun() {
+Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> requestedExampleToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
@@ -118,7 +118,13 @@ Tuple2<ExamplesEnum, ExamplesChartTypeEnum> requestedExampleToRun() {
   const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'lineChart');
   ExamplesChartTypeEnum chartTypeToShow = chartTypeToShowStr.asEnum(ExamplesChartTypeEnum.values);
 
-  return Tuple2(exampleComboToRun, chartTypeToShow);
+  const String orientationStr = String.fromEnvironment('CHART_ORIENTATION', defaultValue: 'column');
+  ChartSeriesOrientation orientation = ChartSeriesOrientation.fromStringOrDefault(orientationStr, ChartSeriesOrientation.column);
+
+  bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+
+  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
+  return Tuple4(exampleComboToRun, chartTypeToShow, orientation, isUseOldDataContainer);
 }
 
 class MyApp extends StatelessWidget {
@@ -197,7 +203,9 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun = requestedExampleToRun();
+  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
+  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun =
+      requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
   MyHomePageState();
@@ -444,7 +452,8 @@ class _ExampleWidgetCreator {
   _ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
-  Tuple2<ExamplesEnum, ExamplesChartTypeEnum> descriptorOfExampleToRun;
+  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
+  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun;
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -481,6 +490,8 @@ class _ExampleWidgetCreator {
     // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
+    ChartSeriesOrientation chartSeriesOrientation = descriptorOfExampleToRun.item3;
+    bool isUseOldDataContainer = descriptorOfExampleToRun.item4;
 
     // Declare chartModel; the data object will be different in every examples.
     ChartModel chartModel;
@@ -990,7 +1001,7 @@ class _ExampleWidgetCreator {
       case ExamplesChartTypeEnum.verticalBarChart:
         SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
-          chartSeriesOrientation: ChartSeriesOrientation.column, // transpose column/row
+          chartSeriesOrientation: chartSeriesOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           isStacked: false,
           xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );

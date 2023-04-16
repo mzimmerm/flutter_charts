@@ -1,8 +1,8 @@
 import 'dart:math' as math show min, max, pow;
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
-
-import '../morphic/container/container_layouter_base.dart';
+import '../morphic/container/container_layouter_base_dart_support.dart';
+import '../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
+import '../morphic/container/chart_support/chart_orientation.dart';
 import '../chart/model/data_model.dart';
 import '../chart/options.dart';
 import '../chart/view_maker.dart';

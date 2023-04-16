@@ -632,12 +632,6 @@ class _DoubleValue {
   double value = 0.0;
 }
 
-// todo-00-refactoring : Move to morphic/chart_support
-enum DataDependency {
-  inputData,
-  outputData,
-}
-
 // -------------------- Functions
 
 // To initialize default colors with dynamic list that allows the colors NOT null, initialization must be done in

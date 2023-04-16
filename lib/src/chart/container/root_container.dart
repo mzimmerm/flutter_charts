@@ -5,9 +5,7 @@ import 'legend_container.dart';
 import 'axis_container.dart';
 import 'data_container.dart';
 import '../../morphic/container/container_layouter_base.dart';
-import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../container/axis_corner_container.dart';
-
 import '../view_maker.dart';
 import '../model/data_model.dart';
 import '../iterative_layout_strategy.dart' as strategy;

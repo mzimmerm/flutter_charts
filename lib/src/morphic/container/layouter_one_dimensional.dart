@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 // this level or equivalent
 import 'container_layouter_base.dart';
+import 'container_layouter_base_dart_support.dart' show ExternalTickAtPosition;
 import '../../util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths

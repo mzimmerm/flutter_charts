@@ -1,9 +1,11 @@
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:test/test.dart'; // test package
 import 'dart:ui' as ui show Color;
 
 // Tested package
 import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';  // todo-00-last-last : do we need full package syntax?
+import 'package:flutter_charts/src/morphic/container/container_layouter_base_dart_support.dart'
+  show DataDependency;  // todo-00-last-last : do we need full package syntax?
 
 void main() {
   // todo 1 add tests for extrapolating . Add more tests in general

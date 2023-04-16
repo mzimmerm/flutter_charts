@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 
 // this level or equivalent
+import 'container_layouter_base_dart_support.dart' show LayoutAxis, ExternalTickAtPosition;
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
     show Align, otherEndAlign, Packing, LengthsPositionerProperties,
@@ -3851,17 +3852,6 @@ class ExternalTicksLayoutProvider {
         .toList();
   }
 
-}
-
-enum ExternalTickAtPosition {
-  childStart,
-  childCenter,
-  childEnd,
-}
-
-enum LayoutAxis {
-  horizontal,
-  vertical,
 }
 
 LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {

@@ -1,5 +1,4 @@
-import '../../../chart/model/data_model.dart';
-import '../container_layouter_base.dart' as container_base;
+import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDependency;
 
 /// Describes display orientation of axes and data on a chart.
 ///
@@ -22,12 +21,12 @@ import '../container_layouter_base.dart' as container_base;
 enum ChartSeriesOrientation {
   // todo-00-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
   column(
-    mainLayoutAxis: container_base.LayoutAxis.vertical,
-    inputDataAxisOrientation: container_base.LayoutAxis.horizontal,
+    mainLayoutAxis: LayoutAxis.vertical,
+    inputDataAxisOrientation: LayoutAxis.horizontal,
   ),
   row(
-    mainLayoutAxis: container_base.LayoutAxis.horizontal,
-    inputDataAxisOrientation: container_base.LayoutAxis.vertical,
+    mainLayoutAxis: LayoutAxis.horizontal,
+    inputDataAxisOrientation: LayoutAxis.vertical,
   );
 
   const ChartSeriesOrientation({
@@ -46,11 +45,11 @@ enum ChartSeriesOrientation {
   /// and negative areas of the chart:
   ///   - If `mainLayoutAxis == container_base.LayoutAxis.vertical`, then the positive/negative sections of chart data
   ///     are layed out in a [container_base.Column] layouter.
-  final container_base.LayoutAxis mainLayoutAxis;
+  final LayoutAxis mainLayoutAxis;
 
   /// Describes how the input axis (other terms: x axis, input data axis, axis with independent data)
   /// is oriented in view - horizontally or vertically.
-  final container_base.LayoutAxis inputDataAxisOrientation;
+  final LayoutAxis inputDataAxisOrientation;
 
   factory ChartSeriesOrientation.fromString(String orientation) {
     switch(orientation) {

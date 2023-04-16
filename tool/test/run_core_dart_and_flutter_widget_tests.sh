@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# todo-00-last-last document
+
+# Runs representative tests - dart unit tests, flutter widget tests (both in directory 'test'),
+#   and a minimum set of flutter integration tests (=driver tests) (in directory 'integration_test'
+
+# Copied from run_all_tests.sh
+
+# Run mini set of flutter integration tests in bash using:
+#   d1=$(date +%s); tool/test/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
+
+# Run mini set of flutter integration tests in eshell using:
+#   setq d1 (string-to-number (format-time-string "%s")); tool/test/run_representative_mini_tests.sh ; setq d2 (string-to-number (format-time-string "%s")); echo "TOOK $(- d2 d1) seconds"
+
+# with clean, add before tool/test/run: ; flutter clean; flutter pub upgrade; flutter pub get;
+
+# To run one example:
+# tool/test/run_all_tests.sh ex31SomeNegativeValues
+
+set -o errexit
+
+echo
+echo -------------------------------------
+echo -------------------------------------
+echo Running Dart files testing, which is still run with Flutter: flutter test test/util/util_labels_test.dart - etc..
+flutter test test/util/util_labels_test.dart
+flutter test test/util/extensions_dart_test.dart
+flutter test test/util/util_dart_test.dart
+flutter test test/chart/layouter_one_dimensional_test.dart
+
+echo
+echo -------------------------------------
+echo -------------------------------------
+echo Running Flutter widget tests: flutter test test/widget_test.dart
+flutter test test/widget_test.dart
+
+echo
+echo -------------------------------------
+echo -------------------------------------
+echo RERUNNING All Flutter widget tests, showing all names: flutter test --reporter expanded
+flutter test --reporter expanded

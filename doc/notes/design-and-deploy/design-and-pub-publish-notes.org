@@ -1877,11 +1877,14 @@ Notes or Later:
 14. [ ] Testing framework speedup: Change the testing framework to only BUILD ONCE then run multiple tests.
 15. [ ] Major but EASY REFACTORING
     1. [ ] Renames:
-       1. [ ] YContainer -> OutputAxisContainer
-       2. [ ] XContainer -> InputAxisContainer
-       3. [ ] remove all 'new' from .dart file names
-       4. [ ] remove most 'as name' from .dart files imports
-       5. [ ] 
+       1. [ ] CHART_TYPE_TO_SHOW -> CHART_TYPE (everywhere, even in IntelliJ files)
+       2. [ ] chartTypeToShow -> chartType
+       3. [ ] USE_OLD_DATA_CONTAINER -> IS_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
+       4. [ ] YContainer -> OutputAxisContainer
+       5. [ ] XContainer -> InputAxisContainer
+       6. [ ] remove all 'new' from .dart file names
+       7. [ ] remove most 'as name' from .dart files imports
+       8. [ ] replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
 16. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
     2. [ ] WHERE NOT?
