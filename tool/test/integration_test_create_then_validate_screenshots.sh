@@ -18,10 +18,9 @@
 #             $1 \
 #             --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded \
 #             --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart \
-#             --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER \
+#             --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER \
 #             $2
 #            ```
-# todo-00-last : I THINK $2 IS UNUSED THROUGHOUT, VALIDATE AND REMOVE
 #          - contains one example from 'ExamplesEnum' or the command line to execute.
 #          - provides an argument to an executable $1 which can be 'flutter drive --driver --target',
 #            so it (the tmp-script-program) can execute its $1 argument by running itself as:
@@ -33,7 +32,7 @@
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
 #                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
-#                --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER  \
+#                --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER  \
 #                $2
 #            ```
 #          - is executed in step 2.
@@ -50,7 +49,7 @@
 set -o errexit
 
 if [[ "$1" == "--help" ]]; then
-  echo Usage: integration_test_validate_screenshots.sh \[exampleEnum\]
+  echo Usage: integration_test_create_then_validate_screenshots.sh \[exampleEnum\]
   exit 1 
 fi
 
@@ -76,8 +75,11 @@ fi
 
 if [[ -n "$2" ]]; then
 
+  #   EXAMPLE_TO_RUN, CHART_TYPE_TO_SHOW, CHART_ORIENTATION, and IS_USE_OLD_DATA_CONTAINER
   exampleEnum=$2
   chartTypeEnum=$3
+  chartOrientation=$CHART_ORIENTATION
+  isUseOldDataContainer=$IS_USE_OLD_DATA_CONTAINER
 
   echo
   echo -------------------------------------
@@ -103,9 +105,15 @@ echo -------------------------------------
 echo Step 1: Sources script \"start_emulator_and_generate_examples_descriptor.sh\", which starts emulator
 echo         and generates program \"tmp/examples_descriptor_generated_program_$RANDOM.sh\"
 echo         that contains command lines to test each example one after another in step 2.
-#   This program can run either integration test (flutter driver) or the app (flutter run), depending on parameters.
-# See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
-source tool/test/start_emulator_and_generate_examples_descriptor.sh "$isFirstRun" "$exampleEnum" "$chartTypeEnum"
+#   This program can run 1) integration test 'flutter drive' 2) widget test 'flutter test' 3) the app 'flutter run'.
+#   See the sourced script below for details of variable and contents of $examples_descriptor_generated_program.
+source tool/test/start_emulator_and_generate_examples_descriptor.sh \
+  "$isFirstRun" \
+  "$exampleEnum" \
+  "$chartTypeEnum" \
+  "$chartOrientation" \
+  "$isUseOldDataContainer"
+
 echo Will run "$examples_descriptor_generated_program".
 echo
 examples_descriptor_generated_program=$examples_descriptor_generated_program
@@ -117,7 +125,7 @@ examples_descriptor_generated_program=$examples_descriptor_generated_program
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
 #                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
-#                --dart-define=USE_OLD_DATA_CONTAINER=$USE_OLD_DATA_CONTAINER  \
+#                --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER  \
 #                $2
 #            ```
 echo

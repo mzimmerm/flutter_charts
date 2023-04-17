@@ -3,7 +3,7 @@
 
 import 'package:tuple/tuple.dart';
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart'; // todo-00-last-last : do we need full package syntax?
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 import '../example/lib/src/util/examples_descriptor.dart';
 
@@ -24,8 +24,6 @@ String relativePath(
 String screenshotFileName(
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
 ) {
-  // todo-00-last : add ChartOrientation for NEW : _NEW_orientation_column
-  // todo-00-last-done: bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
   bool isUseOldDataContainer = exampleComboToRun.item4;
   String newLayout = '';
   if (!isUseOldDataContainer) {
@@ -52,7 +50,6 @@ String expectedScreenshotDirName() {
 Tuple2<String, String> screenshotPathsFor(
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
 ) {
-  // todo-00-last Use Tuple4
   String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
   String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
   return Tuple2(expectedScreenshotPath, actualScreenshotPath);

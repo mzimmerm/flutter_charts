@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# todo-00-last-last document
-
-# The section below shows how to run this test script - dart unit tests, flutter widget tests (both in directory 'test'),
-#   and flutter integration tests (=driver tests) (in directory 'integration_test'
-
 # Bash with clean: Run all tests of all examples:
 #   d1=$(date +%s); flutter clean; flutter pub upgrade; flutter pub get; tool/test/run_all_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds
 
@@ -27,8 +22,8 @@ echo Running screenshot differences tests screenshots validation
 echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
 echo First argument is $1
 
-tool/test/integration_test_validate_screenshots.sh firstRun ex900ErrorFixUserDataAllZero
-tool/test/integration_test_validate_screenshots.sh nextRun
+tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex900ErrorFixUserDataAllZero
+tool/test/integration_test_create_then_validate_screenshots.sh nextRun
 
 # Run tests using the new layouter
 tool/test/run_core_new_integration_tests.sh

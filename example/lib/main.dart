@@ -18,7 +18,7 @@ import 'package:flutter_charts/src/morphic/container/chart_support/chart_orienta
 import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 
-// todo-00-last-last : how come we can import without 'package' here?
+// Can import without 'package' here, because the file is under same lib directory.
 import 'src/util/examples_descriptor.dart';
 
 /// A sample app which shows usage of this library `flutter_charts` in an application.
@@ -79,14 +79,20 @@ void main() {
   //    3) widgets.dart has
   //        - export 'src/widgets/binding.dart'; (references dir PROJ/packages/flutter/lib/src/widgets/binding.dart)
   //    4) binding.dart has
-  //        - the runApp() function
+  //        - the runApp() top level function
   //
   // This process achieves importing (heh via exports) the file
   //    packages/flutter/lib/src/widgets/binding.dart
-  //    which has the runApp() function.
-  //
+  //    which has the runApp() function which does the following:
+  //    ```dart
+  //      void runApp(Widget app) {
+  //        WidgetsFlutterBinding.ensureInitialized()
+  //          ..scheduleAttachRootWidget(app)
+  //          ..scheduleWarmUpFrame();
+  //      }
+  //    ```
   var exampleComboToRun = requestedExampleToRun();
-  if (!ExamplesDescriptor().exampleComboIsAllowed(exampleComboToRun)) {
+  if (!ExamplesDescriptor.allExamples().exampleComboIsAllowed(exampleComboToRun)) {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     io.exit(0);
   }
@@ -121,9 +127,8 @@ Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> reques
   const String orientationStr = String.fromEnvironment('CHART_ORIENTATION', defaultValue: 'column');
   ChartSeriesOrientation orientation = ChartSeriesOrientation.fromStringOrDefault(orientationStr, ChartSeriesOrientation.column);
 
-  bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+  bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
 
-  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
   return Tuple4(exampleComboToRun, chartTypeToShow, orientation, isUseOldDataContainer);
 }
 
@@ -203,7 +208,6 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun =
       requestedExampleToRun();
 
@@ -452,7 +456,6 @@ class _ExampleWidgetCreator {
   _ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
-  // todo-00-last-done : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun;
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],

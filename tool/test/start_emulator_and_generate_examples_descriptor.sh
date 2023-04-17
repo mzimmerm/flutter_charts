@@ -24,6 +24,8 @@
 isFirstRun=$1
 exampleEnum=$2
 chartTypeEnum=$3
+chartOrientation=$4
+isUseOldDataContainer=$5
 
 if [[ $isFirstRun == true ]]; then
   # This is the AVD emulator we request to exist
@@ -65,14 +67,24 @@ fi
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
-echo Running 'dart run example/lib/src/util/examples_descriptor.dart'
-echo   to create $examples_descriptor_generated_program
-dart run example/lib/src/util/examples_descriptor.dart "$exampleEnum" "$chartTypeEnum" > $examples_descriptor_generated_program
+echo Running \"dart run example/lib/src/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$isUseOldDataContainer"\'\"
+echo   which creates $examples_descriptor_generated_program
+
+echo "# Sample of how this runs:"  > $examples_descriptor_generated_program
+echo "# flutter drive \
+  --dart-define=EXAMPLE_TO_RUN=ex75 \
+  --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart \
+  --dart-define=CHART_ORIENTATION=row \
+  --dart-define=IS_USE_OLD_DATA_CONTAINER=false \
+  --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $examples_descriptor_generated_program
+
+dart run example/lib/src/util/examples_descriptor.dart \
+  "$exampleEnum" \
+  "$chartTypeEnum" \
+  "$chartOrientation" \
+  "$isUseOldDataContainer" >> $examples_descriptor_generated_program
 
 chmod u+x $examples_descriptor_generated_program
-
-# Generated script $examples_descriptor_generated_program contains list of lines, one line looks like this
-#    $1 --dart-define=EXAMPLE_TO_RUN=ex_1_0_RandomData --dart-define=CHART_TYPE_TO_SHOW=LineChart $2
 
 
 

@@ -15,7 +15,7 @@ echo -------------------------------------
 echo -------------------------------------
 echo Running wrapper around Flutter integration tests for screenshots validation
 echo This runs an integration [drive] screenshot create test first, followed by widget test that compares screenshots actual/expected
-tool/test/integration_test_validate_screenshots.sh "$exampleEnum"
+tool/test/integration_test_create_then_validate_screenshots.sh "$exampleEnum"
 
 # Example of new/old, running only screenshot-create test:
-#   USE_OLD_DATA_CONTAINER=true tool/test/run_one_create_screenshot_test.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded
+#   IS_USE_OLD_DATA_CONTAINER=true tool/test/run_one_create_screenshot_test.sh ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded

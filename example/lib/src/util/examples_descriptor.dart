@@ -25,21 +25,21 @@ import 'package:tuple/tuple.dart' show Tuple2, Tuple4;
 /// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
 /// that require passing the examples to run or test using the environment variables `--dart-define`.
 void main(List<String> args) {
-  var exampleDescriptor = ExamplesDescriptor();
+  var exampleDescriptor = ExamplesDescriptor.allExamples();
   if (args.isNotEmpty && args[0].trim().isNotEmpty) {
+    // If first command line argument is provided, all 4 must be provided, although some may be empty!
+    // The empty args will be defaulted in the [asCommandLine] method.
+    assert(args.length == 4);
+
     // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
     ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
     exampleDescriptor = ExamplesDescriptor(
       exampleRequested: exampleToRun,
+      chartTypeRequested: args[1].isNotEmpty ? args[1].asEnum(ExamplesChartTypeEnum.values) : null,
+      chartSeriesOrientation: args[2].isNotEmpty ? args[2].asEnum(ChartSeriesOrientation.values) : null,
+      isUseOldDataContainer: args[3].isNotEmpty ? (args[3] == 'true' ? true : false) : null,
+
     );
-    if (args.length >= 2 && args[1].trim().isNotEmpty) {
-      // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
-      ExamplesChartTypeEnum chartTypeRequested = args[1].asEnum(ExamplesChartTypeEnum.values);
-      exampleDescriptor = ExamplesDescriptor(
-        exampleRequested: exampleToRun,
-        chartTypeRequested: chartTypeRequested,
-      );
-    }
   }
   exampleDescriptor.asCommandLine();
 }
@@ -102,8 +102,17 @@ class ExamplesDescriptor {
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;
   ExamplesChartTypeEnum? chartTypeRequested;
+  ChartSeriesOrientation? chartSeriesOrientation;
+  bool? isUseOldDataContainer;
 
-  ExamplesDescriptor({this.exampleRequested, this.chartTypeRequested});
+  ExamplesDescriptor({
+    required this.exampleRequested,
+    required this.chartTypeRequested,
+    required this.chartSeriesOrientation,
+    required this.isUseOldDataContainer,
+  });
+
+  ExamplesDescriptor.allExamples();
 
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     //
@@ -174,21 +183,15 @@ class ExamplesDescriptor {
   bool exampleComboIsAllowed(
     Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
   ) {
-    // todo-00-last-done : replace with Tuple4 but logic unchanged - does not look at orientation
     return _allowed.any((tuple) => tuple.item1 == exampleComboToRun.item1 && tuple.item2 == exampleComboToRun.item2);
   }
 
   /// Present this descriptor is a format suitable to run as a test from command line.
-  ///   List expandIt = ['1', '2', '3'];
-  ///   List expanded = expandIt.map((item) => [item + 'a', item + 'b']).expand((item) => item).toList();
-  ///   print('expanded = $expanded');
   void asCommandLine() {
     List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> combosToRun = exampleRequested == null
         ? _allowed
         : _allowed.where((tuple) => tuple.item1 == exampleRequested).toList();
 
-    // todo-00-last : expand combosToRun with Tuple4 : example, type, orientation, isUseOldDataContainer
-    //   if isUseOldDataContainer, multiply list with ['column'], else with ['column', 'row']
     combosToRun = chartTypeRequested == null
         ? combosToRun
         : combosToRun.where((tuple) => tuple.item2 == chartTypeRequested).toList();
@@ -197,14 +200,17 @@ class ExamplesDescriptor {
       throw StateError('No examples requested to run are defined in examples_descriptor.');
     }
 
-    // exampleRequested may not be set, we need to know if to run old/new. Pull it from env var again here
-    bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+    isUseOldDataContainer ??= true;
 
     List orientationsToRun;
-    if (isUseOldDataContainer) {
-      orientationsToRun = [ChartSeriesOrientation.column];
+    if (chartSeriesOrientation == null) {
+      if (isUseOldDataContainer!) {
+        orientationsToRun = [ChartSeriesOrientation.column];
+      } else {
+        orientationsToRun = [ChartSeriesOrientation.column, ChartSeriesOrientation.row];
+      }
     } else {
-      orientationsToRun = [ChartSeriesOrientation.column, ChartSeriesOrientation.row];
+      orientationsToRun = [chartSeriesOrientation];
     }
 
     List<Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool>>
@@ -212,9 +218,8 @@ class ExamplesDescriptor {
         Tuple4(
             tuple2AndOrientation[0].item1 as ExamplesEnum,
             tuple2AndOrientation[0].item2 as ExamplesChartTypeEnum,
-            // todo-00-last-last : this is not used!!! understand this better.
             tuple2AndOrientation[1] as ChartSeriesOrientation,
-            isUseOldDataContainer,
+            isUseOldDataContainer!,
             )).toList();
 
     for (Tuple4 tuple in combos4ToRun) {
@@ -228,10 +233,8 @@ class ExamplesDescriptor {
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
-          // WRONG: This must be picked up when this line is running as flutter drive gen-file : '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
-          '--dart-define=CHART_ORIENTATION=\$CHART_ORIENTATION '
-          // WRONG: This must be picked up when this line is running as flutter drive gen-file : '--dart-define=USE_OLD_DATA_CONTAINER=$isUseOldDataContainer '
-          '--dart-define=USE_OLD_DATA_CONTAINER=\$USE_OLD_DATA_CONTAINER '
+          '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
+          '--dart-define=IS_USE_OLD_DATA_CONTAINER=$isUseOldDataContainer '
           '\$2' // ' example/lib/main.dart'
           );
     }

@@ -175,7 +175,6 @@ class XContainer extends TransposingAxisContainer {
        directionWrapperAround(
           [TransposingRoller.Column(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-            // isMainAlignTransposed: false, // todo-00-done : added NOT NEEDED, set to false
             children: [
             TransposingExternalTicks.Row(
               chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -216,7 +215,6 @@ class YContainer extends TransposingAxisContainer {
       [
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-            // isMainAlignTransposed: false, // todo-00-done : added NOT NEEDED
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,

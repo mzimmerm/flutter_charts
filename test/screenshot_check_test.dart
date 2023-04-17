@@ -10,15 +10,16 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart'; // todo-00-last-last : do we need full package syntax?
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
 import '../example/lib/src/util/examples_descriptor.dart';
 import '../example/lib/main.dart' as app;
 
 void main() {
   test('after screenshot integration, test for sameness', () {
-    // Find the command-line provided enums which define chart data, options and type to use in the example app.
-    // The app find the enums transiently, here we need it to generate consistent screenshot filename.
-    // todo-00-last : replace with Tuple4 : example, type, orientation, isUseOldDataContainer
+    // Find the command-line provided enums which define chart data, options and type to run.
+    // The app.requestedExampleToRun creates the enums from --dart-define arguments for
+    //   EXAMPLE_TO_RUN, CHART_TYPE_TO_SHOW, CHART_ORIENTATION, and IS_USE_OLD_DATA_CONTAINER.
+    //   passed to 'flutter test this-file.dart', and returns them in Tuple4.
     Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun =
         app.requestedExampleToRun();
     var screenshotPaths = screenshotPathsFor(exampleComboToRun);

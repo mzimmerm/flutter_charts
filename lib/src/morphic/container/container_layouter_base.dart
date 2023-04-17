@@ -2160,7 +2160,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
-    // bool isMainAlignTransposed = true, // todo-00-done : added, NOT NEEDED
     Packing mainAxisPacking = Packing.tight,
     // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
     Align crossAxisAlign = Align.start,
@@ -2181,7 +2180,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-done : added NOT NEEDED
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,
@@ -2197,7 +2195,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
-    // bool isMainAlignTransposed = true, // todo-00-done : added NOT NEEDED
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
@@ -2217,7 +2214,6 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          // mainAxisAlign: isMainAlignTransposed ? otherEndAlign(mainAxisAlign) : mainAxisAlign, // todo-00-done : added  NOT NEEDED
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           crossAxisPacking: crossAxisPacking,

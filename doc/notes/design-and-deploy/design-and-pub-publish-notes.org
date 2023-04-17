@@ -1879,7 +1879,7 @@ Notes or Later:
     1. [ ] Renames:
        1. [ ] CHART_TYPE_TO_SHOW -> CHART_TYPE (everywhere, even in IntelliJ files)
        2. [ ] chartTypeToShow -> chartType
-       3. [ ] USE_OLD_DATA_CONTAINER -> IS_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
+       3. [ ] IS_USE_OLD_DATA_CONTAINER -> IS_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
        4. [ ] YContainer -> OutputAxisContainer
        5. [ ] XContainer -> InputAxisContainer
        6. [ ] remove all 'new' from .dart file names

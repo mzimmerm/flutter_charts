@@ -28,7 +28,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 ///               are made available to the file with this import clause!
 ///               For libraries NOT-EXPORTED in `flutter_charts.dart`,
 ///               we have to use one of the 'code local' schemes in the item below.
-///       Note 2: THIS FORMAT MUST BE USED IN a) example/lib  b) in tests.
+///       Note 2: The package: scheme in 1. MUST BE USED IN a) example/lib and b) in tests.
 ///               Both appear to be able to import relative, crossing the 'lib' boundary,
 ///               but THEN FLUTTER THINGS THOSE ARE DIFFERENT LIBRARIES!
 ///     2. Or using a RELATIVE PATH SCHEME, for example from a .dart file located 

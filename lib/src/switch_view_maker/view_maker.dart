@@ -16,13 +16,13 @@ import '../chart/iterative_layout_strategy.dart' as strategy;
 ///
 /// The abstract view maker has factory constructors that return the old coded_layout or the
 /// new auto-layout instances for bar chart view maker or line chart view maker,
-/// determined by the environment variable `USE_OLD_DATA_CONTAINER` defined on scripts command lines using
+/// determined by the environment variable `IS_USE_OLD_DATA_CONTAINER` defined on scripts command lines using
 ///   ```sh
-///     --dart-define=USE_OLD_DATA_CONTAINER=true # false
+///     --dart-define=IS_USE_OLD_DATA_CONTAINER=true # false
 ///   ```
 /// and picked up in Dart code using code similar to
 ///   ```dart
-///     bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+///     bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
 ///   ```
 ///
 abstract class SwitchChartViewMaker extends ChartViewMaker {
@@ -47,7 +47,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');
-    bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+    bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
 
     if (isUseOldDataContainer) {
       return SwitchVerticalBarChartViewMakerCL(
@@ -75,7 +75,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');
-    bool isUseOldDataContainer = const bool.fromEnvironment('USE_OLD_DATA_CONTAINER', defaultValue: true);
+    bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
 
     if (isUseOldDataContainer) {
       return SwitchLineChartViewMakerCL(
