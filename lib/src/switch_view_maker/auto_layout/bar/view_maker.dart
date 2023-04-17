@@ -21,12 +21,12 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
     required ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     required bool isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartSeriesOrientation: chartSeriesOrientation,
     isStacked: true, // only supported for now for bar chart
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');
   }
@@ -35,22 +35,22 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
   @override
   VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
-    var xContainer = makeViewForHorizontalAxis();
-    var yContainerFirst = makeViewForYContainerFirst();
-    var yContainer = makeViewForVerticalAxis();
+    var horizontalAxisContainer = makeViewForHorizontalAxis();
+    var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
+    var verticalAxisContainer = makeViewForVerticalAxis();
     var dataContainer = makeViewForDataContainer();
 
     return VerticalBarChartRootContainer(
       legendContainer: legendContainer,
-      xContainer: xContainer,
-      yContainerFirst: yContainerFirst,
-      yContainer: yContainer,
+      horizontalAxisContainer: horizontalAxisContainer,
+      verticalAxisContainerFirst: verticalAxisContainerFirst,
+      verticalAxisContainer: verticalAxisContainer,
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
       isStacked: isStacked,
-      xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+      inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
 

@@ -1873,18 +1873,20 @@ Notes or Later:
       - [X] The layouter is outside all bounds. No traces of X or Y labels
       - [X] In row mode, when outputAxis is Horizontal, the 0.0 label does not match the zero position on axis. 
       - [X] After several fixes, X and Y axis work in both orientations.
-13. [ ] Run all tests.
-14. [ ] Testing framework speedup: Change the testing framework to only BUILD ONCE then run multiple tests.
-15. [ ] Major but EASY REFACTORING
-    1. [ ] Renames:
-       1. [ ] CHART_TYPE_TO_SHOW -> CHART_TYPE (everywhere, even in IntelliJ files)
-       2. [ ] chartTypeToShow -> chartType
-       3. [ ] IS_USE_OLD_DATA_CONTAINER -> IS_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
-       4. [ ] YContainer -> OutputAxisContainer
-       5. [ ] XContainer -> InputAxisContainer
-       6. [ ] remove all 'new' from .dart file names
-       7. [ ] remove most 'as name' from .dart files imports
-       8. [ ] replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
+13. [X] Run all tests.
+14. [X] Testing framework speedup: Change the testing framework to only BUILD ONCE then run multiple tests.
+15. [-] Major but EASY REFACTORING
+    1. [-] Renames:
+       1. [X] CHART_TYPE -> CHART_TYPE (everywhere, even in IntelliJ files)
+       2. [X] chartType -> chartType
+       3. [X] IS_USE_OLD_LAYOUTER -> IS_USE_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
+       4. [X] YContainer -> OutputAxisContainer
+       5. [X] XContainer -> InputAxisContainer
+       6. [X] inputAxisContainer -> horizontalAxisContainer
+       7. [X] outputAxisContainer -> verticalAxisContainer
+       8. [X] remove all 'new' from .dart file names
+       9. [X] remove most 'as name' from .dart files imports
+       10. [ ] replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
 16. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
     2. [ ] WHERE NOT?

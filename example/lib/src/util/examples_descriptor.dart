@@ -37,7 +37,7 @@ void main(List<String> args) {
       exampleRequested: exampleToRun,
       chartTypeRequested: args[1].isNotEmpty ? args[1].asEnum(ExamplesChartTypeEnum.values) : null,
       chartSeriesOrientation: args[2].isNotEmpty ? args[2].asEnum(ChartSeriesOrientation.values) : null,
-      isUseOldDataContainer: args[3].isNotEmpty ? (args[3] == 'true' ? true : false) : null,
+      isUseOldLayouter: args[3].isNotEmpty ? (args[3] == 'true' ? true : false) : null,
 
     );
   }
@@ -92,24 +92,24 @@ enum ExamplesChartTypeEnum {
 ///
 /// Method [asCommandLine] generates a shell snippet for all [_allowed] and requested example. The snippet may look like
 ///    ```shell
-///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE_TO_SHOW=lineChart $2
+///    $1 --dart-define=EXAMPLE_TO_RUN=ex30AnimalsBySeasonWithLabelLayoutStrategy --dart-define=CHART_TYPE=lineChart $2
 ///    ```
 /// and is used in the generated tmp file such as `examples_descriptor_generated_program_354.sh`.
 ///
-/// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartTypeToShow'.
+/// The conversion from enumerates to data and options is in [example/lib/main.dart], see 'chartType'.
 /// The conversion from enumerates to chart type is in [example/lib/main.dart] see 'requestedExampleToRun'.
 class ExamplesDescriptor {
   /// If set, only the requested example will run.
   ExamplesEnum? exampleRequested;
   ExamplesChartTypeEnum? chartTypeRequested;
   ChartSeriesOrientation? chartSeriesOrientation;
-  bool? isUseOldDataContainer;
+  bool? isUseOldLayouter;
 
   ExamplesDescriptor({
     required this.exampleRequested,
     required this.chartTypeRequested,
     required this.chartSeriesOrientation,
-    required this.isUseOldDataContainer,
+    required this.isUseOldLayouter,
   });
 
   ExamplesDescriptor.allExamples();
@@ -200,11 +200,11 @@ class ExamplesDescriptor {
       throw StateError('No examples requested to run are defined in examples_descriptor.');
     }
 
-    isUseOldDataContainer ??= true;
+    isUseOldLayouter ??= true;
 
     List orientationsToRun;
     if (chartSeriesOrientation == null) {
-      if (isUseOldDataContainer!) {
+      if (isUseOldLayouter!) {
         orientationsToRun = [ChartSeriesOrientation.column];
       } else {
         orientationsToRun = [ChartSeriesOrientation.column, ChartSeriesOrientation.row];
@@ -219,7 +219,7 @@ class ExamplesDescriptor {
             tuple2AndOrientation[0].item1 as ExamplesEnum,
             tuple2AndOrientation[0].item2 as ExamplesChartTypeEnum,
             tuple2AndOrientation[1] as ChartSeriesOrientation,
-            isUseOldDataContainer!,
+            isUseOldLayouter!,
             )).toList();
 
     for (Tuple4 tuple in combos4ToRun) {
@@ -227,14 +227,14 @@ class ExamplesDescriptor {
       print('echo');
       print('echo');
       print(
-          'echo Running \$1 for EXAMPLE_TO_RUN=${enumName(tuple.item1)}, CHART_TYPE_TO_SHOW=${enumName(tuple.item2)}.');
+          'echo Running \$1 for EXAMPLE_TO_RUN=${enumName(tuple.item1)}, CHART_TYPE=${enumName(tuple.item2)}.');
       print(
           // generates cli representation of arguments
           '\$1 ' // 'flutter run --device-id=\$1 '
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
-          '--dart-define=CHART_TYPE_TO_SHOW=${enumName(tuple.item2)} '
+          '--dart-define=CHART_TYPE=${enumName(tuple.item2)} '
           '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
-          '--dart-define=IS_USE_OLD_DATA_CONTAINER=$isUseOldDataContainer '
+          '--dart-define=IS_USE_OLD_LAYOUTER=$isUseOldLayouter '
           '\$2' // ' example/lib/main.dart'
           );
     }

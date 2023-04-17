@@ -18,7 +18,7 @@ void main() {
   test('after screenshot integration, test for sameness', () {
     // Find the command-line provided enums which define chart data, options and type to run.
     // The app.requestedExampleToRun creates the enums from --dart-define arguments for
-    //   EXAMPLE_TO_RUN, CHART_TYPE_TO_SHOW, CHART_ORIENTATION, and IS_USE_OLD_DATA_CONTAINER.
+    //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and IS_USE_OLD_LAYOUTER.
     //   passed to 'flutter test this-file.dart', and returns them in Tuple4.
     Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun =
         app.requestedExampleToRun();

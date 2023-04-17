@@ -51,23 +51,38 @@ enum ChartSeriesOrientation {
   /// is oriented in view - horizontally or vertically.
   final LayoutAxis inputDataAxisOrientation;
 
-  factory ChartSeriesOrientation.fromString(String orientation) {
-    switch(orientation) {
+  factory ChartSeriesOrientation.fromString(
+    String orientation,
+  ) {
+    switch (orientation) {
       case 'column':
         return ChartSeriesOrientation.column;
       case 'row':
         return ChartSeriesOrientation.row;
       default:
-        throw StateError('Invalid orientation $orientation for converting String to ChartSeriesOrientation.');
+        throw StateError('Invalid orientation \'$orientation\' for converting String to ChartSeriesOrientation.');
     }
   }
 
-  factory ChartSeriesOrientation.fromStringOrDefault(String orientation, ChartSeriesOrientation defaultOrientation) {
+  factory ChartSeriesOrientation.fromStringOrDefault(
+    String orientation,
+    ChartSeriesOrientation defaultOrientation,
+  ) {
     try {
       return ChartSeriesOrientation.fromString(orientation);
     } on StateError {
       return defaultOrientation;
     }
+  }
+
+  factory ChartSeriesOrientation.fromStringDefaultOnEmpty(
+    String orientation,
+    ChartSeriesOrientation defaultOrientation,
+  ) {
+    if (orientation == '') {
+      return defaultOrientation;
+    }
+    return ChartSeriesOrientation.fromString(orientation);
   }
 
   /// For a chart orientation represented by this instance, return whether pixels and values are same orientation

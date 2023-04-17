@@ -24,9 +24,9 @@ String relativePath(
 String screenshotFileName(
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
 ) {
-  bool isUseOldDataContainer = exampleComboToRun.item4;
+  bool isUseOldLayouter = exampleComboToRun.item4;
   String newLayout = '';
-  if (!isUseOldDataContainer) {
+  if (!isUseOldLayouter) {
     newLayout = '_NEW_orientation_${exampleComboToRun.item3.name}';
   }
 

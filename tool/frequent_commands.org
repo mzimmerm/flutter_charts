@@ -8,9 +8,9 @@ flutter pub get
 flutter pub upgrade
 flutter clean; flutter pub get; 
 # Create screenshot - need drive and integration test
-flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE_TO_SHOW=lineChart --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart
+flutter drive --dart-define=EXAMPLE_TO_RUN=ex10RandomData --dart-define=CHART_TYPE=lineChart --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart
 # Test screenshot for equality - only needs unit test (hmm, this is likely integration as well)
-flutter test  --dart-define=EXAMPLE_TO_RUN=ex10RandomData  --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart test/screenshot_check_test.dart
+flutter test  --dart-define=EXAMPLE_TO_RUN=ex10RandomData  --dart-define=CHART_TYPE=verticalBarChart test/screenshot_check_test.dart
 
 # No clean: Run mini set of flutter integration tests in bash using:
 d1=$(date +%s); tool/test/run_representative_mini_tests.sh; echo TOOK $(($(date +%s) - $d1)) seconds

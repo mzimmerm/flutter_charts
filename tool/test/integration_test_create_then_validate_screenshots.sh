@@ -17,8 +17,8 @@
 #            ```sh
 #             $1 \
 #             --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded \
-#             --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart \
-#             --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER \
+#             --dart-define=CHART_TYPE=verticalBarChart \
+#             --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER \
 #             $2
 #            ```
 #          - contains one example from 'ExamplesEnum' or the command line to execute.
@@ -31,8 +31,8 @@
 #                --driver=test_driver/integration_test.dart \
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
-#                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
-#                --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER  \
+#                --dart-define=CHART_TYPE=verticalBarChart  \
+#                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
 #                $2
 #            ```
 #          - is executed in step 2.
@@ -75,11 +75,11 @@ fi
 
 if [[ -n "$2" ]]; then
 
-  #   EXAMPLE_TO_RUN, CHART_TYPE_TO_SHOW, CHART_ORIENTATION, and IS_USE_OLD_DATA_CONTAINER
+  #   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and IS_USE_OLD_LAYOUTER
   exampleEnum=$2
   chartTypeEnum=$3
   chartOrientation=$CHART_ORIENTATION
-  isUseOldDataContainer=$IS_USE_OLD_DATA_CONTAINER
+  isUseOldLayouter=$IS_USE_OLD_LAYOUTER
 
   echo
   echo -------------------------------------
@@ -112,7 +112,7 @@ source tool/test/start_emulator_and_generate_examples_descriptor.sh \
   "$exampleEnum" \
   "$chartTypeEnum" \
   "$chartOrientation" \
-  "$isUseOldDataContainer"
+  "$isUseOldLayouter"
 
 echo Will run "$examples_descriptor_generated_program".
 echo
@@ -124,8 +124,8 @@ examples_descriptor_generated_program=$examples_descriptor_generated_program
 #                --driver=test_driver/integration_test.dart \
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
-#                --dart-define=CHART_TYPE_TO_SHOW=verticalBarChart  \
-#                --dart-define=IS_USE_OLD_DATA_CONTAINER=$IS_USE_OLD_DATA_CONTAINER  \
+#                --dart-define=CHART_TYPE=verticalBarChart  \
+#                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
 #                $2
 #            ```
 echo

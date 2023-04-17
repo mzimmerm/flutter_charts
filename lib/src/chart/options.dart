@@ -21,8 +21,8 @@ import 'bar/options.dart';
 class ChartOptions {
   final IterativeLayoutOptions iterativeLayoutOptions;
   final LegendOptions legendOptions;
-  final XContainerOptions xContainerOptions;
-  final YContainerOptions yContainerOptions;
+  final HorizontalAxisContainerOptions horizontalAxisContainerOptions;
+  final VerticalAxisContainerOptions verticalAxisContainerOptions;
   final DataContainerOptions dataContainerOptions;
   final LabelCommonOptions labelCommonOptions;
   final LineChartOptions lineChartOptions;
@@ -31,8 +31,8 @@ class ChartOptions {
   const ChartOptions({
     this.iterativeLayoutOptions = const IterativeLayoutOptions(),
     this.legendOptions = const LegendOptions(),
-    this.xContainerOptions = const XContainerOptions(),
-    this.yContainerOptions = const YContainerOptions(),
+    this.horizontalAxisContainerOptions = const HorizontalAxisContainerOptions(),
+    this.verticalAxisContainerOptions = const VerticalAxisContainerOptions(),
     this.dataContainerOptions = const DataContainerOptions(),
     this.labelCommonOptions = const LabelCommonOptions(),
     this.lineChartOptions = const LineChartOptions(),
@@ -45,12 +45,12 @@ class ChartOptions {
           legendOptions: const LegendOptions(
             isLegendContainerShown: false,
           ),
-          xContainerOptions: const XContainerOptions(
-            isXContainerShown: false,
+          horizontalAxisContainerOptions: const HorizontalAxisContainerOptions(
+            isShown: false,
           ),
-          yContainerOptions: const YContainerOptions(
-            isYContainerShown: false,
-            isYGridlinesShown: false,
+          verticalAxisContainerOptions: const VerticalAxisContainerOptions(
+            isShown: false,
+            isHorizontalGridLinessShown: false,
           ),
         );
 }
@@ -137,24 +137,57 @@ class LegendOptions {
 }
 
 @immutable
-class XContainerOptions {
-  final bool isXContainerShown;
+class HorizontalAxisContainerOptions {
+  final bool isShown;
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right.
-  final double xLabelsPadTB;
+  final double labelPadTB;
 
   /// Pad space around the X labels area. TB - top/bottom, LR - left/right. Unused.
-  final double xLabelsPadLR;
+  final double labelPadLR;
 
-  const XContainerOptions({
-    this.isXContainerShown = true,
-    this.xLabelsPadTB = 6.0,
-    this.xLabelsPadLR = 40.0,
+  const HorizontalAxisContainerOptions({
+    this.isShown = true,
+    this.labelPadTB = 6.0,
+    this.labelPadLR = 40.0,
   });
 
-  /// Also providing a method to format X labels, but should NOT be used YET
-  String valueToLabel(num value) {
-    /*
+}
+
+@immutable
+class VerticalAxisContainerOptions {
+  final bool isShown;
+
+  /// In the current implementation, X gridlines (horizontal) disappear when `isVerticalAxisContainerShown = false`,
+  /// which is probably reasonable, although should be fixed.
+  ///
+  /// However, Y gridlines (vertical) are showing even when `isHorizontalAxisContainerShown = false`.
+  /// This option allows to toggle it.
+  final bool isHorizontalGridLinessShown;
+
+  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
+  final double labelPadTB;
+
+  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
+  final double labelPadLR;
+
+  // todo-00-last-done : final String yLabelUnits;
+
+  const VerticalAxisContainerOptions({
+    this.isShown = true,
+    this.isHorizontalGridLinessShown = true,
+    this.labelPadTB = 40.0,
+    this.labelPadLR = 6.0,
+    // todo-00-last-done : this.yLabelUnits = '',
+  });
+
+  // todo-00-last-done : unused : String toLabel(String label) => label + yLabelUnits;
+
+}
+
+/// Also providing a method to format X labels, but should NOT be used YET
+String inputValueToLabel(num value) {
+  /*
     // if there are >= 3 < 6 decimal digits, replace with K (etc)
     String val = value.toString();
     if (val.endsWith('000000000')) val = val.substring(0, val.length - 9) + 'B';
@@ -163,51 +196,19 @@ class XContainerOptions {
 
     return val + yLabelUnits;
    */
-    throw StateError('XContainerOptions.valueToLabel should not be used YET');
-  }
-
+  throw StateError('HorizontalAxisContainerOptions.valueToLabel should not be used YET');
 }
 
-@immutable
-class YContainerOptions {
-  final bool isYContainerShown;
+String outputValueToLabel(num value) {
+  // if there are >= 3 < 6 decimal digits, replace with K (etc)
+  // todo 1 add an option for how to format; a method or a formatter.
+  String val = value.toString();
+  if (val.endsWith('000000000')) val = '{$val.substring(0, val.length - 9)} B';
+  if (val.endsWith('000000')) val = '{$val.substring(0, val.length - 6)} M';
+  if (val.endsWith('000')) val = '{$val.substring(0, val.length - 3)} K';
 
-  /// In the current implementation, X gridlines (horizontal) disappear when `isYContainerShown = false`,
-  /// which is probably reasonable, although should be fixed.
-  ///
-  /// However, Y gridlines (vertical) are showing even when `isXContainerShown = false`.
-  /// This option allows to toggle it.
-  final bool isYGridlinesShown;
-
-  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
-  final double yLabelsPadTB;
-
-  /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
-  final double yLabelsPadLR;
-
-  /// todo 2 remove, replace with formatter outright
-  final String yLabelUnits;
-
-  const YContainerOptions({
-    this.isYContainerShown = true,
-    this.isYGridlinesShown = true,
-    this.yLabelsPadTB = 40.0,
-    this.yLabelsPadLR = 6.0,
-    this.yLabelUnits = '',
-  });
-
-  String toLabel(String label) => label + yLabelUnits;
-
-  String valueToLabel(num value) {
-    // if there are >= 3 < 6 decimal digits, replace with K (etc)
-    // todo 1 add an option for how to format; a method or a formatter.
-    String val = value.toString();
-    if (val.endsWith('000000000')) val = '{$val.substring(0, val.length - 9)} B';
-    if (val.endsWith('000000')) val = '{$val.substring(0, val.length - 6)} M';
-    if (val.endsWith('000')) val = '{$val.substring(0, val.length - 3)} K';
-
-    return val + yLabelUnits;
-  }
+  // todo-00-last-done : return val + yLabelUnits;
+  return val;
 }
 
 /// Identity transform.
@@ -371,11 +372,11 @@ class LabelCommonOptions {
 ///
 /// Motivation and reason for existence:
 ///   Some areas of any chart need to have the same width or height in pixels when shown.
-///   For example, the [YContainer] and [DataContainer] should have the same height into which
+///   For example, the [VerticalAxisContainer] and [DataContainer] should have the same height into which
 ///   y labels, and data y values are lextr-ed (linearly extrapolated).
 ///   Such areas, if padded from top or bottom, or from left or right (in this example, top and bottom)
 ///   should be padded with the same padding height, otherwise the size in pixels, left out
-///   for [YContainer] and [DataContainer] would not have the same height.
+///   for [VerticalAxisContainer] and [DataContainer] would not have the same height.
 ///   This is where instances of this class, the [ChartPaddingGroup] come in: They define
 ///   functions that yield common padding. The names of the functions suggest where such common padding should
 ///   be applied:
@@ -387,12 +388,12 @@ class LabelCommonOptions {
 /// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding
 /// to correctly lineup.
 ///
-/// For example, a padding on the bottom of a [YContainer] which provides space
+/// For example, a padding on the bottom of a [VerticalAxisContainer] which provides space
 /// to the bottom half of the label, must be duplicated on the bottom of the [DataContainer]
 /// for the container contents to lineup in the vertical direction.
 ///
 /// Note: Perhaps a better alternative would be to replace the padding with a table row
-///       with two cells below the  [YContainer] and the [DataContainer]. Worth investigating?
+///       with two cells below the  [VerticalAxisContainer] and the [DataContainer]. Worth investigating?
 @immutable
 class ChartPaddingGroup {
 

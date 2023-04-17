@@ -170,7 +170,7 @@ class DataRangeLabelInfosGenerator {
 
   /// The function converts value to label.
   ///
-  /// Assigned from a corresponding function [ChartOptions.yContainerOptions.valueToLabel].
+  /// Assigned from a corresponding function [ChartOptions.verticalAxisContainerOptions.outputValueToLabel].
   final Function _valueToLabel;
 
   /// The function for data inverse transform.

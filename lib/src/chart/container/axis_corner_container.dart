@@ -7,9 +7,9 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../view_maker.dart' as view_maker;
 
 // this level libraries
-import '../container/container_common.dart' as container_common_new;
+import '../container/container_common.dart' as container_common;
 
-class AxisCornerContainer extends container_common_new.ChartAreaContainer {
+class AxisCornerContainer extends container_common.ChartAreaContainer {
   AxisCornerContainer({
     required view_maker.ChartViewMaker chartViewMaker,
     List<BoxContainer>? children,

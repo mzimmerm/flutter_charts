@@ -16,13 +16,13 @@ import '../chart/iterative_layout_strategy.dart' as strategy;
 ///
 /// The abstract view maker has factory constructors that return the old coded_layout or the
 /// new auto-layout instances for bar chart view maker or line chart view maker,
-/// determined by the environment variable `IS_USE_OLD_DATA_CONTAINER` defined on scripts command lines using
+/// determined by the environment variable `IS_USE_OLD_LAYOUTER` defined on scripts command lines using
 ///   ```sh
-///     --dart-define=IS_USE_OLD_DATA_CONTAINER=true # false
+///     --dart-define=IS_USE_OLD_LAYOUTER=true # false
 ///   ```
 /// and picked up in Dart code using code similar to
 ///   ```dart
-///     bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
+///     bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 ///   ```
 ///
 abstract class SwitchChartViewMaker extends ChartViewMaker {
@@ -30,12 +30,12 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     required model.ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     bool isStacked = false,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
   chartSeriesOrientation: chartSeriesOrientation,
   isStacked: isStacked,
-  xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+  inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   /// Factory switch returns instances of auto-layout or coded_layout versions of view maker
@@ -44,24 +44,24 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     required model.ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     bool isStacked = false,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');
-    bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
+    bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
-    if (isUseOldDataContainer) {
+    if (isUseOldLayouter) {
       return SwitchVerticalBarChartViewMakerCL(
         chartModel: chartModel,
         chartSeriesOrientation: chartSeriesOrientation,
         isStacked: isStacked,
-        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
       return SwitchVerticalBarChartViewMaker(
           chartModel: chartModel,
           chartSeriesOrientation: chartSeriesOrientation,
           isStacked: isStacked,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     }
   }
@@ -72,24 +72,24 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     required model.ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     bool isStacked = false,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');
-    bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
+    bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
-    if (isUseOldDataContainer) {
+    if (isUseOldLayouter) {
       return SwitchLineChartViewMakerCL(
         chartModel: chartModel,
         chartSeriesOrientation: chartSeriesOrientation,
         isStacked: isStacked,
-        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
       return SwitchLineChartViewMaker(
         chartModel: chartModel,
         chartSeriesOrientation: chartSeriesOrientation,
         isStacked: isStacked,
-        xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+        inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     }
   }

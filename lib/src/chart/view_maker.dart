@@ -17,7 +17,7 @@ import '../morphic/container/constraints.dart' as constraints;
 import 'model/data_model.dart' as model;
 import 'options.dart' as options;
 import 'container/data_container.dart' as data_container;
-import 'container/container_common.dart' as container_common_new;
+import 'container/container_common.dart' as container_common;
 import 'container/legend_container.dart' as legend_container;
 import 'container/axis_container.dart' as axis_container;
 import 'container/root_container.dart' as root_container;
@@ -33,7 +33,7 @@ import '../util/util_labels.dart' as util_labels;
 ///
 /// This base view maker holds as members:
 ///   - the model in [chartModel]
-///   - the label layout strategy in [xContainerLabelLayoutStrategy]
+///   - the label layout strategy in [inputLabelLayoutStrategy]
 ///   - the definition whether the chart is stacked in [isStacked].
 ///
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
@@ -51,43 +51,45 @@ import '../util/util_labels.dart' as util_labels;
 ///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
 ///   - [container.ChartBehavior.extendAxisToOrigin] is on this Maker,
 ///     as it controls how views behave (although does not control view making).
-abstract class ChartViewMaker extends Object with container_common_new.ChartBehavior {
+abstract class ChartViewMaker extends Object with container_common.ChartBehavior {
   ChartViewMaker({
     required this.chartModel,
     required this.chartSeriesOrientation,
     this.isStacked = false,
-    this.xContainerLabelLayoutStrategy,
+    this.inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
     // Copy options also on this [ViewMaker] from Model.options
     chartOptions = chartModel.chartOptions;
 
-    // Create [yLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
+    // Create [outputLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewMaker] constructor or later
-    // (e.g. [ChartRootContainer], [YContainer]). But here, in [ChartViewMaker] is the first time we can
-    // create the [xLabelsGenerator] and [xLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
+    // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
+    // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
     // todo-0111-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
-    //                         which creates the yLabelsGenerator and xLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
+    //                         which creates the outputLabelsGenerator and inputLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
-    yLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+    outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
-      valueToLabel: chartOptions.yContainerOptions.valueToLabel,
+      // todo-00-last-done : valueToLabel: chartOptions.verticalAxisContainerOptions.outputValueToLabel,
+      valueToLabel: options.outputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
       userLabels: chartModel.yUserLabels,
       isStacked: isStacked,
     );
 
-    // See comment in YContainer constructor
-    xLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
+    // See comment in VerticalAxisContainer constructor
+    inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
       dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
-      valueToLabel: chartOptions.xContainerOptions.valueToLabel,
+      // todo-00-last-done : valueToLabel: chartOptions.horizontalAxisContainerOptions.inputValueToLabel,
+      valueToLabel: options.inputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
       userLabels: chartModel.xUserLabels,
       isStacked: isStacked,
@@ -133,12 +135,12 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   ///
   /// Important note: This should NOT be part of model, as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the Y axis.
-  late util_labels.DataRangeLabelInfosGenerator yLabelsGenerator;
+  late util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
 
-  late util_labels.DataRangeLabelInfosGenerator xLabelsGenerator;
+  late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
 
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
-  strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+  strategy.LabelLayoutStrategy? inputLabelLayoutStrategy;
 
   /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.
@@ -147,8 +149,8 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
     // Create the concrete [ChartRootContainer] for this concrete [ChartViewMaker].
     // After this invocation, the created root container is populated with children
-    // XContainer, YContainer, DataContainer and LegendContainer. Their children are partly populated,
-    // depending on the concrete container. For example YContainer is populated with DataRangeLabelInfosGenerator.
+    // HorizontalAxisContainer, VerticalAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
+    // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeLabelInfosGenerator.
 
     String isFirstStr = _debugPrintBegin();
 
@@ -192,8 +194,8 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   /// but deeper children may or may not be created.
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
-  /// [ChartRootContainer.legendContainer],  [ChartRootContainer.yContainer],
-  ///  [ChartRootContainer.xContainer], and  [chartRootContainer.chartModelContainer].
+  /// [ChartRootContainer.legendContainer],  [ChartRootContainer.verticalAxisContainer],
+  ///  [ChartRootContainer.horizontalAxisContainer], and  [chartRootContainer.chartModelContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
@@ -207,7 +209,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   // ##### Methods which create views (containers) for individual chart areas
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
-  /// or [container.YContainerCL.labelInfos].
+  /// or [container.VerticalAxisContainerCL.labelInfos].
 
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
     return axis_container.TransposingAxisContainer.Horizontal(
@@ -217,7 +219,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
   }
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
-  /// or labels in [container.YContainerCL.labelInfos].
+  /// or labels in [container.VerticalAxisContainerCL.labelInfos].
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
     return axis_container.TransposingAxisContainer.Vertical(
       chartSeriesOrientation: chartSeriesOrientation,
@@ -225,7 +227,7 @@ abstract class ChartViewMaker extends Object with container_common_new.ChartBeha
     );
   }
 
-  axis_container.TransposingAxisContainer makeViewForYContainerFirst() {
+  axis_container.TransposingAxisContainer makeViewForVerticalAxisContainerFirst() {
     return axis_container.TransposingAxisContainer.Vertical(
       chartSeriesOrientation: chartSeriesOrientation,
       chartViewMaker: this,

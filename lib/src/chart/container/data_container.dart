@@ -6,7 +6,7 @@ import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
 import 'axis_container.dart';
-import 'container_common.dart' as container_common_new;
+import 'container_common.dart' as container_common;
 import '../../morphic/container/container_layouter_base.dart';
 import '../model/data_model.dart' as model;
 import '../view_maker.dart';
@@ -16,7 +16,7 @@ import '../options.dart';
 import '../../morphic/container/container_key.dart';
 //import 'line_segment_container.dart';
 
-class DataContainer extends container_common_new.ChartAreaContainer {
+class DataContainer extends container_common.ChartAreaContainer {
 
   DataContainer({
     required ChartViewMaker chartViewMaker,
@@ -24,13 +24,13 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-011 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewYContainer???
+  // todo-011 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewVerticalAxisContainer???
   @override
   void buildAndReplaceChildren() {
     var options = chartViewMaker.chartOptions;
     var padGroup = ChartPaddingGroup(fromChartOptions: options);
-    var yLabelsGenerator = chartViewMaker.yLabelsGenerator;
-    var xLabelsGenerator = chartViewMaker.xLabelsGenerator;
+    var outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
+    var inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
     var chartSeriesOrientation = chartViewMaker.chartSeriesOrientation;
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
@@ -56,14 +56,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       chartSeriesOrientation:           chartSeriesOrientation,
                       crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.positiveOr0,
                       chartViewMaker:                   chartViewMaker,
-                      xLabelsGenerator:                 xLabelsGenerator,
-                      yLabelsGenerator:                 yLabelsGenerator,
+                      inputLabelsGenerator:                 inputLabelsGenerator,
+                      outputLabelsGenerator:                 outputLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     /* todo-00-KEEP */
                     XAxisLineContainer(
-                      xLabelsGenerator: xLabelsGenerator,
-                      yLabelsGenerator: yLabelsGenerator,
+                      inputLabelsGenerator: inputLabelsGenerator,
+                      outputLabelsGenerator: outputLabelsGenerator,
                       chartViewMaker: chartViewMaker,
                     ),
                     /* */
@@ -72,8 +72,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
                       chartSeriesOrientation:           chartSeriesOrientation,
                       crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.negative,
                       chartViewMaker:                   chartViewMaker,
-                      xLabelsGenerator:                 xLabelsGenerator,
-                      yLabelsGenerator:                 yLabelsGenerator,
+                      inputLabelsGenerator:                 inputLabelsGenerator,
+                      outputLabelsGenerator:                 outputLabelsGenerator,
                     ),
                   ],
                 ),
@@ -116,8 +116,8 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     required ChartSeriesOrientation chartSeriesOrientation,
     required model.CrossPointsModelPointsSign         crossPointsModelPointsSign,
     required ChartViewMaker                           chartViewMaker,
-    required DataRangeLabelInfosGenerator             xLabelsGenerator,
-    required DataRangeLabelInfosGenerator             yLabelsGenerator,
+    required DataRangeLabelInfosGenerator             inputLabelsGenerator,
+    required DataRangeLabelInfosGenerator             outputLabelsGenerator,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
@@ -129,14 +129,14 @@ class DataContainer extends container_common_new.ChartAreaContainer {
     switch(crossPointsModelPointsSign) {
       case model.CrossPointsModelPointsSign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
-        ratioOfPositiveOrNegativePortion = yLabelsGenerator.dataRange.ratioOfPositivePortion();
+        ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         isPointsReversed = true;
         mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
-        ratioOfPositiveOrNegativePortion = yLabelsGenerator.dataRange.ratioOfNegativePortion();
+        ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         isPointsReversed = false;
         mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
@@ -177,7 +177,7 @@ class DataContainer extends container_common_new.ChartAreaContainer {
 
 }
 
-class CrossPointsContainer extends container_common_new.ChartAreaContainer {
+class CrossPointsContainer extends container_common.ChartAreaContainer {
 
   CrossPointsContainer({
     required ChartViewMaker chartViewMaker,
@@ -197,7 +197,7 @@ class CrossPointsContainer extends container_common_new.ChartAreaContainer {
   model.CrossPointsModel crossPointsModel;
 }
 
-abstract class PointContainer extends container_common_new.ChartAreaContainer {
+abstract class PointContainer extends container_common.ChartAreaContainer {
 
   PointContainer({
     required this.pointModel,
@@ -240,20 +240,20 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
   void layout() {
     buildAndReplaceChildren();
 
-    DataRangeLabelInfosGenerator xLabelsGenerator = chartViewMaker.xLabelsGenerator;
-    DataRangeLabelInfosGenerator yLabelsGenerator = chartViewMaker.yLabelsGenerator;
+    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
+    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
 
     // Create PointOffset from this [pointModel] by giving it a range,
     // positions the [pointModel] on the x axis on it's label x coordinate.
     // The [pointOffset] can be lextr-ed to it's target value depending on chart direction.
     PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
-          dataRangeLabelInfosGenerator: xLabelsGenerator,
+          dataRangeLabelInfosGenerator: inputLabelsGenerator,
         );
     PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
-      inputDataRange: xLabelsGenerator.dataRange,
-      outputDataRange: yLabelsGenerator.dataRange,
+      inputDataRange: inputLabelsGenerator.dataRange,
+      outputDataRange: outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
       isLextrUseSizerInsteadOfConstraint: false,

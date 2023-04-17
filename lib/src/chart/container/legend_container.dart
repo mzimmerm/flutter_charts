@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Size, Rect, Paint, Canvas;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level base libraries or equivalent
-import 'container_common.dart' as container_common_new show ChartAreaContainer;
+import 'container_common.dart' as container_common show ChartAreaContainer;
 import '../../morphic/container/label_container.dart' as label_container;
 import '../chart_label_container.dart' as chart_label_container;
 import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
@@ -27,7 +27,7 @@ import '../../morphic/container/layouter_one_dimensional.dart';
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by the maximum label or series indicator height,
 /// plus extra spacing.
-class LegendContainer extends container_common_new.ChartAreaContainer {
+class LegendContainer extends container_common.ChartAreaContainer {
   // ### calculated values
 
   /// Constructs the container that holds the data series legends labels and
@@ -179,7 +179,7 @@ class LegendContainer extends container_common_new.ChartAreaContainer {
 
 
 /// Container of one item in the chart legend; each instance corresponds to one row (series) of data.
-class LegendItemContainer extends container_common_new.ChartAreaContainer {
+class LegendItemContainer extends container_common.ChartAreaContainer {
 
   /// Rectangle of the legend color square series indicator
 
@@ -358,7 +358,7 @@ class LegendItemContainer extends container_common_new.ChartAreaContainer {
 }
 
 /// Represents the series color indicator square in the legend.
-class LegendIndicatorRectContainer extends container_common_new.ChartAreaContainer {
+class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
 
   /// Rectangle of the legend color square series indicator.
   /// This is moved to offset then [paint]ed using rectangle paint primitive.

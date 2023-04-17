@@ -55,32 +55,32 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   /// Simple Legend+X+Y+Data Container for a flutter chart.
   ///
   /// The simple flutter chart layout consists of only 2 major areas:
-  /// - [YContainerCL] area manages and lays out the Y labels area, by calculating
+  /// - [VerticalAxisContainerCL] area manages and lays out the Y labels area, by calculating
   ///   sizes required for Y labels (in both X and Y direction).
-  ///   The [YContainerCL]
-  /// - [XContainerCL] area manages and lays out the
+  ///   The [VerticalAxisContainerCL]
+  /// - [HorizontalAxisContainerCL] area manages and lays out the
   ///   - X labels area, and the
   ///   - grid area.
   /// In the X direction, takes up all space left after the
-  /// YContainer layes out the  Y labels area, that is, full width
-  /// minus [YContainerCL.yLabelsContainerWidth].
+  /// VerticalAxisContainer layes out the  Y labels area, that is, full width
+  /// minus [VerticalAxisContainerCL.yLabelsContainerWidth].
   /// In the Y direction, takes
   /// up all available chart area, except a top horizontal strip,
   /// required to paint half of the topmost label.
   ChartRootContainerCL({
     required this.legendContainer,
-    required this.xContainer,
-    required this.yContainer,
-    required this.yContainerFirst,
+    required this.horizontalAxisContainer,
+    required this.verticalAxisContainer,
+    required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
     required this.isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
-    addChildren([legendContainer, xContainer, yContainer, dataContainer]);
+    addChildren([legendContainer, horizontalAxisContainer, verticalAxisContainer, dataContainer]);
   }
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,
@@ -94,11 +94,11 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   @override
   late LegendContainer legendContainer;
   @override
-  late XContainerCL xContainer;
+  late HorizontalAxisContainerCL horizontalAxisContainer;
   @override
-  late YContainerCL yContainer;
+  late VerticalAxisContainerCL verticalAxisContainer;
   @override
-  late YContainerCL yContainerFirst;
+  late VerticalAxisContainerCL verticalAxisContainerFirst;
   @override
   late DataContainerCL dataContainer;
 
@@ -107,12 +107,12 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
 
   late bool isStacked;
 
-  // ##### Methods sharing information between child containers - XContainer and YContainer Source to DataContainer Sink
+  // ##### Methods sharing information between child containers - HorizontalAxisContainer and VerticalAxisContainer Source to DataContainer Sink
 
-  double get xGridStep => xContainer.xGridStep;
+  double get xGridStep => horizontalAxisContainer.xGridStep;
 
   /// X coordinates of x ticks (x tick - middle of column, also middle of label).
-  /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
+  /// Once [HorizontalAxisContainerCL.layout] and [VerticalAxisContainerCL.layout] are complete,
   /// this list drives the layout of [DataContainerCL].
   ///
   /// xTickX are calculated from labels [XLabelContainer]s, and used late in the
@@ -120,14 +120,14 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
   List<double> get xTickXs =>
-      xContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
+      horizontalAxisContainer._xLabelContainers.map((var xLabelContainer) => xLabelContainer.parentOffsetTick).toList();
 
   /// Y coordinates of y ticks (y tick - extrapolated value of data, also middle of label).
-  /// Once [XContainerCL.layout] and [YContainerCL.layout] are complete,
+  /// Once [HorizontalAxisContainerCL.layout] and [VerticalAxisContainerCL.layout] are complete,
   /// this list drives the layout of [DataContainerCL].
   ///
   /// See [AxisLabelContainer.parentOffsetTick] for details.
-  List<double> get yTickYs => yContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
+  List<double> get yTickYs => verticalAxisContainer._yLabelContainers.map((var yLabelContainer) => yLabelContainer.parentOffsetTick).toList();
 
 
   // ##### Methods for layout and paint
@@ -170,80 +170,80 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     ui.Offset legendContainerOffset = ui.Offset.zero;
     legendContainer.applyParentOffset(this, legendContainerOffset);
 
-    // ####### 2. Layout [yContainerFirst] to get Y container width
-    //        that moves [XContainer] and [DataContainer].
-    double yContainerFirstHeight = constraints.height - legendContainerSize.height;
-    var yContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+    // ####### 2. Layout [verticalAxisContainerFirst] to get Y container width
+    //        that moves [HorizontalAxisContainer] and [DataContainer].
+    double verticalAxisContainerFirstHeight = constraints.height - legendContainerSize.height;
+    var verticalAxisContainerFirstBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
-      yContainerFirstHeight,
+      verticalAxisContainerFirstHeight,
     ));
 
-    // Note: yContainerFirst used to be created here as  YContainer( chartViewMaker: chartViewMaker, yLabelsMaxHeightFromFirstLayout: 0.0
-    //       yContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
-    //       is not yet set here, as yContainerFirst never goes through addChildren which sets _parent on children.
+    // Note: verticalAxisContainerFirst used to be created here as  VerticalAxisContainer( chartViewMaker: chartViewMaker, yLabelsMaxHeightFromFirstLayout: 0.0
+    //       verticalAxisContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
+    //       is not yet set here, as verticalAxisContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
-    yContainerFirst.applyParentConstraints(this, yContainerFirstBoxConstraints);
-    yContainerFirst.layout();
+    verticalAxisContainerFirst.applyParentConstraints(this, verticalAxisContainerFirstBoxConstraints);
+    verticalAxisContainerFirst.layout();
 
-    yContainer._yLabelsMaxHeightFromFirstLayout = yContainerFirst.yLabelsMaxHeight;
-    // ####### 3. XContainer: Given width of YContainerFirst, constraint, then layout XContainer
+    verticalAxisContainer._yLabelsMaxHeightFromFirstLayout = verticalAxisContainerFirst.yLabelsMaxHeight;
+    // ####### 3. HorizontalAxisContainer: Given width of VerticalAxisContainerFirst, constraint, then layout HorizontalAxisContainer
 
-    ui.Size yContainerFirstSize = yContainerFirst.layoutSize;
+    ui.Size verticalAxisContainerFirstSize = verticalAxisContainerFirst.layoutSize;
 
-    // xContainer layout width depends on yContainerFirst layout result.  But this dependency can be expressed
-    // as a constraint on xContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
-    var xContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
-      constraints.width - yContainerFirstSize.width,
+    // horizontalAxisContainer layout width depends on verticalAxisContainerFirst layout result.  But this dependency can be expressed
+    // as a constraint on horizontalAxisContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
+    var horizontalAxisContainerBoxConstraints =  BoxContainerConstraints.insideBox(size: ui.Size(
+      constraints.width - verticalAxisContainerFirstSize.width,
       constraints.height - legendContainerSize.height,
     ));
 
-    xContainer.applyParentConstraints(this, xContainerBoxConstraints);
-    xContainer.layout();
+    horizontalAxisContainer.applyParentConstraints(this, horizontalAxisContainerBoxConstraints);
+    horizontalAxisContainer.layout();
 
-    // When we got here, xContainer layout is done, so set the late final layoutSize after re-layouts
-    xContainer.layoutSize = xContainer.lateReLayoutSize;
+    // When we got here, horizontalAxisContainer layout is done, so set the late final layoutSize after re-layouts
+    horizontalAxisContainer.layoutSize = horizontalAxisContainer.lateReLayoutSize;
 
-    ui.Size xContainerSize = xContainer.layoutSize;
-    ui.Offset xContainerOffset = ui.Offset(yContainerFirstSize.width, constraints.height - xContainerSize.height);
-    xContainer.applyParentOffset(this, xContainerOffset);
+    ui.Size horizontalAxisContainerSize = horizontalAxisContainer.layoutSize;
+    ui.Offset horizontalAxisContainerOffset = ui.Offset(verticalAxisContainerFirstSize.width, constraints.height - horizontalAxisContainerSize.height);
+    horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset);
 
-    // ####### 4. [YContainer]: The actual YContainer layout is needed, as height constraint for Y container
-    //          is only known after XContainer layedout xUserLabels.  YContainer expands down to top of xContainer.
+    // ####### 4. [VerticalAxisContainer]: The actual VerticalAxisContainer layout is needed, as height constraint for Y container
+    //          is only known after HorizontalAxisContainer layedout xUserLabels.  VerticalAxisContainer expands down to top of horizontalAxisContainer.
     //          The [yLabelsMaxHeightFromFirstLayout] is used to extrapolate data values to the y axis,
     //          and put labels on ticks.
 
-    // yContainer layout height depends on xContainer layout result.  But this dependency can be expressed
-    // as a constraint on yContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
-    var yConstraintsHeight = constraints.height - legendContainerSize.height - xContainerSize.height;
-    var yContainerBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
+    // verticalAxisContainer layout height depends on horizontalAxisContainer layout result.  But this dependency can be expressed
+    // as a constraint on verticalAxisContainer, so no need to implement [findSourceContainersReturnLayoutResultsToBuildSelf]
+    var yConstraintsHeight = constraints.height - legendContainerSize.height - horizontalAxisContainerSize.height;
+    var verticalAxisContainerBoxConstraints = BoxContainerConstraints.insideBox(size: ui.Size(
       constraints.width,
       yConstraintsHeight,
     ));
 
-    yContainer.applyParentConstraints(this, yContainerBoxConstraints);
-    yContainer.layout();
+    verticalAxisContainer.applyParentConstraints(this, verticalAxisContainerBoxConstraints);
+    verticalAxisContainer.layout();
 
-    var yContainerSize = yContainer.layoutSize;
-    // The layout relies on YContainer width first time and second time to be the same, as width
-    //    was used as remainder space for XContainer.
+    var verticalAxisContainerSize = verticalAxisContainer.layoutSize;
+    // The layout relies on VerticalAxisContainer width first time and second time to be the same, as width
+    //    was used as remainder space for HorizontalAxisContainer.
     // But height, will NOT be the same, it will be shorter second time.
-    assert (yContainerFirstSize.width == yContainerSize.width);
-    ui.Offset yContainerOffset = ui.Offset(0.0, legendContainerSize.height);
-    yContainer.applyParentOffset(this, yContainerOffset);
+    assert (verticalAxisContainerFirstSize.width == verticalAxisContainerSize.width);
+    ui.Offset verticalAxisContainerOffset = ui.Offset(0.0, legendContainerSize.height);
+    verticalAxisContainer.applyParentOffset(this, verticalAxisContainerOffset);
 
     ui.Offset dataContainerOffset;
 
     // ### 6. Layout the data area, which included the grid
     // by calculating the X and Y positions of grid.
     // This must be done after X and Y are layed out - see xTickXs, yTickYs.
-    // The [yContainer] internals and [yContainerSize] are both needed to offset and constraint the [dataContainer].
+    // The [verticalAxisContainer] internals and [verticalAxisContainerSize] are both needed to offset and constraint the [dataContainer].
     BoxContainerConstraints dataContainerBoxConstraints;
     dataContainerBoxConstraints = BoxContainerConstraints.insideBox(
         size: ui.Size(
-          constraints.width - yContainerSize.width,
-          yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - xContainerSize.height,
+          constraints.width - verticalAxisContainerSize.width,
+          yConstraintsHeight, // Note: = constraints.height - legendContainerSize.height - horizontalAxisContainerSize.height,
         ));
-    dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
+    dataContainerOffset = ui.Offset(verticalAxisContainerSize.width, legendContainerSize.height);
 
     dataContainer.applyParentConstraints(this, dataContainerBoxConstraints);
     dataContainer.layout();
@@ -265,16 +265,16 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   /// Before the actual canvas painting, at the beginning of this method,
   /// this class's [layout] is performed, which recursively lays out all member [BoxContainer]s.
   /// Once this top container is layed out, the [paint] is called on all
-  /// member [BoxContainer]s ([YContainerCL],[XContainerCL] etc),
+  /// member [BoxContainer]s ([VerticalAxisContainerCL],[HorizontalAxisContainerCL] etc),
   /// which recursively paints the leaf [BoxContainer]s lines, rectangles and circles
   /// in their calculated layout positions.
   @override
   void paint(ui.Canvas canvas) {
 
     // Draws the Y labels area of the chart.
-    yContainer.paint(canvas);
+    verticalAxisContainer.paint(canvas);
     // Draws the X labels area of the chart.
-    xContainer.paint(canvas);
+    horizontalAxisContainer.paint(canvas);
     // Draws the legend area of the chart.
     legendContainer.paint(canvas);
     // Draws the grid, then data area - bars (bar chart), lines and points (line chart).
@@ -287,7 +287,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
 
 }
 
-/// Common base class for containers of axes with their labels - [XContainerCL] and [YContainerCL].
+/// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [VerticalAxisContainerCL].
 abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {
   AxisContainerCL({
     required ChartViewMaker chartViewMaker,
@@ -305,9 +305,9 @@ mixin PixelRangeProvider on ChartAreaContainer {
   ///      available to the axis. Because this [AxisContainerCL] is generally bigger than the axis pixels,
   ///      this range generally does NOT generally start at zero and end below the pixels available
   ///      to the [AxisContainerCL], as follows:
-  ///      - For the [YContainerCL], the [axisPixelsRange]  start after a half-label height is excluded on the top,
+  ///      - For the [VerticalAxisContainerCL], the [axisPixelsRange]  start after a half-label height is excluded on the top,
   ///        and a vertical tick height is excluded on the bottom.
-  ///      - For the [XContainerCL], the [axisPixelsRange] is currently UNUSED.
+  ///      - For the [HorizontalAxisContainerCL], the [axisPixelsRange] is currently UNUSED.
   ///
   ///  2. The difference between [axisPixelsRange] min and max is the height constraint
   ///     on [DataContainer]!
@@ -315,7 +315,7 @@ mixin PixelRangeProvider on ChartAreaContainer {
   ///   3. If is the interval to which the axis data values, stored in [labelsGenerator]'s
   ///      member [DataRangeLabelInfosGenerator.dataRange] should be extrapolated.
   ///
-  /// Important note: Cannot be final, because, if on XContainer, the [layout] code where
+  /// Important note: Cannot be final, because, if on HorizontalAxisContainer, the [layout] code where
   ///                 this is set may be called multiple times.
   late Interval axisPixelsRange;
 }
@@ -327,14 +327,14 @@ mixin PixelRangeProvider on ChartAreaContainer {
 /// - Horizontally available space is used only as much as needed.
 /// The used amount is given by maximum Y label width, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
-/// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class YContainerCL extends AxisContainerCL implements YContainer {
+/// - See the [HorizontalAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
+class VerticalAxisContainerCL extends AxisContainerCL implements VerticalAxisContainer {
 
   /// Constructs the container that holds Y labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
-  YContainerCL({
+  VerticalAxisContainerCL({
     required ChartViewMaker chartViewMaker,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
@@ -347,17 +347,17 @@ class YContainerCL extends AxisContainerCL implements YContainer {
   late List<YLabelContainerCL> _yLabelContainers;
 
   /// Maximum label height found by the first layout (pre-layout),
-  /// is ONLY used to 'shorten' YContainer constraints on top.
+  /// is ONLY used to 'shorten' VerticalAxisContainer constraints on top.
   double _yLabelsMaxHeightFromFirstLayout = 0.0;
 
-  /// Overridden method creates this [YContainerCL]'s hierarchy-children Y labels
-  /// (instances of [YLabelContainer]) which are maintained in this [YContainerCL._yLabelContainers].
+  /// Overridden method creates this [VerticalAxisContainerCL]'s hierarchy-children Y labels
+  /// (instances of [YLabelContainer]) which are maintained in this [VerticalAxisContainerCL._yLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndReplaceChildren] is that we MAY NOT know until the parent
   /// [chartViewMaker] is being layed out, how much Y-space there is, therefore,
-  /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [YContainerCL],
-  /// only on [XContainerCL] re-layout.
+  /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [VerticalAxisContainerCL],
+  /// only on [HorizontalAxisContainerCL] re-layout.
   ///
   /// The created Y labels should be layed out by invoking [layout]
   /// immediately after this method [buildAndReplaceChildren]
@@ -370,7 +370,7 @@ class YContainerCL extends AxisContainerCL implements YContainer {
 
     // Code above MUST run for the side-effects of setting [axisPixels] and extrapolating the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
-    if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
       _yLabelContainers = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       replaceChildrenWith(_yLabelContainers);
       return;
@@ -386,11 +386,11 @@ class YContainerCL extends AxisContainerCL implements YContainer {
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in chartViewMaker.yLabelsGenerator.labelInfoList) {
+    for (AxisLabelInfo labelInfo in chartViewMaker.outputLabelsGenerator.labelInfoList) {
       var yLabelContainer = YLabelContainerCL(
         chartViewMaker: chartViewMaker,
         label: labelInfo.formattedLabel,
-        labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in YContainer
+        labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in VerticalAxisContainer
         labelStyle: labelStyle,
         labelInfo: labelInfo,
         ownerChartAreaContainer: this,
@@ -402,26 +402,26 @@ class YContainerCL extends AxisContainerCL implements YContainer {
     replaceChildrenWith(_yLabelContainers);
   }
 
-  /// Lays out this [YContainerCL] - the area containing the Y axis labels -
+  /// Lays out this [VerticalAxisContainerCL] - the area containing the Y axis labels -
   /// which children were build during [buildAndReplaceChildren].
   ///
-  /// As this [YContainerCL] is [BuilderOfChildrenDuringParentLayout],
+  /// As this [VerticalAxisContainerCL] is [BuilderOfChildrenDuringParentLayout],
   /// this method should be called just after [buildAndReplaceChildren]
   /// which builds hierarchy-children of this container.
   ///
   /// In the hierarchy-parent [ChartRootContainerCL.layout],
   /// the call to this object's [layout] is second, after [LegendContainer.layout].
-  /// This [YContainerCL.layout] calculates [YContainerCL]'s labels width,
+  /// This [VerticalAxisContainerCL.layout] calculates [VerticalAxisContainerCL]'s labels width,
   /// the width taken by this container for the Y axis labels.
   ///
   /// The remaining horizontal width of [ChartRootContainerCL.chartArea] minus
-  /// [YContainerCL]'s labels width provides remaining available
-  /// horizontal space for the [GridLinesContainer] and [XContainerCL].
+  /// [VerticalAxisContainerCL]'s labels width provides remaining available
+  /// horizontal space for the [GridLinesContainer] and [HorizontalAxisContainerCL].
   @override
   void layout() {
     buildAndReplaceChildren();
 
-    // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the YContainer coordinates.
+    // [_axisYMin] and [_axisYMax] define end points of the Y axis, in the VerticalAxisContainer coordinates.
     // The [_axisYMin] does not start at 0, but leaves space for half label height
     double axisPixelsMin = _yLabelsMaxHeightFromFirstLayout / 2;
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
@@ -431,13 +431,13 @@ class YContainerCL extends AxisContainerCL implements YContainer {
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
     // The code above must be performed for axisPixelsRange to initialize
-    if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
       return;
     }
 
-    // labelInfos.extrapolateLabels(axisPixelsYMin: yContainerAxisPixelsYMin, axisPixelsYMax: yContainerAxisPixelsYMax);
+    // labelInfos.extrapolateLabels(axisPixelsYMin: verticalAxisContainerAxisPixelsYMin, axisPixelsYMax: verticalAxisContainerAxisPixelsYMax);
 
     // Iterate, apply parent constraints, then layout all labels in [_yLabelContainers],
     //   which were previously created in [_createYLabelContainers]
@@ -451,21 +451,21 @@ class YContainerCL extends AxisContainerCL implements YContainer {
 
       // Move the contained LabelContainer to correct position
       yLabelContainer.applyParentOffset(this,
-        ui.Offset(chartViewMaker.chartOptions.yContainerOptions.yLabelsPadLR, labelTopY),
+        ui.Offset(chartViewMaker.chartOptions.verticalAxisContainerOptions.labelPadLR, labelTopY),
       );
     }
 
     // Set the [layoutSize]
     double yLabelsContainerWidth =
         _yLabelContainers.map((yLabelContainer) => yLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * chartViewMaker.chartOptions.yContainerOptions.yLabelsPadLR;
+            2 * chartViewMaker.chartOptions.verticalAxisContainerOptions.labelPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL yLabelContainer in _yLabelContainers) {
@@ -475,7 +475,7 @@ class YContainerCL extends AxisContainerCL implements YContainer {
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewMaker.chartOptions.yContainerOptions.isYContainerShown) {
+    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL yLabelContainer in _yLabelContainers) {
@@ -498,19 +498,19 @@ class YContainerCL extends AxisContainerCL implements YContainer {
 /// - Vertically available space is used only as much as needed.
 /// The used amount is given by maximum X label height, plus extra spacing.
 /// - See [layout] and [layoutSize] for resulting size calculations.
-/// - See the [XContainerCL] constructor for the assumption on [BoxContainerConstraints].
-class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements XContainer {
+/// - See the [HorizontalAxisContainerCL] constructor for the assumption on [BoxContainerConstraints].
+class HorizontalAxisContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangeProvider implements HorizontalAxisContainer {
 
   /// Constructs the container that holds X labels.
   ///
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
-  XContainerCL({
+  HorizontalAxisContainerCL({
     required ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartViewMaker: chartViewMaker,
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
@@ -530,7 +530,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
   ui.Size lateReLayoutSize = const ui.Size(0.0, 0.0);
 
   @override
-  /// Overridden method creates this [XContainerCL]'s hierarchy-children X labels
+  /// Overridden method creates this [HorizontalAxisContainerCL]'s hierarchy-children X labels
   /// (instances of [XLabelContainer]) which are maintained in this [_xLabelContainers].
   ///
   /// The reason the hierarchy-children Y labels are created late in this
@@ -549,7 +549,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
     _xLabelContainers = List.empty(growable: true);
 
     ChartOptions options = chartViewMaker.chartOptions;
-    List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> xUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -559,10 +559,10 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
       var xLabelContainer = XLabelContainerCL(
         chartViewMaker: chartViewMaker,
         label: xUserLabels[xIndex].formattedLabel,
-        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in XContainer
+        labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in HorizontalAxisContainer
         labelStyle: labelStyle,
         // In [XLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: chartViewMaker.xLabelsGenerator.labelInfoList[xIndex],
+        labelInfo: chartViewMaker.inputLabelsGenerator.labelInfoList[xIndex],
         ownerChartAreaContainer: this,
       );
       _xLabelContainers.add(xLabelContainer);
@@ -584,10 +584,10 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 
     ChartOptions options = chartViewMaker.chartOptions;
 
-    // Purely artificial on XContainer for now, we are taking labels from data, or user, NOT generating range.
+    // Purely artificial on HorizontalAxisContainer for now, we are taking labels from data, or user, NOT generating range.
     axisPixelsRange = chartViewMaker.chartModel.dataRangeWhenStringLabels;
 
-    List<AxisLabelInfo> xUserLabels = chartViewMaker.xLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> xUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
     double       yTicksWidth =
                    options.dataContainerOptions.dataLeftTickWidth + options.dataContainerOptions.dataRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
@@ -606,12 +606,12 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
       xLabelContainer.applyParentOrderedSkip(this, !_isLabelOnIndexShown(xIndex));
 
       // Core of X layout calcs - get the layed out label size,
-      //   then find xTickX - the X middle of the label bounding rectangle in hierarchy-parent [XContainer]
+      //   then find xTickX - the X middle of the label bounding rectangle in hierarchy-parent [HorizontalAxisContainer]
       ui.Rect labelBound = ui.Offset.zero & xLabelContainer.layoutSize;
       double halfStepWidth = _xGridStep / 2;
       double atIndexOffset = _xGridStep * xIndex;
       double xTickX = halfStepWidth + atIndexOffset + options.dataContainerOptions.dataLeftTickWidth;
-      double labelTopY = options.xContainerOptions.xLabelsPadTB; // down by XContainer padding
+      double labelTopY = options.horizontalAxisContainerOptions.labelPadTB; // down by HorizontalAxisContainer padding
 
       xLabelContainer.parentOffsetTick = xTickX;
 
@@ -630,10 +630,10 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
     // Set the layout size calculated by this layout. This may be called multiple times during relayout.
     lateReLayoutSize = ui.Size(
       constraints.size.width,
-      xLabelsMaxHeight + 2 * options.xContainerOptions.xLabelsPadTB,
+      xLabelsMaxHeight + 2 * options.horizontalAxisContainerOptions.labelPadTB,
     );
 
-    if (!chartViewMaker.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
       // If not showing this container, no layout needed, just set size to 0.
       lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
@@ -672,7 +672,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewMaker.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
       return;
     }
     // super.applyParentOffset(caller, offset); // super did double-offset as xLabelContainer are on 2 places
@@ -682,7 +682,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
     }
   }
 
-  /// Paints this [XContainerCL] on the passed [canvas].
+  /// Paints this [HorizontalAxisContainerCL] on the passed [canvas].
   ///
   /// Delegates painting to all contained [LabelContainerOriginalKeep]s.
   /// Any contained [LabelContainerOriginalKeep] must have been offset to the appropriate position.
@@ -699,7 +699,7 @@ class XContainerCL extends AdjustableLabelsChartAreaContainer with PixelRangePro
   /// which end up in the intended position but rotated counterclockwise.
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewMaker.chartOptions.xContainerOptions.isXContainerShown) {
+    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {
@@ -770,7 +770,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Keeps data values grouped in columns.
   ///
   /// This column grouped data instance is managed here in the [DataContainerCL],
-  /// as their data points are needed both during [YContainerCL.layout]
+  /// as their data points are needed both during [VerticalAxisContainerCL.layout]
   /// to calculate extrapolating, and also here in [DataContainerCL.layout] to create
   /// [PointPresentersColumns] instance.
   ///
@@ -781,9 +781,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
   /// Container of gridlines parallel to X axis.
   ///
-  /// The reason to separate [_xGridLinesContainer] and [_yGridLinesContainer] is for them to hide/show independently.
-  late GridLinesContainer _xGridLinesContainer;
-  late GridLinesContainer _yGridLinesContainer;
+  /// The reason to separate [_horizontalGridLinesContainer] and [_verticalGridLinesContainer] is for them to hide/show independently.
+  late GridLinesContainer _horizontalGridLinesContainer;
+  late GridLinesContainer _verticalGridLinesContainer;
 
   /// Columns of pointPresenters.
   ///
@@ -793,7 +793,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   late PointPresentersColumns pointPresentersColumns;
 
-  /// Overridden builds children of self [DataContainerCL], the [_yGridLinesContainer] and [_xGridLinesContainer]
+  /// Overridden builds children of self [DataContainerCL], the [_verticalGridLinesContainer] and [_horizontalGridLinesContainer]
   /// and adds them as self children.
   @override
   void buildAndReplaceChildren() {
@@ -810,14 +810,14 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Use this DataContainer layout dependency on [xTickXs] as guidelines for X labels
-    // in [XContainer._xLabelContainers], for each create one [LineContainer] as child of [_yGridLinesContainer]
+    // in [HorizontalAxisContainer._xLabelContainers], for each create one [LineContainer] as child of [_verticalGridLinesContainer]
 
     // Initial values which will show as bad lines if not changed during layout.
     ui.Offset initLineFrom = const ui.Offset(0.0, 0.0);
     ui.Offset initLineTo = const ui.Offset(100.0, 100.0);
 
     // Construct the GridLinesContainer with children: [LineContainer]s
-    _yGridLinesContainer = GridLinesContainer(
+    _verticalGridLinesContainer = GridLinesContainer(
       chartViewMaker: chartViewMaker,
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
@@ -835,11 +835,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       }).toList(growable: false),
     );
 
-    // For stacked, we need to add last right vertical yGrid line - one more child to  [_yGridLinesContainer]
+    // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainer]
     if (isStacked && chartRootContainer.xTickXs.isNotEmpty) {
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 
-      _yGridLinesContainer.addChildren([
+      _verticalGridLinesContainer.addChildren([
         LineContainerCL(
           chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
@@ -855,15 +855,15 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       ]);
     }
     // Add the constructed Y - parallel GridLinesContainer as child to self DataContainer
-    dataContainerChildren.addAll([_yGridLinesContainer]);
+    dataContainerChildren.addAll([_verticalGridLinesContainer]);
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Use this DataContainer layout dependency on [yTickYs] as guidelines for Y labels
-    // in [YContainer._yLabelContainers], for each create one [LineContainer] as child of [_xGridLinesContainer]
+    // in [VerticalAxisContainer._yLabelContainers], for each create one [LineContainer] as child of [_horizontalGridLinesContainer]
 
     // Construct the GridLinesContainer with children: [LineContainer]s
-    _xGridLinesContainer = GridLinesContainer(
+    _horizontalGridLinesContainer = GridLinesContainer(
       chartViewMaker: chartViewMaker,
       children:
           // yTickYs create vertical xLineContainers
@@ -883,7 +883,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
 
     // Add the constructed X - parallel GridLinesContainer as child to self DataContainer
-    dataContainerChildren.addAll([_xGridLinesContainer]);
+    dataContainerChildren.addAll([_horizontalGridLinesContainer]);
 
     replaceChildrenWith(dataContainerChildren);
   }
@@ -893,7 +893,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Uses all available space in the [constraints] set in parent [buildAndReplaceChildren],
   /// which it divides evenly between it's children.
   ///
-  /// First lays out the Grid, then, scales the columns to the [YContainerCL]'s extrapolate
+  /// First lays out the Grid, then, scales the columns to the [VerticalAxisContainerCL]'s extrapolate
   /// based on the available size.
   @override
   void layout() {
@@ -907,24 +907,24 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // ### 1. Vertical Grid (yGrid) layout:
 
     // Position the vertical yGrid in the middle of labels (line chart) or on label left edge (stacked bar)
-    _yGridLinesContainer.applyParentConstraints(this, constraints);
-    _yGridLinesContainer.layout();
+    _verticalGridLinesContainer.applyParentConstraints(this, constraints);
+    _verticalGridLinesContainer.layout();
 
     // ### 2. Horizontal Grid (xGrid) layout:
 
     // Position the horizontal xGrid at mid-points of labels at yTickY.
-    _xGridLinesContainer.applyParentConstraints(this, constraints);
-    _xGridLinesContainer.layout();
+    _horizontalGridLinesContainer.applyParentConstraints(this, constraints);
+    _horizontalGridLinesContainer.layout();
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
 
     // Move all container atomic elements - lines, labels, circles etc
-    _xGridLinesContainer.applyParentOffset(this, offset);
+    _horizontalGridLinesContainer.applyParentOffset(this, offset);
 
     // draw vertical grid
-    _yGridLinesContainer.applyParentOffset(this, offset);
+    _verticalGridLinesContainer.applyParentOffset(this, offset);
 
     // Create, layout, then offset, the 'data container' replacement - the [PointPresentersColumns].
     // The [PointsColumns] and [PointPresentersColumns] are the OLD NOT EXACTLY EQUIVALENT manual way of creating
@@ -940,8 +940,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // This section is doing the following:
     // 1. Creates the 'data container', represented here by [PointsColumns]
     // 2. Layouts the 'data container' by extrapolating.
-    //    Extrapolating is using the [_SourceYContainerAndYContainerToSinkDataContainer]
-    //    which holds the previously layed out [XContainer] and [YContainer].
+    //    Extrapolating is using the [_SourceVerticalAxisContainerAndVerticalAxisContainerToSinkDataContainer]
+    //    which holds the previously layed out [HorizontalAxisContainer] and [VerticalAxisContainer].
     // 3. Applies the parent offset on the 'data container' [PointsColumns].
     //    This offsets the 'data container' [PointsColumns] to the right of the Y axis,
     //    and to the top of the X axis.
@@ -961,7 +961,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
     
     // 2. Layout the data container by extrapolating.
-    // Scale the [pointsColumns] to the [YContainer]'s extrapolate.
+    // Scale the [pointsColumns] to the [VerticalAxisContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
     _lextrPointsColumns(chartViewMaker.chartModel);
@@ -989,11 +989,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   void _paintGridLines(ui.Canvas canvas) {
     // draw horizontal grid
-    _xGridLinesContainer.paint(canvas);
+    _horizontalGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartViewMaker.chartOptions.yContainerOptions.isYGridlinesShown) {
-      _yGridLinesContainer.paint(canvas);
+    if (chartViewMaker.chartOptions.verticalAxisContainerOptions.isHorizontalGridLinessShown) {
+      _verticalGridLinesContainer.paint(canvas);
     }
   }
 
@@ -1204,7 +1204,7 @@ class StackableValuePoint {
   // ################## Members ###################
   // ### Group 0: Structural
 
-  /// Root container added to access yContainer.axisPixels min / max
+  /// Root container added to access verticalAxisContainer.axisPixels min / max
   late final ChartViewMaker chartViewMaker;
 
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
@@ -1295,18 +1295,18 @@ class StackableValuePoint {
   ///
   StackableValuePoint lextrToPixels({
     required double scaledX,
-    required DataRangeLabelInfosGenerator yLabelsGenerator,
+    required DataRangeLabelInfosGenerator outputLabelsGenerator,
   }) {
-    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in yLabelsGenerator
+    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in outputLabelsGenerator
     // were calculated using the NEW [ChartModel]
 
-    YContainerCL yContainerCL = chartViewMaker.chartRootContainer.yContainer as YContainerCL;
-    double axisPixelsYMin = yContainerCL.axisPixelsRange.min;
-    double axisPixelsYMax = yContainerCL.axisPixelsRange.max;
+    VerticalAxisContainerCL verticalAxisContainerCL = chartViewMaker.chartRootContainer.verticalAxisContainer as VerticalAxisContainerCL;
+    double axisPixelsYMin = verticalAxisContainerCL.axisPixelsRange.min;
+    double axisPixelsYMax = verticalAxisContainerCL.axisPixelsRange.max;
 
     scaledFrom = ui.Offset(
       scaledX,
-      yLabelsGenerator.lextrValueToPixels(
+      outputLabelsGenerator.lextrValueToPixels(
         value: fromY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -1314,7 +1314,7 @@ class StackableValuePoint {
     );
     scaledTo = ui.Offset(
       scaledX,
-      yLabelsGenerator.lextrValueToPixels(
+      outputLabelsGenerator.lextrValueToPixels(
         value: toY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -1553,7 +1553,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
         double scaledX = chartRootContainer.xTickXs[col];
         point.lextrToPixels(
           scaledX: scaledX,
-          yLabelsGenerator: chartViewMaker.yLabelsGenerator,
+          outputLabelsGenerator: chartViewMaker.outputLabelsGenerator,
         );
       });
       col++;
@@ -1566,7 +1566,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// presumable calle from parent [DataContainerCL].
   ///
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer
-  ///             dataContainerOffset = ui.Offset(yContainerSize.width, legendContainerSize.height);
+  ///             dataContainerOffset = ui.Offset(verticalAxisContainerSize.width, legendContainerSize.height);
   ///
   /// it moves all points by the offset of [DataContainerCL] in [ChartRootContainerCL].
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {

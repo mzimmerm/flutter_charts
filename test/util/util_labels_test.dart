@@ -179,7 +179,8 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartSeriesOrientation cha
     dataModel: mockChartModel,
     dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-    valueToLabel: options.yContainerOptions.valueToLabel,
+    // todo-00-last-done : valueToLabel: options.verticalAxisContainerOptions.outputValueToLabel,
+    valueToLabel: outputValueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
     isStacked: false,
   );
@@ -251,7 +252,8 @@ void rangeTestCore(
       dataModel: dataModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
-      valueToLabel: options.yContainerOptions.valueToLabel,
+      // todo-00-last-done : valueToLabel: options.verticalAxisContainerOptions.outputValueToLabel,
+      valueToLabel: outputValueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
       isStacked: false,
     );

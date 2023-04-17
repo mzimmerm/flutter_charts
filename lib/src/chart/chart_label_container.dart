@@ -3,11 +3,10 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
 import '../morphic/container/label_container.dart';
-import 'container/container_common.dart' as container_common_new show ChartAreaContainer;
+import 'container/container_common.dart' as container_common show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'options.dart' show ChartOptions;
 import '../util/util_labels.dart' show AxisLabelInfo;
-// import '../util/util_dart.dart' as util_dart;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -32,7 +31,7 @@ import '../util/util_labels.dart' show AxisLabelInfo;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [textPainter]
 ///   is always layed out, ready to be painted.
-class ChartLabelContainer extends container_common_new.ChartAreaContainer with LabelContainerMixin {
+class ChartLabelContainer extends container_common.ChartAreaContainer with LabelContainerMixin {
 
   // Allows to configure certain sizes, colors, and layout.
   // final LabelStyle _labelStyle;
@@ -96,7 +95,7 @@ class ChartLabelContainer extends container_common_new.ChartAreaContainer with L
 /// this container's center [parentOffsetTick] in parent's coordinates.
 ///
 /// **This violates independence of container parents not needing their contained children.
-/// Instances of this class are used in container parent [XContainer] (which is OK),
+/// Instances of this class are used in container parent [HorizontalAxisContainer] (which is OK),
 /// but the parent is storing some of it's properties on children (which is not OK,
 /// effectively, this class uses it's children as sandboxes).**
 ///
@@ -109,9 +108,9 @@ class ChartLabelContainer extends container_common_new.ChartAreaContainer with L
 ///
 /// Generally, the owner (immediate parent) of this object decides what
 /// the [parentOffsetTick]s are:
-/// - If owner is a [YContainer], all positions are relative to the top of
+/// - If owner is a [VerticalAxisContainer], all positions are relative to the top of
 ///   the container of y labels
-/// - If owner is a [XContainer] All positions are relative to the left
+/// - If owner is a [HorizontalAxisContainer] All positions are relative to the left
 ///   of the container of x labels
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
@@ -123,7 +122,7 @@ abstract class AxisLabelContainer extends ChartLabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
-    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
+    required container_common.ChartAreaContainer ownerChartAreaContainer,
   })  : _labelInfo = labelInfo,
         _ownerChartAreaContainer = ownerChartAreaContainer,
         super(
@@ -133,9 +132,9 @@ abstract class AxisLabelContainer extends ChartLabelContainer {
           labelStyle: labelStyle,
         );
 
-  /// The [container_common_new.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
-  final container_common_new.ChartAreaContainer _ownerChartAreaContainer;
-  container_common_new.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
+  /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
+  final container_common.ChartAreaContainer _ownerChartAreaContainer;
+  container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
 
   /// Maintains the LabelInfo from which this [ChartLabelContainer] was created,
   /// for use during [layout] of self or parents.
@@ -157,7 +156,7 @@ class YLabelContainer extends AxisLabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
-    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
+    required container_common.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker: chartViewMaker,
     label:           label,
@@ -168,7 +167,7 @@ class YLabelContainer extends AxisLabelContainer {
   );
 }
 
-/// [AxisLabelContainer] used in the [XContainer].
+/// [AxisLabelContainer] used in the [HorizontalAxisContainer].
 class XLabelContainer extends AxisLabelContainer {
 
   XLabelContainer({
@@ -177,7 +176,7 @@ class XLabelContainer extends AxisLabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
-    required container_common_new.ChartAreaContainer ownerChartAreaContainer,
+    required container_common.ChartAreaContainer ownerChartAreaContainer,
   }) : super(
     chartViewMaker:  chartViewMaker,
     label:           label,

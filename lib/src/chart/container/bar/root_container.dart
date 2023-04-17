@@ -13,24 +13,24 @@ class VerticalBarChartRootContainer extends ChartRootContainer {
 
   VerticalBarChartRootContainer({
     required LegendContainer legendContainer,
-    required TransposingAxisContainer xContainer,
-    required TransposingAxisContainer yContainerFirst,
-    required TransposingAxisContainer yContainer,
+    required TransposingAxisContainer horizontalAxisContainer,
+    required TransposingAxisContainer verticalAxisContainerFirst,
+    required TransposingAxisContainer verticalAxisContainer,
     required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
     required ChartOptions chartOptions,
     required bool isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,
-          xContainer: xContainer,
-          yContainerFirst: yContainerFirst,
-          yContainer: yContainer,
+          horizontalAxisContainer: horizontalAxisContainer,
+          verticalAxisContainerFirst: verticalAxisContainerFirst,
+          verticalAxisContainer: verticalAxisContainer,
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
           chartModel: chartModel,
           isStacked: isStacked,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 }

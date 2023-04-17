@@ -18,12 +18,12 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
     required model.ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     required bool isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartSeriesOrientation: chartSeriesOrientation,
     isStacked: isStacked,
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   /// Makes pointPresenters, the visuals painted on each chart column that
@@ -38,18 +38,18 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
   container.ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker});
 
   @override
-  container.XContainerCL makeViewForHorizontalAxis() {
-        return container.XContainerCL(chartViewMaker: this);
+  container.HorizontalAxisContainerCL makeViewForHorizontalAxis() {
+        return container.HorizontalAxisContainerCL(chartViewMaker: this);
   }
 
   @override
-  container.YContainerCL makeViewForVerticalAxis() {
-        return container.YContainerCL(chartViewMaker: this);
+  container.VerticalAxisContainerCL makeViewForVerticalAxis() {
+        return container.VerticalAxisContainerCL(chartViewMaker: this);
   }
 
   @override
-  container.YContainerCL makeViewForYContainerFirst() {
-    return container.YContainerCL(chartViewMaker: this);
+  container.VerticalAxisContainerCL makeViewForVerticalAxisContainerFirst() {
+    return container.VerticalAxisContainerCL(chartViewMaker: this);
   }
 
   @override

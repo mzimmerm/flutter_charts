@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart' as logger;
 
-import 'container_common.dart' as container_common_new;
+import 'container_common.dart' as container_common;
 import 'legend_container.dart';
 import 'axis_container.dart';
 import 'data_container.dart';
@@ -11,18 +11,18 @@ import '../model/data_model.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 // import '../../morphic/container/layouter_one_dimensional.dart';
 
-class ChartRootContainer extends container_common_new.ChartAreaContainer {
+class ChartRootContainer extends container_common.ChartAreaContainer {
 
   ChartRootContainer({
     required this.legendContainer,
-    required this.xContainer,
-    required this.yContainer,
-    required this.yContainerFirst,
+    required this.horizontalAxisContainer,
+    required this.verticalAxisContainer,
+    required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
     required ChartModel         chartModel,
     required bool             isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self
@@ -37,13 +37,13 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
     TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-01 will go away when we use YContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-01 will go away when we use VerticalAxisContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );
 
     // [YDEX_cellDefinersTable] is table with the following order of containers (left to right, top to bottom):
-    //   YContainer, DataContainer, EmptyAxisCornerContainer, XContainer
+    //   VerticalAxisContainer, DataContainer, EmptyAxisCornerContainer, HorizontalAxisContainer
     List<List<TableLayoutCellDefiner>> YDEX_cellDefinersTable = [
       [vertAxisDefiner, TableLayoutCellDefiner(layoutSequence: 3)],
       [TableLayoutCellDefiner(layoutSequence: 1), TableLayoutCellDefiner(layoutSequence: 0)],
@@ -58,12 +58,12 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
 
     BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
 
-    // yContainer and xContainer are already transposed during creation.
+    // verticalAxisContainer and horizontalAxisContainer are already transposed during creation.
     TableLayouter chartBody = TableLayouter(
       tableLayoutDefiner: tableLayoutDefiner,
       cellsTable: [
-        [yContainer, dataContainer],
-        [axisCornerContainer, xContainer],
+        [verticalAxisContainer, dataContainer],
+        [axisCornerContainer, horizontalAxisContainer],
       ],
     );
 
@@ -89,9 +89,9 @@ class ChartRootContainer extends container_common_new.ChartAreaContainer {
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.
   late LegendContainer legendContainer;
-  covariant late TransposingAxisContainer xContainer;
-  covariant late TransposingAxisContainer yContainer;
-  covariant late TransposingAxisContainer yContainerFirst;
+  covariant late TransposingAxisContainer horizontalAxisContainer;
+  covariant late TransposingAxisContainer verticalAxisContainer;
+  covariant late TransposingAxisContainer verticalAxisContainerFirst;
   covariant late DataContainer dataContainer;
 
   /// Override [BoxContainerHierarchy.isRoot] to prevent checking this root container on parent,

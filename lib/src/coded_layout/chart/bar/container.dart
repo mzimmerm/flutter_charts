@@ -1,12 +1,8 @@
 // base libraries
-import '../../../switch_view_maker/view_maker_cl.dart';
 import '../container.dart';
+import '../../../switch_view_maker/view_maker_cl.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';
-//import '../../../chart/container_new/data_container.dart';
-//import '../../../chart/container_new/axis_container.dart';
-//import '../../../chart/container_new/line/root_container.dart';
-//import '../../../chart/container_new/bar/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/view_maker.dart';
 import '../../../chart/options.dart';
@@ -20,25 +16,25 @@ import 'presenter.dart'; // OLD
 class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
   VerticalBarChartRootContainerCL({
     required LegendContainer legendContainer,
-    required XContainerCL      xContainer,
-    required YContainerCL      yContainerFirst,
-    required YContainerCL      yContainer,
+    required HorizontalAxisContainerCL      horizontalAxisContainer,
+    required VerticalAxisContainerCL      verticalAxisContainerFirst,
+    required VerticalAxisContainerCL      verticalAxisContainer,
     required DataContainerCL   dataContainer,
     required ChartViewMaker  chartViewMaker,
     required ChartModel        chartModel,
     required ChartOptions    chartOptions,
     required bool            isStacked,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     legendContainer: legendContainer,
-    xContainer: xContainer,
-    yContainerFirst: yContainerFirst,
-    yContainer: yContainer,
+    horizontalAxisContainer: horizontalAxisContainer,
+    verticalAxisContainerFirst: verticalAxisContainerFirst,
+    verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
           chartModel: chartModel,
           isStacked: isStacked,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         ) {
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }

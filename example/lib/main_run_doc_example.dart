@@ -25,7 +25,7 @@ void main() {
 ///   ex10RandomData_lineChart
 /// ```
 Widget chartToRun() {
-  LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+  LabelLayoutStrategy? inputLabelLayoutStrategy;
   ChartModel chartModel;
   ChartOptions chartOptions = const ChartOptions();
   // Set option which will ask to start Y axis at data minimum.
@@ -51,7 +51,7 @@ Widget chartToRun() {
     chartModel: chartModel,
     chartSeriesOrientation: ChartSeriesOrientation.column,
     isStacked: false,
-    xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   var lineChart = LineChart(

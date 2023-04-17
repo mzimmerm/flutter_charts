@@ -3,12 +3,12 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 // this level
 
 import '../../morphic/container/container_layouter_base.dart' show LayoutableBox;
-import '../../chart/container/container_common.dart' as container_common_new show ChartAreaContainer;
+import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
 import '../../chart/view_maker.dart';
 
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
-class LineContainerCL extends container_common_new.ChartAreaContainer {
+class LineContainerCL extends container_common.ChartAreaContainer {
   /// Points from which line starts and ends. NOT added to children ATM.
   ui.Offset lineFrom;
   ui.Offset lineTo;

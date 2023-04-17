@@ -1,5 +1,4 @@
 // this level base libraries or equivalent
-//import '../container.dart' as container;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../view_maker.dart' as view_maker;
 import '../../morphic/container/container_key.dart';
@@ -15,12 +14,12 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy,
 /// The basic top level chart blocks are:
 /// - [ChartRootContainer] - the whole chart
 /// - [LegendContainer] - manages the legend
-/// - [YContainer] - manages the Y labels layout, which defines:
+/// - [VerticalAxisContainer] - manages the Y labels layout, which defines:
 ///   - Y axis label sizes
 ///   - Y positions of Y axis labels, defined as yTickY.
 ///     yTicksY s are the Y points of extrapolated data values
 ///     and also Y points on which the Y labels are centered.
-/// - [XContainer] - Equivalent to YContainer, but manages X direction
+/// - [HorizontalAxisContainer] - Equivalent to VerticalAxisContainer, but manages X direction
 ///   layout and labels.
 /// - [DataContainer] and extensions - manages the area which displays:
 ///   - Data as bar chart, line chart, or other chart type.
@@ -72,8 +71,8 @@ abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer imp
 
   AdjustableLabelsChartAreaContainer({
     required view_maker.ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? xContainerLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = xContainerLabelLayoutStrategy ??
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+  })  : _labelLayoutStrategy = inputLabelLayoutStrategy ??
       strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
         super(
         chartViewMaker: chartViewMaker,

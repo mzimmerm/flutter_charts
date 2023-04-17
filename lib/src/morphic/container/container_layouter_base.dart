@@ -1709,9 +1709,9 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
 ///
 /// todo-doc-01 maybe remove or improve all below
 /// Example:
-///   - An example is the Y axis ([YContainer] instance), which creates only as many labels
+///   - An example is the Y axis ([VerticalAxisContainer] instance), which creates only as many labels
 ///     ([YLabelContainer]s instances) as they fit, given how many pixels
-///     the Y axis has available. Such pixel availability is applied on  [YContainer]
+///     the Y axis has available. Such pixel availability is applied on  [VerticalAxisContainer]
 ///
 ///
 /// Important note:
@@ -2648,7 +2648,7 @@ class TableLayoutCellDefiner {
   Align? verticalAlign;
 
   // Late final constraints, can be pre-set by client OR set during [layout],
-  // this is especially useful for the first layed out: e.g. YContainer,
+  // this is especially useful for the first layed out: e.g. VerticalAxisContainer,
   // can set height up to 3/4 parent height, BUT IF DONE LIKE THIS,
   // THE ChartRootContainer AND the TableLayouter must add children in build,
   // because only then TableLayouter has constraints set!!!

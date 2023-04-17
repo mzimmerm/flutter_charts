@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Paint, Canvas;
 
 
-import 'container_common.dart' as container_common_new;
+import 'container_common.dart' as container_common;
 import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_orientation.dart' as chart_orientation;
@@ -21,7 +21,7 @@ import '../model/data_model.dart' as model;
 /// The nullability of [fromPointOffset] and [toPointOffset] is an awkward lip service to
 /// straightforward extensibility of this class where these members can be replaced by [model.PointModel] in extensions,
 /// notable the [LineBetweenPointModelsContainer].
-class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaContainer
+class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContainer
     with container_base.HeightSizerLayouterChildMixin,
         container_base.WidthSizerLayouterChildMixin {
 
@@ -102,8 +102,8 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
-      inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
-      outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+      inputDataRange: chartViewMaker.inputLabelsGenerator.dataRange,
+      outputDataRange: chartViewMaker.outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
@@ -111,8 +111,8 @@ class LineBetweenPointOffsetsContainer extends container_common_new.ChartAreaCon
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       constraintsOnImmediateOwner: constraints,
-      inputDataRange: chartViewMaker.xLabelsGenerator.dataRange,
-      outputDataRange: chartViewMaker.yLabelsGenerator.dataRange,
+      inputDataRange: chartViewMaker.inputLabelsGenerator.dataRange,
+      outputDataRange: chartViewMaker.outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
@@ -191,18 +191,18 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   /// the [model.PointModel]'s [fromPointModel].
   ///
   /// Calculates [fromPointOffset] from the [fromPointModel], using
-  ///   - for [PointOffset.inputValue], the data range from the [chartViewMaker.xLabelsGenerator] and
+  ///   - for [PointOffset.inputValue], the data range from the [chartViewMaker.inputLabelsGenerator] and
   ///     [fromPointModel]'s column index.
   ///   - for [PointOffset.outputValue], the [fromPointModel]'s input value [model.PointModel.outputValue] directly.
   ///
-  /// Both points are on x axis, so the xLabelsGenerator is used as input dataRange for both from/to points.
+  /// Both points are on x axis, so the inputLabelsGenerator is used as input dataRange for both from/to points.
   @override
   PointOffset get fromPointOffset => fromPointModel.asPointOffsetOnInputRange(
-        dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator,
+        dataRangeLabelInfosGenerator: chartViewMaker.inputLabelsGenerator,
       );
 
   /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
-      toPointModel.asPointOffsetOnInputRange(dataRangeLabelInfosGenerator: chartViewMaker.xLabelsGenerator);
+      toPointModel.asPointOffsetOnInputRange(dataRangeLabelInfosGenerator: chartViewMaker.inputLabelsGenerator);
 }

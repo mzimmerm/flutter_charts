@@ -110,7 +110,7 @@ void main() {
 ///
 /// Used *in the tests, integration tests, or main.dart*.
 ///
-/// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE_TO_SHOW']
+/// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
 ///   passed to the program by `--dart-define` options.
 ///
 /// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
@@ -121,15 +121,18 @@ Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> reques
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
 
-  const String chartTypeToShowStr = String.fromEnvironment('CHART_TYPE_TO_SHOW', defaultValue: 'lineChart');
-  ExamplesChartTypeEnum chartTypeToShow = chartTypeToShowStr.asEnum(ExamplesChartTypeEnum.values);
+  const String chartTypeStr = String.fromEnvironment('CHART_TYPE', defaultValue: 'lineChart');
+  ExamplesChartTypeEnum chartType = chartTypeStr.asEnum(ExamplesChartTypeEnum.values);
 
   const String orientationStr = String.fromEnvironment('CHART_ORIENTATION', defaultValue: 'column');
-  ChartSeriesOrientation orientation = ChartSeriesOrientation.fromStringOrDefault(orientationStr, ChartSeriesOrientation.column);
+  ChartSeriesOrientation orientation = ChartSeriesOrientation.fromStringDefaultOnEmpty(
+      orientationStr,
+      ChartSeriesOrientation.column,
+  );
 
-  bool isUseOldDataContainer = const bool.fromEnvironment('IS_USE_OLD_DATA_CONTAINER', defaultValue: true);
+  bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
-  return Tuple4(exampleComboToRun, chartTypeToShow, orientation, isUseOldDataContainer);
+  return Tuple4(exampleComboToRun, chartType, orientation, isUseOldLayouter);
 }
 
 class MyApp extends StatelessWidget {
@@ -193,7 +196,7 @@ class MyHomePage extends StatefulWidget {
 ///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
 ///     Widget chartToRun = definer.createRequestedChart();
 /// recreates lineChartOptions, verticalBarChartOptions, chartModel,
-/// and xContainerLabelLayoutStrategy, the core of this state object (all members)
+/// and inputLabelLayoutStrategy, the core of this state object (all members)
 /// is effectively recreated on each state's [build] call.
 ///
 class MyHomePageState extends State<MyHomePage> {
@@ -485,16 +488,16 @@ class _ExampleWidgetCreator {
   ///   ```sh
   ///     flutter run example/lib/main.dart \
   ///       --dart-define=EXAMPLE_TO_RUN=ex10RandomData \
-  ///       --dart-define=CHART_TYPE_TO_SHOW=lineChart
+  ///       --dart-define=CHART_TYPE=lineChart
   ///   ```
   /// will set [exampleComboToRun] to a concrete Tuple of [ExamplesEnum] and [ExamplesChartTypeEnum], 
   /// such as `Tuple(ex10RandomData, lineChart)`
   Widget createRequestedChart() {
     // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
-    ExamplesChartTypeEnum chartTypeToShow = descriptorOfExampleToRun.item2;
+    ExamplesChartTypeEnum chartType = descriptorOfExampleToRun.item2;
     ChartSeriesOrientation chartSeriesOrientation = descriptorOfExampleToRun.item3;
-    bool isUseOldDataContainer = descriptorOfExampleToRun.item4;
+    bool isUseOldLayouter = descriptorOfExampleToRun.item4;
 
     // Declare chartModel; the data object will be different in every examples.
     ChartModel chartModel;
@@ -503,12 +506,12 @@ class _ExampleWidgetCreator {
     //   unless specific examples need to override this chartOptions default.
     ChartOptions chartOptions = const ChartOptions();
 
-    // Declare a null xContainerLabelLayoutStrategy.
+    // Declare a null inputLabelLayoutStrategy.
     // To use a specific, client defined extension of DefaultIterativeLabelLayoutStrategy or LayoutStrategy,
     //   just create the extension instance similar to the DefaultIterativeLabelLayoutStrategy below.
-    // If xContainerLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
+    // If inputLabelLayoutStrategy is not set in an example (remains null), the charts instantiate
     //   a DefaultIterativeLabelLayoutStrategy.
-    LabelLayoutStrategy? xContainerLabelLayoutStrategy;
+    LabelLayoutStrategy? inputLabelLayoutStrategy;
     
     /// Main switch that includes code to all examples.
     /// The example which [ExamplesEnum] and [ExamplesChartTypeEnum] is passed in the combo is returned.
@@ -529,10 +532,10 @@ class _ExampleWidgetCreator {
 
       case ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy:
         // Example shows an explicit use of the DefaultIterativeLabelLayoutStrategy.
-        // The xContainerLabelLayoutStrategy, if set to null or not set at all, 
+        // The inputLabelLayoutStrategy, if set to null or not set at all, 
         //   defaults to DefaultIterativeLabelLayoutStrategy
         // Clients can also create their own LayoutStrategy.
-        xContainerLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
+        inputLabelLayoutStrategy = DefaultIterativeLabelLayoutStrategy(
           options: chartOptions,
         );
         chartModel = ChartModel(
@@ -985,13 +988,13 @@ class _ExampleWidgetCreator {
     // LineChart or VerticalBarChart depending on what is set in environment.
     Widget chartToRun;
 
-    switch (chartTypeToShow) {
+    switch (chartType) {
       case ExamplesChartTypeEnum.lineChart:
         SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
           chartSeriesOrientation: ChartSeriesOrientation.column,
           chartModel: chartModel,
           isStacked: false,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
         LineChart lineChart = LineChart(
@@ -1006,7 +1009,7 @@ class _ExampleWidgetCreator {
           chartModel: chartModel,
           chartSeriesOrientation: chartSeriesOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           isStacked: false,
-          xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
+          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
         VerticalBarChart verticalBarChart = VerticalBarChart(

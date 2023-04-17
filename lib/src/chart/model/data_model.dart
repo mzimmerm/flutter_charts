@@ -178,8 +178,8 @@ class ChartModel {
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
   /// Can be Strings or numbers.
-  /// If not null, a "manual" layout is used in the [YContainerCL].
-  /// If null, a "auto" layout is used in the [YContainerCL].
+  /// If not null, a "manual" layout is used in the [VerticalAxisContainerCL].
+  /// If null, a "auto" layout is used in the [VerticalAxisContainerCL].
   ///
   final List<String>? yUserLabels;
 

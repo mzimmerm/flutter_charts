@@ -77,7 +77,7 @@ import '../example/lib/main.dart' as app;
 ///
 ///         flutter  drive \
 ///           --dart-define=EXAMPLE_TO_RUN=ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors \
-///           --dart-define=CHART_TYPE_TO_SHOW=VerticalBarChart \
+///           --dart-define=CHART_TYPE=VerticalBarChart \
 ///           --driver=test_driver/integration_test.dart \
 ///           --target=integration_test/screenshot_create_test.dart
 ///
