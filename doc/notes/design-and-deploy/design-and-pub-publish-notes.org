@@ -1875,8 +1875,8 @@ Notes or Later:
       - [X] After several fixes, X and Y axis work in both orientations.
 13. [X] Run all tests.
 14. [X] Testing framework speedup: Change the testing framework to only BUILD ONCE then run multiple tests.
-15. [-] Major but EASY REFACTORING
-    1. [-] Renames:
+15. [X] Major but EASY REFACTORING
+    1. [X] Renames:
        1. [X] CHART_TYPE -> CHART_TYPE (everywhere, even in IntelliJ files)
        2. [X] chartType -> chartType
        3. [X] IS_USE_OLD_LAYOUTER -> IS_USE_OLD_LAYOUTER  (everywhere, even in IntelliJ files)
@@ -1886,16 +1886,20 @@ Notes or Later:
        7. [X] outputAxisContainer -> verticalAxisContainer
        8. [X] remove all 'new' from .dart file names
        9. [X] remove most 'as name' from .dart files imports
-       10. [ ] replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
-16. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
+       10. [X] NO - DOES NOT WORK. replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
+16. [ ] Exclude from backups:
+    1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
+    2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
+    3. 
+17. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
     2. [ ] WHERE NOT?
     3. [ ] MAKE CODE CHANGES
-17. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
-18. [ ] More steps here, or should all work for both column and row???
-19. [ ] Add tests for PointOffset lextr method
-20. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-21. [ ] 
+18. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
+19. [ ] More steps here, or should all work for both column and row???
+20. [ ] Add tests for PointOffset lextr method
+21. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+22. [ ] 
 
   
    

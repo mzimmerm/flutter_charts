@@ -171,17 +171,12 @@ class VerticalAxisContainerOptions {
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right.
   final double labelPadLR;
 
-  // todo-00-last-done : final String yLabelUnits;
-
   const VerticalAxisContainerOptions({
     this.isShown = true,
     this.isHorizontalGridLinessShown = true,
     this.labelPadTB = 40.0,
     this.labelPadLR = 6.0,
-    // todo-00-last-done : this.yLabelUnits = '',
   });
-
-  // todo-00-last-done : unused : String toLabel(String label) => label + yLabelUnits;
 
 }
 
@@ -207,7 +202,6 @@ String outputValueToLabel(num value) {
   if (val.endsWith('000000')) val = '{$val.substring(0, val.length - 6)} M';
   if (val.endsWith('000')) val = '{$val.substring(0, val.length - 3)} K';
 
-  // todo-00-last-done : return val + yLabelUnits;
   return val;
 }
 
