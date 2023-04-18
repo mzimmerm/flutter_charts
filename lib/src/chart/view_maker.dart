@@ -265,7 +265,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
     for (model.CrossPointsModel crossPointsModel in crossPointsModelList) {
       chartBars.add(
-        makeViewForDataContainer_Bar(
+        makeViewForDataContainer_EachBar(
           crossPointsModel: crossPointsModel,
           barsContainerMainAxisAlign: barsContainerMainAxisAlign,
           isPointsReversed: isPointsReversed,
@@ -275,7 +275,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     return chartBars;
   }
 
-  data_container.CrossPointsContainer makeViewForDataContainer_Bar({
+  data_container.CrossPointsContainer makeViewForDataContainer_EachBar({
     required model.CrossPointsModel crossPointsModel,
     required Align barsContainerMainAxisAlign,
     required bool isPointsReversed,
@@ -284,7 +284,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         chartViewMaker: this,
         crossPointsModel: crossPointsModel,
         children: [
-          makeViewForDataContainer_BarLayouter(
+          makeViewForDataContainer_EachBarLayouter(
               crossPointsModel: crossPointsModel,
               barsContainerMainAxisAlign: barsContainerMainAxisAlign,
               isPointsReversed: isPointsReversed),
@@ -295,7 +295,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       );
   }
 
-  container_base.BoxContainer makeViewForDataContainer_BarLayouter({
+  container_base.BoxContainer makeViewForDataContainer_EachBarLayouter({
     required model.CrossPointsModel crossPointsModel,
     required Align barsContainerMainAxisAlign,
     required bool isPointsReversed,
@@ -319,6 +319,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           child: pointContainer,)
     ).toList();
 
+    // In called, isPointsReversed is false for positive, true for negative
     if (isPointsReversed) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
@@ -346,12 +347,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         return container_base.Column(
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: barsContainerMainAxisAlign,
-          children: pointContainers,
+          children: pointContainers, // todo-00-later : pointContainers must have been reversed somewhere. should be reversed here, for first pointContainer is on bottom (last appended)
         );
       case ChartSeriesOrientation.row:
         return container_base.Row(
           mainAxisAlign: barsContainerMainAxisAlign, // otherEndAlign(barsContainerMainAxisAlign) already called
-          children: pointContainers,
+          children: pointContainers.reversed.toList(), // todo-00-later : pointContainers must have been reversed somewhere. should be UN-reversed here
         );
     }
   }
