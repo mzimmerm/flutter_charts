@@ -130,19 +130,17 @@ class DataContainer extends container_common.ChartAreaContainer {
       case model.CrossPointsModelPointsSign.any:
         throw StateError('Invalid sign in this context.');
     }
-    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last try remove
+    // Parent passes specific distributed constraints for positive and negative portion,
+    // so can use Align.start -> Align.end without isMainAxisFlipAlign
     return TransposingRoller.Row(
       chartSeriesOrientation: chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),
-      mainAxisAlign: Align.start, // default todo-00-last : changed from :  mainAxisAlign: barsContainerMainAxisAlign1,
-      // mainAxisAlign: barsContainerMainAxisAlign1,
+      mainAxisAlign: Align.start, // default
       crossAxisAlign: crossAxisAlign,
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModelList: crossPointsModels,
-        // todo-00-last : original code, orientation=row has 'barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign)'
-        //  do we need to resolve? Follow all the way down.
         barsContainerMainAxisAlign: mainAxisAlign,
         isPointsReversed: isPointsReversed,
       ),

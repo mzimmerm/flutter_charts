@@ -220,6 +220,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
+    // todo-00-last : add isMainAxisFlipAlign: false + mainAxisAlign: Align.start instead
     var barsContainerMainAxisAlign1 = chartViewMaker.chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last-last-progress : added
     List<BoxContainer> children = directionWrapperAround(
       [
