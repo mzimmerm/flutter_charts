@@ -1710,7 +1710,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
 /// todo-doc-01 maybe remove or improve all below
 /// Example:
 ///   - An example is the Y axis ([VerticalAxisContainer] instance), which creates only as many labels
-///     ([YLabelContainer]s instances) as they fit, given how many pixels
+///     ([OutputLabelContainer]s instances) as they fit, given how many pixels
 ///     the Y axis has available. Such pixel availability is applied on  [VerticalAxisContainer]
 ///
 ///

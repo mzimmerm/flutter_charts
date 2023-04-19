@@ -14,7 +14,7 @@ import '../../util/util_labels.dart' show AxisLabelInfo;
 ///      (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange to lextr label data values to pixels
 ///   2. has member parentOffsetTick to keep location (from build to manual layout?).
 ///
-///  Legacy label containers [XLabelContainerCL] and [YLabelContainerCL] should extend this
+///  Legacy label containers [InputLabelContainerCL] and [OutputLabelContainerCL] should extend this
 ///
 abstract class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
@@ -54,8 +54,8 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   ///     (before label's parent offset), which becomes [yTickY] but NOT [xTickX]
   ///     (currently, xTickX is from x value data position, not from generated labels by [DataRangeLabelInfosGenerator]).
   ///     ```dart
-  ///        double yTickY = yLabelContainer.parentOffsetTick;
-  ///        double labelTopY = yTickY - yLabelContainer.layoutSize.height / 2;
+  ///        double yTickY = outputLabelContainer.parentOffsetTick;
+  ///        double labelTopY = yTickY - outputLabelContainer.layoutSize.height / 2;
   ///     ```
   ///   - The "tick dash" for the label center on the X or Y axis.
   ///     First "tick dash" is on the first label, last on the last label,
@@ -73,10 +73,10 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
   ///
-  /// Note: Invoked on BOTH [XLabelContainerCL] and [YLabelContainerCL], but only relevant on [YLabelContainerCL].
-  ///       On [XLabelContainerCL] it could be skipped, the layout code in [HorizontalAxisContainerCL.layout]
+  /// Note: Invoked on BOTH [InputLabelContainerCL] and [OutputLabelContainerCL], but only relevant on [OutputLabelContainerCL].
+  ///       On [InputLabelContainerCL] it could be skipped, the layout code in [HorizontalAxisContainerCL.layout]
   ///       ```dart
-  ///           xLabelContainer.parentOffsetTick = xTickX;
+  ///           inputLabelContainer.parentOffsetTick = xTickX;
   ///        ```
   ///        overrides this.
   @override
@@ -97,11 +97,11 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
 }
 
 /// Label container for Y labels, which maintain, in addition to
-/// the superclass [YLabelContainer] also [AxisLabelInfo] - the object
+/// the superclass [OutputLabelContainer] also [AxisLabelInfo] - the object
 /// from which each Y label is created.
-class YLabelContainerCL extends AxisLabelContainerCL {
+class OutputLabelContainerCL extends AxisLabelContainerCL {
 
-  YLabelContainerCL({
+  OutputLabelContainerCL({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
@@ -119,9 +119,9 @@ class YLabelContainerCL extends AxisLabelContainerCL {
 }
 
 /// [AxisLabelContainer] used in the [HorizontalAxisContainer].
-class XLabelContainerCL extends AxisLabelContainerCL {
+class InputLabelContainerCL extends AxisLabelContainerCL {
 
-  XLabelContainerCL({
+  InputLabelContainerCL({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,

@@ -50,7 +50,7 @@ class ChartOptions {
           ),
           verticalAxisContainerOptions: const VerticalAxisContainerOptions(
             isShown: false,
-            isHorizontalGridLinessShown: false,
+            isHorizontalGridLinesShown: false,
           ),
         );
 }
@@ -163,7 +163,7 @@ class VerticalAxisContainerOptions {
   ///
   /// However, Y gridlines (vertical) are showing even when `isHorizontalAxisContainerShown = false`.
   /// This option allows to toggle it.
-  final bool isHorizontalGridLinessShown;
+  final bool isHorizontalGridLinesShown;
 
   /// Pad space around the Y labels area. TB - top/bottom, LR - left/right. Unused
   final double labelPadTB;
@@ -173,7 +173,7 @@ class VerticalAxisContainerOptions {
 
   const VerticalAxisContainerOptions({
     this.isShown = true,
-    this.isHorizontalGridLinessShown = true,
+    this.isHorizontalGridLinesShown = true,
     this.labelPadTB = 40.0,
     this.labelPadLR = 6.0,
   });
@@ -366,11 +366,11 @@ class LabelCommonOptions {
 ///
 /// Motivation and reason for existence:
 ///   Some areas of any chart need to have the same width or height in pixels when shown.
-///   For example, the [VerticalAxisContainer] and [DataContainer] should have the same height into which
+///   For example, the [TransposingOutputAxisContainer] and [DataContainer] should have the same height into which
 ///   y labels, and data y values are lextr-ed (linearly extrapolated).
 ///   Such areas, if padded from top or bottom, or from left or right (in this example, top and bottom)
 ///   should be padded with the same padding height, otherwise the size in pixels, left out
-///   for [VerticalAxisContainer] and [DataContainer] would not have the same height.
+///   for [TransposingOutputAxisContainer] and [DataContainer] would not have the same height.
 ///   This is where instances of this class, the [ChartPaddingGroup] come in: They define
 ///   functions that yield common padding. The names of the functions suggest where such common padding should
 ///   be applied:
@@ -382,12 +382,12 @@ class LabelCommonOptions {
 /// By 'across containers' we mean that multiple [ChartAreaContainer]s require the same padding
 /// to correctly lineup.
 ///
-/// For example, a padding on the bottom of a [VerticalAxisContainer] which provides space
+/// For example, a padding on the bottom of a [TransposingOutputAxisContainer] which provides space
 /// to the bottom half of the label, must be duplicated on the bottom of the [DataContainer]
 /// for the container contents to lineup in the vertical direction.
 ///
 /// Note: Perhaps a better alternative would be to replace the padding with a table row
-///       with two cells below the  [VerticalAxisContainer] and the [DataContainer]. Worth investigating?
+///       with two cells below the  [TransposingOutputAxisContainer] and the [DataContainer]. Worth investigating?
 @immutable
 class ChartPaddingGroup {
 

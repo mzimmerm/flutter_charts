@@ -80,7 +80,7 @@ mixin LabelContainerMixin on BoxContainer {
   ///
   // todo-04-morph : this implementation only works for tilting in [HorizontalAxisContainer] because first call to it is
   //                 made in [HorizontalAxisContainer.layout], after label container is created, as
-  //                    `xLabelContainer.applyParentOffset(this, labelLeftTop + xLabelContainer.tiltedLabelEnvelopeTopLeft)`.
+  //                    `inputLabelContainer.applyParentOffset(this, labelLeftTop + inputLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
   //                    value, which is OVERWRITTEN by the last call described below;
   //                    also, the accumulated non-rotated this.offset is kept on super slot
@@ -89,8 +89,8 @@ mixin LabelContainerMixin on BoxContainer {
   //                 The last call is made in [ChartRootContainer.layout] inside
   //                     `horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset)` as
   //                 as
-  //                    for (AxisLabelContainer xLabelContainer in _xLabelContainers) {
-  //                      xLabelContainer.applyParentOffset(this, offset);
+  //                    for (AxisLabelContainer inputLabelContainer in _inputLabelContainers) {
+  //                      inputLabelContainer.applyParentOffset(this, offset);
   //                    }
   //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint.

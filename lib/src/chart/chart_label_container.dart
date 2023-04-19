@@ -145,12 +145,16 @@ abstract class AxisLabelContainer extends ChartLabelContainer {
 
 }
 
-/// Label container for Y labels, which maintain, in addition to
-/// the superclass [YLabelContainer] also [AxisLabelInfo] - the object
-/// from which each Y label is created.
-class YLabelContainer extends AxisLabelContainer {
+// todo-00-refactoring (this is functional, so careful) : remove InputLabelContainer and OutputLabelContainer and replace with AxisLabelContainer in code
+//                 also in most (all?) places in code, replace inputLabelContainer and outputLabelContainer
+//                 with axisLabelContainer
 
-  YLabelContainer({
+/// Label container for Y labels, which maintain, in addition to
+/// the superclass [OutputLabelContainer] also [AxisLabelInfo] - the object
+/// from which each Y label is created.
+class OutputLabelContainer extends AxisLabelContainer {
+
+  OutputLabelContainer({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
@@ -168,9 +172,9 @@ class YLabelContainer extends AxisLabelContainer {
 }
 
 /// [AxisLabelContainer] used in the [HorizontalAxisContainer].
-class XLabelContainer extends AxisLabelContainer {
+class InputLabelContainer extends AxisLabelContainer {
 
-  XLabelContainer({
+  InputLabelContainer({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,

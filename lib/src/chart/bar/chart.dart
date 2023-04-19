@@ -13,8 +13,6 @@ import 'painter.dart' as bar_painter;
 /// The core override is to set the concrete [ChartContainer], and
 /// it's [ChartContainer.isStacked] setting.
 // todo-00-refactoring : rename this and all related, to BarChart - orientation defines 'vertical' and 'horizontal'
-// todo-00-refactoring : finally remove 'new' from package file names
-// todo-00-refactoring : remove 'as some_package' from most places except things like dart ui.
 class VerticalBarChart extends chart.FlutterChart {
   /// Default constructor accepts size
   VerticalBarChart({

@@ -301,6 +301,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required bool isPointsReversed,
   }) {
     EdgePadding pointRectSidePad;
+    // todo-00-last-later
     switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         pointRectSidePad = const EdgePadding.withSides(start: 6.0, end: 6.0);
@@ -320,6 +321,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     ).toList();
 
     // In called, isPointsReversed is false for positive, true for negative
+    // todo-00-last-later
     if (isPointsReversed) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
@@ -333,15 +335,19 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     );
   }
 
-  // todo-010 :
-  //           - WHY IS THIS IN VIEW MAKER, AND SIMILAR CODE also IN data_container.dart?
-  //              - this indicates a design issue. Can the row/column switch be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
+  // todo-01000 :
+  //           - WHY IS THIS  data_container building code IN VIEW MAKER,
+  //             AND SIMILAR CODE building data_container also IN data_container.dart?
+  //              - this indicates a design issue.
+  //              - CAN THE data_container building code be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
+  //              - SIMILAR FOR AXIS_CONTAINER
   //
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn({
     required ChartSeriesOrientation chartSeriesOrientation,
     required Align barsContainerMainAxisAlign,
     required List<container_base.Padder> pointContainers,
   }) {
+    /* todo-00-last-last replace w Transposing
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return container_base.Column(
@@ -355,6 +361,15 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           children: pointContainers.reversed.toList(), // todo-00-later : pointContainers must have been reversed somewhere. should be UN-reversed here
         );
     }
+    */
+/* NO CHANGE */
+    return container_base.TransposingRoller.Column(
+        chartSeriesOrientation: chartSeriesOrientation,
+        // Positive: Both Align.start and end work, . Negative: only Align.start work in column
+        mainAxisAlign: barsContainerMainAxisAlign,
+        children: pointContainers,
+    );
+/* */
   }
   
   /// Generates [PointContainer] view from each [PointModel]

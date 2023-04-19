@@ -46,8 +46,7 @@ class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                // Column's first Row shows positive Bars, second Row negative Bars, X axis line between them
-                // Column(
+                // RowOrColumn's first item shows positive Bars, second item negative Bars, X axis line between them
                 _buildLevel1PosNegAreasContainerAsRowOrColumn (
                   chartSeriesOrientation: chartSeriesOrientation,
                   children: [
@@ -61,7 +60,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     /* todo-00-KEEP */
-                    XAxisLineContainer(
+                    TransposingInputAxisLineContainer(
                       inputLabelsGenerator: inputLabelsGenerator,
                       outputLabelsGenerator: outputLabelsGenerator,
                       chartViewMaker: chartViewMaker,
@@ -89,7 +88,8 @@ class DataContainer extends container_common.ChartAreaContainer {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer>     children,
   }) {
-    switch(chartSeriesOrientation) {
+    /* todo-00-last-last-last :  replace w Transposing */
+       switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Column(
           children: children,
@@ -104,6 +104,15 @@ class DataContainer extends container_common.ChartAreaContainer {
           mainAxisAlign: Align.end,
         );
     }
+    /* */
+    // todo-00-last-last-last : This break things the most in Row mode - moves the whole chart to the left, as it aligns left (start) instead of the desired right (end)
+    /*
+    return TransposingRoller.Column(
+      chartSeriesOrientation: chartSeriesOrientation,
+      children: children,
+    );
+    */
+
   }
 
 
@@ -145,6 +154,7 @@ class DataContainer extends container_common.ChartAreaContainer {
         throw StateError('Invalid sign in this context.');
     }
 
+    /* todo-00-last-last-last-last  replace w Transposing
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
@@ -173,6 +183,24 @@ class DataContainer extends container_common.ChartAreaContainer {
           ).reversed.toList(),
         );
     }
+   */
+
+
+    return TransposingRoller.Row(
+      chartSeriesOrientation: chartSeriesOrientation,
+      mainAxisConstraintsWeight: ConstraintsWeight(
+        weight: ratioOfPositiveOrNegativePortion,
+      ),
+      mainAxisAlign: mainAxisAlign,
+      crossAxisAlign: crossAxisAlign,
+      children: chartViewMaker.makeViewsForDataContainer_Bars(
+        crossPointsModelList: crossPointsModels,
+        // todo-00-last : original code does otherEndAlign. do we need to resolve? Follow all the way down.
+        barsContainerMainAxisAlign: mainAxisAlign,
+        isPointsReversed: isPointsReversed,
+      ),
+    );
+
   }
 
 }
@@ -184,7 +212,7 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
     required this.crossPointsModel,
     List<BoxContainer>? children,
     ContainerKey? key,
-    // We want to proportionally (evenly) layout if wrapped in Column, so make weight available.
+    // We want to proportionally (evenly) layout if wrapped in Column or Row, so make weight available.
     required ConstraintsWeight constraintsWeight,
   }) : super(
     chartViewMaker: chartViewMaker,

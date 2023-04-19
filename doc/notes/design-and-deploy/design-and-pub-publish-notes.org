@@ -1893,13 +1893,29 @@ Notes or Later:
     3. 
 17. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
     1. [ ] WHERE YES?
+       - [ ] 
+       - [ ] 
+       - [ ] 
     2. [ ] WHERE NOT?
+       - [ ] 
+       - [ ] 
     3. [ ] MAKE CODE CHANGES
 18. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
-19. [ ] More steps here, or should all work for both column and row???
-20. [ ] Add tests for PointOffset lextr method
-21. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-22. [ ] 
+19. [ ] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
+20. [ ] !!! ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~
+21. [ ] In view_maker, data_container, axis_container:
+    - [ ] change any Column, Row to the transposing versions
+    - [ ] review any switch. There should be no switch, all should be via Transposing classes. 
+    - [ ] Introduce TransposingEdgePadding, and use it instead. Any others?
+    - [ ] Status:
+      - [ ]  view_maker
+      - [ ]  data_container
+      - [ ]  axis_container:
+      
+22. [ ] More steps here, or should all work for both column and row???
+23. [ ] Add tests for PointOffset lextr method
+24. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+25. [ ] 
 
   
    
