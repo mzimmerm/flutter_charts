@@ -1887,35 +1887,28 @@ Notes or Later:
        8. [X] remove all 'new' from .dart file names
        9. [X] remove most 'as name' from .dart files imports
        10. [X] NO - DOES NOT WORK. replace usage of enumName(exampleComboToRun.item1) with exampleComboToRun.item1.name - enumName is no longer needed
-16. [ ] Exclude from backups:
+16. [-] In view_maker, data_container, axis_container:
+    - [ ] change any Column, Row to the transposing versions
+    - [ ] review any switch. There should be no switch, all should be via Transposing classes. 
+    - [-] Status:
+      - [X]  view_maker
+      - [X]  data_container
+      - [X]  axis_container:
+      - [ ] Problem: I changed the Transposing Row and Column to use otherEndAlign, and now both row examples are broken; column examples working
+        - [ ] What to do?
+    - [ ] Introduce TransposingEdgePadding, and use it in all 3. Any others?
+17. [ ] Exclude from backups:
     1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
     2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
     3. 
-17. [ ] Code changes start using Transposing instead of Regular ALMOST EVERYWHERE - FIRST ASK : WHERE NOT?
-    1. [ ] WHERE YES?
-       - [ ] 
-       - [ ] 
-       - [ ] 
-    2. [ ] WHERE NOT?
-       - [ ] 
-       - [ ] 
-    3. [ ] MAKE CODE CHANGES
 18. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
 19. [ ] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
 20. [ ] !!! ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~
-21. [ ] In view_maker, data_container, axis_container:
-    - [ ] change any Column, Row to the transposing versions
-    - [ ] review any switch. There should be no switch, all should be via Transposing classes. 
-    - [ ] Introduce TransposingEdgePadding, and use it instead. Any others?
-    - [ ] Status:
-      - [ ]  view_maker
-      - [ ]  data_container
-      - [ ]  axis_container:
       
-22. [ ] More steps here, or should all work for both column and row???
-23. [ ] Add tests for PointOffset lextr method
-24. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-25. [ ] 
+21. [ ] More steps here, or should all work for both column and row???
+22. [ ] Add tests for PointOffset lextr method
+23. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+24. [ ] 
 
   
    

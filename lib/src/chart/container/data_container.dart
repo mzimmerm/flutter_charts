@@ -88,7 +88,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer>     children,
   }) {
-    /* todo-00-last-last-last :  replace w Transposing */
+    /* todo-00-last-last-last-last-last-last :  replace w Transposing
        switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Column(
@@ -104,14 +104,15 @@ class DataContainer extends container_common.ChartAreaContainer {
           mainAxisAlign: Align.end,
         );
     }
+    */
+
     /* */
-    // todo-00-last-last-last : This break things the most in Row mode - moves the whole chart to the left, as it aligns left (start) instead of the desired right (end)
-    /*
     return TransposingRoller.Column(
       chartSeriesOrientation: chartSeriesOrientation,
+      mainAxisAlign: Align.start, // todo-00-last : should not need, default
       children: children,
     );
-    */
+    /* */
 
   }
 
@@ -154,7 +155,7 @@ class DataContainer extends container_common.ChartAreaContainer {
         throw StateError('Invalid sign in this context.');
     }
 
-    /* todo-00-last-last-last-last  replace w Transposing
+    /* todo-00-last-last-last-last : replace w Transposing
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
@@ -186,6 +187,7 @@ class DataContainer extends container_common.ChartAreaContainer {
    */
 
 
+/* */
     return TransposingRoller.Row(
       chartSeriesOrientation: chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
@@ -200,6 +202,7 @@ class DataContainer extends container_common.ChartAreaContainer {
         isPointsReversed: isPointsReversed,
       ),
     );
+/* */
 
   }
 
