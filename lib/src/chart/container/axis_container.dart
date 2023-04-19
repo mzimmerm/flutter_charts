@@ -7,6 +7,7 @@ import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_orientation.dart';
 //import '../../morphic/ui2d/point.dart';
+import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
 import '../chart_label_container.dart';
@@ -219,10 +220,15 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
+    var barsContainerMainAxisAlign1 = chartViewMaker.chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last-last-progress : added
     List<BoxContainer> children = directionWrapperAround(
       [
+        // Row with Column of Y labels and Y axis (Output labels and output axis)
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+            mainAxisAlign: barsContainerMainAxisAlign1, // todo-00-last-last-LAST-LAST-LAST-LAST progress : added : THIS FINALLY FIXED THE LAYOUT in row mode.
+                                                        // todo-00-last-last-LAST-LAST-LAST-LAST : Try to remove the other equivalent code and keep only this code.
+                                                        // todo-00-last-last-LAST-LAST-LAST-LAST : But this is a syndrom of a deeper issue: The TransposingRoller (and maybe all transposing) should ONLY be used with divided constraints - e.g. for multiple children with weights defined.
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,

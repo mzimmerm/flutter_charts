@@ -88,7 +88,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer>     children,
   }) {
-    /* todo-00-last-last-last-last-last-last :  replace w Transposing
+    /* todo-00-last-done :  replace w Transposing
        switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Column(
@@ -109,7 +109,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     /* */
     return TransposingRoller.Column(
       chartSeriesOrientation: chartSeriesOrientation,
-      mainAxisAlign: Align.start, // todo-00-last : should not need, default
+      mainAxisAlign: Align.start, // todo-00-last-done : should not need, default
       children: children,
     );
     /* */
@@ -155,7 +155,7 @@ class DataContainer extends container_common.ChartAreaContainer {
         throw StateError('Invalid sign in this context.');
     }
 
-    /* todo-00-last-last-last-last : replace w Transposing
+    /* todo-00-last-done : replace w Transposing
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return Row(
@@ -188,12 +188,13 @@ class DataContainer extends container_common.ChartAreaContainer {
 
 
 /* */
+    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last-last-progress : added
     return TransposingRoller.Row(
       chartSeriesOrientation: chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),
-      mainAxisAlign: mainAxisAlign,
+      mainAxisAlign: barsContainerMainAxisAlign1, // todo-00-last-last-progress : modified : mainAxisAlign, no luck
       crossAxisAlign: crossAxisAlign,
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModelList: crossPointsModels,

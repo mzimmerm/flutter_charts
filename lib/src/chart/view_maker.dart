@@ -348,7 +348,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required List<container_base.Padder> pointContainers,
   }) {
 
-    /* todo-00-last-last replace w Transposing
+    /* todo-00-last-done replace w Transposing
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return container_base.Column(
@@ -365,11 +365,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     */
 
 /* */
-    var barsContainerMainAxisAlign = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end;
+    // var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end;
+    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end;
     return container_base.TransposingRoller.Column(
         chartSeriesOrientation: chartSeriesOrientation,
         // Positive: Both Align.start and end work, . Negative: only Align.start work in column
-        mainAxisAlign: barsContainerMainAxisAlign,
+        mainAxisAlign: barsContainerMainAxisAlign1,
         children: pointContainers,
     );
 /* */
