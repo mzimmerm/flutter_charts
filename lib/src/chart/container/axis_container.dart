@@ -252,13 +252,11 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                 ],
               ),
               // Y axis line to the right of labels
-              /* todo-00-KEEP */
               TransposingOutputAxisLineContainer(
                 inputLabelsGenerator: _inputLabelsGenerator,
                 outputLabelsGenerator: _outputLabelsGenerator,
                 chartViewMaker: chartViewMaker,
               ),
-              /* */
             ]),
       ],
       _padGroup,

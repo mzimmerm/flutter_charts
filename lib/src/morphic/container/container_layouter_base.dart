@@ -2161,8 +2161,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
-    // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
-    // todo-00-last-done : Changed to center : Align crossAxisAlign = Align.start,
+    // todo-00-done : Changed to center : Align crossAxisAlign = Align.start, : may break OLD tests
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
@@ -2181,7 +2180,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-last-last-done : added
+          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-done : added
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
@@ -2216,7 +2215,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-last-last-done : added // THIS BREAKS Row in row ORIENTATION :
+          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-done : added // THIS BREAKS Row in row ORIENTATION :
           crossAxisAlign: otherEndAlign(crossAxisAlign),
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
@@ -2266,8 +2265,7 @@ class Column extends TransposingRoller {
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
-    // todo-010 : why is this start, when Row has Center. THIS SHOULD BE CENTER. Change to center, and replace tests, as a few things will likely change.
-    // todo-00-last-done : Changed to center : Align crossAxisAlign = Align.start,
+    // todo-00-done : Changed to center : Align crossAxisAlign = Align.start, : may break OLD tests
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,

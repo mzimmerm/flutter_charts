@@ -1895,7 +1895,10 @@ Notes or Later:
       - [X]  data_container
       - [X]  axis_container:
       - [ ] Problem: I changed the Transposing Row and Column to use otherEndAlign, and now both row examples are broken; column examples working
-        - [ ] What to do?
+        - [ ] What to do? See issue in code
+        - [ ] Tomorrow (Wednesday):
+          - [ ] Run representative mini tests. Some old tests may break due to changing to Center. Fix them.
+          - [ ] Look in code for a follow up from the fixes to using Transposing layouters.
     - [ ] Introduce TransposingEdgePadding, and use it in all 3. Any others?
 17. [ ] Exclude from backups:
     1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*

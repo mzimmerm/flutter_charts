@@ -59,13 +59,11 @@ class DataContainer extends container_common.ChartAreaContainer {
                       outputLabelsGenerator:                 outputLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
-                    /* todo-00-KEEP */
                     TransposingInputAxisLineContainer(
                       inputLabelsGenerator: inputLabelsGenerator,
                       outputLabelsGenerator: outputLabelsGenerator,
                       chartViewMaker: chartViewMaker,
                     ),
-                    /* */
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       chartSeriesOrientation:           chartSeriesOrientation,
@@ -84,38 +82,16 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  RollingBoxLayouter _buildLevel1PosNegAreasContainerAsRowOrColumn ({
+  RollingBoxLayouter _buildLevel1PosNegAreasContainerAsRowOrColumn({
     required ChartSeriesOrientation chartSeriesOrientation,
-    required List<BoxContainer>     children,
+    required List<BoxContainer> children,
   }) {
-    /* todo-00-last-done :  replace w Transposing
-       switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
-        return Column(
-          children: children,
-          // Default. Both start and end work, as pos+neg fill whole area. Same applies fro crossAxisAlign, not set.
-          mainAxisAlign: Align.start,
-        );
-      case ChartSeriesOrientation.row:
-        return Row(
-          // Reverse children compared to Column
-          children: children.reversed.toList(),
-          // Both start and end work, as pos+neg fill whole area. So use opposite of what Column uses.
-          mainAxisAlign: Align.end,
-        );
-    }
-    */
-
-    /* */
     return TransposingRoller.Column(
       chartSeriesOrientation: chartSeriesOrientation,
-      mainAxisAlign: Align.start, // todo-00-last-done : should not need, default
+      mainAxisAlign: Align.start, // default
       children: children,
     );
-    /* */
-
   }
-
 
   /// For column chart, ([ChartSeriesOrientation.column]), build row    of (column) bars
   /// For row    chart, ([ChartSeriesOrientation.row])     build column of (row)    bars
@@ -154,59 +130,24 @@ class DataContainer extends container_common.ChartAreaContainer {
       case model.CrossPointsModelPointsSign.any:
         throw StateError('Invalid sign in this context.');
     }
-
-    /* todo-00-last-done : replace w Transposing
-    switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
-        return Row(
-          mainAxisConstraintsWeight: ConstraintsWeight(
-            weight: ratioOfPositiveOrNegativePortion,
-          ),
-          mainAxisAlign: mainAxisAlign,
-          crossAxisAlign: crossAxisAlign,
-          children: chartViewMaker.makeViewsForDataContainer_Bars(
-            crossPointsModelList: crossPointsModels,
-            barsContainerMainAxisAlign: mainAxisAlign,
-            isPointsReversed: isPointsReversed,
-          ),
-        );
-      case ChartSeriesOrientation.row:
-        return Column(
-          mainAxisAlign: otherEndAlign(mainAxisAlign),
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
-          mainAxisConstraintsWeight: ConstraintsWeight(
-            weight: ratioOfPositiveOrNegativePortion,
-          ),
-          children: chartViewMaker.makeViewsForDataContainer_Bars(
-            crossPointsModelList: crossPointsModels,
-            barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign),
-            isPointsReversed: isPointsReversed,
-          ).reversed.toList(),
-        );
-    }
-   */
-
-
-/* */
-    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last-last-progress : added
+    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last try remove
     return TransposingRoller.Row(
       chartSeriesOrientation: chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),
-      mainAxisAlign: barsContainerMainAxisAlign1, // todo-00-last-last-progress : modified : mainAxisAlign, no luck
+      mainAxisAlign: Align.start, // default todo-00-last : changed from :  mainAxisAlign: barsContainerMainAxisAlign1,
+      // mainAxisAlign: barsContainerMainAxisAlign1,
       crossAxisAlign: crossAxisAlign,
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModelList: crossPointsModels,
-        // todo-00-last : original code does otherEndAlign. do we need to resolve? Follow all the way down.
+        // todo-00-last : original code, orientation=row has 'barsContainerMainAxisAlign: otherEndAlign(mainAxisAlign)'
+        //  do we need to resolve? Follow all the way down.
         barsContainerMainAxisAlign: mainAxisAlign,
         isPointsReversed: isPointsReversed,
       ),
     );
-/* */
-
   }
-
 }
 
 class CrossPointsContainer extends container_common.ChartAreaContainer {

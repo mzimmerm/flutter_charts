@@ -12,7 +12,7 @@ import 'painter.dart' as bar_painter;
 /// that provides a canvas on which to draw during the paint phase.
 /// The core override is to set the concrete [ChartContainer], and
 /// it's [ChartContainer.isStacked] setting.
-// todo-00-refactoring : rename this and all related, to BarChart - orientation defines 'vertical' and 'horizontal'
+// todo-001-refactoring : rename this and all related, to BarChart - orientation defines 'vertical' and 'horizontal'
 class VerticalBarChart extends chart.FlutterChart {
   /// Default constructor accepts size
   VerticalBarChart({

@@ -47,7 +47,7 @@ class ChartModel {
     logger.Logger().d('Constructing ChartModel');
     validate();
 
-    // todo-00-later : 1) revert data and labels in code so they look as in chart: left -> right, bottom -> top
+    // todo-001 : 1) revert data and labels in code so they look as in chart: left -> right, bottom -> top
     //                 2) Naturally, CrossPointsModel is then bottom -> top
     //                 3) On points of use CrossPointsModel, transpose or un-transpose, also in parent code a few levels up.
     valuesColumns = transposeRowsToColumns(valuesRows);
@@ -248,7 +248,7 @@ class ChartModel {
 enum CrossPointsModelPointsSign {
   positiveOr0,
   negative,
-  // todo-00-refactoring : remove 'any', not used in any sensible way.
+  // todo-001-refactoring : remove 'any', not used in any sensible way.
   any,
 }
 

@@ -19,7 +19,7 @@ import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDepen
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartSeriesOrientation {
-  // todo-00-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
+  // todo-001-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
   column(
     mainLayoutAxis: LayoutAxis.vertical,
     inputDataAxisOrientation: LayoutAxis.horizontal,
