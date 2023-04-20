@@ -107,7 +107,6 @@ class DataContainer extends container_common.ChartAreaContainer {
   }) {
 
     double ratioOfPositiveOrNegativePortion;
-    bool isPointsReversed;
     Align mainAxisAlign;
     Align crossAxisAlign;
     List<model.CrossPointsModel> crossPointsModels;
@@ -116,14 +115,12 @@ class DataContainer extends container_common.ChartAreaContainer {
       case model.CrossPointsModelPointsSign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
         ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfPositivePortion();
-        isPointsReversed = true;
         mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
         ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfNegativePortion();
-        isPointsReversed = false;
         mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
         break;
@@ -140,7 +137,7 @@ class DataContainer extends container_common.ChartAreaContainer {
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModelList: crossPointsModels,
         barsContainerMainAxisAlign: mainAxisAlign,
-        isPointsReversed: isPointsReversed,
+        crossPointsModelPointsSign: crossPointsModelPointsSign,
       ),
     );
   }

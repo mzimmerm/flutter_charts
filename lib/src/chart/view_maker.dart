@@ -256,7 +256,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
     required List<model.CrossPointsModel> crossPointsModelList,
     required Align barsContainerMainAxisAlign,
-    required bool isPointsReversed,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
   }) {
     List<data_container.CrossPointsContainer> chartBars = [];
     // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
@@ -268,7 +268,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         makeViewForDataContainer_EachBar(
           crossPointsModel: crossPointsModel,
           barsContainerMainAxisAlign: barsContainerMainAxisAlign,
-          isPointsReversed: isPointsReversed,
+          crossPointsModelPointsSign: crossPointsModelPointsSign,
         ),
       );
     }
@@ -278,7 +278,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   data_container.CrossPointsContainer makeViewForDataContainer_EachBar({
     required model.CrossPointsModel crossPointsModel,
     required Align barsContainerMainAxisAlign,
-    required bool isPointsReversed,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
     }) {
     return data_container.CrossPointsContainer(
         chartViewMaker: this,
@@ -287,7 +287,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           makeViewForDataContainer_EachBarLayouter(
               crossPointsModel: crossPointsModel,
               barsContainerMainAxisAlign: barsContainerMainAxisAlign,
-              isPointsReversed: isPointsReversed),
+              crossPointsModelPointsSign: crossPointsModelPointsSign),
         ],
         // Give all view columns the same weight along main axis -
         //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
@@ -298,38 +298,25 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   container_base.BoxContainer makeViewForDataContainer_EachBarLayouter({
     required model.CrossPointsModel crossPointsModel,
     required Align barsContainerMainAxisAlign,
-    required bool isPointsReversed,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
   }) {
-    EdgePadding pointRectSidePad;
-    pointRectSidePad = EdgePadding.TransposingWithSides(
+    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartSeriesOrientation: chartSeriesOrientation,
       start: 6.0,
       end: 6.0,
     );
-/* todo-00-done
-    // todo-001
-    switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
-        pointRectSidePad = const EdgePadding.withSides(start: 6.0, end: 6.0);
-        break;
-      case ChartSeriesOrientation.row:
-        pointRectSidePad = const EdgePadding.withSides(top: 6.0, bottom: 6.0);
-        break;
-    }
-*/
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModels(
       crossPointsModel: crossPointsModel,
     ).map((pointContainer) =>
         container_base.Padder(
-          // todo-01 : Is there an option for sizes? Try to use Aligner instead of Padder, and use gridStepWidthPortionUsedByAtomicPointPresenter to express gap in terms of percentage
           edgePadding: pointRectSidePad,
           child: pointContainer,)
     ).toList();
 
     // In called, isPointsReversed is false for positive, true for negative
-    // todo-001
-    if (isPointsReversed) {
+    // todo-00-next-revert-data-order: When we revert data for all look as in chart, this logic will be inverted, and results of new tests the same
+    if (crossPointsModelPointsSign == model.CrossPointsModelPointsSign.positiveOr0) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
       pointContainers = pointContainers.toList(growable: false);

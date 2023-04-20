@@ -460,6 +460,7 @@ class _ExampleWidgetCreator {
 
   /// Tuple which describes the example
   Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun;
+  // todo-00-next-revert-data-order: revert lines in data and legends
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
