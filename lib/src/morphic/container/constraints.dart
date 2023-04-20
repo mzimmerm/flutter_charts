@@ -2,7 +2,6 @@ import 'dart:ui' show Offset, Rect, Size;
 import 'package:tuple/tuple.dart';
 
 import 'container_edge_padding.dart';
-import 'container_layouter_base.dart';
 import 'container_layouter_base_dart_support.dart';
 import '../../util/extensions_flutter.dart';
 import 'layouter_one_dimensional.dart';
@@ -17,19 +16,7 @@ class ContainerConstraints {}
 ///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
 ///     This could be used it a future two pass layout.
 abstract class BoundingBoxesBase {
-  late final Size minSize;
-  late final Size maxSize;
-  /// Set to non-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
-  ///
-  /// Motivation and assumption:
-  ///   - Used to mark that this bounding box was divided from parent, see [divideUsingStrategy].
-  ///   - Mostly for the benefit of divided [BoxContainerConstraints].
-  ///   - If set, it is assumed that all the divided constraints are managed
-  ///     in a list (e.g. list of constraint children), and the division was a kind to tiling
-  ///     (so that children sizes along this [divideAlongAxis] added up, do not exceed the parent size.
-  late final LayoutAxis? divideAlongAxis;
-
-  // The SINGLE UNNAMED generative non-forwarding constructor
+  // ### The SINGLE UNNAMED generative non-forwarding constructor
   BoundingBoxesBase({
     required this.minSize,
     required this.maxSize,
@@ -42,13 +29,26 @@ abstract class BoundingBoxesBase {
     );
   }
 
-  // Named constructors, forwarded to the generative constructor
+  // ### Named constructors, forwarded to the generative constructor
   BoundingBoxesBase.exactBox({required Size size}) : this(minSize: size, maxSize: size);
   BoundingBoxesBase.insideBox({required Size size}) : this(minSize: Size.zero, maxSize: size);
   BoundingBoxesBase.outsideBox({required Size size}) : this(minSize: size, maxSize: Size.infinite);
   /// Named constructor for unused expansion
   BoundingBoxesBase.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoundingBoxesBase.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
+
+  // ### Members
+  late final Size minSize;
+  late final Size maxSize;
+  /// Set to non-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
+  ///
+  /// Motivation and assumption:
+  ///   - Used to mark that this bounding box was divided from parent, see [divideUsingStrategy].
+  ///   - Mostly for the benefit of divided [BoxContainerConstraints].
+  ///   - If set, it is assumed that all the divided constraints are managed
+  ///     in a list (e.g. list of constraint children), and the division was a kind to tiling
+  ///     (so that children sizes along this [divideAlongAxis] added up, do not exceed the parent size.
+  LayoutAxis? divideAlongAxis;
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
@@ -80,7 +80,7 @@ abstract class BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
-    LayoutAxis? divideAlongAxis,
+    this.divideAlongAxis,
   }) {
     // set members of the newly created instance from parameters, if null,
     // from the passed [other] box
@@ -88,7 +88,6 @@ abstract class BoundingBoxesBase {
     minHeight ??= other.minSize.height;
     maxWidth ??= other.maxSize.width;
     maxHeight ??= other.maxSize.height;
-    divideAlongAxis ??= divideAlongAxis;
 
     assertSizes(
       minWidth: minWidth,
@@ -253,7 +252,6 @@ abstract class BoundingBoxesBase {
         }
         return List.from(fractions, growable: false);
       case ConstraintsDistribution.noDivide:
-        this.divideAlongAxis = divideAlongAxis;
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }
@@ -521,12 +519,6 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
 
-  /// Expresses if it was created for the very top [Row] or [Column].
-  ///
-  /// It is used to control ability of [Row] or [Column] to set [Align] (alignment) other
-  /// then [Align.start]
-  bool isOnTop = false;
-
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
   /// Generative named constructor, from other constraint.
@@ -534,7 +526,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   /// The initializer list initializes the added field [isOnTop],
   ///   followed by a call to super which initializes the common fields,
   BoxContainerConstraints.cloneOther(BoxContainerConstraints other)
-      : isOnTop = other.isOnTop, super.cloneOther(other: other);
+      : super.cloneOther(other: other);
 
   /// [clone] method implementation.
   /// Returns instance created by the [BoxContainerConstraints.cloneOther] constructor.
@@ -563,9 +555,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
     maxWidth: maxWidth,
     maxHeight: maxHeight,
     divideAlongAxis: divideAlongAxis,
-  ) {
-    isOnTop ??= other.isOnTop;
-  }
+  );
 
   /// [cloneWith] method implementation.
   /// Returns instance created by the [BoxContainerConstraints.cloneOtherWith] constructor

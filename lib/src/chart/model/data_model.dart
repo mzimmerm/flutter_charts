@@ -248,8 +248,6 @@ class ChartModel {
 enum CrossPointsModelPointsSign {
   positiveOr0,
   negative,
-  // todo-001-refactoring : remove 'any', not used in any sensible way.
-  any,
 }
 
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
@@ -400,8 +398,6 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required double value,
   }) {
     switch (pointsSign) {
-      case CrossPointsModelPointsSign.any:
-        return true;
       case CrossPointsModelPointsSign.positiveOr0:
         return (value >= 0.0);
       case CrossPointsModelPointsSign.negative:
@@ -417,8 +413,6 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Only makes practical sense if all [_crossPoints] are either positive or negative,
   /// see [CrossPointsModelPointsSign].
   __stackPoints(PointModel point, unused) {
-    assert(pointsSign != CrossPointsModelPointsSign.any);
-
     if (point.hasPrevious) {
       point._stackedOutputValue = point.previous._stackedOutputValue + point.outputValue;
     } else {
@@ -430,8 +424,6 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Returns value-height of this column from (transformed, non-extrapolated) data values of points.
   double get _stackedValue {
     switch (pointsSign) {
-      case CrossPointsModelPointsSign.any:
-        throw StateError('Cannot stack value on CrossPointsModel with mixed signs');
       case CrossPointsModelPointsSign.positiveOr0:
         return __maxOnPoints((PointModel point) => point._stackedOutputValue);
       case CrossPointsModelPointsSign.negative:

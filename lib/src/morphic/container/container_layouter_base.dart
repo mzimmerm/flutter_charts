@@ -226,7 +226,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     // We iterated all the way to root, and no node had a cached _root.
     // Cache rootCandidate as _root, and return the cached _root.
     // But before, propagate the cached _root to all parents for next time use.
-    print(' ### get root: No cached _root found all the way to actual hierarchy-root.');
+    print(' ### Log.info: get root: No cached _root found all the way to actual hierarchy-root.');
     __propagateRootCacheUp(rootCandidate);
     _root = rootCandidate;
     return _root!;
@@ -729,7 +729,7 @@ class RootSandboxSizers {
   /// Returns width sizer if exists, otherwise exception.
   double get widthSizerEnsuredLength {
     if (__widthSizer == null) {
-      print(' ######### No width sizer was placed on the sandbox, returning 0 width.');
+      print(' ### Log.Info: No width sizer was placed on the sandbox, returning 0 width.');
       return 0.0;
     }
     return __widthSizer!.length;
@@ -738,7 +738,7 @@ class RootSandboxSizers {
   /// Returns height sizer if exists, otherwise exception.
   double get heightSizerEnsuredLength {
     if (__heightSizer == null) {
-      print(' ######### No height sizer was placed on the sandbox, returning 0 height.');
+      print(' ### Log.Info: No height sizer was placed on the sandbox, returning 0 height.');
       return 0.0;
     }
     return __heightSizer!.length;
@@ -2037,7 +2037,15 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       }
     } else {
       // Else give all children full self constraints.
-      // This code is the same as super implementation in [BoxLayouter]
+      // This code is the same as super implementation in [BoxLayouter], but has an added warning
+      //    if Align is not start
+      if (mainAxisLayoutProperties.align != Align.start) {
+        print(' ### Log.Warning: Allowing all children full self constraints while Align is not "start" along '
+            'main axis will likely cause overflows during a stressed layout. Either create this instance '
+            'using "mainAxisLayout: Align.start", or divide self constraints by setting weights on all children '
+            'using "mainAxisConstraintsWeight: ConstraintsWeight". \n'
+            'This instance=$this');
+      }
       for (var child in children) {
         child.applyParentConstraints(this, constraints);
       }
@@ -2152,6 +2160,9 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     super.mainAxisConstraintsWeight,
   });
 
+  // final bool isMainAxisAlignFlipperOnTranspose;
+  // final bool isCrossAxisAlignFlipperOnTranspose;
+
   /// [Column] or [Row] producing factory;
   /// Instance produced for default [ChartSeriesOrientation] is [Column];
   /// Same parameters as the default produced instance.
@@ -2161,10 +2172,11 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
-    // todo-00-done : Changed to center : Align crossAxisAlign = Align.start, : may break OLD tests
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    bool isMainAxisAlignFlippedOnTranspose = true,
+    bool isCrossAxisAlignFlippedOnTranspose = true,
   }) {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
@@ -2180,8 +2192,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-done : added
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? otherEndAlign(mainAxisAlign) : mainAxisAlign,
+          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? otherEndAlign(crossAxisAlign) : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
@@ -2200,6 +2212,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
+    bool isMainAxisAlignFlippedOnTranspose = true,
+    bool isCrossAxisAlignFlippedOnTranspose = true,
   }) {
     switch (chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
@@ -2215,8 +2229,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign), // todo-00-done : added // THIS BREAKS Row in row ORIENTATION :
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? otherEndAlign(mainAxisAlign) : mainAxisAlign,
+          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? otherEndAlign(crossAxisAlign) : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
@@ -2265,7 +2279,6 @@ class Column extends TransposingRoller {
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
-    // todo-00-done : Changed to center : Align crossAxisAlign = Align.start, : may break OLD tests
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,

@@ -220,16 +220,13 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
-    // todo-00-last : add isMainAxisFlipAlign: false + mainAxisAlign: Align.start instead
-    var barsContainerMainAxisAlign1 = chartViewMaker.chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end; // todo-00-last-last-progress : added
     List<BoxContainer> children = directionWrapperAround(
       [
         // Row with Column of Y labels and Y axis (Output labels and output axis)
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
-            mainAxisAlign: barsContainerMainAxisAlign1, // todo-00-last-last-LAST-LAST-LAST-LAST progress : added : THIS FINALLY FIXED THE LAYOUT in row mode.
-                                                        // todo-00-last-last-LAST-LAST-LAST-LAST : Try to remove the other equivalent code and keep only this code.
-                                                        // todo-00-last-last-LAST-LAST-LAST-LAST : But this is a syndrom of a deeper issue: The TransposingRoller (and maybe all transposing) should ONLY be used with divided constraints - e.g. for multiple children with weights defined.
+            mainAxisAlign: Align.start, // default
+            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,

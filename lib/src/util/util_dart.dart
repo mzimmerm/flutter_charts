@@ -461,7 +461,7 @@ class DomainLTransform1D {
         _fromMoveOriginBy = fromDomainStart,
         _toMoveOriginBy = -1 * toDomainStart {
     if (isCloserThanEpsilon(toDomainStart, toDomainEnd)) {
-      print( ' ###### to domain is collapsed or closer than epsilon: '
+      print( ' ### Log.Info: to domain is collapsed or closer than epsilon: '
           'toDomainStart $_toDomainStart == toDomainEnd = $_toDomainEnd');
     }
   }
@@ -589,7 +589,7 @@ class ToPixelsLTransform1D extends DomainLTransform1D {
       throw StateError('$runtimeType: toPixelsMin=$toPixelsMin <= toPixelsMax=$toPixelsMax NOT true on $this.');
     }
     if (toPixelsMin == toPixelsMax)  {
-      print(' ##### $runtimeType: TO domain is COLLAPSED: '
+      print(' ### Log.Info: $runtimeType: TO domain is COLLAPSED: '
           'toPixelsMin=$toPixelsMin == toPixelsMax=$toPixelsMax TRUE on $this.');
     }
 

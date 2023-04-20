@@ -347,13 +347,11 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required Align barsContainerMainAxisAlign,
     required List<container_base.Padder> pointContainers,
   }) {
-    // todo-00-last : add isMainAxisFlipAlign: false + mainAxisAlign: Align.start instead
-    var barsContainerMainAxisAlign1 = chartSeriesOrientation == ChartSeriesOrientation.column ? Align.start : Align.end;
     return container_base.TransposingRoller.Column(
       chartSeriesOrientation: chartSeriesOrientation,
       // Positive: Both Align.start and end work, . Negative: only Align.start work in column
-      mainAxisAlign: barsContainerMainAxisAlign1,
-      // todo-000 : pointContainers must have been reversed somewhere. should be reversed here, for first pointContainer is on bottom (last appended)
+      mainAxisAlign: Align.start, // default
+      isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end
       children: pointContainers,
     );
   }

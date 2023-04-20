@@ -67,7 +67,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
       dart_developer.log(msg, name: 'charts.debug.log');
       return;
     }
-    print(' ### $runtimeType. FLUTTER_CHART_PAINTER.PAINT: passed size $size');
+    print(' ### Log.Info: $runtimeType. FLUTTER_CHART_PAINTER.PAINT: passed size $size');
 
     // At this point:
     //   - [ViewMaker] has access to [Model] as it was created with [Model] argument.

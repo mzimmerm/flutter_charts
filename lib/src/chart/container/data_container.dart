@@ -127,8 +127,6 @@ class DataContainer extends container_common.ChartAreaContainer {
         mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
         break;
-      case model.CrossPointsModelPointsSign.any:
-        throw StateError('Invalid sign in this context.');
     }
     // Parent passes specific distributed constraints for positive and negative portion,
     // so can use Align.start -> Align.end without isMainAxisFlipAlign
