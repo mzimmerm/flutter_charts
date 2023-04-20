@@ -82,6 +82,8 @@ class LegendContainer extends container_common.ChartAreaContainer {
         childLayout = container_base.Column(
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
+          crossAxisAlign: Align.start,         // override to left-justify
+          crossAxisPacking: Packing.matrjoska, // default
           children: children,
         );
         break;

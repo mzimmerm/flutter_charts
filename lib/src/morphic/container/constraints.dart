@@ -12,13 +12,22 @@ class ContainerConstraints {}
 /// Represents sizes of two boxes without specifying positions.
 ///
 /// Objects of this class's extensions allow two core roles:
-///   - Role of a constraint that a parent in a layout hierarchy requires of it's children.
+///   - Role of a constraint that a parent in a layout hierarchy requires existence of children.
 ///     This role is used in the current one-pass layout, implemented by [BoxContainerConstraints].
 ///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
 ///     This could be used it a future two pass layout.
 abstract class BoundingBoxesBase {
   late final Size minSize;
   late final Size maxSize;
+  /// Set to non-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
+  ///
+  /// Motivation and assumption:
+  ///   - Used to mark that this bounding box was divided from parent, see [divideUsingStrategy].
+  ///   - Mostly for the benefit of divided [BoxContainerConstraints].
+  ///   - If set, it is assumed that all the divided constraints are managed
+  ///     in a list (e.g. list of constraint children), and the division was a kind to tiling
+  ///     (so that children sizes along this [divideAlongAxis] added up, do not exceed the parent size.
+  late final LayoutAxis? divideAlongAxis;
 
   // The SINGLE UNNAMED generative non-forwarding constructor
   BoundingBoxesBase({
@@ -71,6 +80,7 @@ abstract class BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
+    LayoutAxis? divideAlongAxis,
   }) {
     // set members of the newly created instance from parameters, if null,
     // from the passed [other] box
@@ -78,6 +88,7 @@ abstract class BoundingBoxesBase {
     minHeight ??= other.minSize.height;
     maxWidth ??= other.maxSize.width;
     maxHeight ??= other.maxSize.height;
+    divideAlongAxis ??= divideAlongAxis;
 
     assertSizes(
       minWidth: minWidth,
@@ -115,6 +126,7 @@ abstract class BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
+    LayoutAxis? divideAlongAxis,
   });
 
   Size get size {
@@ -155,7 +167,7 @@ abstract class BoundingBoxesBase {
   /// Divide this [BoundingBoxesBase] into a list of 'smaller' [BoundingBoxesBase]s objects,
   /// depending on the dividing strategy [ConstraintsDistribution].
   ///
-  /// The sizes of the returned constraint list are smaller along the direction of the passed [layoutAxis];
+  /// The sizes of the returned constraint list are smaller along the direction of the passed [divideAlongAxis];
   /// cross-sizes remain the same as this constraint.
   ///
   /// Extensions use this method to pass smaller constraints to children; use for layout sizes
@@ -164,7 +176,7 @@ abstract class BoundingBoxesBase {
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
     required ConstraintsDistribution divideStrategy,
-    required LayoutAxis layoutAxis,
+    required LayoutAxis divideAlongAxis,
     List<double>? doubleWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
@@ -187,7 +199,7 @@ abstract class BoundingBoxesBase {
 
     switch (divideStrategy) {
       case ConstraintsDistribution.evenly:
-        switch (layoutAxis) {
+        switch (divideAlongAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
             minHeight = minSize.height;
@@ -208,6 +220,7 @@ abstract class BoundingBoxesBase {
             minHeight: minHeight,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
+            divideAlongAxis: divideAlongAxis,
           );
           fractions.add(fraction);
         }
@@ -215,7 +228,7 @@ abstract class BoundingBoxesBase {
       case ConstraintsDistribution.doubleWeights:
         List<BoundingBoxesBase> fractions = [];
         for (var doubleWeight in doubleWeights!) {
-          switch (layoutAxis) {
+          switch (divideAlongAxis) {
             case LayoutAxis.horizontal:
               minWidth = minSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
               minHeight = minSize.height;
@@ -234,11 +247,13 @@ abstract class BoundingBoxesBase {
             minHeight: minHeight,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
+            divideAlongAxis: divideAlongAxis,
           );
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
       case ConstraintsDistribution.noDivide:
+        this.divideAlongAxis = divideAlongAxis;
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }
@@ -384,12 +399,14 @@ class BoundingBoxes extends BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
+    LayoutAxis? divideAlongAxis,
   }) : super.cloneOtherWith(
           other: other,
           minWidth: minWidth,
           minHeight: minHeight,
           maxWidth: maxWidth,
           maxHeight: maxHeight,
+          divideAlongAxis: divideAlongAxis,
         );
 
   /// [cloneWith] method implementation.
@@ -400,6 +417,7 @@ class BoundingBoxes extends BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
+    LayoutAxis? divideAlongAxis,
   }) {
     return BoundingBoxes.cloneOtherWith(
       other: this,
@@ -407,6 +425,7 @@ class BoundingBoxes extends BoundingBoxesBase {
       minHeight: minHeight,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
+      divideAlongAxis: divideAlongAxis,
     );
   }
 
@@ -486,12 +505,6 @@ class BoundingBoxes extends BoundingBoxesBase {
 ///   todo-04 : can we make this immutable? Or even make const constructors?
 class BoxContainerConstraints extends BoundingBoxesBase {
 
-  /// Expresses if it was created for the very top [Row] or [ColumnLayoter].
-  ///
-  /// It is used to control ability of [Row] or [Column] to set [Align] (alignment) other
-  /// then [Align.start]
-  bool isOnTop = false;
-
   /// The SINGLE UNNAMED generative constructor.
   /// must call super, super initializes fields in BoundingBoxesBase
   BoxContainerConstraints({
@@ -507,6 +520,12 @@ class BoxContainerConstraints extends BoundingBoxesBase {
   /// Named constructor for unused expansion
   BoxContainerConstraints.unused() : this.exactBox(size: const Size(0.0, 0.0));
   BoxContainerConstraints.infinity() : this.insideBox(size: const Size(double.infinity, double.infinity));
+
+  /// Expresses if it was created for the very top [Row] or [Column].
+  ///
+  /// It is used to control ability of [Row] or [Column] to set [Align] (alignment) other
+  /// then [Align.start]
+  bool isOnTop = false;
 
   // ### Prototype design pattern for cloning - cloneOther constructor used in clone extensions
 
@@ -536,12 +555,14 @@ class BoxContainerConstraints extends BoundingBoxesBase {
     double? maxWidth,
     double? maxHeight,
     bool? isOnTop,
+    LayoutAxis? divideAlongAxis,
   }) : super.cloneOtherWith(
     other: other,
     minWidth: minWidth,
     minHeight: minHeight,
     maxWidth: maxWidth,
     maxHeight: maxHeight,
+    divideAlongAxis: divideAlongAxis,
   ) {
     isOnTop ??= other.isOnTop;
   }
@@ -554,6 +575,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
     double? minHeight,
     double? maxWidth,
     double? maxHeight,
+    LayoutAxis? divideAlongAxis,
   }) {
     return BoxContainerConstraints.cloneOtherWith(
       other: this,
@@ -561,6 +583,7 @@ class BoxContainerConstraints extends BoundingBoxesBase {
       minHeight: minHeight,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
+      divideAlongAxis: divideAlongAxis,
     );
   }
 

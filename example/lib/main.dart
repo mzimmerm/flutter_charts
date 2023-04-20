@@ -497,7 +497,7 @@ class _ExampleWidgetCreator {
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartType = descriptorOfExampleToRun.item2;
     ChartSeriesOrientation chartSeriesOrientation = descriptorOfExampleToRun.item3;
-    bool isUseOldLayouter = descriptorOfExampleToRun.item4;
+    // bool isUseOldLayouter = descriptorOfExampleToRun.item4;
 
     // Declare chartModel; the data object will be different in every examples.
     ChartModel chartModel;

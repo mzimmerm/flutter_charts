@@ -17,7 +17,7 @@
 // Import specifically only the source file where enumName is defined, and no 'dart:ui' is referenced
 
 import '../../../../lib/src/util/util_dart.dart' show enumName;
-import '../../../../lib/src/util/extensions_dart.dart' show StringExtension, expandList, multiplyListElementsBy;
+import '../../../../lib/src/util/extensions_dart.dart' show StringExtension, multiplyListElementsBy;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart' show ChartSeriesOrientation;
 
 import 'package:tuple/tuple.dart' show Tuple2, Tuple4;

@@ -1900,18 +1900,29 @@ Notes or Later:
           - [ ] Run representative mini tests. Some old tests may break due to changing to Center. Fix them.
           - [ ] Look in code for a follow up from the fixes to using Transposing layouters.
     - [ ] Introduce TransposingEdgePadding, and use it in all 3. Any others?
-17. [ ] Exclude from backups:
+17. [ ]
+18. [ ] Exclude from backups:
     1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
     2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
     3. 
-18. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
-19. [ ] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
-20. [ ] !!! ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~
+19. [ ] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
+20. [ ] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
+21. [ ] !!! ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~
       
-21. [ ] More steps here, or should all work for both column and row???
-22. [ ] Add tests for PointOffset lextr method
-23. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-24. [ ] 
+22. [ ] More steps here, or should all work for both column and row???
+23. [ ] Add tests for PointOffset lextr method
+24. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+25. [ ] 
+26.
+
+
+***  Introduce control over divided Constraints
+
+1. [ ] In Constraints, add variable isDividedWidthFromParent, isDividedHeightFromParent, default false, also method isDividedLengthFromParentAlong(LayoutAxis).
+2. [ ] In TransposingRoller.Column, Row layout method (which?), if  !isDividedLengthFromParentAlong(mainLayoutAxis) and Align=Align.end, or center, is used, add a WARNING.
+3. [ ] In TransposingRoller.Column, Row, add parameter isMainAxisFlipAlign, isCrossAxisFlipAlign, default false. If set to false, the otherEndAlign is NOT performed when creating Row, Column in factory.
+    
+  
 
   
    

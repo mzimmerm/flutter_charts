@@ -431,7 +431,7 @@ enum DataRowsPaintingOrder {
 
 enum LegendAndItemLayoutEnum {
   legendIsColumnStartLooseItemIsRowStartLoose, // See comment on legendIsColumnStartTightItemIsRowStartTight
-  legendIsColumnStartTightItemIsRowStartTight, // default for legend column : Item row is top, so is NOT overriden, so must be set to intended!
+  legendIsColumnStartTightItemIsRowStartTight, // default for legend column : Item row is top, so is NOT overridden, so must be set to intended!
   legendIsRowCenterLooseItemIsRowEndLoose, // Item row is not top, forced to 'start', 'tight' , so noop
   legendIsRowStartTightItemIsRowStartTight, // default for legend row : desired and tested
   legendIsRowStartTightItemIsRowStartTightSecondGreedy, // second Item is greedy wrapped

@@ -2025,7 +2025,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
         divideIntoCount: children.length,
         divideStrategy: ConstraintsDistribution.doubleWeights,
-        layoutAxis:  mainLayoutAxis,
+        divideAlongAxis:  mainLayoutAxis,
         doubleWeights: childrenWeights.doubleWeightList,
       );
 
@@ -2112,7 +2112,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
         divideStrategy: ConstraintsDistribution.doubleWeights,
-        layoutAxis: mainLayoutAxis,
+        divideAlongAxis: mainLayoutAxis,
         doubleWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
 
