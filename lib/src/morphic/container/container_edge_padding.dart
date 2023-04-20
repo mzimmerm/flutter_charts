@@ -1,4 +1,6 @@
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
+
 /// Edge padding for the [Padder] layouter.
 ///
 /// Script-writing order dependent members [start] and [end] define padding in logical pixels
@@ -32,6 +34,21 @@ class EdgePadding  {
     this.end = 0.0,
     this.bottom = 0.0,
   });
+
+  factory EdgePadding.TransposingWithSides({
+    required ChartSeriesOrientation chartSeriesOrientation,
+    double start = 0.0,
+    double top = 0.0,
+    double end = 0.0,
+    double bottom = 0.0,
+  }) {
+    switch(chartSeriesOrientation) {
+      case ChartSeriesOrientation.column:
+        return EdgePadding.withSides(start: start, top: top, end: end, bottom: bottom);
+      case ChartSeriesOrientation.row:
+        return EdgePadding.withSides(start: bottom, top: end, end: top, bottom: start);
+    }
+  }
 
   // constructor const EdgePadding.none() : this.withSides();
   static const EdgePadding none = EdgePadding.withSides(); // member field

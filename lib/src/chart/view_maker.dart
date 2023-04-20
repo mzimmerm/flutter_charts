@@ -301,6 +301,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required bool isPointsReversed,
   }) {
     EdgePadding pointRectSidePad;
+    pointRectSidePad = EdgePadding.TransposingWithSides(
+      chartSeriesOrientation: chartSeriesOrientation,
+      start: 6.0,
+      end: 6.0,
+    );
+/* todo-00-done
     // todo-001
     switch(chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
@@ -310,6 +316,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         pointRectSidePad = const EdgePadding.withSides(top: 6.0, bottom: 6.0);
         break;
     }
+*/
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModels(
       crossPointsModel: crossPointsModel,
