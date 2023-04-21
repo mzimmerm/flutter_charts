@@ -108,6 +108,8 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   final ChartSeriesOrientation chartSeriesOrientation;
 
+  // todo-00-last final ChartStackingEnum chartStacking;
+
   final bool isStacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
@@ -320,7 +322,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     }
 
     return _buildLevel3PointsBarAsRowOrColumn(
-      chartSeriesOrientation: chartSeriesOrientation,
       barsContainerMainAxisAlign: barsContainerMainAxisAlign,
       pointContainers: pointContainers,
     );
@@ -334,7 +335,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   //              - SIMILAR FOR AXIS_CONTAINER
   //
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn({
-    required ChartSeriesOrientation chartSeriesOrientation,
     required Align barsContainerMainAxisAlign,
     required List<container_base.Padder> pointContainers,
   }) {

@@ -27,11 +27,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   // todo-011 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewVerticalAxisContainer???
   @override
   void buildAndReplaceChildren() {
-    var options = chartViewMaker.chartOptions;
-    var padGroup = ChartPaddingGroup(fromChartOptions: options);
-    var outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
-    var inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
-    var chartSeriesOrientation = chartViewMaker.chartSeriesOrientation;
+    var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
 
     // Generate list of containers, each container represents one bar (chartViewMaker defines if horizontal or vertical)
     // This is the entry point where this container's [chartViewMaker] starts to generate this container (view).
@@ -48,27 +44,20 @@ class DataContainer extends container_common.ChartAreaContainer {
               children: [
                 // RowOrColumn's first item shows positive Bars, second item negative Bars, X axis line between them
                 _buildLevel1PosNegAreasContainerAsRowOrColumn (
-                  chartSeriesOrientation: chartSeriesOrientation,
                   children: [
                     // Row with columns of positive values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       crossPointsModelPointsSign: model.CrossPointsModelPointsSign.positiveOr0,
-                      chartViewMaker:             chartViewMaker,
-                      inputLabelsGenerator:       inputLabelsGenerator,
-                      outputLabelsGenerator:      outputLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     TransposingInputAxisLineContainer(
-                      inputLabelsGenerator: inputLabelsGenerator,
-                      outputLabelsGenerator: outputLabelsGenerator,
-                      chartViewMaker: chartViewMaker,
+                      chartViewMaker:             chartViewMaker,
+                      inputLabelsGenerator:       chartViewMaker.inputLabelsGenerator,
+                      outputLabelsGenerator:      chartViewMaker.outputLabelsGenerator,
                     ),
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
                       crossPointsModelPointsSign: model.CrossPointsModelPointsSign.negative,
-                      chartViewMaker:             chartViewMaker,
-                      inputLabelsGenerator:       inputLabelsGenerator,
-                      outputLabelsGenerator:      outputLabelsGenerator,
                     ),
                   ],
                 ),
@@ -81,11 +70,10 @@ class DataContainer extends container_common.ChartAreaContainer {
   }
 
   RollingBoxLayouter _buildLevel1PosNegAreasContainerAsRowOrColumn({
-    required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
   }) {
     return TransposingRoller.Column(
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       mainAxisAlign: Align.start, // default
       children: children,
     );
@@ -98,9 +86,6 @@ class DataContainer extends container_common.ChartAreaContainer {
   /// depending on
   RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsRowOrColumn({
     required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
-    required ChartViewMaker                   chartViewMaker,
-    required DataRangeLabelInfosGenerator     inputLabelsGenerator,
-    required DataRangeLabelInfosGenerator     outputLabelsGenerator,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
@@ -111,13 +96,13 @@ class DataContainer extends container_common.ChartAreaContainer {
     switch(crossPointsModelPointsSign) {
       case model.CrossPointsModelPointsSign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
-        ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfPositivePortion();
+        ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
-        ratioOfPositiveOrNegativePortion = outputLabelsGenerator.dataRange.ratioOfNegativePortion();
+        ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
         break;
