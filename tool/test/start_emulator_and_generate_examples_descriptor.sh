@@ -67,7 +67,7 @@ fi
 examples_descriptor_generated_program=test/tmp/examples_descriptor_generated_program_$RANDOM.sh
 
 # Dart run examples_descriptor.dart which generates a script with dart_defines.
-echo Running \"dart run example/lib/src/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$isUseOldLayouter"\'\"
+echo Running \"dart run example/lib/src/util/examples_descriptor.dart \'"$exampleEnum"\' \'"$chartTypeEnum"\'  \'"$chartOrientation"\' \'"$chartStacking"\' \'"$isUseOldLayouter"\'\"
 echo   which creates $examples_descriptor_generated_program
 
 echo "# Sample of how this runs:"  > $examples_descriptor_generated_program
@@ -75,6 +75,7 @@ echo "# flutter drive \
   --dart-define=EXAMPLE_TO_RUN=ex75 \
   --dart-define=CHART_TYPE=verticalBarChart \
   --dart-define=CHART_ORIENTATION=row \
+  --dart-define=CHART_STACKING=stacked \
   --dart-define=IS_USE_OLD_LAYOUTER=false \
   --driver=test_driver/integration_test.dart --target=integration_test/screenshot_create_test.dart"  >> $examples_descriptor_generated_program
 
@@ -82,6 +83,7 @@ dart run example/lib/src/util/examples_descriptor.dart \
   "$exampleEnum" \
   "$chartTypeEnum" \
   "$chartOrientation" \
+  "$chartStacking" \
   "$isUseOldLayouter" >> $examples_descriptor_generated_program
 
 chmod u+x $examples_descriptor_generated_program

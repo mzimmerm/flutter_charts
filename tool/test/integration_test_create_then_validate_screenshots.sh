@@ -75,10 +75,12 @@ fi
 
 if [[ -n "$2" ]]; then
 
-  #   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and IS_USE_OLD_LAYOUTER
+  # If the second argument is provided, 5 values which fully specify the chart to run must be provided:
+  #   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, CHART_STACKING, and IS_USE_OLD_LAYOUTER
   exampleEnum=$2
   chartTypeEnum=$3
   chartOrientation=$CHART_ORIENTATION
+  chartStacking=$CHART_STACKING
   isUseOldLayouter=$IS_USE_OLD_LAYOUTER
 
   echo
@@ -112,6 +114,7 @@ source tool/test/start_emulator_and_generate_examples_descriptor.sh \
   "$exampleEnum" \
   "$chartTypeEnum" \
   "$chartOrientation" \
+  "$chartStacking" \
   "$isUseOldLayouter"
 
 echo Will run "$examples_descriptor_generated_program".

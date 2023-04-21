@@ -6,7 +6,7 @@ import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDepen
 ///   For almost all chart types (at least for line chart and bar chart),
 ///   the same data can be presented using two equivalent views:
 ///   1. View where the independent axis (x axis, input axis) is shown horizontally,
-///      and values across series are shown vertically, in columns, potentially stacked;
+///      and values across series are shown vertically, in columns, potentially 'vertically stacked'.
 ///   2. A 'inverted' view where the independent axis (x axis, input axis) is shown vertically,
 ///      and values across series are shown horizontally, in rows, potentially 'horizontally stacked'.
 ///

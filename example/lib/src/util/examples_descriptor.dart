@@ -20,7 +20,7 @@ import '../../../../lib/src/util/util_dart.dart' show enumName;
 import '../../../../lib/src/util/extensions_dart.dart' show StringExtension, multiplyListElementsBy;
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart' show ChartSeriesOrientation;
 
-import 'package:tuple/tuple.dart' show Tuple2, Tuple4;
+import 'package:tuple/tuple.dart' show Tuple2, Tuple5;
 
 /// Present the [ExamplesDescriptor] as a command line for consumption by shell scripts
 /// that require passing the examples to run or test using the environment variables `--dart-define`.
@@ -29,7 +29,9 @@ void main(List<String> args) {
   if (args.isNotEmpty && args[0].trim().isNotEmpty) {
     // If first command line argument is provided, all 4 must be provided, although some may be empty!
     // The empty args will be defaulted in the [asCommandLine] method.
-    assert(args.length == 4);
+    if (args.length != 5) {
+      throw StateError('5 arguments required, but only the following provided: $args');
+    }
 
     // Assumes argument name is one of ExamplesEnum, e.g. ex10RandomData
     ExamplesEnum exampleToRun = args[0].asEnum(ExamplesEnum.values);
@@ -37,7 +39,8 @@ void main(List<String> args) {
       exampleRequested: exampleToRun,
       chartTypeRequested: args[1].isNotEmpty ? args[1].asEnum(ExamplesChartTypeEnum.values) : null,
       chartSeriesOrientation: args[2].isNotEmpty ? args[2].asEnum(ChartSeriesOrientation.values) : null,
-      isUseOldLayouter: args[3].isNotEmpty ? (args[3] == 'true' ? true : false) : null,
+      chartStacking: args[3].isNotEmpty ? args[3].asEnum(ChartStackingEnum.values) : null,
+      isUseOldLayouter: args[4].isNotEmpty ? (args[4] == 'true' ? true : false) : null,
 
     );
   }
@@ -72,10 +75,22 @@ enum ExamplesEnum {
   ex900ErrorFixUserDataAllZero,
 }
 
+// todo-00-refactoring : move to the same dart file with enums. Also review all enums in flutter_charts and organize them
+// todo-00-refactoring : rename to ChartTypeEnum,
 /// Describes chart types shown in examples or integration tests.
 enum ExamplesChartTypeEnum {
   lineChart,
+  // todo-00-refactoring: rename verticalBarChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
+  //
   verticalBarChart,
+}
+
+/// Describes how cross-series data are shown: Either stacked, or side by side.
+///
+/// Side by side in only applicable to Bar chart.
+enum ChartStackingEnum {
+  stacked,
+  sideBySide,
 }
 
 /// Defines the list of the examples available to be tested or run interactively in scripts.
@@ -103,12 +118,14 @@ class ExamplesDescriptor {
   ExamplesEnum? exampleRequested;
   ExamplesChartTypeEnum? chartTypeRequested;
   ChartSeriesOrientation? chartSeriesOrientation;
+  ChartStackingEnum? chartStacking;
   bool? isUseOldLayouter;
 
   ExamplesDescriptor({
     required this.exampleRequested,
     required this.chartTypeRequested,
     required this.chartSeriesOrientation,
+    required this.chartStacking,
     required this.isUseOldLayouter,
   });
 
@@ -181,7 +198,7 @@ class ExamplesDescriptor {
   ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only
   ///   one chart type makes sense to be presented.
   bool exampleComboIsAllowed(
-    Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+    Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,
   ) {
     return _allowed.any((tuple) => tuple.item1 == exampleComboToRun.item1 && tuple.item2 == exampleComboToRun.item2);
   }
@@ -213,7 +230,21 @@ class ExamplesDescriptor {
       orientationsToRun = [chartSeriesOrientation];
     }
 
-    List<Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool>>
+    List stackingToRun;
+    if (chartStacking == null) {
+      if (isUseOldLayouter!) {
+        stackingToRun = [ChartStackingEnum.stacked];
+      } else {
+        stackingToRun = [ChartStackingEnum.stacked, ChartStackingEnum.sideBySide];
+      }
+    } else {
+      stackingToRun = [chartStacking];
+    }
+
+    List<List> orientationsAndStackingToRun = multiplyListElementsBy(orientationsToRun, stackingToRun);
+
+/* todo-00-last-done
+    List<Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool>>
     combos4ToRun = multiplyListElementsBy(combosToRun, orientationsToRun).map((tuple2AndOrientation) =>
         Tuple4(
             tuple2AndOrientation[0].item1 as ExamplesEnum,
@@ -221,8 +252,19 @@ class ExamplesDescriptor {
             tuple2AndOrientation[1] as ChartSeriesOrientation,
             isUseOldLayouter!,
             )).toList();
+*/
 
-    for (Tuple4 tuple in combos4ToRun) {
+    List<Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool>>
+    combos5ToRun = multiplyListElementsBy(combosToRun, orientationsAndStackingToRun).map((tuple2AndOrientationWithStacking) =>
+        Tuple5(
+          tuple2AndOrientationWithStacking[0].item1 as ExamplesEnum,
+          tuple2AndOrientationWithStacking[0].item2 as ExamplesChartTypeEnum,
+          tuple2AndOrientationWithStacking[1][0] as ChartSeriesOrientation,
+          tuple2AndOrientationWithStacking[1][1] as ChartStackingEnum,
+          isUseOldLayouter!,
+        )).toList();
+
+    for (Tuple5 tuple in combos5ToRun) {
       print('set -o errexit');
       print('echo');
       print('echo');
@@ -234,6 +276,7 @@ class ExamplesDescriptor {
           '--dart-define=EXAMPLE_TO_RUN=${enumName(tuple.item1)} '
           '--dart-define=CHART_TYPE=${enumName(tuple.item2)} '
           '--dart-define=CHART_ORIENTATION=${enumName(tuple.item3)} '
+          '--dart-define=CHART_STACKING=${enumName(tuple.item4)} '
           '--dart-define=IS_USE_OLD_LAYOUTER=$isUseOldLayouter '
           '\$2' // ' example/lib/main.dart'
           );
@@ -242,7 +285,7 @@ class ExamplesDescriptor {
 }
 
 bool isExampleWithRandomData(
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,
 ) {
   if (enumName(exampleComboToRun.item1).contains('RandomData')) {
     return true;

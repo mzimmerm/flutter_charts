@@ -126,7 +126,7 @@ Align otherEndAlign(Align align) {
 /// describes that a given constraint should create multiple constraints that are the same.
 enum ConstraintsDistribution {
   evenly, // todo-023 : deprecate and remove. Rely on children to all set doubleWeights=1 instead
-  doubleWeights,
+  doubleWeights, // todo-00-refactor rename to childrenWeights. Also in code, replace doubleWeight with weight.
   noDivide,
 }
 

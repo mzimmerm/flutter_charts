@@ -7,7 +7,7 @@
 /// so Widget classes are referred to without prefix
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tuple/tuple.dart' show Tuple4;
+import 'package:tuple/tuple.dart' show Tuple5;
 import 'dart:io' as io show exit;
 import 'dart:ui' as ui show Color;
 import 'package:logger/logger.dart';
@@ -96,27 +96,25 @@ void main() {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     io.exit(0);
   }
-  
-  // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with 
-  // installing the fonts in pubspec.yaml. 
+
+  // If using a client-specific font, such as GoogleFonts, this is needed, in conjunction with
+  // installing the fonts in pubspec.yaml.
   // But these 2 additions are needed ONLY in integration tests. App works without those 2 additions.
   GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const MyApp());
 }
 
-/// From environment variables, returns the enum of the example to run
-/// *in the tests, integration tests, or main.dart*.
+//// Returns the enum of the chart example to run *in widget tests, integration tests, or example/lib/main.dart*.
 ///
-/// Used *in the tests, integration tests, or main.dart*.
-///
-/// Pull values of environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
-///   passed to the program by `--dart-define` options.
+/// The enums are pulled from environment variables named ['EXAMPLE_TO_RUN'] and ['CHART_TYPE']
+///   passed to the main program by `--dart-define` options.
 ///
 /// Converts the dart-define(d) environment variables passed to 'flutter run', 'flutter test', or 'flutter driver',
-///   to a tuple of enums which describe the example to run, and the chart type to show.
+///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
+///   and 'IS_USE_OLD_LAYOUTER' into enums which describe the example to run, and the chart type to show.
 ///
-Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> requestedExampleToRun() {
+Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> requestedExampleToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
@@ -130,9 +128,12 @@ Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> reques
       ChartSeriesOrientation.column,
   );
 
+  const String stackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
+  ChartStackingEnum stacking = stackingStr.asEnum(ChartStackingEnum.values);
+
   bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
-  return Tuple4(exampleComboToRun, chartType, orientation, isUseOldLayouter);
+  return Tuple5(exampleComboToRun, chartType, orientation, stacking, isUseOldLayouter);
 }
 
 class MyApp extends StatelessWidget {
@@ -211,7 +212,7 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun =
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun =
       requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
@@ -459,7 +460,7 @@ class _ExampleWidgetCreator {
   _ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> descriptorOfExampleToRun;
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun;
   // todo-00-next-revert-data-order: revert lines in data and legends
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],

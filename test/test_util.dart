@@ -10,7 +10,7 @@ import '../example/lib/src/util/examples_descriptor.dart';
 /// Path to screenshot file the test uses for each test.
 String relativePath(
   String screenshotDirName,
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,
 ) {
   return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
 }
@@ -22,12 +22,12 @@ String relativePath(
 ///   - 'ex10RandomData_lineChart.png'     (for old layout)
 ///   - 'ex10RandomData_lineChart_NEW.png' (for new layout)
 String screenshotFileName(
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,
 ) {
-  bool isUseOldLayouter = exampleComboToRun.item4;
+  bool isUseOldLayouter = exampleComboToRun.item5;
   String newLayout = '';
   if (!isUseOldLayouter) {
-    newLayout = '_NEW_orientation_${exampleComboToRun.item3.name}';
+    newLayout = '_NEW_orientation_${exampleComboToRun.item3.name}_stacking_${exampleComboToRun.item4.name}';
   }
 
   return '${enumName(exampleComboToRun.item1)}_${enumName(exampleComboToRun.item2)}$newLayout.png';
@@ -48,7 +48,7 @@ String expectedScreenshotDirName() {
 ///
 /// Paths include filename, and are relative to project root.
 Tuple2<String, String> screenshotPathsFor(
-  Tuple4<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,
 ) {
   String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
   String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);
