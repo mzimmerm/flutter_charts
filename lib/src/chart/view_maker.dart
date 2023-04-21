@@ -55,7 +55,8 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ChartViewMaker({
     required this.chartModel,
     required this.chartSeriesOrientation,
-    this.isStacked = false,
+    required this.chartStacking,
+    // todo-00-last-done : this.isStacked = false,
     this.inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
@@ -108,9 +109,10 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   final ChartSeriesOrientation chartSeriesOrientation;
 
-  // todo-00-last final ChartStackingEnum chartStacking;
+  final ChartStackingEnum chartStacking;
 
-  final bool isStacked;
+  // todo-00-last : changed to getter : final bool isStacked;
+  bool get isStacked => chartStacking == ChartStackingEnum.stacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
   /// on every [FlutterChartPainter] paint and repaint.

@@ -17,12 +17,12 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
   SwitchChartViewMakerCL({
     required model.ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
-    required bool isStacked,
+    required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartSeriesOrientation: chartSeriesOrientation,
-    isStacked: isStacked,
+    chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 

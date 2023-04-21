@@ -25,7 +25,8 @@ isFirstRun=$1
 exampleEnum=$2
 chartTypeEnum=$3
 chartOrientation=$4
-isUseOldLayouter=$5
+chartStacking=$5
+isUseOldLayouter=$6
 
 if [[ $isFirstRun == true ]]; then
   # This is the AVD emulator we request to exist

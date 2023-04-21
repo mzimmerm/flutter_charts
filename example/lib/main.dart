@@ -995,6 +995,7 @@ class _ExampleWidgetCreator {
       case ExamplesChartTypeEnum.lineChart:
         SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
           chartSeriesOrientation: ChartSeriesOrientation.column,
+          chartStacking: ChartStackingEnum.sideBySide,
           chartModel: chartModel,
           isStacked: false,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
@@ -1011,8 +1012,7 @@ class _ExampleWidgetCreator {
         SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
           chartSeriesOrientation: chartSeriesOrientation, // transpose column/row is set in env var CHART_ORIENTATION
-          // todo-00-last : chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
-          isStacked: false,
+          chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

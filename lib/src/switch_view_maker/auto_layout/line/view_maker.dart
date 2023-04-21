@@ -20,12 +20,12 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   SwitchLineChartViewMaker({
     required ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
-    required bool isStacked,
+    required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
     chartSeriesOrientation: chartSeriesOrientation,
-    isStacked: false, // only supported for now for line chart
+    chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     logger.Logger().d('$runtimeType created');
