@@ -52,11 +52,10 @@ class DataContainer extends container_common.ChartAreaContainer {
                   children: [
                     // Row with columns of positive values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      chartSeriesOrientation:           chartSeriesOrientation,
-                      crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.positiveOr0,
-                      chartViewMaker:                   chartViewMaker,
-                      inputLabelsGenerator:                 inputLabelsGenerator,
-                      outputLabelsGenerator:                 outputLabelsGenerator,
+                      crossPointsModelPointsSign: model.CrossPointsModelPointsSign.positiveOr0,
+                      chartViewMaker:             chartViewMaker,
+                      inputLabelsGenerator:       inputLabelsGenerator,
+                      outputLabelsGenerator:      outputLabelsGenerator,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     TransposingInputAxisLineContainer(
@@ -66,11 +65,10 @@ class DataContainer extends container_common.ChartAreaContainer {
                     ),
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      chartSeriesOrientation:           chartSeriesOrientation,
-                      crossPointsModelPointsSign:       model.CrossPointsModelPointsSign.negative,
-                      chartViewMaker:                   chartViewMaker,
-                      inputLabelsGenerator:                 inputLabelsGenerator,
-                      outputLabelsGenerator:                 outputLabelsGenerator,
+                      crossPointsModelPointsSign: model.CrossPointsModelPointsSign.negative,
+                      chartViewMaker:             chartViewMaker,
+                      inputLabelsGenerator:       inputLabelsGenerator,
+                      outputLabelsGenerator:      outputLabelsGenerator,
                     ),
                   ],
                 ),
@@ -99,11 +97,10 @@ class DataContainer extends container_common.ChartAreaContainer {
   /// Either are build for only positive or only negative values,
   /// depending on
   RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsRowOrColumn({
-    required ChartSeriesOrientation chartSeriesOrientation,
-    required model.CrossPointsModelPointsSign         crossPointsModelPointsSign,
-    required ChartViewMaker                           chartViewMaker,
-    required DataRangeLabelInfosGenerator             inputLabelsGenerator,
-    required DataRangeLabelInfosGenerator             outputLabelsGenerator,
+    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
+    required ChartViewMaker                   chartViewMaker,
+    required DataRangeLabelInfosGenerator     inputLabelsGenerator,
+    required DataRangeLabelInfosGenerator     outputLabelsGenerator,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
@@ -128,7 +125,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     // Parent passes specific distributed constraints for positive and negative portion,
     // so can use Align.start -> Align.end without isMainAxisFlipAlign
     return TransposingRoller.Row(
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),

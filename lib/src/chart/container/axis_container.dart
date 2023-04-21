@@ -110,10 +110,9 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   late final LabelStyle _labelStyle;
 
   factory TransposingAxisContainer.Vertical({
-    required ChartSeriesOrientation chartSeriesOrientation,
     required ChartViewMaker chartViewMaker,
   }) {
-    switch (chartSeriesOrientation) {
+    switch (chartViewMaker.chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return TransposingOutputAxisContainer(
           chartViewMaker: chartViewMaker,
@@ -128,10 +127,9 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   }
 
   factory TransposingAxisContainer.Horizontal({
-    required ChartSeriesOrientation chartSeriesOrientation,
     required ChartViewMaker chartViewMaker,
   }) {
-    switch (chartSeriesOrientation) {
+    switch (chartViewMaker.chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
         return TransposingInputAxisContainer(
           chartViewMaker: chartViewMaker,
@@ -226,7 +224,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
             mainAxisAlign: Align.start, // default
-            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end
+            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight-no divide
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,

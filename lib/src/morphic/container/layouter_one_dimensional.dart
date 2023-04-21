@@ -103,7 +103,7 @@ enum Align {
   end,
 }
 
-/// todo-011 : make Align extended enum, and add this method
+/// todo-00-refactoring : make Align extended enum, and add this method, rename it to flipAlign
 Align otherEndAlign(Align align) {
   switch(align) {
     case Align.start:

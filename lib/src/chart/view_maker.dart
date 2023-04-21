@@ -66,7 +66,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-0111-refactor : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-00-refactoring : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the outputLabelsGenerator and inputLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -211,7 +211,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
     return axis_container.TransposingAxisContainer.Horizontal(
-      chartSeriesOrientation: chartSeriesOrientation,
       chartViewMaker: this,
     );
   }
@@ -220,14 +219,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// or labels in [container.VerticalAxisContainerCL.labelInfos].
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
     return axis_container.TransposingAxisContainer.Vertical(
-      chartSeriesOrientation: chartSeriesOrientation,
       chartViewMaker: this,
     );
   }
 
   axis_container.TransposingAxisContainer makeViewForVerticalAxisContainerFirst() {
     return axis_container.TransposingAxisContainer.Vertical(
-      chartSeriesOrientation: chartSeriesOrientation,
       chartViewMaker: this,
     );
   }
@@ -345,7 +342,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       chartSeriesOrientation: chartSeriesOrientation,
       // Positive: Both Align.start and end work, . Negative: only Align.start work in column
       mainAxisAlign: Align.start, // default
-      isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end
+      isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight-no divide
       children: pointContainers,
     );
   }

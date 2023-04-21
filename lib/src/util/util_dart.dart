@@ -565,7 +565,7 @@ class DomainLTransform1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-011 : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
+/// todo-00-refactoring (functional) : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
 class ToPixelsLTransform1D extends DomainLTransform1D {
   ToPixelsLTransform1D({
     required double fromValuesMin,
