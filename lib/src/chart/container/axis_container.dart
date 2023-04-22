@@ -224,7 +224,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
         TransposingRoller.Row(
             chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
             mainAxisAlign: Align.start, // default
-            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight-no divide
+            isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
             children: [
               TransposingExternalTicks.Column(
                 chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,

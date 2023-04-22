@@ -43,7 +43,7 @@ class DataContainer extends container_common.ChartAreaContainer {
             WidthSizerLayouter(
               children: [
                 // RowOrColumn's first item shows positive Bars, second item negative Bars, X axis line between them
-                _buildLevel1PosNegAreasContainerAsRowOrColumn (
+                _buildLevel1PosAndNegAreasContainerAsRowOrColumn (
                   children: [
                     // Row with columns of positive values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
@@ -69,7 +69,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  RollingBoxLayouter _buildLevel1PosNegAreasContainerAsRowOrColumn({
+  RollingBoxLayouter _buildLevel1PosAndNegAreasContainerAsRowOrColumn({
     required List<BoxContainer> children,
   }) {
     return TransposingRoller.Column(
@@ -113,8 +113,9 @@ class DataContainer extends container_common.ChartAreaContainer {
       ),
       mainAxisAlign: Align.start, // default
       crossAxisAlign: crossAxisAlign,
+      // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_Bars(
-        crossPointsModelList: crossPointsModels,
+        crossPointsModels: crossPointsModels,
         crossPointsModelPointsSign: crossPointsModelPointsSign,
       ),
     );
@@ -204,11 +205,12 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
     );
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
-    // which is the size of the rectangle presenting the point.
-    // The offset, [pixelPointOffset] is used in line chart
-
-    // The layoutSize is also the size of the rectangle, which, when positioned
-    // by the parent layouter, presents the value of the [pointModel] on a bar chart.
+    // which is the [layoutSize] of the rectangle presenting the point.
+    // The offset, [pixelPointOffset] is used in line chart.
+    //
+    // The [layoutSize] is also the size of the rectangle, which, when positioned
+    // by the parent layouter, is the pixel-lextr-ed value of the [pointModel]
+    // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
 

@@ -242,9 +242,29 @@ class ChartModel {
 ///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
 ///             This enum supports creating and later using (processing, view making) the positive and negative
 ///             bars separately.
+// todo-010-refactoring : rename to Sign
 enum CrossPointsModelPointsSign {
   positiveOr0,
-  negative,
+  negative;
+
+  /// Checks if the sign of a the passed [value] is the sign required by this enum instance.
+  ///
+  /// Motivation: In the context of a charting framework, any series positive and negative
+  ///             values are split and kept separate in model and in view containers.
+  ///             Example:
+  ///               - There are separate instances of positive and negative [CrossPointsModel]s,
+  ///                 in [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
+  ///             This method is a helper to performs the separation based on [pointsSign].
+  bool isValueMySign({
+    required double value,
+  }) {
+    switch (this) {
+      case CrossPointsModelPointsSign.positiveOr0:
+        return (value >= 0.0);
+      case CrossPointsModelPointsSign.negative:
+        return (value < 0.0);
+    }
+  }
 }
 
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
@@ -287,7 +307,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
     //   - positive and negative values of the [valuesColumn] are separated to their own [_crossPoints].
     for (double outputValue in valuesColumn) {
-      if (__isValueMySign(
+      if (pointsSign.isValueMySign(
         value: outputValue,
       )) {
         var point = PointModel(
@@ -386,6 +406,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   @override
   Iterable<PointModel> allElements() => _crossPointsAllElements;
 
+/* todo-00-last-done : moved to PointModel
   /// Checks if the sign of a the passed [value] is the sign required by this instance of [CrossPointsModel].
   ///
   /// Motivation: In the context of a charting framework, any series positive and negative
@@ -403,6 +424,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
         return (value < 0.0);
     }
   }
+*/
 
   /// Calculates and initializes the final stacked positive and negative values on points.
   ///
@@ -525,6 +547,12 @@ class PointModel extends Object with DoubleLinked {
     this.outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble();
     // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
 
+    if (outputValue >= 0.0) {
+      crossPointsModelPointsSign = CrossPointsModelPointsSign.positiveOr0;
+    } else {
+      crossPointsModelPointsSign = CrossPointsModelPointsSign.negative;
+    }
+
     assertDoubleResultsSame(
       ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
           .yTransform(ownerCrossPointsModel.dataModel.valuesRows[rowIndex][columnIndex])
@@ -555,6 +583,8 @@ class PointModel extends Object with DoubleLinked {
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   late final double outputValue;
 
+  late final CrossPointsModelPointsSign crossPointsModelPointsSign;
+
   /// References the data column (crossPoints list) this point belongs to
   CrossPointsModel ownerCrossPointsModel;
 
@@ -583,17 +613,17 @@ class PointModel extends Object with DoubleLinked {
   ///
   /// Motivation:
   ///
-  ///   [PointModel]'s input values (x values, independent values) are ofter non-numeric,
-  ///   defined by [ChartModel.xUserLabels] or similar approach, so to get inputValue-position
+  ///   [PointModel]'s inputValue (x values, independent values) is often non-numeric,
+  ///   defined by [ChartModel.xUserLabels] or similar approach, so to get inputValue
   ///   of this instance seems irrelevant or incorrect to ask for.
-  ///   However, for the purpose of displaying a container representing a [PointModel],
-  ///   we want to assign the [PointModel] an inputValue, which can be lextr-ed to
-  ///   it's pixel position.  However, assigning an inputValue by itself does not help;
-  ///   To lextr inputValue to some pixel value, we need to affix the inputValue
+  ///   However, when positioning a [PointContainer] representing a [PointModel],
+  ///   we need to place the [PointModel] an some inputValue, which can be lextr-ed to
+  ///   it's pixel display position.  Assigning an inputValue by itself would not help;
+  ///   To lextr the inputValue to some pixel value, we need to affix the inputValue
   ///   to a range. This method, [inputValueOnInputRange] does just that:
   ///   Given the passed [dataRangeLabelInfosGenerator], using its data range
   ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue
-  ///   of this [PointModel] by dividing the data range into equal portions,
+  ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
   /// Delegated to [ownerCrossPointsModel].
