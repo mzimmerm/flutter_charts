@@ -89,7 +89,6 @@ class DataContainer extends container_common.ChartAreaContainer {
   }) {
 
     double ratioOfPositiveOrNegativePortion;
-    Align mainAxisAlign;
     Align crossAxisAlign;
     List<model.CrossPointsModel> crossPointsModels;
 
@@ -97,18 +96,16 @@ class DataContainer extends container_common.ChartAreaContainer {
       case model.CrossPointsModelPointsSign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
-        mainAxisAlign = Align.end;  // main align does not matter, as bars fill up the whole bar area
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.CrossPointsModelPointsSign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
-        mainAxisAlign = Align.start;
         crossAxisAlign = Align.start;
         break;
     }
-    // Parent passes specific distributed constraints for positive and negative portion,
-    // so can use Align.start -> Align.end without isMainAxisFlipAlign
+    // Row with a positive or negative bars, depending on [crossPointsModelPointsSign].
+    // The Row constraints are weighted by the ratio for positives and negatives passed here.
     return TransposingRoller.Row(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
@@ -118,7 +115,6 @@ class DataContainer extends container_common.ChartAreaContainer {
       crossAxisAlign: crossAxisAlign,
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModelList: crossPointsModels,
-        barsContainerMainAxisAlign: mainAxisAlign,
         crossPointsModelPointsSign: crossPointsModelPointsSign,
       ),
     );

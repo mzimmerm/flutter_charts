@@ -254,7 +254,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ///
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
     required List<model.CrossPointsModel> crossPointsModelList,
-    required Align barsContainerMainAxisAlign,
     required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
   }) {
     List<data_container.CrossPointsContainer> chartBars = [];
@@ -266,7 +265,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       chartBars.add(
         makeViewForDataContainer_EachBar(
           crossPointsModel: crossPointsModel,
-          barsContainerMainAxisAlign: barsContainerMainAxisAlign,
           crossPointsModelPointsSign: crossPointsModelPointsSign,
         ),
       );
@@ -276,7 +274,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   data_container.CrossPointsContainer makeViewForDataContainer_EachBar({
     required model.CrossPointsModel crossPointsModel,
-    required Align barsContainerMainAxisAlign,
     required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
     }) {
     return data_container.CrossPointsContainer(
@@ -285,7 +282,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         children: [
           makeViewForDataContainer_EachBarLayouter(
               crossPointsModel: crossPointsModel,
-              barsContainerMainAxisAlign: barsContainerMainAxisAlign,
               crossPointsModelPointsSign: crossPointsModelPointsSign),
         ],
         // Give all view columns the same weight along main axis -
@@ -296,7 +292,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   container_base.BoxContainer makeViewForDataContainer_EachBarLayouter({
     required model.CrossPointsModel crossPointsModel,
-    required Align barsContainerMainAxisAlign,
     required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
@@ -321,7 +316,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     }
 
     return _buildLevel3PointsBarAsRowOrColumn(
-      barsContainerMainAxisAlign: barsContainerMainAxisAlign,
       pointContainers: pointContainers,
     );
   }
@@ -334,7 +328,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   //              - SIMILAR FOR AXIS_CONTAINER
   //
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn({
-    required Align barsContainerMainAxisAlign,
     required List<container_base.Padder> pointContainers,
   }) {
     return container_base.TransposingRoller.Column(

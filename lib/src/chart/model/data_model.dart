@@ -87,7 +87,7 @@ class ChartModel {
   final List<CrossPointsModel> crossPointsModelPositiveList = [];
   final List<CrossPointsModel> crossPointsModelNegativeList = [];
 
-  /// Returns the minimum and maximum non-extrapolated, transformed data values calculated from [ChartModel],
+  /// Returns the minimum and maximum transformed, non-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
   ///
   /// The returned value is calculated from [ChartModel] by finding maximum and minimum of data values
@@ -260,7 +260,7 @@ enum CrossPointsModelPointsSign {
 ///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
-/// Note: [CrossPointsModel] replaces [PointsColumn].
+/// Note: [CrossPointsModel] replaces the [PointsColumn] in legacy layouter.
 ///
 class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
@@ -278,6 +278,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required List<double> valuesColumn,
     required this.dataModel,
     required this.columnIndex,
+    // todo-00-refactor (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
     required numDataModelColumns,
     required this.pointsSign
   }) : _numDataModelColumns = numDataModelColumns {
@@ -294,14 +295,14 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
           ownerCrossPointsModel: this,
           rowIndex: rowIndex,
         );
-        _crossPoints.add(point);
+        _crossPointsAllElements.add(point);
       }
       rowIndex++;
     }
     // Now all values in [valuesColumn] are converted to [PointModel]s and models added
     // to [_crossPoints] (which back [allElements]), we can double-link the [_crossPoints].
     // We just need one point to start linking - we use this [DoubleLinkedOwner.firstLinked].
-    if (_crossPoints.isNotEmpty) {
+    if (_crossPointsAllElements.isNotEmpty) {
       firstLinked().linkAll();
       // Once the owned DoubleLinked data points are linked, we can do iteration operations of them, such as stacking.
 
@@ -324,7 +325,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
-  /// The data values of this column are stored in the [_crossPoints] list,
+  /// The data values of this column are stored in the [_crossPointsAllElements] list,
   /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
@@ -339,7 +340,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// so it can be used before these two lists are fully constructed and populated with
   /// instances of [CrossPointsModel].
   ///
-  /// This is also accessible by [PointModel]
+  /// This is also accessible by [PointModel].
+  //     // todo-00-refactor (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
   final int _numDataModelColumns;
 
   /// Calculates inputValue-position (x-position, independent value position) of
@@ -377,12 +379,12 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// all [DoubleLinked] elements owned by this [DoubleLinkedOwner].
   /// At the same time, the points are all [PointModel] in this positive or negative column
   /// (crossPoints list).
-  final List<PointModel> _crossPoints = [];
+  final List<PointModel> _crossPointsAllElements = [];
 
   /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
   /// the owned [DoubleLinked] instances of [PointModel].
   @override
-  Iterable<PointModel> allElements() => _crossPoints;
+  Iterable<PointModel> allElements() => _crossPointsAllElements;
 
   /// Checks if the sign of a the passed [value] is the sign required by this instance of [CrossPointsModel].
   ///
@@ -404,10 +406,10 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Calculates and initializes the final stacked positive and negative values on points.
   ///
-  /// Assumes that [DoubleLinked.linkAll] has been called on first element on the [_crossPoints],
+  /// Assumes that [DoubleLinked.linkAll] has been called on first element on the [_crossPointsAllElements],
   /// which is the backing list of this [DoubleLinkedOwner]'s  [allElements].
   ///
-  /// Only makes practical sense if all [_crossPoints] are either positive or negative,
+  /// Only makes practical sense if all [_crossPointsAllElements] are either positive or negative,
   /// see [CrossPointsModelPointsSign].
   __stackPoints(PointModel point, unused) {
     if (point.hasPrevious) {
@@ -496,9 +498,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
 /// Represents one data point in the chart data model [ChartModel] and related model classes.
 ///
-/// Replaces the legacy [StackableValuePoint].
-///
 /// Notes:
+///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
 ///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerCrossPointsModel],
 ///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._dataModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
@@ -559,7 +560,7 @@ class PointModel extends Object with DoubleLinked {
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossPointsModel._crossPoints] at index [rowIndex].
+  /// Also, this point object is kept in [CrossPointsModel._crossPointsAllElements] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
@@ -574,14 +575,17 @@ class PointModel extends Object with DoubleLinked {
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
   int get columnIndex => ownerCrossPointsModel.columnIndex;
 
+  // todo-00-refactoring (functional) : delegate all the way to ownerCrossPointsModel.dataModel.numDataModelColumns
+  // but this is not used anyway, so maybe remove.
   int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
 
-  /// Calculates inputValue-position (x value) of this [PointModel] instance.
+  /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
   /// Motivation:
   ///
-  ///   Input values (x values) of data model [PointModel] are ofter non-numeric,
-  ///   and are defined by [ChartModel.xUserLabels] or similar approach.
+  ///   [PointModel]'s input values (x values, independent values) are ofter non-numeric,
+  ///   defined by [ChartModel.xUserLabels] or similar approach, so to get inputValue-position
+  ///   of this instance seems irrelevant or incorrect to ask for.
   ///   However, for the purpose of displaying a container representing a [PointModel],
   ///   we want to assign the [PointModel] an inputValue, which can be lextr-ed to
   ///   it's pixel position.  However, assigning an inputValue by itself does not help;
