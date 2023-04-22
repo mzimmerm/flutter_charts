@@ -190,7 +190,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               ),
               children: [
                 for (var labelInfo in _inputLabelsGenerator.labelInfoList)
-                  // todo-010 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  // todo-012 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   InputLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,

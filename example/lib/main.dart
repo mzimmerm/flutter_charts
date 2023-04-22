@@ -461,7 +461,6 @@ class _ExampleWidgetCreator {
 
   /// Tuple which describes the example
   Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun;
-  // todo-00-next-revert-data-order: revert lines in data and legends
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -995,7 +994,7 @@ class _ExampleWidgetCreator {
       case ExamplesChartTypeEnum.lineChart:
         SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
           chartSeriesOrientation: ChartSeriesOrientation.column,
-          chartStacking: ChartStackingEnum.sideBySide,
+          chartStacking: ChartStackingEnum.nonStacked,
           chartModel: chartModel,
           isStacked: false,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,

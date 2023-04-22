@@ -20,7 +20,7 @@ import 'util_dart.dart' as util_dart;
 /// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
 ///
 /// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
-/// todo-011 : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
+/// todo-013 : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -51,12 +51,13 @@ class DataRangeLabelInfosGenerator {
   ///   - [dataRange]
   ///   - [_labelInfos]
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // todo-done : added as a temporary to test old vs new
+    required this.chartViewMaker, // added as a temporary to test old vs new todo-010 : do we need this reference? if used, then: dataModel and isStacked is NOT needed.
     required ChartModel dataModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
+    // todo-010 : remove isStacked here and most (all?) other places. Use ChartStackingEnum.stacked from chartViewMaker here, and other places where possible.
     required bool isStacked,
     List<String>? userLabels,
   })  :
@@ -70,7 +71,7 @@ class DataRangeLabelInfosGenerator {
     //   (which may be an envelop around values, for example if we want to always start at 0),
     //   then creates [_labelInfos] labels evenly distributed in the [dataRange] interval.
     // Both local [dataEnvelope] and member [dataRange]
-    //   are **not-extrapolated && transformed** data from [ChartModelPoint].
+    //   are **transformed && not-extrapolated** data from [ChartModelPoint].
     if (userLabels != null) {
       switch(dataDependency) {
         case DataDependency.inputData:
@@ -230,7 +231,7 @@ class DataRangeLabelInfosGenerator {
     // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
-    // todo-00-refactoring : Move this switch to ChartSeriesOrientation
+    // todo-010-refactoring : Move this switch to ChartSeriesOrientation
     bool isOwnerLayouterDirectionAgainstDisplayOrderDirection;
     switch(chartViewMaker.chartSeriesOrientation) {
       case ChartSeriesOrientation.column:
@@ -303,7 +304,7 @@ class DataRangeLabelInfosGenerator {
       ),
       lengthsConstraint: interval.length,
     ).positionLengths();
-    // todo-010 ^^ Call to positionLengths() is questionable. Should this be done using layout? BASICALLY THIS FEEDS OFF THE 1D LENGTHS LAYOUT DEEP INTO IT'S GUTS.
+    // todo-012 ^^ Call to positionLengths() is questionable. Should this be done using layout? BASICALLY THIS FEEDS OFF THE 1D LENGTHS LAYOUT DEEP INTO IT'S GUTS.
 
     switch(pointPositionInSegment) {
       case util_dart.LineSegmentPosition.min:

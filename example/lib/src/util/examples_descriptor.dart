@@ -218,24 +218,13 @@ class ExamplesDescriptor {
       if (isUseOldLayouter!) {
         stackingToRun = [ChartStackingEnum.stacked];
       } else {
-        stackingToRun = [ChartStackingEnum.stacked, ChartStackingEnum.sideBySide];
+        stackingToRun = [ChartStackingEnum.stacked, ChartStackingEnum.nonStacked];
       }
     } else {
       stackingToRun = [chartStacking];
     }
 
     List<List> orientationsAndStackingToRun = multiplyListElementsBy(orientationsToRun, stackingToRun);
-
-/* todo-00-last-done
-    List<Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool>>
-    combos4ToRun = multiplyListElementsBy(combosToRun, orientationsToRun).map((tuple2AndOrientation) =>
-        Tuple4(
-            tuple2AndOrientation[0].item1 as ExamplesEnum,
-            tuple2AndOrientation[0].item2 as ExamplesChartTypeEnum,
-            tuple2AndOrientation[1] as ChartSeriesOrientation,
-            isUseOldLayouter!,
-            )).toList();
-*/
 
     List<Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool>>
     combos5ToRun = multiplyListElementsBy(combosToRun, orientationsAndStackingToRun).map((tuple2AndOrientationWithStacking) =>

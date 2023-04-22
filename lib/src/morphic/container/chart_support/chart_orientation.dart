@@ -19,7 +19,7 @@ import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDepen
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartSeriesOrientation {
-  // todo-001-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
+  // todo-010-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
   column(
     mainLayoutAxis: LayoutAxis.vertical,
     inputDataAxisOrientation: LayoutAxis.horizontal,
@@ -116,20 +116,19 @@ enum ChartSeriesOrientation {
   }
 }
 
-// todo-00-refactoring : move to the same dart file with enums. Also review all enums in flutter_charts and organize them
-// todo-00-refactoring : rename to ChartTypeEnum,
+// todo-010-refactoring : move to the same dart file with enums. Also review all enums in flutter_charts and organize them
+// todo-010-refactoring : rename to ChartTypeEnum,
 /// Describes chart types shown in examples or integration tests.
 enum ExamplesChartTypeEnum {
   lineChart,
-  // todo-00-refactoring: rename verticalBarChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
+  // todo-010-refactoring: rename verticalBarChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
   //
   verticalBarChart,
 }
 
-/// Describes how cross-series data are shown: Either stacked, or side by side.
-///
-/// Side by side in only applicable to Bar chart.
+/// Describes how cross-series data are shown: Either stacked, or nonStacked (side by side on horizontal bar chart,
+/// all starting at zero on line chart).
 enum ChartStackingEnum {
   stacked,
-  sideBySide, // todo-00-last : rename to nonStacked - this is side by side on Bar, regular for line chart
+  nonStacked,
 }

@@ -47,9 +47,6 @@ class ChartModel {
     logger.Logger().d('Constructing ChartModel');
     validate();
 
-    // todo-001 : 1) revert data and labels in code so they look as in chart: left -> right, bottom -> top
-    //                 2) Naturally, CrossPointsModel is then bottom -> top
-    //                 3) On points of use CrossPointsModel, transpose or un-transpose, also in parent code a few levels up.
     valuesColumns = transposeRowsToColumns(valuesRows);
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
@@ -195,7 +192,7 @@ class ChartModel {
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
 
-  // todo-011-performance : cache valuesMax/Min ond also _flatten
+  // todo-013-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => valuesRows.expand((element) => element).toList();
   double get _valuesMin => _flatten.reduce(math.min);
   // double get _valuesMax => _flatten.reduce(math.max);

@@ -103,7 +103,7 @@ enum Align {
   end,
 }
 
-/// todo-00-refactoring : make Align extended enum, and add this method, rename it to flipAlign
+/// todo-010-refactoring : make Align extended enum, and add this method, rename it to flipAlign
 Align otherEndAlign(Align align) {
   switch(align) {
     case Align.start:
@@ -125,8 +125,8 @@ Align otherEndAlign(Align align) {
 /// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
 /// describes that a given constraint should create multiple constraints that are the same.
 enum ConstraintsDistribution {
-  evenly, // todo-023 : deprecate and remove. Rely on children to all set doubleWeights=1 instead
-  doubleWeights, // todo-00-refactor rename to childrenWeights. Also in code, replace doubleWeight with weight.
+  evenly, // todo-010-refactoring : deprecate and remove. Rely on children to all set doubleWeights=1 instead
+  doubleWeights, // todo-010-refactoring rename to childrenWeights. Also in code, replace doubleWeight with weight.
   noDivide,
 }
 
@@ -199,7 +199,7 @@ class LayedoutLengthsPositioner {
   /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
-    // todo-0100 : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
+    // todo-012 : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,

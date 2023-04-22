@@ -50,7 +50,7 @@ Widget chartToRun() {
   var lineChartViewMaker = SwitchLineChartViewMaker(
     chartModel: chartModel,
     chartSeriesOrientation: ChartSeriesOrientation.column,
-    chartStacking: ChartStackingEnum.sideBySide,
+    chartStacking: ChartStackingEnum.nonStacked,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 

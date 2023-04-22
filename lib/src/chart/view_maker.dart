@@ -56,7 +56,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required this.chartModel,
     required this.chartSeriesOrientation,
     required this.chartStacking,
-    // todo-00-last-done : this.isStacked = false,
     this.inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing ChartViewMaker');
@@ -67,7 +66,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-00-refactoring : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
+    // todo-010-refactoring : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
     //                         Although not purely a view-independent model, it should ONLY have this one private constructro
     //                         which creates the outputLabelsGenerator and inputLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
     //                         should be public, but the constructor of it private to the new_model.
@@ -111,7 +110,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   final ChartStackingEnum chartStacking;
 
-  // todo-00-last : changed to getter : final bool isStacked;
   bool get isStacked => chartStacking == ChartStackingEnum.stacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
@@ -316,7 +314,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     ).toList();
 
     // In called, isPointsReversed is false for positive, true for negative
-    // todo-00-next-revert-data-order: When we revert data for all look as in chart, this logic will be inverted, and results of new tests the same
     if (crossPointsModelPointsSign == model.CrossPointsModelPointsSign.positiveOr0) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
@@ -329,7 +326,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     );
   }
 
-  // todo-01000 :
+  // todo-010
   //           - WHY IS THIS  data_container building code IN VIEW MAKER,
   //             AND SIMILAR CODE building data_container also IN data_container.dart?
   //              - this indicates a design issue.

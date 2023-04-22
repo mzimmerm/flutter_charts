@@ -808,7 +808,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 /// itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
-/// todo-0100 : document basic role of SizerLayouters - it is not clear from this documentation.
+/// todo-012 : document basic role of SizerLayouters - it is not clear from this documentation.
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
@@ -1785,7 +1785,7 @@ abstract class PositioningBoxContainer extends BoxContainer {
   @override
   void _layout_Post_NotLeaf_OffsetChildren(List<ui.Rect> positionedRectsInMe, List<LayoutableBox> children) {
     assert(positionedRectsInMe.length == children.length);
-    // todo-010 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
+    // todo-012 : review _offset : in BoxLayouter : _offset += offset; + position skip. Why not here?
     for (int i = 0; i < positionedRectsInMe.length; i++) {
       children[i].applyParentOffset(this, positionedRectsInMe[i].topLeft);
     }
@@ -2416,7 +2416,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    // todo-0100 : is this same impl as in BoxLayouter? If so, why? can we just use BoxLayouter impl?
+    // todo-010 : is this same impl as in BoxLayouter? If so, why? can we just use BoxLayouter impl?
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -2452,7 +2452,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   factory TransposingExternalTicks.Column({
     required ChartSeriesOrientation chartSeriesOrientation,
     required List<BoxContainer> children,
-    // todo-011 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-013 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2541,7 +2541,7 @@ class ExternalTicksRow extends TransposingExternalTicks {
 class ExternalTicksColumn extends TransposingExternalTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    // todo-011 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-013 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2873,7 +2873,7 @@ class TableLayoutCellMinSizer {
       enforcedMinLayoutSize = tableConstraints!.multiplySidesBy(ui.Size(tableWidthPortion, tableHeightPortion)).size;
     } else if (__isUsePreLayout) {
       assert(preLayoutCellToGainMinima != null);
-      // todo-011 : parent == this will fail. Maybe allow apply to ignore.
+      // todo-013 : parent == this will fail. Maybe allow apply to ignore.
       // preLayoutCellToGainMinima.applyParentConstraints(preLayoutCellToGainMinima as LayoutableBox, preLayoutCellConstraints!);
       preLayoutCellToGainMinima!.layout();
       enforcedMinLayoutSize = preLayoutCellToGainMinima!.layoutSize;
@@ -2931,7 +2931,7 @@ class TableLayoutDefiner {
                 numColumns,
                 (int column) => TableLayoutCellDefiner(
                 layoutSequence: row * numColumns + column,
-                // todo-011-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
+                // todo-013-refactoring : we probably want to add the first 2 lines :, if set in caller, should be set here!! This will likely not change results
                 // horizontalAlign: horizontalAlign,
                 // verticalAlign: verticalAlign,
                 // cellConstraints: null,
@@ -2991,7 +2991,7 @@ class TableLayoutDefiner {
   }
 
   /// Finds TableLayoutCellDefiner on row, column
-  /// todo-011-performance : optimize, find it in cellDefinersTable instead !!!!
+  /// todo-013-performance : optimize, find it in cellDefinersTable instead !!!!
   TableLayoutCellDefiner find_cellDefiner_on(row, column) =>
       flatCellDefiners.firstWhere(
               (cellDefiner) => cellDefiner.row == row && cellDefiner.column == column,
@@ -3003,7 +3003,7 @@ class TableLayoutDefiner {
   ///   - First priority is alignment on the cell level at [TableLayoutCellDefiner.verticalAlign] if not null;
   ///   - Next priority, is alignment in the definer [cellsAlignerDefiner] if not null
   ///   - Last priority is this instance's alignment [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  //   todo-011 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  //   todo-013 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   //                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);

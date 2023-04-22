@@ -146,7 +146,7 @@ mixin LabelContainerMixin on BoxContainer {
   ///   set on this object by parent in layout (before this [layout] is called,
   ///   parent would have pushed constraints.
   void _layoutLogicToSetMemberMaxSizeForTextLayout() {
-    // todo-0110 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-0130 : this seems incorrect - used for all labels, yet it acts as legend label!!
     labelMaxWidth = calcLabelMaxWidthFromLayoutOptionsAndConstraints();
     if (allowParentToSkipOnDistressedSize && labelMaxWidth <= 0.0) {
       // todo-02 : fix this as not dealing with width < 0 brings issues further
@@ -186,7 +186,7 @@ mixin LabelContainerMixin on BoxContainer {
     _tiltedLabelEnvelope = _createLabelEnvelope();
     ui.Size layoutSize = _tiltedLabelEnvelope.size;
 
-    // todo-0110 : add exception if reached with _labelMaxWidth < 0.0
+    // todo-0130 : add exception if reached with _labelMaxWidth < 0.0
     if (layoutSize.width > labelMaxWidth) {
       isOverflowingHorizontally = true;
       textPainter.layout(maxWidth: labelMaxWidth);

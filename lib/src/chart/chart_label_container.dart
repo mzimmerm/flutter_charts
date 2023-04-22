@@ -81,7 +81,7 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
-    // todo-0110 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-012 : this seems incorrect - used for all labels, yet it acts as legend label!!
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -145,7 +145,7 @@ abstract class AxisLabelContainer extends ChartLabelContainer {
 
 }
 
-// todo-001-refactoring (this is functional, so careful) : remove InputLabelContainer and OutputLabelContainer and replace with AxisLabelContainer in code
+// todo-010-refactoring (this is functional, so careful) : remove InputLabelContainer and OutputLabelContainer and replace with AxisLabelContainer in code
 //                 also in most (all?) places in code, replace inputLabelContainer and outputLabelContainer
 //                 with axisLabelContainer
 
