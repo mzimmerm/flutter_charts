@@ -45,11 +45,11 @@ class DataContainer extends container_common.ChartAreaContainer {
             WidthSizerLayouter(
               children: [
                 // RowOrColumn's first item shows positive Bars, second item negative Bars, X axis line between them
-                _buildLevel1PosAndNegAreasContainerAsRowOrColumn (
+                _buildLevel1PosAndNegBarsAreasContainerAsTransposingColumn (
                   children: [
                     // Row with columns of positive values
-                    _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      pointSign: model.Sign.positiveOr0,
+                    _buildLevel2PosOrNegBarsContainerAsTransposingRow(
+                      barsAreaSign: model.Sign.positiveOr0,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     TransposingInputAxisLineContainer(
@@ -58,8 +58,8 @@ class DataContainer extends container_common.ChartAreaContainer {
                       outputLabelsGenerator:      chartViewMaker.outputLabelsGenerator,
                     ),
                     // Row with columns of negative values
-                    _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      pointSign: model.Sign.negative,
+                    _buildLevel2PosOrNegBarsContainerAsTransposingRow(
+                      barsAreaSign: model.Sign.negative,
                     ),
                   ],
                 ),
@@ -71,7 +71,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  RollingBoxLayouter _buildLevel1PosAndNegAreasContainerAsRowOrColumn({
+  RollingBoxLayouter _buildLevel1PosAndNegBarsAreasContainerAsTransposingColumn({
     required List<BoxContainer> children,
   }) {
     return TransposingRoller.Column(
@@ -86,15 +86,15 @@ class DataContainer extends container_common.ChartAreaContainer {
   ///
   /// Either are build for only positive or only negative values,
   /// depending on
-  RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsRowOrColumn({
-    required model.Sign pointSign,
+  RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsTransposingRow({
+    required model.Sign barsAreaSign,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
     Align crossAxisAlign;
     List<model.CrossPointsModel> crossPointsModels;
 
-    switch(pointSign) {
+    switch(barsAreaSign) {
       case model.Sign.positiveOr0:
 
 
@@ -116,9 +116,9 @@ class DataContainer extends container_common.ChartAreaContainer {
         crossAxisAlign = Align.start;
         break;
       case model.Sign.any:
-        throw StateError('Should be called only with [pointSign] positive or negative.');
+        throw StateError('Should be called only with [barsAreaSign] positive or negative.');
     }
-    // Row with a positive or negative bars, depending on [pointSign].
+    // Row with a positive or negative bars, depending on [barsAreaSign].
     // The Row constraints are weighted by the ratio for positives and negatives passed here.
     return TransposingRoller.Row(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -130,7 +130,7 @@ class DataContainer extends container_common.ChartAreaContainer {
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModels: crossPointsModels,
-        pointSign: pointSign,
+        barsAreaSign: barsAreaSign,
       ),
     );
   }
@@ -261,13 +261,34 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   ///
   /// This container is a stand-in for non-stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
+  // todo-010-next : The algorighm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
+  //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
+  //                 maybe not even that.
   @override
   void layout() {
-    // Super calculates and sets [layoutSize].
-    super.layout();
+    buildAndReplaceChildren();
+
+    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
+    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
+
+    // Create PointOffset from this [pointModel] by giving it a range,
+    // positions the [pointModel] on the x axis on it's label x coordinate.
+    // The [pointOffset] can be lextr-ed to it's target value depending on chart direction.
+    PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
+      dataRangeLabelInfosGenerator: inputLabelsGenerator,
+    );
+    PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
+      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      constraintsOnImmediateOwner: constraints,
+      inputDataRange: inputLabelsGenerator.dataRange,
+      outputDataRange: outputLabelsGenerator.dataRange,
+      heightToLextr: heightToLextr,
+      widthToLextr: widthToLextr,
+      isLextrUseSizerInsteadOfConstraint: false,
+    );
 
     // Make the layoutSize zero in the direction of the chart orientation
-    layoutSize = layoutSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+    layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
       axis: chartViewMaker.chartSeriesOrientation.inputDataAxisOrientation,
       other: const ui.Size(0.0, 0.0),
     );

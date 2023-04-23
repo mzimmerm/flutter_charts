@@ -1916,6 +1916,7 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
 /// as well as the 'cross' direction on this base class constructor.
 ///
 /// Similar to Flex.
+// todo-001-next : Add childrenWeights.even or something similar which will cause all children to have the same weight, unless all children define weights, in which case that definition wins
 abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   RollingBoxLayouter({
     required List<BoxContainer> children,
@@ -3601,7 +3602,13 @@ class Padder extends PositioningBoxLayouter {
   Padder({
     required this.edgePadding,
     required BoxContainer child,
-  }) : super(children: [child]);
+    ContainerKey? key,
+    ConstraintsWeight constraintsWeight  = ConstraintsWeight.defaultWeight, // todo-00-last-last-progress : added weight
+  }) : super(
+          children: [child],
+          key: key,
+          constraintsWeight: constraintsWeight,
+        );
 
   final EdgePadding edgePadding;
 

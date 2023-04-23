@@ -255,7 +255,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ///
   List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
     required List<model.CrossPointsModel> crossPointsModels,
-    required model.Sign pointSign,
+    required model.Sign barsAreaSign,
   }) {
     List<data_container.CrossPointsContainer> chartBars = [];
     // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
@@ -266,7 +266,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       chartBars.add(
         makeViewForDataContainer_EachBar(
           crossPointsModel: crossPointsModel,
-          pointSign: pointSign,
+          barsAreaSign: barsAreaSign,
         ),
       );
     }
@@ -275,7 +275,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   data_container.CrossPointsContainer makeViewForDataContainer_EachBar({
     required model.CrossPointsModel crossPointsModel,
-    required model.Sign pointSign,
+    required model.Sign barsAreaSign,
     }) {
     return data_container.CrossPointsContainer(
         chartViewMaker: this,
@@ -283,7 +283,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         children: [
           makeViewForDataContainer_EachBarLayouter(
               crossPointsModel: crossPointsModel,
-              pointSign: pointSign),
+              barsAreaSign: barsAreaSign),
         ],
         // Give all view columns the same weight along main axis -
         //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
@@ -293,32 +293,33 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   container_base.RollingBoxLayouter makeViewForDataContainer_EachBarLayouter({
     required model.CrossPointsModel crossPointsModel,
-    required model.Sign pointSign,
+    required model.Sign barsAreaSign,
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartSeriesOrientation: chartSeriesOrientation,
-      start: 6.0,
-      end: 6.0,
+      start: 1.0, // todo-00-last-last-last : was : 6.0,
+      end: 1.0, // todo-00-last-last-last : was : 6.0,
     );
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModel(
       crossPointsModel: crossPointsModel,
-      pointSign: pointSign,
+      barsAreaSign: barsAreaSign,
     ).map((pointContainer) =>
         container_base.Padder(
           edgePadding: pointRectSidePad,
-          child: pointContainer,)
+          child: pointContainer,
+          constraintsWeight: const container_base.ConstraintsWeight(weight: 1), ) // todo-00-last-last : added constraintsWeight
     ).toList();
 
     /* todo-00-last-done (only refactored)
-    if (pointSign == model.Sign.positiveOr0) {
+    if (barsAreaSign == model.Sign.positiveOr0) {
       pointContainers = pointContainers.reversed.toList(growable: false);
     } else {
       pointContainers = pointContainers.toList(growable: false);
     }
     */
     // In called, isPointsReversed is false for positive, true for negative
-    switch(pointSign) {
+    switch(barsAreaSign) {
       case model.Sign.positiveOr0:
         pointContainers = pointContainers.reversed.toList(growable: false);
         break;
@@ -330,7 +331,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         throw StateError('Not allowed');
     }
 
-    return _buildLevel3PointsBarAsRowOrColumn(
+    return _buildLevel3PointsBarAsTransposingColumn(
       childrenPointContainers: pointContainers,
     );
   }
@@ -343,7 +344,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   //              - SIMILAR FOR AXIS_CONTAINER
   //
 /* todo-00-last ori KEEP
-  container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn({
+  container_base.RollingBoxLayouter _buildLevel3PointsBarAsTransposingColumn({
     required List<container_base.Padder> childrenPointContainers,
   }) {
     return container_base.TransposingRoller.Column(
@@ -356,9 +357,26 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   }
 */
 
-  container_base.RollingBoxLayouter _buildLevel3PointsBarAsRowOrColumn({
+  container_base.RollingBoxLayouter _buildLevel3PointsBarAsTransposingColumn({
     required List<container_base.Padder> childrenPointContainers,
   }) {
+    /* todo-00-last : Adding padding around TransposingColumn
+    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
+      chartSeriesOrientation: chartSeriesOrientation,
+      start: 1.0, // todo-00-last-last-last : was : 6.0,
+      end: 1.0, // todo-00-last-last-last : was : 6.0,
+    );
+    // Get point containers, and wrap each in a Padder, narrowing the bars
+    var pointContainers = makeViewForDataContainer_CrossPointsModel(
+      crossPointsModel: crossPointsModel,
+      barsAreaSign: barsAreaSign,
+    ).map((pointContainer) =>
+        container_base.Padder(
+          edgePadding: pointRectSidePad,
+          child: pointContainer,
+          constraintsWeight: const container_base.ConstraintsWeight(weight: 1), ) // todo-00-last-last : added constraintsWeight
+    ).toList();
+   */
     switch(chartStacking) {
       case ChartStackingEnum.stacked:
         return container_base.TransposingRoller.Column(
@@ -414,7 +432,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   //                  their places for positive and negative are alternating.
   List<data_container.PointContainer> makeViewForDataContainer_CrossPointsModel({
     required model.CrossPointsModel crossPointsModel,
-    required model.Sign pointSign, // todo-001-refactoring: Rename pointSign to pointSign; Rename Sign to Sign
+    required model.Sign barsAreaSign, // todo-001-refactoring: Rename barsAreaSign to barsAreaSign; Rename Sign to Sign
   }) {
     List<data_container.PointContainer> pointContainerList = [];
     data_container.PointContainer pointContainer;
@@ -422,36 +440,42 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.
     crossPointsModel.applyOnAllElements(
-          (model.PointModel pointModelElm, dynamic passedList) {
-            switch(chartStacking) {
-              case ChartStackingEnum.stacked:
-                // Stacked:
-                //   Note: this [makeViewForDataContainer_CrossPointsModel] is called separately for positive and negative;
-                //   Only create point container and add to result if point sign and stack sign being built are the same.
-                if (pointSign == pointModelElm.sign) {
-                  passedList.add(makeViewForDataArea_PointModel(
-                    pointModel: pointModelElm,
-                  ));
-                }
-                break;
-              case ChartStackingEnum.nonStacked:
-              // todo-00-last-progress : return 0 length (along main direction) Container when called for the off-sign pointModelElm
-              //                - nonStacked: we can get non-stacked working by causing the makeViewForDataArea_PointModel
-              //                  return 0 length (along main direction) Container when called for the off-sign pointModelElm
-              //                  this creates the returned list of PointContainers the same size for positive and negative, so
-              //                  their places for positive and negative are alternating.
-                passedList.add(makeViewForDataArea_PointModelWithZeroValue(
-                  pointModel: pointModelElm,
-                ));
-                break;
+      (model.PointModel pointModelElm, dynamic passedList) {
+        switch (chartStacking) {
+          case ChartStackingEnum.stacked:
+            // Stacked:
+            //  Note: this [makeViewForDataContainer_CrossPointsModel] is called each for positive and negative;
+            //  Only create point container and add to result if point sign and stack sign being built are the same.
+            if (barsAreaSign == pointModelElm.sign) {
+              passedList.add(makeViewForDataArea_PointModel(
+                pointModel: pointModelElm,
+              ));
             }
+            break;
+          case ChartStackingEnum.nonStacked:
+            // todo-00-last-progress : return 0 length (along main direction) Container when called for the off-sign pointModelElm
+            //                - nonStacked: we can get non-stacked working by causing the makeViewForDataArea_PointModel
+            //                  return 0 length (along main direction) Container when called for the off-sign pointModelElm
+            //                  this creates the returned list of PointContainers the same size for positive and negative, so
+            //                  their places for positive and negative are alternating.
+
+            if (barsAreaSign == pointModelElm.sign) {
+              passedList.add(makeViewForDataArea_PointModel(
+                pointModel: pointModelElm,
+              ));
+            } else {
+              passedList.add(makeViewForDataArea_PointModelWithZeroValue(
+                pointModel: pointModelElm,
+              ));
+            }
+            break;
+        }
       },
       pointContainerList,
     );
 
     return pointContainerList;
   }
-
 
   /// Generate view for this single leaf [PointModel] - a single [NewVBarPointContainer].
   ///
