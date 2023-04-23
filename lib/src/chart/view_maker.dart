@@ -253,22 +253,46 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// [model.ChartModel.crossPointsModelPositiveList] OR the [model.ChartModel.crossPointsModelNegativeList] -
   /// both are instances of [model.CrossPointsModel].
   ///
-  List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
+  // todo-00-last-last-last : changed to what it is: List<data_container.CrossPointsContainer> makeViewsForDataContainer_Bars({
+  List<container_base.Padder> makeViewsForDataContainer_Bars({
     required List<model.CrossPointsModel> crossPointsModels,
     required model.Sign barsAreaSign,
   }) {
-    List<data_container.CrossPointsContainer> chartBars = [];
+    // todo-00-last-last-last : changed to what it is: List<data_container.CrossPointsContainer> chartBars = [];
+    List<container_base.Padder> chartBars = [];
     // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
     //   creates a [CrossPointsContainer] (chartBar) from each cross-series, adds the chartBar
     //   to the [chartBars] list, which is returned.
 
     for (model.CrossPointsModel crossPointsModel in crossPointsModels) {
+
+      // todo-00-last-last-last-progress : Adding bar padding here
+      /* todo-00-last-last-last KEEP ori
       chartBars.add(
         makeViewForDataContainer_EachBar(
           crossPointsModel: crossPointsModel,
           barsAreaSign: barsAreaSign,
         ),
       );
+      */
+
+      data_container.CrossPointsContainer oneBar = makeViewForDataContainer_EachBar(
+        crossPointsModel: crossPointsModel,
+        barsAreaSign: barsAreaSign,
+      );
+
+      EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
+        chartSeriesOrientation: chartSeriesOrientation,
+        start: 6.0,
+        end: 6.0,
+      );
+      container_base.Padder oneBarPadded = container_base.Padder(
+        edgePadding: pointRectSidePad,
+        child: oneBar,
+        constraintsWeight: const container_base.ConstraintsWeight(weight: 1), // todo-00-last-last : added constraintsWeight
+      );
+
+      chartBars.add(oneBarPadded);
     }
     return chartBars;
   }
@@ -287,7 +311,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         ],
         // Give all view columns the same weight along main axis -
         //   results in same width of each [CrossPointsContainer] as owner will be Row (main axis is horizontal)
-        constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
+      // todo-00-last-last-last : removed, placed up : constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
       );
   }
 
@@ -297,8 +321,8 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartSeriesOrientation: chartSeriesOrientation,
-      start: 1.0, // todo-00-last-last-last : was : 6.0,
-      end: 1.0, // todo-00-last-last-last : was : 6.0,
+      start: 0.0, // todo-00-last-last-last : was : 6.0, BUT MAKE IT 1.0
+      end: 0.0, // todo-00-last-last-last : was : 6.0, BUT MAKE IT 1.0
     );
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModel(
@@ -360,23 +384,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsTransposingColumn({
     required List<container_base.Padder> childrenPointContainers,
   }) {
-    /* todo-00-last : Adding padding around TransposingColumn
-    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
-      chartSeriesOrientation: chartSeriesOrientation,
-      start: 1.0, // todo-00-last-last-last : was : 6.0,
-      end: 1.0, // todo-00-last-last-last : was : 6.0,
-    );
-    // Get point containers, and wrap each in a Padder, narrowing the bars
-    var pointContainers = makeViewForDataContainer_CrossPointsModel(
-      crossPointsModel: crossPointsModel,
-      barsAreaSign: barsAreaSign,
-    ).map((pointContainer) =>
-        container_base.Padder(
-          edgePadding: pointRectSidePad,
-          child: pointContainer,
-          constraintsWeight: const container_base.ConstraintsWeight(weight: 1), ) // todo-00-last-last : added constraintsWeight
-    ).toList();
-   */
     switch(chartStacking) {
       case ChartStackingEnum.stacked:
         return container_base.TransposingRoller.Column(

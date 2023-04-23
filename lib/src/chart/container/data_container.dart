@@ -144,12 +144,12 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
     List<BoxContainer>? children,
     ContainerKey? key,
     // We want to proportionally (evenly) layout if wrapped in Column or Row, so make weight available.
-    required ConstraintsWeight constraintsWeight,
+    // todo-00-last-last-last : removed, placed up : required ConstraintsWeight constraintsWeight,
   }) : super(
     chartViewMaker: chartViewMaker,
     children: children,
     key: key,
-    constraintsWeight: constraintsWeight,
+    // todo-00-last-last-last : removed, placed up : constraintsWeight: constraintsWeight,
   );
 
   /// Model backing this container.
