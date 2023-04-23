@@ -61,7 +61,7 @@ class ChartModel {
           dataModel: this,
           columnIndex: columnIndex,
           numDataModelColumns: numDataModelColumns,
-          pointsSign: CrossPointsModelPointsSign.positiveOr0,
+          pointsSign: Sign.positiveOr0,
         ),
       );
       crossPointsModelNegativeList.add(
@@ -70,7 +70,17 @@ class ChartModel {
           dataModel: this,
           columnIndex: columnIndex,
           numDataModelColumns: numDataModelColumns,
-          pointsSign: CrossPointsModelPointsSign.negative,
+          pointsSign: Sign.negative,
+        ),
+      );
+      // todo-00-last-progress - added:
+      crossPointsModelList.add(
+        CrossPointsModel(
+          valuesColumn: valuesColumn,
+          dataModel: this,
+          columnIndex: columnIndex,
+          numDataModelColumns: numDataModelColumns,
+          pointsSign: Sign.any,
         ),
       );
 
@@ -86,6 +96,7 @@ class ChartModel {
   /// several grouped bars for non-stacked bar chart.
   final List<CrossPointsModel> crossPointsModelPositiveList = [];
   final List<CrossPointsModel> crossPointsModelNegativeList = [];
+  final List<CrossPointsModel> crossPointsModelList = []; // todo-00-last-progress
 
   /// Returns the minimum and maximum transformed, non-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -243,9 +254,10 @@ class ChartModel {
 ///             This enum supports creating and later using (processing, view making) the positive and negative
 ///             bars separately.
 // todo-010-refactoring : rename to Sign
-enum CrossPointsModelPointsSign {
+enum Sign {
   positiveOr0,
-  negative;
+  negative,
+  any;
 
   /// Checks if the sign of a the passed [value] is the sign required by this enum instance.
   ///
@@ -259,10 +271,12 @@ enum CrossPointsModelPointsSign {
     required double value,
   }) {
     switch (this) {
-      case CrossPointsModelPointsSign.positiveOr0:
+      case Sign.positiveOr0:
         return (value >= 0.0);
-      case CrossPointsModelPointsSign.negative:
+      case Sign.negative:
         return (value < 0.0);
+      case Sign.any:
+        return true;
     }
   }
 }
@@ -307,7 +321,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
     //   - positive and negative values of the [valuesColumn] are separated to their own [_crossPoints].
     for (double outputValue in valuesColumn) {
-      if (pointsSign.isValueMySign(
+      // todo-00-last-done if (pointsSign.isValueMySign(
+      if (pointsSign == Sign.any || pointsSign.isValueMySign(
         value: outputValue,
       )) {
         var point = PointModel(
@@ -385,13 +400,13 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 
   /// Sign that all [PointModel]s in this [CrossPointsModel] must have.
   ///
-  /// Sign is represented by [CrossPointsModelPointsSign].
+  /// Sign is represented by [Sign].
   ///
   /// Motivation: The model of any chart maintains separate member for positive and negative values
   ///             in the same cross-series data column in [ChartModel] - the [crossPointsModelPositiveList]
   ///             and the [crossPointsModelNegativeList]. This member allows to separate
   ///             values in each cross-series data column into the positives and negatives.
-  late final CrossPointsModelPointsSign pointsSign;
+  late final Sign pointsSign;
 
   /// Points of this positive or negative column (crossPoints).
   ///
@@ -418,9 +433,9 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required double value,
   }) {
     switch (pointsSign) {
-      case CrossPointsModelPointsSign.positiveOr0:
+      case Sign.positiveOr0:
         return (value >= 0.0);
-      case CrossPointsModelPointsSign.negative:
+      case Sign.negative:
         return (value < 0.0);
     }
   }
@@ -432,7 +447,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// which is the backing list of this [DoubleLinkedOwner]'s  [allElements].
   ///
   /// Only makes practical sense if all [_crossPointsAllElements] are either positive or negative,
-  /// see [CrossPointsModelPointsSign].
+  /// see [Sign].
   __stackPoints(PointModel point, unused) {
     if (point.hasPrevious) {
       point._stackedOutputValue = point.previous._stackedOutputValue + point.outputValue;
@@ -445,10 +460,13 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Returns value-height of this column from (transformed, non-extrapolated) data values of points.
   double get _stackedValue {
     switch (pointsSign) {
-      case CrossPointsModelPointsSign.positiveOr0:
+      case Sign.positiveOr0:
         return __maxOnPoints((PointModel point) => point._stackedOutputValue);
-      case CrossPointsModelPointsSign.negative:
+      case Sign.negative:
         return __minOnPoints((PointModel point) => point._stackedOutputValue);
+      case Sign.any:
+        // todo-00-last : ADDRESS THIS. FOR NOW, RETURN 0 : throw StateError('Cannot stack values which mix positive and negative.');
+        return 0.0;
     }
   }
 
@@ -548,9 +566,9 @@ class PointModel extends Object with DoubleLinked {
     // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
 
     if (outputValue >= 0.0) {
-      crossPointsModelPointsSign = CrossPointsModelPointsSign.positiveOr0;
+      sign = Sign.positiveOr0;
     } else {
-      crossPointsModelPointsSign = CrossPointsModelPointsSign.negative;
+      sign = Sign.negative;
     }
 
     assertDoubleResultsSame(
@@ -583,7 +601,8 @@ class PointModel extends Object with DoubleLinked {
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   late final double outputValue;
 
-  late final CrossPointsModelPointsSign crossPointsModelPointsSign;
+  /// [Sign] of the [outputValue].
+  late final Sign sign;
 
   /// References the data column (crossPoints list) this point belongs to
   CrossPointsModel ownerCrossPointsModel;

@@ -1,7 +1,9 @@
-import 'dart:ui' as ui show Rect, Paint, Canvas;
+import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
 // this level base libraries or equivalent
 //import '../../morphic/container/chart_support/chart_orientation.dart';
+import 'package:flutter_charts/src/util/extensions_flutter.dart';
+
 import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../../morphic/ui2d/point.dart';
 import '../../util/util_labels.dart';
@@ -47,7 +49,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                   children: [
                     // Row with columns of positive values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      crossPointsModelPointsSign: model.CrossPointsModelPointsSign.positiveOr0,
+                      pointSign: model.Sign.positiveOr0,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     TransposingInputAxisLineContainer(
@@ -57,7 +59,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                     ),
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsRowOrColumn(
-                      crossPointsModelPointsSign: model.CrossPointsModelPointsSign.negative,
+                      pointSign: model.Sign.negative,
                     ),
                   ],
                 ),
@@ -85,26 +87,38 @@ class DataContainer extends container_common.ChartAreaContainer {
   /// Either are build for only positive or only negative values,
   /// depending on
   RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsRowOrColumn({
-    required model.CrossPointsModelPointsSign crossPointsModelPointsSign,
+    required model.Sign pointSign,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
     Align crossAxisAlign;
     List<model.CrossPointsModel> crossPointsModels;
 
-    switch(crossPointsModelPointsSign) {
-      case model.CrossPointsModelPointsSign.positiveOr0:
+    switch(pointSign) {
+      case model.Sign.positiveOr0:
+
+
+        // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
+        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
+
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
-      case model.CrossPointsModelPointsSign.negative:
+      case model.Sign.negative:
+
+
+        // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
+        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
+
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         crossAxisAlign = Align.start;
         break;
+      case model.Sign.any:
+        throw StateError('Should be called only with [pointSign] positive or negative.');
     }
-    // Row with a positive or negative bars, depending on [crossPointsModelPointsSign].
+    // Row with a positive or negative bars, depending on [pointSign].
     // The Row constraints are weighted by the ratio for positives and negatives passed here.
     return TransposingRoller.Row(
       chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
@@ -116,7 +130,7 @@ class DataContainer extends container_common.ChartAreaContainer {
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_Bars(
         crossPointsModels: crossPointsModels,
-        crossPointsModelPointsSign: crossPointsModelPointsSign,
+        pointSign: pointSign,
       ),
     );
   }
@@ -223,5 +237,44 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
     paint.color = pointModel.color;
 
     canvas.drawRect(rect, paint);
+  }
+}
+
+// todo-00-last-progress
+/// A dummy [BarPointContainer] with zero [layoutSize] in the direction of the main axis.,
+class ZeroValueBarPointContainer extends BarPointContainer {
+
+  ZeroValueBarPointContainer({
+    required model.PointModel pointModel,
+    required ChartViewMaker chartViewMaker,
+    List<BoxContainer>? children,
+    ContainerKey? key,
+  }) : super(
+    pointModel: pointModel,
+    chartViewMaker: chartViewMaker,
+    children: children,
+    key: key,
+  );
+
+  /// Layout this container by calling super, then set the [layoutSize] in the value direction
+  /// (owner layouter mainAxisDirection) to be zero.
+  ///
+  /// This container is a stand-in for non-stacked value point, on the positive or negative side against
+  /// where the actual value bar is shown.
+  @override
+  void layout() {
+    // Super calculates and sets [layoutSize].
+    super.layout();
+
+    // Make the layoutSize zero in the direction of the chart orientation
+    layoutSize = layoutSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      axis: chartViewMaker.chartSeriesOrientation.inputDataAxisOrientation,
+      other: const ui.Size(0.0, 0.0),
+    );
+  }
+
+  @override
+  paint(ui.Canvas canvas) {
+    return;
   }
 }
