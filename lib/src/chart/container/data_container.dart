@@ -99,8 +99,8 @@ class DataContainer extends container_common.ChartAreaContainer {
 
 
         // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
-        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
+        crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
+        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
 
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
@@ -109,8 +109,8 @@ class DataContainer extends container_common.ChartAreaContainer {
 
 
         // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
-        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
+        crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
+        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
 
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         crossAxisAlign = Align.start;
