@@ -114,7 +114,7 @@ void main() {
 ///   by `--dart-define` for variables named 'EXAMPLE_TO_RUN', 'CHART_TYPE', 'CHART_STACKING', 'CHART_ORIENTATION'
 ///   and 'IS_USE_OLD_LAYOUTER' into enums which describe the example to run, and the chart type to show.
 ///
-Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> requestedExampleToRun() {
+Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> requestedExampleToRun() {
   // Pickup what example to run, and which chart to show (line, vertical bar).
   const String exampleToRunStr = String.fromEnvironment('EXAMPLE_TO_RUN', defaultValue: 'ex10RandomData');
   ExamplesEnum exampleComboToRun = exampleToRunStr.asEnum(ExamplesEnum.values);
@@ -123,9 +123,9 @@ Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackin
   ExamplesChartTypeEnum chartType = chartTypeStr.asEnum(ExamplesChartTypeEnum.values);
 
   const String orientationStr = String.fromEnvironment('CHART_ORIENTATION', defaultValue: 'column');
-  ChartSeriesOrientation orientation = ChartSeriesOrientation.fromStringDefaultOnEmpty(
+  ChartOrientation orientation = ChartOrientation.fromStringDefaultOnEmpty(
       orientationStr,
-      ChartSeriesOrientation.column,
+      ChartOrientation.column,
   );
 
   const String stackingStr = String.fromEnvironment('CHART_STACKING', defaultValue: 'stacked');
@@ -212,7 +212,7 @@ class MyHomePageState extends State<MyHomePage> {
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.
-  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun =
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun =
       requestedExampleToRun();
 
   /// Default constructor uses member defaults for all options and data.
@@ -460,7 +460,7 @@ class _ExampleWidgetCreator {
   _ExampleWidgetCreator(this.descriptorOfExampleToRun);
 
   /// Tuple which describes the example
-  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun;
+  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> descriptorOfExampleToRun;
   var animalsDefaultData = const [
     [10.0, 20.0, 5.0, 30.0, 5.0, 20.0],
     [30.0, 60.0, 16.0, 100.0, 12.0, 120.0],
@@ -497,7 +497,7 @@ class _ExampleWidgetCreator {
     // Example requested to run
     ExamplesEnum exampleComboToRun = descriptorOfExampleToRun.item1;
     ExamplesChartTypeEnum chartType = descriptorOfExampleToRun.item2;
-    ChartSeriesOrientation chartSeriesOrientation = descriptorOfExampleToRun.item3;
+    ChartOrientation chartOrientation = descriptorOfExampleToRun.item3;
     ChartStackingEnum chartStacking = descriptorOfExampleToRun.item4;
     // bool isUseOldLayouter = descriptorOfExampleToRun.item5;
 
@@ -993,7 +993,7 @@ class _ExampleWidgetCreator {
     switch (chartType) {
       case ExamplesChartTypeEnum.lineChart:
         SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
-          chartSeriesOrientation: ChartSeriesOrientation.column,
+          chartOrientation: ChartOrientation.column,
           chartStacking: ChartStackingEnum.nonStacked,
           chartModel: chartModel,
           isStacked: false,
@@ -1010,7 +1010,7 @@ class _ExampleWidgetCreator {
       case ExamplesChartTypeEnum.barChart:
         SwitchChartViewMaker barChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
-          chartSeriesOrientation: chartSeriesOrientation, // transpose column/row is set in env var CHART_ORIENTATION
+          chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );

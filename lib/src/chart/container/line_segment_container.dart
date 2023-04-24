@@ -8,15 +8,15 @@ import '../../morphic/container/chart_support/chart_orientation.dart' as chart_o
 import '../view_maker.dart' as view_maker;
 // import '../container.dart' as container;
 import '../model/data_model.dart' as model;
-// import '../../util/util_labels.dart' as util_labels;
+// import '../../util/label_model.dart' as util_labels;
 
 /// Leaf container lays out and draws a line segment between [fromPointOffset] and [toPointOffset] using [linePaint].
 ///
 /// The  [fromPointOffset] and [toPointOffset] are late, and SHOULD be set in the constructor;
 /// MUST be set before [layout] is called.
 ///
-/// Does NOT define [chart_orientation.ChartSeriesOrientation]. Will transform according to member
-/// [view_maker.ChartViewMaker.chartSeriesOrientation].
+/// Does NOT define [chart_orientation.ChartOrientation]. Will transform according to member
+/// [view_maker.ChartViewMaker.chartOrientation].
 ///
 /// The nullability of [fromPointOffset] and [toPointOffset] is an awkward lip service to
 /// straightforward extensibility of this class where these members can be replaced by [model.PointModel] in extensions,
@@ -31,7 +31,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   /// Example:
   /// ```dart
   ///   LineBetweenPointOffsetsContainer( // could also place in Row with main constraints weight=0.0
-  ///     chartSeriesOrientation: ChartSeriesOrientation.column,
+  ///     chartOrientation: ChartOrientation.column,
   ///     fromPointOffset: const PointOffset(inputValue: 0.0, outputValue: 0.0),
   ///     toPointOffset: PointOffset(inputValue: chartViewMaker.chartModel.dataRangeWhenStringLabels.max, outputValue: 0.0),
   ///     linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
@@ -100,7 +100,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     //   to flip (invert) during the lextr.
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.outputLabelsGenerator.dataRange,
@@ -109,7 +109,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewMaker.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewMaker.outputLabelsGenerator.dataRange,
@@ -127,7 +127,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
 
   /// Internal calculation of [layoutSize] returns the [ui.Size] of this container.
   ///
-  /// The size is already oriented correctly by taking into account the [chart_orientation.ChartSeriesOrientation],
+  /// The size is already oriented correctly by taking into account the [chart_orientation.ChartOrientation],
   /// because the underlying [_fromOffsetPixels] and [_toOffsetPixels] have done the same in the [layout] implementation.
   ui.Size get _layoutSize {
     return ui.Size(
@@ -158,8 +158,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
 
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 ///
-/// Does NOT define [chart_orientation.ChartSeriesOrientation]. Will transform according to member
-/// [view_maker.ChartViewMaker.chartSeriesOrientation].
+/// Does NOT define [chart_orientation.ChartOrientation]. Will transform according to member
+/// [view_maker.ChartViewMaker.chartOrientation].
 ///
 class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   LineBetweenPointModelsContainer({

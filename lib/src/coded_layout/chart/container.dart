@@ -24,7 +24,7 @@ import 'line_container.dart';
 import 'presenter.dart';
 import '../../chart/options.dart';
 import '../../util/util_dart.dart';
-import '../../util/util_labels.dart';
+import '../../chart/model/label_model.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 //import '../container/container_key.dart';
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;

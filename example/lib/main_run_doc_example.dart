@@ -49,7 +49,7 @@ Widget chartToRun() {
   );
   var lineChartViewMaker = SwitchLineChartViewMaker(
     chartModel: chartModel,
-    chartSeriesOrientation: ChartSeriesOrientation.column,
+    chartOrientation: ChartOrientation.column,
     chartStacking: ChartStackingEnum.nonStacked,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );

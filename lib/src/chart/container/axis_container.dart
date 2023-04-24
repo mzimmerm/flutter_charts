@@ -9,7 +9,7 @@ import '../../morphic/container/chart_support/chart_orientation.dart';
 //import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';
-import '../../util/util_labels.dart';
+import '../model/label_model.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
 // import '../iterative_layout_strategy.dart';
@@ -23,10 +23,10 @@ import 'line_segment_container.dart';
 ///
 /// Defined by its end points, [fromPointOffset] and [toPointOffset].
 ///
-/// Neither this container, not it's end points specify [ChartSeriesOrientation], as they are defined
-/// in a coordinate system assuming orientation [ChartSeriesOrientation.column].
-/// The orientation is determined by member [chartViewMaker]'s [ChartViewMaker.chartSeriesOrientation];
-/// if orientation is set to [ChartSeriesOrientation.row], the line is transformed to it's row orientation by
+/// Neither this container, not it's end points specify [ChartOrientation], as they are defined
+/// in a coordinate system assuming orientation [ChartOrientation.column].
+/// The orientation is determined by member [chartViewMaker]'s [ChartViewMaker.chartOrientation];
+/// if orientation is set to [ChartOrientation.row], the line is transformed to it's row orientation by
 /// transforming the end points [fromPointOffset] and [toPointOffset]
 /// using their [PointOffset.lextrToPixelsMaybeTransposeInContextOf].
 ///
@@ -112,13 +112,13 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   factory TransposingAxisContainer.Vertical({
     required ChartViewMaker chartViewMaker,
   }) {
-    switch (chartViewMaker.chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartViewMaker.chartOrientation) {
+      case ChartOrientation.column:
         return TransposingOutputAxisContainer(
           chartViewMaker: chartViewMaker,
           directionWrapperAround: _verticalWrapperAround,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return TransposingInputAxisContainer(
           chartViewMaker: chartViewMaker,
           directionWrapperAround: _verticalWrapperAround,
@@ -129,13 +129,13 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   factory TransposingAxisContainer.Horizontal({
     required ChartViewMaker chartViewMaker,
   }) {
-    switch (chartViewMaker.chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartViewMaker.chartOrientation) {
+      case ChartOrientation.column:
         return TransposingInputAxisContainer(
           chartViewMaker: chartViewMaker,
           directionWrapperAround: _horizontalWrapperAround,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return TransposingOutputAxisContainer(
           chartViewMaker: chartViewMaker,
           directionWrapperAround: _horizontalWrapperAround,
@@ -181,10 +181,10 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
     List<BoxContainer> children =
        directionWrapperAround(
           [TransposingRoller.Column(
-            chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+            chartOrientation: chartViewMaker.chartOrientation,
             children: [
             TransposingExternalTicks.Row(
-              chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+              chartOrientation: chartViewMaker.chartOrientation,
               mainAxisExternalTicksLayoutProvider: _inputLabelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
@@ -222,12 +222,12 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
       [
         // Row with Column of Y labels and Y axis (Output labels and output axis)
         TransposingRoller.Row(
-            chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+            chartOrientation: chartViewMaker.chartOrientation,
             mainAxisAlign: Align.start, // default
             isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
             children: [
               TransposingExternalTicks.Column(
-                chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+                chartOrientation: chartViewMaker.chartOrientation,
                 mainAxisExternalTicksLayoutProvider: _outputLabelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),

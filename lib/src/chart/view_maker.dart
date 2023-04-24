@@ -22,7 +22,7 @@ import 'container/legend_container.dart' as legend_container;
 import 'container/axis_container.dart' as axis_container;
 import 'container/root_container.dart' as root_container;
 import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../util/util_labels.dart' as util_labels;
+import 'model/label_model.dart' as util_labels;
 
 /// Abstract base class for view makers.
 ///
@@ -33,7 +33,7 @@ import '../util/util_labels.dart' as util_labels;
 ///
 /// This base view maker holds as members:
 ///   - the model in [chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
-///   - the chart orientation in [chartSeriesOrientation]
+///   - the chart orientation in [chartOrientation]
 ///   - the definition whether the chart is stacked in [chartStacking].
 ///   - the label layout strategy in [inputLabelLayoutStrategy]
 ///
@@ -55,7 +55,7 @@ import '../util/util_labels.dart' as util_labels;
 abstract class ChartViewMaker extends Object with container_common.ChartBehavior {
   ChartViewMaker({
     required this.chartModel,
-    required this.chartSeriesOrientation,
+    required this.chartOrientation,
     required this.chartStacking,
     this.inputLabelLayoutStrategy,
   }) {
@@ -67,10 +67,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     // We can construct the generator here in [ChartViewMaker] constructor or later
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
-    // todo-010-refactoring : DataRangeLabelInfosGenerator should be moved to the new_model.dart.
-    //                         Although not purely a view-independent model, it should ONLY have this one private constructro
-    //                         which creates the outputLabelsGenerator and inputLabelsGenerator. ONLY the class DataRangeLabelInfosGenerator
-    //                         should be public, but the constructor of it private to the new_model.
     outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartViewMaker: this,
       dataModel: chartModel,
@@ -107,7 +103,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// [ChartViewMaker.chartModel]'s [ChartOptions].
   late final options.ChartOptions chartOptions;
 
-  final ChartSeriesOrientation chartSeriesOrientation;
+  final ChartOrientation chartOrientation;
 
   final ChartStackingEnum chartStacking;
 
@@ -270,7 +266,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       );
 
       EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
-        chartSeriesOrientation: chartSeriesOrientation,
+        chartOrientation: chartOrientation,
         start: 5.0,
         end: 5.0,
       );
@@ -307,7 +303,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required model.Sign barsAreaSign,
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartOrientation: chartOrientation,
       start: 1.0,
       end: 1.0,
     );
@@ -363,7 +359,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     switch(chartStacking) {
       case ChartStackingEnum.stacked:
         return container_base.TransposingRoller.Column(
-          chartSeriesOrientation: chartSeriesOrientation,
+          chartOrientation: chartOrientation,
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: Align.start, // default
           isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide
@@ -371,7 +367,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         );
       case ChartStackingEnum.nonStacked:
         return container_base.TransposingRoller.Row(
-          chartSeriesOrientation: chartSeriesOrientation,
+          chartOrientation: chartOrientation,
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: Align.start, // default
           // column:  sit positive bars at end,   negative bars at start
@@ -394,7 +390,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required model.Sign barsAreaSign,
   }) {
     List<data_container.PointContainer> pointContainerList = [];
-    data_container.PointContainer pointContainer;
 
     // Generates [PointContainer] view from each [PointModel]
     // and collect the views in a list which is returned.

@@ -57,7 +57,7 @@ void main() {
 
   test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
-    ChartSeriesOrientation chartSeriesOrientation = ChartSeriesOrientation.column;
+    ChartOrientation chartOrientation = ChartOrientation.column;
     ChartStackingEnum chartStacking = ChartStackingEnum.stacked;
 
     DataRangeLabelInfosGenerator labelsGenerator;
@@ -67,7 +67,7 @@ void main() {
     var byRowLegends = ['Legend of row 1'];
 
     var valuesRows = [[1.0, 22.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, 0.0);
@@ -77,7 +77,7 @@ void main() {
 
 
     valuesRows = [[-1.0, -22.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, -300.0);
@@ -86,7 +86,7 @@ void main() {
     expect(labelInfoList[3].outputValue, 0.0);
 
     valuesRows = [[22.0, 10.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -300.0);
@@ -96,7 +96,7 @@ void main() {
     expect(labelInfoList[4].outputValue, 100.0);
 
     valuesRows = [[-22.0, -10.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -100.0);
@@ -106,7 +106,7 @@ void main() {
     expect(labelInfoList[4].outputValue, 300.0);
 
     valuesRows = [[-1000.0, 0.0, 1000.0, 2000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, ['1', '2', '3', '4'], byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, ['1', '2', '3', '4'], byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, -1000.0);
@@ -115,7 +115,7 @@ void main() {
     expect(labelInfoList[3].outputValue, 2000.0);
 
     valuesRows = [[-1000.0, 0.0, 1000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartSeriesOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].outputValue, -1000.0);
@@ -169,12 +169,12 @@ void main() {
 
 }
 
-DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartSeriesOrientation chartSeriesOrientation, ChartStackingEnum chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
+DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStackingEnum chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
   var mockChartModel = _constructMockChartModel(options, valuesRows, xUserLabels, extendAxisToOrigin, byRowLegends);
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(
       chartModel: mockChartModel,
-      chartSeriesOrientation: chartSeriesOrientation,
+      chartOrientation: chartOrientation,
       isStacked: true,
     ),
     dataModel: mockChartModel,
@@ -189,11 +189,11 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartSeriesOrientation cha
 class MockChartViewMaker extends ChartViewMaker {
   MockChartViewMaker({
     required ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required bool isStacked,
 }): super(
     chartModel: chartModel,
-    chartSeriesOrientation: chartSeriesOrientation,
+    chartOrientation: chartOrientation,
     chartStacking: ChartStackingEnum.stacked,
 );
 
@@ -246,7 +246,7 @@ void rangeTestCore(
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
       chartViewMaker: MockChartViewMaker(
         chartModel: dataModel,
-        chartSeriesOrientation: ChartSeriesOrientation.column,
+        chartOrientation: ChartOrientation.column,
         isStacked: true,
       ),
       dataModel: dataModel,

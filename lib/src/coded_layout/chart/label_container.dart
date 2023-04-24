@@ -6,7 +6,7 @@ import '../../chart/container/container_common.dart' as container_common show Ch
 import '../../morphic/container/label_container.dart';
 import '../../chart/chart_label_container.dart';
 import '../../chart/view_maker.dart' as view_maker;
-import '../../util/util_labels.dart' show AxisLabelInfo;
+import '../../chart/model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:

@@ -22,8 +22,8 @@ class PointOffset extends Offset {
   /// Size of the rectangle which represents one value point on either horizontal bar or vertical bar,
   /// depending on chart orientation. Calculated by the call to [lextrToPixelsMaybeTransposeInContextOf].
   ///
-  /// For [ChartSeriesOrientation.column] width is constraints.width on column, height is outputValuePixels
-  /// For [ChartSeriesOrientation.row]    width is inputValuePixels, height is constraints.height on row
+  /// For [ChartOrientation.column] width is constraints.width on column, height is outputValuePixels
+  /// For [ChartOrientation.row]    width is inputValuePixels, height is constraints.height on row
   ///
   /// Used to get the rectangle representing the bar in chart [BarPointContainer].
   ///
@@ -45,15 +45,15 @@ class PointOffset extends Offset {
   Offset get asOffset => Offset(inputValue, outputValue);
 
   /// Lextr this [PointOffset] to it's pixel scale, first possibly transposing
-  /// it if [chartSeriesOrientation] is [ChartSeriesOrientation.row].
+  /// it if [chartOrientation] is [ChartOrientation.row].
   ///
-  /// The Lextr takes into account chart orientation [chartSeriesOrientation],
+  /// The Lextr takes into account chart orientation [chartOrientation],
   /// which may cause the x and y (input and output) values to transpose
   /// around [Diagonal.leftToRightUp] during the lextr.
   ///
-  ///   - [chartSeriesOrientation] describes the orientation. [ChartSeriesOrientation.column] transforms
+  ///   - [chartOrientation] describes the orientation. [ChartOrientation.column] transforms
   ///     only once on each axis: between value-domain and pixel-domain on the same axis.
-  ///     [ChartSeriesOrientation.column] transforms twice on each axis:
+  ///     [ChartOrientation.column] transforms twice on each axis:
   ///       - first transforms value on each axis to value on cross-axis, using their respective value-domains,
   ///       - second on each cross axis, from value-domain to pixel-domain
   ///
@@ -67,8 +67,8 @@ class PointOffset extends Offset {
   ///   - [isLextrUseSizerInsteadOfConstraint] if true, processing uses [heightToLextr] and [widthToLextr]
   ///      instead of [constraintsOnImmediateOwner] to set height and width of the pixel-domains. Default false.
   ///
-  /// Items below summarize the rules for lextr-ing [PointOffset] depending on it's [chartSeriesOrientation]
-  /// being [ChartSeriesOrientation.column] or the [ChartSeriesOrientation.row].
+  /// Items below summarize the rules for lextr-ing [PointOffset] depending on it's [chartOrientation]
+  /// being [ChartOrientation.column] or the [ChartOrientation.row].
   ///
   /// Below:
   ///   - 'x' means the same as in-code 'inputValue', 'y' the same as 'outputValue'.
@@ -78,7 +78,7 @@ class PointOffset extends Offset {
   ///
   /// Description of transforms:
   ///
-  ///   1. The [ChartSeriesOrientation.column] performs 1 transform, which transforms a [PointOffset]
+  ///   1. The [ChartOrientation.column] performs 1 transform, which transforms a [PointOffset]
   ///      from values-range to pixels-range on both axes.
   ///     - Transform steps, shown here on min and max values:
   ///       - 1st coordinate : x min -> x pixel min (placed in 1st coordinate)
@@ -108,7 +108,7 @@ class PointOffset extends Offset {
   ///           LAYOUT PLACES THE LINE BETWEEN POSITIVE AND NEGATIVE SECTIONS
   ///
   ///
-  ///   2. The [ChartSeriesOrientation.row] performs 2 consecutive transforms
+  ///   2. The [ChartOrientation.row] performs 2 consecutive transforms
   ///      This first transform transposes a [PointOffset] around [Diagonal.leftToRightUp],
   ///      representing a (x -> y, y -> x) transform,
   ///      the second transforms a [PointOffset] from values-range to pixels-range on both axes.
@@ -141,7 +141,7 @@ class PointOffset extends Offset {
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
   PointOffset lextrToPixelsMaybeTransposeInContextOf({
-    required ChartSeriesOrientation  chartSeriesOrientation,
+    required ChartOrientation  chartOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
@@ -149,7 +149,7 @@ class PointOffset extends Offset {
     required double                  widthToLextr,
     required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
-    ChartSeriesOrientation orientation = chartSeriesOrientation;
+    ChartOrientation orientation = chartOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
     double inputPixels = 0.0;
@@ -165,7 +165,7 @@ class PointOffset extends Offset {
     double barPointRectWidth, barPointRectHeight;
 
     switch (orientation) {
-      case ChartSeriesOrientation.column:
+      case ChartOrientation.column:
         // 1.1.1:
         fromValuesRange1 = inputDataRange;
         toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
@@ -199,7 +199,7 @@ class PointOffset extends Offset {
         barPointRectHeight = fromValueOutputPixels.fromValueLengthInPixels;
 
         break;
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
       // todo-010 : to convert between column chart and row chart in 2D
       //                    is equivalent to diagonal transpose ALL POINTS IN 2D EXCEPT LABEL DIRECTION around Diagonal.LeftToRightUp
       //                    such transpose is equivalent to flipping (transposing) coordinates: x -> y, y -> x

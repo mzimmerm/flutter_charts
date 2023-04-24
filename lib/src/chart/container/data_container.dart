@@ -6,7 +6,7 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
 import '../../morphic/container/chart_support/chart_orientation.dart';
 import '../../morphic/ui2d/point.dart';
-import '../../util/util_labels.dart';
+import '../model/label_model.dart';
 import 'axis_container.dart';
 import 'container_common.dart' as container_common;
 import '../../morphic/container/container_layouter_base.dart';
@@ -75,14 +75,14 @@ class DataContainer extends container_common.ChartAreaContainer {
     required List<BoxContainer> children,
   }) {
     return TransposingRoller.Column(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       mainAxisAlign: Align.start, // default
       children: children,
     );
   }
 
-  /// For column chart, ([ChartSeriesOrientation.column]), build row    of (column) bars
-  /// For row    chart, ([ChartSeriesOrientation.row])     build column of (row)    bars
+  /// For column chart, ([ChartOrientation.column]), build row    of (column) bars
+  /// For row    chart, ([ChartOrientation.row])     build column of (row)    bars
   ///
   /// Either are build for only positive or only negative values,
   /// depending on
@@ -111,7 +111,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     // Row with a positive or negative bars, depending on [barsAreaSign].
     // The Row constraints are weighted by the ratio for positives and negatives passed here.
     return TransposingRoller.Row(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       mainAxisConstraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),
@@ -196,7 +196,7 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
           dataRangeLabelInfosGenerator: inputLabelsGenerator,
         );
     PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
@@ -264,7 +264,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
       dataRangeLabelInfosGenerator: inputLabelsGenerator,
     );
     PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
-      chartSeriesOrientation: chartViewMaker.chartSeriesOrientation,
+      chartOrientation: chartViewMaker.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
@@ -275,7 +275,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
 
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
-      axis: chartViewMaker.chartSeriesOrientation.inputDataAxisOrientation,
+      axis: chartViewMaker.chartOrientation.inputDataAxisOrientation,
       other: const ui.Size(0.0, 0.0),
     );
   }

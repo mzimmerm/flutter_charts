@@ -18,8 +18,7 @@ import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDepen
 /// In all 'regular' situations, there are only two allowed combination of mainLayoutAxis and inputDataAxisOrientation
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
-enum ChartSeriesOrientation {
-  // todo-010-refactoring : rename to ChartOrientation, or ChartCrossSeriesOrientation
+enum ChartOrientation {
   column(
     mainLayoutAxis: LayoutAxis.vertical,
     inputDataAxisOrientation: LayoutAxis.horizontal,
@@ -29,7 +28,7 @@ enum ChartSeriesOrientation {
     inputDataAxisOrientation: LayoutAxis.vertical,
   );
 
-  const ChartSeriesOrientation({
+  const ChartOrientation({
     required this.mainLayoutAxis, // orientation along which outputValues (across series values) are displayed
     required this.inputDataAxisOrientation, // orientation of axis where inputValues (independent values, x values) are displayed
   });
@@ -51,38 +50,38 @@ enum ChartSeriesOrientation {
   /// is oriented in view - horizontally or vertically.
   final LayoutAxis inputDataAxisOrientation;
 
-  factory ChartSeriesOrientation.fromString(
+  factory ChartOrientation.fromString(
     String orientation,
   ) {
     switch (orientation) {
       case 'column':
-        return ChartSeriesOrientation.column;
+        return ChartOrientation.column;
       case 'row':
-        return ChartSeriesOrientation.row;
+        return ChartOrientation.row;
       default:
-        throw StateError('Invalid orientation \'$orientation\' for converting String to ChartSeriesOrientation.');
+        throw StateError('Invalid orientation \'$orientation\' for converting String to ChartOrientation.');
     }
   }
 
-  factory ChartSeriesOrientation.fromStringOrDefault(
+  factory ChartOrientation.fromStringOrDefault(
     String orientation,
-    ChartSeriesOrientation defaultOrientation,
+    ChartOrientation defaultOrientation,
   ) {
     try {
-      return ChartSeriesOrientation.fromString(orientation);
+      return ChartOrientation.fromString(orientation);
     } on StateError {
       return defaultOrientation;
     }
   }
 
-  factory ChartSeriesOrientation.fromStringDefaultOnEmpty(
+  factory ChartOrientation.fromStringDefaultOnEmpty(
     String orientation,
-    ChartSeriesOrientation defaultOrientation,
+    ChartOrientation defaultOrientation,
   ) {
     if (orientation == '') {
       return defaultOrientation;
     }
-    return ChartSeriesOrientation.fromString(orientation);
+    return ChartOrientation.fromString(orientation);
   }
 
   /// For a chart orientation represented by this instance, return whether pixels and values are same orientation
@@ -93,19 +92,19 @@ enum ChartSeriesOrientation {
   ///   displayed pixels are on the horizontal or vertical axis. This information is used to extrapolate data values
   ///   to pixels, on either axis, to answer this question: should the value to pixels lextr invert sign?
   bool isOnHorizontalAxis({required DataDependency inputOrOutputData}) {
-    // for ChartSeriesOrientation.column, and inputOrOutputData DataDependency.inputData,   return true
-    // for ChartSeriesOrientation.column, and inputOrOutputData DataDependency.outputData,  return false
-    // for ChartSeriesOrientation.row,    and inputOrOutputData DataDependency.inputData,   return false
-    // for ChartSeriesOrientation.row,    and inputOrOutputData DataDependency.outputData,  return true
+    // for ChartOrientation.column, and inputOrOutputData DataDependency.inputData,   return true
+    // for ChartOrientation.column, and inputOrOutputData DataDependency.outputData,  return false
+    // for ChartOrientation.row,    and inputOrOutputData DataDependency.inputData,   return false
+    // for ChartOrientation.row,    and inputOrOutputData DataDependency.outputData,  return true
     switch(this) {
-      case ChartSeriesOrientation.column:
+      case ChartOrientation.column:
         switch (inputOrOutputData) {
           case DataDependency.inputData:
             return true;
           case DataDependency.outputData:
             return false;
         }
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         switch (inputOrOutputData) {
           case DataDependency.inputData:
             return false;
@@ -114,6 +113,17 @@ enum ChartSeriesOrientation {
         }
     }
   }
+
+
+  bool get isOwnerLayouterDirectionAgainstDisplayOrderDirection {
+    switch (this) {
+      case ChartOrientation.column:
+        return false;
+      case ChartOrientation.row:
+        return true;
+    }
+  }
+
 }
 
 // todo-010-refactoring : move to the same dart file with enums. Also review all enums in flutter_charts and organize them
@@ -121,8 +131,6 @@ enum ChartSeriesOrientation {
 /// Describes chart types shown in examples or integration tests.
 enum ExamplesChartTypeEnum {
   lineChart,
-  // todo-010-refactoring: rename barChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
-  //
   barChart,
 }
 

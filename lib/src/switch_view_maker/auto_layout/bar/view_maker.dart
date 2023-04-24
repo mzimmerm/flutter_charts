@@ -19,12 +19,12 @@ import '../../view_maker.dart'; // NEW SWITCH
 class SwitchBarChartViewMaker extends SwitchChartViewMaker {
   SwitchBarChartViewMaker({
     required ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,
-    chartSeriesOrientation: chartSeriesOrientation,
+    chartOrientation: chartOrientation,
     chartStacking: chartStacking,
     inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {

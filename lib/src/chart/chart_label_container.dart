@@ -6,7 +6,7 @@ import '../morphic/container/label_container.dart';
 import 'container/container_common.dart' as container_common show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'options.dart' show ChartOptions;
-import '../util/util_labels.dart' show AxisLabelInfo;
+import 'model/label_model.dart' show AxisLabelInfo;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///

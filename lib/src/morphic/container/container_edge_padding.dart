@@ -36,16 +36,16 @@ class EdgePadding  {
   });
 
   factory EdgePadding.TransposingWithSides({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     double start = 0.0,
     double top = 0.0,
     double end = 0.0,
     double bottom = 0.0,
   }) {
-    switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch(chartOrientation) {
+      case ChartOrientation.column:
         return EdgePadding.withSides(start: start, top: top, end: end, bottom: bottom);
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return EdgePadding.withSides(start: bottom, top: end, end: top, bottom: start);
     }
   }

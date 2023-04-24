@@ -10,7 +10,7 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../options.dart';
 
 import '../../util/extensions_dart.dart';
-import '../../util/util_labels.dart' as util_labels;
+import 'label_model.dart' as util_labels;
 import '../../util/util_dart.dart';
 
 

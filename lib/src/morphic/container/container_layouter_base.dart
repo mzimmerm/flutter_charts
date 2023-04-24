@@ -12,7 +12,7 @@ import 'layouter_one_dimensional.dart'
     LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import 'chart_support/chart_orientation.dart' show ChartSeriesOrientation;
+import 'chart_support/chart_orientation.dart' show ChartOrientation;
 import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../../util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsLTransform1D,
@@ -864,25 +864,25 @@ abstract class TransposingSizerLayouter extends FromConstraintsSizerLayouter {
   });
 
   factory TransposingSizerLayouter.Width({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     List<BoxContainer>? children,
   }) {
-    switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch(chartOrientation) {
+      case ChartOrientation.column:
         return WidthSizerLayouter(children: children);
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return HeightSizerLayouter(children: children);
     }
   }
 
   factory TransposingSizerLayouter.Height({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     List<BoxContainer>? children,
   }) {
-    switch(chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch(chartOrientation) {
+      case ChartOrientation.column:
         return HeightSizerLayouter(children: children);
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return WidthSizerLayouter(children: children);
     }
   }
@@ -2165,11 +2165,11 @@ abstract class TransposingRoller extends RollingBoxLayouter {
   // final bool isCrossAxisAlignFlipperOnTranspose;
 
   /// [Column] or [Row] producing factory;
-  /// Instance produced for default [ChartSeriesOrientation] is [Column];
+  /// Instance produced for default [ChartOrientation] is [Column];
   /// Same parameters as the default produced instance.
   ///
   factory TransposingRoller.Column({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
@@ -2179,8 +2179,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
   }) {
-    switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartOrientation) {
+      case ChartOrientation.column:
         return Column(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2189,7 +2189,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
@@ -2206,7 +2206,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
   ///
   /// This has an equivalent behavior, if we change Column to Row.
   factory TransposingRoller.Row({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     Packing mainAxisPacking = Packing.tight,
@@ -2216,8 +2216,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
   }) {
-    switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartOrientation) {
+      case ChartOrientation.column:
         return Row(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2226,7 +2226,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
@@ -2447,11 +2447,11 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   });
 
   /// [ExternalTicksColumn] or [ExternalTicksRow] producing factory;
-  /// Instance produced for default [ChartSeriesOrientation] is [ExternalTicksColumn];
+  /// Instance produced for default [ChartOrientation] is [ExternalTicksColumn];
   /// Same parameters as the default produced instance.
   ///
   factory TransposingExternalTicks.Column({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
     // todo-013 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
@@ -2461,8 +2461,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
     required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
   }) {
-    switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartOrientation) {
+      case ChartOrientation.column:
         return ExternalTicksColumn(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2470,7 +2470,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
         return ExternalTicksRow(
           children: children.reversed.toList(),
@@ -2486,7 +2486,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   ///
   /// This has an equivalent behavior, if we change Column to Row.
   factory TransposingExternalTicks.Row({
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
@@ -2495,8 +2495,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
     // ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
     required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
   }) {
-    switch (chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch (chartOrientation) {
+      case ChartOrientation.column:
         return ExternalTicksRow(
           children: children,
           mainAxisAlign: mainAxisAlign,
@@ -2504,7 +2504,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
           crossAxisPacking: crossAxisPacking,
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         return ExternalTicksColumn(
           children: children.reversed.toList(),
           mainAxisAlign: otherEndAlign(mainAxisAlign),
@@ -3827,8 +3827,8 @@ class ExternalTicksLayoutProvider {
   ///
   /// Important Implementation Notes:
   ///
-  ///   1. [tickValues] are in increasing order for [ChartSeriesOrientation]
-  ///      value [ChartSeriesOrientation.column], in decreasing order for [ChartSeriesOrientation.row].
+  ///   1. [tickValues] are in increasing order for [ChartOrientation]
+  ///      value [ChartOrientation.column], in decreasing order for [ChartOrientation.row].
   ///      This is determined by [isOwnerLayouterDirectionAgainstDisplayOrderDirection]; the motivation
   ///      for this order is for horizontal axis always show numeric labels in increasing order left to right,
   ///      and for vertical axis always show numeric labels in increasing order bottom to top.

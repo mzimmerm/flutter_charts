@@ -16,12 +16,12 @@ import '../../view_maker_cl.dart'; // OLD
 class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
   SwitchLineChartViewMakerCL({
     required ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           chartModel: chartModel,
-          chartSeriesOrientation: chartSeriesOrientation,
+          chartOrientation: chartOrientation,
           chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         ) {

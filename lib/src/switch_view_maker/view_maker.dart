@@ -28,12 +28,12 @@ import '../chart/iterative_layout_strategy.dart' as strategy;
 abstract class SwitchChartViewMaker extends ChartViewMaker {
   SwitchChartViewMaker ({
     required model.ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
-  chartSeriesOrientation: chartSeriesOrientation,
+  chartOrientation: chartOrientation,
   chartStacking: chartStacking,
   inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
@@ -42,7 +42,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   /// for vertical bar chart.
   factory SwitchChartViewMaker.barChartViewMakerFactory({
     required model.ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required ChartStackingEnum chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
@@ -52,14 +52,14 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     if (isUseOldLayouter) {
       return SwitchBarChartViewMakerCL(
         chartModel: chartModel,
-        chartSeriesOrientation: chartSeriesOrientation,
+        chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
       return SwitchBarChartViewMaker(
           chartModel: chartModel,
-          chartSeriesOrientation: chartSeriesOrientation,
+          chartOrientation: chartOrientation,
         chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
@@ -70,7 +70,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   /// for line chart.
   factory SwitchChartViewMaker.lineChartViewMakerFactory({
     required model.ChartModel chartModel,
-    required ChartSeriesOrientation chartSeriesOrientation,
+    required ChartOrientation chartOrientation,
     required ChartStackingEnum chartStacking,
     bool isStacked = false,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
@@ -81,21 +81,21 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     if (isUseOldLayouter) {
       return SwitchLineChartViewMakerCL(
         chartModel: chartModel,
-        chartSeriesOrientation: chartSeriesOrientation,
+        chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
       return SwitchLineChartViewMaker(
         chartModel: chartModel,
-        chartSeriesOrientation: chartSeriesOrientation,
+        chartOrientation: chartOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     }
   }
 
-  // final ChartSeriesOrientation chartSeriesOrientation;
+  // final ChartOrientation chartOrientation;
 
 }
 

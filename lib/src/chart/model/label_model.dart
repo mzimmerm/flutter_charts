@@ -1,15 +1,14 @@
 import 'dart:math' as math show min, max, pow;
 
-import '../morphic/container/container_layouter_base_dart_support.dart';
-import '../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
-import '../morphic/container/chart_support/chart_orientation.dart';
-import '../chart/model/data_model.dart';
-import '../chart/options.dart';
-import '../chart/view_maker.dart';
-import '../morphic/container/layouter_one_dimensional.dart'
+import '../../morphic/container/container_layouter_base_dart_support.dart';
+import '../../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
+import 'data_model.dart';
+import '../options.dart';
+import '../view_maker.dart';
+import '../../morphic/container/layouter_one_dimensional.dart'
     show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 
-import 'util_dart.dart' as util_dart;
+import '../../util/util_dart.dart' as util_dart;
 
 // todo-doc-01 documentation fix, this is old
 /// Generates label values from data values, and allows label manipulation: transform, format, extrapolate to axis pixels.
@@ -19,8 +18,9 @@ import 'util_dart.dart' as util_dart;
 ///
 /// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
 ///
+/// Although not purely a view-independent model ...
+
 /// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
-/// todo-013 : move the whole util_labels.dart to the 'model' folder, rename util_labels.dart to label_model.dart
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -179,11 +179,11 @@ class DataRangeLabelInfosGenerator {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Given the [chartSeriesOrientation] and [dataDependency], deduce if this [DataRangeLabelInfosGenerator]
+  /// Given the [chartOrientation] and [dataDependency], deduce if this [DataRangeLabelInfosGenerator]
   /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
   ///
   /// Returns true if this [DataRangeLabelInfosGenerator] labels will be shown on [LayoutAxis.vertical].
-  bool get isOnHorizontalAxis => chartViewMaker.chartSeriesOrientation.isOnHorizontalAxis(inputOrOutputData: dataDependency);
+  bool get isOnHorizontalAxis => chartViewMaker.chartOrientation.isOnHorizontalAxis(inputOrOutputData: dataDependency);
 
   /// Extrapolates [value] from extended data range [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
@@ -231,17 +231,22 @@ class DataRangeLabelInfosGenerator {
     // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
-    // todo-010-refactoring : Move this switch to ChartSeriesOrientation
+/* todo-00-last-done : ori KEEP
     bool isOwnerLayouterDirectionAgainstDisplayOrderDirection;
-    switch(chartViewMaker.chartSeriesOrientation) {
-      case ChartSeriesOrientation.column:
+    switch(chartViewMaker.chartOrientation) {
+      case ChartOrientation.column:
         isOwnerLayouterDirectionAgainstDisplayOrderDirection = false;
         break;
-      case ChartSeriesOrientation.row:
+      case ChartOrientation.row:
         isOwnerLayouterDirectionAgainstDisplayOrderDirection = true;
         break;
     }
     if (isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
+      tickValues = tickValues.reversed.toList();
+    }
+*/
+
+    if (chartViewMaker.chartOrientation.isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
       tickValues = tickValues.reversed.toList();
     }
 
@@ -252,8 +257,6 @@ class DataRangeLabelInfosGenerator {
       externalTickAtPosition: externalTickAtPosition,
     );
   }
-
-
 
   /// Places [labelPointsCount] positions evenly distanced in [interval] between [interval.min]
   /// and [interval.max], and returns the positions list.

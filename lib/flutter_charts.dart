@@ -165,7 +165,7 @@ export 'src/chart/options.dart';
 export 'src/chart/model/random_chart_data.dart';
 export 'src/util/util_dart.dart';
 export 'src/util/util_flutter.dart';
-export 'src/util/util_labels.dart';
+export 'src/chart/model/label_model.dart';
 
 // export 'src/coded_layout/chart/data_model.dart';
 export 'src/coded_layout/chart/container.dart';
