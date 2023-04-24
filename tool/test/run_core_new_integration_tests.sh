@@ -14,7 +14,15 @@ echo
 echo -------------------------------------
 echo -------------------------------------
 echo Running screenshot actual/expected test for NEW LAYOUT
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart
-IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart
+
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh firstRun ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
+
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  verticalBarChart
+
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=column CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart
+
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=stacked    tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart
+IS_USE_OLD_LAYOUTER=false CHART_ORIENTATION=row    CHART_STACKING=nonStacked tool/test/integration_test_create_then_validate_screenshots.sh nextRun  ex31SomeNegativeValues                                                         verticalBarChart

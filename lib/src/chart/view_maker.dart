@@ -271,8 +271,8 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
       EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
         chartSeriesOrientation: chartSeriesOrientation,
-        start: 6.0,
-        end: 6.0,
+        start: 5.0,
+        end: 5.0,
       );
       container_base.Padder oneBarPadded = container_base.Padder(
         edgePadding: pointRectSidePad,
@@ -308,8 +308,8 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartSeriesOrientation: chartSeriesOrientation,
-      start: 0.0,
-      end: 0.0,
+      start: 1.0,
+      end: 1.0,
     );
     // Get point containers, and wrap each in a Padder, narrowing the bars
     var pointContainers = makeViewForDataContainer_CrossPointsModel(
@@ -350,7 +350,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
             childrenPointContainers = childrenPointContainers.reversed.toList(growable: false);
             break;
           case model.Sign.negative:
-            childrenPointContainers = childrenPointContainers.toList(growable: false);
+            // todo-00-last-done : childrenPointContainers = childrenPointContainers.toList(growable: false);
             break;
           case model.Sign.any:
             throw StateError('Invalid "any" sign for data container bars.');
@@ -375,7 +375,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: Align.start, // default
           // column:  sit positive bars at end,   negative bars at start
-          // row:     sit positive bars at start, negative bars at end (Transposing will take care of Row)
+          // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
           crossAxisAlign: barsAreaSign == model.Sign.positiveOr0 ? Align.end : Align.start,
           // isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide todo-010-next review
           children: childrenPointContainers,
