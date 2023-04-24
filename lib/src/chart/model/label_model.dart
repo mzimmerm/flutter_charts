@@ -231,20 +231,6 @@ class DataRangeLabelInfosGenerator {
     // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
-/* todo-00-last-done : ori KEEP
-    bool isOwnerLayouterDirectionAgainstDisplayOrderDirection;
-    switch(chartViewMaker.chartOrientation) {
-      case ChartOrientation.column:
-        isOwnerLayouterDirectionAgainstDisplayOrderDirection = false;
-        break;
-      case ChartOrientation.row:
-        isOwnerLayouterDirectionAgainstDisplayOrderDirection = true;
-        break;
-    }
-    if (isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
-      tickValues = tickValues.reversed.toList();
-    }
-*/
 
     if (chartViewMaker.chartOrientation.isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
       tickValues = tickValues.reversed.toList();

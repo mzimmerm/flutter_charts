@@ -35,7 +35,6 @@ class ChartModel {
 
   ChartModel({
     required this.valuesRows,
-    // todo-010-refactoring : rename xUserLabels to inputUserLabels
     required this.xUserLabels,
     required this.byRowLegends,
     required this.chartOptions,
@@ -53,7 +52,6 @@ class ChartModel {
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
     // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
-    int numDataModelColumns = valuesColumns.length;
     int columnIndex = 0;
     for (List<double> valuesColumn in valuesColumns) {
       crossPointsModelPositiveList.add(
@@ -61,7 +59,6 @@ class ChartModel {
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex,
-          numDataModelColumns: numDataModelColumns,
           pointsSign: Sign.positiveOr0,
         ),
       );
@@ -70,7 +67,6 @@ class ChartModel {
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex,
-          numDataModelColumns: numDataModelColumns,
           pointsSign: Sign.negative,
         ),
       );
@@ -79,7 +75,6 @@ class ChartModel {
           valuesColumn: valuesColumn,
           dataModel: this,
           columnIndex: columnIndex,
-          numDataModelColumns: numDataModelColumns,
           pointsSign: Sign.any,
         ),
       );
@@ -174,11 +169,14 @@ class ChartModel {
   /// Data reorganized from rows to columns.
   late final List<List<double>> valuesColumns;
 
+  int get numColumns => valuesColumns.length;
+
   /// Labels on independent (X) axis.
   ///
   /// It is assumed labels are defined, by the client
   /// and their number is the same as number of points
   /// in each row in [_valuesRows].
+  // todo-010-refactoring : rename xUserLabels to inputUserLabels
   final List<String> xUserLabels;
 
   /// The legends for each row in [_valuesRows].
@@ -193,6 +191,8 @@ class ChartModel {
   /// If not null, a "manual" layout is used in the [VerticalAxisContainerCL].
   /// If null, a "auto" layout is used in the [VerticalAxisContainerCL].
   ///
+  //
+  // todo-010-refactoring : rename yUserLabels to outputUserLabels
   final List<String>? yUserLabels;
 
   /// Colors representing each data row (series) in [ChartModel].
@@ -312,10 +312,8 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required List<double> valuesColumn,
     required this.dataModel,
     required this.columnIndex,
-    // todo-010-refactoring (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
-    required numDataModelColumns,
     required this.pointsSign
-  }) : _numDataModelColumns = numDataModelColumns {
+  }) {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
@@ -367,21 +365,10 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   ///   -  [ChartModel.byRowColors]
   final int columnIndex;
 
-  /// Number of column-wise elements the owner [ChartModel] has.
-  ///
-  /// Same as size of [ChartModel.crossPointsModelPositiveList] AND the [ChartModel.crossPointsModelNegativeList].
-  /// It is provided early in constructor of this [CrossPointsModel],
-  /// so it can be used before these two lists are fully constructed and populated with
-  /// instances of [CrossPointsModel].
-  ///
-  /// This is also accessible by [PointModel].
-  // todo-010-refactoring (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
-  final int _numDataModelColumns;
-
   /// Calculates inputValue-position (x-position, independent value position) of
   /// instances of this [CrossPointsModel] and it's [PointModel] elements.
   ///
-  /// The value is in the middle of the column - there are [ChartModel] [_numDataModelColumns] columns that
+  /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numDataModelColumns] columns that
   /// divide the [dataRange].
   ///
   /// Note: So this is offset from start and end of the Interval.
@@ -393,7 +380,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / _numDataModelColumns);
+    double columnWidth = (dataRange.length / dataModel.numColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
@@ -602,10 +589,6 @@ class PointModel extends Object with DoubleLinked {
   ///
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
   int get columnIndex => ownerCrossPointsModel.columnIndex;
-
-  // todo-010-refactoring (functional) : delegate all the way to ownerCrossPointsModel.dataModel.numDataModelColumns
-  // but this is not used anyway, so maybe remove.
-  int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
 
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///

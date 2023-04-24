@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Rect, Offset, Canvas, Paint;
+import 'dart:ui' as ui show Rect, Canvas, Paint;
 import 'package:flutter/material.dart' as material show Colors;
 
 // base libraries
@@ -18,8 +18,6 @@ class AxisCornerContainer extends container_common.ChartAreaContainer {
           children: children,
         );
 
-  // todo-00-last-done : late ui.Rect _rect;
-
   /// This default implementation has no children, it is leaf, so override the only method
   /// needed to override for leafs
   @override
@@ -29,21 +27,6 @@ class AxisCornerContainer extends container_common.ChartAreaContainer {
 
     layoutSize = rect.size;
   }
-
-/* todo-00-last-done
-  @override
-  void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    // This was a core issue of layout rectangles and child rectangles not matching.
-    super.applyParentOffset(caller, offset);
-    _rect = _rect.shift(offset);
-  }
-
-  @override
-  paint(ui.Canvas canvas) {
-    ui.Paint paint = (ui.Paint()..color = material.Colors.red);
-    canvas.drawRect(_rect, paint);
-  }
-  */
 
   @override
   paint(ui.Canvas canvas) {

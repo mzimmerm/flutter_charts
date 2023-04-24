@@ -346,10 +346,9 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
             childrenPointContainers = childrenPointContainers.reversed.toList(growable: false);
             break;
           case model.Sign.negative:
-            // todo-00-last-done : childrenPointContainers = childrenPointContainers.toList(growable: false);
             break;
           case model.Sign.any:
-            throw StateError('Invalid "any" sign for data container bars.');
+            throw StateError('Invalid use of "any" sign for data container bars.');
         }        break;
       case ChartStacking.nonStacked:
         // logic on this is in-place on crossAxisAlign
