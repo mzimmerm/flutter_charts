@@ -1131,7 +1131,7 @@ class LineChartDataContainerCL extends DataContainerCL {
 /// Represents a set of gridlines (either horizontal or vertical, but not both),
 /// which draw the dotted grid lines in chart.
 ///
-/// The grid lines are positioned in the middle of labels (Y labels, and X labels for non-stacked)
+/// The grid lines are positioned in the middle of labels (Y labels, and X labels for Non-Stacked)
 /// or on the left label edge (X labels for stacked).
 ///
 /// Note: Methods [layout], [applyParentOffset], and [paint], use the default implementation.
@@ -1367,7 +1367,7 @@ class StackableValuePoint {
   }
 }
 
-/// Represents a column of [StackableValuePoint]s, with support for both stacked and non-stacked charts.
+/// Represents a column of [StackableValuePoint]s, with support for both stacked and Non-Stacked charts.
 ///
 /// Corresponds to one column of data from [DeprecatedChartData.valuesRows], ready for presentation by [PointPresenter]s.
 ///

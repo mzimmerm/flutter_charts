@@ -119,11 +119,10 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child
-    //   of a non-stacked [LineChart] with hierarchy-parent being [Column] or [Row] with [mainAxisLayout=matrjoska,end]
+    //   of a Non-Stacked [LineChart] with hierarchy-parent being [Column] or [Row] with [mainAxisLayout=matrjoska,end]
     //   all sibling [LineSegmentContainer]s overlap and grow from end. Then the [layoutSize] in the main direction
     //   of parent is the max length in that direction. In the cross-direction, it is the same as constraint size.
     layoutSize = _layoutSize;
-
   }
 
   /// Internal calculation of [layoutSize] returns the [ui.Size] of this container.

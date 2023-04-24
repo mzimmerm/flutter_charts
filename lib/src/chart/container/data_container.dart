@@ -96,22 +96,12 @@ class DataContainer extends container_common.ChartAreaContainer {
 
     switch(barsAreaSign) {
       case model.Sign.positiveOr0:
-
-
-        // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelPositiveList;
-
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
       case model.Sign.negative:
-
-
-        // todo-00-last-progress : crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        // crossPointsModels = chartViewMaker.chartModel.crossPointsModelNegativeList;
-
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         crossAxisAlign = Align.start;
         break;
@@ -143,13 +133,10 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
     required this.crossPointsModel,
     List<BoxContainer>? children,
     ContainerKey? key,
-    // We want to proportionally (evenly) layout if wrapped in Column or Row, so make weight available.
-    // todo-00-last-last-last : removed, placed up : required ConstraintsWeight constraintsWeight,
   }) : super(
     chartViewMaker: chartViewMaker,
     children: children,
     key: key,
-    // todo-00-last-last-last : removed, placed up : constraintsWeight: constraintsWeight,
   );
 
   /// Model backing this container.
@@ -240,7 +227,6 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
   }
 }
 
-// todo-00-last-progress
 /// A dummy [BarPointContainer] with zero [layoutSize] in the direction of the main axis.,
 class ZeroValueBarPointContainer extends BarPointContainer {
 
@@ -259,9 +245,9 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   /// Layout this container by calling super, then set the [layoutSize] in the value direction
   /// (owner layouter mainAxisDirection) to be zero.
   ///
-  /// This container is a stand-in for non-stacked value point, on the positive or negative side against
+  /// This container is a stand-in for Non-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
-  // todo-010-next : The algorighm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
+  // todo-010-next : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
   //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
   //                 maybe not even that.
   @override

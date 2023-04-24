@@ -73,7 +73,6 @@ class ChartModel {
           pointsSign: Sign.negative,
         ),
       );
-      // todo-00-last-progress - added:
       crossPointsModelList.add(
         CrossPointsModel(
           valuesColumn: valuesColumn,
@@ -93,10 +92,11 @@ class ChartModel {
   /// List of crossPoints in the model.
   ///
   /// Represents one bar-set in the chart. The bar-set is a single bar in stacked bar chart,
-  /// several grouped bars for non-stacked bar chart.
+  /// several grouped bars for Non-Stacked bar chart.
+  // todo-010-next : review positive and negative. I do not think it is needed. Tag before removal.
   final List<CrossPointsModel> crossPointsModelPositiveList = [];
   final List<CrossPointsModel> crossPointsModelNegativeList = [];
-  final List<CrossPointsModel> crossPointsModelList = []; // todo-00-last-progress
+  final List<CrossPointsModel> crossPointsModelList = [];
 
   /// Returns the minimum and maximum transformed, non-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -104,7 +104,7 @@ class ChartModel {
   /// The returned value is calculated from [ChartModel] by finding maximum and minimum of data values
   /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
   ///
-  /// The source data of the returned interval differs in stacked and non-stacked data, determined by argument [isStacked] :
+  /// The source data of the returned interval differs in stacked and Non-Stacked data, determined by argument [isStacked] :
   ///   - For [isStacked] true, the min and max is taken from [PointModel._stackedPositiveOutputValue] and
   ///     [PointModel._stackedNegativeOutputValue] is used.
   ///   - For  [isStacked] false, the min and max is taken from [PointModel.outputValue] is used.
@@ -312,7 +312,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     required List<double> valuesColumn,
     required this.dataModel,
     required this.columnIndex,
-    // todo-00-refactor (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
+    // todo-010-refactoring (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
     required numDataModelColumns,
     required this.pointsSign
   }) : _numDataModelColumns = numDataModelColumns {
@@ -321,7 +321,6 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
     //   - positive and negative values of the [valuesColumn] are separated to their own [_crossPoints].
     for (double outputValue in valuesColumn) {
-      // todo-00-last-done if (pointsSign.isValueMySign(
       if (pointsSign == Sign.any || pointsSign.isValueMySign(
         value: outputValue,
       )) {
@@ -376,7 +375,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// instances of [CrossPointsModel].
   ///
   /// This is also accessible by [PointModel].
-  //     // todo-00-refactor (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
+  // todo-010-refactoring (functional) : as dataModel is member, just use dataModel.numColumns instead of passing it here
   final int _numDataModelColumns;
 
   /// Calculates inputValue-position (x-position, independent value position) of
@@ -421,26 +420,6 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   @override
   Iterable<PointModel> allElements() => _crossPointsAllElements;
 
-/* todo-00-last-done : moved to PointModel
-  /// Checks if the sign of a the passed [value] is the sign required by this instance of [CrossPointsModel].
-  ///
-  /// Motivation: In the context of a charting framework, any series positive and negative
-  ///             values are split and kept separate in model and in view containers,
-  ///             using separate instances of positive and negative [CrossPointsModel]s,
-  ///             in [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
-  ///             This method is a helper to performs the separation based on [pointsSign].
-  bool __isValueMySign({
-    required double value,
-  }) {
-    switch (pointsSign) {
-      case Sign.positiveOr0:
-        return (value >= 0.0);
-      case Sign.negative:
-        return (value < 0.0);
-    }
-  }
-*/
-
   /// Calculates and initializes the final stacked positive and negative values on points.
   ///
   /// Assumes that [DoubleLinked.linkAll] has been called on first element on the [_crossPointsAllElements],
@@ -465,7 +444,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
       case Sign.negative:
         return __minOnPoints((PointModel point) => point._stackedOutputValue);
       case Sign.any:
-        // todo-00-last : ADDRESS THIS. FOR NOW, RETURN 0 : throw StateError('Cannot stack values which mix positive and negative.');
+        // todo-010-next : ADDRESS THIS. FOR NOW, RETURN 0 : throw StateError('Cannot stack values which mix positive and negative.');
         return 0.0;
     }
   }
@@ -624,7 +603,7 @@ class PointModel extends Object with DoubleLinked {
   /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
   int get columnIndex => ownerCrossPointsModel.columnIndex;
 
-  // todo-00-refactoring (functional) : delegate all the way to ownerCrossPointsModel.dataModel.numDataModelColumns
+  // todo-010-refactoring (functional) : delegate all the way to ownerCrossPointsModel.dataModel.numDataModelColumns
   // but this is not used anyway, so maybe remove.
   int get numDataModelColumns => ownerCrossPointsModel._numDataModelColumns;
 
