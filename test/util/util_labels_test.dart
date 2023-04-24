@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Color;
 
 // Tested package
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base_dart_support.dart'
   show DataDependency;
 
@@ -58,7 +58,7 @@ void main() {
   test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale', () {
     ChartOptions options = const ChartOptions();
     ChartOrientation chartOrientation = ChartOrientation.column;
-    ChartStackingEnum chartStacking = ChartStackingEnum.stacked;
+    ChartStacking chartStacking = ChartStacking.stacked;
 
     DataRangeLabelInfosGenerator labelsGenerator;
     
@@ -169,7 +169,7 @@ void main() {
 
 }
 
-DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStackingEnum chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
+DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
   var mockChartModel = _constructMockChartModel(options, valuesRows, xUserLabels, extendAxisToOrigin, byRowLegends);
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(
@@ -194,7 +194,7 @@ class MockChartViewMaker extends ChartViewMaker {
 }): super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,
-    chartStacking: ChartStackingEnum.stacked,
+    chartStacking: ChartStacking.stacked,
 );
 
   @override

@@ -10,7 +10,7 @@ import 'dart:io';
 
 import 'test_util.dart';
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import '../example/lib/src/util/examples_descriptor.dart';
 import '../example/lib/main.dart' as app;
 
@@ -20,7 +20,7 @@ void main() {
     // The app.requestedExampleToRun creates the enums from --dart-define arguments for
     //   EXAMPLE_TO_RUN, CHART_TYPE, CHART_ORIENTATION, and IS_USE_OLD_LAYOUTER.
     //   passed to 'flutter test this-file.dart', and returns them in Tuple5.
-    Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> exampleComboToRun =
+    Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun =
         app.requestedExampleToRun();
     var screenshotPaths = screenshotPathsFor(exampleComboToRun);
     String expectedScreenshotPath = screenshotPaths.item1;

@@ -18,19 +18,19 @@ class AxisCornerContainer extends container_common.ChartAreaContainer {
           children: children,
         );
 
-  // todo-010-refactoring (functional) : do not keep _rect, keep _size, and create _rect = _size & offset in paint.
-  late ui.Rect _rect;
+  // todo-00-last-done : late ui.Rect _rect;
 
   /// This default implementation has no children, it is leaf, so override the only method
   /// needed to override for leafs
   @override
   layout_Post_Leaf_SetSize_FromInternals() {
     /// Set some small layoutSize
-    _rect = const ui.Rect.fromLTWH(0.0, 0.0, 20.0, 20.0);
+    ui.Rect rect = const ui.Rect.fromLTWH(0.0, 0.0, 20.0, 20.0);
 
-    layoutSize = _rect.size;
+    layoutSize = rect.size;
   }
 
+/* todo-00-last-done
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
     // This was a core issue of layout rectangles and child rectangles not matching.
@@ -42,5 +42,12 @@ class AxisCornerContainer extends container_common.ChartAreaContainer {
   paint(ui.Canvas canvas) {
     ui.Paint paint = (ui.Paint()..color = material.Colors.red);
     canvas.drawRect(_rect, paint);
+  }
+  */
+
+  @override
+  paint(ui.Canvas canvas) {
+    ui.Paint paint = (ui.Paint()..color = material.Colors.red);
+    canvas.drawRect(offset & layoutSize, paint);
   }
 }

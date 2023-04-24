@@ -10,7 +10,7 @@ import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLay
 import '../../../chart/line/container.dart'; // NEW BASE
 
 // this level: switch/auto_layout/bar
-import '../../../morphic/container/chart_support/chart_orientation.dart';
+import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../view_maker.dart'; // NEW SWITCH
 
 /// Concrete [ChartViewMaker] for [LineChart].
@@ -20,7 +20,7 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   SwitchLineChartViewMaker({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,

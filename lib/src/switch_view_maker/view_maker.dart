@@ -2,7 +2,7 @@ import 'package:logger/logger.dart' as logger;
 
 import '../chart/view_maker.dart'; // NEW MAKER BASE
 
-import '../morphic/container/chart_support/chart_orientation.dart';
+import '../morphic/container/chart_support/chart_style.dart';
 import 'auto_layout/line/view_maker.dart'; // NEW MAKER LINE
 import 'auto_layout/bar/view_maker.dart'; // NEW MAKER BAR
 import 'coded_layout/line/view_maker.dart'; // OLD MAKER LINE
@@ -29,7 +29,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   SwitchChartViewMaker ({
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super (
   chartModel: chartModel,
@@ -43,7 +43,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   factory SwitchChartViewMaker.barChartViewMakerFactory({
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');
@@ -71,7 +71,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
   factory SwitchChartViewMaker.lineChartViewMakerFactory({
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     bool isStacked = false,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {

@@ -35,6 +35,7 @@ class ChartModel {
 
   ChartModel({
     required this.valuesRows,
+    // todo-010-refactoring : rename xUserLabels to inputUserLabels
     required this.xUserLabels,
     required this.byRowLegends,
     required this.chartOptions,
@@ -380,7 +381,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Calculates inputValue-position (x-position, independent value position) of
   /// instances of this [CrossPointsModel] and it's [PointModel] elements.
   ///
-  /// The value is in the middle of the column - there are [_numDataModelColumns] columns that
+  /// The value is in the middle of the column - there are [ChartModel] [_numDataModelColumns] columns that
   /// divide the [dataRange].
   ///
   /// Note: So this is offset from start and end of the Interval.

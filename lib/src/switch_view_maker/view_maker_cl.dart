@@ -8,7 +8,7 @@ import 'view_maker.dart'; // NEW SWITCH
 import '../chart/view_maker.dart'; // NEW
 import '../chart/model/data_model.dart' as model;
 import '../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../morphic/container/chart_support/chart_orientation.dart';
+import '../morphic/container/chart_support/chart_style.dart';
 
 import '../coded_layout/chart/presenter.dart' as presenter; // OLD - ok to use in switch
 
@@ -17,7 +17,7 @@ abstract class SwitchChartViewMakerCL extends SwitchChartViewMaker {
   SwitchChartViewMakerCL({
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,

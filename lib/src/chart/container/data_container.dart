@@ -1,10 +1,10 @@
 import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
 // this level base libraries or equivalent
-//import '../../morphic/container/chart_support/chart_orientation.dart';
+//import '../../morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
-import '../../morphic/container/chart_support/chart_orientation.dart';
+import '../../morphic/container/chart_support/chart_style.dart';
 import '../../morphic/ui2d/point.dart';
 import '../model/label_model.dart';
 import 'axis_container.dart';

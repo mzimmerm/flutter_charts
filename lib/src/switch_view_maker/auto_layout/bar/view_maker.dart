@@ -4,7 +4,7 @@ import '../../../chart/container/data_container.dart';
 
 // base libraries
 import '../../../chart/view_maker.dart';
-import '../../../morphic/container/chart_support/chart_orientation.dart';
+import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../../chart/container/bar/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -20,7 +20,7 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
   SwitchBarChartViewMaker({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required ChartStackingEnum chartStacking,
+    required ChartStacking chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartModel: chartModel,

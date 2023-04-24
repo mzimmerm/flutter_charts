@@ -5,7 +5,7 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/container/container_layouter_base_dart_support.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
-import '../../morphic/container/chart_support/chart_orientation.dart';
+import '../../morphic/container/chart_support/chart_style.dart';
 //import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';

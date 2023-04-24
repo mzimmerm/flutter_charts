@@ -126,17 +126,15 @@ enum ChartOrientation {
 
 }
 
-// todo-010-refactoring : move to the same dart file with enums. Also review all enums in flutter_charts and organize them
-// todo-010-refactoring : rename to ChartTypeEnum,
 /// Describes chart types shown in examples or integration tests.
-enum ExamplesChartTypeEnum {
+enum ChartType {
   lineChart,
   barChart,
 }
 
 /// Describes how cross-series data are shown: Either stacked, or nonStacked (side by side on horizontal bar chart,
 /// all starting at zero on line chart).
-enum ChartStackingEnum {
+enum ChartStacking {
   stacked,
   nonStacked,
 }

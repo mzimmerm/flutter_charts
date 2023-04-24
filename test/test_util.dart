@@ -3,14 +3,14 @@
 
 import 'package:tuple/tuple.dart';
 
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_orientation.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/flutter_charts.dart' show enumName;
 import '../example/lib/src/util/examples_descriptor.dart';
 
 /// Path to screenshot file the test uses for each test.
 String relativePath(
   String screenshotDirName,
-  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
 ) {
   return '$screenshotDirName/${screenshotFileName(exampleComboToRun)}';
 }
@@ -22,7 +22,7 @@ String relativePath(
 ///   - 'ex10RandomData_lineChart.png'     (for old layout)
 ///   - 'ex10RandomData_lineChart_NEW.png' (for new layout)
 String screenshotFileName(
-  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
 ) {
   bool isUseOldLayouter = exampleComboToRun.item5;
   String newLayout = '';
@@ -48,7 +48,7 @@ String expectedScreenshotDirName() {
 ///
 /// Paths include filename, and are relative to project root.
 Tuple2<String, String> screenshotPathsFor(
-  Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartOrientation, ChartStackingEnum, bool> exampleComboToRun,
+  Tuple5<ExamplesEnum, ChartType, ChartOrientation, ChartStacking, bool> exampleComboToRun,
 ) {
   String expectedScreenshotPath = relativePath(expectedScreenshotDirName(), exampleComboToRun);
   String actualScreenshotPath = relativePath(screenshotDirName(), exampleComboToRun);

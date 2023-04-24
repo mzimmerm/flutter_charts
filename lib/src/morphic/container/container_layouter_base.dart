@@ -12,7 +12,7 @@ import 'layouter_one_dimensional.dart'
     LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
-import 'chart_support/chart_orientation.dart' show ChartOrientation;
+import 'chart_support/chart_style.dart' show ChartOrientation;
 import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../../util/util_dart.dart' as util_dart
     show LineSegment, Interval, ToPixelsLTransform1D,

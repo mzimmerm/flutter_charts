@@ -5,7 +5,7 @@ import 'package:logger/logger.dart' as logger;
 
 // import 'dart:developer' as dart_developer;
 
-import '../morphic/container/chart_support/chart_orientation.dart';
+import '../morphic/container/chart_support/chart_style.dart';
 import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/container_layouter_base.dart' as container_base;
 import '../morphic/container/container_layouter_base_dart_support.dart';
@@ -105,9 +105,9 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   final ChartOrientation chartOrientation;
 
-  final ChartStackingEnum chartStacking;
+  final ChartStacking chartStacking;
 
-  bool get isStacked => chartStacking == ChartStackingEnum.stacked;
+  bool get isStacked => chartStacking == ChartStacking.stacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
   /// on every [FlutterChartPainter] paint and repaint.
@@ -340,7 +340,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
     switch(chartStacking) {
       // column, stacked only, positive: revert order so that first cross-series is at end (bottom)
-      case ChartStackingEnum.stacked:
+      case ChartStacking.stacked:
         switch(barsAreaSign) {
           case model.Sign.positiveOr0:
             childrenPointContainers = childrenPointContainers.reversed.toList(growable: false);
@@ -351,13 +351,13 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           case model.Sign.any:
             throw StateError('Invalid "any" sign for data container bars.');
         }        break;
-      case ChartStackingEnum.nonStacked:
+      case ChartStacking.nonStacked:
         // logic on this is in-place on crossAxisAlign
         break;
     }
 
     switch(chartStacking) {
-      case ChartStackingEnum.stacked:
+      case ChartStacking.stacked:
         return container_base.TransposingRoller.Column(
           chartOrientation: chartOrientation,
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
@@ -365,7 +365,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide
           children: childrenPointContainers,
         );
-      case ChartStackingEnum.nonStacked:
+      case ChartStacking.nonStacked:
         return container_base.TransposingRoller.Row(
           chartOrientation: chartOrientation,
           // Positive: Both Align.start and end work, . Negative: only Align.start work in column
@@ -396,7 +396,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     crossPointsModel.applyOnAllElements(
       (model.PointModel pointModelElm, dynamic passedList) {
         switch (chartStacking) {
-          case ChartStackingEnum.stacked:
+          case ChartStacking.stacked:
             // Stacked:
             //   Note: this [makeViewForDataContainer_CrossPointsModel] is called each for positive and negative;
             //   Creates a point container from point [pointModelElm] and adds the container to result,
@@ -407,7 +407,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
               ));
             }
             break;
-          case ChartStackingEnum.nonStacked:
+          case ChartStacking.nonStacked:
             // Non-Stacked:
             //   For points [pointModelElm] with the same sign as the stack sign being built,
             //     creates a regular point container from point [pointModelElm] and adds the container to result,
