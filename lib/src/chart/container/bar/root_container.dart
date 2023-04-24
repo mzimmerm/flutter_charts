@@ -9,9 +9,9 @@ import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// The container-hierarchy root container of the vertical bar chart.
-class VerticalBarChartRootContainer extends ChartRootContainer {
+class BarChartRootContainer extends ChartRootContainer {
 
-  VerticalBarChartRootContainer({
+  BarChartRootContainer({
     required LegendContainer legendContainer,
     required TransposingAxisContainer horizontalAxisContainer,
     required TransposingAxisContainer verticalAxisContainerFirst,

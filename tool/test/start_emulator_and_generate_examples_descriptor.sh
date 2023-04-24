@@ -74,7 +74,7 @@ echo   which creates $examples_descriptor_generated_program
 echo "# Sample of how this runs:"  > $examples_descriptor_generated_program
 echo "# flutter drive \
   --dart-define=EXAMPLE_TO_RUN=ex75 \
-  --dart-define=CHART_TYPE=verticalBarChart \
+  --dart-define=CHART_TYPE=barChart \
   --dart-define=CHART_ORIENTATION=row \
   --dart-define=CHART_STACKING=stacked \
   --dart-define=IS_USE_OLD_LAYOUTER=false \

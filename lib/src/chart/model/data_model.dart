@@ -253,7 +253,6 @@ class ChartModel {
 ///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
 ///             This enum supports creating and later using (processing, view making) the positive and negative
 ///             bars separately.
-// todo-010-refactoring : rename to Sign
 enum Sign {
   positiveOr0,
   negative,

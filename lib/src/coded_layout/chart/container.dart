@@ -1001,7 +1001,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   /// Abstract method common to implementing data containers,
-  /// currently the [LineChartDataContainerCL] and the [VerticalBarChartDataContainerCL].
+  /// currently the [LineChartDataContainerCL] and the [BarChartDataContainerCL].
   void _drawPointPresentersColumns(ui.Canvas canvas);
 
   /// Paints grid lines, then paints [PointPresentersColumns]
@@ -1043,8 +1043,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 ///
 /// The only role is to implement the abstract method of the baseclass,
 /// [paint] and [_drawPointPresentersColumns].
-class VerticalBarChartDataContainerCL extends DataContainerCL {
-  VerticalBarChartDataContainerCL({
+class BarChartDataContainerCL extends DataContainerCL {
+  BarChartDataContainerCL({
     required ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,

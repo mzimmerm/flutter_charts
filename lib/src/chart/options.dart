@@ -26,7 +26,7 @@ class ChartOptions {
   final DataContainerOptions dataContainerOptions;
   final LabelCommonOptions labelCommonOptions;
   final LineChartOptions lineChartOptions;
-  final VerticalBarChartOptions verticalBarChartOptions;
+  final BarChartOptions barChartOptions;
 
   const ChartOptions({
     this.iterativeLayoutOptions = const IterativeLayoutOptions(),
@@ -36,7 +36,7 @@ class ChartOptions {
     this.dataContainerOptions = const DataContainerOptions(),
     this.labelCommonOptions = const LabelCommonOptions(),
     this.lineChartOptions = const LineChartOptions(),
-    this.verticalBarChartOptions = const VerticalBarChartOptions(),
+    this.barChartOptions = const BarChartOptions(),
   });
 
   /// Convenience constructor sets all values to default except labels and gridlines are defined not to show.
@@ -260,7 +260,7 @@ class DataContainerOptions {
   ///
   /// The default value [false] starts the Y axis and it's labels at 0. Starting at 0 is NOT allowed ('banned')
   /// in several conditions:
-  /// - On the [VerticalBarChart]
+  /// - On the [BarChart]
   /// - For some [yTransform]s for example logarithm transform,
   ///   where both data and logarithm must start above y value of 0.
   /// The implementation of this 'ban' is governed by [ChartBehavior.extendAxisToOrigin];

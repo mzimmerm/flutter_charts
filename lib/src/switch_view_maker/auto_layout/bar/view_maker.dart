@@ -13,11 +13,11 @@ import '../../../chart/bar/container.dart';
 // this level: switch/auto_layout/bar
 import '../../view_maker.dart'; // NEW SWITCH
 
-/// Concrete [ChartViewMaker] for [VerticalBarChart].
+/// Concrete [ChartViewMaker] for [BarChart].
 ///
 /// See [ChartViewMaker] for help.
-class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
-  SwitchVerticalBarChartViewMaker({
+class SwitchBarChartViewMaker extends SwitchChartViewMaker {
+  SwitchBarChartViewMaker({
     required ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     required ChartStackingEnum chartStacking,
@@ -33,14 +33,14 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  VerticalBarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  BarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var horizontalAxisContainer = makeViewForHorizontalAxis();
     var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
     var verticalAxisContainer = makeViewForVerticalAxis();
     var dataContainer = makeViewForDataContainer();
 
-    return VerticalBarChartRootContainer(
+    return BarChartRootContainer(
       legendContainer: legendContainer,
       horizontalAxisContainer: horizontalAxisContainer,
       verticalAxisContainerFirst: verticalAxisContainerFirst,
@@ -56,7 +56,7 @@ class SwitchVerticalBarChartViewMaker extends SwitchChartViewMaker {
 
   @override
   DataContainer makeViewForDataContainer() {
-    return VerticalBarChartDataContainer(
+    return BarChartDataContainer(
       chartViewMaker: this,
     );
   }

@@ -3,25 +3,25 @@
 
 1.  [Examples with code](#org70673f2)
     1.  [ex10RandomData\_lineChart ](#org3eb3441)
-    2.  [ex10RandomData\_verticalBarChart ](#orgbe8fa25)
+    2.  [ex10RandomData\_barChart ](#orgbe8fa25)
     3.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_lineChart ](#orgda02a3d)
-    4.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart ](#org78a229d)
+    4.  [ex30AnimalsBySeasonWithLabelLayoutStrategy\_barChart ](#org78a229d)
     5.  [ex31SomeNegativeValues\_lineChart ](#orgbf36cdb)
-    6.  [ex31SomeNegativeValues\_verticalBarChart ](#org3432df0)
+    6.  [ex31SomeNegativeValues\_barChart ](#org3432df0)
     7.  [ex32AllPositiveYsYAxisStartsAbove0\_lineChart ](#org763be56)
-    8.  [ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart ](#orgfe5d568)
+    8.  [ex32AllPositiveYsYAxisStartsAbove0\_barChart ](#orgfe5d568)
     9.  [ex33AllNegativeYsYAxisEndsBelow0\_lineChart ](#org86b4136)
     10. [ex34OptionsDefiningUserTextStyleOnLabels\_lineChart ](#org260cba6)
     11. [ex35AnimalsBySeasonNoLabelsShown\_lineChart ](#org3d3c134)
-    12. [ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart ](#org7a1ade3)
+    12. [ex35AnimalsBySeasonNoLabelsShown\_barChart ](#org7a1ade3)
     13. [ex40LanguagesWithYOrdinalUserLabelsAndUserColors\_lineChart ](#orgc6be307)
-    14. [ex50StocksWithNegativesWithUserColors\_verticalBarChart ](#org91f6516)
+    14. [ex50StocksWithNegativesWithUserColors\_barChart ](#org91f6516)
     15. [ex52AnimalsBySeasonLogarithmicScale\_lineChart ](#org77e5f4f)
-    16. [ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart ](#org042b202)
-    17. [ex60LabelsIteration1\_verticalBarChart ](#orgada2279)
-    18. [ex60LabelsIteration2\_verticalBarChart ](#orgd3771d7)
-    19. [ex60LabelsIteration3\_verticalBarChart ](#org547dcea)
-    20. [ex60LabelsIteration4\_verticalBarChart ](#org95e404c)
+    16. [ex52AnimalsBySeasonLogarithmicScale\_barChart ](#org042b202)
+    17. [ex60LabelsIteration1\_barChart ](#orgada2279)
+    18. [ex60LabelsIteration2\_barChart ](#orgd3771d7)
+    19. [ex60LabelsIteration3\_barChart ](#org547dcea)
+    20. [ex60LabelsIteration4\_barChart ](#org95e404c)
     21. [ex900ErrorFixUserDataAllZero\_lineChart ](#orgc87cb9f)
 2.  [Latest release changes](#orgeaf773f)
 3.  [Installation](#org03b46dd)
@@ -67,17 +67,17 @@ To quickly test the code, you can paste the method `chartToRun()` into the sampl
 <tbody>
 <tr>
 <td class="org-left"><a href="#org2ed092d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org20acd52"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org20acd52"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_barChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#orga260a0c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org79c67fb"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org79c67fb"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
 <td class="org-left"><a href="#org3060b69"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgb5f44f1"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgb5f44f1"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_barChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#orgbd56dc9"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orge19a63d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orge19a63d"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
@@ -85,23 +85,23 @@ To quickly test the code, you can paste the method `chartToRun()` into the sampl
 <td class="org-left"><a href="#orgd322ff6"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#orgcdf5631"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#orgd400995"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org9227186"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org9227186"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
 <td class="org-left"><a href="#orgd962a15"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org6246d9c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org6246d9c"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart_w150.png" alt="nil"/></a></td>
 <td class="org-left"><a href="#org673ceb3"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org807928e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org807928e"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
 <tr>
-<td class="org-left"><a href="#orgbdb2c57"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orgfe51f7b"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#orga666d35"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_verticalBarChart_w150.png" alt="nil"/></a></td>
-<td class="org-left"><a href="#org8f86d1f"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_verticalBarChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgbdb2c57"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_barChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orgfe51f7b"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_barChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#orga666d35"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_barChart_w150.png" alt="nil"/></a></td>
+<td class="org-left"><a href="#org8f86d1f"><img src="https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_barChart_w150.png" alt="nil"/></a></td>
 </tr>
 
 
@@ -147,7 +147,7 @@ Result
 
 <a id="orgbe8fa25"></a>
 
-## ex10RandomData\_verticalBarChart <a id="org20acd52"></a>
+## ex10RandomData\_barChart <a id="org20acd52"></a>
 
 Code
 
@@ -157,22 +157,22 @@ Code
       ChartOptions chartOptions = const ChartOptions();
       // Example shows a demo-type data generated randomly in a range.
       chartData = RandomChartData.generated(chartOptions: chartOptions);
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex10RandomData_barChart.png "Line Chart caption")
 
 
 <a id="orgda02a3d"></a>
@@ -229,7 +229,7 @@ Result
 
 <a id="org78a229d"></a>
 
-## ex30AnimalsBySeasonWithLabelLayoutStrategy\_verticalBarChart <a id="org79c67fb"></a>
+## ex30AnimalsBySeasonWithLabelLayoutStrategy\_barChart <a id="org79c67fb"></a>
 
 Code
 
@@ -261,22 +261,22 @@ Code
       chartOptions: chartOptions,
       );
       // chartData.dataRowsDefaultColors(); // if not set, called in constructor
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png "Line Chart caption")
 
 
 <a id="orgbf36cdb"></a>
@@ -326,7 +326,7 @@ Result
 
 <a id="org3432df0"></a>
 
-## ex31SomeNegativeValues\_verticalBarChart <a id="orgb5f44f1"></a>
+## ex31SomeNegativeValues\_barChart <a id="orgb5f44f1"></a>
 
 Code
 
@@ -351,22 +351,22 @@ Code
       ],
       chartOptions: chartOptions,
       );
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31SomeNegativeValues_barChart.png "Line Chart caption")
 
 
 <a id="org763be56"></a>
@@ -420,7 +420,7 @@ Result
 
 <a id="orgfe5d568"></a>
 
-## ex32AllPositiveYsYAxisStartsAbove0\_verticalBarChart <a id="orge19a63d"></a>
+## ex32AllPositiveYsYAxisStartsAbove0\_barChart <a id="orge19a63d"></a>
 
 Code
 
@@ -449,22 +449,22 @@ Code
       ],
       chartOptions: chartOptions,
       );
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_barChart.png "Line Chart caption")
 
 
 <a id="org86b4136"></a>
@@ -641,7 +641,7 @@ Result
 
 <a id="org7a1ade3"></a>
 
-## ex35AnimalsBySeasonNoLabelsShown\_verticalBarChart <a id="org9227186"></a>
+## ex35AnimalsBySeasonNoLabelsShown\_barChart <a id="org9227186"></a>
 
 Code
 
@@ -668,22 +668,22 @@ Code
       ],
       chartOptions: chartOptions,
       );
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart.png "Line Chart caption")
 
 
 <a id="orgc6be307"></a>
@@ -750,7 +750,7 @@ Result
 
 <a id="org91f6516"></a>
 
-## ex50StocksWithNegativesWithUserColors\_verticalBarChart <a id="org6246d9c"></a>
+## ex50StocksWithNegativesWithUserColors\_barChart <a id="org6246d9c"></a>
 
 Code
 
@@ -787,22 +787,22 @@ Code
       ],
       chartOptions: chartOptions,
       );
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart.png "Line Chart caption")
 
 
 <a id="org77e5f4f"></a>
@@ -853,7 +853,7 @@ Result
 
 <a id="org042b202"></a>
 
-## ex52AnimalsBySeasonLogarithmicScale\_verticalBarChart <a id="org807928e"></a>
+## ex52AnimalsBySeasonLogarithmicScale\_barChart <a id="org807928e"></a>
 
 Code
 
@@ -879,27 +879,27 @@ Code
       ],
       chartOptions: chartOptions,
       );
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart.png "Line Chart caption")
 
 
 <a id="orgada2279"></a>
 
-## ex60LabelsIteration1\_verticalBarChart <a id="orgbdb2c57"></a>
+## ex60LabelsIteration1\_barChart <a id="orgbdb2c57"></a>
 
 Code
 
@@ -922,27 +922,27 @@ Code
       chartOptions: chartOptions,
       );
       exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration1_barChart.png "Line Chart caption")
 
 
 <a id="orgd3771d7"></a>
 
-## ex60LabelsIteration2\_verticalBarChart <a id="orgfe51f7b"></a>
+## ex60LabelsIteration2\_barChart <a id="orgfe51f7b"></a>
 
 Code
 
@@ -966,27 +966,27 @@ Code
       chartOptions: chartOptions,
       );
       exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration2_barChart.png "Line Chart caption")
 
 
 <a id="org547dcea"></a>
 
-## ex60LabelsIteration3\_verticalBarChart <a id="orga666d35"></a>
+## ex60LabelsIteration3\_barChart <a id="orga666d35"></a>
 
 Code
 
@@ -1010,27 +1010,27 @@ Code
       chartOptions: chartOptions,
       );
       exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration3_barChart.png "Line Chart caption")
 
 
 <a id="org95e404c"></a>
 
-## ex60LabelsIteration4\_verticalBarChart <a id="org8f86d1f"></a>
+## ex60LabelsIteration4\_barChart <a id="org8f86d1f"></a>
 
 Code
 
@@ -1054,22 +1054,22 @@ Code
       chartOptions: chartOptions,
       );
       exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
-      var verticalBarChartContainer = VerticalBarChartTopContainer(
+      var barChartContainer = BarChartTopContainer(
         chartData: chartData,
         xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
       );
     
-      var verticalBarChart = VerticalBarChart(
-        painter: VerticalBarChartPainter(
-          verticalBarChartContainer: verticalBarChartContainer,
+      var barChart = BarChart(
+        painter: BarChartPainter(
+          barChartContainer: barChartContainer,
         ),
       );
-      return verticalBarChart;
+      return barChart;
     }
 
 Result
 
-![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_verticalBarChart.png "Line Chart caption")
+![img](https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex60LabelsIteration4_barChart.png "Line Chart caption")
 
 
 <a id="orgc87cb9f"></a>

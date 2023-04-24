@@ -12,7 +12,7 @@ import 'view_maker.dart' as view_maker;
 ///
 /// As this class extends [widgets.CustomPainter], the Flutter framework
 /// ensures it's [paint] method is called at some point during the chart widget
-/// ([VerticalBarChart], [LineChart], etc, the extensions of [widgets.CustomPaint])
+/// ([BarChart], [LineChart], etc, the extensions of [widgets.CustomPaint])
 ///  is being build.
 ///
 /// This class does the core of painting the chart, in it's core method [paint].

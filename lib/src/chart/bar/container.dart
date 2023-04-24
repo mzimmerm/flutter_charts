@@ -2,8 +2,8 @@
 import '../container/data_container.dart';
 import '../view_maker.dart';
 
-class VerticalBarChartDataContainer extends DataContainer {
-  VerticalBarChartDataContainer({
+class BarChartDataContainer extends DataContainer {
+  BarChartDataContainer({
     required ChartViewMaker chartViewMaker,
   }) : super(
     chartViewMaker: chartViewMaker,

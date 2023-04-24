@@ -4,25 +4,25 @@
 * Table of contents :TOC:noexport:
 - [[#examples-with-code][Examples with code]]
   - [[#ex10randomdata_linechart-ex10randomdata_linechart][ex10RandomData_lineChart <<ex10RandomData_lineChart>>]]
-  - [[#ex10randomdata_verticalbarchart-ex10randomdata_verticalbarchart][ex10RandomData_verticalBarChart <<ex10RandomData_verticalBarChart>>]]
+  - [[#ex10randomdata_verticalbarchart-ex10randomdata_verticalbarchart][ex10RandomData_barChart <<ex10RandomData_barChart>>]]
   - [[#ex30animalsbyseasonwithlabellayoutstrategy_linechart-ex30animalsbyseasonwithlabellayoutstrategy_linechart][ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart>>]]
-  - [[#ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart-ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart][ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart>>]]
+  - [[#ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart-ex30animalsbyseasonwithlabellayoutstrategy_verticalbarchart][ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart>>]]
   - [[#ex31somenegativevalues_linechart-ex31somenegativevalues_linechart][ex31SomeNegativeValues_lineChart <<ex31SomeNegativeValues_lineChart>>]]
-  - [[#ex31somenegativevalues_verticalbarchart-ex31somenegativevalues_verticalbarchart][ex31SomeNegativeValues_verticalBarChart <<ex31SomeNegativeValues_verticalBarChart>>]]
+  - [[#ex31somenegativevalues_verticalbarchart-ex31somenegativevalues_verticalbarchart][ex31SomeNegativeValues_barChart <<ex31SomeNegativeValues_barChart>>]]
   - [[#ex32allpositiveysyaxisstartsabove0_linechart-ex32allpositiveysyaxisstartsabove0_linechart][ex32AllPositiveYsYAxisStartsAbove0_lineChart <<ex32AllPositiveYsYAxisStartsAbove0_lineChart>>]]
-  - [[#ex32allpositiveysyaxisstartsabove0_verticalbarchart-ex32allpositiveysyaxisstartsabove0_verticalbarchart][ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart <<ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart>>]]
+  - [[#ex32allpositiveysyaxisstartsabove0_verticalbarchart-ex32allpositiveysyaxisstartsabove0_verticalbarchart][ex32AllPositiveYsYAxisStartsAbove0_barChart <<ex32AllPositiveYsYAxisStartsAbove0_barChart>>]]
   - [[#ex33allnegativeysyaxisendsbelow0_linechart-ex33allnegativeysyaxisendsbelow0_linechart][ex33AllNegativeYsYAxisEndsBelow0_lineChart <<ex33AllNegativeYsYAxisEndsBelow0_lineChart>>]]
   - [[#ex34optionsdefiningusertextstyleonlabels_linechart-ex34optionsdefiningusertextstyleonlabels_linechart][ex34OptionsDefiningUserTextStyleOnLabels_lineChart <<ex34OptionsDefiningUserTextStyleOnLabels_lineChart>>]]
   - [[#ex35animalsbyseasonnolabelsshown_linechart-ex35animalsbyseasonnolabelsshown_linechart][ex35AnimalsBySeasonNoLabelsShown_lineChart <<ex35AnimalsBySeasonNoLabelsShown_lineChart>>]]
-  - [[#ex35animalsbyseasonnolabelsshown_verticalbarchart-ex35animalsbyseasonnolabelsshown_verticalbarchart][ex35AnimalsBySeasonNoLabelsShown_verticalBarChart <<ex35AnimalsBySeasonNoLabelsShown_verticalBarChart>>]]
+  - [[#ex35animalsbyseasonnolabelsshown_verticalbarchart-ex35animalsbyseasonnolabelsshown_verticalbarchart][ex35AnimalsBySeasonNoLabelsShown_barChart <<ex35AnimalsBySeasonNoLabelsShown_barChart>>]]
   - [[#ex40languageswithyordinaluserlabelsandusercolors_linechart-ex40languageswithyordinaluserlabelsandusercolors_linechart][ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart <<ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart>>]]
-  - [[#ex50stockswithnegativeswithusercolors_verticalbarchart-ex50stockswithnegativeswithusercolors_verticalbarchart][ex50StocksWithNegativesWithUserColors_verticalBarChart <<ex50StocksWithNegativesWithUserColors_verticalBarChart>>]]
+  - [[#ex50stockswithnegativeswithusercolors_verticalbarchart-ex50stockswithnegativeswithusercolors_verticalbarchart][ex50StocksWithNegativesWithUserColors_barChart <<ex50StocksWithNegativesWithUserColors_barChart>>]]
   - [[#ex52animalsbyseasonlogarithmicscale_linechart-ex52animalsbyseasonlogarithmicscale_linechart][ex52AnimalsBySeasonLogarithmicScale_lineChart <<ex52AnimalsBySeasonLogarithmicScale_lineChart>>]]
-  - [[#ex52animalsbyseasonlogarithmicscale_verticalbarchart-ex52animalsbyseasonlogarithmicscale_verticalbarchart][ex52AnimalsBySeasonLogarithmicScale_verticalBarChart <<ex52AnimalsBySeasonLogarithmicScale_verticalBarChart>>]]
-  - [[#ex60labelsiteration1_verticalbarchart-ex60labelsiteration1_verticalbarchart][ex60LabelsIteration1_verticalBarChart <<ex60LabelsIteration1_verticalBarChart>>]]
-  - [[#ex60labelsiteration2_verticalbarchart-ex60labelsiteration2_verticalbarchart][ex60LabelsIteration2_verticalBarChart <<ex60LabelsIteration2_verticalBarChart>>]]
-  - [[#ex60labelsiteration3_verticalbarchart-ex60labelsiteration3_verticalbarchart][ex60LabelsIteration3_verticalBarChart <<ex60LabelsIteration3_verticalBarChart>>]]
-  - [[#ex60labelsiteration4_verticalbarchart-ex60labelsiteration4_verticalbarchart][ex60LabelsIteration4_verticalBarChart <<ex60LabelsIteration4_verticalBarChart>>]]
+  - [[#ex52animalsbyseasonlogarithmicscale_verticalbarchart-ex52animalsbyseasonlogarithmicscale_verticalbarchart][ex52AnimalsBySeasonLogarithmicScale_barChart <<ex52AnimalsBySeasonLogarithmicScale_barChart>>]]
+  - [[#ex60labelsiteration1_verticalbarchart-ex60labelsiteration1_verticalbarchart][ex60LabelsIteration1_barChart <<ex60LabelsIteration1_barChart>>]]
+  - [[#ex60labelsiteration2_verticalbarchart-ex60labelsiteration2_verticalbarchart][ex60LabelsIteration2_barChart <<ex60LabelsIteration2_barChart>>]]
+  - [[#ex60labelsiteration3_verticalbarchart-ex60labelsiteration3_verticalbarchart][ex60LabelsIteration3_barChart <<ex60LabelsIteration3_barChart>>]]
+  - [[#ex60labelsiteration4_verticalbarchart-ex60labelsiteration4_verticalbarchart][ex60LabelsIteration4_barChart <<ex60LabelsIteration4_barChart>>]]
   - [[#ex900errorfixuserdataallzero_linechart-ex900errorfixuserdataallzero_linechart][ex900ErrorFixUserDataAllZero_lineChart <<ex900ErrorFixUserDataAllZero_lineChart>>]]
 - [[#latest-release-changes][Latest release changes]]
 - [[#installation][Installation]]
@@ -191,11 +191,11 @@ To quickly test the code, you can paste the method ~chartToRun()~ into the sampl
 
 #+END_SRC
 
-| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                                   | [[ex10RandomData_verticalBarChart][file:doc/readme_images/ex10RandomData_verticalBarChart_w150.png]]                        | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart_w150.png]] |
-| [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                           | [[ex31SomeNegativeValues_verticalBarChart][file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart_w150.png]]                | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart_w150.png]]         |
-| [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]                 | [[ex34OptionsDefiningUserTextStyleOnLabels_lineChart][file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png]]     | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]           | [[ex35AnimalsBySeasonNoLabelsShown_verticalBarChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart_w150.png]]           |
-| [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_verticalBarChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]]        | [[ex52AnimalsBySeasonLogarithmicScale_verticalBarChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart_w150.png]]        |
-| [[ex60LabelsIteration1_verticalBarChart][file:doc/readme_images/ex60LabelsIteration1_verticalBarChart_w150.png]]                      | [[ex60LabelsIteration2_verticalBarChart][file:doc/readme_images/ex60LabelsIteration2_verticalBarChart_w150.png]]                  | [[ex60LabelsIteration3_verticalBarChart][file:doc/readme_images/ex60LabelsIteration3_verticalBarChart_w150.png]]                | [[ex60LabelsIteration4_verticalBarChart][file:doc/readme_images/ex60LabelsIteration4_verticalBarChart_w150.png]]                       |
+| [[ex10RandomData_lineChart][file:doc/readme_images/ex10RandomData_lineChart_w150.png]]                                   | [[ex10RandomData_barChart][file:doc/readme_images/ex10RandomData_barChart_w150.png]]                        | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart_w150.png]] | [[ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart][file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart_w150.png]] |
+| [[ex31SomeNegativeValues_lineChart][file:doc/readme_images/ex31SomeNegativeValues_lineChart_w150.png]]                           | [[ex31SomeNegativeValues_barChart][file:doc/readme_images/ex31SomeNegativeValues_barChart_w150.png]]                | [[ex32AllPositiveYsYAxisStartsAbove0_lineChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart_w150.png]]         | [[ex32AllPositiveYsYAxisStartsAbove0_barChart][file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_barChart_w150.png]]         |
+| [[ex33AllNegativeYsYAxisEndsBelow0_lineChart][file:doc/readme_images/ex33AllNegativeYsYAxisEndsBelow0_lineChart_w150.png]]                 | [[ex34OptionsDefiningUserTextStyleOnLabels_lineChart][file:doc/readme_images/ex34OptionsDefiningUserTextStyleOnLabels_lineChart_w150.png]]     | [[ex35AnimalsBySeasonNoLabelsShown_lineChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart_w150.png]]           | [[ex35AnimalsBySeasonNoLabelsShown_barChart][file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart_w150.png]]           |
+| [[ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart][file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart_w150.png]] | [[ex50StocksWithNegativesWithUserColors_barChart][file:doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart_w150.png]] | [[ex52AnimalsBySeasonLogarithmicScale_lineChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart_w150.png]]        | [[ex52AnimalsBySeasonLogarithmicScale_barChart][file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart_w150.png]]        |
+| [[ex60LabelsIteration1_barChart][file:doc/readme_images/ex60LabelsIteration1_barChart_w150.png]]                      | [[ex60LabelsIteration2_barChart][file:doc/readme_images/ex60LabelsIteration2_barChart_w150.png]]                  | [[ex60LabelsIteration3_barChart][file:doc/readme_images/ex60LabelsIteration3_barChart_w150.png]]                | [[ex60LabelsIteration4_barChart][file:doc/readme_images/ex60LabelsIteration4_barChart_w150.png]]                       |
 | [[ex900ErrorFixUserDataAllZero_lineChart][file:doc/readme_images/ex900ErrorFixUserDataAllZero_lineChart_w150.png]]                     |                                                                                        |                                                                                      |                                                                                             |
 
 
@@ -233,7 +233,7 @@ Result
 [[file:doc/readme_images/ex10RandomData_lineChart.png]]
 
 
-** ex10RandomData_verticalBarChart <<ex10RandomData_verticalBarChart>>
+** ex10RandomData_barChart <<ex10RandomData_barChart>>
 
 Code
 
@@ -244,17 +244,17 @@ Code
     ChartOptions chartOptions = const ChartOptions();
     // Example shows a demo-type data generated randomly in a range.
     chartData = RandomChartData.generated(chartOptions: chartOptions);
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -264,7 +264,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex10RandomData_verticalBarChart.png]]
+[[file:doc/readme_images/ex10RandomData_barChart.png]]
 
 
 ** ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart>>
@@ -323,7 +323,7 @@ Result
 [[file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_lineChart.png]]
 
 
-** ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart>>
+** ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart <<ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart>>
 
 Code
 
@@ -356,17 +356,17 @@ Code
     chartOptions: chartOptions,
     );
     // chartData.dataRowsDefaultColors(); // if not set, called in constructor
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -376,7 +376,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_verticalBarChart.png]]
+[[file:doc/readme_images/ex30AnimalsBySeasonWithLabelLayoutStrategy_barChart.png]]
 
 
 ** ex31SomeNegativeValues_lineChart <<ex31SomeNegativeValues_lineChart>>
@@ -428,7 +428,7 @@ Result
 [[file:doc/readme_images/ex31SomeNegativeValues_lineChart.png]]
 
 
-** ex31SomeNegativeValues_verticalBarChart <<ex31SomeNegativeValues_verticalBarChart>>
+** ex31SomeNegativeValues_barChart <<ex31SomeNegativeValues_barChart>>
 
 Code
 
@@ -454,17 +454,17 @@ Code
     ],
     chartOptions: chartOptions,
     );
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -474,7 +474,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex31SomeNegativeValues_verticalBarChart.png]]
+[[file:doc/readme_images/ex31SomeNegativeValues_barChart.png]]
 
 
 ** ex32AllPositiveYsYAxisStartsAbove0_lineChart <<ex32AllPositiveYsYAxisStartsAbove0_lineChart>>
@@ -530,7 +530,7 @@ Result
 [[file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_lineChart.png]]
 
 
-** ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart <<ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart>>
+** ex32AllPositiveYsYAxisStartsAbove0_barChart <<ex32AllPositiveYsYAxisStartsAbove0_barChart>>
 
 Code
 
@@ -560,17 +560,17 @@ Code
     ],
     chartOptions: chartOptions,
     );
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -580,7 +580,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_verticalBarChart.png]]
+[[file:doc/readme_images/ex32AllPositiveYsYAxisStartsAbove0_barChart.png]]
 
 
 ** ex33AllNegativeYsYAxisEndsBelow0_lineChart <<ex33AllNegativeYsYAxisEndsBelow0_lineChart>>
@@ -767,7 +767,7 @@ Result
 [[file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_lineChart.png]]
 
 
-** ex35AnimalsBySeasonNoLabelsShown_verticalBarChart <<ex35AnimalsBySeasonNoLabelsShown_verticalBarChart>>
+** ex35AnimalsBySeasonNoLabelsShown_barChart <<ex35AnimalsBySeasonNoLabelsShown_barChart>>
 
 Code
 
@@ -795,17 +795,17 @@ Code
     ],
     chartOptions: chartOptions,
     );
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -815,7 +815,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_verticalBarChart.png]]
+[[file:doc/readme_images/ex35AnimalsBySeasonNoLabelsShown_barChart.png]]
 
 
 ** ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart <<ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart>>
@@ -884,7 +884,7 @@ Result
 [[file:doc/readme_images/ex40LanguagesWithYOrdinalUserLabelsAndUserColors_lineChart.png]]
 
 
-** ex50StocksWithNegativesWithUserColors_verticalBarChart <<ex50StocksWithNegativesWithUserColors_verticalBarChart>>
+** ex50StocksWithNegativesWithUserColors_barChart <<ex50StocksWithNegativesWithUserColors_barChart>>
 
 Code
 
@@ -922,17 +922,17 @@ Code
     ],
     chartOptions: chartOptions,
     );
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -942,7 +942,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex50StocksWithNegativesWithUserColors_verticalBarChart.png]]
+[[file:doc/readme_images/ex50StocksWithNegativesWithUserColors_barChart.png]]
 
 
 ** ex52AnimalsBySeasonLogarithmicScale_lineChart <<ex52AnimalsBySeasonLogarithmicScale_lineChart>>
@@ -995,7 +995,7 @@ Result
 [[file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_lineChart.png]]
 
 
-** ex52AnimalsBySeasonLogarithmicScale_verticalBarChart <<ex52AnimalsBySeasonLogarithmicScale_verticalBarChart>>
+** ex52AnimalsBySeasonLogarithmicScale_barChart <<ex52AnimalsBySeasonLogarithmicScale_barChart>>
 
 Code
 
@@ -1022,17 +1022,17 @@ Code
     ],
     chartOptions: chartOptions,
     );
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -1042,10 +1042,10 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_verticalBarChart.png]]
+[[file:doc/readme_images/ex52AnimalsBySeasonLogarithmicScale_barChart.png]]
 
 
-** ex60LabelsIteration1_verticalBarChart <<ex60LabelsIteration1_verticalBarChart>>
+** ex60LabelsIteration1_barChart <<ex60LabelsIteration1_barChart>>
 
 Code
 
@@ -1069,17 +1069,17 @@ Code
     chartOptions: chartOptions,
     );
     exampleSideEffects = _ExampleSideEffects()..leftSqueezeText=''.. rightSqueezeText='';
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -1089,10 +1089,10 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex60LabelsIteration1_verticalBarChart.png]]
+[[file:doc/readme_images/ex60LabelsIteration1_barChart.png]]
 
 
-** ex60LabelsIteration2_verticalBarChart <<ex60LabelsIteration2_verticalBarChart>>
+** ex60LabelsIteration2_barChart <<ex60LabelsIteration2_barChart>>
 
 Code
 
@@ -1117,17 +1117,17 @@ Code
     chartOptions: chartOptions,
     );
     exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 3;
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -1137,10 +1137,10 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex60LabelsIteration2_verticalBarChart.png]]
+[[file:doc/readme_images/ex60LabelsIteration2_barChart.png]]
 
 
-** ex60LabelsIteration3_verticalBarChart <<ex60LabelsIteration3_verticalBarChart>>
+** ex60LabelsIteration3_barChart <<ex60LabelsIteration3_barChart>>
 
 Code
 
@@ -1165,17 +1165,17 @@ Code
     chartOptions: chartOptions,
     );
     exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 6;
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -1185,10 +1185,10 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex60LabelsIteration3_verticalBarChart.png]]
+[[file:doc/readme_images/ex60LabelsIteration3_barChart.png]]
 
 
-** ex60LabelsIteration4_verticalBarChart <<ex60LabelsIteration4_verticalBarChart>>
+** ex60LabelsIteration4_barChart <<ex60LabelsIteration4_barChart>>
 
 Code
 
@@ -1213,17 +1213,17 @@ Code
     chartOptions: chartOptions,
     );
     exampleSideEffects = _ExampleSideEffects()..leftSqueezeText='>>'.. rightSqueezeText='<' * 30;
-    var verticalBarChartContainer = VerticalBarChartTopContainer(
+    var barChartContainer = BarChartTopContainer(
       chartData: chartData,
       xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
     );
     
-    var verticalBarChart = VerticalBarChart(
-      painter: VerticalBarChartPainter(
-        verticalBarChartContainer: verticalBarChartContainer,
+    var barChart = BarChart(
+      painter: BarChartPainter(
+        barChartContainer: barChartContainer,
       ),
     );
-    return verticalBarChart;
+    return barChart;
   }
 #+end_src
 
@@ -1233,7 +1233,7 @@ Result
 #+ATTR_ORG: :width 300
 #+ATTR_LATEX: :width 2.0in
 #+ATTR_HTML: :width 300
-[[file:doc/readme_images/ex60LabelsIteration4_verticalBarChart.png]]
+[[file:doc/readme_images/ex60LabelsIteration4_barChart.png]]
 
 
 ** ex900ErrorFixUserDataAllZero_lineChart <<ex900ErrorFixUserDataAllZero_lineChart>>

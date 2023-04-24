@@ -7,7 +7,7 @@ import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDepen
 ///   the same data can be presented using two equivalent views:
 ///   1. View where the independent axis (x axis, input axis) is shown horizontally,
 ///      and values across series are shown vertically, in columns, potentially 'vertically stacked'.
-///   2. A 'inverted' view where the independent axis (x axis, input axis) is shown vertically,
+///   2. A 'transposed' view where the independent axis (x axis, input axis) is shown vertically,
 ///      and values across series are shown horizontally, in rows, potentially 'horizontally stacked'.
 ///
 /// This enum can be used as a single parameter which controls the orientation of the chart view
@@ -121,9 +121,9 @@ enum ChartSeriesOrientation {
 /// Describes chart types shown in examples or integration tests.
 enum ExamplesChartTypeEnum {
   lineChart,
-  // todo-010-refactoring: rename verticalBarChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
+  // todo-010-refactoring: rename barChart to barChart everywhere. ChartSeriesOrientation column, row, defines horizontal, vertical.
   //
-  verticalBarChart,
+  barChart,
 }
 
 /// Describes how cross-series data are shown: Either stacked, or nonStacked (side by side on horizontal bar chart,

@@ -185,7 +185,7 @@ class MyHomePage extends StatefulWidget {
 ///
 /// While this home page state object is created only once (hence, the above
 /// state's member [descriptorOfExampleToRun], is created only once, the charts shown
-/// in this demo, the [LineChart] and the [VerticalBarChart], are recreated
+/// in this demo, the [LineChart] and the [BarChart], are recreated
 /// in this object's [build] method - so, **the chart objects are created over
 /// and over**.
 ///
@@ -196,7 +196,7 @@ class MyHomePage extends StatefulWidget {
 /// Note: At the same time, because the this state's [build] calls
 ///    _ExampleDefiner definer = _ExampleDefiner(descriptorOfExampleToRun);
 ///     Widget chartToRun = definer.createRequestedChart();
-/// recreates lineChartOptions, verticalBarChartOptions, chartModel,
+/// recreates lineChartOptions, barChartOptions, chartModel,
 /// and inputLabelLayoutStrategy, the core of this state object (all members)
 /// is effectively recreated on each state's [build] call.
 ///
@@ -376,7 +376,7 @@ class MyHomePageState extends State<MyHomePage> {
                   // Row -> Expanded -> Chart expands chart horizontally <-->
                   Expanded(
                     // #### Core chart
-                    child: chartToRun, // verticalBarChart, lineChart
+                    child: chartToRun, // barChart, lineChart
                   ),
                   Text(exampleSpecific.rightSqueezeText), // '<<' by default
                   // labels fit horizontally
@@ -453,7 +453,7 @@ class _ExampleSideEffects {
 /// in [run_all_examples.sh].
 ///
 /// Collects all 'variables' that are needed for each example: chart data, labels, colors and so on.
-/// Makes available the verticalBarChart and the lineChart constructed from the 'variables'.
+/// Makes available the barChart and the lineChart constructed from the 'variables'.
 class _ExampleWidgetCreator {
 
   /// Construct the definer object for the example.
@@ -987,7 +987,7 @@ class _ExampleWidgetCreator {
         break;
     }
 
-    // LineChart or VerticalBarChart depending on what is set in environment.
+    // LineChart or BarChart depending on what is set in environment.
     Widget chartToRun;
 
     switch (chartType) {
@@ -1007,24 +1007,24 @@ class _ExampleWidgetCreator {
         );
         chartToRun = lineChart;
         break;
-      case ExamplesChartTypeEnum.verticalBarChart:
-        SwitchChartViewMaker verticalBarChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
+      case ExamplesChartTypeEnum.barChart:
+        SwitchChartViewMaker barChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
           chartModel: chartModel,
           chartSeriesOrientation: chartSeriesOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 
-        VerticalBarChart verticalBarChart = VerticalBarChart(
-          painter: VerticalBarChartPainter(
-            verticalBarChartViewMaker: verticalBarChartViewMaker,
+        BarChart barChart = BarChart(
+          painter: BarChartPainter(
+            barChartViewMaker: barChartViewMaker,
           ),
         );
 
-        chartToRun = verticalBarChart;
+        chartToRun = barChart;
         break;
     }
-    // Returns the configured LineChart or VerticalBarChart that will be added to the [_MyHomePageState],
+    // Returns the configured LineChart or BarChart that will be added to the [_MyHomePageState],
     //   depending on the chart type requested by [requestedExampleToRun]
     return chartToRun;
   }

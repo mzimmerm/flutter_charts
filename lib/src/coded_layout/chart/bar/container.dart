@@ -13,8 +13,8 @@ import 'presenter.dart'; // OLD
 
 
 /// The container-hierarchy root container of the vertical bar chart in the coded_layout legacy version.
-class VerticalBarChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
-  VerticalBarChartRootContainerCL({
+class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootContainer {
+  BarChartRootContainerCL({
     required LegendContainer legendContainer,
     required HorizontalAxisContainerCL      horizontalAxisContainer,
     required VerticalAxisContainerCL      verticalAxisContainerFirst,

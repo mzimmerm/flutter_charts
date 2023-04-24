@@ -120,7 +120,7 @@ class MyHomePageState extends State<MyHomePage> {
                   const Text('>>>'),
                   Expanded(
                     // #### Core chart
-                    child: chartToRun(), // verticalBarChart, lineChart
+                    child: chartToRun(), // barChart, lineChart
                   ),
                   const Text('<<'),
                 ],

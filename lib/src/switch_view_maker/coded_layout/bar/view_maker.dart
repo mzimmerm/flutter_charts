@@ -13,8 +13,8 @@ import '../../../coded_layout/chart/bar/container.dart';
 import '../../../morphic/container/chart_support/chart_orientation.dart';
 import '../../view_maker_cl.dart'; // OLD
 
-class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
-  SwitchVerticalBarChartViewMakerCL({
+class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
+  SwitchBarChartViewMakerCL({
     required ChartModel chartModel,
     required ChartSeriesOrientation chartSeriesOrientation,
     required ChartStackingEnum chartStacking,
@@ -29,14 +29,14 @@ class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
   }
 
   @override
-  VerticalBarChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  BarChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var horizontalAxisContainer = makeViewForHorizontalAxis();
     var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
     var verticalAxisContainer = makeViewForVerticalAxis();
     var dataContainer = makeViewForDataContainer();
 
-    return VerticalBarChartRootContainerCL(
+    return BarChartRootContainerCL(
       legendContainer: legendContainer,
       horizontalAxisContainer: horizontalAxisContainer,
       verticalAxisContainerFirst: verticalAxisContainerFirst,
@@ -52,7 +52,7 @@ class SwitchVerticalBarChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   DataContainerCL makeViewForDataContainer() {
-    return VerticalBarChartDataContainerCL(
+    return BarChartDataContainerCL(
       chartViewMaker: this,
     );
   }

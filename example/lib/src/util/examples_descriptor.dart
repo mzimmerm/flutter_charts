@@ -79,7 +79,7 @@ enum ExamplesEnum {
 /// Defines the list of the examples available to be tested or run interactively in scripts.
 ///
 /// Each example properties are the enums from [ExamplesEnum] (e.g. [ExamplesEnum.ex10RandomData])
-/// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.verticalBarChart])
+/// and types (e.g. [ExamplesChartTypeEnum.lineChart], [ExamplesChartTypeEnum.barChart])
 ///
 /// By scripts, we mean [run_all_tests.sh] and [run_representative_tests.sh] tests,
 /// and interactively running in [run_all_examples.sh].
@@ -117,59 +117,59 @@ class ExamplesDescriptor {
   final List<Tuple2<ExamplesEnum, ExamplesChartTypeEnum>> _allowed = [
     //
     const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex10RandomData, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex30AnimalsBySeasonWithLabelLayoutStrategy, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex31SomeNegativeValues, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex32AllPositiveYsYAxisStartsAbove0, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex33AllNegativeYsYAxisEndsBelow0, ExamplesChartTypeEnum.lineChart),
     //
     const Tuple2(ExamplesEnum.ex34OptionsDefiningUserTextStyleOnLabels, ExamplesChartTypeEnum.lineChart),
     //
     const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex35AnimalsBySeasonNoLabelsShown, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors, ExamplesChartTypeEnum.lineChart),
     //
-    const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex50StocksWithNegativesWithUserColors, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.lineChart),
-    const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex52AnimalsBySeasonLogarithmicScale, ExamplesChartTypeEnum.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration1, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex60LabelsIteration1, ExamplesChartTypeEnum.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration2, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex60LabelsIteration2, ExamplesChartTypeEnum.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration3, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex60LabelsIteration3, ExamplesChartTypeEnum.barChart),
     //
-    const Tuple2(ExamplesEnum.ex60LabelsIteration4, ExamplesChartTypeEnum.verticalBarChart),
+    const Tuple2(ExamplesEnum.ex60LabelsIteration4, ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex70AnimalsBySeasonLegendIsColumnStartLooseItemIsRowStartLoose,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex71AnimalsBySeasonLegendIsColumnStartTightItemIsRowStartTight,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex73AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTight,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex74AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightSecondGreedy,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
     //
     const Tuple2(ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
-        ExamplesChartTypeEnum.verticalBarChart),
+        ExamplesChartTypeEnum.barChart),
 
     //
     const Tuple2(ExamplesEnum.ex900ErrorFixUserDataAllZero, ExamplesChartTypeEnum.lineChart),
@@ -178,7 +178,7 @@ class ExamplesDescriptor {
   /// Check if the example described with the passed enums should run in a test.
   ///
   /// Generally examples should run as either [ExamplesChartTypeEnum.lineChart]
-  ///   or [ExamplesChartTypeEnum.verticalBarChart] except a few where only
+  ///   or [ExamplesChartTypeEnum.barChart] except a few where only
   ///   one chart type makes sense to be presented.
   bool exampleComboIsAllowed(
     Tuple5<ExamplesEnum, ExamplesChartTypeEnum, ChartSeriesOrientation, ChartStackingEnum, bool> exampleComboToRun,

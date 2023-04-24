@@ -17,7 +17,7 @@
 #            ```sh
 #             $1 \
 #             --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded \
-#             --dart-define=CHART_TYPE=verticalBarChart \
+#             --dart-define=CHART_TYPE=barChart \
 #             --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER \
 #             $2
 #            ```
@@ -31,7 +31,7 @@
 #                --driver=test_driver/integration_test.dart \
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
-#                --dart-define=CHART_TYPE=verticalBarChart  \
+#                --dart-define=CHART_TYPE=barChart  \
 #                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
 #                $2
 #            ```
@@ -127,7 +127,7 @@ examples_descriptor_generated_program=$examples_descriptor_generated_program
 #                --driver=test_driver/integration_test.dart \
 #                --target=integration_test/screenshot_create_test.dart  \
 #                --dart-define=EXAMPLE_TO_RUN=ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded  \
-#                --dart-define=CHART_TYPE=verticalBarChart  \
+#                --dart-define=CHART_TYPE=barChart  \
 #                --dart-define=IS_USE_OLD_LAYOUTER=$IS_USE_OLD_LAYOUTER  \
 #                $2
 #            ```

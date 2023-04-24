@@ -105,7 +105,7 @@ To convert *README-source-for-md.org* to *README.md*, we need to do a few extra 
     #+END_SRC
    + The above is achieved with:
      - replace-regex ~[\/]*doc/readme_images~ to  ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images~
-     - in the README.MD file, the result inside <img src= sections should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_verticalBarChart.png~
+     - in the README.MD file, the result inside <img src= sections should look like ~https://github.com/mzimmerm/flutter_charts/raw/master/doc/readme_images/ex31AnimalsBySeasonNoLabelsShown_barChart.png~
 
 ** ~dart format --line-length=120 lib~
 ** ~dart format --line-length=120 example~
@@ -405,7 +405,7 @@ e^loge(x) = x ; e^loge(10) = 10
 ****** DONE Steps to introduce logarithmic scale
  
 - [X] Add data test if scale is logarithmic: only allowed if yValues are numeric and >= 0, otherwise exception, method: checkDomainAndRangeValidFor(yTransform)  
-- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartRootContainer such as VerticalBarChartRootContainer
+- [X] ! The above needs ChartData to contain ChartOptions. So this requires API deep changes. ChartOptions is passed to ChartData rather than ChartRootContainer such as BarChartRootContainer
 - [X] NOT FOR NOW: If scale is logarithmic, enforce the setting data starts above 0
 - [X] Add comments:
   - [X] LabelInfo.dataValue should ONLY be used for labels, never for data or coordinates
@@ -449,24 +449,24 @@ e^loge(x) = x ; e^loge(10) = 10
   - [X] Address todo-00-later-not-used
   - [X] Make YScaler members and methods private
   - [X] Remove YScaler member dataYsEnvelop
-**** DONE Refactor ChartOptions so the same class applies for both LineChart and VerticalBarChart
+**** DONE Refactor ChartOptions so the same class applies for both LineChart and BarChart
 
-Idea: Only have one ChartOptions class, used both as LineChartOptions and VerticalBarChartOptions.
+Idea: Only have one ChartOptions class, used both as LineChartOptions and BarChartOptions.
 
-We lose: Polymorphism (ability to define methods with differenct behavior) on LineChartOptions and VerticalBarChartOptions.
+We lose: Polymorphism (ability to define methods with differenct behavior) on LineChartOptions and BarChartOptions.
 
 Why it's OK: We are trying to remove all behavior from options anyway, in fact, removing all options.
 
 - [X] pull loose LineChartOptions members to a LineChartOptions 
 - [X] Rename in place ChartOptions to CommonChartOptions 
-- [X] convert VerticalBarChartOptions to empty class
-- [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, VerticalBarChartOptions
-- [X] Remove any references in code to LineChartOptions, VerticalBarChartOptions.
+- [X] convert BarChartOptions to empty class
+- [X] Change ChartOptions to extend BaseChartOptions, and add 2 members,  LineChartOptions, BarChartOptions
+- [X] Remove any references in code to LineChartOptions, BarChartOptions.
 - [X] Make code and test work.
-**** DONE Add an intermediate between CustomPaint and Chart: ~VerticalBarChart extends widgets.CustomPaint~
+**** DONE Add an intermediate between CustomPaint and Chart: ~BarChart extends widgets.CustomPaint~
 
 Add ~FlutterChart extends  widgets.CustomPaint~
-Then ~VerticalBarChart extends FlutterChart~
+Then ~BarChart extends FlutterChart~
 Then ~LineChart extends FlutterChart~
 **** DONE Add note that Envelope always means Envelope of List<double>. It is always an Interval, either a closure of the List<double>, or it's extension to start or end at 0.
 **** DONE Rename any _container, container members to topChartContainer if it is actually ChartableTopContainer
@@ -1006,8 +1006,8 @@ This needs entity model change:
 - need to allow/add member presentAs on DataSet (presentAs line chart or bar chart) 
 - need to allow xLabels and yLabels on DataSet ?? How ??
 - we allow to set both options AND enum chartType on ChartDataRows
-- we add CombinedChart (in addition to LineChart and VerticalBarChart) - CombinedChart must allow to set  
-Now this presents a problem as to API: Now we are not creating LineChart, or VerticalBarChart, but a Chart WITH LineChart and VerticalBarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
+- we add CombinedChart (in addition to LineChart and BarChart) - CombinedChart must allow to set
+Now this presents a problem as to API: Now we are not creating LineChart, or BarChart, but a Chart WITH LineChart and BarChart in it. SO MAYBE THE DISTINCTION BETWEEN LINE AND BAR IS ON THE
 ** EVEN-LATER Misc EVEN-LATER Around Container and Layout
 *** EVEN-LATER Later in Container refactoring: Convert all Presenter, PointsColumn, PointsColumns etc to Containers but keep the code structure the same
 *** EVEN-LATER Morph: Consider making ChartRootContainer.data.dataRows, and everything else except ChartOptions private, and provide a way to construct  ~PointsColumns~ in ~ChartData~ like _createStackableValuePointsFromChartData does.
@@ -1563,8 +1563,8 @@ Details of parent/child relationship establishment:
    - [ ] GridLinesContainer : todo-00
    - [X] DataContainer                         (via extends ChartAreaContainerUsingManualLayout)
    - [X] AdjustableLabelsChartAreaContainer    (via extends ChartAreaContainerUsingManualLayout)
-   - [X] VerticalBarChartRootContainer         (via extends ChartRootContainer)
-   - [X] VerticalBarChartDataContainer         (via extends DataContainer)
+   - [X] BarChartRootContainer         (via extends ChartRootContainer)
+   - [X] BarChartDataContainer         (via extends DataContainer)
    - [X] LineChartRootContainer                (via extends ChartRootContainer)
    - [X] LineChartDataContainer                (via extends DataContainer)
 
@@ -1585,8 +1585,8 @@ Core of setting up BoxContainer parent/child hierarchy:
   - [X] GridLinesContainer
   - [X] DataContainer
   - [X] AdjustableLabelsChartAreaContainer :  no layout method, so no change
-  - [X] VerticalBarChartRootContainer :  no layout method, so no change
-  - [X] VerticalBarChartDataContainer :  no layout method, so no change
+  - [X] BarChartRootContainer :  no layout method, so no change
+  - [X] BarChartDataContainer :  no layout method, so no change
   - [X] LineChartRootContainer:  no layout method, so no change
   - [X] LineChartDataContainer:  no layout method, so no change
 - [X] Test everything.
@@ -1707,7 +1707,7 @@ It seems both getter and setter can remain private, good.
 Classes with X are BoxContainers with layout implemented
 
 - [X] ~ChartRootContainer~
-  - [X] ~VerticalBarChartRootContainer~
+  - [X] ~BarChartRootContainer~
   - [X] ~LineChartRootContainer~
 - [X] ~LabelContainer~ and extensions : all use BoxContainer.layout 
   - [X] ~AxisLabelContainer~
@@ -1717,7 +1717,7 @@ Classes with X are BoxContainers with layout implemented
     - [X] ~XContainer~
   - [X] ~DataContainer~
     - [X] ~LineChartDataContainer~
-    - [X] ~VerticalBarChartDataContainer~
+    - [X] ~BarChartDataContainer~
   - [X] ~LegendContainer~
   - [X] ~YContainer~
 - [ ] ~GridLinesContainer~
@@ -1789,7 +1789,7 @@ Classes:
 - [X] GridLinesContainer
 - [X] DataContainer and extensions:
   - [X] LineChartDataContainer
-  - [X] VerticalBarChartDataContainer
+  - [X] BarChartDataContainer
   
   
 *** DONE Create a *completely new* BoxContainers for everything. For now, keep ~PointPresenter~ s and related.
@@ -1944,7 +1944,7 @@ Notes or Later:
 
 ** LATER Example72 is different from previous version. Investigate and fix
 
-ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_verticalBarChart.png
+ex72AnimalsBySeasonLegendIsRowCenterLooseItemIsRowEndLoose_barChart.png
 
 is overflowing now, where before it was not. Investigate and fix if applicable.
 

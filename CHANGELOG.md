@@ -52,7 +52,7 @@ There are API changes in this release. Below may or may not be a full list
 
 1. `ChartData` now 'knows' about `ChartOptions`, as data validation needs to know about options. For example, `ChartData` now needs to check if data are all positive, if the `ChartOptions` ask for a logarithmic scale. 
 
-2. As a consequence of the above change, `ChartOptions` parameter has been removed from the `ChartTopContainer` constructors (such as `VerticalBarChartTopContainer`), and moved to `ChartData` constructors.
+2. As a consequence of the above change, `ChartOptions` parameter has been removed from the `ChartTopContainer` constructors (such as `BarChartTopContainer`), and moved to `ChartData` constructors.
 
 # Version 0.3.1 (2021-12-19)
 
@@ -63,40 +63,40 @@ There are API changes in this release. Below may or may not be a full list
 # Version 0.3.0 (2021-12-17)
 
 ## API changes
-1. `VerticalBarChart`, `LineChart` API changes: Removed the container parameter from the constructor of VerticalBarChart and LineChart.
-    The container is now passed to the painter. A client example of creating a VerticalBarChart:
+1. `BarChart`, `LineChart` API changes: Removed the container parameter from the constructor of BarChart and LineChart.
+    The container is now passed to the painter. A client example of creating a BarChart:
     ```dart
         ChartData chartData = RandomChartData();
-        ChartOptions chartOptions = VerticalBarChartOptions();
+        ChartOptions chartOptions = BarChartOptions();
 
-        VerticalBarChartTopContainer verticalBarChartContainer = VerticalBarChartTopContainer(
+        BarChartTopContainer barChartContainer = BarChartTopContainer(
           chartData: chartData,
           chartOptions: chartOptions,
           // optional xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
         );
     
-        VerticalBarChart verticalBarChart = VerticalBarChart(
-          painter: VerticalBarChartPainter(
-            verticalBarChartContainer: verticalBarChartContainer,
+        BarChart barChart = BarChart(
+          painter: BarChartPainter(
+            barChartContainer: barChartContainer,
           ),
         );
 
     ```
     - If the container was passed before, it needs to be removed. 
-    - The container is stored on the VerticalBarChartPainter and used from there.
+    - The container is stored on the BarChartPainter and used from there.
     - A similar situation for the LineChart.
-2. `ChartOptions`, `LineOptions`, `VerticalBarChartOptions` API changes. The constructors of all the options classes have changed. `ChartOptions` were split to `IterativeLayoutOptions`, `LegendOptions`, `XContainerOptions`, `YContainerOptions`, `DataContainerOptions`, and `LabelCommonOptions`. Please check the code in `example/lib/main.dart` which contains examples of how to create instances of those classes.
+2. `ChartOptions`, `LineOptions`, `BarChartOptions` API changes. The constructors of all the options classes have changed. `ChartOptions` were split to `IterativeLayoutOptions`, `LegendOptions`, `XContainerOptions`, `YContainerOptions`, `DataContainerOptions`, and `LabelCommonOptions`. Please check the code in `example/lib/main.dart` which contains examples of how to create instances of those classes.
 
 ## Functional improvements
 
 1. The optional ability to hide labels (on x axis, y axis), hide the legend, and hide the gridline has been added. This feature is controlled by ChartOptions. See the code in `example/lib/main.dart`. This is an out of context example of how to create the options that ignore all labels, legend, and gridline. Ignoring only one, or any combination will also work
     ```dart
-      ChartOptions chartOptions = VerticalBarChartOptions.noLabels();
+      ChartOptions chartOptions = BarChartOptions.noLabels();
     ```
     or to set individual values to false. Default is true so no need to set
     ```dart
       ChartOptions chartOptions =
-            VerticalBarChartOptions(
+            BarChartOptions(
                 chartOptions: const ChartOptions(
                   legendOptions: LegendOptions(
                     isLegendContainerShown: false,
@@ -171,7 +171,7 @@ This release added the ability to skip the legend, when there is insufficient ho
 ``` dart
   void defineOptionsAndData() {
     _lineChartOptions = new LineChartOptions();
-    _verticalBarChartOptions = new VerticalBarChartOptions();
+    _barChartOptions = new BarChartOptions();
     _chartData = new ChartData();
     _chartData.dataRowsLegends = [
       "Spring",

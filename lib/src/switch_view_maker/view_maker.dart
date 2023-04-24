@@ -50,14 +50,14 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     bool isUseOldLayouter = const bool.fromEnvironment('IS_USE_OLD_LAYOUTER', defaultValue: true);
 
     if (isUseOldLayouter) {
-      return SwitchVerticalBarChartViewMakerCL(
+      return SwitchBarChartViewMakerCL(
         chartModel: chartModel,
         chartSeriesOrientation: chartSeriesOrientation,
         chartStacking: chartStacking,
         inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     } else {
-      return SwitchVerticalBarChartViewMaker(
+      return SwitchBarChartViewMaker(
           chartModel: chartModel,
           chartSeriesOrientation: chartSeriesOrientation,
         chartStacking: chartStacking,

@@ -104,10 +104,10 @@ abstract class ChartBehavior {
   /// See the extensions of this class for overrides of this method.
   ///
   /// [ChartBehavior] is mixed in to [ChartRootContainer]. This method
-  /// is implemented by concrete [LineChartRootContainer] and [VerticalBarChartRootContainer].
-  /// - In the stacked containers, such as [VerticalBarChartRootContainer], it should return [false],
+  /// is implemented by concrete [LineChartRootContainer] and [BarChartRootContainer].
+  /// - In the stacked containers, such as [BarChartRootContainer], it should return [false],
   ///   as stacked values should always start at zero, because stacked charts must show absolute values.
-  ///   See [VerticalBarChartRootContainer.extendAxisToOrigin].
+  ///   See [BarChartRootContainer.extendAxisToOrigin].
   /// - In the unstacked containers such as  [LineChartRootContainer], this is usually implemented to
   ///   return the option [DataContainerOptions.extendAxisToOriginRequested],
   ///   see [LineChartRootContainer.extendAxisToOrigin].
