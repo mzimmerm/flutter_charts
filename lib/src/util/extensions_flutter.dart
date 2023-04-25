@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter package
 
 import '../morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
-import '../morphic/container/container_layouter_base_dart_support.dart' show LayoutAxis;
+import '../morphic/container/morphic_dart_enums.dart' show LayoutAxis;
 
 extension SizeExtension on ui.Size {
 

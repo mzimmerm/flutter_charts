@@ -16,7 +16,7 @@ import '../../chart/model/label_model.dart' show AxisLabelInfo;
 ///
 ///  Legacy label containers [InputLabelContainerCL] and [OutputLabelContainerCL] should extend this
 ///
-abstract class AxisLabelContainerCL extends AxisLabelContainer {
+class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
@@ -96,6 +96,7 @@ abstract class AxisLabelContainerCL extends AxisLabelContainer {
   }
 }
 
+/* todo-00-last-done
 /// Label container for Y labels, which maintain, in addition to
 /// the superclass [OutputLabelContainer] also [AxisLabelInfo] - the object
 /// from which each Y label is created.
@@ -137,3 +138,4 @@ class InputLabelContainerCL extends AxisLabelContainerCL {
     ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }
+*/

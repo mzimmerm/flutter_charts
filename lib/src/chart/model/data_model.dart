@@ -35,10 +35,10 @@ class ChartModel {
 
   ChartModel({
     required this.valuesRows,
-    required this.xUserLabels,
+    required this.inputUserLabels,
     required this.byRowLegends,
     required this.chartOptions,
-    this.yUserLabels,
+    this.outputUserLabels,
     List<ui.Color>? byRowColors,
   })  :
         // Initializing of non-nullable final byRowColors which is a non-required argument
@@ -171,13 +171,12 @@ class ChartModel {
 
   int get numColumns => valuesColumns.length;
 
-  /// Labels on independent (X) axis.
+  /// Labels on input axis (also named independent axis, x axis).
   ///
   /// It is assumed labels are defined, by the client
   /// and their number is the same as number of points
   /// in each row in [_valuesRows].
-  // todo-010-refactoring : rename xUserLabels to inputUserLabels
-  final List<String> xUserLabels;
+  final List<String> inputUserLabels;
 
   /// The legends for each row in [_valuesRows].
   ///
@@ -187,13 +186,12 @@ class ChartModel {
 
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
-  /// Can be Strings or numbers.
-  /// If not null, a "manual" layout is used in the [VerticalAxisContainerCL].
-  /// If null, a "auto" layout is used in the [VerticalAxisContainerCL].
+  /// Can be freehand Strings or numbers converted to Strings.
+  /// If not null, a "manual" layout is used in the axis container where it is displayed -
+  ///   in the [VerticalAxisContainer] or [HorizontalAxisContainer].
+  /// If null, a "auto" layout is used in the axis container where it is displayed.
   ///
-  //
-  // todo-010-refactoring : rename yUserLabels to outputUserLabels
-  final List<String>? yUserLabels;
+  final List<String>? outputUserLabels;
 
   /// Colors representing each data row (series) in [ChartModel].
   final List<ui.Color> byRowColors;
@@ -595,7 +593,7 @@ class PointModel extends Object with DoubleLinked {
   /// Motivation:
   ///
   ///   [PointModel]'s inputValue (x values, independent values) is often non-numeric,
-  ///   defined by [ChartModel.xUserLabels] or similar approach, so to get inputValue
+  ///   defined by [ChartModel.inputUserLabels] or similar approach, so to get inputValue
   ///   of this instance seems irrelevant or incorrect to ask for.
   ///   However, when positioning a [PointContainer] representing a [PointModel],
   ///   we need to place the [PointModel] an some inputValue, which can be lextr-ed to
@@ -616,9 +614,9 @@ class PointModel extends Object with DoubleLinked {
     );
   }
 
-  /// Once the x labels are established, either as [xUserLabels] or generated, clients can
+  /// Once the x labels are established, either as [inputUserLabels] or generated, clients can
   ///  ask for the label.
-  Object get xUserLabel => ownerCrossPointsModel.dataModel.xUserLabels[columnIndex];
+  Object get inputUserLabel => ownerCrossPointsModel.dataModel.inputUserLabels[columnIndex];
 
   ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
 

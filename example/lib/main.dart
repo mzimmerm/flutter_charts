@@ -547,7 +547,7 @@ class _ExampleWidgetCreator {
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          inputUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
           byRowLegends: const [
             'Spring',
             'Summer',
@@ -568,7 +568,7 @@ class _ExampleWidgetCreator {
             [0.0, 100.0, -200.0, 150.0, -100.0, -150.0],
             [-800.0, -400.0, -300.0, -400.0, -200.0, -250.0],
           ],
-          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
           byRowLegends: const [
             'Big Corp',
             'Medium Corp',
@@ -594,7 +594,7 @@ class _ExampleWidgetCreator {
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
           ],
-          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
           byRowLegends: const [
             'Off zero 1',
             'Off zero 2',
@@ -618,7 +618,7 @@ class _ExampleWidgetCreator {
             [-20.0, -25.0, -30.0, -35.0, -40.0, -20.0],
             [-35.0, -40.0, -20.0, -25.0, -30.0, -20.0],
           ],
-          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
           byRowLegends: const [
             'Off zero 1',
             'Off zero 2',
@@ -668,7 +668,7 @@ class _ExampleWidgetCreator {
             [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
             [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
           ],
-          xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
           byRowLegends: const [
             'Font Test Series1',
             'Font Test Series2',
@@ -687,7 +687,7 @@ class _ExampleWidgetCreator {
             [25.0, 40.0, 20.0, 80.0, 12.0, 90.0],
             [12.0, 30.0, 18.0, 40.0, 10.0, 30.0],
           ],
-          xUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
+          inputUserLabels: const ['Wolf', 'Deer', 'Owl', 'Mouse', 'Hawk', 'Vole'],
           byRowLegends: const [
             'Spring',
             'Summer',
@@ -717,7 +717,7 @@ class _ExampleWidgetCreator {
             [4.0, 9.0, 6.0, 8.0],
             [3.0, 9.0, 10.0, 1.0],
           ],
-          xUserLabels: const ['Speed', 'Readability', 'Level of Novel', 'Usage'],
+          inputUserLabels: const ['Speed', 'Readability', 'Level of Novel', 'Usage'],
           byRowColors: const [
             Colors.blue,
             Colors.yellow,
@@ -725,7 +725,7 @@ class _ExampleWidgetCreator {
             Colors.amber,
           ],
           byRowLegends: const ['Java', 'Dart', 'Python', 'Newspeak'],
-          yUserLabels: const [
+          outputUserLabels: const [
             'Low',
             'Medium',
             'High',
@@ -750,7 +750,7 @@ class _ExampleWidgetCreator {
             [7.0, 8.0, 7.0, 11.0, 9.0],
             [3.0, 2.0, 1.0, 3.0, 3.0],
           ],
-          xUserLabels: const ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
+          inputUserLabels: const ['Energy', 'Health', 'Finance', 'Chips', 'Oil'],
           byRowLegends: const [
             '-2% or less',
             '-2% to 0%',
@@ -779,7 +779,7 @@ class _ExampleWidgetCreator {
             [10.0, 600.0, 1000000.0],
             [20.0, 1000.0, 1500000.0],
           ],
-          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          inputUserLabels: const ['Wolf', 'Deer', 'Mouse'],
           byRowLegends: const [
             'Spring',
             'Summer',
@@ -796,7 +796,7 @@ class _ExampleWidgetCreator {
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
-          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
           byRowLegends: const [
             'Owl count',
             'Hawk count',
@@ -815,7 +815,7 @@ class _ExampleWidgetCreator {
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
-          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
           byRowLegends: const [
             'Owl count',
             'Hawk count',
@@ -834,7 +834,7 @@ class _ExampleWidgetCreator {
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
-          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
           byRowLegends: const [
             'Owl count',
             'Hawk count',
@@ -853,7 +853,7 @@ class _ExampleWidgetCreator {
             [200.0, 190.0, 180.0, 200.0, 250.0, 300.0],
             [300.0, 280.0, 260.0, 240.0, 300.0, 350.0],
           ],
-          xUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
+          inputUserLabels: const ['January', 'February', 'March', 'April', 'May', 'June'],
           byRowLegends: const [
             'Owl count',
             'Hawk count',
@@ -871,7 +871,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -885,7 +885,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -899,7 +899,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -913,7 +913,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -927,7 +927,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -942,7 +942,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -957,7 +957,7 @@ class _ExampleWidgetCreator {
 
         chartModel = ChartModel(
           valuesRows: animalsDefaultData,
-          xUserLabels: animalsXUserLabels,
+          inputUserLabels: animalsXUserLabels,
           byRowLegends: animalsDataRowsLegends,
           chartOptions: chartOptions,
         );
@@ -966,16 +966,16 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
         /// Currently, setting [ChartDate.valuesRows] requires to also set all of
-        /// [chartModel.xUserLabels], [chartModel.byRowLegends], [chartModel.byRowColors]
+        /// [chartModel.inputUserLabels], [chartModel.byRowLegends], [chartModel.byRowColors]
         // Fix was: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
         chartModel = ChartModel(
           valuesRows: const [
             [0.0, 0.0, 0.0],
           ],
           // Note: When ChartData is defined,
-          //       ALL OF  xUserLabels,  byRowLegends, byRowColors
+          //       ALL OF  inputUserLabels,  byRowLegends, byRowColors
           //       must be set by client
-          xUserLabels: const ['Wolf', 'Deer', 'Mouse'],
+          inputUserLabels: const ['Wolf', 'Deer', 'Mouse'],
           byRowLegends: const [
             'Row 1',
           ],

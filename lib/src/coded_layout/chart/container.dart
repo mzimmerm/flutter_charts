@@ -208,7 +208,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset);
 
     // ####### 4. [VerticalAxisContainer]: The actual VerticalAxisContainer layout is needed, as height constraint for Y container
-    //          is only known after HorizontalAxisContainer layedout xUserLabels.  VerticalAxisContainer expands down to top of horizontalAxisContainer.
+    //          is only known after HorizontalAxisContainer layedout inputUserLabels.  VerticalAxisContainer expands down to top of horizontalAxisContainer.
     //          The [yLabelsMaxHeightFromFirstLayout] is used to extrapolate data values to the y axis,
     //          and put labels on ticks.
 
@@ -344,7 +344,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
   }
 
   /// Containers of Y labels.
-  late List<OutputLabelContainerCL> _outputLabelContainers;
+  late List<AxisLabelContainerCL> _outputLabelContainers;
 
   /// Maximum label height found by the first layout (pre-layout),
   /// is ONLY used to 'shorten' VerticalAxisContainer constraints on top.
@@ -387,7 +387,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
     );
 
     for (AxisLabelInfo labelInfo in chartViewMaker.outputLabelsGenerator.labelInfoList) {
-      var outputLabelContainer = OutputLabelContainerCL(
+      var outputLabelContainer = AxisLabelContainerCL(
         chartViewMaker: chartViewMaker,
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in VerticalAxisContainer
@@ -552,16 +552,16 @@ class HorizontalAxisContainerCL
     _inputLabelContainers = List.empty(growable: true);
 
     ChartOptions options = chartViewMaker.chartOptions;
-    List<AxisLabelInfo> xUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
     //   and lays out the InputLabelContainers along X in _gridStepWidth increments.
 
-    for (int xIndex = 0; xIndex < xUserLabels.length; xIndex++) {
-      var inputLabelContainer = InputLabelContainerCL(
+    for (int xIndex = 0; xIndex < inputUserLabels.length; xIndex++) {
+      var inputLabelContainer = AxisLabelContainerCL(
         chartViewMaker: chartViewMaker,
-        label: xUserLabels[xIndex].formattedLabel,
+        label: inputUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in HorizontalAxisContainer
         labelStyle: labelStyle,
         // In [InputLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
@@ -590,12 +590,12 @@ class HorizontalAxisContainerCL
     // Purely artificial on HorizontalAxisContainer for now, we are taking labels from data, or user, NOT generating range.
     axisPixelsRange = chartViewMaker.chartModel.dataRangeWhenStringLabels;
 
-    List<AxisLabelInfo> xUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
     double       yTicksWidth =
                    options.dataContainerOptions.dataLeftTickWidth + options.dataContainerOptions.dataRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
-    double       labelMaxAllowedWidth = availableWidth / xUserLabels.length;
-    int numShownLabels    = (xUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
+    double       labelMaxAllowedWidth = availableWidth / inputUserLabels.length;
+    int numShownLabels    = (inputUserLabels.length ~/ labelLayoutStrategy.showEveryNthLabel);
     _xGridStep            = labelMaxAllowedWidth;
     _shownLabelsStepWidth = availableWidth / numShownLabels;
 

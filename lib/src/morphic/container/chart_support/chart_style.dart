@@ -1,4 +1,4 @@
-import '../container_layouter_base_dart_support.dart' show LayoutAxis, DataDependency;
+import '../morphic_dart_enums.dart' show LayoutAxis, DataDependency;
 
 /// Describes display orientation of axes and data on a chart.
 ///
@@ -84,36 +84,35 @@ enum ChartOrientation {
     return ChartOrientation.fromString(orientation);
   }
 
-  /// For a chart orientation represented by this instance, return whether pixels and values are same orientation
-  /// on an axis which displays [DataDependency] in the passed [inputOrOutputData]
+  /// For a chart orientation represented by this instance, describes orientation of the axis
+  /// which displays [DataDependency] described in the passed [dataDependency]
   /// 
   /// Motivation: For any chart orientation, and any axis on the chart, we need to know if the data values axis
   ///   and the pixel axis which displays them, run in the same direction; this knowledge is equivalent to the knowledge whether
   ///   displayed pixels are on the horizontal or vertical axis. This information is used to extrapolate data values
   ///   to pixels, on either axis, to answer this question: should the value to pixels lextr invert sign?
-  bool isOnHorizontalAxis({required DataDependency inputOrOutputData}) {
-    // for ChartOrientation.column, and inputOrOutputData DataDependency.inputData,   return true
-    // for ChartOrientation.column, and inputOrOutputData DataDependency.outputData,  return false
-    // for ChartOrientation.row,    and inputOrOutputData DataDependency.inputData,   return false
-    // for ChartOrientation.row,    and inputOrOutputData DataDependency.outputData,  return true
+  LayoutAxis layoutAxisForDataDependency({required DataDependency dataDependency}) {
+    // for ChartOrientation.column, and inputOrOutputData DataDependency.inputData,   return LayoutAxis.horizontal
+    // for ChartOrientation.column, and inputOrOutputData DataDependency.outputData,  return LayoutAxis.vertical
+    // for ChartOrientation.row,    and inputOrOutputData DataDependency.inputData,   return LayoutAxis.vertical
+    // for ChartOrientation.row,    and inputOrOutputData DataDependency.outputData,  return LayoutAxis.horizontal
     switch(this) {
       case ChartOrientation.column:
-        switch (inputOrOutputData) {
+        switch (dataDependency) {
           case DataDependency.inputData:
-            return true;
+            return LayoutAxis.horizontal;
           case DataDependency.outputData:
-            return false;
+            return LayoutAxis.vertical;
         }
       case ChartOrientation.row:
-        switch (inputOrOutputData) {
+        switch (dataDependency) {
           case DataDependency.inputData:
-            return false;
+            return LayoutAxis.vertical;
           case DataDependency.outputData:
-            return true;
+            return LayoutAxis.horizontal;
         }
     }
   }
-
 
   bool get isOwnerLayouterDirectionAgainstDisplayOrderDirection {
     switch (this) {

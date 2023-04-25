@@ -2,7 +2,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
 import '../../morphic/container/container_layouter_base.dart';
-import '../../morphic/container/container_layouter_base_dart_support.dart';
+import '../../morphic/container/morphic_dart_enums.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_style.dart';
@@ -191,7 +191,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               children: [
                 for (var labelInfo in _inputLabelsGenerator.labelInfoList)
                   // todo-012 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
-                  InputLabelContainer(
+                  AxisLabelContainer( // todo-00-done : InputLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
                     labelTiltMatrix: vector_math.Matrix2.identity(),
@@ -236,7 +236,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                   //   by order of ExternalTicksLayoutProvider.tickPixels created and possibly reversed from
                   //   ExternalTicksLayoutProvider.tickValues. See [_outputLabelsGenerator.asExternalTicksLayoutProvider]
                   for (var labelInfo in _outputLabelsGenerator.labelInfoList)
-                    OutputLabelContainer(
+                    AxisLabelContainer( // todo-00-done : OutputLabelContainer(
                       chartViewMaker: chartViewMaker,
                       label: labelInfo.formattedLabel,
                       labelTiltMatrix: vector_math.Matrix2.identity(),

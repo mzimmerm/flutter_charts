@@ -4,7 +4,7 @@ import 'dart:ui' as ui show Color;
 // Tested package
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/morphic/container/container_layouter_base_dart_support.dart'
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart'
   show DataDependency;
 
 void main() {
@@ -63,11 +63,11 @@ void main() {
     DataRangeLabelInfosGenerator labelsGenerator;
     
     var extendAxisToOrigin = true;
-    var xUserLabels = ['1', '2', '3'];
+    var inputUserLabels = ['1', '2', '3'];
     var byRowLegends = ['Legend of row 1'];
 
     var valuesRows = [[1.0, 22.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, inputUserLabels, byRowLegends);
     List<AxisLabelInfo> labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, 0.0);
@@ -77,7 +77,7 @@ void main() {
 
 
     valuesRows = [[-1.0, -22.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, inputUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 4);
     expect(labelInfoList[0].outputValue, -300.0);
@@ -86,7 +86,7 @@ void main() {
     expect(labelInfoList[3].outputValue, 0.0);
 
     valuesRows = [[22.0, 10.0, -333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, inputUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -300.0);
@@ -96,7 +96,7 @@ void main() {
     expect(labelInfoList[4].outputValue, 100.0);
 
     valuesRows = [[-22.0, -10.0, 333.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, inputUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 5);
     expect(labelInfoList[0].outputValue, -100.0);
@@ -115,7 +115,7 @@ void main() {
     expect(labelInfoList[3].outputValue, 2000.0);
 
     valuesRows = [[-1000.0, 0.0, 1000.0]];
-    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, xUserLabels, byRowLegends);
+    labelsGenerator = dataRangeLabelsGenerator(chartOrientation, chartStacking, extendAxisToOrigin, options, valuesRows, inputUserLabels, byRowLegends);
     labelInfoList = labelsGenerator.labelInfoList;
     expect(labelInfoList.length, 3);
     expect(labelInfoList[0].outputValue, -1000.0);
@@ -142,7 +142,7 @@ void main() {
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 413.42857142857144, 8.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelInfosGenerator'],
   //     [[-800.0, 0.0, 1000.0, 2200.0, -600.0, 400.0, 1400.0, 2200.0, -800.0, 200.0, 800.0, 1600.0, -200.0, 0.0, 1000.0, 1600.0, -400.0, 0.0, 800.0, 2000.0, -800.0, 200.0, 1400.0, 1800.0], 441.42857142857144, 0.0, [-1000.0, 0.0, 1000.0, 2000.0], -800.0, 2200.0, 'Instance of DataRangeLabelInfosGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, xUserLabels);
+  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, inputUserLabels);
   // });
   //
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
@@ -163,14 +163,14 @@ void main() {
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 413.42857142857144, 8.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelInfosGenerator'],
   //     [[-20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -35.0, -25.0, -40.0, -30.0, -20.0, -20.0], 441.42857142857144, 0.0, [-40.0, -30.0, -20.0], -40.0, -20.0, 'Instance of DataRangeLabelInfosGenerator'],
   //   ];
-  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, xUserLabels);
+  //   rangeTestCore(data, options, extendAxisToOrigin, byRowLegends, inputUserLabels);
   // });
 
 
 }
 
-DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> xUserLabels, List<String> byRowLegends) {
-  var mockChartModel = _constructMockChartModel(options, valuesRows, xUserLabels, extendAxisToOrigin, byRowLegends);
+DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> inputUserLabels, List<String> byRowLegends) {
+  var mockChartModel = _constructMockChartModel(options, valuesRows, inputUserLabels, extendAxisToOrigin, byRowLegends);
   return DataRangeLabelInfosGenerator(
     chartViewMaker: MockChartViewMaker(
       chartModel: mockChartModel,
@@ -211,7 +211,7 @@ class MockChartViewMaker extends ChartViewMaker {
 MockChartModel _constructMockChartModel(
   ChartOptions options,
   List<List<double>> valuesRows,
-  List<String> xUserLabels,
+  List<String> inputUserLabels,
   bool extendAxisToOrigin,
   List<String> byRowLegends,
 ) {
@@ -219,7 +219,7 @@ MockChartModel _constructMockChartModel(
       chartOptions: options,
       byRowLegends: byRowLegends,
       valuesRows: valuesRows,
-      xUserLabels: xUserLabels,
+      inputUserLabels: inputUserLabels,
       byRowColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
     );
 }
@@ -230,7 +230,7 @@ void rangeTestCore(
   ChartOptions options,
   bool extendAxisToOrigin,
   List<String> byRowLegends,
-  List<String> xUserLabels,
+  List<String> inputUserLabels,
 ) {
   for (var valuesRow in data) {
     // List<double> dataYsForRange = valuesRow[0] as List<double>;
@@ -281,17 +281,17 @@ class StartYAxisAtDataMinProhibitedChartBehavior extends Object with ChartBehavi
 class MockChartModel extends ChartModel {
   MockChartModel({
     required valuesRows,
-    required xUserLabels,
+    required inputUserLabels,
     required byRowLegends,
     required chartOptions,
-    List<String>? yUserLabels,
+    List<String>? outputUserLabels,
     List<ui.Color>? byRowColors,
   }) : super(
     valuesRows: valuesRows,
-    xUserLabels: xUserLabels,
+    inputUserLabels: inputUserLabels,
     byRowLegends: byRowLegends,
     chartOptions: chartOptions,
-    yUserLabels: yUserLabels,
+    outputUserLabels: outputUserLabels,
     byRowColors: byRowColors,
   );
 

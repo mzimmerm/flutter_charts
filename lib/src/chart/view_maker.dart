@@ -8,7 +8,7 @@ import 'package:logger/logger.dart' as logger;
 import '../morphic/container/chart_support/chart_style.dart';
 import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/container_layouter_base.dart' as container_base;
-import '../morphic/container/container_layouter_base_dart_support.dart';
+import '../morphic/container/morphic_dart_enums.dart';
 // import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/layouter_one_dimensional.dart';
 import '../morphic/container/constraints.dart' as constraints;
@@ -74,7 +74,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.outputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartModel.yUserLabels,
+      userLabels: chartModel.outputUserLabels,
       isStacked: isStacked,
     );
 
@@ -86,7 +86,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.inputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
-      userLabels: chartModel.xUserLabels,
+      userLabels: chartModel.inputUserLabels,
       isStacked: isStacked,
     );
   }
@@ -205,7 +205,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   // ##### Methods which create views (containers) for individual chart areas
 
-  /// Assumed made from [model.ChartModel] member [model.ChartModel.xUserLabels]
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.inputUserLabels]
   /// or [container.VerticalAxisContainerCL.labelInfos].
 
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
@@ -214,7 +214,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     );
   }
 
-  /// Assumed made from [model.ChartModel] member [model.ChartModel.yUserLabels]
+  /// Assumed made from [model.ChartModel] member [model.ChartModel.outputUserLabels]
   /// or labels in [container.VerticalAxisContainerCL.labelInfos].
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
     return axis_container.TransposingAxisContainer.Vertical(

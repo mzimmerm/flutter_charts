@@ -115,7 +115,7 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
 /// - If owner is Area [ChartContainer], all positions are relative
 ///   to the top of the available [chartArea].
 ///
-abstract class AxisLabelContainer extends ChartLabelContainer {
+class AxisLabelContainer extends ChartLabelContainer {
   AxisLabelContainer({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
@@ -145,10 +145,7 @@ abstract class AxisLabelContainer extends ChartLabelContainer {
 
 }
 
-// todo-010-refactoring (functional, so careful) : remove InputLabelContainer and OutputLabelContainer and replace with AxisLabelContainer in code
-//                 also in most (all?) places in code, replace inputLabelContainer and outputLabelContainer
-//                 with axisLabelContainer
-
+/* todo-00-last-done
 /// Label container for Y labels, which maintain, in addition to
 /// the superclass [OutputLabelContainer] also [AxisLabelInfo] - the object
 /// from which each Y label is created.
@@ -190,3 +187,4 @@ class InputLabelContainer extends AxisLabelContainer {
     ownerChartAreaContainer: ownerChartAreaContainer,
   );
 }
+*/

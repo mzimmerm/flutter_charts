@@ -9,17 +9,17 @@ import 'data_model.dart';
 class RandomChartData extends ChartModel {
   RandomChartData({
     required valuesRows,
-    required xUserLabels,
+    required inputUserLabels,
     required byRowLegends,
     required chartOptions,
-    yUserLabels,
+    outputUserLabels,
     byRowColors,
   }) : super(
           valuesRows: valuesRows,
-          xUserLabels: xUserLabels,
+          inputUserLabels: inputUserLabels,
           byRowLegends: byRowLegends,
           chartOptions: chartOptions,
-          yUserLabels: yUserLabels,
+          outputUserLabels: outputUserLabels,
           byRowColors: byRowColors,
         );
 
@@ -40,10 +40,10 @@ class RandomChartData extends ChartModel {
     byRowColors,
   }) : this(
           valuesRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
-          xUserLabels: randomDataXLabels(numXLabels),
+          inputUserLabels: randomDataXLabels(numXLabels),
           byRowLegends: randomDataRowsLegends(numDataRows),
           chartOptions: chartOptions,
-          yUserLabels: randomDataYLabels(useUserProvidedYLabels),
+          outputUserLabels: randomDataYLabels(useUserProvidedYLabels),
           byRowColors: byRowColors,
         );
 }
@@ -83,7 +83,7 @@ List<String> randomDataRowsLegends(int valuesRowsCount) {
   return defaultLegends;
 }
 
-/// Generate list of "random" [xUserLabels] as monthNames or weekday names.
+/// Generate list of "random" [inputUserLabels] as monthNames or weekday names.
 ///
 ///
 List<String> randomDataXLabels(int numXLabels) {
@@ -92,11 +92,11 @@ List<String> randomDataXLabels(int numXLabels) {
 }
 
 List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
-  List<String>? yUserLabels;
+  List<String>? outputUserLabels;
   if (useUserProvidedYLabels) {
-    yUserLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
+    outputUserLabels = ['NONE', 'OK', 'GOOD', 'BETTER', '100%'];
   }
-  return yUserLabels;
+  return outputUserLabels;
 }
 
 List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDataYs) {

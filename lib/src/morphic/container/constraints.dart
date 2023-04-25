@@ -2,9 +2,10 @@ import 'dart:ui' show Offset, Rect, Size;
 import 'package:tuple/tuple.dart';
 
 import 'container_edge_padding.dart';
-import 'container_layouter_base_dart_support.dart';
+import 'morphic_dart_enums.dart';
 import '../../util/extensions_flutter.dart';
 import 'layouter_one_dimensional.dart';
+import 'container_layouter_base.dart' show BoxContainer;
 
 class ContainerConstraints {}
 
@@ -163,41 +164,54 @@ abstract class BoundingBoxesBase {
     }
   }
 
-  /// Divide this [BoundingBoxesBase] into a list of 'smaller' [BoundingBoxesBase]s objects,
-  /// depending on the dividing strategy [ConstraintsDistribution].
+  /// Creates a list of 'smaller' [BoundingBoxesBase]s objects, based on this [BoundingBoxesBase].
   ///
-  /// The sizes of the returned constraint list are smaller along the direction of the passed [divideAlongAxis];
-  /// cross-sizes remain the same as this constraint.
+  /// The created [BoundingBoxesBase]s and their sizes depend on the dividing strategy [divideStrategy].
+  ///
+  /// The sizes of the returned constraint list are smaller along the orientation of the passed [divideAlongAxis];
+  /// the cross-sizes remain the same as the size of this instance in that orientation.
   ///
   /// Extensions use this method to pass smaller constraints to children; use for layout sizes
   /// is unclear atm.
+  ///
+  /// The parameters description:
+  ///   -
+  ///   - [divideIntoCount]  todo-01-doc
+  ///   - [divideStrategy] todo-01-doc
+  ///   - [divideAlongAxis] Defines the axis along which this constraint is divided.
+  ///      In the cross-axis to [divideAlongAxis], the sizes are taken from this constraint.
+  ///   - [childrenWeights] Defines the weights by which this instance is divided. The
+  ///     name refers to the usual use of this method, where this instance is a constraint on a parent [BoxContainer],
+  ///     and client asks to divide the constraint into smaller constraints given the parent's children weight.
+  ///     Each weight acts along the axis orientation given by [divideAlongAxis].
+  ///
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
-    required ConstraintsDistribution divideStrategy,
+    required ConstraintsDivisionStrategy divideStrategy,
     required LayoutAxis divideAlongAxis,
-    List<double>? doubleWeights,
+    List<double>? childrenWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
     late final double sumDoubleWeights;
 
-    if (divideStrategy == ConstraintsDistribution.doubleWeights && doubleWeights == null) {
-      throw StateError('doubleWeights only applicable for ConstraintsDistribution.ratio');
+    if (divideStrategy == ConstraintsDivisionStrategy.byChildrenWeights && childrenWeights == null) {
+      throw StateError('doubleWeights only applicable for ConstraintsDivisionStrategy.ratio');
     }
 
-    if ((divideStrategy == ConstraintsDistribution.evenly ||
-            divideStrategy == ConstraintsDistribution.evenly) &&
-        doubleWeights != null) {
-      throw StateError('doubleWeights not applicable for ConstraintsDistribution.evenly or noDivide');
+    if ((divideStrategy == ConstraintsDivisionStrategy.evenDivision ||
+            divideStrategy == ConstraintsDivisionStrategy.evenDivision) &&
+        childrenWeights != null) {
+      throw StateError('doubleWeights not applicable for ConstraintsDivisionStrategy.evenly or noDivide');
     }
 
-    if (doubleWeights != null) {
-      assert(doubleWeights.length == divideIntoCount);
-      sumDoubleWeights = doubleWeights.fold<double>(0, (previousValue, element) => previousValue + element);
+    if (childrenWeights != null) {
+      assert(childrenWeights.length == divideIntoCount);
+      sumDoubleWeights = childrenWeights.fold<double>(0, (previousValue, element) => previousValue + element);
     }
 
     switch (divideStrategy) {
-      case ConstraintsDistribution.evenly:
+      case ConstraintsDivisionStrategy.evenDivision:
         switch (divideAlongAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -224,9 +238,9 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDistribution.doubleWeights:
+      case ConstraintsDivisionStrategy.byChildrenWeights:
         List<BoundingBoxesBase> fractions = [];
-        for (var doubleWeight in doubleWeights!) {
+        for (var doubleWeight in childrenWeights!) {
           switch (divideAlongAxis) {
             case LayoutAxis.horizontal:
               minWidth = minSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
@@ -251,7 +265,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDistribution.noDivide:
+      case ConstraintsDivisionStrategy.noDivision:
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }

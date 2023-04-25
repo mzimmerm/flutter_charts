@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 
 // this level or equivalent
-import 'container_layouter_base_dart_support.dart' show LayoutAxis, ExternalTickAtPosition;
+import 'morphic_dart_enums.dart' show LayoutAxis, ExternalTickAtPosition;
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
-    show Align, otherEndAlign, Packing, LengthsPositionerProperties,
-    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDistribution;
+    show Align, Packing, LengthsPositionerProperties,
+    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivisionStrategy;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'chart_support/chart_style.dart' show ChartOrientation;
@@ -2025,9 +2025,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       assert (childrenWeights.constraintsWeightList.length == children.length);
       List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
         divideIntoCount: children.length,
-        divideStrategy: ConstraintsDistribution.doubleWeights,
+        divideStrategy: ConstraintsDivisionStrategy.byChildrenWeights,
         divideAlongAxis:  mainLayoutAxis,
-        doubleWeights: childrenWeights.doubleWeightList,
+        childrenWeights: childrenWeights.doubleWeightList,
       );
 
       assert (childrenConstraints.length == children.length);
@@ -2120,9 +2120,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       //   creating [greedyChildrenConstraints].
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
-        divideStrategy: ConstraintsDistribution.doubleWeights,
+        divideStrategy: ConstraintsDivisionStrategy.byChildrenWeights,
         divideAlongAxis: mainLayoutAxis,
-        doubleWeights: _greedyChildren.map((child) => child.greed).toList(),
+        childrenWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
 
       // Apply on greedyChildren their newly weight-divided greedyChildrenConstraints
@@ -2193,8 +2193,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Row(
           children: children.reversed.toList(),
-          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? otherEndAlign(mainAxisAlign) : mainAxisAlign,
-          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? otherEndAlign(crossAxisAlign) : crossAxisAlign,
+          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? mainAxisAlign.otherEndAlign() : mainAxisAlign,
+          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
@@ -2230,8 +2230,8 @@ abstract class TransposingRoller extends RollingBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return Column(
           children: children.reversed.toList(),
-          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? otherEndAlign(mainAxisAlign) : mainAxisAlign,
-          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? otherEndAlign(crossAxisAlign) : crossAxisAlign,
+          mainAxisAlign: isMainAxisAlignFlippedOnTranspose ? mainAxisAlign.otherEndAlign() : mainAxisAlign,
+          crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
@@ -2474,8 +2474,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
         // All factory parameters listed, reversed, and passed
         return ExternalTicksRow(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign),
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          mainAxisAlign: mainAxisAlign.otherEndAlign(),
+          crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );
@@ -2507,8 +2507,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
       case ChartOrientation.row:
         return ExternalTicksColumn(
           children: children.reversed.toList(),
-          mainAxisAlign: otherEndAlign(mainAxisAlign),
-          crossAxisAlign: otherEndAlign(crossAxisAlign),
+          mainAxisAlign: mainAxisAlign.otherEndAlign(),
+          crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
           mainAxisExternalTicksLayoutProvider: mainAxisExternalTicksLayoutProvider,
         );

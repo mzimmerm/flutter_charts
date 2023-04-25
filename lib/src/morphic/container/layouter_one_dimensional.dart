@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 
 // this level or equivalent
 import 'container_layouter_base.dart';
-import 'container_layouter_base_dart_support.dart' show ExternalTickAtPosition;
+import 'morphic_dart_enums.dart' show ExternalTickAtPosition;
 import '../../util/util_dart.dart' as util_dart show LineSegment, Interval;
 
 /// [Packing] describes mutually exclusive layouts for a list of lengths
@@ -100,34 +100,32 @@ enum Align {
   center,
   // todo-04 : added centerExpand but not tested or used. Originally intended for chart GridContainer layout. Maybe not needed?
   centerExpand,
-  end,
-}
+  end;
 
-/// todo-010-refactoring : make Align extended enum, and add this method, rename it to flipAlign
-Align otherEndAlign(Align align) {
-  switch(align) {
-    case Align.start:
-      return Align.end;
-    case Align.end:
-      return Align.start;
-    case Align.center:
-      return Align.center;
-    case Align.centerExpand:
-      return Align.center;
+  /// Returns the [Align] transposed to the other end of this [Align].
+  Align otherEndAlign() {
+    switch(this) {
+      case Align.start:
+        return Align.end;
+      case Align.end:
+        return Align.start;
+      case Align.center:
+        return Align.center;
+      case Align.centerExpand:
+        return Align.center;
+    }
   }
 }
-
-
 
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
 ///
-/// The term 'divided' may be misleading for [ConstraintsDistribution.noDivide], as that
+/// The term 'divided' may be misleading for [ConstraintsDivisionStrategy.noDivision], as that
 /// describes that a given constraint should create multiple constraints that are the same.
-enum ConstraintsDistribution {
-  evenly, // todo-010-refactoring : deprecate and remove. Rely on children to all set doubleWeights=1 instead
-  doubleWeights, // todo-010-refactoring rename to childrenWeights. Also in code, replace doubleWeight with weight.
-  noDivide,
+enum ConstraintsDivisionStrategy {
+  evenDivision,
+  byChildrenWeights,
+  noDivision,
 }
 
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along

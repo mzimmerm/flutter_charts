@@ -1,6 +1,6 @@
 import 'dart:math' as math show min, max, pow;
 
-import '../../morphic/container/container_layouter_base_dart_support.dart';
+import '../../morphic/container/morphic_dart_enums.dart';
 import '../../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
 import 'data_model.dart';
 import '../options.dart';
@@ -183,7 +183,9 @@ class DataRangeLabelInfosGenerator {
   /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
   ///
   /// Returns true if this [DataRangeLabelInfosGenerator] labels will be shown on [LayoutAxis.vertical].
-  bool get isOnHorizontalAxis => chartViewMaker.chartOrientation.isOnHorizontalAxis(inputOrOutputData: dataDependency);
+  bool get isOnHorizontalAxis =>
+      chartViewMaker.chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) ==
+      LayoutAxis.horizontal;
 
   /// Extrapolates [value] from extended data range [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
