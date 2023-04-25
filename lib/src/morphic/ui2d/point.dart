@@ -284,10 +284,8 @@ class PointOffset extends Offset {
     toPixelsRange = portion.toPixelsPortion;
 
     var transform = ToPixelsLTransform1D(
-        fromValuesMin: fromValuesRange.min,
-        fromValuesMax: fromValuesRange.max,
-        toPixelsMin: toPixelsRange.min,
-        toPixelsMax: toPixelsRange.max,
+        fromValues: Interval(fromValuesRange.min, fromValuesRange.max),
+        toPixels:   Interval(toPixelsRange.min, toPixelsRange.max),
         doInvertToDomain: doInvertDomain,
     );
     double fromValueOnAxisPixels, fromValueLengthInPixels;

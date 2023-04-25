@@ -565,38 +565,35 @@ class DomainLTransform1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-/// todo-010-refactoring (functional) : Refactor throughout to accept Intervals, to explicitly express min < max on both values and pixels.
 class ToPixelsLTransform1D extends DomainLTransform1D {
   ToPixelsLTransform1D({
-    required double fromValuesMin,
-    required double fromValuesMax,
-    required double toPixelsMin,
-    required double toPixelsMax,
+    required Interval fromValues,
+    required Interval toPixels,
     this.doInvertToDomain = false,
   }) : super(
-    fromDomainStart: fromValuesMin,
-    fromDomainEnd: fromValuesMax,
-    toDomainStart: doInvertToDomain ? toPixelsMax : toPixelsMin,
-    toDomainEnd: doInvertToDomain ? toPixelsMin : toPixelsMax,
+    fromDomainStart: fromValues.min,
+    fromDomainEnd: fromValues.max,
+    toDomainStart: doInvertToDomain ? toPixels.max : toPixels.min,
+    toDomainEnd: doInvertToDomain ? toPixels.min : toPixels.max,
   ) {
-    assert(fromValuesMin < fromValuesMax && toPixelsMin <= toPixelsMax);
+    assert(fromValues.min < fromValues.max && toPixels.min <= toPixels.max);
     
     // Allow the TO pixels domain to be collapsed, but not the FROM values domain, which is in the denominator of [_scaleBy] in super.
-    if (!(fromValuesMin < fromValuesMax)) {
-      throw StateError('$runtimeType: fromValuesMin=$fromValuesMin < fromValuesMax=$fromValuesMax NOT true on $this.');
+    if (!(fromValues.min < fromValues.max)) {
+      throw StateError('$runtimeType: fromValues.min=$fromValues.min < fromValues.max=$fromValues.max NOT true on $this.');
     }
-    if (!(toPixelsMin <= toPixelsMax)) {
-      throw StateError('$runtimeType: toPixelsMin=$toPixelsMin <= toPixelsMax=$toPixelsMax NOT true on $this.');
+    if (!(toPixels.min <= toPixels.max)) {
+      throw StateError('$runtimeType: toPixels.min=$toPixels.min <= toPixels.max=$toPixels.max NOT true on $this.');
     }
-    if (toPixelsMin == toPixelsMax)  {
+    if (toPixels.min == toPixels.max)  {
       print(' ### Log.Info: $runtimeType: TO domain is COLLAPSED: '
-          'toPixelsMin=$toPixelsMin == toPixelsMax=$toPixelsMax TRUE on $this.');
+          'toPixels.min=$toPixels.min == toPixels.max=$toPixels.max TRUE on $this.');
     }
 
   }
 
   /// Explicitly invert domains, which are assumed in the same direction,
-  /// due to the precondition `fromValuesMin < fromValuesMax && toPixelsMin <= toPixelsMax`
+  /// due to the precondition `fromValues.min < fromValues.max && toPixels.min <= toPixels.max`
   final bool doInvertToDomain;
 
   @override

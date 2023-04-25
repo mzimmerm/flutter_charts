@@ -191,7 +191,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               children: [
                 for (var labelInfo in _inputLabelsGenerator.labelInfoList)
                   // todo-012 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
-                  AxisLabelContainer( // todo-00-done : InputLabelContainer(
+                  AxisLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
                     labelTiltMatrix: vector_math.Matrix2.identity(),
@@ -236,7 +236,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                   //   by order of ExternalTicksLayoutProvider.tickPixels created and possibly reversed from
                   //   ExternalTicksLayoutProvider.tickValues. See [_outputLabelsGenerator.asExternalTicksLayoutProvider]
                   for (var labelInfo in _outputLabelsGenerator.labelInfoList)
-                    AxisLabelContainer( // todo-00-done : OutputLabelContainer(
+                    AxisLabelContainer(
                       chartViewMaker: chartViewMaker,
                       label: labelInfo.formattedLabel,
                       labelTiltMatrix: vector_math.Matrix2.identity(),

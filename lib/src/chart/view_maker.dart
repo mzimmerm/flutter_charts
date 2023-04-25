@@ -249,7 +249,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// [model.ChartModel.crossPointsModelPositiveList] OR the [model.ChartModel.crossPointsModelNegativeList] -
   /// both are instances of [model.CrossPointsModel].
   // todo-010-next : 1) Reduce number of methods - merge the container-producing methods. 2) Review if the PointContainers, CrossSeriesContainers etc are needed and maybe rethink. 3) Change return values of methods
-  List<container_base.Padder> makeViewsForDataContainer_Bars({
+  List<container_base.Padder> makeViewsForDataContainer_CrossSeriesBars({
     required List<model.CrossPointsModel> crossPointsModels,
     required model.Sign barsAreaSign,
   }) {
@@ -260,7 +260,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
     for (model.CrossPointsModel crossPointsModel in crossPointsModels) {
 
-      data_container.CrossPointsContainer oneBar = makeViewForDataContainer_EachBar(
+      data_container.CrossPointsContainer oneBar = makeViewForDataContainer_EachCrossSeriesBar(
         crossPointsModel: crossPointsModel,
         barsAreaSign: barsAreaSign,
       );
@@ -282,7 +282,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     return chartBars;
   }
 
-  data_container.CrossPointsContainer makeViewForDataContainer_EachBar({
+  data_container.CrossPointsContainer makeViewForDataContainer_EachCrossSeriesBar({
     required model.CrossPointsModel crossPointsModel,
     required model.Sign barsAreaSign,
     }) {
@@ -290,15 +290,14 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         chartViewMaker: this,
         crossPointsModel: crossPointsModel,
         children: [
-          makeViewForDataContainer_EachBarLayouter(
+          makeViewForDataContainer_EachCrossSeriesBarLayouter(
               crossPointsModel: crossPointsModel,
               barsAreaSign: barsAreaSign),
         ],
       );
   }
 
-  // todo-00-next : Rename EachBar to EachCrossSeriesBar; Rename Bar CrossSeriesBar, Bars to CrossSeriesBars
-  container_base.RollingBoxLayouter makeViewForDataContainer_EachBarLayouter({
+  container_base.RollingBoxLayouter makeViewForDataContainer_EachCrossSeriesBarLayouter({
     required model.CrossPointsModel crossPointsModel,
     required model.Sign barsAreaSign,
   }) {

@@ -6,10 +6,8 @@ void main() {
   test('extrapolateValue - test linear scaling utility', () {
     
     expect(ToPixelsLTransform1D(
-      fromValuesMin: 1.0,
-      fromValuesMax: 2.0,
-      toPixelsMin: 10.0,
-      toPixelsMax: 20.0,
+      fromValues: const Interval(1.0, 2.0),
+      toPixels: const Interval(10.0, 20.0),
     ).apply(1.0),
       10.0,);
   });

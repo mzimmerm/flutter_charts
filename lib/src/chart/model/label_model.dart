@@ -2,11 +2,11 @@ import 'dart:math' as math show min, max, pow;
 
 import '../../morphic/container/morphic_dart_enums.dart';
 import '../../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
+import '../../morphic/container/layouter_one_dimensional.dart'
+    show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 import 'data_model.dart';
 import '../options.dart';
 import '../view_maker.dart';
-import '../../morphic/container/layouter_one_dimensional.dart'
-    show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 
 import '../../util/util_dart.dart' as util_dart;
 
@@ -213,10 +213,8 @@ class DataRangeLabelInfosGenerator {
     // lextr the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
     // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
     return util_dart.ToPixelsLTransform1D(
-      fromValuesMin: dataRange.min,
-      fromValuesMax: dataRange.max,
-      toPixelsMin: axisPixelsMin,
-      toPixelsMax: axisPixelsMax,
+      fromValues: util_dart.Interval(dataRange.min, dataRange.max),
+      toPixels: util_dart.Interval(axisPixelsMin, axisPixelsMax),
       doInvertToDomain: !isOnHorizontalAxis,
     ).apply(value);
   }

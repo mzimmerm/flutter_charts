@@ -3861,10 +3861,8 @@ class ExternalTicksLayoutProvider {
     
     return tickValues
         .map((double value) => util_dart.ToPixelsLTransform1D(
-              fromValuesMin: tickValuesDomain.min,
-              fromValuesMax: tickValuesDomain.max,
-              toPixelsMin: tickPixelsDomain.min,
-              toPixelsMax: tickPixelsDomain.max,
+              fromValues: util_dart.Interval(tickValuesDomain.min, tickValuesDomain.max),
+              toPixels: util_dart.Interval(tickPixelsDomain.min, tickPixelsDomain.max),
               doInvertToDomain: !isOnHorizontalAxis,
             ).apply(value))
         .toList();
