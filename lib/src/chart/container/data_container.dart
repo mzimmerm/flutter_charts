@@ -112,14 +112,14 @@ class DataContainer extends container_common.ChartAreaContainer {
     // The Row constraints are weighted by the ratio for positives and negatives passed here.
     return TransposingRoller.Row(
       chartOrientation: chartViewMaker.chartOrientation,
-      mainAxisConstraintsWeight: ConstraintsWeight(
+      constraintsWeight: ConstraintsWeight(
         weight: ratioOfPositiveOrNegativePortion,
       ),
       mainAxisAlign: Align.start, // default
       crossAxisAlign: crossAxisAlign,
       // column orientation, any stacking, any sign: bars of data are in Row main axis,
       // this Row must divide width to all bars evenly
-      constraintsDivisionToChildrenStrategy: ConstraintsDivisionToChildrenStrategy.evenDivision, // todo-00-last-done
+      constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_CrossPointsModels(
         crossPointsModels: crossPointsModels,
@@ -250,7 +250,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   ///
   /// This container is a stand-in for Non-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
-  // todo-010-next : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
+  // todo-011-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
   //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
   //                 maybe not even that.
   @override

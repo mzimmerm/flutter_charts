@@ -22,7 +22,7 @@ ui.Rect boundingRect(List<ui.Rect> rectangles, /*{double Function()? orElse}*/) 
 void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
   if (!(isCloserThanEpsilon(result.width, otherResult.width) ||
       isCloserThanEpsilon(result.height, otherResult.height))) {
-    String msg = 'Size results do not match. Result was $result, Other result was $otherResult.';
+    String msg = ' ### Log.Warning: Size results do not match. Result was $result, Other result was $otherResult.';
     print(msg);
     throw StateError(msg);
   }

@@ -62,7 +62,8 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
     // Applications should handle size=(0,0) which may happen
     //   - just return and wait for re-call with size > (0,0).
     if (size == ui.Size.zero) {
-      String msg = ' ### $runtimeType. PAINT: passed size 0 to this CustomPainter! Nothing painted here, RETURNING.';
+      String msg = ' ### Log.Info: $runtimeType. PAINT: passed size 0 to this CustomPainter! '
+          'Nothing painted here, RETURNING.';
       print(msg);
       dart_developer.log(msg, name: 'charts.debug.log');
       return;

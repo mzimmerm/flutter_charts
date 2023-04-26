@@ -249,10 +249,15 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// Each child in the returned list should be made from one positive or negative element of the model
   /// [model.ChartModel.crossPointsModelList].
 
-  // todo-010-next : 1) DONE Reduce number of methods - merge the container-producing methods.
-  // todo-010-next : 2) Review if the PointContainers, CrossSeriesContainers etc are needed and maybe rethink. 3) Change return values of methods
-  // todo-010-next : 3) Change return values of methods
-  // todo-010-next : 4!!) Pull Pad-creation outside of the methods where possible.
+  // todo-010      : 1) Reduce number of methods - merge the container-producing methods.
+  //                 2) Review if the PointContainers, CrossSeriesContainers etc are needed and maybe rethink.
+  //                 3) Change return values of methods
+  //                 4!!) Pull Pad-creation outside of the methods where possible.
+  //                 5) Review use and naming of _buildLevelYYY methods.
+  //                 6) WHY DOES VIEW_MAKER EXIST??????? THERE IS SIMILAR CODE IN DATA_CONTAINER AND VIEW_MAKER
+  //                    - CAN THE data_container building code be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
+  //                    - SIMILAR FOR AXIS_CONTAINER
+
   List<container_base.Padder> makeViewsForDataContainer_CrossPointsModels({
     required List<model.CrossPointsModel> crossPointsModels,
     required model.Sign barsAreaSign,
@@ -275,13 +280,10 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         end: 5.0,
       );
 
+      // Pad around each [PointContainer]. Parent layouter must enforce even weights along main axis on all.
       container_base.Padder oneBarPadded = container_base.Padder(
         edgePadding: pointRectSidePad,
         child: oneBar,
-/* todo-00-last-done
-        // Give all padded [CrossPointsContainer] which will be wrapped in columns the same weight along main axis.
-        constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
-*/
       );
 
       chartBars.add(oneBarPadded);
@@ -321,19 +323,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
                   // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
                   .where((containerElm) => containerElm != null)
                   .map((containerElm) => containerElm!)
-                  // Pads each [PointContainer], and gives each pad same weight for the Level3PointsBar
-                  // in _buildLevel3PointsBarAsTransposingColumn, forces to divide constraints.
-                  // Same weight is ONLY NEEDED FOR nonStacked, both row and column orientations),
-                  // so owner Column or Row is forced to divide constraints in the main direction.
+                  // Pad around each [PointContainer].
+                  // Only for nonStacked, parent layouter must enforce even weights along main axis on all.
                   // For stacked, we must NOT put weights, as in main direction, each bar has no limit.
                   .map((pointContainer) => container_base.Padder(
                         edgePadding: pointRectSidePad,
                         child: pointContainer,
-/* todo-00-last-done
-                        constraintsWeight: isStacked
-                            ? container_base.ConstraintsWeight.defaultWeight
-                            : const container_base.ConstraintsWeight(weight: 1),
-*/
                       ))
                   .toList(),
           barsAreaSign: barsAreaSign,
@@ -342,57 +337,32 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     );
   }
 
-  // todo-010
-  //           - WHY IS THIS  data_container building code IN VIEW MAKER,
-  //             AND SIMILAR CODE building data_container also IN data_container.dart?
-  //              - this indicates a design issue.
-  //              - CAN THE data_container building code be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
-  //              - SIMILAR FOR AXIS_CONTAINER
-  //
-  // todo-010-next : get rid of this method, merge it.
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsTransposingColumn({
     required List<container_base.Padder> pointContainers,
     required model.Sign barsAreaSign,
   }) {
 
     switch(chartStacking) {
-      // column, stacked only, positive: revert order so that first cross-series is at end (bottom)
-      case ChartStacking.stacked:
-        switch(barsAreaSign) {
-          case model.Sign.positiveOr0:
-            pointContainers = pointContainers.reversed.toList(growable: false);
-            break;
-          case model.Sign.negative:
-            break;
-          case model.Sign.any:
-            throw StateError('Invalid use of "any" sign for data container bars.');
-        }        break;
-      case ChartStacking.nonStacked:
-        // logic on this is in-place on crossAxisAlign
-        break;
-    }
-
-    switch(chartStacking) {
       case ChartStacking.stacked:
         return container_base.TransposingRoller.Column(
           chartOrientation: chartOrientation,
-          // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: Align.start, // default
+          crossAxisAlign: Align.center, // default
+          constraintsDivideToChildren: ConstraintsDivideToChildren.noDivision, // default
           isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide
-          children: pointContainers,
+          children: barsAreaSign == model.Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
         );
       case ChartStacking.nonStacked:
         return container_base.TransposingRoller.Row(
           chartOrientation: chartOrientation,
-          // Positive: Both Align.start and end work, . Negative: only Align.start work in column
           mainAxisAlign: Align.start, // default
           // column:  sit positive bars at end,   negative bars at start
           // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
           crossAxisAlign: barsAreaSign == model.Sign.positiveOr0 ? Align.end : Align.start,
           // nonStacked column orientation, leaf rects are in Row along main axis,
           // this Row must divide width to all leaf rects evenly
-          constraintsDivisionToChildrenStrategy: ConstraintsDivisionToChildrenStrategy.evenDivision, // todo-00-last-done
-          // isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide todo-010-next review
+          constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
+          isMainAxisAlignFlippedOnTranspose: true, // default
           children: pointContainers,
         );
     }

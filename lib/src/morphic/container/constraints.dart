@@ -166,7 +166,7 @@ abstract class BoundingBoxesBase {
 
   /// Creates a list of 'smaller' [BoundingBoxesBase]s objects, based on this [BoundingBoxesBase].
   ///
-  /// The created [BoundingBoxesBase]s and their sizes depend on the dividing strategy [divideStrategy].
+  /// The created [BoundingBoxesBase]s and their sizes depend on the dividing strategy [constraintsDivideToChildren].
   ///
   /// The sizes of the returned constraint list are smaller along the orientation of the passed [divideAlongAxis];
   /// the cross-sizes remain the same as the size of this instance in that orientation.
@@ -177,7 +177,7 @@ abstract class BoundingBoxesBase {
   /// The parameters description:
   ///   -
   ///   - [divideIntoCount]  todo-01-doc
-  ///   - [divideStrategy] todo-01-doc
+  ///   - [constraintsDivideToChildren] todo-01-doc
   ///   - [divideAlongAxis] Defines the axis along which this constraint is divided.
   ///      In the cross-axis to [divideAlongAxis], the sizes are taken from this constraint.
   ///   - [childrenWeights] Defines the weights by which this instance is divided. The
@@ -188,32 +188,29 @@ abstract class BoundingBoxesBase {
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
-    // todo-010-refactoring : rename to constraintsDivisionToChildrenStrategy
-    required ConstraintsDivisionToChildrenStrategy divideStrategy,
+    required ConstraintsDivideToChildren constraintsDivideToChildren,
     required LayoutAxis divideAlongAxis,
     List<double>? childrenWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
-    late final double sumDoubleWeights;
+    late final double sumChildrenWeights;
 
-    if (divideStrategy == ConstraintsDivisionToChildrenStrategy.byChildrenWeights && childrenWeights == null) {
-      throw StateError('For divideStrategy "byChildrenWeights", childrenWeights must be set, but it is null');
+    if (constraintsDivideToChildren == ConstraintsDivideToChildren.byChildrenWeights && childrenWeights == null) {
+      throw StateError('For constraintsDivideToChildren "byChildrenWeights",'
+          ' childrenWeights must be set, but it is null');
     }
 
-    // todo-00-refactoring (functional) - this seems to be a bug
-    if ((divideStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision ||
-            divideStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision) &&
-        childrenWeights != null) {
-      throw StateError('doubleWeights not applicable for ConstraintsDivisionToChildrenStrategy.evenly or noDivide');
+    if (constraintsDivideToChildren.isNot(ConstraintsDivideToChildren.byChildrenWeights) && childrenWeights != null) {
+      throw StateError('weights not applicable for ConstraintsDivideToChildren.evenly or noDivide');
     }
 
     if (childrenWeights != null) {
       assert(childrenWeights.length == divideIntoCount);
-      sumDoubleWeights = childrenWeights.fold<double>(0, (previousValue, element) => previousValue + element);
+      sumChildrenWeights = childrenWeights.fold<double>(0, (previousValue, element) => previousValue + element);
     }
 
-    switch (divideStrategy) {
-      case ConstraintsDivisionToChildrenStrategy.evenDivision:
+    switch (constraintsDivideToChildren) {
+      case ConstraintsDivideToChildren.evenDivision:
         switch (divideAlongAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -240,21 +237,21 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivisionToChildrenStrategy.byChildrenWeights:
+      case ConstraintsDivideToChildren.byChildrenWeights:
         List<BoundingBoxesBase> fractions = [];
-        for (var doubleWeight in childrenWeights!) {
+        for (var weight in childrenWeights!) {
           switch (divideAlongAxis) {
             case LayoutAxis.horizontal:
-              minWidth = minSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
+              minWidth = minSize.width * (1.0 * weight) / sumChildrenWeights;
               minHeight = minSize.height;
-              maxWidth = maxSize.width * (1.0 * doubleWeight) / sumDoubleWeights;
+              maxWidth = maxSize.width * (1.0 * weight) / sumChildrenWeights;
               maxHeight = maxSize.height;
               break;
             case LayoutAxis.vertical:
               minWidth = minSize.width;
-              minHeight = minSize.height * (1.0 * doubleWeight) / sumDoubleWeights;
+              minHeight = minSize.height * (1.0 * weight) / sumChildrenWeights;
               maxWidth = maxSize.width;
-              maxHeight = maxSize.height * (1.0 * doubleWeight) / sumDoubleWeights;
+              maxHeight = maxSize.height * (1.0 * weight) / sumChildrenWeights;
               break;
           }
           var fraction = cloneWith(
@@ -267,7 +264,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivisionToChildrenStrategy.noDivision:
+      case ConstraintsDivideToChildren.noDivision:
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }

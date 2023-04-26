@@ -89,7 +89,6 @@ void main() {
       [0.0, -40.0, -20.0,        8.0, 413.42857142857144,  -397.428571428571434],
     ];
     for (var valuesRow in data) {
-      // print('$valuesRow');
       expect(
         isCloserThanEpsilon(
             DomainLTransform1D(

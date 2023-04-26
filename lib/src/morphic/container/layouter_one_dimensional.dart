@@ -118,15 +118,26 @@ enum Align {
 }
 
 /// Describes how a constraint should be divided into multiple constraints,
-/// presumably for the divided constraints to be passed to children.
+/// before the divided constraints are passed to children.
 ///
-/// The term 'divided' may be misleading for [ConstraintsDivisionToChildrenStrategy.noDivision], as that
-/// describes that a given constraint should create multiple constraints that are the same.
-// todo-00-refactoring : rename to ConstraintsDivisionToChildrenStrategy
-enum ConstraintsDivisionToChildrenStrategy {
+/// The decision if or how constraints are divided, is determined by two concepts:
+///   - The constraints weights of children 'for parent', use the [ConstraintsWeight] instances,
+///     and its wrapper [ConstraintsWeights] instances.
+///   - The constraints division strategy 'to children (as parent)', use this [ConstraintsDivideToChildren] instances.
+///
+/// Because both can be set, priorities must be defined. The detail priorities are implemented
+/// by individual layouters. So far, the single use is in [MainAndCrossAxisBoxLayouter].
+/// See [MainAndCrossAxisBoxLayouter.constraintsDivideToChildren].
+///
+enum ConstraintsDivideToChildren {
   evenDivision,
   byChildrenWeights,
-  noDivision,
+  noDivision;
+
+  bool isNot(ConstraintsDivideToChildren other) {
+    if (this != other) return true;
+    return false;
+  }
 }
 
 /// Properties of [BoxLayouter] describe [packing] and [align] of the layed out elements along
