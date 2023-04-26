@@ -117,6 +117,9 @@ class DataContainer extends container_common.ChartAreaContainer {
       ),
       mainAxisAlign: Align.start, // default
       crossAxisAlign: crossAxisAlign,
+      // column orientation, any stacking, any sign: bars of data are in Row main axis,
+      // this Row must divide width to all bars evenly
+      constraintsDivisionToChildrenStrategy: ConstraintsDivisionToChildrenStrategy.evenDivision, // todo-00-last-done
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_CrossPointsModels(
         crossPointsModels: crossPointsModels,

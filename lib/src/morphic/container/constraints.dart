@@ -188,21 +188,23 @@ abstract class BoundingBoxesBase {
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
   List<BoundingBoxesBase> divideUsingStrategy({
     required int divideIntoCount,
-    required ConstraintsDivisionStrategy divideStrategy,
+    // todo-010-refactoring : rename to constraintsDivisionToChildrenStrategy
+    required ConstraintsDivisionToChildrenStrategy divideStrategy,
     required LayoutAxis divideAlongAxis,
     List<double>? childrenWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
     late final double sumDoubleWeights;
 
-    if (divideStrategy == ConstraintsDivisionStrategy.byChildrenWeights && childrenWeights == null) {
-      throw StateError('doubleWeights only applicable for ConstraintsDivisionStrategy.ratio');
+    if (divideStrategy == ConstraintsDivisionToChildrenStrategy.byChildrenWeights && childrenWeights == null) {
+      throw StateError('For divideStrategy "byChildrenWeights", childrenWeights must be set, but it is null');
     }
 
-    if ((divideStrategy == ConstraintsDivisionStrategy.evenDivision ||
-            divideStrategy == ConstraintsDivisionStrategy.evenDivision) &&
+    // todo-00-refactoring (functional) - this seems to be a bug
+    if ((divideStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision ||
+            divideStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision) &&
         childrenWeights != null) {
-      throw StateError('doubleWeights not applicable for ConstraintsDivisionStrategy.evenly or noDivide');
+      throw StateError('doubleWeights not applicable for ConstraintsDivisionToChildrenStrategy.evenly or noDivide');
     }
 
     if (childrenWeights != null) {
@@ -211,7 +213,7 @@ abstract class BoundingBoxesBase {
     }
 
     switch (divideStrategy) {
-      case ConstraintsDivisionStrategy.evenDivision:
+      case ConstraintsDivisionToChildrenStrategy.evenDivision:
         switch (divideAlongAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -238,7 +240,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivisionStrategy.byChildrenWeights:
+      case ConstraintsDivisionToChildrenStrategy.byChildrenWeights:
         List<BoundingBoxesBase> fractions = [];
         for (var doubleWeight in childrenWeights!) {
           switch (divideAlongAxis) {
@@ -265,7 +267,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivisionStrategy.noDivision:
+      case ConstraintsDivisionToChildrenStrategy.noDivision:
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }

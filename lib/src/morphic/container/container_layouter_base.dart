@@ -9,7 +9,7 @@ import 'morphic_dart_enums.dart' show LayoutAxis, ExternalTickAtPosition;
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
     show Align, Packing, LengthsPositionerProperties,
-    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivisionStrategy;
+    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivisionToChildrenStrategy;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'chart_support/chart_style.dart' show ChartOrientation;
@@ -507,12 +507,17 @@ class ConstraintsWeight {
   }
 }
 
+/// Wrapper for a list of constraints, typically representing a parent's child constraints.
+///
+/// In addition to a simple list, allows to calculate [sum] of weights, and a descriptive method [allDefined],
+/// used by layouters to decide which constraint system division is preferred,
+/// in case of a collision between parent-layouter-defined division and children-defined weights division.
 class ConstraintsWeights {
 
   /// List of weights, typically created from of all children of a [BoxContainer].
   final List<ConstraintsWeight> constraintsWeightList;
 
-  ConstraintsWeights.from({
+  ConstraintsWeights.fromList({
      required List<ConstraintsWeight> constraintsWeightList,
   }) : constraintsWeightList = List.from(constraintsWeightList, growable: false);
 
@@ -524,9 +529,10 @@ class ConstraintsWeights {
   /// which are assumed to have been copied to [constraintsWeightList].
   bool get allDefined => constraintsWeightList.where((element) => element.weight < 0).isEmpty;
 
+  // todo-010-refactoring : rename to weightList, also check if the doubleWeight is used other places.
   List<double> get doubleWeightList {
     if (!allDefined) {
-      throw StateError('Some weights are not defined positive, constraintsWeights=$constraintsWeightList');
+      throw StateError('Some weights are not defined, constraintsWeights=$constraintsWeightList');
     }
     return constraintsWeightList.map((element) => element.weight).toList();
   }
@@ -1023,7 +1029,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   @override
   late final ContainerKey key;
 
-  /// Defines the relative size of constraints when considered as one child among siblings.
+  /// Defines the relative size of constraints when considered as one child among parent's siblings.
   ///
   /// The 'relative size' is referred to as 'weight' of this child constraint among all children constraints.
   ///
@@ -1034,11 +1040,14 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// by parent [BoxLayouter] (during construction), ONLY if parents want to proportionally layout
   /// instances of it's children. This is the situation for multi-children layouters, such as [Column] and [Row].
   ///
+  /// // todo-010-refactoring : Rename constraintsWeight to constraintsWeightForParent
   late final ConstraintsWeight constraintsWeight;
 
-  // Get the ConstraintsWeights instance from all children. Parents may this to decide distribution of constraints.
+  /// Get the ConstraintsWeights instance from all children. Parents may this to decide distribution of constraints.
+  // todo-010-refactoring : Rename to childrenWeightsAsParent
+  // todo-010-refactoring (functional). This is not used, but other places use similar logic. Pull it here and start using this method
   ConstraintsWeights get childrenWeights =>
-      ConstraintsWeights.from(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
+      ConstraintsWeights.fromList(constraintsWeightList: __children.map((child) => child.constraintsWeight).toList());
 
   // BoxLayouter section 2: Implements [LayoutableBox] -------------------------------------------------
 
@@ -1538,6 +1547,7 @@ abstract class BoxContainer extends BoxContainerHierarchy with BoxLayouter
     // todo-023 : can key and children be required, final, and non nullable?
     ContainerKey? key,
     List<BoxContainer>? children,
+    // todo-010-refactoring : rename to constraintsWeightForParent
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) {
     // Late initialize the constraintsWeight
@@ -1859,9 +1869,13 @@ abstract class NonPositioningBoxLayouter extends BoxContainer {
 
 }
 
-/// Intermediate layout class uses the main/cross axis properties concept, but keeps layout from it's superclass.
+/// Intermediate abstract layout class is first from top of the layout hierarchy to
+/// introduce the concept of the main and cross axis.
 ///
-/// Extensions are intended to split to external ticks layouter and rolling layouter.
+/// Keeps layout the same as it's superclass; extensions should override
+/// it to implement the concept of main and cross axis.
+///
+/// Extensions are intended to split to the external ticks layouter and the rolling layouter.
 abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   MainAndCrossAxisBoxLayouter({
     required List<BoxContainer> children,
@@ -1869,6 +1883,9 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
+    this.constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
+    // todo-010-refactoring : rename to standard constraintsWeightForParent, but found usages first.
+    //                        rename reason: It should be the parent in which way to divide constraints. Parent may NOT be MainAndCrossAxisBoxLayouter, so the concept of mainAxis does not make sense for the parent!!
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1895,6 +1912,16 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   late LengthsPositionerProperties mainAxisLayoutProperties;
   late LengthsPositionerProperties crossAxisLayoutProperties;
 
+  /// The strategy defining if constraints should be divided among children during layout (and if yes, how).
+  ///
+  /// The decision if or how constraints are divided, is determined by two concepts:
+  ///   - the constraints weights of children 'for parent'
+  ///   - the constraints division strategy 'to children (as parent)',
+  ///     defined by this [constraintsDivisionToChildrenStrategy].
+  ///
+  /// Because both can be set, priorities must be defined. This is how priorities work:
+  /// todo-010-refactoring describe if here or somewhere
+  final ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy;
 }
 
   /// Base class for layouters which layout along two axes: the main axis, along which the layout
@@ -1916,7 +1943,8 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
 /// as well as the 'cross' direction on this base class constructor.
 ///
 /// Similar to Flex.
-// todo-011 : Add childrenWeights.even or something similar which will cause all children to have the same weight, unless all children define weights, in which case that definition wins
+// todo-00 : Add childrenWeights.even or something similar which will cause all children to have the same weight, unless all children define weights, in which case that definition wins
+
 abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   RollingBoxLayouter({
     required List<BoxContainer> children,
@@ -1924,6 +1952,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
+    ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1931,6 +1960,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
+    constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   );
 
@@ -2013,43 +2043,55 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
   void _layout_Pre_DistributeConstraintsToImmediateChildren(List<LayoutableBox> children) {
     // In this [RollingLayouter] the passed children are only non-greedy children.
     // Constraints are distributed only among non-greedy children; the greedy child(ren) will get constraints later.
-    ConstraintsWeights childrenWeights = ConstraintsWeights.from(
-        constraintsWeightList: children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight)
-            .toList());
+    ConstraintsWeights childrenWeights = ConstraintsWeights.fromList(
+        constraintsWeightList:
+            children.map((LayoutableBox child) => (child as BoxLayouter).constraintsWeight).toList());
 
-    // If weights defined on all children, this [RollingBoxLayouter] distributes constraints to children
-    //   proportionally to children's weights;
-    // Else, all children receive full parent's weight.
-    if (childrenWeights.allDefined) {
-      // If all children have weights defined, give children constraints divided according to defined weights
-      assert (childrenWeights.constraintsWeightList.length == children.length);
-      List<BoundingBoxesBase> childrenConstraints = constraints.divideUsingStrategy(
-        divideIntoCount: children.length,
-        divideStrategy: ConstraintsDivisionStrategy.byChildrenWeights,
-        divideAlongAxis:  mainLayoutAxis,
-        childrenWeights: childrenWeights.doubleWeightList,
-      );
-
-      assert (childrenConstraints.length == children.length);
+    if (childrenWeights.allDefined ||
+        constraintsDivisionToChildrenStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision) {
+      List<BoundingBoxesBase>? childrenConstraints;
+      // Priority 1 on constraints division:
+      //   If weights are defined on all children, this [RollingBoxLayouter] distributes constraints to children
+      //   proportionally to children's weights.
+      if (childrenWeights.allDefined) {
+        // If all children have weights defined, give children constraints divided according to defined weights
+        assert(childrenWeights.constraintsWeightList.length == children.length);
+        childrenConstraints = constraints.divideUsingStrategy(
+          divideIntoCount: children.length,
+          divideStrategy: ConstraintsDivisionToChildrenStrategy.byChildrenWeights,
+          divideAlongAxis: mainLayoutAxis,
+          childrenWeights: childrenWeights.doubleWeightList,
+        );
+      } else if (constraintsDivisionToChildrenStrategy == ConstraintsDivisionToChildrenStrategy.evenDivision) {
+        // Some children do NOT have weights defined, priority is even division set on this layouter
+        // If this layouter defines [ConstraintsDivisionToChildrenStrategy = evenly], divide constraints evenly
+        childrenConstraints = constraints.divideUsingStrategy(
+          divideIntoCount: children.length,
+          divideStrategy: ConstraintsDivisionToChildrenStrategy.evenDivision,
+          divideAlongAxis: mainLayoutAxis,
+        );
+      }
+      assert(childrenConstraints!.length == children.length);
 
       // Apply the divided constraints on children
       for (int i = 0; i < children.length; i++) {
-        _children[i].applyParentConstraints(this, childrenConstraints[i] as BoxContainerConstraints);
+        _children[i].applyParentConstraints(this, childrenConstraints![i] as BoxContainerConstraints);
       }
-    } else {
-      // Else give all children full self constraints.
-      // This code is the same as super implementation in [BoxLayouter], but has an added warning
-      //    if Align is not start
-      if (mainAxisLayoutProperties.align != Align.start) {
-        print(' ### Log.Warning: Allowing all children full self constraints while Align is not "start" along '
-            'main axis will likely cause overflows during a stressed layout. Either create this instance '
-            'using "mainAxisLayout: Align.start", or divide self constraints by setting weights on all children '
-            'using "mainAxisConstraintsWeight: ConstraintsWeight". \n'
-            'This instance=$this');
-      }
-      for (var child in children) {
-        child.applyParentConstraints(this, constraints);
-      }
+      return;
+    }
+
+    // No constraint division, give all children full self constraints.
+    // This code is the same as super implementation in [BoxLayouter], but has an added warning
+    //    if Align is not start
+    if (mainAxisLayoutProperties.align != Align.start) {
+      print(' ### Log.Warning: Allowing all children full self constraints while Align is not "start" along '
+          'main axis will likely cause overflows during a stressed layout. Either create this instance '
+          'using "mainAxisLayout: Align.start", or divide self constraints by setting weights on all children '
+          'using "mainAxisConstraintsWeight: ConstraintsWeight". \n'
+          'This instance=$this');
+    }
+    for (var child in children) {
+      child.applyParentConstraints(this, constraints);
     }
   }
 
@@ -2120,7 +2162,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       //   creating [greedyChildrenConstraints].
       List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
         divideIntoCount: _greedyChildren.length,
-        divideStrategy: ConstraintsDivisionStrategy.byChildrenWeights,
+        divideStrategy: ConstraintsDivisionToChildrenStrategy.byChildrenWeights,
         divideAlongAxis: mainLayoutAxis,
         childrenWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
@@ -2158,6 +2200,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required super.mainAxisPacking,
     required super.crossAxisAlign,
     required super.crossAxisPacking,
+    super.constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision, // todo-00-last : why not default ??
     super.mainAxisConstraintsWeight,
   });
 
@@ -2175,6 +2218,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
@@ -2187,6 +2231,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
+          constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
       case ChartOrientation.row:
@@ -2197,6 +2242,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
+          constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
     }
@@ -2212,6 +2258,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
@@ -2224,6 +2271,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
+          constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
       case ChartOrientation.row:
@@ -2234,6 +2282,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
+          constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
           mainAxisConstraintsWeight: mainAxisConstraintsWeight,
         );
     }
@@ -2248,6 +2297,7 @@ class Row extends TransposingRoller {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -2255,6 +2305,7 @@ class Row extends TransposingRoller {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
+    constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
@@ -2282,6 +2333,7 @@ class Column extends TransposingRoller {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
+    ConstraintsDivisionToChildrenStrategy constraintsDivisionToChildrenStrategy = ConstraintsDivisionToChildrenStrategy.noDivision,
     ConstraintsWeight mainAxisConstraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -2289,6 +2341,7 @@ class Column extends TransposingRoller {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
+    constraintsDivisionToChildrenStrategy: constraintsDivisionToChildrenStrategy,
     mainAxisConstraintsWeight: mainAxisConstraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;

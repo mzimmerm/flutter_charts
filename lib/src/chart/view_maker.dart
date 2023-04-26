@@ -278,8 +278,10 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
       container_base.Padder oneBarPadded = container_base.Padder(
         edgePadding: pointRectSidePad,
         child: oneBar,
+/* todo-00-last-done
         // Give all padded [CrossPointsContainer] which will be wrapped in columns the same weight along main axis.
         constraintsWeight: const container_base.ConstraintsWeight(weight: 1),
+*/
       );
 
       chartBars.add(oneBarPadded);
@@ -327,9 +329,11 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
                   .map((pointContainer) => container_base.Padder(
                         edgePadding: pointRectSidePad,
                         child: pointContainer,
+/* todo-00-last-done
                         constraintsWeight: isStacked
                             ? container_base.ConstraintsWeight.defaultWeight
                             : const container_base.ConstraintsWeight(weight: 1),
+*/
                       ))
                   .toList(),
           barsAreaSign: barsAreaSign,
@@ -385,6 +389,9 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           // column:  sit positive bars at end,   negative bars at start
           // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
           crossAxisAlign: barsAreaSign == model.Sign.positiveOr0 ? Align.end : Align.start,
+          // nonStacked column orientation, leaf rects are in Row along main axis,
+          // this Row must divide width to all leaf rects evenly
+          constraintsDivisionToChildrenStrategy: ConstraintsDivisionToChildrenStrategy.evenDivision, // todo-00-last-done
           // isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide todo-010-next review
           children: pointContainers,
         );

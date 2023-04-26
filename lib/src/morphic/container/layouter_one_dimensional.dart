@@ -120,9 +120,10 @@ enum Align {
 /// Describes how a constraint should be divided into multiple constraints,
 /// presumably for the divided constraints to be passed to children.
 ///
-/// The term 'divided' may be misleading for [ConstraintsDivisionStrategy.noDivision], as that
+/// The term 'divided' may be misleading for [ConstraintsDivisionToChildrenStrategy.noDivision], as that
 /// describes that a given constraint should create multiple constraints that are the same.
-enum ConstraintsDivisionStrategy {
+// todo-00-refactoring : rename to ConstraintsDivisionToChildrenStrategy
+enum ConstraintsDivisionToChildrenStrategy {
   evenDivision,
   byChildrenWeights,
   noDivision,
