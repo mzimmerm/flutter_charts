@@ -118,7 +118,7 @@ class DataContainer extends container_common.ChartAreaContainer {
       mainAxisAlign: Align.start, // default
       crossAxisAlign: crossAxisAlign,
       // Switches from DataContainer to ChartViewMaker, as it needs a model
-      children: chartViewMaker.makeViewsForDataContainer_CrossSeriesBars(
+      children: chartViewMaker.makeViewsForDataContainer_CrossPointsModels(
         crossPointsModels: crossPointsModels,
         barsAreaSign: barsAreaSign,
       ),
