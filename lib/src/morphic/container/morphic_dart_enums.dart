@@ -41,13 +41,6 @@ enum Sign {
   any;
 
   /// Checks if the sign of a the passed [value] is the sign required by this enum instance.
-  ///
-  /// Motivation: In the context of a charting framework, any series positive and negative
-  ///             values are split and kept separate in model and in view containers.
-  ///             Example:
-  ///               - There are separate instances of positive and negative [CrossPointsModel]s,
-  ///                 in [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
-  ///             This method is a helper to performs the separation based on [pointsSign].
   bool isValueMySign({
     required double value,
   }) {
