@@ -51,7 +51,7 @@ class DataRangeLabelInfosGenerator {
   ///   - [dataRange]
   ///   - [_labelInfos]
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // added as a temporary to test old vs new todo-010 : do we need this reference? if used, then: dataModel and isStacked is NOT needed.
+    required this.chartViewMaker, // added as a temporary to test old vs new todo-010 : do we need this reference? if used, then: dataModel and isStacked is NOT needed. PASS chartOrientation ONLY instrad of this
     required ChartModel dataModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,

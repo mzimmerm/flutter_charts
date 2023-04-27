@@ -6,7 +6,6 @@ import '../morphic/container/label_container.dart';
 import 'container/container_common.dart' as container_common show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'options.dart' show ChartOptions;
-// todo-00-done : import 'model/label_model.dart' show AxisLabelInfo;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -123,33 +122,10 @@ class AxisLabelContainer extends ChartLabelContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-/* todo-00-done : moved to AxisLabelContainerCL
-    required AxisLabelInfo labelInfo,
-    required container_common.ChartAreaContainer ownerChartAreaContainer,
-*/
-  })
-      :
-/* todo-00-done : moved to AxisLabelContainerCL
-      _labelInfo = labelInfo,
-      _ownerChartAreaContainer = ownerChartAreaContainer,
-*/
-        super(
+  }) : super(
           chartViewMaker: chartViewMaker,
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
         );
-
-/* todo-00-done : moved to AxisLabelContainerCL
-  /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
-  final container_common.ChartAreaContainer _ownerChartAreaContainer;
-  container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
-
-  /// Maintains the LabelInfo from which this [ChartLabelContainer] was created,
-  /// for use during [layout] of self or parents.
-  final AxisLabelInfo _labelInfo;
-
-  /// Getter of [AxisLabelInfo] which created this Y label.
-  AxisLabelInfo get labelInfo => _labelInfo;
-*/
 }

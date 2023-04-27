@@ -34,11 +34,8 @@ class AxisLabelContainerCL extends AxisLabelContainer {
         label: label,
         labelTiltMatrix: labelTiltMatrix,
         labelStyle: labelStyle,
-        // todo-00-done : moved from AxisLabelContainer : labelInfo: labelInfo,
-        // todo-00-done : moved from AxisLabelContainer : ownerChartAreaContainer: ownerChartAreaContainer,
       );
 
-  /* todo-00-done : moved from AxisLabelContainer */
   /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
   final container_common.ChartAreaContainer _ownerChartAreaContainer;
   container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
@@ -113,21 +110,3 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
 }
-
-/* todo-00-done
-class AxisLabelContainer extends ChartLabelContainer {
-  AxisLabelContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
-    required String label,
-    required vector_math.Matrix2 labelTiltMatrix,
-    required LabelStyle labelStyle,
-  })
-      :
-
-        super(
-        chartViewMaker: chartViewMaker,
-        label: label,
-        labelTiltMatrix: labelTiltMatrix,
-        labelStyle: labelStyle,
-      );
- */

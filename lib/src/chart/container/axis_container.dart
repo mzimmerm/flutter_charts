@@ -195,8 +195,6 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in VerticalAxisContainer
                     labelStyle: _labelStyle,
-                    // todo-00-done : labelInfo: labelInfo,
-                    // todo-00-done : ownerChartAreaContainer: this,
                   )
               ],
             ),
@@ -240,8 +238,6 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in VerticalAxisContainer
                       labelStyle: _labelStyle,
-                      // todo-00-done : labelInfo: labelInfo,
-                      // todo-00-done : ownerChartAreaContainer: this,
                     )
                 ],
               ),

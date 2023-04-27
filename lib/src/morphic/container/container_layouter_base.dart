@@ -91,10 +91,17 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     addChildren(newChildren);
   }
 
-  /// Allows [BoxContainer]'s [_children] to be created and set (or replaced) late (after parent creation)
-  /// while the parent [layout] is descended into it's children [layout]s.
+  /// Allows [_children] of a [BoxContainer] (considered a 'parent' in this text)
+  /// to be created and set (or replaced) 'late' (after parent construction) in parent's [layout]
+  /// before the parent's [layout] descends into it's children's [layout]s.
   ///
-  /// Note: "Normally", the [_children] should created *early* in the [BoxContainer] constructor.
+  /// Motivation: Such 'late' creation of children is legitimate in situation where
+  ///             the children creation is affected by the [constraints] available to children.
+  ///             For example, in stress conditions, we may create less labels. The amount of stress
+  ///             is not known until parent's [layout] is in progress.
+  ///
+  /// Note: "Alternatively", [BoxContainer]'s [_children] should be created
+  ///       *early* in parent's [BoxContainer] constructor.
   ///
   /// Important note on motivation for this method's existence:
   ///   - When constructing most UIs, when creating a parent [BoxContainer], the UI creator
@@ -128,17 +135,32 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///     this [BoxContainer] would not need to mixin this [BuilderOfChildrenDuringParentLayout],
   ///     and build it's children in it's [BoxContainer] constructor.
   ///
-  /// Important note - lifecycle:
-  ///   For instances of [BoxContainer] mixed in with this [BuilderOfChildrenDuringParentLayout], \
-  ///   the sequence of method invocations of such object should be as follows
-  ///   ``` dart
-  ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
-  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-010-doc documentation is not right
-  ///     3.  instance.layout();
-  ///     4.  instance.applyParentOffset(this, instanceParentOffset);
-  ///   ```
-  ///   This was chosen because there are legitimate reasons for the [buildAndReplaceChildren]
-  ///   to need the instance's [constraints].
+  /// Important notes - lifecycle of [BoxContainer]:
+  ///   - Note: The default [layout] implementation first operation is
+  ///          ```dart
+  ///             this.buildAndReplaceChildren();
+  ///          ```
+  ///          If [layout] is overridden, it should do the same
+  ///   - For any 'childInstance' of [BoxContainer] mixed in with this [BuilderOfChildrenDuringParentLayout],
+  ///     the sequence of method invocations of such object should be as follows
+  ///     1. Context: parent. The 'childInstance' of [BoxContainer] is created as a child of some other [BoxContainer],
+  ///        either in the parent's constructor, or in parent's [buildAndReplaceChildren] method
+  ///        (Self [buildAndReplaceChildren] should be the first operation invoked in parent's [layout].)
+  ///     2. Context: parent. The parent invokes [BoxContainer.applyParentConstraints] on 'childInstance' as
+  ///        ```dart
+  ///           childInstance.applyParentConstraints(this, constraintsOnChild);
+  ///        ```
+  ///        in parent's [layout] method.
+  ///     3. Context: parent. The parent invokes [BoxContainer.layout] on 'childInstance' as
+  ///        ```dart
+  ///           childInstance.layout();
+  ///        ```
+  ///     4. Context: parent. After parent invokes [layout] on all 'childInstance's, it should position children
+  ///        in self according to it's layout rules, yielding for each of it's children, it's `childOffsetInSelf`.
+  ///        Once that is done, the child should be moved by the `childOffsetInSelf` by calling
+  ///        ```dart
+  ///           childInstance.applyParentConstraints(this, childOffsetInSelf);
+  ///        ```
   ///
   /// An example: As an example, we have a chart with 'root container' which contains two hierarchy-sibling areas:
   ///   - the 'x axis container', which shows data labels that must not wrap, but
@@ -164,7 +186,6 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///     this mixin's siblings' [layout], establishing the remaining space
   ///     ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
   ///     create an 'appropriate', 'non-overlapping' children of itself.
-
   void buildAndReplaceChildren();
 
   /// Default implementation of [buildAndReplaceChildren] is a no-op,
@@ -413,18 +434,14 @@ abstract class LayoutableBox {
   ///            (see [LabelContainer.offsetOfPotentiallyRotatedLabel]) and store result as member
   ///        - Override [paint] by painting on the calculated (parent also applied) offset,
   ///           (see [LabelContainer.paint].
-
-  ///
   void applyParentOffset(LayoutableBox caller, ui.Offset offset);
 
-  /// todo-doc-01 fully, also write : Important override notes and rules for [applyParentOrderedSkip] on extensions:
   /// Expresses that parent ordered this [BoxLayouter] instance to be skipped during
   /// the [layout] and [paint] processing.
   ///
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
-  // todo-010-doc : document fully, including rules for overriding
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
   ///
@@ -606,9 +623,10 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 /// itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
-/// todo-010-doc : document basic role of SizerLayouters - it is not clear from this documentation.
-/// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
-/// and [HeightSizerLayouter] to it.
+/// Motivation: Sizer layouters provide an 'anchor parent size' for children that need to
+///             size and position themselves exactly proportionally to a fixed 'anchor parent size'.
+///             A chart is an example, where the chart axis and it's scale serve as the 'anchor parent size'.
+///
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
 
   /// The required generative constructor
@@ -2400,7 +2418,7 @@ class ExternalTicksColumn extends TransposingExternalTicks {
 
 /// If used on [TableLayoutDefiner], it aligns the table cells 'packed towards middle' as much as possible.
 ///
-/// The intended use is in situations where the [TableLayout] should layout Flutter Charts.
+/// The intended use is in situations where the [TableLayouter] should layout Flutter Charts.
 /// In charts context, the X axis, Y axis, and data container should be aligned so the pack tight without spacing
 /// between them.
 ///
@@ -2477,6 +2495,9 @@ class ChartTableLayoutCellsAlignerDefiner {
 /// Exists for the benefit of the [TableLayouter], during it's [TableLayouter.layout],
 /// to allow child iteration in user-defined sequence [layoutSequence]
 /// and creation of constraints for the next cell in layout sequence.
+///
+/// Structurally, one instance of this [TableLayoutCellDefiner] should be created for each table cell.
+/// The instances are kept in [TableLayoutDefiner.cellDefinersTable], which is a list of lists.
 ///
 class TableLayoutCellDefiner {
 
@@ -2598,28 +2619,34 @@ class TableLayoutCellDefiner {
   late TableLayoutCellDefiner? nextCellDefinerInLayoutSequence;
 }
 
-/// Represents a minimum Size of a cell in [TableLayout].
+/// Represents a 'minimum Size of a cell in [TableLayouter]'.
 ///
-/// By 'minimum Size of a cell in [TableLayout]' we mean that from the beginning of the [layout]
-/// process in [TableLayout] the algorithm assumes the [BoxContainer] in the cell will have
-/// at least the minimum Size. The side-effect of this fact is important: From the beginning of the [layout],
+/// By 'minimum Size of a cell in [TableLayouter]' we mean that from the beginning of the [layout]
+/// process in the [TableLayouter], the algorithm assumes the [BoxContainer] in the cell will have
+/// at least some minimum Size. The side-effect of this fact is important: From the beginning of the [layout],
 /// all other cells being layed out are given (smaller) constraints, assuming the 'minimum size of one cell'
 /// is taken away.
-///
-/// todo-010-doc fix docs
-/// The method by which the minimum Size is defined can be one of:
-///   - providing minimum width and height for the cell
-/// or a [BoxContainer] which produces constraints upon a 'test layout' for
-/// a cell in [TableLayouter] - that is, minimum constraints for the cell defined by [TableLayoutCellDefiner].
-/// todo-010-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
-///
-/// Part of [TableLayoutDefiner], which will ensure the provided constraint
 ///
 /// Motivation: During table layout, we often need to set a minimum size of a row
 ///             or a column - row width or column height, or both.
 ///             This class helps to express this need, either by specifying a minimum size directly,
 ///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
-/// How is this motivation implemented?  todo-010-doc
+///
+/// Structurally, one instance of this class is created for each instance of [TableLayoutCellDefiner];
+/// the instance of this class is kept in [TableLayoutCellDefiner.cellMinSizer].
+///
+/// The method by which the 'minimum Size of a cell in [TableLayouter]' is defined can be one of:
+///
+///   - [TableLayoutCellMinSizer.fromMinima] defines minimum width and height for the cell
+///     in pixels.
+///   - [TableLayoutCellMinSizer.fromPortionOfTableConstraint] defines minimum width and height for the cell
+///     as 1-based ratio of the constraints given to the [TableLayouter] instance.
+///   - [TableLayoutCellMinSizer.fromCellPreLayout] defines minimum width and height for the cell
+///     in pixels - the pixels are not hardcoded, but should be a result of invoking [layout] of the passed
+///     [BoxContainer] named [preLayoutCellToGainMinima].
+///   - [TableLayoutCellMinSizer.none] defines NO minimum width or height for the cell.
+///     This construction exists to remove need for nulling instances when no minimizing sizer is used.
+///
 ///
 class TableLayoutCellMinSizer {
   TableLayoutCellMinSizer.fromMinima({
@@ -2730,7 +2757,7 @@ class TableLayoutCellMinSizer {
   }
 }
 
-/// Manages [TableLayoutCellDefiner]s for TableLayouter during layout.
+/// Manages [TableLayoutCellDefiner]s for cells in [TableLayouter] during layout.
 ///
 /// Each instance requires validation of correctness, such as all rows must be the same length.
 /// Validation is performed by [], but it should be called late, in the [TableLayouter] constructor
@@ -2868,6 +2895,12 @@ class TableLayoutDefiner {
 /// Lays out [BoxContainer]s in the passed [cellsTable] as a table.
 ///
 /// The layout order is specified by the passed [tableLayoutDefiner].
+///
+/// Structure:
+///   - [TableLayouter]
+///     - has one [TableLayoutDefiner] in [TableLayouter.tableLayoutDefiner]; this [TableLayoutDefiner] instance has
+///       - MxN [TableLayoutCellDefiner]s in [TableLayoutDefiner.cellDefinersTable]; each [TableLayoutCellDefiner]
+///         - has 0-1 [TableLayoutCellMinSizer] in  [TableLayoutCellDefiner.cellMinSizer].
 ///
 /// Unlike [RollingBoxLayouter], each cell (child) in the [TableLayouter]
 /// receives it's constraints just before it's layout is called.
