@@ -188,15 +188,15 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               ),
               children: [
                 for (var labelInfo in _inputLabelsGenerator.labelInfoList)
-                  // todo-012 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
+                  // todo-013 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   AxisLabelContainer(
                     chartViewMaker: chartViewMaker,
                     label: labelInfo.formattedLabel,
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in VerticalAxisContainer
                     labelStyle: _labelStyle,
-                    labelInfo: labelInfo,
-                    ownerChartAreaContainer: this,
+                    // todo-00-done : labelInfo: labelInfo,
+                    // todo-00-done : ownerChartAreaContainer: this,
                   )
               ],
             ),
@@ -240,8 +240,8 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in VerticalAxisContainer
                       labelStyle: _labelStyle,
-                      labelInfo: labelInfo,
-                      ownerChartAreaContainer: this,
+                      // todo-00-done : labelInfo: labelInfo,
+                      // todo-00-done : ownerChartAreaContainer: this,
                     )
                 ],
               ),

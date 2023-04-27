@@ -44,7 +44,7 @@ abstract class BoundingBoxesBase {
   /// Set to non-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
   ///
   /// Motivation and assumption:
-  ///   - Used to mark that this bounding box was divided from parent, see [divideUsingStrategy].
+  ///   - Used to mark that this bounding box was divided from parent, see [divideUsingMethod].
   ///   - Mostly for the benefit of divided [BoxContainerConstraints].
   ///   - If set, it is assumed that all the divided constraints are managed
   ///     in a list (e.g. list of constraint children), and the division was a kind to tiling
@@ -166,7 +166,7 @@ abstract class BoundingBoxesBase {
 
   /// Creates a list of 'smaller' [BoundingBoxesBase]s objects, based on this [BoundingBoxesBase].
   ///
-  /// The created [BoundingBoxesBase]s and their sizes depend on the dividing strategy [constraintsDivideToChildren].
+  /// The created [BoundingBoxesBase]s and their sizes depend on the dividing strategy [constraintsDivideMethod].
   ///
   /// The sizes of the returned constraint list are smaller along the orientation of the passed [divideAlongAxis];
   /// the cross-sizes remain the same as the size of this instance in that orientation.
@@ -176,8 +176,8 @@ abstract class BoundingBoxesBase {
   ///
   /// The parameters description:
   ///   -
-  ///   - [divideIntoCount]  todo-01-doc
-  ///   - [constraintsDivideToChildren] todo-01-doc
+  ///   - [divideIntoCount] Count to divide evenly to
+  ///   - [constraintsDivideMethod] value of [ConstraintsDivideMethod]
   ///   - [divideAlongAxis] Defines the axis along which this constraint is divided.
   ///      In the cross-axis to [divideAlongAxis], the sizes are taken from this constraint.
   ///   - [childrenWeights] Defines the weights by which this instance is divided. The
@@ -185,23 +185,28 @@ abstract class BoundingBoxesBase {
   ///     and client asks to divide the constraint into smaller constraints given the parent's children weight.
   ///     Each weight acts along the axis orientation given by [divideAlongAxis].
   ///
+  // todo-011 : separate into methods:
+  //    - divideEvenlyIntoCount: params : divideIntoCount, divideAlongAxis
+  //    - divideByChildrenWeights: params : childrenWeights, divideAlongAxis
+  //    - copyIntoCount: params: copyCount, divideAlongAxis
+  //    and call them in code based on given method
   // List<T> divideUsingStrategy<T extends BoundingBoxesBase>({
-  List<BoundingBoxesBase> divideUsingStrategy({
+  List<BoundingBoxesBase> divideUsingMethod({
     required int divideIntoCount,
-    required ConstraintsDivideToChildren constraintsDivideToChildren,
+    required ConstraintsDivideMethod constraintsDivideMethod,
     required LayoutAxis divideAlongAxis,
     List<double>? childrenWeights,
   }) {
     double minWidth, minHeight, maxWidth, maxHeight;
     late final double sumChildrenWeights;
 
-    if (constraintsDivideToChildren == ConstraintsDivideToChildren.byChildrenWeights && childrenWeights == null) {
-      throw StateError('For constraintsDivideToChildren "byChildrenWeights",'
+    if (constraintsDivideMethod == ConstraintsDivideMethod.byChildrenWeights && childrenWeights == null) {
+      throw StateError('For constraintsDivideMethod "byChildrenWeights",'
           ' childrenWeights must be set, but it is null');
     }
 
-    if (constraintsDivideToChildren.isNot(ConstraintsDivideToChildren.byChildrenWeights) && childrenWeights != null) {
-      throw StateError('weights not applicable for ConstraintsDivideToChildren.evenly or noDivide');
+    if (constraintsDivideMethod.isNot(ConstraintsDivideMethod.byChildrenWeights) && childrenWeights != null) {
+      throw StateError('weights not applicable for ConstraintsDivideMethod.evenly or noDivide');
     }
 
     if (childrenWeights != null) {
@@ -209,8 +214,8 @@ abstract class BoundingBoxesBase {
       sumChildrenWeights = childrenWeights.fold<double>(0, (previousValue, element) => previousValue + element);
     }
 
-    switch (constraintsDivideToChildren) {
-      case ConstraintsDivideToChildren.evenDivision:
+    switch (constraintsDivideMethod) {
+      case ConstraintsDivideMethod.evenDivision:
         switch (divideAlongAxis) {
           case LayoutAxis.horizontal:
             minWidth = minSize.width / divideIntoCount;
@@ -237,7 +242,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivideToChildren.byChildrenWeights:
+      case ConstraintsDivideMethod.byChildrenWeights:
         List<BoundingBoxesBase> fractions = [];
         for (var weight in childrenWeights!) {
           switch (divideAlongAxis) {
@@ -264,7 +269,7 @@ abstract class BoundingBoxesBase {
           fractions.add(fraction);
         }
         return List.from(fractions, growable: false);
-      case ConstraintsDivideToChildren.noDivision:
+      case ConstraintsDivideMethod.noDivision:
         return List.filled(divideIntoCount, clone(), growable: false);
     }
   }

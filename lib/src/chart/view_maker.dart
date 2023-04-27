@@ -347,7 +347,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           chartOrientation: chartOrientation,
           mainAxisAlign: Align.start, // default
           crossAxisAlign: Align.center, // default
-          constraintsDivideToChildren: ConstraintsDivideToChildren.noDivision, // default
+          constraintsDivideMethod: ConstraintsDivideMethod.noDivision, // default
           isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide
           children: barsAreaSign == Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
         );
@@ -360,7 +360,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
           // nonStacked column orientation, leaf rects are in Row along main axis,
           // this Row must divide width to all leaf rects evenly
-          constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
+          constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
           isMainAxisAlignFlippedOnTranspose: true, // default
           children: pointContainers,
         );

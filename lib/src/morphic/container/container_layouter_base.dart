@@ -9,7 +9,7 @@ import 'morphic_dart_enums.dart' show LayoutAxis, ExternalTickAtPosition;
 import 'container_edge_padding.dart' show EdgePadding;
 import 'layouter_one_dimensional.dart'
     show Align, Packing, LengthsPositionerProperties,
-    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivideToChildren;
+    LayedoutLengthsPositioner, PositionedLineSegments, ConstraintsDivideMethod;
 import 'container_alignment.dart' show Alignment, AlignmentTransform;
 import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'chart_support/chart_style.dart' show ChartOrientation;
@@ -133,7 +133,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   ///   the sequence of method invocations of such object should be as follows
   ///   ``` dart
   ///     1.  instance.applyParentConstraints(this, instanceParentConstraints);
-  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-01-doc documentation is not right
+  ///     2.  instance.buildAndReplaceChildren(); // or a concrete LayoutContext todo-010-doc documentation is not right
   ///     3.  instance.layout();
   ///     4.  instance.applyParentOffset(this, instanceParentOffset);
   ///   ```
@@ -424,7 +424,7 @@ abstract class LayoutableBox {
   void applyParentOrderedSkip(LayoutableBox caller, bool orderedSkip);
 
   /// Set constraints from parent of this [LayoutableBox].
-  // todo-01-doc : document fully, including rules for overriding
+  // todo-010-doc : document fully, including rules for overriding
   void applyParentConstraints(LayoutableBox caller, BoxContainerConstraints constraints);
 
   ///
@@ -606,7 +606,7 @@ mixin FromConstraintsSizerMixin on BoxContainer {
 /// itself on the sandbox, by calling the mixed in method
 /// [FromConstraintsSizerMixin.findOrSetRootSandboxSizersThenCheckOrSetThisSizer].
 ///
-/// todo-012 : document basic role of SizerLayouters - it is not clear from this documentation.
+/// todo-010-doc : document basic role of SizerLayouters - it is not clear from this documentation.
 /// Consider removing from class hierarchy, OR moving portion of methods from [WidthSizerLayouter]
 /// and [HeightSizerLayouter] to it.
 abstract class FromConstraintsSizerLayouter extends NonPositioningBoxLayouter with FromConstraintsSizerMixin {
@@ -1147,7 +1147,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   /// in the same order as the passed [children]. The rectangle origin placed relative
   /// to the layouter instance, in the order of [children].
   ///
-  /// todo-01-review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
+  /// todo-013 : review : If no [children] are passed, must use all member [_children] for both rectangle positioning and order.
   /// It can ignore the passed [children] and position member [_children],
   /// but then, the offset children method [_layout_Post_NotLeaf_OffsetChildren] must be overridden
   /// to do the same (act on member [_children] rather than the passed [children]).
@@ -1236,7 +1236,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
     // causes layoutSize to not include bounding Offset of children, if children were created using Row or Column
     // layout with freePadding. This is a hack to include free padding on the left from one_dimensional layout;
     // The hack works because this self layouter always starts at 0,0,0,0. Probably only works for Align.left or Align.center.
-    // todo-01 : Perhaps can be fixed properly by one_dimensional layouter returning line segments DISTINGUISH PADDING FROM LENGTHS,
+    // todo-014 : Perhaps can be fixed properly by one_dimensional layouter returning line segments DISTINGUISH PADDING FROM LENGTHS,
     //   and some follow up processing. See [__convertMainAndCrossSegmentsToRect] and context around.
     ui.Rect positionedChildrenOuterRectIncludingFreePadding = util_flutter.boundingRect(
       [
@@ -1667,7 +1667,7 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
-    this.constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    this.constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1701,17 +1701,17 @@ abstract class MainAndCrossAxisBoxLayouter extends PositioningBoxLayouter {
   /// The decision if or how constraints are divided, is determined by two concepts:
   ///   - The constraints weights of children 'for parent', use [ConstraintsWeight] instances,
   ///     and a wrapper [ConstraintsWeights] instances.
-  ///   - The constraints division strategy 'to children (as parent)', use the [ConstraintsDivideToChildren] instances.
+  ///   - The constraints division strategy 'to children (as parent)', use the [ConstraintsDivideMethod] instances.
   ///
   /// Because both can be set, priorities must be defined. Here is the priority logic, implemented in
   /// [RollingBoxLayouter._layout_Pre_DistributeConstraintsToImmediateChildren]:
   ///   1. If the [constraintsWeight] is defined on all children of this layouter (can be checked using
   ///      [ConstraintsWeights.allDefined]), the constraints are divided according to [constraintsWeight]s
   ///      on all children of this layoter.
-  ///   2. If this layouter [constraintsDivideToChildren] is set to [ConstraintsDivideToChildren.evenDivision],
+  ///   2. If this layouter [constraintsDivideMethod] is set to [ConstraintsDivideMethod.evenDivision],
   ///      this layouter's constraints are evenly divided among children.
   ///   3. Otherwise, all children receive the undivided constraints of this instance.
-  final ConstraintsDivideToChildren constraintsDivideToChildren;
+  final ConstraintsDivideMethod constraintsDivideMethod;
 }
 
   /// Base class for layouters which layout along two axes: the main axis, along which the layout
@@ -1741,7 +1741,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     required Packing mainAxisPacking,
     required Align crossAxisAlign,
     required Packing crossAxisPacking,
-    ConstraintsDivideToChildren constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -1749,7 +1749,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    constraintsDivideToChildren: constraintsDivideToChildren,
+    constraintsDivideMethod: constraintsDivideMethod,
     constraintsWeight: constraintsWeight,
   );
 
@@ -1833,7 +1833,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
     // In this [RollingLayouter] the passed children are only non-greedy children.
     // Constraints are distributed only among non-greedy children; the greedy child(ren) will get constraints later.
     if (childrenWeights.allDefined ||
-        constraintsDivideToChildren == ConstraintsDivideToChildren.evenDivision) {
+        constraintsDivideMethod == ConstraintsDivideMethod.evenDivision) {
       List<BoundingBoxesBase>? childrenConstraints;
       // Priority 1 on constraints division:
       //   If weights are defined on all children, this [RollingBoxLayouter] distributes constraints to children
@@ -1841,18 +1841,18 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       if (childrenWeights.allDefined) {
         // If all children have weights defined, give children constraints divided according to defined weights
         assert(childrenWeights.constraintsWeightList.length == children.length);
-        childrenConstraints = constraints.divideUsingStrategy(
+        childrenConstraints = constraints.divideUsingMethod(
           divideIntoCount: children.length,
-          constraintsDivideToChildren: ConstraintsDivideToChildren.byChildrenWeights,
+          constraintsDivideMethod: ConstraintsDivideMethod.byChildrenWeights,
           divideAlongAxis: mainLayoutAxis,
           childrenWeights: childrenWeights.weightList,
         );
-      } else if (constraintsDivideToChildren == ConstraintsDivideToChildren.evenDivision) {
+      } else if (constraintsDivideMethod == ConstraintsDivideMethod.evenDivision) {
         // Some children do NOT have weights defined, priority is even division set on this layouter
-        // If this layouter defines [ConstraintsDivideToChildren = evenly], divide constraints evenly
-        childrenConstraints = constraints.divideUsingStrategy(
+        // If this layouter defines [ConstraintsDivideMethod = evenly], divide constraints evenly
+        childrenConstraints = constraints.divideUsingMethod(
           divideIntoCount: children.length,
-          constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
+          constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
           divideAlongAxis: mainLayoutAxis,
         );
       }
@@ -1945,9 +1945,9 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
 
       // Weight-divide [constraintsRemainingForGreedy] into the ratios greed / sum(greed),
       //   creating [greedyChildrenConstraints].
-      List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingStrategy(
+      List<BoundingBoxesBase> greedyChildrenConstraints = constraintsRemainingForGreedy.divideUsingMethod(
         divideIntoCount: _greedyChildren.length,
-        constraintsDivideToChildren: ConstraintsDivideToChildren.byChildrenWeights,
+        constraintsDivideMethod: ConstraintsDivideMethod.byChildrenWeights,
         divideAlongAxis: mainLayoutAxis,
         childrenWeights: _greedyChildren.map((child) => child.greed).toList(),
       );
@@ -1985,7 +1985,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     required super.mainAxisPacking,
     required super.crossAxisAlign,
     required super.crossAxisPacking,
-    super.constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    super.constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     super.constraintsWeight,
   });
 
@@ -2003,7 +2003,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsDivideToChildren constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
@@ -2016,7 +2016,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
-          constraintsDivideToChildren: constraintsDivideToChildren,
+          constraintsDivideMethod: constraintsDivideMethod,
           constraintsWeight: constraintsWeight,
         );
       case ChartOrientation.row:
@@ -2027,7 +2027,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
-          constraintsDivideToChildren: constraintsDivideToChildren,
+          constraintsDivideMethod: constraintsDivideMethod,
           constraintsWeight: constraintsWeight,
         );
     }
@@ -2043,7 +2043,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsDivideToChildren constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
     bool isMainAxisAlignFlippedOnTranspose = true,
     bool isCrossAxisAlignFlippedOnTranspose = true,
@@ -2056,7 +2056,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           mainAxisPacking: mainAxisPacking,
           crossAxisAlign: crossAxisAlign,
           crossAxisPacking: crossAxisPacking,
-          constraintsDivideToChildren: constraintsDivideToChildren,
+          constraintsDivideMethod: constraintsDivideMethod,
           constraintsWeight: constraintsWeight,
         );
       case ChartOrientation.row:
@@ -2067,7 +2067,7 @@ abstract class TransposingRoller extends RollingBoxLayouter {
           crossAxisAlign: isCrossAxisAlignFlippedOnTranspose ? crossAxisAlign.otherEndAlign() : crossAxisAlign,
           mainAxisPacking: mainAxisPacking,
           crossAxisPacking: crossAxisPacking,
-          constraintsDivideToChildren: constraintsDivideToChildren,
+          constraintsDivideMethod: constraintsDivideMethod,
           constraintsWeight: constraintsWeight,
         );
     }
@@ -2082,7 +2082,7 @@ class Row extends TransposingRoller {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsDivideToChildren constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -2090,7 +2090,7 @@ class Row extends TransposingRoller {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    constraintsDivideToChildren: constraintsDivideToChildren,
+    constraintsDivideMethod: constraintsDivideMethod,
     constraintsWeight: constraintsWeight,
   ) {
     // Fields declared in mixin portion of BoxContainer cannot be initialized in initializer,
@@ -2118,7 +2118,7 @@ class Column extends TransposingRoller {
     Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.center,
     Packing crossAxisPacking = Packing.matrjoska,
-    ConstraintsDivideToChildren constraintsDivideToChildren = ConstraintsDivideToChildren.noDivision,
+    ConstraintsDivideMethod constraintsDivideMethod = ConstraintsDivideMethod.noDivision,
     ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
   }) : super(
     children: children,
@@ -2126,7 +2126,7 @@ class Column extends TransposingRoller {
     mainAxisPacking: mainAxisPacking,
     crossAxisAlign: crossAxisAlign,
     crossAxisPacking: crossAxisPacking,
-    constraintsDivideToChildren: constraintsDivideToChildren,
+    constraintsDivideMethod: constraintsDivideMethod,
     constraintsWeight: constraintsWeight,
   ) {
     mainLayoutAxis = LayoutAxis.vertical;
@@ -2255,7 +2255,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// See [layout_Post_NotLeaf_PositionChildren] for description of overall [layout] goals.
   @override
   void _layout_Post_NotLeaf_SetSize_FromPositionedChildren(List<ui.Rect> positionedChildrenRects) {
-    // todo-011 : is this same impl as in BoxLayouter? If so, why? can we just use BoxLayouter impl?
+    // todo-010 : is this same impl as in BoxLayouter? If so, why? can we just use BoxLayouter impl? can we merge it there?
     ui.Rect positionedChildrenOuterRect = util_flutter
         .boundingRect(positionedChildrenRects.map((ui.Rect childRect) => childRect).toList(growable: false));
 
@@ -2291,7 +2291,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
   factory TransposingExternalTicks.Column({
     required ChartOrientation chartOrientation,
     required List<BoxContainer> children,
-    // todo-013 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
+    // todo-014 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2380,7 +2380,6 @@ class ExternalTicksRow extends TransposingExternalTicks {
 class ExternalTicksColumn extends TransposingExternalTicks {
   ExternalTicksColumn({
     required List<BoxContainer> children,
-    // todo-013 provide some way to express that for ExternalRollingTicks, Both Align and Packing should be Packing.externalTicksDefined.
     Align mainAxisAlign = Align.start,
     // mainAxisPacking not allowed to be set, positions provided by external ticks: Packing mainAxisPacking = Packing.tight,
     Align crossAxisAlign = Align.start,
@@ -2607,12 +2606,12 @@ class TableLayoutCellDefiner {
 /// all other cells being layed out are given (smaller) constraints, assuming the 'minimum size of one cell'
 /// is taken away.
 ///
-/// todo-01-doc fix docs
+/// todo-010-doc fix docs
 /// The method by which the minimum Size is defined can be one of:
 ///   - providing minimum width and height for the cell
 /// or a [BoxContainer] which produces constraints upon a 'test layout' for
 /// a cell in [TableLayouter] - that is, minimum constraints for the cell defined by [TableLayoutCellDefiner].
-/// todo-01-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
+/// todo-010-doc NO: with sequence [TableLayoutCellDefiner.layoutSequence] equal to zero.
 ///
 /// Part of [TableLayoutDefiner], which will ensure the provided constraint
 ///
@@ -2620,7 +2619,7 @@ class TableLayoutCellDefiner {
 ///             or a column - row width or column height, or both.
 ///             This class helps to express this need, either by specifying a minimum size directly,
 ///             or asking a [BoxContainer] to layout and use it's [layoutSize] as the minimum size.
-/// How is this motivation implemented?  todo-01-doc
+/// How is this motivation implemented?  todo-010-doc
 ///
 class TableLayoutCellMinSizer {
   TableLayoutCellMinSizer.fromMinima({
@@ -2840,7 +2839,7 @@ class TableLayoutDefiner {
   ///   - First priority is alignment on the cell level at [TableLayoutCellDefiner.verticalAlign] if not null;
   ///   - Next priority, is alignment in the definer [cellsAlignerDefiner] if not null
   ///   - Last priority is this instance's alignment [TableLayoutDefiner.verticalAlign] which is guaranteed not null.
-  //   todo-013 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
+  //   todo-014 : unify to one method, alignInDirectionOnCell(AxisDirection direction (horiz or vert), row, column, but first,
   //                  add on cellDefiner method alignInDirection(horizontal, vertical), return horizontalAlign or vertical align
   Align verticalAlignFor(int row, int column) {
     var cellDefiner = find_cellDefiner_on(row, column);

@@ -6,7 +6,7 @@ import '../morphic/container/label_container.dart';
 import 'container/container_common.dart' as container_common show ChartAreaContainer;
 import 'view_maker.dart' as view_maker;
 import 'options.dart' show ChartOptions;
-import 'model/label_model.dart' show AxisLabelInfo;
+// todo-00-done : import 'model/label_model.dart' show AxisLabelInfo;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
 ///
@@ -31,7 +31,7 @@ import 'model/label_model.dart' show AxisLabelInfo;
 ///   Consequently,  there is no need to check for
 ///   a "needs layout" method - the underlying [textPainter]
 ///   is always layed out, ready to be painted.
-class ChartLabelContainer extends container_common.ChartAreaContainer with LabelContainerMixin {
+class ChartLabelContainer extends container_common.ChartAreaContainer with TiltableLabelContainerMixin {
 
   // Allows to configure certain sizes, colors, and layout.
   // final LabelStyle _labelStyle;
@@ -39,8 +39,8 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// todo-02 : Does not set parent container's [_boxConstraints] and [chartViewMaker].
-  /// It is currently assumed clients will not call any methods using them.
+  /// Note: Does not set parent container's [_boxConstraints] and [chartViewMaker].
+  ///       It is currently assumed clients will not call any methods using those members.
   ChartLabelContainer({
     required view_maker.ChartViewMaker chartViewMaker,
     required String label,
@@ -51,7 +51,6 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
           chartViewMaker: chartViewMaker,
       ) {
     this.labelTiltMatrix = labelTiltMatrix;
-    // _labelStyle = labelStyle,
     textPainter = widgets.TextPainter(
       text: widgets.TextSpan(
         text: label,
@@ -63,6 +62,8 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
       textScaleFactor: labelStyle.textScaleFactor,
       // removed, causes lockup: ellipsis: "...", // forces a single line - without it, wraps at width
     );
+
+    // _labelStyle = labelStyle,
     // var text = new widgets.TextSpan(
     //   text: label,
     //   style: _labelStyle.textStyle, // All labels share one style object
@@ -81,7 +82,8 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Label
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
-    // todo-012 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    // todo-013 : this seems incorrect - used for all labels, yet it acts as legend label!!
+    //            used only to get label max size in rotated labels.
     double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
@@ -121,10 +123,16 @@ class AxisLabelContainer extends ChartLabelContainer {
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
+/* todo-00-done : moved to AxisLabelContainerCL
     required AxisLabelInfo labelInfo,
     required container_common.ChartAreaContainer ownerChartAreaContainer,
-  })  : _labelInfo = labelInfo,
-        _ownerChartAreaContainer = ownerChartAreaContainer,
+*/
+  })
+      :
+/* todo-00-done : moved to AxisLabelContainerCL
+      _labelInfo = labelInfo,
+      _ownerChartAreaContainer = ownerChartAreaContainer,
+*/
         super(
           chartViewMaker: chartViewMaker,
           label: label,
@@ -132,6 +140,7 @@ class AxisLabelContainer extends ChartLabelContainer {
           labelStyle: labelStyle,
         );
 
+/* todo-00-done : moved to AxisLabelContainerCL
   /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
   final container_common.ChartAreaContainer _ownerChartAreaContainer;
   container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
@@ -142,5 +151,5 @@ class AxisLabelContainer extends ChartLabelContainer {
 
   /// Getter of [AxisLabelInfo] which created this Y label.
   AxisLabelInfo get labelInfo => _labelInfo;
-
+*/
 }

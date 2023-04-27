@@ -24,14 +24,32 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
     required container_common.ChartAreaContainer ownerChartAreaContainer,
-  }) : super(
+    // todo-00-last : move to ChartLabelContainerCL : this.labelTiltMatrix = labelTiltMatrix;
+  }) :
+        _labelInfo = labelInfo,
+        _ownerChartAreaContainer = ownerChartAreaContainer,
+
+        super(
         chartViewMaker: chartViewMaker,
         label: label,
         labelTiltMatrix: labelTiltMatrix,
         labelStyle: labelStyle,
-        labelInfo: labelInfo,
-        ownerChartAreaContainer: ownerChartAreaContainer,
+        // todo-00-done : moved from AxisLabelContainer : labelInfo: labelInfo,
+        // todo-00-done : moved from AxisLabelContainer : ownerChartAreaContainer: ownerChartAreaContainer,
       );
+
+  /* todo-00-done : moved from AxisLabelContainer */
+  /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
+  final container_common.ChartAreaContainer _ownerChartAreaContainer;
+  container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
+
+  /// Maintains the LabelInfo from which this [ChartLabelContainer] was created,
+  /// for use during [layout] of self or parents.
+  final AxisLabelInfo _labelInfo;
+
+  /// Getter of [AxisLabelInfo] which created this Y label.
+  AxisLabelInfo get labelInfo => _labelInfo;
+
 
   /// [parentOffsetTick] is the UI pixel coordinate of the "axis tick mark", which represent the
   /// X or Y data value.
@@ -95,3 +113,21 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     super.layout_Post_Leaf_SetSize_FromInternals();
   }
 }
+
+/* todo-00-done
+class AxisLabelContainer extends ChartLabelContainer {
+  AxisLabelContainer({
+    required view_maker.ChartViewMaker chartViewMaker,
+    required String label,
+    required vector_math.Matrix2 labelTiltMatrix,
+    required LabelStyle labelStyle,
+  })
+      :
+
+        super(
+        chartViewMaker: chartViewMaker,
+        label: label,
+        labelTiltMatrix: labelTiltMatrix,
+        labelStyle: labelStyle,
+      );
+ */

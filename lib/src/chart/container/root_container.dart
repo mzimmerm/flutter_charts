@@ -33,11 +33,11 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
 
     // [vertAxisDefiner] : Definer for vertical axis container. Vertical axis determines the width
     //   of the first table column, and also the width left for the remainder of the table.
-    // todo-01-doc : is it true that everything pre-layout goes by the sequence, actual layout by the table positions?
+    // Note: Everything pre-layout is ordered by the sequence, actual layout by the cell positions in table
     TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-01 will go away when we use VerticalAxisContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-011 will go away when we use VerticalAxisContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );
@@ -84,7 +84,7 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     );
   }
 
-  /// todo-01-last The members are only needed during layout of deeper children (e.g., BarPointContainer) to access the members' sizes or constraints
+  /// todo-011 The members are only needed during layout of deeper children (e.g., BarPointContainer) to access the members' sizes or constraints
   ///           Maybe we can remove the members and access them inside children by key??? LIKELY NOT BY KEY, BECAUSE, DUE TO SURRONDING MEMBERS IN
   ///           LAYOUT OBJECTS, THEY ARE NOT AMONG CHILDREN.
   /// Members that display the Areas of chart.

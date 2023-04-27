@@ -75,7 +75,6 @@ class PointPresentersColumn {
   }) {
     int rowIndex = 0;
     for (StackableValuePoint point in fromPoints) {
-      // todo-04-last nextRightPointsColumn IS LIKELY UNUSED, REMOVE.
       StackableValuePoint? nextRightColumnValuePoint = pointsColumn.nextRightPointsColumn != null
           ? pointsColumn.nextRightPointsColumn!.stackableValuePoints[rowIndex]
           : null;

@@ -1,6 +1,5 @@
 import 'dart:math' as math show max;
 import 'package:tuple/tuple.dart';
-import 'dart:ui' as ui;
 
 // this level or equivalent
 import 'container_layouter_base.dart';
@@ -123,18 +122,18 @@ enum Align {
 /// The decision if or how constraints are divided, is determined by two concepts:
 ///   - The constraints weights of children 'for parent', use the [ConstraintsWeight] instances,
 ///     and its wrapper [ConstraintsWeights] instances.
-///   - The constraints division strategy 'to children (as parent)', use this [ConstraintsDivideToChildren] instances.
+///   - The constraints division strategy 'to children (as parent)', use this [ConstraintsDivideMethod] instances.
 ///
 /// Because both can be set, priorities must be defined. The detail priorities are implemented
 /// by individual layouters. So far, the single use is in [MainAndCrossAxisBoxLayouter].
-/// See [MainAndCrossAxisBoxLayouter.constraintsDivideToChildren].
+/// See [MainAndCrossAxisBoxLayouter.constraintsDivideMethod].
 ///
-enum ConstraintsDivideToChildren {
+enum ConstraintsDivideMethod {
   evenDivision,
   byChildrenWeights,
   noDivision;
 
-  bool isNot(ConstraintsDivideToChildren other) {
+  bool isNot(ConstraintsDivideMethod other) {
     if (this != other) return true;
     return false;
   }
@@ -209,7 +208,7 @@ class LayedoutLengthsPositioner {
   /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
-    // todo-012 : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
+    // todo-010 (functional) : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
@@ -618,12 +617,6 @@ class PositionedLineSegments {
   ///
   /// If can be used by clients to deal with overflow by a warning or painting a yellow rectangle.
   final bool isOverflown;
-
-  /// Envelope of the layed out [lineSegments].
-  ///
-  /// This will become the [BoxLayouter.layoutSize] along the layout axis.
-  // todo-02-next : how is this actually used ?? Why is width 0.0?? It must work but how?
-  ui.Size get envelope => ui.Size(0.0, totalPositionedLengthIncludesPadding);
 
   /// Returns copy of this instance's [lineSegments] that are reversed and
   /// re-layedout (layed out from end rather than start).

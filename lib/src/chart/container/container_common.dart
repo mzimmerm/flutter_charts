@@ -51,7 +51,7 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
   ///
   /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
   /// to reach data model, as well as the view.
-  // todo-01 : can we move this on a CL class if only needed by legacy?
+  // todo-013 : can we move this on a CL class if only needed by legacy?
   final view_maker.ChartViewMaker chartViewMaker;
 
   @override

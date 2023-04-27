@@ -25,7 +25,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     chartViewMaker: chartViewMaker,
   );
 
-  // todo-013 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewVerticalAxisContainer???
+  // todo-010 : why do we construct in buildAndReplaceChildren here in DataContainer, while construct in constructor in NewVerticalAxisContainer???
   @override
   void buildAndReplaceChildren() {
     var padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
@@ -118,7 +118,7 @@ class DataContainer extends container_common.ChartAreaContainer {
       crossAxisAlign: crossAxisAlign,
       // column orientation, any stacking, any sign: bars of data are in Row main axis,
       // this Row must divide width to all bars evenly
-      constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
+      constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_CrossPointsModels(
         crossPointsModels: crossPointsModels,
@@ -249,7 +249,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   ///
   /// This container is a stand-in for Non-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
-  // todo-011-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
+  // todo-014-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
   //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,
   //                 maybe not even that.
   @override
