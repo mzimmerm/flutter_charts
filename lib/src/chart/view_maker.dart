@@ -6,10 +6,9 @@ import 'package:logger/logger.dart' as logger;
 // import 'dart:developer' as dart_developer;
 
 import '../morphic/container/chart_support/chart_style.dart';
+import '../morphic/container/morphic_dart_enums.dart';
 import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/container_layouter_base.dart' as container_base;
-import '../morphic/container/morphic_dart_enums.dart';
-// import '../morphic/container/container_edge_padding.dart';
 import '../morphic/container/layouter_one_dimensional.dart';
 import '../morphic/container/constraints.dart' as constraints;
 
@@ -260,7 +259,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   List<container_base.Padder> makeViewsForDataContainer_CrossPointsModels({
     required List<model.CrossPointsModel> crossPointsModels,
-    required model.Sign barsAreaSign,
+    required Sign barsAreaSign,
   }) {
     List<container_base.Padder> chartBars = [];
     // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
@@ -299,7 +298,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ///
   data_container.CrossPointsContainer makeViewForDataContainer_EachCrossPointsModel({
     required model.CrossPointsModel crossPointsModel,
-    required model.Sign barsAreaSign,
+    required Sign barsAreaSign,
   }) {
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartOrientation: chartOrientation,
@@ -339,7 +338,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   container_base.RollingBoxLayouter _buildLevel3PointsBarAsTransposingColumn({
     required List<container_base.Padder> pointContainers,
-    required model.Sign barsAreaSign,
+    required Sign barsAreaSign,
   }) {
 
     switch(chartStacking) {
@@ -350,7 +349,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           crossAxisAlign: Align.center, // default
           constraintsDivideToChildren: ConstraintsDivideToChildren.noDivision, // default
           isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, as children have no weight=no divide
-          children: barsAreaSign == model.Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
+          children: barsAreaSign == Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
         );
       case ChartStacking.nonStacked:
         return container_base.TransposingRoller.Row(
@@ -358,7 +357,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
           mainAxisAlign: Align.start, // default
           // column:  sit positive bars at end,   negative bars at start
           // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
-          crossAxisAlign: barsAreaSign == model.Sign.positiveOr0 ? Align.end : Align.start,
+          crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
           // nonStacked column orientation, leaf rects are in Row along main axis,
           // this Row must divide width to all leaf rects evenly
           constraintsDivideToChildren: ConstraintsDivideToChildren.evenDivision,
@@ -374,7 +373,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// 
   /// Encapsulates the logic of creating [PointContainer] from [PointModel] for 
   /// all possible values of [chartStacking] and [barsAreaSign].
-  ClsPointToNullableContainer clsPointToNullableContainerForSign(model.Sign barsAreaSign) {
+  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
     return (model.PointModel pointModelElm) {
       data_container.PointContainer? pointContainer;
       switch (chartStacking) {

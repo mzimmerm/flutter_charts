@@ -4,8 +4,8 @@ import 'dart:ui' as ui show Color;
 // Tested package
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart'
-  show DataDependency;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
+// import '../../lib/src/morphic/container/morphic_dart_enums.dart';
 
 void main() {
   // todo 1 add tests for extrapolating . Add more tests in general

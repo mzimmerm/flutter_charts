@@ -6,13 +6,11 @@ import '../../morphic/container/morphic_dart_enums.dart';
 import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/label_container.dart';
 import '../../morphic/container/chart_support/chart_style.dart';
-//import '../../morphic/ui2d/point.dart';
 import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';
 import '../model/label_model.dart';
 import '../chart_label_container.dart';
 import '../view_maker.dart';
-// import '../iterative_layout_strategy.dart';
 import '../options.dart';
 
 // this level libraries

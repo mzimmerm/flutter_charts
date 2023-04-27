@@ -1,3 +1,6 @@
+import 'dart:math' as math show min, max;
+
+import '../morphic/container/morphic_dart_enums.dart' show Sign;
 import 'util_dart.dart';
 
 /// Extensions on the [String] class.
@@ -29,6 +32,17 @@ extension IterableExtension<E> on Iterable<E> {
       return orElse();
     }
     throw StateError('Iterable $this has no elements. this=${toList()}');
+  }
+
+  double extremeValueWithSign(Sign sign) {
+    switch(sign) {
+      case Sign.positiveOr0:
+        return fold<double>(0.0, (prev, element) => math.max(prev, element as double));
+      case Sign.negative:
+        return fold<double>(0.0, (prev, element) => math.min(prev, element as double));
+      case Sign.any:
+        throw StateError('method extremeWithSign cannot be applied on Sign.any');
+    }
   }
 }
 

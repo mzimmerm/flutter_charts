@@ -1,12 +1,12 @@
 import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
-// import 'package:flutter/cupertino.dart';
-import 'package:flutter_charts/src/morphic/ui2d/point.dart';
 import 'package:logger/logger.dart' as logger;
 import 'package:flutter/material.dart' as material show Colors;
 
 // this level or equivalent
+import '../../morphic/container/morphic_dart_enums.dart' show Sign;
 import '../../morphic/container/container_layouter_base.dart';
+import '../../morphic/ui2d/point.dart';
 import '../options.dart';
 
 import '../../util/extensions_dart.dart';
@@ -114,6 +114,7 @@ class ChartModel {
     if (isStacked) {
       // Stacked values always start or end at 0.0. 
       return Interval(
+        // todo-00
         crossPointsModelNegativeList.map((pointsColumn) => pointsColumn._stackedValue).reduceOrElse(math.min, orElse: () => 0.0),
         crossPointsModelPositiveList.map((pointsColumn) => pointsColumn._stackedValue).reduceOrElse(math.max, orElse: () => 0.0),
       );
@@ -212,7 +213,6 @@ class ChartModel {
   double get _transformedValuesMax =>
       _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
-
   void validate() {
     //                      But that would require ChartOptions available in ChartModel.
     if (!(valuesRows.length == byRowLegends.length)) {
@@ -242,41 +242,20 @@ class ChartModel {
     }
   }
 
-}
-
-/// On behalf of [CrossPointsModel], represents the sign of the values of [PointModel] points
-/// which should be added to the [CrossPointsModel].
-///
-/// Motivation: In order to display both negative and positive values on the bar chart or line chart,
-///             the [ChartModel] manages the positive and negative values separately in
-///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
-///             This enum supports creating and later using (processing, view making) the positive and negative
-///             bars separately.
-enum Sign {
-  positiveOr0,
-  negative,
-  any;
-
-  /// Checks if the sign of a the passed [value] is the sign required by this enum instance.
+  // todo-00-progress added vvvvv
+  /// Returns max of all columns (more precisely, all [CrossPointsModel]s),
+  ///   for positive [sign], min for negative [sign].
   ///
-  /// Motivation: In the context of a charting framework, any series positive and negative
-  ///             values are split and kept separate in model and in view containers.
-  ///             Example:
-  ///               - There are separate instances of positive and negative [CrossPointsModel]s,
-  ///                 in [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
-  ///             This method is a helper to performs the separation based on [pointsSign].
-  bool isValueMySign({
-    required double value,
-  }) {
-    switch (this) {
-      case Sign.positiveOr0:
-        return (value >= 0.0);
-      case Sign.negative:
-        return (value < 0.0);
-      case Sign.any:
-        return true;
-    }
+  /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
+  /// their separately positive or negative values stacked if [isStacked] is true
+  double extremeValueWithSign(Sign sign, bool isStacked) {
+    return crossPointsModelList
+        .map((crossPointsModel) => crossPointsModel.extremeValueWithSign(sign, isStacked))
+        .extremeValueWithSign(sign);
   }
+  // todo-00-progress added ^^^^
+
+
 }
 
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values,
@@ -467,37 +446,30 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     return result.value;
   }
 
-  /*
-  double get _stackedPositiveValue => __maxOnPoints((PointModel point) => point._stackedPositiveOutputValue);
-  double get _stackedNegativeValue => __minOnPoints((PointModel point) => point._stackedNegativeOutputValue);
-  double get _minPointValue         => __minOnPoints((PointModel point) => point.outputValue);
-  double get _maxPointValue         => __maxOnPoints((PointModel point) => point.outputValue);
-
-  late final double _stackedPositiveOutputValue;
-  late final double _stackedNegativeOutputValue;
-
-  __stackPoints(PointModel point, unused) {
-    if (point.hasPrevious) {
-      if (point.outputValue < 0.0) {
-        point._stackedNegativeOutputValue = point.previous._stackedNegativeOutputValue + point.outputValue;
-        point._stackedPositiveOutputValue = point.previous._stackedPositiveOutputValue;
-      } else {
-        point._stackedPositiveOutputValue = point.previous._stackedPositiveOutputValue + point.outputValue;
-        point._stackedNegativeOutputValue = point.previous._stackedNegativeOutputValue;
-      }
-    } else {
-      // first element
-      if (point.outputValue < 0.0) {
-        point._stackedNegativeOutputValue = point.outputValue;
-        point._stackedPositiveOutputValue = 0.0;
-      } else {
-        point._stackedNegativeOutputValue = 0.0;
-        point._stackedPositiveOutputValue = point.outputValue;
-      }
+  // todo-00-progress added vvvvv
+  /// If [isStacked] is true,  returns value of all same-sign values added;
+  /// If [isStacked] is false, returns max of contained [PointModel.outputValue]
+  ///   for positive [sign], min for negative [sign].
+  double extremeValueWithSign(Sign sign, bool isStacked) {
+    if (isStacked) {
+      return _pointsWithSign(sign)
+          .map((pointModel) => pointModel.outputValue)
+          .fold(0, (prevValue, thisOutputValue) => prevValue + thisOutputValue);
     }
-  }
-  */
 
+    return _pointsWithSign(sign)
+        .map((pointModel) => pointModel.outputValue)
+        .extremeValueWithSign(sign);
+  }
+
+  /// Return iterable of my points with the passed sign
+  Iterable<PointModel> _pointsWithSign(Sign sign) {
+    if (sign == Sign.any) throw StateError('Method _pointsWithSign is not applicable for Sign.any');
+
+    return allElements()
+        .where((pointModel) => pointModel.sign == sign);
+  }
+  // todo-00-progress added ^^^^
 }
 
 /// Represents one data point in the chart data model [ChartModel] and related model classes.
@@ -518,7 +490,6 @@ class PointModel extends Object with DoubleLinked {
   ///                 as the [ownerCrossPointsModel] is split from [ChartModel.dataColumns] so
   ///                 [rowIndex] can only be used to reach `ownerCrossPointsModel.dataModel.valuesRows`.
   PointModel({
-    // required this.outputValue,
     required double outputValue,
     required this.ownerCrossPointsModel,
     required this.rowIndex,

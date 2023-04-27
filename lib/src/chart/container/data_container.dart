@@ -1,10 +1,10 @@
 import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
 // this level base libraries or equivalent
-//import '../../morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
 import '../../morphic/container/chart_support/chart_style.dart';
+import '../../morphic/container/morphic_dart_enums.dart' show Sign;
 import '../../morphic/ui2d/point.dart';
 import '../model/label_model.dart';
 import 'axis_container.dart';
@@ -16,7 +16,6 @@ import '../../morphic/container/container_edge_padding.dart';
 import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
 import '../../morphic/container/container_key.dart';
-//import 'line_segment_container.dart';
 
 class DataContainer extends container_common.ChartAreaContainer {
 
@@ -49,7 +48,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                   children: [
                     // Row with columns of positive values
                     _buildLevel2PosOrNegBarsContainerAsTransposingRow(
-                      barsAreaSign: model.Sign.positiveOr0,
+                      barsAreaSign: Sign.positiveOr0,
                     ),
                     // X axis line. Could place in Row with main constraints weight=0.0
                     TransposingInputAxisLineContainer(
@@ -59,7 +58,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                     ),
                     // Row with columns of negative values
                     _buildLevel2PosOrNegBarsContainerAsTransposingRow(
-                      barsAreaSign: model.Sign.negative,
+                      barsAreaSign: Sign.negative,
                     ),
                   ],
                 ),
@@ -87,7 +86,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   /// Either are build for only positive or only negative values,
   /// depending on
   RollingBoxLayouter _buildLevel2PosOrNegBarsContainerAsTransposingRow({
-    required model.Sign barsAreaSign,
+    required Sign barsAreaSign,
   }) {
 
     double ratioOfPositiveOrNegativePortion;
@@ -95,17 +94,17 @@ class DataContainer extends container_common.ChartAreaContainer {
     List<model.CrossPointsModel> crossPointsModels;
 
     switch(barsAreaSign) {
-      case model.Sign.positiveOr0:
+      case Sign.positiveOr0:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
         crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
         break;
-      case model.Sign.negative:
+      case Sign.negative:
         crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
         ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
         crossAxisAlign = Align.start;
         break;
-      case model.Sign.any:
+      case Sign.any:
         throw StateError('Should be called only with [barsAreaSign] positive or negative.');
     }
     // Row with a positive or negative bars, depending on [barsAreaSign].
