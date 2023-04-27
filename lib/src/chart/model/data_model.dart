@@ -5,7 +5,6 @@ import 'package:flutter/material.dart' as material show Colors;
 
 // this level or equivalent
 import '../../morphic/container/morphic_dart_enums.dart' show Sign;
-import '../../morphic/container/container_layouter_base.dart';
 import '../../morphic/ui2d/point.dart';
 import '../options.dart';
 
@@ -78,9 +77,8 @@ class ChartModel {
   /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
   ///
   /// The source data of the returned interval differs in stacked and Non-Stacked data, determined by argument [isStacked] :
-  ///   - For [isStacked] true, the min and max is taken from [PointModel._stackedPositiveOutputValue] and
-  ///     [PointModel._stackedNegativeOutputValue] is used.
-  ///   - For  [isStacked] false, the min and max is taken from [PointModel.outputValue] is used.
+  ///   - For [isStacked] true,  the min and max is from [extremeValueWithSign] for positive and negative sign
+  ///   - For [isStacked] false, the min and max is from [_transformedValuesMin] and max.
   ///
   /// Implementation detail: maximum and minimum is calculated column-wise [CrossPointsModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
@@ -106,12 +104,11 @@ class ChartModel {
   /// Returns the interval that envelopes all data values in [ChartModel.valuesRows], possibly extended to 0.
   ///
   /// The [isStacked] controls whether the interval is created from values in [PointModel.outputValue]
-  /// or the stacked values [PointModel._stackedPositiveOutputValue] and
-  /// [PointModel._stackedNegativeOutputValue]
+  /// or their stacked values.
   ///
   /// Whether the resulting Interval is extended from the simple min/max of all data values
-  /// is controlled by [extendAxisToOrigin]. If [true] the interval is extended to zero
-  /// if all values are positive or all are negative.
+  /// is controlled by [extendAxisToOrigin]. If true, the interval is extended to zero
+  /// if all values are positive or all values are negative.
   ///
   Interval extendedValuesInterval({
     required bool isStacked,
@@ -249,7 +246,7 @@ class ChartModel {
 ///
 /// Note: [CrossPointsModel] replaces the [PointsColumn] in legacy layouter.
 ///
-class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
+class CrossPointsModel {
 
   /// Constructs a model for one bar of points.
   ///
@@ -274,7 +271,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
         ownerCrossPointsModel: this,
         rowIndex: rowIndex,
       );
-      _crossPointsAllElements.add(point);
+      crossPointsAllElements.add(point);
       rowIndex++;
     }
   }
@@ -287,7 +284,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
-  /// The data values of this column are stored in the [_crossPointsAllElements] list,
+  /// The data values of this column are stored in the [crossPointsAllElements] list,
   /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
@@ -314,32 +311,19 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
-  /// Sign that all [PointModel]s in this [CrossPointsModel] must have.
-  ///
-  /// Sign is represented by [Sign].
-  ///
-  /// Motivation: The model of any chart maintains separate member for positive and negative values
-  ///             in the same cross-series data column in [ChartModel] - the [crossPointsModelPositiveList]
-  ///             and the [crossPointsModelNegativeList]. This member allows to separate
-  ///             values in each cross-series data column into the positives and negatives.
-  late final Sign pointsSign;
-
   /// Points of this positive or negative column (crossPoints).
+  final List<PointModel> crossPointsAllElements = [];
+
+  /// Returns data minimum or maximum.
   ///
-  /// The points are needed to provide the [allElements] method, which answers the list of
-  /// all [DoubleLinked] elements owned by this [DoubleLinkedOwner].
-  /// At the same time, the points are all [PointModel] in this positive or negative column
-  /// (crossPoints list).
-  final List<PointModel> _crossPointsAllElements = [];
-
-  /// Implements the [DoubleLinkedOwner] abstract method which provides all elements for
-  /// the owned [DoubleLinked] instances of [PointModel].
-  @override
-  Iterable<PointModel> allElements() => _crossPointsAllElements;
-
-  /// If [isStacked] is true,  returns value of all same-sign values added;
-  /// If [isStacked] is false, returns max of contained [PointModel.outputValue]
-  ///   for positive [sign], min for negative [sign].
+  /// In more detail:
+  ///   - For [isStacked] is true,  returns added (accumulated) [PointModel.outputValue]s
+  ///     for all [PointModel]s in this [CrossPointsModel] instance, that have the passed [sign].
+  ///   - For [isStacked] is false:
+  ///     - For [sign] positive, returns max of positive [PointModel.outputValue]s
+  ///       for all positive [PointModel]s in this [CrossPointsModel] instance.
+  ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
+  ///       for all negative [PointModel]s in this [CrossPointsModel] instance.
   double extremeValueWithSign(Sign sign, bool isStacked) {
     if (isStacked) {
       return _pointsWithSign(sign)
@@ -356,7 +340,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
   Iterable<PointModel> _pointsWithSign(Sign sign) {
     if (sign == Sign.any) throw StateError('Method _pointsWithSign is not applicable for Sign.any');
 
-    return allElements()
+    return crossPointsAllElements
         .where((pointModel) => pointModel.sign == sign);
   }
 }
@@ -369,7 +353,7 @@ class CrossPointsModel extends Object with DoubleLinkedOwner<PointModel> {
 ///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._dataModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
-class PointModel extends Object with DoubleLinked {
+class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
   /// Constructs instance from the owner [CrossPointsModel] instance [ownerCrossPointsModel],
@@ -383,11 +367,7 @@ class PointModel extends Object with DoubleLinked {
     required this.ownerCrossPointsModel,
     required this.rowIndex,
   }) {
-    // The ownerSeries is ChartModelSeries which is DoubleLinkedOwner
-    // of all [PointModel]s, managed by [DoubleLinkedOwner.allElements]
-    doubleLinkedOwner = ownerCrossPointsModel;
     this.outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble();
-    // By the time a PointModel is constructed, DataModel and it's ownerCrossPointsList INDEXES are configured
 
     if (outputValue >= 0.0) {
       sign = Sign.positiveOr0;
@@ -402,15 +382,6 @@ class PointModel extends Object with DoubleLinked {
       this.outputValue,
     );
 
-    /* KEEP - BUT NOT TRUE: After splitting each data column to positive and negative, the
-                             ownerCrossPointsModel._crossPoints[rowIndex] can NOT be used: _crossPoints may be shorter or empty
-    assertDoubleResultsSame(
-      ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossPointsModel._crossPoints[rowIndex].outputValue)
-          .toDouble(),
-      outputValue,
-    );
-    */
   }
 
   // ===================== NEW CODE ============================================
@@ -433,7 +404,7 @@ class PointModel extends Object with DoubleLinked {
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossPointsModel._crossPointsAllElements] at index [rowIndex].
+  /// Also, this point object is kept in [CrossPointsModel.crossPointsAllElements] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;

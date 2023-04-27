@@ -315,7 +315,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
               // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
               // stacked and nonStacked, and positive and negative, distinctly.
               crossPointsModel
-                  .allElements()
+                  .crossPointsAllElements
                   // Map applies function converting [PointModel] to [PointContainer],
                   // calling the hook [makeViewForDataArea_PointModel]
                   .map(clsPointToNullableContainerForSign(barsAreaSign))
