@@ -1,5 +1,7 @@
 import 'dart:math' as math show Random, pow, min, max;
 import 'dart:ui' as ui show Color;
+import 'package:flutter/cupertino.dart' show immutable;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:logger/logger.dart' as logger;
 import 'package:flutter/material.dart' as material show Colors;
 
@@ -13,21 +15,16 @@ import 'label_model.dart' as util_labels;
 import '../../util/util_dart.dart';
 
 
-// todo-doc-01 document Copied from [ChartData], it is a replacement for both legacy [ChartData], [PointsColumns],
-//                   and various holders of Y data values, including some parts of [DataRangeLabelInfosGenerator]
-/// Notes:
-///   - DATA MODEL SHOULD NOT HAVE ACCESS TO ANY OBJECTS THAT HAVE TO DO WITH
-///     - Extrapolating OF MODEL VALUES (does not)
-///     - COLORS   (currently does)
-///     - LABELS   (currently does)
-///     - LEGENDS  (currently does)
-///     - OPTIONS  (currently does)
-///     THOSE OBJECTS SHOULD BE ACCESSED FROM CONTAINER EXTENSIONS FOR extrapolating, OFFSET AND PAINTING.
+/// Immutable data viewed in chart.
 ///
 /// Important lifecycle notes:
 ///   - When [ChartModel] is constructed, the [ChartRootContainerCL] is not available.
 ///     So in constructor, [ChartModel] cannot be given access to the root container, and it's needed members
 ///     such as [ChartRootContainerCL.labelsGenerator].
+///
+/// Legacy Note: Replacement for legacy [ChartData], [PointsColumns],
+///              and various holders of dependent data values, including parts of [DataRangeLabelInfosGenerator]
+@immutable
 class ChartModel {
 
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
@@ -77,27 +74,30 @@ class ChartModel {
   /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
   ///
   /// The source data of the returned interval differs in stacked and Non-Stacked data, determined by argument [isStacked] :
-  ///   - For [isStacked] true,  the min and max is from [extremeValueWithSign] for positive and negative sign
-  ///   - For [isStacked] false, the min and max is from [_transformedValuesMin] and max.
+  ///   - For [chartStacking] == [ChartStacking.stacked],
+  ///       the min and max is from [extremeValueWithSign] for positive and negative sign
+  ///   - For [chartStacking] == [ChartStacking.nonStacked],
+  ///       the min and max is from [_transformedValuesMin] and max.
   ///
   /// Implementation detail: maximum and minimum is calculated column-wise [CrossPointsModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
   Interval valuesInterval({
-    required bool isStacked,
+    required ChartStacking chartStacking,
   }) {
-    if (isStacked) {
-      // Stacked values always start or end at 0.0. 
-      return Interval(
-        extremeValueWithSign(Sign.negative, isStacked),
-        extremeValueWithSign(Sign.positiveOr0, isStacked),
-      );
-    } else {
-      // Non-Stacked values can just use values from DataModel [_valuesRows] transformed values.  
-      return Interval(
-        _transformedValuesMin,
-        _transformedValuesMax,
-      );
+    switch(chartStacking) {
+      case ChartStacking.stacked:
+        // Stacked values always start or end at 0.0.isStacked
+        return Interval(
+          extremeValueWithSign(Sign.negative, chartStacking),
+          extremeValueWithSign(Sign.positiveOr0, chartStacking),
+        );
+      case ChartStacking.nonStacked:
+        // Non-Stacked values can just use values from DataModel [_valuesRows] transformed values.
+        return Interval(
+          _transformedValuesMin,
+          _transformedValuesMax,
+        );
     }
   }
 
@@ -111,11 +111,11 @@ class ChartModel {
   /// if all values are positive or all values are negative.
   ///
   Interval extendedValuesInterval({
-    required bool isStacked,
+    required ChartStacking chartStacking,
     required bool extendAxisToOrigin,
   }) {
     return util_labels.extendToOrigin(
-      valuesInterval(isStacked: isStacked),
+      valuesInterval(chartStacking: chartStacking),
       extendAxisToOrigin,
     );
   }
@@ -225,9 +225,9 @@ class ChartModel {
   ///
   /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
   /// their separately positive or negative values stacked if [isStacked] is true
-  double extremeValueWithSign(Sign sign, bool isStacked) {
+  double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
     return crossPointsModelList
-        .map((crossPointsModel) => crossPointsModel.extremeValueWithSign(sign, isStacked))
+        .map((crossPointsModel) => crossPointsModel.extremeValueWithSign(sign, chartStacking))
         .extremeValueWithSign(sign);
   }
 
@@ -317,23 +317,24 @@ class CrossPointsModel {
   /// Returns data minimum or maximum.
   ///
   /// In more detail:
-  ///   - For [isStacked] is true,  returns added (accumulated) [PointModel.outputValue]s
+  ///   - For [chartStacking] == [ChartStacking.stacked],  returns added (accumulated) [PointModel.outputValue]s
   ///     for all [PointModel]s in this [CrossPointsModel] instance, that have the passed [sign].
-  ///   - For [isStacked] is false:
+  ///   - For [chartStacking] == [ChartStacking.nonStacked]
   ///     - For [sign] positive, returns max of positive [PointModel.outputValue]s
   ///       for all positive [PointModel]s in this [CrossPointsModel] instance.
   ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
   ///       for all negative [PointModel]s in this [CrossPointsModel] instance.
-  double extremeValueWithSign(Sign sign, bool isStacked) {
-    if (isStacked) {
-      return _pointsWithSign(sign)
-          .map((pointModel) => pointModel.outputValue)
-          .fold(0, (prevValue, thisOutputValue) => prevValue + thisOutputValue);
+  double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
+    switch(chartStacking) {
+      case ChartStacking.stacked:
+        return _pointsWithSign(sign)
+            .map((pointModel) => pointModel.outputValue)
+            .fold(0, (prevValue, thisOutputValue) => prevValue + thisOutputValue);
+      case ChartStacking.nonStacked:
+        return _pointsWithSign(sign)
+            .map((pointModel) => pointModel.outputValue)
+            .extremeValueWithSign(sign);
     }
-
-    return _pointsWithSign(sign)
-        .map((pointModel) => pointModel.outputValue)
-        .extremeValueWithSign(sign);
   }
 
   /// Return iterable of my points with the passed sign

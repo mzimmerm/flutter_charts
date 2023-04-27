@@ -45,7 +45,6 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
-      isStacked: isStacked,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }

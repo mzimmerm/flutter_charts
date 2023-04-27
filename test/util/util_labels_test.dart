@@ -172,17 +172,18 @@ void main() {
 DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> valuesRows, List<String> inputUserLabels, List<String> byRowLegends) {
   var mockChartModel = _constructMockChartModel(options, valuesRows, inputUserLabels, extendAxisToOrigin, byRowLegends);
   return DataRangeLabelInfosGenerator(
-    chartViewMaker: MockChartViewMaker(
+    /*chartViewMaker: MockChartViewMaker(
       chartModel: mockChartModel,
       chartOrientation: chartOrientation,
       isStacked: true,
-    ),
+    ),*/
+    chartOrientation: chartOrientation,
+    chartStacking: chartStacking,
     dataModel: mockChartModel,
     dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: outputValueToLabel,
     inverseTransform: options.dataContainerOptions.yInverseTransform,
-    isStacked: false,
   );
 }
 
@@ -190,7 +191,7 @@ class MockChartViewMaker extends ChartViewMaker {
   MockChartViewMaker({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
-    required bool isStacked,
+    required ChartStacking chartStacking,
 }): super(
     chartModel: chartModel,
     chartOrientation: chartOrientation,
@@ -220,7 +221,7 @@ MockChartModel _constructMockChartModel(
       byRowLegends: byRowLegends,
       valuesRows: valuesRows,
       inputUserLabels: inputUserLabels,
-      byRowColors: [const ui.Color.fromARGB(0, 0, 0, 0)],
+      byRowColors: const [ui.Color.fromARGB(0, 0, 0, 0)],
     );
 }
 
@@ -244,17 +245,18 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
-      chartViewMaker: MockChartViewMaker(
+      /*chartViewMaker: MockChartViewMaker(
         chartModel: dataModel,
         chartOrientation: ChartOrientation.column,
         isStacked: true,
-      ),
+      ),*/
+      chartOrientation: ChartOrientation.column,
+      chartStacking: ChartStacking.nonStacked,
       dataModel: dataModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: outputValueToLabel,
       inverseTransform: options.dataContainerOptions.yInverseTransform,
-      isStacked: false,
     );
 
 

@@ -49,7 +49,6 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
-      isStacked: isStacked,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }

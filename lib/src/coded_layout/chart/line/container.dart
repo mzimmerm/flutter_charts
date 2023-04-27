@@ -21,7 +21,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
     required DataContainerCL dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
-    required bool isStacked,
     required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
@@ -32,7 +31,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
           chartModel: chartModel,
-          isStacked: isStacked,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         ) {
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();

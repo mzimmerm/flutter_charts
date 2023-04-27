@@ -11,6 +11,14 @@ import '../model/data_model.dart';
 import '../iterative_layout_strategy.dart' as strategy;
 // import '../../morphic/container/layouter_one_dimensional.dart';
 
+/// The root [BoxContainer] of the whole chart.
+///
+/// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation
+/// in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewMaker]
+/// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
+///
+/// Child containers calculate coordinates of chart points used for painting grid, labels, chart points etc.
+///
 class ChartRootContainer extends container_common.ChartAreaContainer {
 
   ChartRootContainer({
@@ -21,7 +29,6 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
     required ChartModel         chartModel,
-    required bool             isStacked,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');

@@ -502,23 +502,13 @@ class BoundingBoxes extends BoundingBoxesBase {
   }
 }
 
-/// Defines how a container [layout] should expand the container in a direction.
+/// Defines how a container [layout] should expand the container in horizontal and vertical direction.
 ///
-/// Direction can be "width" or "height".
-/// Generally,
-/// - If direction style is [TryFill], the container should use all
-///   available length in the direction (that is, [width] or [height].
-///   This is intended to fill a predefined
-///   available length, such as when showing X axis labels
-/// - If direction style is [GrowDoNotFill], container should use as much space
-///   as needed in the direction, but stop "well before" the available length.
-///   The "well before" is not really defined here.
-///   This is intended to for example layout Y axis in X direction,
-///   where we want to put the data container to the right of the Y labels.
-/// - If direction style is [Unused], the [layout] should fail on attempted
-///   looking at such
-///   todo-doc-01 this documentation is not correct
-///   todo-04 : can we make this immutable? Or even make const constructors?
+/// The expansion (length) in either direction is defined the same way [ui.Size] defines
+/// it's expansion as "width" or "height".
+///
+/// The allowed expansion (lengths in horizontal and vertical direction) is defined by named constructors.
+///
 class BoxContainerConstraints extends BoundingBoxesBase {
 
   /// The SINGLE UNNAMED generative constructor.

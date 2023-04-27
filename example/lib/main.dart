@@ -996,7 +996,6 @@ class _ExampleWidgetCreator {
           chartOrientation: ChartOrientation.column,
           chartStacking: ChartStacking.nonStacked,
           chartModel: chartModel,
-          isStacked: false,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

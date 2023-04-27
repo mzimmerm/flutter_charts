@@ -202,3 +202,78 @@ mixin DoubleLinkedOwner<E> {
   }
 }
 */
+
+
+/*
+/// Mixin marks implementations as able to create and add [_children] *late*,
+/// during [layout] of their parent.
+///
+/// Note: By default, [_children] should created *early* in the [BoxContainer] constructor.
+///
+/// This mixin should be used by extension of [BoxContainer]s
+/// that need to wait constructing children later than in the constructor.
+///
+/// As an example, we have a chart with 'root container' which contains two hierarchy-sibling areas:
+///   - the 'x axis container', which shows data labels that must not wrap, but
+///     there may be too many labels to fit the width.
+///   - The 'data container' which shows, among others, a dotted vertical line
+///     in the center of each label.
+///
+/// An acceptable solution to the problem where 'x axis container' labels that must not wrap, but
+/// there may be too many labels to fit the width, is for the chart to skip every N-th label.
+/// The N only becomes known during the 'x axis container' [layout],
+/// called from the 'root container' [layout].  But this situation creates a
+/// dependency for drawing dotted lines above the labels. As the dotted lines are part
+/// of 'data container', a sibling container to the 'x axis container',
+/// we can mix this [BuilderOfChildrenDuringParentLayout] to the 'data container',
+/// and call it's [buildAndReplaceChildren] during the 'root container' [layout].
+///
+/// This approach requires for the 'source' sibling 'x axis container' to *know* which sibling(s) 'sinks'
+/// depend on the 'source' [layout], and the other way around.  Also, the 'source' and the 'sink' must
+/// agree on the object to exchange the 'sink' create information - this is the object
+/// returned from [findSourceContainersReturnLayoutResultsToBuildSelf]
+///
+/// In such situation, a hierarchy-parent during the [layout] would first call
+/// this mixin's siblings' [layout], establishing the remaining space
+/// ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
+/// create an 'appropriate', 'non-overlapping' children of itself.
+///
+/// Example:
+///   - An example is the Y axis ([VerticalAxisContainer] instance), which creates only as many labels
+///     ([OutputLabelContainer]s instances) as they fit, given how many pixels
+///     the Y axis has available. Such pixel availability is applied on  [VerticalAxisContainer]
+///
+///
+/// Important note:
+///   - It is assumed that [constraints] are set on this [BoxContainer] before calling this,
+///     likely in parent's [layout] that calls first [layout] on
+///     one or more siblings, calculating the [constraints] remaining for this  [BoxContainer].
+///   - Implementations MUST also call [layout] immediately after calling
+///     the [buildAndReplaceChildren].
+
+mixin BuilderOfChildrenDuringParentLayout on BoxContainer {
+
+  /// Intended implementation is to find sibling 'source' [BoxContainer]s which [layout] results 'drive'
+  /// the build of this 'sink' [BoxContainer] (the build is performed by [buildAndReplaceChildren]).
+  ///
+  /// Intended place of invocation is in this sink's [BoxContainer]'s [buildAndReplaceChildren], which
+  /// builds and adds it's children, based on the information in the object returned from this method.
+  ///
+  /// All information regarding
+  ///   - what sibling [BoxContainer]s are 'sources' which [layout] 'drives' the build of this [BoxContainer]
+  ///   - how to find such siblings
+  ///   - what is the returned object that serves as a message between the 'source' [BoxContainer]s [layout] results
+  ///     and this 'sink' [buildAndReplaceChildren]
+  ///  must be available to this [BoxContainer].
+  ///
+  /// The finding may be done using [ContainerKey] or simply hardcoded reaching to the siblings.
+  ///
+  /// Returns the object that serves as a message from the 'source' [BoxContainer]s to this 'sink' [BoxContainer],
+  /// during the sink's [buildAndReplaceChildren].
+  Object findSourceContainersReturnLayoutResultsToBuildSelf() {
+    throw UnimplementedError(
+        '$this.findSourceContainersReturnLayoutResultsToBuildSelf: '
+            'Implementations invoking this method must implement it.');
+  }
+}
+*/

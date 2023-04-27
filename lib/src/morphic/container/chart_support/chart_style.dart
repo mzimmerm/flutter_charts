@@ -135,5 +135,9 @@ enum ChartType {
 /// all starting at zero on line chart).
 enum ChartStacking {
   stacked,
-  nonStacked,
+  nonStacked;
+
+  bool get isStacked {
+    return this == stacked;
+  }
 }

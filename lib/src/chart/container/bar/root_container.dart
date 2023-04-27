@@ -20,7 +20,6 @@ class BarChartRootContainer extends ChartRootContainer {
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
     required ChartOptions chartOptions,
-    required bool isStacked,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,
@@ -30,7 +29,6 @@ class BarChartRootContainer extends ChartRootContainer {
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
           chartModel: chartModel,
-          isStacked: isStacked,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 }

@@ -54,6 +54,11 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
   // todo-013 : can we move this on a CL class if only needed by legacy?
   final view_maker.ChartViewMaker chartViewMaker;
 
+  // todo-later : Go over all usages, and move child building to this method
+  //              from constructors.
+  //              In particular: why do we construct in buildAndReplaceChildren in DataContainer,
+  //                             while construct in constructor in NewVerticalAxisContainer?
+  //                             Etc
   @override
   void buildAndReplaceChildren() {
     buildAndReplaceChildrenDefault();

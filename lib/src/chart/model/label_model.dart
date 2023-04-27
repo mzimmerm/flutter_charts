@@ -1,26 +1,25 @@
 import 'dart:math' as math show min, max, pow;
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+
 import '../../morphic/container/morphic_dart_enums.dart';
 import '../../morphic/container/container_layouter_base.dart' show ExternalTicksLayoutProvider;
 import '../../morphic/container/layouter_one_dimensional.dart'
     show LayedoutLengthsPositioner, LengthsPositionerProperties, PositionedLineSegments, Align, Packing;
 import 'data_model.dart';
 import '../options.dart';
-import '../view_maker.dart';
 
 import '../../util/util_dart.dart' as util_dart;
 
-// todo-doc-01 documentation fix, this is old
-/// Generates label values from data values, and allows label manipulation: transform, format, extrapolate to axis pixels.
+/// Generates and manages the data range of values displayed on chart, as well as label values displayed.
+///
+/// This includes data range and label manipulation such as: transformations, formatting, extrapolation to axis pixels.
 ///
 /// During construction, decides how many labels will be created, and generates points on which the labels
 /// will be placed (these points are also values of the labels).
 ///
-/// All values, including the [AxisLabelInfo]s are calculated using [ChartModel].
+/// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
 ///
-/// Although not purely a view-independent model ...
-
-/// The labels are managed in the [labelInfos] member in all forms - raw, transformed, scaled, and raw formatted.
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -51,14 +50,13 @@ class DataRangeLabelInfosGenerator {
   ///   - [dataRange]
   ///   - [_labelInfos]
   DataRangeLabelInfosGenerator({
-    required this.chartViewMaker, // added as a temporary to test old vs new todo-010 : do we need this reference? if used, then: dataModel and isStacked is NOT needed. PASS chartOrientation ONLY instrad of this
+    required this.chartOrientation,
+    required ChartStacking chartStacking,
     required ChartModel dataModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
     required Function inverseTransform,
-    // todo-010 : remove isStacked here and most (all?) other places. Use ChartStackingEnum.stacked from chartViewMaker here, and other places where possible.
-    required bool isStacked,
     List<String>? userLabels,
   })  :
         _valueToLabel = valueToLabel,
@@ -80,7 +78,7 @@ class DataRangeLabelInfosGenerator {
           //   it will be lextr-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          dataEnvelope = chartViewMaker.chartModel.dataRangeWhenStringLabels;
+          dataEnvelope = dataModel.dataRangeWhenStringLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
@@ -91,7 +89,7 @@ class DataRangeLabelInfosGenerator {
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
-          dataEnvelope = dataModel.valuesInterval(isStacked: isStacked);
+          dataEnvelope = dataModel.valuesInterval(chartStacking: chartStacking);
           double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
           transformedLabelValues =
               List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
@@ -100,7 +98,7 @@ class DataRangeLabelInfosGenerator {
     } else {
       dataEnvelope = dataModel.extendedValuesInterval(
         extendAxisToOrigin: extendAxisToOrigin,
-        isStacked: isStacked,
+        chartStacking: chartStacking,
       );
       transformedLabelValues = _generateValuesForLabelsIn(
         interval: dataEnvelope,
@@ -131,7 +129,7 @@ class DataRangeLabelInfosGenerator {
 
   }
 
-  final ChartViewMaker chartViewMaker; // todo-done : added as a temporary to test old vs new
+  final ChartOrientation chartOrientation; // todo-done : added as a temporary to test old vs new
 
   /// Describes if this [DataRangeLabelInfosGenerator] instance is for dependent or independent data.
   ///
@@ -179,13 +177,12 @@ class DataRangeLabelInfosGenerator {
   /// Assigned from a corresponding function [ChartOptions.dataContainerOptions.yInverseTransform].
   final Function _inverseTransform;
 
-  /// Given the [chartOrientation] and [dataDependency], deduce if this [DataRangeLabelInfosGenerator]
+  /// Given the member [chartOrientation] and passed [dataDependency], deduces if this [DataRangeLabelInfosGenerator]
   /// labels will be shown on [LayoutAxis.vertical] or [LayoutAxis.horizontal].
   ///
   /// Returns true if this [DataRangeLabelInfosGenerator] labels will be shown on [LayoutAxis.vertical].
   bool get isOnHorizontalAxis =>
-      chartViewMaker.chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) ==
-      LayoutAxis.horizontal;
+      chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) == LayoutAxis.horizontal;
 
   /// Extrapolates [value] from extended data range [dataRange],
   /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
@@ -232,7 +229,7 @@ class DataRangeLabelInfosGenerator {
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
 
-    if (chartViewMaker.chartOrientation.isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
+    if (chartOrientation.isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
       tickValues = tickValues.reversed.toList();
     }
 

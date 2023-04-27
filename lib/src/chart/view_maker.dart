@@ -71,26 +71,26 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
     // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
     outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
-      chartViewMaker: this,
+      chartOrientation: chartOrientation,
+      chartStacking: chartStacking,
       dataModel: chartModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.outputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
       userLabels: chartModel.outputUserLabels,
-      isStacked: isStacked,
     );
 
     // See comment in VerticalAxisContainer constructor
     inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
-      chartViewMaker: this,
+      chartOrientation: chartOrientation,
+      chartStacking: chartStacking,
       dataModel: chartModel,
       dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.inputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
       userLabels: chartModel.inputUserLabels,
-      isStacked: isStacked,
     );
   }
 
@@ -109,8 +109,6 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   final ChartOrientation chartOrientation;
 
   final ChartStacking chartStacking;
-
-  bool get isStacked => chartStacking == ChartStacking.stacked;
 
   /// The root container (view) is created by this maker [ChartViewMaker]
   /// on every [FlutterChartPainter] paint and repaint.

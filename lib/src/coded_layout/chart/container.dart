@@ -14,7 +14,6 @@ import '../../chart/container/axis_container.dart';
 import '../../chart/model/data_model.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
-import '../../chart/painter.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter,
     LayoutableBox;
@@ -38,18 +37,7 @@ import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
 
 
-/// Abstract class representing the root [BoxContainer] of the whole chart.
-///
-/// Concrete [ChartRootContainerCL] instance is created new on every [FlutterChartPainter.paint] invocation
-/// in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewMaker]
-/// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
-///
-/// Child containers calculate coordinates of chart points
-/// used for painting grid, labels, chart points etc.
-///
-/// The lifecycle of [ChartRootContainerCL] follows the lifecycle of any [BoxContainer], the sequence of
-/// method invocations should be as follows:
-///   - todo-doc-01 : document here and in [BoxContainer]
+/// See [ChartRootContainer].
 abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartRootContainer {
 
   /// Simple Legend+X+Y+Data Container for a flutter chart.
@@ -75,7 +63,6 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
-    required this.isStacked,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');
@@ -101,11 +88,6 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
   late VerticalAxisContainerCL verticalAxisContainerFirst;
   @override
   late DataContainerCL dataContainer;
-
-
-  /// ##### Subclasses - aware members.
-
-  late bool isStacked;
 
   // ##### Methods sharing information between child containers - HorizontalAxisContainer and VerticalAxisContainer Source to DataContainer Sink
 
@@ -808,7 +790,6 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
     ChartOptions chartOptions = chartViewMaker.chartOptions;
-    bool isStacked = chartViewMaker.isStacked;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -824,7 +805,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       chartViewMaker: chartViewMaker,
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
-        double lineX = isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
+        double lineX = chartViewMaker.chartStacking.isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
         return LineContainerCL(
           chartViewMaker: chartViewMaker,
           lineFrom: initLineFrom,
@@ -839,7 +820,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
 
     // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainer]
-    if (isStacked && chartRootContainer.xTickXs.isNotEmpty) {
+    if (chartViewMaker.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 
       _verticalGridLinesContainer.addChildren([
@@ -959,7 +940,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     pointsColumns = PointsColumns(
       chartViewMaker: chartViewMaker,
       pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
-      isStacked: chartViewMaker.isStacked,
+      isStacked: chartViewMaker.chartStacking.isStacked,
       caller: this,
     );
     

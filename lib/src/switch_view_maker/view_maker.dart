@@ -72,7 +72,6 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
     required model.ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
-    bool isStacked = false,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) {
     logger.Logger().d('Constructing SwitchChartViewMaker');

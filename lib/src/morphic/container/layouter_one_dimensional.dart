@@ -208,11 +208,15 @@ class LayedoutLengthsPositioner {
   /// - [externalTicksLayoutProvider] only applies for [Packing.externalTicksProvided]
   ///
   LayedoutLengthsPositioner({
-    // todo-010 (functional) : should we assert only positive or 0 lengths? - Probably, it should NOT make any difference. Later can extend to negatives.
     required this.lengths,
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
   }) {
+    // todo-00-done todo-done KEEP COMMENT 2-23-04027: : assert only positive or 0 lengths.
+    //          Later we can use negative positioning
+    for(var length in lengths) {
+      assert (length >= 0.0);
+    }
     assert(lengthsConstraint != double.infinity);
     switch (lengthsPositionerProperties.packing) {
       case Packing.matrjoska:

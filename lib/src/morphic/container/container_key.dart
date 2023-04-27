@@ -70,7 +70,10 @@ class SiblingsValueKey<T> extends SiblingsKey {
   int get hashCode => value.hashCode * 17;
 }
 
-// todo-doc-01
+/// Allows implementations to be identified by a user-defined unique key.
+///
+/// Uniqueness depends on context, and is not described by this class:
+/// Uniqueness can be global, in hierarchy, among siblings etc.
 abstract class Keyed {
   ContainerKey get key;
 }

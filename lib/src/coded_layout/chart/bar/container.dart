@@ -23,7 +23,6 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     required ChartViewMaker  chartViewMaker,
     required ChartModel        chartModel,
     required ChartOptions    chartOptions,
-    required bool            isStacked,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     legendContainer: legendContainer,
@@ -32,10 +31,9 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
-          chartModel: chartModel,
-          isStacked: isStacked,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
-        ) {
+    chartModel: chartModel,
+    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
+  ) {
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
