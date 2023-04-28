@@ -15,7 +15,7 @@ import '../../chart/model/data_model.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../morphic/container/container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, LayoutableBox, Padder, RollingBoxLayouter, TransposingRoller;
+    show BoxContainer, BoxLayouter, LayoutableBox, RollingBoxLayouter, TransposingRoller;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
@@ -1019,49 +1019,69 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     return pointPresenters;
   }
 
-  // ----- todo-00-done : Added after moving methods from view_maker to data_container
-  // todo-00 : check all methods moved to data_container and remove them from view_maker extensions
+  // Methods needed to implement DataContainer, but are not used in this CL DataContainerCL,
+  //   all throw [UnimplementedError].
 
   @override
-  TransposingRoller buildLevel1BarsAndAxisColumn({required RollingBoxLayouter positiveBarsContainer, required TransposingInputAxisLineContainer inputAxisLine, required RollingBoxLayouter negativeBarsContainer}) {
+  TransposingRoller buildLevel1BarsAndAxisColumn({
+    required RollingBoxLayouter positiveBarsContainer,
+    required TransposingInputAxisLineContainer inputAxisLine,
+    required RollingBoxLayouter negativeBarsContainer,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  TransposingRoller buildLevel2SameSignBarsRow({required Sign barsAreaSign}) {
+  TransposingRoller buildLevel2SameSignBarsRow({
+    required Sign barsAreaSign,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  TransposingRoller buildLevel3PointContainersColumn({required List<Padder> pointContainers, required Sign barsAreaSign}) {
+  TransposingRoller buildLevel3PointContainersColumn({
+    required List<PointContainer> pointContainers,
+    required Sign barsAreaSign,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  List<Padder> makeViewsFor_CrossPointsModels({required List<CrossPointsModel> crossPointsModels, required Sign barsAreaSign}) {
+  List<CrossPointsContainer> makeViewsFor_CrossPointsModels({
+    required List<CrossPointsModel> crossPointsModels,
+    required Sign barsAreaSign,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  CrossPointsContainer makeViewFor_EachCrossPointsModel({required CrossPointsModel crossPointsModel, required Sign barsAreaSign}) {
+  CrossPointsContainer makeViewFor_EachCrossPointsModel({
+    required CrossPointsModel crossPointsModel,
+    required Sign barsAreaSign,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  PointContainer makeViewForDataArea_PointModel({required PointModel pointModel}) {
+  PointContainer makeViewForDataArea_PointModel({
+    required PointModel pointModel,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  PointContainer makeViewForDataArea_PointModelWithZeroValue({required PointModel pointModel}) {
+  PointContainer makeViewForDataArea_PointModelWithZeroValue({
+    required PointModel pointModel,
+  }) {
     throw UnimplementedError();
   }
 
   @override
-  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
+  ClsPointToNullableContainer clsPointToNullableContainerForSign(
+    Sign barsAreaSign,
+  ) {
     throw UnimplementedError();
   }
-
 }
 
 /// Provides the data area container for the bar chart.

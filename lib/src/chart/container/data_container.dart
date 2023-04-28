@@ -69,11 +69,14 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  /// Builds a container for the positive and negative bars containers.
+  /// Builds a container for positive and negative areas, separated by axis line.
   ///
   /// This container is on the top of data container hierarchy.
   ///
-  /// The passed [children] should be
+  /// It accepts it's child containers in order of display (which could be reversed for row orientation
+  ///   - [positiveBarsContainer] The area with positive bars
+  ///   - [inputAxisLine]  Axis line separating positive and negative areas
+  ///   - [negativeBarsContainer] The area with negative bars
   ///
   /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Column] is built;
   /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
@@ -102,6 +105,12 @@ class DataContainer extends container_common.ChartAreaContainer {
   }) {
     assert(barsAreaSign != Sign.any);
 
+    EdgePadding barSidePad = EdgePadding.TransposingWithSides(
+      chartOrientation: chartViewMaker.chartOrientation,
+      start: 5.0,
+      end: 5.0,
+    );
+
     // Row with positive or negative Column-bars, depending on [barsAreaSign].
     // As there are two of these rows in a parent Column, each Row is:
     //   - weighted by the ratio of positive / negative range taken up depending on sign
@@ -119,48 +128,65 @@ class DataContainer extends container_common.ChartAreaContainer {
       // this Row must divide width to all bars evenly
       constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
       // Switches from DataContainer to ChartViewMaker, as it needs a model
-      children: makeViewsFor_CrossPointsModels( // todo-00 : wrap padder from inside around this call as map
+      children: makeViewsFor_CrossPointsModels(
         crossPointsModels: chartViewMaker.chartModel.crossPointsModelList,
         barsAreaSign: barsAreaSign,
-      ),
+      )
+          // Pad around each [PointContainer].
+          .map((crossPointsContainer) => Padder(
+                edgePadding: barSidePad,
+                child: crossPointsContainer,
+              ))
+          .toList(),
     );
   }
 
-  // todo-00 : pull docs here from other build methods
+  /// Builds a container for one bar with [PointContainer]s.
+  ///
+  /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Column] is built;
+  /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
   // todo-00-next : WHAT IF WE TURN THIS INTO a method on CrossPointsContainer.buildAndReplaceChildren ???
   TransposingRoller buildLevel3PointContainersColumn({
-    // todo-00 : pull Padder in - pass here PointContainers, and pad them first thing here, before passing down as children
-    required List<Padder> pointContainers,
+    required List<PointContainer> pointContainers,
     required Sign barsAreaSign,
   }) {
+
+    // Pad around each [PointContainer] before placing it in TransposingRoller
+    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
+      chartOrientation: chartViewMaker.chartOrientation,
+      start: 1.0,
+      end: 1.0,
+    );
+    List<Padder> paddedPointContainers = pointContainers
+        .map((pointContainer) => Padder(
+              edgePadding: pointRectSidePad,
+              child: pointContainer,
+            ))
+        .toList();
+
     switch (chartViewMaker.chartStacking) {
       case ChartStacking.stacked:
         return TransposingRoller.Column(
           chartOrientation: chartViewMaker.chartOrientation,
-          mainAxisAlign: Align.start,
-          // default
-          crossAxisAlign: Align.center,
-          // default
-          constraintsDivideMethod: ConstraintsDivideMethod.noDivision,
-          // default
-          isMainAxisAlignFlippedOnTranspose: false,
-          // but do not flip to Align.end, as children have no weight=no divide
-          children: barsAreaSign == Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
+          mainAxisAlign: Align.start, // default
+          crossAxisAlign: Align.center, // default
+          // For stacked, do NOT put weights, as in main direction, each bar has no limit.
+          constraintsDivideMethod: ConstraintsDivideMethod.noDivision, // default
+          isMainAxisAlignFlippedOnTranspose: false, // do not flip to Align.end, as children have no weight=no divide
+          children: barsAreaSign == Sign.positiveOr0 ? paddedPointContainers.reversed.toList() : paddedPointContainers,
         );
       case ChartStacking.nonStacked:
         return TransposingRoller.Row(
           chartOrientation: chartViewMaker.chartOrientation,
-          mainAxisAlign: Align.start,
-          // default
+          mainAxisAlign: Align.start, // default
           // column:  sit positive bars at end,   negative bars at start
           // row:     sit positive bars at start, negative bars at end (Transposing will take care of this row flip)
           crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
-          // nonStacked column orientation, leaf rects are in Row along main axis,
-          // this Row must divide width to all leaf rects evenly
+          // For nonStacked leaf rects are in Transposing Row along main axis,
+          // this row must divide width to all leaf rects evenly
           constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
-          isMainAxisAlignFlippedOnTranspose: true,
-          // default
-          children: pointContainers,
+          isMainAxisAlignFlippedOnTranspose: true, // default
+          children: paddedPointContainers,
         );
     }
   }
@@ -183,38 +209,15 @@ class DataContainer extends container_common.ChartAreaContainer {
   //                    - CAN THE data_container building code be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
   //                    - SIMILAR FOR AXIS_CONTAINER
 
-  // todo-00 : pull Padder outside, return List<CrossPointsContainer>
-  List<Padder> makeViewsFor_CrossPointsModels({
+  /// List of containers, each is one column of data (in column orientation).
+  List<CrossPointsContainer> makeViewsFor_CrossPointsModels({
     required List<model.CrossPointsModel> crossPointsModels,
     required Sign barsAreaSign,
   }) {
-    List<Padder> chartBars = [];
-    // Iterates the [chartModel] cross-series (column wise) [crossPointsModel],
-    //   creates a [CrossPointsContainer] (chartBar) from each cross-series, adds the chartBar
-    //   to the [chartBars] list, which is returned.
-
-    for (model.CrossPointsModel crossPointsModel in crossPointsModels) {
-      CrossPointsContainer oneBar = makeViewFor_EachCrossPointsModel(
+    return crossPointsModels.map((crossPointsModel) =>  makeViewFor_EachCrossPointsModel(
         crossPointsModel: crossPointsModel,
         barsAreaSign: barsAreaSign,
-      );
-
-      EdgePadding barSidePad = EdgePadding.TransposingWithSides(
-        chartOrientation: chartViewMaker.chartOrientation,
-        start: 5.0,
-        end: 5.0,
-      );
-
-      // Pad around each [PointContainer]. Parent layouter must enforce even weights along main axis on all.
-      Padder oneBarPadded = Padder(
-        edgePadding: barSidePad,
-        child: oneBar,
-      );
-
-      chartBars.add(oneBarPadded);
-    }
-
-    return chartBars;
+      )).toList();
   }
 
   /// Makes view for one [model.CrossPointsModel],
@@ -227,17 +230,11 @@ class DataContainer extends container_common.ChartAreaContainer {
     required model.CrossPointsModel crossPointsModel,
     required Sign barsAreaSign,
   }) {
-    EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
-      chartOrientation: chartViewMaker.chartOrientation,
-      start: 1.0,
-      end: 1.0,
-    );
     return CrossPointsContainer(
       chartViewMaker: chartViewMaker,
-      // todo-00-done : crossPointsModel: crossPointsModel,
       pointContainers: [
         buildLevel3PointContainersColumn( // todo-00-last: This builds TransposingRoller SO DO NOT PRETEND it is List<PointContainer> !!
-          pointContainers: // todo-00 : padders are created and wrapping here. Do NOT do that. move the padding to inside buildLevel3PointContainersColumn
+          pointContainers:
               // Creates a list of padded [PointContainer]s from all points of the passed [crossPointsModel].
               // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
               // stacked and nonStacked, and positive and negative, distinctly.
@@ -248,13 +245,6 @@ class DataContainer extends container_common.ChartAreaContainer {
                   // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
                   .where((containerElm) => containerElm != null)
                   .map((containerElm) => containerElm!)
-                  // Pad around each [PointContainer].
-                  // Only for nonStacked, parent layouter must enforce even weights along main axis on all.
-                  // For stacked, we must NOT put weights, as in main direction, each bar has no limit.
-                  .map((pointContainer) => Padder(
-                        edgePadding: pointRectSidePad,
-                        child: pointContainer,
-                      ))
                   .toList(),
 
           barsAreaSign: barsAreaSign,
@@ -335,7 +325,6 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
 
   CrossPointsContainer({
     required ChartViewMaker chartViewMaker,
-    // todo-00-done : required this.crossPointsModel,
     List<BoxContainer>? pointContainers,
     // todo-00-note : THIS IS NOT TRUE. A List<TransposingRoller> is passed here!! : List<PointContainer>? pointContainers,
     ContainerKey? key,
@@ -344,9 +333,6 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
     children: pointContainers,
     key: key,
   );
-
-  /// Model backing this container.
-  // todo-00-done : model.CrossPointsModel crossPointsModel;
 }
 
 abstract class PointContainer extends container_common.ChartAreaContainer {

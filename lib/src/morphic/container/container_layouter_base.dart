@@ -244,7 +244,7 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
     // We iterated all the way to root, and no node had a cached _root.
     // Cache rootCandidate as _root, and return the cached _root.
     // But before, propagate the cached _root to all parents for next time use.
-    print(' ### Log.info: get root: No cached _root found all the way to actual hierarchy-root.');
+    print(' ### Log.Info: get root: No cached _root found all the way to actual hierarchy-root.');
     __propagateRootCacheUp(rootCandidate);
     _root = rootCandidate;
     return _root!;
