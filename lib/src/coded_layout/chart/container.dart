@@ -15,7 +15,7 @@ import '../../chart/model/data_model.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../morphic/container/container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, LayoutableBox, Padder;
+    show BoxContainer, BoxLayouter, LayoutableBox, Padder, RollingBoxLayouter, TransposingRoller;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
@@ -1023,7 +1023,27 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   // todo-00 : check all methods moved to data_container and remove them from view_maker extensions
 
   @override
-  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
+  TransposingRoller buildLevel1BarsAndAxisColumn({required RollingBoxLayouter positiveBarsContainer, required TransposingInputAxisLineContainer inputAxisLine, required RollingBoxLayouter negativeBarsContainer}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  TransposingRoller buildLevel2SameSignBarsRow({required Sign barsAreaSign}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  TransposingRoller buildLevel3PointContainersColumn({required List<Padder> pointContainers, required Sign barsAreaSign}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<Padder> makeViewsFor_CrossPointsModels({required List<CrossPointsModel> crossPointsModels, required Sign barsAreaSign}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  CrossPointsContainer makeViewFor_EachCrossPointsModel({required CrossPointsModel crossPointsModel, required Sign barsAreaSign}) {
     throw UnimplementedError();
   }
 
@@ -1038,12 +1058,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  CrossPointsContainer makeViewForDataContainer_EachCrossPointsModel({required CrossPointsModel crossPointsModel, required Sign barsAreaSign}) {
-    throw UnimplementedError();
-  }
-
-  @override
-  List<Padder> makeViewsForDataContainer_CrossPointsModels({required List<CrossPointsModel> crossPointsModels, required Sign barsAreaSign}) {
+  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
     throw UnimplementedError();
   }
 
