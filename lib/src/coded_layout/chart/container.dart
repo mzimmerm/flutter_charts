@@ -15,8 +15,7 @@ import '../../chart/model/data_model.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../morphic/container/container_layouter_base.dart'
-    show BoxContainer, BoxLayouter,
-    LayoutableBox;
+    show BoxContainer, BoxLayouter, LayoutableBox, Padder;
 //import 'container_alignment.dart';
 //import 'container_edge_padding.dart';
 import 'line_container.dart';
@@ -27,6 +26,7 @@ import '../../chart/model/label_model.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 //import '../container/container_key.dart';
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
+import '../../morphic/container/morphic_dart_enums.dart';
 //import '../chart/layouter_one_dimensional.dart';
 import '../../chart/iterative_layout_strategy.dart' as strategy;
 
@@ -1018,6 +1018,35 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     }
     return pointPresenters;
   }
+
+  // ----- todo-00-done : Added after moving methods from view_maker to data_container
+  // todo-00 : check all methods moved to data_container and remove them from view_maker extensions
+
+  @override
+  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
+    throw UnimplementedError();
+  }
+
+  @override
+  PointContainer makeViewForDataArea_PointModel({required PointModel pointModel}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  PointContainer makeViewForDataArea_PointModelWithZeroValue({required PointModel pointModel}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  CrossPointsContainer makeViewForDataContainer_EachCrossPointsModel({required CrossPointsModel crossPointsModel, required Sign barsAreaSign}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<Padder> makeViewsForDataContainer_CrossPointsModels({required List<CrossPointsModel> crossPointsModels, required Sign barsAreaSign}) {
+    throw UnimplementedError();
+  }
+
 }
 
 /// Provides the data area container for the bar chart.
@@ -1062,6 +1091,7 @@ class BarChartDataContainerCL extends DataContainerCL {
       }
     }
   }
+
 }
 
 /// Provides the data area container for the line chart.
