@@ -204,6 +204,10 @@ class Interval {
     return 1.0 - ratioOfPositivePortion();
   }
 
+  double ratioOfAnySignPortion() {
+    return 1.0;
+  }
+
   /// If this [Interval] intersects with the passed [other] interval,
   /// returns a new interval which is an intersection of this interval with the passed interval;
   /// Otherwise, returns an Interval which is collapsed on the single point of my range, specified

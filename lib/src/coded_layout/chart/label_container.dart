@@ -24,17 +24,14 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
     required container_common.ChartAreaContainer ownerChartAreaContainer,
-    // todo-00-last : move to ChartLabelContainerCL : this.labelTiltMatrix = labelTiltMatrix;
-  }) :
-        _labelInfo = labelInfo,
+  })  : _labelInfo = labelInfo,
         _ownerChartAreaContainer = ownerChartAreaContainer,
-
         super(
-        chartViewMaker: chartViewMaker,
-        label: label,
-        labelTiltMatrix: labelTiltMatrix,
-        labelStyle: labelStyle,
-      );
+          chartViewMaker: chartViewMaker,
+          label: label,
+          labelTiltMatrix: labelTiltMatrix,
+          labelStyle: labelStyle,
+        );
 
   /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
   final container_common.ChartAreaContainer _ownerChartAreaContainer;

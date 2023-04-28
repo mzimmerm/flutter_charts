@@ -271,7 +271,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
         barsAreaSign: barsAreaSign,
       );
 
-      EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
+      EdgePadding barSidePad = EdgePadding.TransposingWithSides(
         chartOrientation: chartOrientation,
         start: 5.0,
         end: 5.0,
@@ -279,12 +279,13 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
       // Pad around each [PointContainer]. Parent layouter must enforce even weights along main axis on all.
       container_base.Padder oneBarPadded = container_base.Padder(
-        edgePadding: pointRectSidePad,
+        edgePadding: barSidePad,
         child: oneBar,
       );
 
       chartBars.add(oneBarPadded);
     }
+
     return chartBars;
   }
 

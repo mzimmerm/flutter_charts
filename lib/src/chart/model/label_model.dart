@@ -167,6 +167,17 @@ class DataRangeLabelInfosGenerator {
   /// Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
 
+  double dataRangeRatioOfPortionWithSign(Sign sign) {
+    switch(sign) {
+      case Sign.positiveOr0:
+        return dataRange.ratioOfPositivePortion();
+      case Sign.negative:
+        return dataRange.ratioOfNegativePortion();
+      case Sign.any:
+        return dataRange.ratioOfAnySignPortion();
+    }
+  }
+
   /// The function converts value to label.
   ///
   /// Assigned from a corresponding function [ChartOptions.verticalAxisContainerOptions.outputValueToLabel].

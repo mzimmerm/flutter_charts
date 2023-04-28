@@ -311,10 +311,10 @@ class CrossPointsModel {
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
-  /// Points of this positive or negative column (crossPoints).
+  /// Points in this column are points in one cross-series column.
   final List<PointModel> crossPointsAllElements = [];
 
-  /// Returns data minimum or maximum.
+  /// Returns minimum or maximum of [PointModel.outputValue]s in me.
   ///
   /// In more detail:
   ///   - For [chartStacking] == [ChartStacking.stacked],  returns added (accumulated) [PointModel.outputValue]s
@@ -337,7 +337,7 @@ class CrossPointsModel {
     }
   }
 
-  /// Return iterable of my points with the passed sign
+  /// Return iterable of my points with the passed sign.
   Iterable<PointModel> _pointsWithSign(Sign sign) {
     if (sign == Sign.any) throw StateError('Method _pointsWithSign is not applicable for Sign.any');
 

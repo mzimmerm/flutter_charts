@@ -88,39 +88,26 @@ class DataContainer extends container_common.ChartAreaContainer {
     required Sign barsAreaSign,
   }) {
 
-    double ratioOfPositiveOrNegativePortion;
-    Align crossAxisAlign;
-    List<model.CrossPointsModel> crossPointsModels;
+    assert (barsAreaSign != Sign.any);
 
-    switch(barsAreaSign) {
-      case Sign.positiveOr0:
-        crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfPositivePortion();
-        crossAxisAlign = Align.end; // cross align end for pos / start for neg push negative and positive together.
-        break;
-      case Sign.negative:
-        crossPointsModels = chartViewMaker.chartModel.crossPointsModelList;
-        ratioOfPositiveOrNegativePortion = chartViewMaker.outputLabelsGenerator.dataRange.ratioOfNegativePortion();
-        crossAxisAlign = Align.start;
-        break;
-      case Sign.any:
-        throw StateError('Should be called only with [barsAreaSign] positive or negative.');
-    }
-    // Row with a positive or negative bars, depending on [barsAreaSign].
-    // The Row constraints are weighted by the ratio for positives and negatives passed here.
+    // Row with positive or negative Column-bars, depending on [barsAreaSign].
+    // As there are two of these rows in a parent Column, each Row is:
+    //   - weighted by the ratio of positive / negative range taken up depending on sign
+    //   - cross-aligned to top or bottom depending on sign.
     return TransposingRoller.Row(
       chartOrientation: chartViewMaker.chartOrientation,
       constraintsWeight: ConstraintsWeight(
-        weight: ratioOfPositiveOrNegativePortion,
+        weight: chartViewMaker.outputLabelsGenerator.dataRangeRatioOfPortionWithSign(barsAreaSign),
       ),
       mainAxisAlign: Align.start, // default
-      crossAxisAlign: crossAxisAlign,
+      // sit positive bars at end (bottom), negative pop to start (top)
+      crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
       // column orientation, any stacking, any sign: bars of data are in Row main axis,
       // this Row must divide width to all bars evenly
       constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
       // Switches from DataContainer to ChartViewMaker, as it needs a model
       children: chartViewMaker.makeViewsForDataContainer_CrossPointsModels(
-        crossPointsModels: crossPointsModels,
+        crossPointsModels: chartViewMaker.chartModel.crossPointsModelList,
         barsAreaSign: barsAreaSign,
       ),
     );
@@ -181,8 +168,8 @@ class BarPointContainer extends PointContainer with WidthSizerLayouterChildMixin
     key: key,
   );
 
-  /// Full [layout] implementation calculates and set the final [_rectangleSize],
-  /// the width and height of the Rectangle that represents data as pixels.
+  /// Full [layout] implementation calculates and sets the pixel width and height of the Rectangle
+  /// that represents data.
   @override
   void layout() {
     buildAndReplaceChildren();
