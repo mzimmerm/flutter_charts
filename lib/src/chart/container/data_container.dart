@@ -45,7 +45,7 @@ class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                buildLevel1BarsAndAxisColumn(
+                buildLevel1BarsContainersAndAxisColumn(
                   // Row with columns of positive values
                   positiveBarsContainer: buildLevel2SameSignBarsRow(
                     barsAreaSign: Sign.positiveOr0,
@@ -80,7 +80,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   ///
   /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Column] is built;
   /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
-  TransposingRoller buildLevel1BarsAndAxisColumn({
+  TransposingRoller buildLevel1BarsContainersAndAxisColumn({
     required RollingBoxLayouter positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required RollingBoxLayouter negativeBarsContainer,

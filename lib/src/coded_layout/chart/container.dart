@@ -1023,7 +1023,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   //   all throw [UnimplementedError].
 
   @override
-  TransposingRoller buildLevel1BarsAndAxisColumn({
+  TransposingRoller buildLevel1BarsContainersAndAxisColumn({
     required RollingBoxLayouter positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required RollingBoxLayouter negativeBarsContainer,
