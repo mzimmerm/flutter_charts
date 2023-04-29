@@ -73,7 +73,7 @@ import '../example/lib/main.dart' as app;
 ///           --driver=test_driver/integration_test.dart
 ///           --target=integration_test/screenshot_create_test.dart
 ///
-///         # or non-default charts screenshots as
+///         # or not-default charts screenshots as
 ///
 ///         flutter  drive \
 ///           --dart-define=EXAMPLE_TO_RUN=ex_5_0_StocksRankedOnYWithNegatives_DataYLabels_UserColors \

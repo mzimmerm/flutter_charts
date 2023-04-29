@@ -37,8 +37,8 @@ class ChartModel {
     this.outputUserLabels,
     List<ui.Color>? byRowColors,
   })  :
-        // Initializing of non-nullable final byRowColors which is a non-required argument
-        // must be done in initialized by a non-member function (member methods only in constructor body)
+        // Initializing of not-nullable final byRowColors which is a not-required argument
+        // must be done in initialized by a not-member function (member methods only in constructor body)
         byRowColors = byRowColors ?? byRowDefaultColors(valuesRows.length) {
     logger.Logger().d('Constructing ChartModel');
     validate();
@@ -67,13 +67,13 @@ class ChartModel {
   /// List of crossPoints in the model.
   final List<CrossPointsModel> crossPointsModelList = [];
 
-  /// Returns the minimum and maximum transformed, non-extrapolated data values calculated from [ChartModel],
+  /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
   ///
   /// The returned value is calculated from [ChartModel] by finding maximum and minimum of data values
   /// in [PointModel] instances, which are added up if the passed [isStacked] is `true`.
   ///
-  /// The source data of the returned interval differs in stacked and Non-Stacked data, determined by argument [isStacked] :
+  /// The source data of the returned interval differs in stacked and not-Stacked data, determined by argument [isStacked] :
   ///   - For [chartStacking] == [ChartStacking.stacked],
   ///       the min and max is from [extremeValueWithSign] for positive and negative sign
   ///   - For [chartStacking] == [ChartStacking.nonStacked],
@@ -93,7 +93,7 @@ class ChartModel {
           extremeValueWithSign(Sign.positiveOr0, chartStacking),
         );
       case ChartStacking.nonStacked:
-        // Non-Stacked values can just use values from DataModel [_valuesRows] transformed values.
+        // not-Stacked values can just use values from DataModel [_valuesRows] transformed values.
         return Interval(
           _transformedValuesMin,
           _transformedValuesMax,
@@ -120,10 +120,10 @@ class ChartModel {
     );
   }
 
-  /// Data range used when labels are non-numeric.
+  /// Data range used when labels are not-numeric.
   ///
   /// Motivation:
-  ///   When labels for input values or output values are non-numeric or cannot be
+  ///   When labels for input values or output values are not-numeric or cannot be
   ///   converted to numeric, there must still be some way to lextr values to pixels.
   ///   This member provides a default 'from' range for such lextr-ing.
   ///
@@ -246,6 +246,7 @@ class ChartModel {
 ///
 /// Note: [CrossPointsModel] replaces the [PointsColumn] in legacy layouter.
 ///
+@immutable
 class CrossPointsModel {
 
   /// Constructs a model for one bar of points.
@@ -271,7 +272,7 @@ class CrossPointsModel {
         ownerCrossPointsModel: this,
         rowIndex: rowIndex,
       );
-      crossPointsAllElements.add(point);
+      crossSeriesPoints.add(point);
       rowIndex++;
     }
   }
@@ -284,7 +285,7 @@ class CrossPointsModel {
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
-  /// The data values of this column are stored in the [crossPointsAllElements] list,
+  /// The data values of this column are stored in the [crossSeriesPoints] list,
   /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
@@ -312,7 +313,7 @@ class CrossPointsModel {
   }
 
   /// Points in this column are points in one cross-series column.
-  final List<PointModel> crossPointsAllElements = [];
+  final List<PointModel> crossSeriesPoints = [];
 
   /// Returns minimum or maximum of [PointModel.outputValue]s in me.
   ///
@@ -341,7 +342,7 @@ class CrossPointsModel {
   Iterable<PointModel> _pointsWithSign(Sign sign) {
     if (sign == Sign.any) throw StateError('Method _pointsWithSign is not applicable for Sign.any');
 
-    return crossPointsAllElements
+    return crossSeriesPoints
         .where((pointModel) => pointModel.sign == sign);
   }
 }
@@ -354,6 +355,7 @@ class CrossPointsModel {
 ///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._dataModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
+@immutable
 class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
@@ -367,45 +369,40 @@ class PointModel {
     required double outputValue,
     required this.ownerCrossPointsModel,
     required this.rowIndex,
-  }) {
-    this.outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble();
-
-    if (outputValue >= 0.0) {
-      sign = Sign.positiveOr0;
-    } else {
-      sign = Sign.negative;
-    }
-
+  })
+    : outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
+    sign = outputValue >= 0.0 ? Sign.positiveOr0 : Sign.negative
+  {
     assertDoubleResultsSame(
       ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
           .yTransform(ownerCrossPointsModel.dataModel.valuesRows[rowIndex][columnIndex])
           .toDouble(),
       this.outputValue,
     );
-
   }
 
   // ===================== NEW CODE ============================================
 
-  /// The original (transformed, not-extrapolated) data value from one data item
-  /// in the 2D, rows first, list of (output) values [ChartModel.valuesRows].
+  /// The *transformed, not-extrapolated* data value from one data item
+  /// in the 2D, rows first, [ChartModel.valuesRows] at position [rowIndex].
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
   ///   - column at index [columnIndex], which is also the [ownerCrossPointsModel]'s
   ///     index [CrossPointsModel.columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
-  late final double outputValue;
+  final double outputValue;
+
 
   /// [Sign] of the [outputValue].
-  late final Sign sign;
+  final Sign sign;
 
   /// References the data column (crossPoints list) this point belongs to
-  CrossPointsModel ownerCrossPointsModel;
+  final CrossPointsModel ownerCrossPointsModel;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossPointsModel.crossPointsAllElements] at index [rowIndex].
+  /// Also, this point object is kept in [CrossPointsModel.crossSeriesPoints] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
@@ -419,7 +416,7 @@ class PointModel {
   ///
   /// Motivation:
   ///
-  ///   [PointModel]'s inputValue (x values, independent values) is often non-numeric,
+  ///   [PointModel]'s inputValue (x values, independent values) is often not-numeric,
   ///   defined by [ChartModel.inputUserLabels] or similar approach, so to get inputValue
   ///   of this instance seems irrelevant or incorrect to ask for.
   ///   However, when positioning a [PointContainer] representing a [PointModel],

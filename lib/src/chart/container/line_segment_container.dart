@@ -47,7 +47,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
   });
 
-  /// Model contains the transformed, non-extrapolated values of the point where the line starts.
+  /// Model contains the transformed, not-extrapolated values of the point where the line starts.
   late final PointOffset? fromPointOffset;
   late final PointOffset? toPointOffset;
   final ui.Paint linePaint;
@@ -119,7 +119,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child
-    //   of a Non-Stacked [LineChart] with hierarchy-parent being [Column] or [Row] with [mainAxisLayout=matrjoska,end]
+    //   of a Not-Stacked [LineChart] with hierarchy-parent being [Column] or [Row] with [mainAxisLayout=matrjoska,end]
     //   all sibling [LineSegmentContainer]s overlap and grow from end. Then the [layoutSize] in the main direction
     //   of parent is the max length in that direction. In the cross-direction, it is the same as constraint size.
     layoutSize = _layoutSize;
@@ -176,7 +176,7 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
           isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
 
-  /// Model contains the transformed, non-extrapolated values of the point where the line starts.
+  /// Model contains the transformed, not-extrapolated values of the point where the line starts.
   ///
   /// This member [fromPointModel] replaces the super [LineBetweenPointOffsetsContainer.fromPointOffset],
   /// in the sense that it yields the super  [LineBetweenPointOffsetsContainer.fromPointOffset]

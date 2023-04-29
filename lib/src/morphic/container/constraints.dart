@@ -17,7 +17,7 @@ class ContainerConstraints {}
 ///   - Role of a layout size 'wiggle room' a child offers to it's parent when laying out using a two pass layout.
 ///     This could be used it a future two pass layout.
 abstract class BoundingBoxesBase {
-  // ### The SINGLE UNNAMED generative non-forwarding constructor
+  // ### The SINGLE UNNAMED generative not-forwarding constructor
   BoundingBoxesBase({
     required this.minSize,
     required this.maxSize,
@@ -41,7 +41,7 @@ abstract class BoundingBoxesBase {
   // ### Members
   late final Size minSize;
   late final Size maxSize;
-  /// Set to non-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
+  /// Set to not-null value of [LayoutAxis] if this bounding box was divided from a 'parent'.
   ///
   /// Motivation and assumption:
   ///   - Used to mark that this bounding box was divided from parent, see [divideUsingMethod].
@@ -64,7 +64,7 @@ abstract class BoundingBoxesBase {
   /// Abstract method for cloning, using the prototype pattern to share
   /// cloning implementation with superclasses.
   ///
-  /// Used along with the generative non-forwarding named constructor [BoundingBoxesBase.cloneOther].
+  /// Used along with the generative not-forwarding named constructor [BoundingBoxesBase.cloneOther].
   /// In the extensions [clone] returns newly constructed BoundingBoxesBase extensions
   /// using the concrete [cloneOther] named constructor
   /// and passing `this` to it.
@@ -73,7 +73,7 @@ abstract class BoundingBoxesBase {
   // The cloneOtherWith family is implemented similar to [BoundingBoxesBase.cloneOther] + [clone]
   // BUT the [cloneWith] cannot be abstract, as extensions need more parameters.
 
-  /// Generative non-forwarding named constructor from other [BoundingBoxesBase] and values to change
+  /// Generative not-forwarding named constructor from other [BoundingBoxesBase] and values to change
   /// on the clone.
   BoundingBoxesBase.cloneOtherWith({
     required BoundingBoxesBase other,

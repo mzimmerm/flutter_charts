@@ -187,7 +187,7 @@ class DataContainer extends container_common.ChartAreaContainer {
           // Creates a list of padded [PointContainer]s from all points of the passed [crossPointsModel].
           // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
           // stacked and nonStacked, and positive and negative, distinctly.
-          crossPointsModel.crossPointsAllElements
+          crossPointsModel.crossSeriesPoints
               // Map applies function converting [PointModel] to [PointContainer],
               // calling the hook [makeViewForDataArea_PointModel]
               .map(clsPointToNullableContainerForSign(barsAreaSign))
@@ -448,7 +448,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   /// Layout this container by calling super, then set the [layoutSize] in the value direction
   /// (owner layouter mainAxisDirection) to be zero.
   ///
-  /// This container is a stand-in for Non-Stacked value point, on the positive or negative side against
+  /// This container is a stand-in for Not-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
   // todo-014-functional : The algorithm is copied from super, just adding the piece of logic setting layoutSize 0.0 in the value direction.
   //                 This is bad for both performance and principle. Find a faster, clearer way - basically we need the logic from super to calculate layoutSize in the cross-value direction,

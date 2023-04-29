@@ -86,7 +86,7 @@ class EnvelopedRotatedRect {
 
   ui.Rect _envelopeRect;
 
-  /// The smallest non-rotated rectangle which envelops the rotated rectangle.
+  /// The smallest not-rotated rectangle which envelops the rotated rectangle.
   get envelopeRect => _envelopeRect;
 
   /// Represents a rectangle [rect] rotated around pivot at center of rectangle,
@@ -157,7 +157,7 @@ class EnvelopedRotatedRect {
 
     // shift is generally large positive, from the already layed out X axis label [_sourceRect], 
     //   to the envelope [_envelopeRect] around the coordinate center.
-    // Adding shift to the _topLeft (which is generally a small negative the centered beginning of non-tilted text),
+    // Adding shift to the _topLeft (which is generally a small negative the centered beginning of not-tilted text),
     // Gets us back to the area of layed out X axis labels.
     ui.Offset shift = _sourceRect.topLeft - _envelopeRect.topLeft;
     _envelopeRect = _envelopeRect.shift(shift);

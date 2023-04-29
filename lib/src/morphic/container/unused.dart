@@ -236,7 +236,7 @@ mixin DoubleLinkedOwner<E> {
 /// In such situation, a hierarchy-parent during the [layout] would first call
 /// this mixin's siblings' [layout], establishing the remaining space
 /// ([constraints]) left over for this [BuilderOfChildrenDuringParentLayout] container, then
-/// create an 'appropriate', 'non-overlapping' children of itself.
+/// create an 'appropriate', 'not-overlapping' children of itself.
 ///
 /// Example:
 ///   - An example is the Y axis ([VerticalAxisContainer] instance), which creates only as many labels

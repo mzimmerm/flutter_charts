@@ -202,13 +202,13 @@ class MyHomePage extends StatefulWidget {
 ///
 class MyHomePageState extends State<MyHomePage> {
   // Note (on null safety):
-  //     To be able to have non-nullable types on members
+  //     To be able to have not-nullable types on members
   //     such as _lineChartOptions (and all others here), 2 things need be done:
-  //   1. The member must be initialized with some non-null value,
+  //   1. The member must be initialized with some not-null value,
   //      either in the definition or in constructor initializer list
   //   2. If a member is passed to a constructor (see  _MyHomePageState.fromOptionsAndData)
   //      the constructor value must still be marked "required".
-  //      This serves as a lasso that enforces callers to set the non-null.
+  //      This serves as a lasso that enforces callers to set the not-null.
   //      But why Dart would not use the initialized value?
 
   /// Get the example to run from environment variables.

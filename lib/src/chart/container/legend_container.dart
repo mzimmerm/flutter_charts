@@ -107,7 +107,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
         children[1] = container_base.Greedy(child: children[1]);
         childLayout = container_base.Row(
           // Note: Attempt to make Align.center + Packing.loose shows no effect - the LegendItem inside container_base.Greedy
-          //       remains start + tight. That make sense, as container_base.Greedy is non-positioning.
+          //       remains start + tight. That make sense, as container_base.Greedy is not-positioning.
           //       If we wanted to center the LegendItem inside of container_base.Greedy, wrap the inside into Center.
           mainAxisAlign: Align.start,
           mainAxisPacking: Packing.tight,
@@ -160,7 +160,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
   @override
   void layout() {
     buildAndReplaceChildren();
-    // todo-023 : can we just call super? this appears needed, otherwise non-label results change slightly, but still correct
+    // todo-023 : can we just call super? this appears needed, otherwise not-label results change slightly, but still correct
     //                we should probably remove this block orderedSkip - but check behavior in debugger, what
     //                happens to layoutSize, it may never be set?
     if (orderedSkip) {

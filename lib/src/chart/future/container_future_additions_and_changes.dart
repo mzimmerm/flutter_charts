@@ -28,7 +28,7 @@ class BoxShape extends Shape {
   math.Rectangle get positionedSurface => const math.Rectangle(0.0, 0.0, 0.0, 0.0);
 }
 
-/// Represents non-positioned pie shape. Internal coordinates are polar, but can ask for containing rectangle.
+/// Represents not-positioned pie shape. Internal coordinates are polar, but can ask for containing rectangle.
 /// Equivalent to Size in Box shapes (internally in cartesian coordinates)
 class Pie {
   // todo-05 add distance and angle, and implement

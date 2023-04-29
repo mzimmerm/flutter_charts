@@ -9,7 +9,7 @@ import '../../util/geometry.dart' as geometry;
 // import '../util/util_dart.dart' as util_dart;
 
 /// Mixin allows [ChartLabelContainer] extend [ChartAreaContainer]
-/// and at the same time allows (future) non-chart specific `LabelContainer` labels.
+/// and at the same time allows (future) not-chart specific `LabelContainer` labels.
 mixin TiltableLabelContainerMixin on BoxContainer {
 
   /// Max width of label (outside constraint).
@@ -43,8 +43,8 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   ///
   /// The returned value is the offset (before any rotation!),
   /// needed to reach the point where the text in the [textPainter]
-  /// should start painting the tilted or non-tilted situation.
-  /// In the non-tilted situation, the returned value is always Offset.zero.
+  /// should start painting the tilted or not-tilted situation.
+  /// In the not-tilted situation, the returned value is always Offset.zero.
   ui.Offset get tiltedLabelEnvelopeTopLeft {
     if (labelTiltMatrix == vector_math.Matrix2.identity()) {
       assert (_tiltedLabelEnvelope.topLeft == ui.Offset.zero);
@@ -61,7 +61,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   /// the [offset] + [_tiltedLabelEnvelope.topLeft] - by the tilt angle against the
   /// tilt (this angle is represented by [labelTiltMatrix] inverse).
   ///
-  /// In *non-tilted labels*, the [_tiltedLabelEnvelope] was created as
+  /// In *not-tilted labels*, the [_tiltedLabelEnvelope] was created as
   /// ```dart
   ///   ui.Offset.zero & _textPainter.size, // offset & size => Rect
   /// ```
@@ -75,7 +75,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   /// In the *tilted labels*, the [_tiltedLabelEnvelope.topLeft]
   /// is a small value below origin such as [0.0, 30.0],
   /// and [offset] is also large, after all parent offsets applied. In this situation,
-  /// the non-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
+  /// the not-zero  [_tiltedLabelEnvelope.topLeft] represent the needed slight 'shift down'
   /// of the original [offset] at which to start painting, as the tilted labels take up a bigger rectangle.
   ///
   // todo-04-morph : this implementation only works for tilting in [HorizontalAxisContainer] because first call to it is
@@ -83,8 +83,8 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   //                    `inputLabelContainer.applyParentOffset(this, labelLeftTop + inputLabelContainer.tiltedLabelEnvelopeTopLeft)`.
   //                 In this first call(s), the result of offsetOfPotentiallyRotatedLabel is the rotated
   //                    value, which is OVERWRITTEN by the last call described below;
-  //                    also, the accumulated non-rotated this.offset is kept on super slot
-  //                    This is what we want - we want to keep the non-rotated this.offset on super slot,
+  //                    also, the accumulated not-rotated this.offset is kept on super slot
+  //                    This is what we want - we want to keep the not-rotated this.offset on super slot,
   //                    and only do the rotation on the last call (last before paint)
   //                 The last call is made in [ChartRootContainer.layout] inside
   //                     `horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset)` as
@@ -92,7 +92,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   //                    for (AxisLabelContainer inputLabelContainer in _inputLabelContainers) {
   //                      inputLabelContainer.applyParentOffset(this, offset);
   //                    }
-  //                 which calculates and stores the rotated value of the accumulated non-rotated this.offset
+  //                 which calculates and stores the rotated value of the accumulated not-rotated this.offset
   //                 into offsetOfPotentiallyRotatedLabel; which value is used by paint.
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
@@ -100,7 +100,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
 
     // Next, _rotateLabelEnvelopeTopLeftToPaintOffset:
     // Transform the point where label painting starts against the tilt of labels.
-    // No-op for non-tilted labels, where _labelTiltMatrix is identity,
+    // No-op for not-tilted labels, where _labelTiltMatrix is identity,
     //   and  _tiltedLabelEnvelope.topLeft is center = Offset.zero.
     vector_math.Matrix2 canvasTiltMatrix = labelTiltMatrix.clone();
     canvasTiltMatrix.invert();

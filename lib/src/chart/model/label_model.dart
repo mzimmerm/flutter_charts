@@ -282,7 +282,7 @@ class DataRangeLabelInfosGenerator {
   ///    3. As this method simply divides the available interval into [labelPointsCount],
   ///       it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
   ///       (which it would be even for logarithmic scale). The interval represents transformed (ususally identity),
-  ///       non-lextr-ed values.
+  ///       not-lextr-ed values.
   List<double> _placeLabelPointsInInterval({
     required util_dart.Interval interval,
     required int labelPointsCount,
@@ -321,12 +321,12 @@ class DataRangeLabelInfosGenerator {
   ///
   /// As the values are generated from [interval], the values us whatever is the
   /// [interval]'s values scale and transform. Likely, the [interval] represents
-  /// transformed but non-extrapolated values.
+  /// transformed but not-extrapolated values.
   ///
   /// The label values power is the same as the greatest power
   /// of the passed number [interval.end], when expanded to 10 based power series.
   ///
-  /// Precision is 1 (that is, only leading digit is non-zero, rest are zeros).
+  /// Precision is 1 (that is, only leading digit is not-zero, rest are zeros).
   ///
   /// Examples:
   ///   1. [util_dart.Interval] is <0, 123> then labels=[0, 100]
@@ -478,7 +478,7 @@ class AxisLabelInfo {
 
   final DataRangeLabelInfosGenerator _labelsGenerator;
 
-  /// Not-extrapolated and not-transformed label value.
+  /// not-extrapolated and not-transformed label value.
   ///
   /// This is only used in labels display, never to calculate or display data values.
   /// All data values calculations are using the [outputValue].
@@ -486,7 +486,7 @@ class AxisLabelInfo {
 
   /// The transformed [_rawOutputValue].
   ///
-  /// In non-transferred (e.g. non-log) charts, this is equal to [_rawOutputValue].
+  /// In not-transferred (e.g. not-log) charts, this is equal to [_rawOutputValue].
   ///
   /// This is the value shown on the chart, before any scaling to pixel value.
   final double outputValue;

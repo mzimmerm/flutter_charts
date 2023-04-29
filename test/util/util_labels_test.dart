@@ -146,7 +146,7 @@ void main() {
   // });
   //
   // test('Range.makeLabelsGeneratorWithLabelInfosFromDataYsOnScale test - ChartOptions with startYAxisAtDataMinRequested: true forces axis labels to start above 0', () {
-  //   // Here, options are non-default.
+  //   // Here, options are not-default.
   //   ChartOptions options = const ChartOptions(
   //     dataContainerOptions: DataContainerOptions(startYAxisAtDataMinRequested: true),
   //   );
