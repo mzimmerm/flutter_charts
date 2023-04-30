@@ -45,9 +45,9 @@ class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                buildLevel1BarsContainersAndAxisColumn(
+                remakePositiveAndNegativeBarsWithInputAxisLineContainer(
                   // Row with columns of positive values
-                  positiveBarsContainer: buildLevel2SameSignBarsRow(
+                  positiveBarsContainer: remakeBarsContainer(
                     barsAreaSign: Sign.positiveOr0,
                   ),
                   // X axis line. Could place in Row with main constraints weight=0.0
@@ -57,7 +57,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                     outputLabelsGenerator: chartViewMaker.outputLabelsGenerator,
                   ),
                   // Row with columns of negative values
-                  negativeBarsContainer: buildLevel2SameSignBarsRow(
+                  negativeBarsContainer: remakeBarsContainer(
                     barsAreaSign: Sign.negative,
                   ),
                 ),
@@ -69,42 +69,107 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  /// Builds a container for positive and negative areas, separated by axis line.
-  ///
-  /// This container is on the top of data container hierarchy.
-  ///
-  /// It accepts it's child containers in order of display (which could be reversed for row orientation
-  ///   - [positiveBarsContainer] The area with positive bars
-  ///   - [inputAxisLine]  Axis line separating positive and negative areas
-  ///   - [negativeBarsContainer] The area with negative bars
-  ///
-  /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Column] is built;
-  /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
-  TransposingRoller buildLevel1BarsContainersAndAxisColumn({
-    required RollingBoxLayouter positiveBarsContainer,
+  /// [DataContainer] client-overridable method hook for extending [PositiveAndNegativeBarsWithInputAxisLineContainer].
+  PositiveAndNegativeBarsWithInputAxisLineContainer remakePositiveAndNegativeBarsWithInputAxisLineContainer({
+    required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
-    required RollingBoxLayouter negativeBarsContainer,
+    required BarsContainer negativeBarsContainer,
+    ContainerKey? key,
   }) {
-    return TransposingRoller.Column(
-      chartOrientation: chartViewMaker.chartOrientation,
-      mainAxisAlign: Align.start, // default
-      children: [
-        positiveBarsContainer,
-        inputAxisLine,
-        negativeBarsContainer,
-      ],
+    return PositiveAndNegativeBarsWithInputAxisLineContainer(
+      chartViewMaker: chartViewMaker,
+      positiveBarsContainer: positiveBarsContainer,
+      inputAxisLine: inputAxisLine,
+      negativeBarsContainer: negativeBarsContainer,
+      key: key,
     );
   }
 
-  /// Build the area showing either positive or negative bars, depending on [barsAreaSign].
-  ///
-  /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Row]    of (column) bars is built;
-  /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Column] of (row)    bars is built.
-  TransposingRoller buildLevel2SameSignBarsRow({
-    required Sign barsAreaSign,
+  /// [DataContainer] client-overridable method hook for extending [BarsContainer].
+  BarsContainer remakeBarsContainer ({
+      required Sign barsAreaSign,
+      ContainerKey? key,
   }) {
-    assert(barsAreaSign != Sign.any);
+    return BarsContainer(
+      chartViewMaker: chartViewMaker,
+      barsAreaSign: barsAreaSign,
+      key: key,
+    );
+  }
 
+}
+
+/// Builds a container for positive and negative chart data areas;
+///   positive and negative areas are separated by an axis line.
+///
+/// This container is on the top of data container hierarchy.
+///
+/// It accepts it's child containers in order of display (which could be reversed for row orientation
+///   - [positiveBarsContainer] The area with positive bars
+///   - [inputAxisLine]  Axis line separating positive and negative areas
+///   - [negativeBarsContainer] The area with negative bars
+///
+/// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Column] is built;
+/// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
+class PositiveAndNegativeBarsWithInputAxisLineContainer extends container_common.ChartAreaContainer {
+  PositiveAndNegativeBarsWithInputAxisLineContainer({
+    required ChartViewMaker chartViewMaker,
+    required this.positiveBarsContainer,
+    required this.inputAxisLine,
+    required this.negativeBarsContainer,
+    ContainerKey? key,
+  }) : super(
+          chartViewMaker: chartViewMaker, // KEEP comment - no children to super, added in buildAndReplaceChildren
+          key: key,
+        );
+
+  final BarsContainer positiveBarsContainer;
+  final TransposingInputAxisLineContainer inputAxisLine;
+  final BarsContainer negativeBarsContainer;
+
+  @override
+  void buildAndReplaceChildren() {
+    replaceChildrenWith([
+      TransposingRoller.Column(
+        chartOrientation: chartViewMaker.chartOrientation,
+        mainAxisAlign: Align.start, // default
+        children: [
+          positiveBarsContainer,
+          inputAxisLine,
+          negativeBarsContainer,
+        ],
+      )
+    ]);
+  }
+}
+
+
+/// Build the area showing either positive or negative bars, depending on [barsAreaSign].
+///
+/// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Row]    of (column) bars is built;
+/// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Column] of (row)    bars is built.
+class BarsContainer extends container_common.ChartAreaContainer {
+  // todo-00 : maybe rename to CrossPointsBarsContainer
+
+  BarsContainer({
+    required ChartViewMaker chartViewMaker,
+    required this.barsAreaSign,
+    ContainerKey? key,
+  }) : super(
+          chartViewMaker: chartViewMaker,
+          // KEEP - no children passed, they are created in place
+          key: key,
+        ) {
+    if (barsAreaSign == Sign.any) {
+      throw StateError('$runtimeType is designed to hold elements with the same sign.');
+    }
+  }
+
+  /// The sign of bars for which this container is built.
+  final Sign barsAreaSign;
+
+  @override
+  void buildAndReplaceChildren() {
     EdgePadding barSidePad = EdgePadding.TransposingWithSides(
       chartOrientation: chartViewMaker.chartOrientation,
       start: 5.0,
@@ -115,81 +180,48 @@ class DataContainer extends container_common.ChartAreaContainer {
     // As there are two of these rows in a parent Column, each Row is:
     //   - weighted by the ratio of positive / negative range taken up depending on sign
     //   - cross-aligned to top or bottom depending on sign.
-    return TransposingRoller.Row(
-      chartOrientation: chartViewMaker.chartOrientation,
-      constraintsWeight: ConstraintsWeight(
-        weight: chartViewMaker.outputLabelsGenerator.dataRangeRatioOfPortionWithSign(barsAreaSign),
-      ),
-      mainAxisAlign: Align.start,
-      // default
-      // sit positive bars at end (bottom), negative pop to start (top)
-      crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
-      // column orientation, any stacking, any sign: bars of data are in Row main axis,
-      // this Row must divide width to all bars evenly
-      constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
-      // Switches from DataContainer to ChartViewMaker, as it needs a model
-      children: makeViewsFor_CrossPointsModels(
-        crossPointsModels: chartViewMaker.chartModel.crossPointsModelList,
-        barsAreaSign: barsAreaSign,
+    replaceChildrenWith([
+      TransposingRoller.Row(
+        chartOrientation: chartViewMaker.chartOrientation,
+        constraintsWeight: ConstraintsWeight(
+          weight: chartViewMaker.outputLabelsGenerator.dataRangeRatioOfPortionWithSign(barsAreaSign),
+        ),
+        mainAxisAlign: Align.start, // default
+        // sit positive bars at end (bottom), negative pop to start (top)
+        crossAxisAlign: barsAreaSign == Sign.positiveOr0 ? Align.end : Align.start,
+        // column orientation, any stacking, any sign: bars of data are in Row main axis,
+        // this Row must divide width to all bars evenly
+        constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
+        // children are padded bars; each bar created from one [CrossPointsModel], contains rectangles or lines
+        children: chartViewMaker.chartModel.crossPointsModelList
+            .map((crossPointsModel) => remakeCrossPointsBar(
+                  crossPointsModel: crossPointsModel,
+                  barsAreaSign: barsAreaSign,
+                ))
+            .map((crossPointsBar) => Padder(
+                  edgePadding: barSidePad,
+                  child: crossPointsBar,
+                ))
+            .toList(),
       )
-          // Pad around each [PointContainer].
-          .map((crossPointsContainer) => Padder(
-                edgePadding: barSidePad,
-                child: crossPointsContainer,
-              ))
-          .toList(),
-    );
+    ]);
   }
 
-  /// Makes a view showing all bars of data points.
-  ///
-  /// Each child in the returned list should be made from one positive or negative element of the model
-  /// [model.ChartModel.crossPointsModelList].
-  /// Makes a view showing all bars of data points.
-  ///
-  /// Each child in the returned list should be made from one positive or negative element of the model
-  /// [model.ChartModel.crossPointsModelList].
-
-  // todo-010      : 1) Reduce number of methods - merge the container-producing methods.
-  //                 2) Review if the PointContainers, CrossSeriesContainers etc are needed and maybe rethink.
-  //                 3) Change return values of methods
-  //                 4!!) Pull Pad-creation outside of the methods where possible.
-  //                 5) Review use and naming of _buildLevelYYY methods.
-  //                 6) WHY DOES VIEW_MAKER EXIST??????? THERE IS SIMILAR CODE IN DATA_CONTAINER AND VIEW_MAKER
-  //                    - CAN THE data_container building code be ONLY in Container extension OR ViewMaker but NOT IN BOTH?
-  //                    - SIMILAR FOR AXIS_CONTAINER
-
-  /// List of containers, each is one column of data (in column orientation).
-  List<CrossPointsContainer> makeViewsFor_CrossPointsModels({
-    required List<model.CrossPointsModel> crossPointsModels,
-    required Sign barsAreaSign,
-  }) {
-    return crossPointsModels.map((crossPointsModel) =>  makeViewFor_EachCrossPointsModel(
-        crossPointsModel: crossPointsModel,
-        barsAreaSign: barsAreaSign,
-      )).toList();
-  }
-
-  /// Makes view for one [model.CrossPointsModel],
-  /// presenting one bar (stacked or nonStacked) of data values (positive or negative).
-  ///
-  /// Controlled by two overridable hooks: [buildLevel3PointContainersColumn]
-  /// and [makeViewForDataArea_PointModel].
-  /// todo-00 : return whatever children are - List<TransposingRoller>. Remove the CrossPointsContainer entirely, it is better expressed as
-  CrossPointsContainer makeViewFor_EachCrossPointsModel({
+  /// [BarsContainer] client-overridable method hook for extending [CrossPointsBar].
+  CrossPointsBar remakeCrossPointsBar({
     required model.CrossPointsModel crossPointsModel,
     required Sign barsAreaSign,
   }) {
-    return CrossPointsContainer(
+    return CrossPointsBar(
       chartViewMaker: chartViewMaker,
       barsAreaSign: barsAreaSign,
       pointContainers:
           // Creates a list of padded [PointContainer]s from all points of the passed [crossPointsModel].
           // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
           // stacked and nonStacked, and positive and negative, distinctly.
-          crossPointsModel.crossSeriesPoints
+          crossPointsModel.pointModelList
               // Map applies function converting [PointModel] to [PointContainer],
-              // calling the hook [makeViewForDataArea_PointModel]
+              // calling the hook [remakePointContainer]
               .map(clsPointToNullableContainerForSign(barsAreaSign))
               // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
               .where((containerElm) => containerElm != null)
@@ -212,7 +244,7 @@ class DataContainer extends container_common.ChartAreaContainer {
             // Note: this [makeViewFor_CrossPointsModel] is called each for positive and negative;
             // For points [pointModelElm] with the same sign as the stack sign being built,
             //   creates a point container from the [pointModelElm]. Caller must add the container to result list.
-            pointContainer = makeViewForDataArea_PointModel(
+            pointContainer = remakePointContainer(
               pointModel: pointModelElm,
             );
           } else {
@@ -224,7 +256,7 @@ class DataContainer extends container_common.ChartAreaContainer {
           if (barsAreaSign == pointModelElm.sign) {
             // For points [pointModelElm] with the same sign as the stack sign being built,
             //   creates a point container from the [pointModelElm]. Caller must add the container to result list.
-            pointContainer = makeViewForDataArea_PointModel(
+            pointContainer = remakePointContainer(
               pointModel: pointModelElm,
             );
           } else {
@@ -232,7 +264,7 @@ class DataContainer extends container_common.ChartAreaContainer {
             //   creates a 'ZeroValue' container which has 0 length (along main direction).
             //   This ensures the returned list of PointContainers is the same size for positive and negative, so
             //   their places for positive and negative are alternating. Caller must add the container to result list.
-            pointContainer = makeViewForDataArea_PointModelWithZeroValue(
+            pointContainer = remakePointContainerWithZeroValue(
               pointModel: pointModelElm,
             );
           }
@@ -242,10 +274,8 @@ class DataContainer extends container_common.ChartAreaContainer {
     };
   }
 
-  /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
-  ///
-  /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  PointContainer makeViewForDataArea_PointModel({
+  /// [BarsContainer] client-overridable method hook for extending [PointContainer].
+  PointContainer remakePointContainer({
     required model.PointModel pointModel,
   }) {
     return BarPointContainer(
@@ -254,7 +284,10 @@ class DataContainer extends container_common.ChartAreaContainer {
     );
   }
 
-  PointContainer makeViewForDataArea_PointModelWithZeroValue({
+  /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
+  ///
+  /// Likely not needed by any client.
+  PointContainer remakePointContainerWithZeroValue({
     required model.PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
@@ -265,20 +298,24 @@ class DataContainer extends container_common.ChartAreaContainer {
   }
 }
 
-/// View for one [CrossPointsModel], is a container for one bar of [PointContainer]s.
+/// View for one [model.CrossPointsModel], in other words, a bar of [PointContainer]s.
+///
+/// Each [PointContainer] views one [model.PointModel] in [model.CrossPointsModel.pointModelList].
+///
+/// Visually presented as a horizontal or vertical bar with rectangles or lines representing data points.
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
 ///
-class CrossPointsContainer extends container_common.ChartAreaContainer {
+class CrossPointsBar extends container_common.ChartAreaContainer {
 
-  CrossPointsContainer({
+  CrossPointsBar({
     required ChartViewMaker chartViewMaker,
     required this.barsAreaSign,
     required this.pointContainers,
     ContainerKey? key,
   }) : super(
     chartViewMaker: chartViewMaker,
-    // KEEP - no children to super, added in buildAndReplaceChildren : children: pointContainers,
+    // KEEP comment - no children to super, added in buildAndReplaceChildren
     key: key,
   );
 
@@ -338,12 +375,13 @@ class CrossPointsContainer extends container_common.ChartAreaContainer {
 
 }
 
-/// View for a [PointModel] instance.
+/// Abstract container is a view for it's [pointModel];
+/// implementations represent the point model on a line, or as a rectangle in a bar chart.
 ///
 /// Important note: To enable extensibility, two things are being done here:
 ///   - extends `with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin`,
 ///     for extensions to not have to worry about sizing
-///   - signature includes `List<BoxContainer>? children`, to allow extensions to compose.
+///   - signature includes `List<BoxContainer>? children`, to allow extensions to compose from other [BoxContainer]s.
 ///
 abstract class PointContainer extends container_common.ChartAreaContainer  with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
 
@@ -371,6 +409,9 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 /// needed to lextr the [pointModel] to a position on the chart.
 class BarPointContainer extends PointContainer {
 
+  /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
+  ///
+  /// Note: On the leaf, we return single element by agreement, higher ups return lists.
   BarPointContainer({
     required model.PointModel pointModel,
     required ChartViewMaker chartViewMaker,

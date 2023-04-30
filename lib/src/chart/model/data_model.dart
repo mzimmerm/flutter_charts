@@ -272,7 +272,7 @@ class CrossPointsModel {
         ownerCrossPointsModel: this,
         rowIndex: rowIndex,
       );
-      crossSeriesPoints.add(point);
+      pointModelList.add(point);
       rowIndex++;
     }
   }
@@ -285,7 +285,7 @@ class CrossPointsModel {
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
-  /// The data values of this column are stored in the [crossSeriesPoints] list,
+  /// The data values of this column are stored in the [pointModelList] list,
   /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
   ///
   /// This is needed to access the legacy arrays such as:
@@ -313,7 +313,7 @@ class CrossPointsModel {
   }
 
   /// Points in this column are points in one cross-series column.
-  final List<PointModel> crossSeriesPoints = [];
+  final List<PointModel> pointModelList = [];
 
   /// Returns minimum or maximum of [PointModel.outputValue]s in me.
   ///
@@ -342,7 +342,7 @@ class CrossPointsModel {
   Iterable<PointModel> _pointsWithSign(Sign sign) {
     if (sign == Sign.any) throw StateError('Method _pointsWithSign is not applicable for Sign.any');
 
-    return crossSeriesPoints
+    return pointModelList
         .where((pointModel) => pointModel.sign == sign);
   }
 }
@@ -402,7 +402,7 @@ class PointModel {
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossPointsModel.crossSeriesPoints] at index [rowIndex].
+  /// Also, this point object is kept in [CrossPointsModel.pointModelList] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;

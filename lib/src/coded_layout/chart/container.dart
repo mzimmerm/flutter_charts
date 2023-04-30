@@ -15,19 +15,16 @@ import '../../chart/model/data_model.dart';
 import '../../morphic/container/label_container.dart';
 import '../../chart/view_maker.dart';
 import '../../morphic/container/container_layouter_base.dart'
-    show BoxContainer, BoxLayouter, LayoutableBox, RollingBoxLayouter, TransposingRoller;
-//import 'container_alignment.dart';
-//import 'container_edge_padding.dart';
+    show BoxContainer, BoxLayouter, LayoutableBox;
 import 'line_container.dart';
 import 'presenter.dart';
 import '../../chart/options.dart';
 import '../../util/util_dart.dart';
 import '../../chart/model/label_model.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
-//import '../container/container_key.dart';
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
+import '../../morphic/container/container_key.dart' show ContainerKey;
 import '../../morphic/container/morphic_dart_enums.dart';
-//import '../chart/layouter_one_dimensional.dart';
 import '../../chart/iterative_layout_strategy.dart' as strategy;
 
 import '../../switch_view_maker/view_maker_cl.dart';
@@ -35,6 +32,12 @@ import '../../switch_view_maker/view_maker_cl.dart';
 // extension libraries
 import 'line/presenter.dart' as line_presenters;
 import 'bar/presenter.dart' as bar_presenters;
+
+// unused
+//import 'container_alignment.dart';
+//import 'container_edge_padding.dart';
+//import '../container/container_key.dart';
+//import '../chart/layouter_one_dimensional.dart';
 
 
 /// See [ChartRootContainer].
@@ -1023,67 +1026,23 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   //   all throw [UnimplementedError].
 
   @override
-  TransposingRoller buildLevel1BarsContainersAndAxisColumn({
-    required RollingBoxLayouter positiveBarsContainer,
+  PositiveAndNegativeBarsWithInputAxisLineContainer remakePositiveAndNegativeBarsWithInputAxisLineContainer({
+    required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
-    required RollingBoxLayouter negativeBarsContainer,
+    required BarsContainer negativeBarsContainer,
+    ContainerKey? key,
   }) {
     throw UnimplementedError();
   }
 
   @override
-  TransposingRoller buildLevel2SameSignBarsRow({
+  BarsContainer remakeBarsContainer ({
     required Sign barsAreaSign,
+    ContainerKey? key,
   }) {
     throw UnimplementedError();
   }
 
-/* todo-00-done
-  @override
-  TransposingRoller buildLevel3PointContainersColumn({
-    required List<PointContainer> pointContainers,
-    required Sign barsAreaSign,
-  }) {
-    throw UnimplementedError();
-  }
-*/
-
-  @override
-  List<CrossPointsContainer> makeViewsFor_CrossPointsModels({
-    required List<CrossPointsModel> crossPointsModels,
-    required Sign barsAreaSign,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  CrossPointsContainer makeViewFor_EachCrossPointsModel({
-    required CrossPointsModel crossPointsModel,
-    required Sign barsAreaSign,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  PointContainer makeViewForDataArea_PointModel({
-    required PointModel pointModel,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  PointContainer makeViewForDataArea_PointModelWithZeroValue({
-    required PointModel pointModel,
-  }) {
-    throw UnimplementedError();
-  }
-
-  @override
-  ClsPointToNullableContainer clsPointToNullableContainerForSign(
-    Sign barsAreaSign,
-  ) {
-    throw UnimplementedError();
-  }
 }
 
 /// Provides the data area container for the bar chart.
