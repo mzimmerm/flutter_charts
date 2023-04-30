@@ -5,6 +5,8 @@
 import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
 // this level base libraries or equivalent
+import 'package:flutter_charts/flutter_charts.dart';
+import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
 import '../../morphic/container/chart_support/chart_style.dart';
@@ -21,6 +23,29 @@ import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
 import '../../morphic/container/container_key.dart';
 
+// todo-010-documentation finish
+
+/// Important note about override:
+///   1. Extensibility:  Consider a client that needs to place a value into each data rectangle on a bar chart.
+///     This requires
+///     - implementing [BarPointContainer] as [MyBarPointContainer]
+///        - overriding the [buildAndReplaceChildren] method (if [MyBarPointContainer] is composed
+///          of [BarPointContainer] and say a new [BarPointLabel] which are placed in a stack)
+///        - OR
+///        - overriding the [layout] method and [paint] method (if [MyBarPointContainer] also extends [BarPointContainer]
+///          and uses the [paint] method to paint the values.
+///     - However, creating the [MyBarPointContainer] is not sufficient, we also need to 'deliver' it
+///       to the chart at the place where [BarPointContainer] is created. This is possible by the following:
+///       - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeViewForDataContainer]
+///       - Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.remakeBarsContainer].
+///       - Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.remakeCrossPointsBar]
+///       - Extend the [CrossPointsBar] to [MyCrossPointsBar] and override [CrossPointsBar.remakePointContainer]
+///       - from [MyCrossPointsBar.remakePointContainer] return instance of [MyBarPointContainer]
+///       - from [MyBarsContainer.remakeCrossPointsBar] return instance of [MyCrossPointsBar]
+///       - from [MyDataContainer.remakeBarsContainer] return instance of [MyBarsContainer]
+///       - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
+///       - Pass [MyChartViewMaker] (instead of [ChartViewMaker] into [FlutterChartPainter] such as [BarChartPainter]
+///
 class DataContainer extends container_common.ChartAreaContainer {
   DataContainer({
     required ChartViewMaker chartViewMaker,
@@ -143,13 +168,11 @@ class PositiveAndNegativeBarsWithInputAxisLineContainer extends container_common
   }
 }
 
-
 /// Build the area showing either positive or negative bars, depending on [barsAreaSign].
 ///
 /// For [ChartViewMaker.chartOrientation] = [ChartOrientation.column] a [Row]    of (column) bars is built;
 /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Column] of (row)    bars is built.
 class BarsContainer extends container_common.ChartAreaContainer {
-  // todo-00 : maybe rename to CrossPointsBarsContainer
 
   BarsContainer({
     required ChartViewMaker chartViewMaker,
@@ -215,87 +238,10 @@ class BarsContainer extends container_common.ChartAreaContainer {
     return CrossPointsBar(
       chartViewMaker: chartViewMaker,
       barsAreaSign: barsAreaSign,
-      pointContainers:
-          // Creates a list of padded [PointContainer]s from all points of the passed [crossPointsModel].
-          // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
-          // stacked and nonStacked, and positive and negative, distinctly.
-          crossPointsModel.pointModelList
-              // Map applies function converting [PointModel] to [PointContainer],
-              // calling the hook [remakePointContainer]
-              .map(clsPointToNullableContainerForSign(barsAreaSign))
-              // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
-              .where((containerElm) => containerElm != null)
-              .map((containerElm) => containerElm!)
-              .toList(),
+      crossPointsModel: crossPointsModel,
     );
   }
 
-  /// Function closure, when called with argument [barsAreaSign],
-  /// returns [PointContainer] yielding function with one free parameter, the [PointModel].
-  ///
-  /// Encapsulates the logic of creating [PointContainer] from [PointModel] for
-  /// all possible values of [ChartViewMaker.chartStacking] and [barsAreaSign].
-  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
-    return (model.PointModel pointModelElm) {
-      PointContainer? pointContainer;
-      switch (chartViewMaker.chartStacking) {
-        case ChartStacking.stacked:
-          if (barsAreaSign == pointModelElm.sign) {
-            // Note: this [makeViewFor_CrossPointsModel] is called each for positive and negative;
-            // For points [pointModelElm] with the same sign as the stack sign being built,
-            //   creates a point container from the [pointModelElm]. Caller must add the container to result list.
-            pointContainer = remakePointContainer(
-              pointModel: pointModelElm,
-            );
-          } else {
-            // For points [pointModelElm] with opposite sign to the stack being built,
-            // return null PointContainer. Caller must SKIP this null, so no container will be added to result list.
-          }
-          break;
-        case ChartStacking.nonStacked:
-          if (barsAreaSign == pointModelElm.sign) {
-            // For points [pointModelElm] with the same sign as the stack sign being built,
-            //   creates a point container from the [pointModelElm]. Caller must add the container to result list.
-            pointContainer = remakePointContainer(
-              pointModel: pointModelElm,
-            );
-          } else {
-            // For points [pointModelElm] with opposite sign to the stack being built,
-            //   creates a 'ZeroValue' container which has 0 length (along main direction).
-            //   This ensures the returned list of PointContainers is the same size for positive and negative, so
-            //   their places for positive and negative are alternating. Caller must add the container to result list.
-            pointContainer = remakePointContainerWithZeroValue(
-              pointModel: pointModelElm,
-            );
-          }
-          break;
-      }
-      return pointContainer;
-    };
-  }
-
-  /// [BarsContainer] client-overridable method hook for extending [PointContainer].
-  PointContainer remakePointContainer({
-    required model.PointModel pointModel,
-  }) {
-    return BarPointContainer(
-      pointModel: pointModel,
-      chartViewMaker: chartViewMaker,
-    );
-  }
-
-  /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
-  ///
-  /// Likely not needed by any client.
-  PointContainer remakePointContainerWithZeroValue({
-    required model.PointModel pointModel,
-  }) {
-    // return BarPointContainer with 0 layoutSize in the value orientation
-    return ZeroValueBarPointContainer(
-      pointModel: pointModel,
-      chartViewMaker: chartViewMaker,
-    );
-  }
 }
 
 /// View for one [model.CrossPointsModel], in other words, a bar of [PointContainer]s.
@@ -311,7 +257,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
   CrossPointsBar({
     required ChartViewMaker chartViewMaker,
     required this.barsAreaSign,
-    required this.pointContainers,
+    required this.crossPointsModel,
     ContainerKey? key,
   }) : super(
     chartViewMaker: chartViewMaker,
@@ -319,7 +265,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
     key: key,
   );
 
-  final List<PointContainer> pointContainers;
+  final model.CrossPointsModel crossPointsModel;
   final Sign barsAreaSign;
 
   /// Builds a container for one bar with [PointContainer]s.
@@ -328,12 +274,25 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
   /// for [ChartViewMaker.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
   @override
   void buildAndReplaceChildren() {
+
     // Pad around each [PointContainer] before placing it in TransposingRoller
     EdgePadding pointRectSidePad = EdgePadding.TransposingWithSides(
       chartOrientation: chartViewMaker.chartOrientation,
       start: 1.0,
       end: 1.0,
     );
+    // Creates a list of [PointContainer]s from all points of the passed [crossPointsModel], pads each [PointContainer].
+    // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
+    // stacked and nonStacked, and positive and negative, distinctly.
+    List<PointContainer> pointContainers = crossPointsModel.pointModelList
+    // Map applies function converting [PointModel] to [PointContainer],
+    // calling the hook [remakePointContainer]
+        .map(clsPointToNullableContainerForSign(barsAreaSign))
+    // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
+        .where((containerElm) => containerElm != null)
+        .map((containerElm) => containerElm!)
+        .toList();
+
     List<Padder> paddedPointContainers = pointContainers
         .map((pointContainer) => Padder(
               edgePadding: pointRectSidePad,
@@ -371,6 +330,73 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
     }
     // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([pointContainersLayouter])
     addChildren([pointContainersLayouter]);
+  }
+
+  /// Function closure, when called with argument [barsAreaSign],
+  /// returns [PointContainer] yielding function with one free parameter, the [PointModel].
+  ///
+  /// Encapsulates the logic of creating [PointContainer] from [PointModel] for
+  /// all possible values of [ChartViewMaker.chartStacking] and [barsAreaSign].
+  ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
+    return (model.PointModel pointModelElm) {
+      PointContainer? pointContainer;
+      switch (chartViewMaker.chartStacking) {
+        case ChartStacking.stacked:
+          if (barsAreaSign == pointModelElm.sign) {
+            // Note: this [remakePointContainer] is called (all the way from top) once for positive, once for negative;
+            // For [pointModelElm] with the same sign as the stack sign being built,
+            //   creates a [pointContainer] from the [pointModelElm]. Caller adds the [pointContainer] to result list.
+            pointContainer = remakePointContainer(
+              pointModel: pointModelElm,
+            );
+          } else {
+            // For points [pointModelElm] with opposite sign to the stack being built,
+            // return null PointContainer. Caller must SKIP this null, so no container will be added to result list.
+          }
+          break;
+        case ChartStacking.nonStacked:
+          if (barsAreaSign == pointModelElm.sign) {
+            // For points [pointModelElm] with the same sign as the stack sign being built,
+            //   creates a [pointContainer] from the [pointModelElm]. Caller adds the [pointContainer] to result list.
+            pointContainer = remakePointContainer(
+              pointModel: pointModelElm,
+            );
+          } else {
+            // For points [pointModelElm] with opposite sign to the stack being built,
+            //   creates a 'ZeroValue' [pointContainer] which has 0 length (along main direction).
+            //   This ensures the returned list of PointContainers is the same size for positive and negative, so
+            //   their places for positive and negative alternate. Caller adds the [pointContainer] to result list.
+            pointContainer = remakePointContainerWithZeroValue(
+              pointModel: pointModelElm,
+            );
+          }
+          break;
+      }
+      return pointContainer;
+    };
+  }
+
+  /// [BarsContainer] client-overridable method hook for extending [PointContainer].
+  PointContainer remakePointContainer({
+    required model.PointModel pointModel,
+  }) {
+    return BarPointContainer(
+      pointModel: pointModel,
+      chartViewMaker: chartViewMaker,
+    );
+  }
+
+  /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
+  ///
+  /// Likely not needed by any client.
+  PointContainer remakePointContainerWithZeroValue({
+    required model.PointModel pointModel,
+  }) {
+    // return BarPointContainer with 0 layoutSize in the value orientation
+    return ZeroValueBarPointContainer(
+      pointModel: pointModel,
+      chartViewMaker: chartViewMaker,
+    );
   }
 
 }
