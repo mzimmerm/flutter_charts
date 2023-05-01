@@ -3,10 +3,7 @@ import '../root_container.dart';
 import '../axis_container.dart';
 import '../data_container.dart';
 import '../legend_container.dart';
-import '../../model/data_model.dart';
 import '../../view_maker.dart';
-import '../../options.dart';
-import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 
 /// The container-hierarchy root container of the line chart.
@@ -18,10 +15,6 @@ class LineChartRootContainer extends ChartRootContainer {
     required TransposingAxisContainer      verticalAxisContainer,
     required DataContainer   dataContainer,
     required ChartViewMaker  chartViewMaker,
-    // todo-00 : remove the 3 below, already in ChartViewMaker
-    required ChartModel        chartModel,
-    required ChartOptions    chartOptions,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     legendContainer: legendContainer,
     horizontalAxisContainer: horizontalAxisContainer,
@@ -29,8 +22,6 @@ class LineChartRootContainer extends ChartRootContainer {
     verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
-    chartModel: chartModel,
-    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
 
 }

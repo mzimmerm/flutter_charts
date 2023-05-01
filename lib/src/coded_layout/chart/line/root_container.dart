@@ -5,9 +5,7 @@ import '../axis_container.dart';
 import '../data_container.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';
-import '../../../chart/model/data_model.dart';
 import '../../../chart/view_maker.dart';
-import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
 import 'presenter.dart'; // OLD
@@ -21,9 +19,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
     required VerticalAxisContainerCL verticalAxisContainer,
     required DataContainerCL dataContainer,
     required ChartViewMaker chartViewMaker,
-    // todo-00 : remove the 2 below, already in ChartViewMaker
-    required ChartModel chartModel,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,
           horizontalAxisContainer: horizontalAxisContainer,
@@ -31,8 +26,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
           verticalAxisContainer: verticalAxisContainer,
           dataContainer: dataContainer,
           chartViewMaker: chartViewMaker,
-          chartModel: chartModel,
-          inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         ) {
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = LineAndHotspotLeafPointPresenterCreator();
   }

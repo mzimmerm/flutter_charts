@@ -39,10 +39,6 @@ class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
       verticalAxisContainer: VerticalAxisContainerCL(chartViewMaker: this),
       dataContainer: BarChartDataContainerCL(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
-      // todo-00 remove all 3 below, already in chartViewMaker
-      chartModel: chartModel,
-      chartOptions: chartViewMaker.chartOptions,
-      inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
 

@@ -71,15 +71,15 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   /// The strategy of this [AdjustableLabelsChartAreaContainer] and all instances
-  /// is shared from the (single) [ChartViewMaker.inputLabelLayoutStrategy].
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => chartViewMaker.inputLabelLayoutStrategy;
+  /// is shared from the (single) [ChartViewMaker.inputLabelLayoutStrategyInst].
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => chartViewMaker.inputLabelLayoutStrategyInst;
 
   AdjustableLabelsChartAreaContainer({
     required view_maker.ChartViewMaker chartViewMaker,
   }) : super(
           chartViewMaker: chartViewMaker,
         ) {
-    chartViewMaker.inputLabelLayoutStrategy.onContainer(this);
+    chartViewMaker.inputLabelLayoutStrategyInst.onContainer(this);
   }
 }
 

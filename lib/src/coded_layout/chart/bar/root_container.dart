@@ -5,10 +5,7 @@ import '../data_container.dart';
 import '../../../switch_view_maker/view_maker_cl.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';
-import '../../../chart/model/data_model.dart';
 import '../../../chart/view_maker.dart';
-import '../../../chart/options.dart';
-import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
 import 'presenter.dart'; // OLD
@@ -23,10 +20,6 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     required VerticalAxisContainerCL      verticalAxisContainer,
     required DataContainerCL   dataContainer,
     required ChartViewMaker  chartViewMaker,
-    // todo-00 : remove the 3 below, already in ChartViewMaker
-    required ChartModel        chartModel,
-    required ChartOptions    chartOptions,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     legendContainer: legendContainer,
     horizontalAxisContainer: horizontalAxisContainer,
@@ -34,8 +27,6 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
     chartViewMaker: chartViewMaker,
-    chartModel: chartModel,
-    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   ) {
     (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }

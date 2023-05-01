@@ -17,7 +17,6 @@ import '../../util/util_dart.dart';
 import '../../chart/model/label_model.dart';
 import '../../util/collection.dart' as custom_collection show CustomList;
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
-import '../../chart/iterative_layout_strategy.dart' as strategy;
 
 /// See [ChartRootContainer].
 abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartRootContainer {
@@ -44,9 +43,6 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
-    // todo-00 : remove the 3 below, already in ChartViewMaker
-    required ChartModel chartModel,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self

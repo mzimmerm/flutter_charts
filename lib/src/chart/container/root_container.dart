@@ -7,9 +7,6 @@ import 'data_container.dart';
 import '../../morphic/container/container_layouter_base.dart';
 import '../container/axis_corner_container.dart';
 import '../view_maker.dart';
-import '../model/data_model.dart';
-import '../iterative_layout_strategy.dart' as strategy;
-// import '../../morphic/container/layouter_one_dimensional.dart';
 
 /// The root [BoxContainer] of the whole chart.
 ///
@@ -28,9 +25,6 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
-    // todo-00 : remove the 2 below, already in ChartViewMaker
-    required ChartModel         chartModel,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(chartViewMaker: chartViewMaker) {
     logger.Logger().d('    Constructing ChartRootContainer');
     // Attach children passed in constructor, previously created in Maker, to self

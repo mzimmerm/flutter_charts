@@ -36,7 +36,7 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 ///   - the model in [chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
 ///   - the chart orientation in [chartOrientation]
 ///   - the definition whether the chart is stacked in [chartStacking].
-///   - the label layout strategy in [inputLabelLayoutStrategy]
+///   - the label layout strategy in [inputLabelLayoutStrategyInst]
 ///
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
 /// which is also a late member after it is constructed.
@@ -65,7 +65,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     logger.Logger().d('Constructing ChartViewMaker');
 
     inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: chartModel.chartOptions);
-    this.inputLabelLayoutStrategy = inputLabelLayoutStrategy!;
+    inputLabelLayoutStrategyInst = inputLabelLayoutStrategy;
 
     // Create [outputLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewMaker] constructor or later
@@ -140,7 +140,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator; // todo-010 : can this be late final?
 
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
-  late final strategy.LabelLayoutStrategy inputLabelLayoutStrategy;
+  late final strategy.LabelLayoutStrategy inputLabelLayoutStrategyInst;
 
   /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.
