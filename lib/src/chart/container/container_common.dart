@@ -2,7 +2,7 @@
 import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../view_maker.dart' as view_maker;
 import '../../morphic/container/container_key.dart';
-import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy, DefaultIterativeLabelLayoutStrategy;
+import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// Base class which manages, lays out, offsets, and paints
 /// all [container_base.BoxContainer] derived classes used on charts.
@@ -70,19 +70,16 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
 ///
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
-  late final strategy.LabelLayoutStrategy _labelLayoutStrategy;
-
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => _labelLayoutStrategy;
+  /// The strategy of this [AdjustableLabelsChartAreaContainer] and all instances
+  /// is shared from the (single) [ChartViewMaker.inputLabelLayoutStrategy].
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => chartViewMaker.inputLabelLayoutStrategy;
 
   AdjustableLabelsChartAreaContainer({
     required view_maker.ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
-  })  : _labelLayoutStrategy = inputLabelLayoutStrategy ??
-      strategy.DefaultIterativeLabelLayoutStrategy(options: chartViewMaker.chartOptions),
-        super(
-        chartViewMaker: chartViewMaker,
-      ) {
-    _labelLayoutStrategy.onContainer(this);
+  }) : super(
+          chartViewMaker: chartViewMaker,
+        ) {
+    chartViewMaker.inputLabelLayoutStrategy.onContainer(this);
   }
 }
 

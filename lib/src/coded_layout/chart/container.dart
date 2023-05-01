@@ -44,6 +44,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker chartViewMaker,
+    // todo-00 : remove the 3 below, already in ChartViewMaker
     required ChartModel chartModel,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   })  : super(chartViewMaker: chartViewMaker) {

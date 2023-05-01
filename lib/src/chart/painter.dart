@@ -24,7 +24,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   ///
   /// This object is created once per chart, on the FIRST invocation OF  [FlutterChartPainter.paint] ,
   /// BUT it is NOT recreated on each repaint - the follow up repaint [FlutterChartPainter.paint] invocation.
-  /// That behavior is in contrast to concrete view, the [containers.ChartRootContainer], which is created anew on every
+  /// That behavior is ichartRootContainerCreateBuildLayoutPaintn contrast to concrete view, the [containers.ChartRootContainer], which is created anew on every
   /// [FlutterChartPainter.paint] invocation, including the repaint invocation
   /// .
   view_maker.ChartViewMaker chartViewMaker;

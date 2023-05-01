@@ -60,7 +60,7 @@ abstract class SwitchChartViewMaker extends ChartViewMaker {
       return SwitchBarChartViewMaker(
           chartModel: chartModel,
           chartOrientation: chartOrientation,
-        chartStacking: chartStacking,
+          chartStacking: chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
       );
     }

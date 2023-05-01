@@ -4,7 +4,7 @@ import 'package:logger/logger.dart' as logger;
 import 'painter.dart' as painter;
 
 /// Abstract base class of Flutter Charts.
-///
+///painter
 abstract class FlutterChart extends widgets.CustomPaint {
   /// Default constructor accepts size
   FlutterChart({

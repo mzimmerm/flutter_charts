@@ -23,6 +23,7 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     required VerticalAxisContainerCL      verticalAxisContainer,
     required DataContainerCL   dataContainer,
     required ChartViewMaker  chartViewMaker,
+    // todo-00 : remove the 3 below, already in ChartViewMaker
     required ChartModel        chartModel,
     required ChartOptions    chartOptions,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,

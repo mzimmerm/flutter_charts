@@ -28,6 +28,7 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
     required ChartViewMaker   chartViewMaker,
+    // todo-00 : remove the 2 below, already in ChartViewMaker
     required ChartModel         chartModel,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(chartViewMaker: chartViewMaker) {

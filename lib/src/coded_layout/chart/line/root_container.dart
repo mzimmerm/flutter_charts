@@ -21,6 +21,7 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
     required VerticalAxisContainerCL verticalAxisContainer,
     required DataContainerCL dataContainer,
     required ChartViewMaker chartViewMaker,
+    // todo-00 : remove the 2 below, already in ChartViewMaker
     required ChartModel chartModel,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(

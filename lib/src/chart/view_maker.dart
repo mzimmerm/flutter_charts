@@ -18,7 +18,7 @@ import 'options.dart' as options;
 import 'container/data_container.dart' as data_container;
 import 'container/container_common.dart' as container_common;
 import 'container/root_container.dart' as root_container;
-import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
+import 'iterative_layout_strategy.dart' as strategy;
 import 'model/label_model.dart' as util_labels;
 
 /// Type definition for closures returning a function from model [model.PointModel] 
@@ -60,11 +60,12 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     required this.chartModel,
     required this.chartOrientation,
     required this.chartStacking,
-    this.inputLabelLayoutStrategy,
-  }) {
+    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
+  }) : chartOptions = chartModel.chartOptions {
     logger.Logger().d('Constructing ChartViewMaker');
-    // Copy options also on this [ViewMaker] from Model.options
-    chartOptions = chartModel.chartOptions;
+
+    inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: chartModel.chartOptions);
+    this.inputLabelLayoutStrategy = inputLabelLayoutStrategy!;
 
     // Create [outputLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
     // We can construct the generator here in [ChartViewMaker] constructor or later
@@ -104,7 +105,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
   /// [ChartViewMaker.chartModel]'s [ChartOptions].
-  late final options.ChartOptions chartOptions;
+  final options.ChartOptions chartOptions;
 
   final ChartOrientation chartOrientation;
 
@@ -131,14 +132,15 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// The [labelsGenerator]'s interval [DataRangeLabelInfosGenerator.dataRange]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
   ///
-  /// Important note: This should NOT be part of model, as different views would have a different instance of it.
-  ///                 Reason: Different views may have different labels, esp. on the Y axis.
-  late util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
+  /// Important note: This should NOT be part of model,
+  ///                 as different views would have a different instance of it.
+  ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
+  late util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator; // todo-010 : can this be late final?
 
-  late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
+  late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator; // todo-010 : can this be late final?
 
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
-  strategy.LabelLayoutStrategy? inputLabelLayoutStrategy;
+  late final strategy.LabelLayoutStrategy inputLabelLayoutStrategy;
 
   /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.

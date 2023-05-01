@@ -18,7 +18,6 @@ import '../../chart/options.dart';
 import '../../util/util_dart.dart';
 import '../../chart/model/label_model.dart';
 import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
-import '../../chart/iterative_layout_strategy.dart' as strategy;
 
 /// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [VerticalAxisContainerCL].
 abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {
@@ -219,10 +218,8 @@ class HorizontalAxisContainerCL
   /// all available horizontal space, and only use necessary vertical space.
   HorizontalAxisContainerCL({
     required ChartViewMaker chartViewMaker,
-    strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
     chartViewMaker: chartViewMaker,
-    inputLabelLayoutStrategy: inputLabelLayoutStrategy,
   );
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]

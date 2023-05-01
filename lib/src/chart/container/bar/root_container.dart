@@ -17,6 +17,7 @@ class BarChartRootContainer extends ChartRootContainer {
     required TransposingAxisContainer verticalAxisContainer,
     required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
+    // todo-00 : remove the 2 below, already in ChartViewMaker
     required ChartModel chartModel,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(

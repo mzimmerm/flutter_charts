@@ -42,6 +42,7 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
       verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewMaker: this),
       dataContainer: BarChartDataContainer(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
+      // todo-00 remove the 2 below, already in chartViewMaker
       chartModel: chartModel,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
