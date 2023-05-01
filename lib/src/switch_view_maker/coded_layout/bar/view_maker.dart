@@ -11,7 +11,7 @@ import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
-import '../../../coded_layout/chart/bar/container.dart';
+import '../../../coded_layout/chart/bar/root_container.dart';
 
 import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../view_maker_cl.dart'; // OLD
