@@ -1026,6 +1026,11 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   //   all throw [UnimplementedError].
 
   @override
+  bool get isMakeComponentsForwardedToOwner => throw UnimplementedError();
+  @override
+  set isMakeComponentsForwardedToOwner(bool isValue) => throw UnimplementedError();
+
+  @override
   PositiveAndNegativeBarsWithInputAxisLineContainer remakePositiveAndNegativeBarsWithInputAxisLineContainer({
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
@@ -1037,12 +1042,35 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
   @override
   BarsContainer remakeBarsContainer ({
+    required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
     ContainerKey? key,
   }) {
     throw UnimplementedError();
   }
 
+  @override
+  CrossPointsBar remakeCrossPointsBar({
+    required CrossPointsModel crossPointsModel,
+    required DataContainer ownerDataContainer,
+    required Sign barsAreaSign,
+  }) {
+    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+  }
+
+  @override
+  PointContainer remakePointContainer({
+    required PointModel pointModel,
+  }) {
+    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+  }
+
+  @override
+  PointContainer remakePointContainerWithZeroValue({
+    required PointModel pointModel,
+  }) {
+    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+  }
 }
 
 /// Provides the data area container for the bar chart.
