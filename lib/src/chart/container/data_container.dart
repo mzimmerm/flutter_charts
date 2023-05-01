@@ -567,7 +567,9 @@ class BarPointContainer extends PointContainer {
   }
 }
 
-/// A dummy [BarPointContainer] with zero [layoutSize] in the direction of the main axis.,
+/// A zero-height (thus 'invisible') [BarPointContainer] extension.
+///
+/// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
 class ZeroValueBarPointContainer extends BarPointContainer {
 
   ZeroValueBarPointContainer({
@@ -584,6 +586,8 @@ class ZeroValueBarPointContainer extends BarPointContainer {
 
   /// Layout this container by calling super, then set the [layoutSize] in the value direction
   /// (owner layouter mainAxisDirection) to be zero.
+  ///
+  /// To be precise, the value direction is defined as input data axis, [ChartOrientation.inputDataAxisOrientation].
   ///
   /// This container is a stand-in for Not-Stacked value point, on the positive or negative side against
   /// where the actual value bar is shown.
