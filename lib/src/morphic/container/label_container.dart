@@ -89,7 +89,7 @@ mixin TiltableLabelContainerMixin on BoxContainer {
   //                 The last call is made in [ChartRootContainer.layout] inside
   //                     `horizontalAxisContainer.applyParentOffset(this, horizontalAxisContainerOffset)` as
   //                 as
-  //                    for (AxisLabelContainer inputLabelContainer in _inputLabelContainers) {
+  //                    for (AxisLabelContainer inputLabelContainer in inputLabelContainerCLs) {
   //                      inputLabelContainer.applyParentOffset(this, offset);
   //                    }
   //                 which calculates and stores the rotated value of the accumulated not-rotated this.offset

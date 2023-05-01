@@ -1902,11 +1902,10 @@ Notes or Later:
 17. [X] Introduce TransposingEdgePadding, and use it in all 3. Any others?
 18. [X] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
 19. [X] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
-20. [ ] Finish all todo-00-refactoring.
-    - [ ] Test all before 
-    - [ ] After each step, run mini tests
-    - [ ] Test all after
-21. [ ] !!! ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~      
+20. [X] ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~      
+21. [ ] Rename ChartViewMaker to ChartViewModel, implement ChartModel and add forwarding methods to ChartModel:
+    1. [ ] Remove ChartModel from signatures, and use ChartViewModel instead
+    2. [ ] Pull LabelLayoutStrategy to ChartViewModel
 22. [ ] Add tests for PointOffset lextr method
 23. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 24. [ ] Exclude from backups:

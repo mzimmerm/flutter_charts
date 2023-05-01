@@ -1,5 +1,7 @@
 // base libraries
 import '../container.dart';
+import '../axis_container.dart';
+import '../data_container.dart';
 import '../../../switch_view_maker/view_maker_cl.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';

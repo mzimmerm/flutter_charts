@@ -46,24 +46,28 @@ import '../../morphic/container/container_key.dart';
 ///       to the chart at the place where [BarPointContainer] is created.
 ///       Such 'delivery of [MyBarPointContainer] instances to their places' is possible in one of two methods:
 ///       1. Gradual override of all classes under [DataContainer]
-///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeChartRootContainer]
-///         - Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.remakeBarsContainer].
-///         - Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.remakeCrossPointsBar]
-///         - Extend the [CrossPointsBar] to [MyCrossPointsBar] and override [CrossPointsBar.remakePointContainer]
-///         - from [MyCrossPointsBar.remakePointContainer] return instance of [MyBarPointContainer]
-///         - from [MyBarsContainer.remakeCrossPointsBar] return instance of [MyCrossPointsBar]
-///         - from [MyDataContainer.remakeBarsContainer] return instance of [MyBarsContainer]
-///         - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
-///         - Pass [MyChartViewMaker] (instead of [ChartViewMaker]) into concrete [FlutterChartPainter]
+///         - 1.1 Extend the [ChartRootContainer] to [MyBarChartRootContainer]
+///         - 1.2 Extend the [SwitchBarChartViewMaker] to [MyBarChartViewMaker] and override [ChartViewMaker.makeChartRootContainer]
+///             to return [MyBarChartRootContainer].
+///         - 1.3 Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.MyBarChartViewMakerBarsContainer]
+///             to return instance of [MyBarsContainer]
+///         - 1.4 Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.MyBarChartViewMakerCrossPointsBar]
+///            to return instance of [MyCrossPointsBar]
+///         - 1.5 Extend the [CrossPointsBar] to [MyCrossPointsBar] and override [CrossPointsBar.MyBarChartViewMakerPointContainer]
+///             to return instance of [MyBarPointContainer]
+///         - 1.6 In [MyBarChartViewMaker] override [makeChartRootContainer], create and return [MyBarChartRootContainer]
+///           instance, pass to it's dataContainer parameter argument
+///           ```dart
+///              dataContainer: BarChartDataContainer(chartViewMaker: this),
+///           ```
+///         - 1.7 Pass [MyBarChartViewMaker] (instead of [ChartViewMaker]) into concrete [FlutterChartPainter]
 ///           instance (example of concrete [FlutterChartPainter] is [BarChartPainter])
-///       2. Easy override provided by 'remake' methods pulled up to [DataContainer]:
-///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeViewForDataContainer]
-///         - Extend the [DataContainer]  to [MyDataContainer]  and :
-///           - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
-///           - override [MyDataContainer.remakePointContainer], return instance of [MyBarPointContainer]
-///           - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
-///           - Pass [MyChartViewMaker] (instead of [ChartViewMaker]) into concrete [FlutterChartPainter]
-///             instance (example of concrete [FlutterChartPainter] is [BarChartPainter])
+///
+///       2. Easier override provided by 'MyBarChartViewMaker' methods pulled up to [DataContainer]:
+///         - 1.1, 1.2 are the same.
+///         - But we do NOT need to create [MyBarsContainer] and [MyCrossPointsBar] 1.3 and 1.4
+///         - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
+///         - 1.5, 1.6 and 1.7 are the same
 ///
 class DataContainer extends container_common.ChartAreaContainer {
   DataContainer({
@@ -89,9 +93,9 @@ class DataContainer extends container_common.ChartAreaContainer {
           children: [
             WidthSizerLayouter(
               children: [
-                remakePositiveAndNegativeBarsWithInputAxisLineContainer(
+                MyBarChartViewMakerPositiveAndNegativeBarsWithInputAxisLineContainer(
                   // Row with columns of positive values
-                  positiveBarsContainer: remakeBarsContainer(
+                  positiveBarsContainer: MyBarChartViewMakerBarsContainer(
                     barsAreaSign: Sign.positiveOr0,
                     ownerDataContainer: this,
                   ),
@@ -102,7 +106,7 @@ class DataContainer extends container_common.ChartAreaContainer {
                     outputLabelsGenerator: chartViewMaker.outputLabelsGenerator,
                   ),
                   // Row with columns of negative values
-                  negativeBarsContainer: remakeBarsContainer(
+                  negativeBarsContainer: MyBarChartViewMakerBarsContainer(
                     barsAreaSign: Sign.negative,
                     ownerDataContainer: this,
                   ),
@@ -115,14 +119,14 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  /// If true, calling [BarsContainer.remakeCrossPointsBar],
-  /// [CrossPointsBar.remakePointContainer], [CrossPointsBar.remakePointContainerWithZeroValue]
+  /// If true, calling [BarsContainer.MyBarChartViewMakerCrossPointsBar],
+  /// [CrossPointsBar.MyBarChartViewMakerPointContainer], [CrossPointsBar.MyBarChartViewMakerPointContainerWithZeroValue]
   /// is forwarded to their equivalents on [DataContainer].
   ///
   /// Motivation: The single motivation is client simplicity of implementing [DataContainer] extensions,
   ///             When set to true on an extension of [DataContainer], such extension must also
-  ///             override [BarsContainer.remakeCrossPointsBar],
-  ///             [CrossPointsBar.remakePointContainer], [CrossPointsBar.remakePointContainerWithZeroValue],
+  ///             override [BarsContainer.MyBarChartViewMakerCrossPointsBar],
+  ///             [CrossPointsBar.MyBarChartViewMakerPointContainer], [CrossPointsBar.MyBarChartViewMakerPointContainerWithZeroValue],
   ///             returning from them either extension instances of [CrossPointsBar],
   ///             [PointContainer], and [PointContainerWithZeroValue] or the default base instances - although at least
   ///             one should return an extension instance for any functional changes compared to default.
@@ -130,7 +134,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   bool isMakeComponentsForwardedToOwner = false;
 
   /// [DataContainer] client-overridable method hook for extending [PositiveAndNegativeBarsWithInputAxisLineContainer].
-  PositiveAndNegativeBarsWithInputAxisLineContainer remakePositiveAndNegativeBarsWithInputAxisLineContainer({
+  PositiveAndNegativeBarsWithInputAxisLineContainer MyBarChartViewMakerPositiveAndNegativeBarsWithInputAxisLineContainer({
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required BarsContainer negativeBarsContainer,
@@ -146,7 +150,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   }
 
   /// [DataContainer] client-overridable method hook for extending [BarsContainer].
-  BarsContainer remakeBarsContainer ({
+  BarsContainer MyBarChartViewMakerBarsContainer ({
       required DataContainer ownerDataContainer,
       required Sign barsAreaSign,
       ContainerKey? key,
@@ -161,7 +165,7 @@ class DataContainer extends container_common.ChartAreaContainer {
 
   /// Child component makers delegated to owner [DataContainer] -----------
   ///
-  CrossPointsBar remakeCrossPointsBar({
+  CrossPointsBar MyBarChartViewMakerCrossPointsBar({
     required model.CrossPointsModel crossPointsModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
@@ -169,7 +173,7 @@ class DataContainer extends container_common.ChartAreaContainer {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
 
-  PointContainer remakePointContainer({
+  PointContainer MyBarChartViewMakerPointContainer({
     required model.PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
@@ -178,7 +182,7 @@ class DataContainer extends container_common.ChartAreaContainer {
   /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
   ///
   /// Likely not needed by any client.
-  PointContainer remakePointContainerWithZeroValue({
+  PointContainer MyBarChartViewMakerPointContainerWithZeroValue({
     required model.PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
@@ -280,7 +284,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
         constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
         // children are padded bars; each bar created from one [CrossPointsModel], contains rectangles or lines
         children: chartViewMaker.chartModel.crossPointsModelList
-            .map((crossPointsModel) => remakeCrossPointsBar(
+            .map((crossPointsModel) => MyBarChartViewMakerCrossPointsBar(
                   crossPointsModel: crossPointsModel,
                   ownerDataContainer: ownerDataContainer,
                   barsAreaSign: barsAreaSign,
@@ -295,13 +299,13 @@ class BarsContainer extends container_common.ChartAreaContainer {
   }
 
   /// [BarsContainer] client-overridable method hook for extending [CrossPointsBar].
-  CrossPointsBar remakeCrossPointsBar({
+  CrossPointsBar MyBarChartViewMakerCrossPointsBar({
     required model.CrossPointsModel crossPointsModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
   }) {
     if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.remakeCrossPointsBar(
+      return ownerDataContainer.MyBarChartViewMakerCrossPointsBar(
         crossPointsModel: crossPointsModel,
         ownerDataContainer: ownerDataContainer,
         barsAreaSign: barsAreaSign,
@@ -363,7 +367,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
     // stacked and nonStacked, and positive and negative, distinctly.
     List<PointContainer> pointContainers = crossPointsModel.pointModelList
     // Map applies function converting [PointModel] to [PointContainer],
-    // calling the hook [remakePointContainer]
+    // calling the hook [MyBarChartViewMakerPointContainer]
         .map(clsPointToNullableContainerForSign(barsAreaSign))
     // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
         .where((containerElm) => containerElm != null)
@@ -420,10 +424,10 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
       switch (chartViewMaker.chartStacking) {
         case ChartStacking.stacked:
           if (barsAreaSign == pointModelElm.sign) {
-            // Note: this [remakePointContainer] is called (all the way from top) once for positive, once for negative;
+            // Note: this [MyBarChartViewMakerPointContainer] is called (all the way from top) once for positive, once for negative;
             // For [pointModelElm] with the same sign as the stack sign being built,
             //   creates a [pointContainer] from the [pointModelElm]. Caller adds the [pointContainer] to result list.
-            pointContainer = remakePointContainer(
+            pointContainer = MyBarChartViewMakerPointContainer(
               pointModel: pointModelElm,
             );
           } else {
@@ -435,7 +439,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
           if (barsAreaSign == pointModelElm.sign) {
             // For points [pointModelElm] with the same sign as the stack sign being built,
             //   creates a [pointContainer] from the [pointModelElm]. Caller adds the [pointContainer] to result list.
-            pointContainer = remakePointContainer(
+            pointContainer = MyBarChartViewMakerPointContainer(
               pointModel: pointModelElm,
             );
           } else {
@@ -443,7 +447,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
             //   creates a 'ZeroValue' [pointContainer] which has 0 length (along main direction).
             //   This ensures the returned list of PointContainers is the same size for positive and negative, so
             //   their places for positive and negative alternate. Caller adds the [pointContainer] to result list.
-            pointContainer = remakePointContainerWithZeroValue(
+            pointContainer = MyBarChartViewMakerPointContainerWithZeroValue(
               pointModel: pointModelElm,
             );
           }
@@ -454,11 +458,11 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
   }
 
   /// [BarsContainer] client-overridable method hook for extending [PointContainer].
-  PointContainer remakePointContainer({
+  PointContainer MyBarChartViewMakerPointContainer({
     required model.PointModel pointModel,
   }) {
     if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.remakePointContainer(
+      return ownerDataContainer.MyBarChartViewMakerPointContainer(
         pointModel: pointModel,
       );
     }
@@ -471,12 +475,12 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
   /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
   ///
   /// Likely not needed by any client.
-  PointContainer remakePointContainerWithZeroValue({
+  PointContainer MyBarChartViewMakerPointContainerWithZeroValue({
     required model.PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
     if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.remakePointContainerWithZeroValue(
+      return ownerDataContainer.MyBarChartViewMakerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
     }

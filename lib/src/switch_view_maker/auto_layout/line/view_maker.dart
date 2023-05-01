@@ -2,7 +2,6 @@ import 'package:logger/logger.dart' as logger;
 
 
 // base libraries
-// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/axis_container.dart';
 import '../../../chart/view_maker.dart';
@@ -48,13 +47,6 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
-
-/* todo-00-last-last-last-done
-  @override
-  DataContainer makeViewForDataContainer() {
-    return LineChartDataContainer(chartViewMaker: this,);
-  }
-*/
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///

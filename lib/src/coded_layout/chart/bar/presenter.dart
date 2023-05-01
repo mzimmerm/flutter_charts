@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Rect, Offset, Paint, Color;
 // base libraries
 import '../presenter.dart';
 import '../container.dart';
+import '../axis_container.dart';
 import '../../../chart/view_maker.dart';
 
 /// PointPresenter of the atomic/leaf element of one data point on the

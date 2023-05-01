@@ -2,10 +2,9 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import '../../../chart/view_maker.dart';
-// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
 import '../../../chart/container/legend_container.dart';
-// todo-00-last-last-done : import '../../../chart/container/axis_container.dart';
-import '../../../coded_layout/chart/container.dart';
+import '../../../coded_layout/chart/axis_container.dart';
+import '../../../coded_layout/chart/data_container.dart';
 import '../../../chart/model/data_model.dart';
 
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
@@ -45,13 +44,6 @@ class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
-
-/* todo-00-last-last-last-done
-  @override
-  DataContainerCL makeViewForDataContainer() {
-    return BarChartDataContainerCL(chartViewMaker: this);
-  }
- */
 
   @override
   bool get extendAxisToOrigin => true;
