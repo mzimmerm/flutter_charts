@@ -12,7 +12,7 @@ import '../view_maker.dart' as view_maker;
 import '../options.dart' as chart_options;
 import '../../morphic/container/layouter_one_dimensional.dart';
 
-/// Lays out the legend area for the chart.
+/// Lays out the legend area for the chart for legends in [ChartModel.byRowLegends].
 ///
 /// The legend area contains individual legend items represented
 /// by [LegendItemContainer]. Each legend item

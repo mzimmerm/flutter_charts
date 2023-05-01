@@ -1,6 +1,8 @@
 import 'package:logger/logger.dart' as logger;
 
-import '../../../chart/container/data_container.dart';
+// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
+import '../../../chart/container/legend_container.dart';
+import '../../../chart/container/axis_container.dart';
 
 // base libraries
 import '../../../chart/view_maker.dart';
@@ -34,30 +36,24 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
   /// Concrete implementation returns the root for vertical bar chart.
   @override
   BarChartRootContainer makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
-    var legendContainer = makeViewForLegendContainer();
-    var horizontalAxisContainer = makeViewForHorizontalAxis();
-    var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
-    var verticalAxisContainer = makeViewForVerticalAxis();
-    var dataContainer = makeViewForDataContainer();
-
     return BarChartRootContainer(
-      legendContainer: legendContainer,
-      horizontalAxisContainer: horizontalAxisContainer,
-      verticalAxisContainerFirst: verticalAxisContainerFirst,
-      verticalAxisContainer: verticalAxisContainer,
-      dataContainer: dataContainer,
+      legendContainer: LegendContainer(chartViewMaker: this),
+      horizontalAxisContainer: TransposingAxisContainer.Horizontal(chartViewMaker: this),
+      verticalAxisContainerFirst: TransposingAxisContainer.Vertical(chartViewMaker: this),
+      verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewMaker: this),
+      dataContainer: BarChartDataContainer(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
 
+/* todo-00-last-last-last-done
   @override
   DataContainer makeViewForDataContainer() {
-    return BarChartDataContainer(
-      chartViewMaker: this,
-    );
+    return BarChartDataContainer(chartViewMaker: this);
   }
+*/
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///

@@ -2,6 +2,9 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import '../../../chart/view_maker.dart';
+// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
+import '../../../chart/container/legend_container.dart';
+// todo-00-last-last-done : import '../../../chart/container/axis_container.dart';
 import '../../../coded_layout/chart/container.dart';
 import '../../../chart/model/data_model.dart';
 
@@ -30,30 +33,24 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   LineChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
-    var legendContainer = makeViewForLegendContainer();
-    var horizontalAxisContainer = makeViewForHorizontalAxis();
-    var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
-    var verticalAxisContainer = makeViewForVerticalAxis();
-    var dataContainer = makeViewForDataContainer();
-
     return LineChartRootContainerCL(
-      legendContainer: legendContainer,
-      horizontalAxisContainer: horizontalAxisContainer,
-      verticalAxisContainerFirst: verticalAxisContainerFirst,
-      verticalAxisContainer: verticalAxisContainer,
-      dataContainer: dataContainer,
+      legendContainer: LegendContainer(chartViewMaker: this),
+      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewMaker: this),
+      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewMaker: this),
+      verticalAxisContainer: VerticalAxisContainerCL(chartViewMaker: this),
+      dataContainer: LineChartDataContainerCL(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }
 
+/* todo-00-last-last-last-done
   @override
   DataContainerCL makeViewForDataContainer() {
-    return LineChartDataContainerCL(
-      chartViewMaker: this,
-    );
+    return LineChartDataContainerCL(chartViewMaker: this);
   }
+ */
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///

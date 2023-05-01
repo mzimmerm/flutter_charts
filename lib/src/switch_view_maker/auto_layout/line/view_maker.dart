@@ -2,12 +2,14 @@ import 'package:logger/logger.dart' as logger;
 
 
 // base libraries
-import '../../../chart/container/line/root_container.dart';
-import '../../../chart/container/data_container.dart';
+// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
+import '../../../chart/container/legend_container.dart';
+import '../../../chart/container/axis_container.dart';
 import '../../../chart/view_maker.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import '../../../chart/line/container.dart'; // NEW BASE
+import '../../../chart/container/line/root_container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../../morphic/container/chart_support/chart_style.dart';
@@ -34,18 +36,12 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
   /// Concrete implementation returns the root for vertical bar chart.
   @override
   LineChartRootContainer makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
-    var legendContainer = makeViewForLegendContainer();
-    var horizontalAxisContainer = makeViewForHorizontalAxis();
-    var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
-    var verticalAxisContainer = makeViewForVerticalAxis();
-    var dataContainer = makeViewForDataContainer();
-
     return LineChartRootContainer(
-      legendContainer: legendContainer,
-      horizontalAxisContainer: horizontalAxisContainer,
-      verticalAxisContainerFirst: verticalAxisContainerFirst,
-      verticalAxisContainer: verticalAxisContainer,
-      dataContainer: dataContainer,
+      legendContainer: LegendContainer(chartViewMaker: this),
+      horizontalAxisContainer: TransposingAxisContainer.Horizontal(chartViewMaker: this),
+      verticalAxisContainerFirst: TransposingAxisContainer.Vertical(chartViewMaker: this),
+      verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewMaker: this),
+      dataContainer: LineChartDataContainer(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
@@ -53,12 +49,12 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
     );
   }
 
+/* todo-00-last-last-last-done
   @override
   DataContainer makeViewForDataContainer() {
-    return LineChartDataContainer(
-      chartViewMaker: this,
-    );
+    return LineChartDataContainer(chartViewMaker: this,);
   }
+*/
 
   /// Implements [ChartBehavior] mixin abstract method.
   ///

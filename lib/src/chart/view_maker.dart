@@ -17,8 +17,8 @@ import 'model/data_model.dart' as model;
 import 'options.dart' as options;
 import 'container/data_container.dart' as data_container;
 import 'container/container_common.dart' as container_common;
-import 'container/legend_container.dart' as legend_container;
-import 'container/axis_container.dart' as axis_container;
+// todo-00-last-last-done : import 'container/legend_container.dart' as legend_container;
+// todo-00-last-last-done : import 'container/axis_container.dart' as axis_container;
 import 'container/root_container.dart' as root_container;
 import 'iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import 'model/label_model.dart' as util_labels;
@@ -213,40 +213,40 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// Assumed made from [model.ChartModel] member [model.ChartModel.inputUserLabels]
   /// or [container.VerticalAxisContainerCL.labelInfos].
 
+/* todo-00-last-last-done
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
     // todo-00-last-last : create a new Container HorizontalAxisContainer, and move it to axis_container
-    return axis_container.TransposingAxisContainer.Horizontal(
-      chartViewMaker: this,
-    );
+    return axis_container.TransposingAxisContainer.Horizontal(chartViewMaker: this);
   }
+*/
 
+/* todo-00-last-last-done
   /// Assumed made from [model.ChartModel] member [model.ChartModel.outputUserLabels]
   /// or labels in [container.VerticalAxisContainerCL.labelInfos].
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
     // todo-00-last-last : create a new Container HorizontalAxisContainer, and move it to axis_container
-    return axis_container.TransposingAxisContainer.Vertical(
-      chartViewMaker: this,
-    );
+    return axis_container.TransposingAxisContainer.Vertical(chartViewMaker: this);
   }
 
   axis_container.TransposingAxisContainer makeViewForVerticalAxisContainerFirst() {
     // todo-00-last-last : just call makeViewForVerticalAxisContainer
-    return axis_container.TransposingAxisContainer.Vertical(
-      chartViewMaker: this,
-    );
+    return axis_container.TransposingAxisContainer.Vertical(chartViewMaker: this);
   }
+ */
 
+/* todo-00-last-last-done
   /// Makes view for legends in [model.ChartModel.byRowLegends].
   legend_container.LegendContainer makeViewForLegendContainer() {
-    return legend_container.LegendContainer(
-      chartViewMaker: this,
-    );
+    return legend_container.LegendContainer(chartViewMaker: this);
   }
+*/
 
+/* todo-00-last-last-last-done
   /// Abstract method makes view for all data in [model.ChartModel.valuesColumns].
   /// The returned view presents all data in the data area.
   /// The chart type (line, bar) is determined by a concrete [ChartRootContainer].
   data_container.DataContainer makeViewForDataContainer();
+ */
 
   String _debugPrintBegin() {
     String isFirstStr = _isFirst ? '=== IS FIRST ===' : '=== IS SECOND ===';

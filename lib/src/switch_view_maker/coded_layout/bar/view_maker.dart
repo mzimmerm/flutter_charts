@@ -2,6 +2,9 @@ import 'package:logger/logger.dart' as logger;
 
 // base libraries
 import '../../../chart/view_maker.dart';
+// todo-00-last-last-done : import '../../../chart/container/data_container.dart';
+import '../../../chart/container/legend_container.dart';
+// todo-00-last-last-done : import '../../../chart/container/axis_container.dart';
 import '../../../coded_layout/chart/container.dart';
 import '../../../chart/model/data_model.dart';
 
@@ -30,18 +33,12 @@ class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
 
   @override
   BarChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
-    var legendContainer = makeViewForLegendContainer();
-    var horizontalAxisContainer = makeViewForHorizontalAxis();
-    var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
-    var verticalAxisContainer = makeViewForVerticalAxis();
-    var dataContainer = makeViewForDataContainer();
-
     return BarChartRootContainerCL(
-      legendContainer: legendContainer,
-      horizontalAxisContainer: horizontalAxisContainer,
-      verticalAxisContainerFirst: verticalAxisContainerFirst,
-      verticalAxisContainer: verticalAxisContainer,
-      dataContainer: dataContainer,
+      legendContainer: LegendContainer(chartViewMaker: this),
+      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewMaker: this),
+      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewMaker: this),
+      verticalAxisContainer: VerticalAxisContainerCL(chartViewMaker: this),
+      dataContainer: BarChartDataContainerCL(chartViewMaker: this),
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
       chartOptions: chartViewMaker.chartOptions,
@@ -49,12 +46,12 @@ class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
     );
   }
 
+/* todo-00-last-last-last-done
   @override
   DataContainerCL makeViewForDataContainer() {
-    return BarChartDataContainerCL(
-      chartViewMaker: this,
-    );
+    return BarChartDataContainerCL(chartViewMaker: this);
   }
+ */
 
   @override
   bool get extendAxisToOrigin => true;

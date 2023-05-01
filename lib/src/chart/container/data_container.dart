@@ -46,7 +46,7 @@ import '../../morphic/container/container_key.dart';
 ///       to the chart at the place where [BarPointContainer] is created.
 ///       Such 'delivery of [MyBarPointContainer] instances to their places' is possible in one of two methods:
 ///       1. Gradual override of all classes under [DataContainer]
-///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeViewForDataContainer]
+///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeChartRootContainer]
 ///         - Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.remakeBarsContainer].
 ///         - Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.remakeCrossPointsBar]
 ///         - Extend the [CrossPointsBar] to [MyCrossPointsBar] and override [CrossPointsBar.remakePointContainer]
@@ -54,14 +54,16 @@ import '../../morphic/container/container_key.dart';
 ///         - from [MyBarsContainer.remakeCrossPointsBar] return instance of [MyCrossPointsBar]
 ///         - from [MyDataContainer.remakeBarsContainer] return instance of [MyBarsContainer]
 ///         - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
-///         - Pass [MyChartViewMaker] (instead of [ChartViewMaker] into [FlutterChartPainter] such as [BarChartPainter]
+///         - Pass [MyChartViewMaker] (instead of [ChartViewMaker]) into concrete [FlutterChartPainter]
+///           instance (example of concrete [FlutterChartPainter] is [BarChartPainter])
 ///       2. Easy override provided by 'remake' methods pulled up to [DataContainer]:
 ///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeViewForDataContainer]
 ///         - Extend the [DataContainer]  to [MyDataContainer]  and :
 ///           - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
 ///           - override [MyDataContainer.remakePointContainer], return instance of [MyBarPointContainer]
 ///           - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
-///           - Pass [MyChartViewMaker] (instead of [ChartViewMaker] into [FlutterChartPainter] such as [BarChartPainter]
+///           - Pass [MyChartViewMaker] (instead of [ChartViewMaker]) into concrete [FlutterChartPainter]
+///             instance (example of concrete [FlutterChartPainter] is [BarChartPainter])
 ///
 class DataContainer extends container_common.ChartAreaContainer {
   DataContainer({
