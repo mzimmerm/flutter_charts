@@ -527,7 +527,7 @@ class _ExampleWidgetCreator {
               legendAndItemLayoutEnum:
                   LegendAndItemLayoutEnum.legendIsRowStartTightItemIsRowStartTightItemChildrenPadded),
         );
-        chartModel = RandomChartData.generated(
+        chartModel = RandomChartModel.generated(
           chartOptions: chartOptions,
         );
         break;

@@ -5,7 +5,6 @@ import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/view_maker.dart';
-import '../../../chart/options.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 // this level
@@ -21,7 +20,6 @@ class LineChartRootContainerCL extends ChartRootContainerCL implements ChartRoot
     required DataContainerCL dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
-    required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,

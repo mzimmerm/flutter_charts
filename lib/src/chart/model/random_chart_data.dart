@@ -6,8 +6,8 @@ import 'data_model.dart';
 // The single unnamed constructor (like primary factory in Newspeak). Must call super.
 /// Generator of sample data for testing the charts.
 ///
-class RandomChartData extends ChartModel {
-  RandomChartData({
+class RandomChartModel extends ChartModel {
+  RandomChartModel({
     required valuesRows,
     required inputUserLabels,
     required byRowLegends,
@@ -23,13 +23,13 @@ class RandomChartData extends ChartModel {
           byRowColors: byRowColors,
         );
 
-  // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartData(args) constructor.
+  // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartModel(args) constructor.
   /// Generate random data for chart, with number of x labels given by
   /// [numXLabels] and number of data series given by [numDataRows].
   ///
   /// If [useMonthNames] is set to false, random
   ///
-  RandomChartData.generated({
+  RandomChartModel.generated({
     required ChartOptions chartOptions,
     bool useUserProvidedYLabels = false,
     int numXLabels = 6,

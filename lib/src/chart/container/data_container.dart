@@ -22,8 +22,17 @@ import '../../morphic/container/layouter_one_dimensional.dart';
 import '../options.dart';
 import '../../morphic/container/container_key.dart';
 
-// todo-010-documentation finish
 
+/// Container for data on the chart.
+///
+/// It only includes the visual widgets representing data: bars on a bar chart, lines on a line chart.
+///
+/// To be precise, it also does include the input values axis, in detail:
+///   - It does NOT include: neither the output values axis nor the output values labels.
+///     The output values axis and labels are visually represented by [TransposingOutputAxisContainer].
+///   - From the input values axis and label, it does include only the axis, but not the labels.
+///     The input values labels are visually represented by [TransposingInputAxisContainer].
+///
 /// Important note about override:
 ///   1. Extensibility:  Consider a client that needs to place a value into each data rectangle on a bar chart.
 ///     This requires
@@ -47,6 +56,12 @@ import '../../morphic/container/container_key.dart';
 ///         - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
 ///         - Pass [MyChartViewMaker] (instead of [ChartViewMaker] into [FlutterChartPainter] such as [BarChartPainter]
 ///       2. Easy override provided by 'remake' methods pulled up to [DataContainer]:
+///         - Extend the [ChartViewMaker] to [MyChartViewMaker] and override [ChartViewMaker.makeViewForDataContainer]
+///         - Extend the [DataContainer]  to [MyDataContainer]  and :
+///           - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
+///           - override [MyDataContainer.remakePointContainer], return instance of [MyBarPointContainer]
+///           - from [MyChartViewMaker.makeViewForDataContainer] return instance of [MyDataContainer]
+///           - Pass [MyChartViewMaker] (instead of [ChartViewMaker] into [FlutterChartPainter] such as [BarChartPainter]
 ///
 class DataContainer extends container_common.ChartAreaContainer {
   DataContainer({

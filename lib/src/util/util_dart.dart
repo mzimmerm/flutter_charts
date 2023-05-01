@@ -322,7 +322,7 @@ enum LineSegmentPosition {
 ///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-/// todo-011 : Add tests for easier refactoring
+/// todo-00 : Add tests for easier refactoring
 class LTransform1D {
   final double _scaleBy;
   final double _moveOriginBy;
@@ -606,6 +606,10 @@ class ToPixelsLTransform1D extends DomainLTransform1D {
   }
 }
 
+/// todo-00 : Adding a 2D linear transform of function vectors. The function vector elements might be LTransform1D.apply??
+///           Research and think through.
+// 22. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
+///
 
 // ################ Functions ########################
 

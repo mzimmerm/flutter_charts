@@ -30,7 +30,7 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// Abstract base class for view makers.
 ///
 /// A view maker is a class that makes (creates, produces, generates) a chart view hierarchy,
-/// starting with a concrete [container.ChartRootContainerCL], with the help of [model.ChartModel].
+/// starting with a concrete [root_container.ChartRootContainer], with the help of [model.ChartModel].
 ///
 /// This base view maker has access to [model.ChartModel]
 ///
@@ -43,16 +43,18 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
 /// which is also a late member after it is constructed.
 ///
-/// [ChartViewMaker] is not a [BoxContainer], it provides a 'link' between [FlutterChartPainter]
-/// which [paint] method is called by the Flutter framework, and the root of the chart container hierarchy,
-/// the [chartRootContainer].
+/// [ChartViewMaker] is not a BoxContainer, it provides a 'link' between [FlutterChartPainter]
+/// which [FlutterChartPainter.paint] method is called by the Flutter framework,
+/// and the root of the chart container hierarchy, the [root_container.ChartRootContainer] which it
+/// creates in its [makeChartRootContainer].
 ///
 /// Core methods of [ChartViewMaker] are
 ///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];
 ///     this method creates, builds, lays out, and paints
 ///     the root of the chart container hierarchy, the [chartRootContainer].
-///   - abstract [makeViewRoot]; extensions of [ChartViewMaker] (for example, [LineChartViewMaker]) should create
-///     and return an instance of the concrete [chartRootContainer] (for example [LineChartRootContainer]).
+///   - abstract [makeChartRootContainer]; from it, the extensions of [ChartViewMaker]
+///     (for example, [LineChartViewMaker]) should create and return an instance of the concrete [chartRootContainer]
+///     (for example [LineChartRootContainer]).
 ///   - [container.ChartBehavior.extendAxisToOrigin] is on this Maker,
 ///     as it controls how views behave (although does not control view making).
 abstract class ChartViewMaker extends Object with container_common.ChartBehavior {
@@ -73,7 +75,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      dataModel: chartModel,
+      chartModel: chartModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.outputValueToLabel,
@@ -85,7 +87,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
     inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      dataModel: chartModel,
+      chartModel: chartModel,
       dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.inputValueToLabel,
@@ -97,7 +99,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// ChartData to hold on before member [chartRootContainer] is created late.
   ///
   /// After [chartRootContainer] is created and set, This [ChartModel] type member [chartModel]
-  /// should be placed on the member [chartRootContainer.chartModel].
+  /// should be placed on the member [chartRootContainer.ownerChartModel].
 
   /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
   final model.ChartModel chartModel;
@@ -154,7 +156,7 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
     // Create the view [chartRootContainer] and set on member on this maker [ChartViewMaker].
     // This happens even on re-paint, so can be done multiple times after state changes in the + button.
-    chartRootContainer = makeViewRoot(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
+    chartRootContainer = makeChartRootContainer(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
 
     // Only set `chartModel.chartViewMaker = this` ONCE. Reason: member chartModel is created ONCE, same as this ANCHOR.
     // To have chartModel late final, we have to keep track to only initialize chartModel.chartViewMaker = this on first run.
@@ -200,16 +202,19 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ///
   /// Important notes:
   ///   - This controller (ViewMaker) can access both on ChartRootContainer and ChartModel.
-  root_container.ChartRootContainer makeViewRoot({
+  root_container.ChartRootContainer makeChartRootContainer({
     required covariant ChartViewMaker chartViewMaker,
   });
 
   // ##### Methods which create views (containers) for individual chart areas
+  // todo-00-last remove all these methods. Just keep makeChartRootContainer, and rename to generateChartRootContainer.
+  //              Where the methods are used, plugin what it returns.
 
   /// Assumed made from [model.ChartModel] member [model.ChartModel.inputUserLabels]
   /// or [container.VerticalAxisContainerCL.labelInfos].
 
   axis_container.TransposingAxisContainer makeViewForHorizontalAxis() {
+    // todo-00-last-last : create a new Container HorizontalAxisContainer, and move it to axis_container
     return axis_container.TransposingAxisContainer.Horizontal(
       chartViewMaker: this,
     );
@@ -218,12 +223,14 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   /// Assumed made from [model.ChartModel] member [model.ChartModel.outputUserLabels]
   /// or labels in [container.VerticalAxisContainerCL.labelInfos].
   axis_container.TransposingAxisContainer makeViewForVerticalAxis() {
+    // todo-00-last-last : create a new Container HorizontalAxisContainer, and move it to axis_container
     return axis_container.TransposingAxisContainer.Vertical(
       chartViewMaker: this,
     );
   }
 
   axis_container.TransposingAxisContainer makeViewForVerticalAxisContainerFirst() {
+    // todo-00-last-last : just call makeViewForVerticalAxisContainer
     return axis_container.TransposingAxisContainer.Vertical(
       chartViewMaker: this,
     );

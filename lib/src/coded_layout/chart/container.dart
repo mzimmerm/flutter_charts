@@ -1502,7 +1502,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.valuesRows] values in
-  /// the passed [chartViewMaker.chartModel].
+  /// the passed [chartViewMaker.ownerChartModel].
   PointsColumns({
     required this.chartViewMaker,
     required PointPresenterCreator pointPresenterCreator,

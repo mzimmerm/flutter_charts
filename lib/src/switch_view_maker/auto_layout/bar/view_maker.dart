@@ -33,7 +33,7 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  BarChartRootContainer makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  BarChartRootContainer makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var horizontalAxisContainer = makeViewForHorizontalAxis();
     var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
@@ -48,7 +48,6 @@ class SwitchBarChartViewMaker extends SwitchChartViewMaker {
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
-      chartOptions: chartViewMaker.chartOptions,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }

@@ -33,7 +33,7 @@ abstract class FlutterChartPainter extends widgets.CustomPainter {
   bool _isFirstPaint = true;
 
   /// Constructs this chart painter, giving it [chartViewMaker], which
-  /// holds on [chartModel] and other members needed for
+  /// holds on [ownerChartModel] and other members needed for
   /// the late creation of [containers.ChartViewMaker.chartViewMaker].
 
   FlutterChartPainter({

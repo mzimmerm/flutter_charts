@@ -5,7 +5,6 @@ import '../data_container.dart';
 import '../legend_container.dart';
 import '../../model/data_model.dart';
 import '../../view_maker.dart';
-import '../../options.dart';
 import '../../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
 /// The container-hierarchy root container of the vertical bar chart.
@@ -19,7 +18,6 @@ class BarChartRootContainer extends ChartRootContainer {
     required DataContainer dataContainer,
     required ChartViewMaker chartViewMaker,
     required ChartModel chartModel,
-    required ChartOptions chartOptions,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
   }) : super(
           legendContainer: legendContainer,

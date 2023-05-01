@@ -29,7 +29,7 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
   }
 
   @override
-  LineChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  LineChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var horizontalAxisContainer = makeViewForHorizontalAxis();
     var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();
@@ -44,7 +44,6 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
       dataContainer: dataContainer,
       chartViewMaker: chartViewMaker,
       chartModel: chartModel,
-      chartOptions: chartViewMaker.chartOptions,
       inputLabelLayoutStrategy: inputLabelLayoutStrategy,
     );
   }

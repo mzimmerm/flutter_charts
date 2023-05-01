@@ -29,7 +29,7 @@ class SwitchBarChartViewMakerCL extends SwitchChartViewMakerCL {
   }
 
   @override
-  BarChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) {
+  BarChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
     var legendContainer = makeViewForLegendContainer();
     var horizontalAxisContainer = makeViewForHorizontalAxis();
     var verticalAxisContainerFirst = makeViewForVerticalAxisContainerFirst();

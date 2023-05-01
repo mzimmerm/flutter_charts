@@ -53,7 +53,7 @@ class ChartModel {
       crossPointsModelList.add(
         CrossPointsModel(
           valuesColumn: valuesColumn,
-          dataModel: this,
+          ownerChartModel: this,
           columnIndex: columnIndex,
         ),
       );
@@ -93,7 +93,7 @@ class ChartModel {
           extremeValueWithSign(Sign.positiveOr0, chartStacking),
         );
       case ChartStacking.nonStacked:
-        // not-Stacked values can just use values from DataModel [_valuesRows] transformed values.
+        // not-Stacked values can just use values from ChartModel [_valuesRows] transformed values.
         return Interval(
           _transformedValuesMin,
           _transformedValuesMax,
@@ -252,14 +252,14 @@ class CrossPointsModel {
   /// Constructs a model for one bar of points.
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
-  /// The [dataModel] is the [DataModel] underlying the [CrossPointsModel] instance being created.
-  /// The [columnIndex] is index of the [valuesColumn] in the [dataModel].
-  /// The [numDataModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
+  /// The [ownerChartModel] is the [ChartModel] underlying the [CrossPointsModel] instance being created.
+  /// The [columnIndex] is index of the [valuesColumn] in the [ownerChartModel].
+  /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
   CrossPointsModel({
     required List<double> valuesColumn,
-    required this.dataModel,
+    required this.ownerChartModel,
     required this.columnIndex,
   }) {
     // Construct data points from the passed [valuesRow] and add each point to member _points
@@ -278,7 +278,7 @@ class CrossPointsModel {
   }
 
   /// The full [ChartModel] from which data columns this [CrossPointsModel] is created.
-  final ChartModel dataModel;
+  final ChartModel ownerChartModel;
 
   /// Index of this column (crossPoints list) in the [ChartModel.crossPointsModelList].
   ///
@@ -296,19 +296,19 @@ class CrossPointsModel {
   /// Calculates inputValue-position (x-position, independent value position) of
   /// instances of this [CrossPointsModel] and it's [PointModel] elements.
   ///
-  /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numDataModelColumns] columns that
+  /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numChartModelColumns] columns that
   /// divide the [dataRange].
   ///
   /// Note: So this is offset from start and end of the Interval.
   ///
   /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view maker,
-  /// we can use the [_numDataModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
+  /// we can use the [_numChartModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
   /// to calculate this value
   double inputValueOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / dataModel.numColumns);
+    double columnWidth = (dataRange.length / ownerChartModel.numColumns);
     return (columnWidth * columnIndex) + (columnWidth / 2);
   }
 
@@ -352,7 +352,7 @@ class CrossPointsModel {
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
 ///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerCrossPointsModel],
-///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._dataModel].
+///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._chartModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
 @immutable
@@ -364,18 +364,18 @@ class PointModel {
   ///
   /// Important note: The [ownerCrossPointsModel] value on [rowIndex], IS NOT [outputValue],
   ///                 as the [ownerCrossPointsModel] is split from [ChartModel.dataColumns] so
-  ///                 [rowIndex] can only be used to reach `ownerCrossPointsModel.dataModel.valuesRows`.
+  ///                 [rowIndex] can only be used to reach `ownerCrossPointsModel.chartModel.valuesRows`.
   PointModel({
     required double outputValue,
     required this.ownerCrossPointsModel,
     required this.rowIndex,
   })
-    : outputValue = ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
+    : outputValue = ownerCrossPointsModel.ownerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
     sign = outputValue >= 0.0 ? Sign.positiveOr0 : Sign.negative
   {
     assertDoubleResultsSame(
-      ownerCrossPointsModel.dataModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossPointsModel.dataModel.valuesRows[rowIndex][columnIndex])
+      ownerCrossPointsModel.ownerChartModel.chartOptions.dataContainerOptions
+          .yTransform(ownerCrossPointsModel.ownerChartModel.valuesRows[rowIndex][columnIndex])
           .toDouble(),
       this.outputValue,
     );
@@ -440,9 +440,9 @@ class PointModel {
 
   /// Once the x labels are established, either as [inputUserLabels] or generated, clients can
   ///  ask for the label.
-  Object get inputUserLabel => ownerCrossPointsModel.dataModel.inputUserLabels[columnIndex];
+  Object get inputUserLabel => ownerCrossPointsModel.ownerChartModel.inputUserLabels[columnIndex];
 
-  ui.Color get color => ownerCrossPointsModel.dataModel.byRowColors[rowIndex];
+  ui.Color get color => ownerCrossPointsModel.ownerChartModel.byRowColors[rowIndex];
 
   PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,

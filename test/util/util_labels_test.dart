@@ -179,7 +179,7 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrie
     ),*/
     chartOrientation: chartOrientation,
     chartStacking: chartStacking,
-    dataModel: mockChartModel,
+    chartModel: mockChartModel,
     dataDependency: DataDependency.outputData,
     extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
     valueToLabel: outputValueToLabel,
@@ -205,7 +205,7 @@ class MockChartViewMaker extends ChartViewMaker {
   DataContainerCL makeViewForDataContainer() => throw UnimplementedError();
 
   @override
-  ChartRootContainerCL makeViewRoot({required ChartViewMaker chartViewMaker}) => throw UnimplementedError();
+  ChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) => throw UnimplementedError();
 }
 
 
@@ -226,7 +226,7 @@ MockChartModel _constructMockChartModel(
 }
 
 void rangeTestCore(
-  ChartModel dataModel,
+  ChartModel chartModel,
   List<List<Object>> data,
   ChartOptions options,
   bool extendAxisToOrigin,
@@ -246,13 +246,13 @@ void rangeTestCore(
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
       /*chartViewMaker: MockChartViewMaker(
-        chartModel: dataModel,
+        chartModel: chartModel,
         chartOrientation: ChartOrientation.column,
         isStacked: true,
       ),*/
       chartOrientation: ChartOrientation.column,
       chartStacking: ChartStacking.nonStacked,
-      dataModel: dataModel,
+      chartModel: chartModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin, // start Y axis at 0
       valueToLabel: outputValueToLabel,

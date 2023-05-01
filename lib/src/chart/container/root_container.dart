@@ -44,7 +44,7 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     TableLayoutCellDefiner vertAxisDefiner = TableLayoutCellDefiner(
       layoutSequence: 2,
       cellMinSizer: TableLayoutCellMinSizer.fromMinima(
-        cellWidthMinimum: 65.0, // todo-011 will go away when we use VerticalAxisContainerFirst pre-layout
+        cellWidthMinimum: 65.0, // todo-012 will go away when we use VerticalAxisContainerFirst pre-layout
         cellHeightMinimum: 0.0,
       ),
     );

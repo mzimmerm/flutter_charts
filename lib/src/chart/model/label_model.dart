@@ -26,25 +26,25 @@ class DataRangeLabelInfosGenerator {
   /// by this [DataRangeLabelInfosGenerator].
   ///
   /// If [userLabels] list of user labels is passed, user labels will be used and distributed linearly between the
-  /// passed [dataModel] minimum and maximum.
+  /// passed [chartModel] minimum and maximum.
   /// Otherwise, new labels are automatically generated with values of
-  /// highest order of numeric values in the passed [dataModel].
+  /// highest order of numeric values in the passed [chartModel].
   ///
   /// Parameters discussion:
   ///
-  /// - [dataModel] contains the numeric data values, passed to constructor.
-  ///   An envelope is created from the [dataModel] values, possibly extending the envelope interval to start or end at 0.
+  /// - [chartModel] contains the numeric data values, passed to constructor.
+  ///   An envelope is created from the [chartModel] values, possibly extending the envelope interval to start or end at 0.
   ///   Whether the envelope interval starts or ends at 0.0, even if data are away from 0.0, is controlled by member
   ///   [extendAxisToOrigin].
   /// - [userLabels] may be set by user.
   /// - [_labelInfos] and [dataRange] are created from [dataMode] for only the highest order of values
-  ///   in [dataModel], and can be both wider or narrower than extremes of the [dataModel].
-  ///     1. Ex1. for [dataModel] values [-600.0 .. 2200.0]
-  ///             ==> [labelInfos] =   [-1000, 0, 1000, 2000] (NARROWER THAN dataModel max 2200)
+  ///   in [chartModel], and can be both wider or narrower than extremes of the [chartModel].
+  ///     1. Ex1. for [chartModel] values [-600.0 .. 2200.0]
+  ///             ==> [labelInfos] =   [-1000, 0, 1000, 2000] (NARROWER THAN chartModel max 2200)
   ///             ==> [dataRange] = [-600 .. 2200]
-  ///     2. Ex2. for [dataModel] values  [0.0 .. 1800.0]
+  ///     2. Ex2. for [chartModel] values  [0.0 .. 1800.0]
   ///             ==> [labelInfos]   = [0, 1000, 2000]
-  ///             ==> [dataRange] = [0 .. 2000] (WIDER than dataModel max 1800)
+  ///             ==> [dataRange] = [0 .. 2000] (WIDER than chartModel max 1800)
   ///
   /// Constructor calculates the following members:
   ///   - [dataRange]
@@ -52,7 +52,7 @@ class DataRangeLabelInfosGenerator {
   DataRangeLabelInfosGenerator({
     required this.chartOrientation,
     required ChartStacking chartStacking,
-    required ChartModel dataModel,
+    required ChartModel chartModel,
     required this.dataDependency,
     required bool extendAxisToOrigin,
     required Function valueToLabel,
@@ -78,7 +78,7 @@ class DataRangeLabelInfosGenerator {
           //   it will be lextr-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
-          dataEnvelope = dataModel.dataRangeWhenStringLabels;
+          dataEnvelope = chartModel.dataRangeWhenStringLabels;
           transformedLabelValues = _placeLabelPointsInInterval(
             interval: dataEnvelope,
             labelPointsCount: userLabels.length,
@@ -89,14 +89,14 @@ class DataRangeLabelInfosGenerator {
           // This is ONLY needed for legacy coded_layout to work
           // On dependent (Y) axis, with user labels, we have to use actual data values,
           //   because all scaling uses actual data values
-          dataEnvelope = dataModel.valuesInterval(chartStacking: chartStacking);
+          dataEnvelope = chartModel.valuesInterval(chartStacking: chartStacking);
           double dataStepHeight = (dataEnvelope.max - dataEnvelope.min) / (userLabels.length - 1);
           transformedLabelValues =
               List.generate(userLabels.length, (index) => dataEnvelope.min + index * dataStepHeight);
           break;
       }
     } else {
-      dataEnvelope = dataModel.extendedValuesInterval(
+      dataEnvelope = chartModel.extendedValuesInterval(
         extendAxisToOrigin: extendAxisToOrigin,
         chartStacking: chartStacking,
       );
