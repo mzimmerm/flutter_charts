@@ -40,14 +40,17 @@ class ChartModel {
   {
     logger.Logger().d('Constructing ChartModel');
 
-    // Initializing of not-nullable final byRowColors which is a not-required argument
-    // must be done in initialized by a not-member function (member methods only in constructor body)
-    legendColors ??= byRowDefaultColors(valuesRows.length);
+    // Generate legend colors if not provided.
+    legendColors ??= _byRowDefaultColors(valuesRows.length);
+/* todo-00-done
     _legendColors = legendColors;
     _legendNames = legendNames;
+*/
 
     // validate after late finals initialized as they are used in validate.
-    validate();
+    validate(legendNames, legendColors);
+
+    _legendColumn = _LegendColumn(legendNames, legendColors);
 
     valuesColumns = transposeRowsToColumns(valuesRows);
 
@@ -67,7 +70,6 @@ class ChartModel {
     columnIndex++;
     }
 
-    bigLegendColumn = BigLegendColumn(_legendNames, _legendColors);
   }
 
   // NEW CODE =============================================================
@@ -75,7 +77,12 @@ class ChartModel {
   /// List of crossPoints in the model.
   final List<CrossPointsModel> crossPointsModelList = [];
 
-  late final BigLegendColumn bigLegendColumn;
+  /// The legends for each row of data.
+  ///
+  /// There is one Legend per data row. Alternative name would be "series names and colors".
+  late final _LegendColumn _legendColumn;
+
+  LegendItem getLegendItemAt(int index) => _legendColumn.getItemAt(index);
 
   /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -173,6 +180,7 @@ class ChartModel {
   ///
   final List<String>? outputUserLabels;
 
+/* todo-00-done
   /// The legends for each row in [_valuesRows].
   ///
   /// One Legend String per row.
@@ -181,6 +189,7 @@ class ChartModel {
 
   /// Colors representing each data row (series) in [ChartModel].
   late final List<ui.Color> _legendColors;
+*/
 
   /// Chart options of this [ChartModel].
   ///
@@ -189,15 +198,16 @@ class ChartModel {
   final ChartOptions chartOptions;
 
 
+  /* todo-00-done : removed, use LegendColumn instead.
   ui.Color colorAtRow(int index) {
     return _legendColors
         .elementAt(index % _legendColors.length);
   }
-
   String legendAtRow(int index) {
     return _legendNames
         .elementAt(index % _legendNames.length);
   }
+  */
 
   // todo-013-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => valuesRows.expand((element) => element).toList();
@@ -209,25 +219,25 @@ class ChartModel {
   double get _transformedValuesMax =>
       _flatten.map((value) => chartOptions.dataContainerOptions.yTransform(value).toDouble()).reduce(math.max);
 
-  void validate() {
+  void validate(List<String> legendNames, List<ui.Color> legendColors) {
     //                      But that would require ChartOptions available in ChartModel.
-    if (!(valuesRows.length == _legendNames.length)) {
+    if (!(valuesRows.length == legendNames.length)) {
       throw StateError('The number of legend labels provided in parameter "legendNames", '
           'does not equal the number of data rows provided in parameter "valuesRows":\n'
           'Detail reason: Row legend labels must be provided in parameter "legendNames", '
           'and their number must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of legendNames: ${_legendNames.length}].\n'
+          '   [number of valuesRows: ${valuesRows.length}] != [number of legendNames: ${legendNames.length}].\n'
           'To fix this: provide ${valuesRows.length} "legendNames".');
     }
-    if (!(valuesRows.length == _legendColors.length)) {
+    if (!(valuesRows.length == legendColors.length)) {
       throw StateError('The number of legend colors provided in parameter "legendColors", '
           'does not equal the number of data rows provided in parameter "valuesRows":\n'
           'Detail reason: If not provided in "legendColors", legend colors are generated. '
           'If the parameter "legendColors" is provided, '
           'the number of colors must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of legendColors: ${_legendColors.length}].\n'
+          '   [number of valuesRows: ${valuesRows.length}] != [number of legendColors: ${legendColors.length}].\n'
           'To fix this: provide ${valuesRows.length} "legendColors".');
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
@@ -267,8 +277,11 @@ class LegendItem {
   final ui.Color color;
 }
 
-class BigLegendColumn {
-  BigLegendColumn(List<String>nameColumn, List<ui.Color> legendColors) {
+/// Descriptors of legends; each descriptor
+///
+///
+class _LegendColumn {
+  _LegendColumn(List<String>nameColumn, List<ui.Color> legendColors) {
     if (nameColumn.length != legendColors.length) {
       throw StateError('There must be the same number of legend names and colors, but client provided '
           '${nameColumn.length} names and ${legendColors.length} colors.');
@@ -495,7 +508,7 @@ class PointModel {
   Object get inputUserLabel => ownerCrossPointsModel.ownerChartModel.inputUserLabels[columnIndex];
 
   // todo-00-done : ui.Color get color => ownerCrossPointsModel.ownerChartModel.byRowColors[rowIndex];
-  ui.Color get color => ownerCrossPointsModel.ownerChartModel.colorAtRow(rowIndex);
+  ui.Color get color => ownerCrossPointsModel.ownerChartModel.getLegendItemAt(rowIndex).color;
 
   PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
@@ -515,7 +528,7 @@ class PointModel {
 /// Sets up colors for legends, first several explicitly, rest randomly.
 ///
 /// This is used if user does not set colors.
-List<ui.Color> byRowDefaultColors(int valuesRowsCount) {
+List<ui.Color> _byRowDefaultColors(int valuesRowsCount) {
   List<ui.Color> rowsColors = List.empty(growable: true);
 
   if (valuesRowsCount >= 1) {

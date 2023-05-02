@@ -148,10 +148,12 @@ class LegendContainer extends container_common.ChartAreaContainer {
         LegendItemContainer(
           chartViewMaker: chartViewMaker,
           // todo-00-done : label: byRowLegends[index],
-          label: chartViewMaker.chartModel.legendAtRow(index),
+           // todo-00-done : label: chartViewMaker.chartModel.legendAtRow(index),
+          label: chartViewMaker.chartModel.getLegendItemAt(index).name,
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartViewMaker.chartModel.colorAtRow(index)),
+            // todo-00-done : ..color = chartViewMaker.chartModel.colorAtRow(index)),
+            ..color = chartViewMaker.chartModel.getLegendItemAt(index).color),
           options: options,
         ),
     ];

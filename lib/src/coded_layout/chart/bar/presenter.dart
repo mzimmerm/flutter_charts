@@ -30,7 +30,8 @@ class VerticalBarPointPresenter extends PointPresenter {
     List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
     valuesRowPaint.color = byRowColors[rowIndex % byRowColors.length];
 */
-    valuesRowPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
+    // todo-00-done : valuesRowPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
+    valuesRowPaint.color = chartViewMaker.chartModel.getLegendItemAt(rowIndex).color;
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;

@@ -42,7 +42,8 @@ class LineAndHotspotPointPresenter extends PointPresenter {
     List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
     rowDataPaint.color = byRowColors[rowIndex % byRowColors.length];
 */
-    rowDataPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
+    // todo-00-done : rowDataPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
+    rowDataPaint.color = chartViewMaker.chartModel.getLegendItemAt(rowIndex).color;
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
