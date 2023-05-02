@@ -309,7 +309,7 @@ main() {
   });
 
   group('LayedoutLengthsPositioner.layout() Tight End,', () {
-    // todo-023 : Column with mainAxisAlign: Align.end behaves weird in CrossPointsBar.  Add to a test, Align.end, Packing.tight.
+    // todo-023 : Column with mainAxisAlign: Align.end behaves weird in DataColumnPointsBar.  Add to a test, Align.end, Packing.tight.
     var tightEndLengthsConstraintLessThanSizes = LayedoutLengthsPositioner(
       lengths: lengths,
       lengthsPositionerProperties: const LengthsPositionerProperties(packing: Packing.tight, align: Align.end),

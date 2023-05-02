@@ -298,7 +298,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// See [DataContainerOptions.valuesRowsPaintingOrder].
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
     var options = chartViewMaker.chartOptions;
-    if (options.dataContainerOptions.valuesRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
+    if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       pointPresenters = pointPresenters.reversed.toList();
     }
     return pointPresenters;
@@ -332,8 +332,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  CrossPointsBar MyBarChartViewMakerCrossPointsBar({
-    required CrossPointsModel crossPointsModel,
+  DataColumnPointsBar MyBarChartViewMakerDataColumnPointsBar({
+    required DataColumnModel dataColumnModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
   }) {

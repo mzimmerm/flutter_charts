@@ -27,12 +27,12 @@ enum DataDependency {
   outputData,
 }
 
-/// On behalf of [CrossPointsModel], represents the sign of the values of [PointModel] points
-/// which should be added to the [CrossPointsModel].
+/// On behalf of [DataColumnPointsModel], represents the sign of the values of [PointModel] points
+/// which should be added to the [DataColumnPointsModel].
 ///
 /// Motivation: In order to display both negative and positive values on the bar chart or line chart,
 ///             the [ChartModel] manages the positive and negative values separately in
-///             [ChartModel.crossPointsModelPositiveList] and [ChartModel.crossPointsModelNegativeList].
+///             [ChartModel.dataColumnPointsModelPositiveList] and [ChartModel.dataColumnPointsModelNegativeList].
 ///             This enum supports creating and later using (processing, view making) the positive and negative
 ///             bars separately.
 enum Sign {

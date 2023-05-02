@@ -234,7 +234,7 @@ class DataContainerOptions {
   /// While so far only makes a difference on the line chart, this is defined
   /// as a common option in case there is some future overlap use on other
   /// chart types.
-  final DataRowsPaintingOrder valuesRowsPaintingOrder;
+  final DataRowsPaintingOrder dataRowsPaintingOrder;
 
   /// The transformation function which is always applied on y data before data are added to the chart internals.
   ///
@@ -303,7 +303,7 @@ class DataContainerOptions {
     this.dataLeftTickWidth = 6.0,
     this.dataRightTickWidth = 6.0,
     this.gridStepWidthPortionUsedByAtomicPointPresenter = 0.75,
-    this.valuesRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
+    this.dataRowsPaintingOrder = DataRowsPaintingOrder.firstToLast,
     this.extendAxisToOriginRequested = true,
     this.yTransform = identity<num>,
     this.yInverseTransform = identity<num>,

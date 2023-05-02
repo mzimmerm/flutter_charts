@@ -30,7 +30,7 @@ class ChartModel {
   // ================ CONSTRUCTOR NEEDS SOME OLD MEMBERS FOR NOW ====================
 
   ChartModel({
-    required this.valuesRows,
+    required this.dataRows,
     required this.inputUserLabels,
     required this.chartOptions,
     this.outputUserLabels,
@@ -41,7 +41,7 @@ class ChartModel {
     logger.Logger().d('Constructing ChartModel');
 
     // Generate legend colors if not provided.
-    legendColors ??= _byRowDefaultColors(valuesRows.length);
+    legendColors ??= _byRowDefaultColors(dataRows.length);
 /* todo-00-done
     _legendColors = legendColors;
     _legendNames = legendNames;
@@ -52,15 +52,15 @@ class ChartModel {
 
     _legendColumn = _LegendColumn(legendNames, legendColors);
 
-    valuesColumns = transposeRowsToColumns(valuesRows);
+    valuesColumns = transposeRowsToColumns(dataRows);
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
-    // Here, create one [ChartModelSeries] for each data row, and add to member [crossPointsList]
+    // Here, create one [ChartModelSeries] for each data row, and add to member [dataColumnPointsList]
     int columnIndex = 0;
     for (List<double> valuesColumn in valuesColumns) {
-      crossPointsModelList.add(
-        CrossPointsModel(
+      dataColumnList.add(
+        DataColumnModel(
           valuesColumn: valuesColumn,
           ownerChartModel: this,
           columnIndex: columnIndex,
@@ -74,8 +74,8 @@ class ChartModel {
 
   // NEW CODE =============================================================
 
-  /// List of crossPoints in the model.
-  final List<CrossPointsModel> crossPointsModelList = [];
+  /// List of dataColumnPoints in the model.
+  final List<DataColumnModel> dataColumnList = [];
 
   /// The legends for each row of data.
   ///
@@ -96,7 +96,7 @@ class ChartModel {
   ///   - For [chartStacking] == [ChartStacking.nonStacked],
   ///       the min and max is from [_transformedValuesMin] and max.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [CrossPointsModel] first, but could go
+  /// Implementation detail: maximum and minimum is calculated column-wise [DataColumnPointsModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
   Interval valuesInterval({
@@ -155,9 +155,9 @@ class ChartModel {
   /// Each row of data represents one data series.
   /// Legends per row are managed by [byRowLegends].
   ///
-  final List<List<double>> valuesRows;
+  final List<List<double>> dataRows;
 
-  int get numRows => valuesRows.length;
+  int get numRows => dataRows.length;
 
   /// Data reorganized from rows to columns.
   late final List<List<double>> valuesColumns;
@@ -210,7 +210,7 @@ class ChartModel {
   */
 
   // todo-013-performance : cache valuesMax/Min ond also _flatten
-  List<double> get _flatten => valuesRows.expand((element) => element).toList();
+  List<double> get _flatten => dataRows.expand((element) => element).toList();
   double get _valuesMin => _flatten.reduce(math.min);
   // double get _valuesMax => _flatten.reduce(math.max);
 
@@ -221,24 +221,24 @@ class ChartModel {
 
   void validate(List<String> legendNames, List<ui.Color> legendColors) {
     //                      But that would require ChartOptions available in ChartModel.
-    if (!(valuesRows.length == legendNames.length)) {
+    if (!(dataRows.length == legendNames.length)) {
       throw StateError('The number of legend labels provided in parameter "legendNames", '
-          'does not equal the number of data rows provided in parameter "valuesRows":\n'
+          'does not equal the number of data rows provided in parameter "dataRows":\n'
           'Detail reason: Row legend labels must be provided in parameter "legendNames", '
           'and their number must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of legendNames: ${legendNames.length}].\n'
-          'To fix this: provide ${valuesRows.length} "legendNames".');
+          '   [number of dataRows: ${dataRows.length}] != [number of legendNames: ${legendNames.length}].\n'
+          'To fix this: provide ${dataRows.length} "legendNames".');
     }
-    if (!(valuesRows.length == legendColors.length)) {
+    if (!(dataRows.length == legendColors.length)) {
       throw StateError('The number of legend colors provided in parameter "legendColors", '
-          'does not equal the number of data rows provided in parameter "valuesRows":\n'
+          'does not equal the number of data rows provided in parameter "dataRows":\n'
           'Detail reason: If not provided in "legendColors", legend colors are generated. '
           'If the parameter "legendColors" is provided, '
           'the number of colors must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of legendColors: ${legendColors.length}].\n'
-          'To fix this: provide ${valuesRows.length} "legendColors".');
+          '   [number of dataRows: ${dataRows.length}] != [number of legendColors: ${legendColors.length}].\n'
+          'To fix this: provide ${dataRows.length} "legendColors".');
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
@@ -248,7 +248,7 @@ class ChartModel {
     }
   }
 
-  /// For positive [sign], returns max of all columns (more precisely, of all [CrossPointsModel]s),
+  /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnPointsModel]s),
   ///   or 0.0 if there are no positive columns;
   /// for negative [sign]. returns min of all columns or 0.0 if there are no negative columns
   ///
@@ -259,8 +259,8 @@ class ChartModel {
   /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
   /// their separately positive or negative values stacked if [isStacked] is true
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
-    return crossPointsModelList
-        .map((crossPointsModel) => crossPointsModel.extremeValueWithSign(sign, chartStacking))
+    return dataColumnList
+        .map((dataColumnModel) => dataColumnModel.extremeValueWithSign(sign, chartStacking))
         .extremeValueWithSign(sign);
   }
 
@@ -309,32 +309,32 @@ class _LegendColumn {
 ///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
-/// Note: [CrossPointsModel] replaces the [PointsColumn] in legacy layouter.
+/// Note: [DataColumnPointsModel] replaces the [PointsColumn] in legacy layouter.
 ///
 @immutable
-class CrossPointsModel {
+class DataColumnModel {
 
   /// Constructs a model for one bar of points.
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
-  /// The [ownerChartModel] is the [ChartModel] underlying the [CrossPointsModel] instance being created.
+  /// The [ownerChartModel] is the [ChartModel] underlying the [DataColumnPointsModel] instance being created.
   /// The [columnIndex] is index of the [valuesColumn] in the [ownerChartModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
-  CrossPointsModel({
+  DataColumnModel({
     required List<double> valuesColumn,
     required this.ownerChartModel,
     required this.columnIndex,
   }) {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
-    // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_crossPoints]
-    //   - positive and negative values of the [valuesColumn] are separated to their own [_crossPoints].
+    // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_dataColumnPoints]
+    //   - positive and negative values of the [valuesColumn] are separated to their own [_dataColumnPoints].
     for (double outputValue in valuesColumn) {
       var point = PointModel(
         outputValue: outputValue,
-        ownerCrossPointsModel: this,
+        ownerDataColumnModel: this,
         rowIndex: rowIndex,
       );
       pointModelList.add(point);
@@ -342,10 +342,10 @@ class CrossPointsModel {
     }
   }
 
-  /// The full [ChartModel] from which data columns this [CrossPointsModel] is created.
+  /// The full [ChartModel] from which data columns this [DataColumnPointsModel] is created.
   final ChartModel ownerChartModel;
 
-  /// Index of this column (crossPoints list) in the [ChartModel.crossPointsModelList].
+  /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnPointsModelList].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
@@ -359,7 +359,7 @@ class CrossPointsModel {
   final int columnIndex;
 
   /// Calculates inputValue-position (x-position, independent value position) of
-  /// instances of this [CrossPointsModel] and it's [PointModel] elements.
+  /// instances of this [DataColumnPointsModel] and it's [PointModel] elements.
   ///
   /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numChartModelColumns] columns that
   /// divide the [dataRange].
@@ -384,12 +384,12 @@ class CrossPointsModel {
   ///
   /// In more detail:
   ///   - For [chartStacking] == [ChartStacking.stacked],  returns added (accumulated) [PointModel.outputValue]s
-  ///     for all [PointModel]s in this [CrossPointsModel] instance, that have the passed [sign].
+  ///     for all [PointModel]s in this [DataColumnPointsModel] instance, that have the passed [sign].
   ///   - For [chartStacking] == [ChartStacking.nonStacked]
   ///     - For [sign] positive, returns max of positive [PointModel.outputValue]s
-  ///       for all positive [PointModel]s in this [CrossPointsModel] instance.
+  ///       for all positive [PointModel]s in this [DataColumnPointsModel] instance.
   ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
-  ///       for all negative [PointModel]s in this [CrossPointsModel] instance.
+  ///       for all negative [PointModel]s in this [DataColumnPointsModel] instance.
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
     switch(chartStacking) {
       case ChartStacking.stacked:
@@ -416,31 +416,31 @@ class CrossPointsModel {
 ///
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
-///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerCrossPointsModel],
-///     which in turn has access to [ChartModel] through it's member [CrossPointsModel._chartModel].
+///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerDataColumnPointsModel],
+///     which in turn has access to [ChartModel] through it's member [DataColumnPointsModel._chartModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
 @immutable
 class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
-  /// Constructs instance from the owner [CrossPointsModel] instance [ownerCrossPointsModel],
+  /// Constructs instance from the owner [DataColumnPointsModel] instance [ownerDataColumnPointsModel],
   /// and [rowIndex], the index in where the point value [outputValue] is located.
   ///
-  /// Important note: The [ownerCrossPointsModel] value on [rowIndex], IS NOT [outputValue],
-  ///                 as the [ownerCrossPointsModel] is split from [ChartModel.dataColumns] so
-  ///                 [rowIndex] can only be used to reach `ownerCrossPointsModel.chartModel.valuesRows`.
+  /// Important note: The [ownerDataColumnPointsModel] value on [rowIndex], IS NOT [outputValue],
+  ///                 as the [ownerDataColumnPointsModel] is split from [ChartModel.dataColumns] so
+  ///                 [rowIndex] can only be used to reach `ownerDataColumnPointsModel.chartModel.valuesRows`.
   PointModel({
     required double outputValue,
-    required this.ownerCrossPointsModel,
+    required this.ownerDataColumnModel,
     required this.rowIndex,
   })
-    : outputValue = ownerCrossPointsModel.ownerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
+    : outputValue = ownerDataColumnModel.ownerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
     sign = outputValue >= 0.0 ? Sign.positiveOr0 : Sign.negative
   {
     assertDoubleResultsSame(
-      ownerCrossPointsModel.ownerChartModel.chartOptions.dataContainerOptions
-          .yTransform(ownerCrossPointsModel.ownerChartModel.valuesRows[rowIndex][columnIndex])
+      ownerDataColumnModel.ownerChartModel.chartOptions.dataContainerOptions
+          .yTransform(ownerDataColumnModel.ownerChartModel.dataRows[rowIndex][columnIndex])
           .toDouble(),
       this.outputValue,
     );
@@ -453,8 +453,8 @@ class PointModel {
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
-  ///   - column at index [columnIndex], which is also the [ownerCrossPointsModel]'s
-  ///     index [CrossPointsModel.columnIndex].
+  ///   - column at index [columnIndex], which is also the [ownerDataColumnPointsModel]'s
+  ///     index [DataColumnPointsModel.columnIndex].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double outputValue;
 
@@ -462,20 +462,20 @@ class PointModel {
   /// [Sign] of the [outputValue].
   final Sign sign;
 
-  /// References the data column (crossPoints list) this point belongs to
-  final CrossPointsModel ownerCrossPointsModel;
+  /// References the data column (dataColumnPoints list) this point belongs to
+  final DataColumnModel ownerDataColumnModel;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [CrossPointsModel.pointModelList] at index [rowIndex].
+  /// Also, this point object is kept in [DataColumnPointsModel.pointModelList] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
-  /// Getter of the column index in the owner [ownerCrossPointsModel].
+  /// Getter of the column index in the owner [ownerDataColumnPointsModel].
   ///
-  /// Delegated to [ownerCrossPointsModel] index [CrossPointsModel.columnIndex].
-  int get columnIndex => ownerCrossPointsModel.columnIndex;
+  /// Delegated to [ownerDataColumnPointsModel] index [DataColumnPointsModel.columnIndex].
+  int get columnIndex => ownerDataColumnModel.columnIndex;
 
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
@@ -494,21 +494,21 @@ class PointModel {
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
-  /// Delegated to [ownerCrossPointsModel].
+  /// Delegated to [ownerDataColumnPointsModel].
   double inputValueOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
-    return ownerCrossPointsModel.inputValueOnInputRange(
+    return ownerDataColumnModel.inputValueOnInputRange(
       dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
     );
   }
 
   /// Once the x labels are established, either as [inputUserLabels] or generated, clients can
   ///  ask for the label.
-  Object get inputUserLabel => ownerCrossPointsModel.ownerChartModel.inputUserLabels[columnIndex];
+  Object get inputUserLabel => ownerDataColumnModel.ownerChartModel.inputUserLabels[columnIndex];
 
-  // todo-00-done : ui.Color get color => ownerCrossPointsModel.ownerChartModel.byRowColors[rowIndex];
-  ui.Color get color => ownerCrossPointsModel.ownerChartModel.getLegendItemAt(rowIndex).color;
+  // todo-00-done : ui.Color get color => ownerDataColumnPointsModel.ownerChartModel.byRowColors[rowIndex];
+  ui.Color get color => ownerDataColumnModel.ownerChartModel.getLegendItemAt(rowIndex).color;
 
   PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
@@ -528,29 +528,29 @@ class PointModel {
 /// Sets up colors for legends, first several explicitly, rest randomly.
 ///
 /// This is used if user does not set colors.
-List<ui.Color> _byRowDefaultColors(int valuesRowsCount) {
+List<ui.Color> _byRowDefaultColors(int dataRowsCount) {
   List<ui.Color> rowsColors = List.empty(growable: true);
 
-  if (valuesRowsCount >= 1) {
+  if (dataRowsCount >= 1) {
     rowsColors.add(material.Colors.yellow);
   }
-  if (valuesRowsCount >= 2) {
+  if (dataRowsCount >= 2) {
     rowsColors.add(material.Colors.green);
   }
-  if (valuesRowsCount >= 3) {
+  if (dataRowsCount >= 3) {
     rowsColors.add(material.Colors.blue);
   }
-  if (valuesRowsCount >= 4) {
+  if (dataRowsCount >= 4) {
     rowsColors.add(material.Colors.black);
   }
-  if (valuesRowsCount >= 5) {
+  if (dataRowsCount >= 5) {
     rowsColors.add(material.Colors.grey);
   }
-  if (valuesRowsCount >= 6) {
+  if (dataRowsCount >= 6) {
     rowsColors.add(material.Colors.orange);
   }
-  if (valuesRowsCount > 6) {
-    for (int i = 3; i < valuesRowsCount; i++) {
+  if (dataRowsCount > 6) {
+    for (int i = 3; i < dataRowsCount; i++) {
       int colorHex = math.Random().nextInt(0xFFFFFF);
       int opacityHex = 0xFF;
       rowsColors.add(ui.Color(colorHex + (opacityHex * math.pow(16, 6)).toInt()));

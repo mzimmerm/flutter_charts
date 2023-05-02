@@ -51,9 +51,9 @@ import '../../morphic/container/container_key.dart';
 ///             to return [MyBarChartRootContainer].
 ///         - 1.3 Extend the [DataContainer]  to [MyDataContainer]  and override [DataContainer.MyBarChartViewMakerBarsContainer]
 ///             to return instance of [MyBarsContainer]
-///         - 1.4 Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.MyBarChartViewMakerCrossPointsBar]
-///            to return instance of [MyCrossPointsBar]
-///         - 1.5 Extend the [CrossPointsBar] to [MyCrossPointsBar] and override [CrossPointsBar.MyBarChartViewMakerPointContainer]
+///         - 1.4 Extend the [BarsContainer]  to [MyBarsContainer]  and override [BarsContainer.MyBarChartViewMakerDataColumnPointsBar]
+///            to return instance of [MyDataColumnPointsBar]
+///         - 1.5 Extend the [DataColumnPointsBar] to [MyDataColumnPointsBar] and override [DataColumnPointsBar.MyBarChartViewMakerPointContainer]
 ///             to return instance of [MyBarPointContainer]
 ///         - 1.6 In [MyBarChartViewMaker] override [makeChartRootContainer], create and return [MyBarChartRootContainer]
 ///           instance, pass to it's dataContainer parameter argument
@@ -65,7 +65,7 @@ import '../../morphic/container/container_key.dart';
 ///
 ///       2. Easier override provided by 'MyBarChartViewMaker' methods pulled up to [DataContainer]:
 ///         - 1.1, 1.2 are the same.
-///         - But we do NOT need to create [MyBarsContainer] and [MyCrossPointsBar] 1.3 and 1.4
+///         - But we do NOT need to create [MyBarsContainer] and [MyDataColumnPointsBar] 1.3 and 1.4
 ///         - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
 ///         - 1.5, 1.6 and 1.7 are the same
 ///
@@ -119,15 +119,15 @@ class DataContainer extends container_common.ChartAreaContainer {
     ]);
   }
 
-  /// If true, calling [BarsContainer.MyBarChartViewMakerCrossPointsBar],
-  /// [CrossPointsBar.MyBarChartViewMakerPointContainer], [CrossPointsBar.MyBarChartViewMakerPointContainerWithZeroValue]
+  /// If true, calling [BarsContainer.MyBarChartViewMakerDataColumnPointsBar],
+  /// [DataColumnPointsBar.MyBarChartViewMakerPointContainer], [DataColumnPointsBar.MyBarChartViewMakerPointContainerWithZeroValue]
   /// is forwarded to their equivalents on [DataContainer].
   ///
   /// Motivation: The single motivation is client simplicity of implementing [DataContainer] extensions,
   ///             When set to true on an extension of [DataContainer], such extension must also
-  ///             override [BarsContainer.MyBarChartViewMakerCrossPointsBar],
-  ///             [CrossPointsBar.MyBarChartViewMakerPointContainer], [CrossPointsBar.MyBarChartViewMakerPointContainerWithZeroValue],
-  ///             returning from them either extension instances of [CrossPointsBar],
+  ///             override [BarsContainer.MyBarChartViewMakerDataColumnPointsBar],
+  ///             [DataColumnPointsBar.MyBarChartViewMakerPointContainer], [DataColumnPointsBar.MyBarChartViewMakerPointContainerWithZeroValue],
+  ///             returning from them either extension instances of [DataColumnPointsBar],
   ///             [PointContainer], and [PointContainerWithZeroValue] or the default base instances - although at least
   ///             one should return an extension instance for any functional changes compared to default.
 
@@ -165,8 +165,8 @@ class DataContainer extends container_common.ChartAreaContainer {
 
   /// Child component makers delegated to owner [DataContainer] -----------
   ///
-  CrossPointsBar MyBarChartViewMakerCrossPointsBar({
-    required model.CrossPointsModel crossPointsModel,
+  DataColumnPointsBar MyBarChartViewMakerDataColumnPointsBar({
+    required model.DataColumnModel dataColumnModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
   }) {
@@ -282,48 +282,48 @@ class BarsContainer extends container_common.ChartAreaContainer {
         // column orientation, any stacking, any sign: bars of data are in Row main axis,
         // this Row must divide width to all bars evenly
         constraintsDivideMethod: ConstraintsDivideMethod.evenDivision,
-        // children are padded bars; each bar created from one [CrossPointsModel], contains rectangles or lines
-        children: chartViewMaker.chartModel.crossPointsModelList
-            .map((crossPointsModel) => MyBarChartViewMakerCrossPointsBar(
-                  crossPointsModel: crossPointsModel,
+        // children are padded bars; each bar created from one [DataColumnPointsModel], contains rectangles or lines
+        children: chartViewMaker.chartModel.dataColumnList
+            .map((dataColumnModel) => MyBarChartViewMakerDataColumnPointsBar(
+                  dataColumnModel: dataColumnModel,
                   ownerDataContainer: ownerDataContainer,
                   barsAreaSign: barsAreaSign,
                 ))
-            .map((crossPointsBar) => Padder(
+            .map((dataColumnPointsBar) => Padder(
                   edgePadding: barSidePad,
-                  child: crossPointsBar,
+                  child: dataColumnPointsBar,
                 ))
             .toList(),
       )
     ]);
   }
 
-  /// [BarsContainer] client-overridable method hook for extending [CrossPointsBar].
-  CrossPointsBar MyBarChartViewMakerCrossPointsBar({
-    required model.CrossPointsModel crossPointsModel,
+  /// [BarsContainer] client-overridable method hook for extending [DataColumnPointsBar].
+  DataColumnPointsBar MyBarChartViewMakerDataColumnPointsBar({
+    required model.DataColumnModel dataColumnModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
   }) {
     if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.MyBarChartViewMakerCrossPointsBar(
-        crossPointsModel: crossPointsModel,
+      return ownerDataContainer.MyBarChartViewMakerDataColumnPointsBar(
+        dataColumnModel: dataColumnModel,
         ownerDataContainer: ownerDataContainer,
         barsAreaSign: barsAreaSign,
       );
     }
-    return CrossPointsBar(
+    return DataColumnPointsBar(
       chartViewMaker: chartViewMaker,
       ownerDataContainer: ownerDataContainer,
       barsAreaSign: barsAreaSign,
-      crossPointsModel: crossPointsModel,
+      dataColumnModel: dataColumnModel,
     );
   }
 
 }
 
-/// View for one [model.CrossPointsModel], in other words, a bar of [PointContainer]s.
+/// View for one [model.DataColumnPointsModel], in other words, a bar of [PointContainer]s.
 ///
-/// Each [PointContainer] views one [model.PointModel] in [model.CrossPointsModel.pointModelList].
+/// Each [PointContainer] views one [model.PointModel] in [model.DataColumnPointsModel.pointModelList].
 ///
 /// Each instance is visually presented as a horizontal or vertical bar
 /// displaying [PointContainer] rectangles or lines.
@@ -331,13 +331,13 @@ class BarsContainer extends container_common.ChartAreaContainer {
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
 ///
-class CrossPointsBar extends container_common.ChartAreaContainer {
+class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
-  CrossPointsBar({
+  DataColumnPointsBar({
     required ChartViewMaker chartViewMaker,
     required this.ownerDataContainer,
     required this.barsAreaSign,
-    required this.crossPointsModel,
+    required this.dataColumnModel,
     ContainerKey? key,
   }) : super(
     chartViewMaker: chartViewMaker,
@@ -345,7 +345,7 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
     key: key,
   );
 
-  final model.CrossPointsModel crossPointsModel;
+  final model.DataColumnModel dataColumnModel;
   final DataContainer ownerDataContainer;
   final Sign barsAreaSign;
 
@@ -362,10 +362,10 @@ class CrossPointsBar extends container_common.ChartAreaContainer {
       start: 1.0,
       end: 1.0,
     );
-    // Creates a list of [PointContainer]s from all points of the passed [crossPointsModel], pads each [PointContainer].
+    // Creates a list of [PointContainer]s from all points of the passed [dataColumnPointsModel], pads each [PointContainer].
     // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
     // stacked and nonStacked, and positive and negative, distinctly.
-    List<PointContainer> pointContainers = crossPointsModel.pointModelList
+    List<PointContainer> pointContainers = dataColumnModel.pointModelList
     // Map applies function converting [PointModel] to [PointContainer],
     // calling the hook [MyBarChartViewMakerPointContainer]
         .map(clsPointToNullableContainerForSign(barsAreaSign))

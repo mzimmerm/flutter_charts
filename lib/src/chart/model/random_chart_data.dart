@@ -8,14 +8,14 @@ import 'data_model.dart';
 ///
 class RandomChartModel extends ChartModel {
   RandomChartModel({
-    required valuesRows,
+    required dataRows,
     required inputUserLabels,
     required legendNames,
     required chartOptions,
     outputUserLabels,
     legendColors,
   }) : super(
-          valuesRows: valuesRows,
+          dataRows: dataRows,
           inputUserLabels: inputUserLabels,
           legendNames: legendNames,
           chartOptions: chartOptions,
@@ -39,7 +39,7 @@ class RandomChartModel extends ChartModel {
     bool overlapDataYs = false,
     legendColors,
   }) : this(
-          valuesRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
+          dataRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
           inputUserLabels: randomDataXLabels(numXLabels),
           legendNames: randomDataRowsLegends(numDataRows),
           chartOptions: chartOptions,
@@ -52,29 +52,29 @@ class RandomChartModel extends ChartModel {
 ///
 /// This is used if user does not set legends.
 /// This should be kept in sync with colors below.
-List<String> randomDataRowsLegends(int valuesRowsCount) {
+List<String> randomDataRowsLegends(int dataRowsCount) {
   List<String> defaultLegends = List.empty(growable: true);
 
-  if (valuesRowsCount >= 1) {
+  if (dataRowsCount >= 1) {
     defaultLegends.add('YELLOW' /*' with really long description'*/);
   }
-  if (valuesRowsCount >= 2) {
+  if (dataRowsCount >= 2) {
     defaultLegends.add('GREEN');
   }
-  if (valuesRowsCount >= 3) {
+  if (dataRowsCount >= 3) {
     defaultLegends.add('BLUE');
   }
-  if (valuesRowsCount >= 4) {
+  if (dataRowsCount >= 4) {
     defaultLegends.add('BLACK');
   }
-  if (valuesRowsCount >= 5) {
+  if (dataRowsCount >= 5) {
     defaultLegends.add('GREY');
   }
-  if (valuesRowsCount >= 6) {
+  if (dataRowsCount >= 6) {
     defaultLegends.add('ORANGE');
   }
-  if (valuesRowsCount > 6) {
-    for (int i = 3; i < valuesRowsCount; i++) {
+  if (dataRowsCount > 6) {
+    for (int i = 3; i < dataRowsCount; i++) {
       // todo-1 when large value is generated, it paints outside canvas, fix.
       int number = math.Random().nextInt(10000);
       defaultLegends.add('OTHER  ${number.toString()}');
@@ -100,7 +100,7 @@ List<String>? randomDataYLabels(bool useUserProvidedYLabels) {
 }
 
 List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDataYs) {
-  List<List<double>> valuesRows = List.empty(growable: true);
+  List<List<double>> dataRows = List.empty(growable: true);
 
   double scale = 200.0;
 
@@ -110,7 +110,7 @@ List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDat
   double pushUpStep = overlapDataYs ? 0.0 : maxDataY.toDouble();
 
   for (int rowIndex = 0; rowIndex < numDataRows; rowIndex++) {
-    valuesRows.add(_randomDataOneRow(
+    dataRows.add(_randomDataOneRow(
       rgen: rgen,
       max: maxDataY,
       pushUpBy: (rowIndex - 1) * pushUpStep,
@@ -118,7 +118,7 @@ List<List<double>> randomDataYs(int numXLabels, int numDataRows, bool overlapDat
       numXLabels: numXLabels,
     ));
   }
-  return valuesRows;
+  return dataRows;
 }
 
 List<double> _randomDataOneRow({

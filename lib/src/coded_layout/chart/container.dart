@@ -596,16 +596,16 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// The currently processed point is (potentially) stacked on it's predecessor.
   void _createStackableValuePointsFromChartData(ChartModel chartModel) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
-        List.filled(chartModel.valuesRows[0].length, null);
-    for (int col = 0; col < chartModel.valuesRows[0].length; col++) {
+        List.filled(chartModel.dataRows[0].length, null);
+    for (int col = 0; col < chartModel.dataRows[0].length; col++) {
       rowOfPredecessorPoints[col] = null; // new StackableValuePoint.initial(); // was:null
     }
 
     // Data points managed row.  Internal only, should be refactored away.
     List<List<StackableValuePoint>> valuePointArrInRows = List.empty(growable: true);
 
-    for (int row = 0; row < chartModel.valuesRows.length; row++) {
-      List<num> valuesRow = chartModel.valuesRows[row];
+    for (int row = 0; row < chartModel.dataRows.length; row++) {
+      List<num> valuesRow = chartModel.dataRows[row];
       List<StackableValuePoint> pointsRow = List<StackableValuePoint>.empty(growable: true);
       valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < valuesRow.length; col++) {
