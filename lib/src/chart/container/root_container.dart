@@ -8,6 +8,9 @@ import '../../morphic/container/container_layouter_base.dart';
 import '../container/axis_corner_container.dart';
 import '../view_maker.dart';
 
+// comments
+import '../painter.dart';
+
 /// The root [BoxContainer] of the whole chart.
 ///
 /// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation

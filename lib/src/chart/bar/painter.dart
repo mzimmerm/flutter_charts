@@ -1,6 +1,6 @@
+/*
 // base libraries
 import '../painter.dart';
-import '../view_maker.dart'; // NEW BASE
 
 // this level
 
@@ -12,9 +12,6 @@ import '../view_maker.dart'; // NEW BASE
 class BarChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [BarChartPainter] is initialized with
   /// the [BarChartContainer].
-  BarChartPainter({
-    required ChartViewMaker barChartViewMaker,
-  }) : super(
-          chartViewMaker: barChartViewMaker,
-        );
+  BarChartPainter();
 }
+*/

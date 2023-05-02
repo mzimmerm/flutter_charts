@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 /// Example app for flutter_charts, which shows one concrete chart,
 /// the widget returned from [chartToRun].
@@ -55,9 +56,8 @@ Widget chartToRun() {
   );
 
   var lineChart = LineChart(
-    painter: LineChartPainter(
-      lineChartViewMaker: lineChartViewMaker,
-    ),
+    chartViewMaker: lineChartViewMaker,
+    chartPainter: FlutterChartPainter(),
   );
   return lineChart;
 }

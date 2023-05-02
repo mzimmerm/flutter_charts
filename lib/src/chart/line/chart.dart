@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart' as widgets;
 
 // base libraries
-import '../chart.dart' as chart;
-
-// this level
-import '../line/painter.dart' as line_painter show LineChartPainter;
+import '../chart.dart';
+import '../painter.dart' show FlutterChartPainter;
+import '../view_maker.dart' show ChartViewMaker;
 
 /// Provides paint for the line chart.
 ///
@@ -19,19 +18,29 @@ import '../line/painter.dart' as line_painter show LineChartPainter;
 ///                              this.size: Size.zero, Widget child })`
 ///       and syntax of a constructor with named parameters
 ///       can be seen in the [LineChart] constructor.
-class LineChart extends chart.FlutterChart {
+class LineChart extends FlutterChart {
   /// Default constructor accepts size
   LineChart({
     widgets.Key? key,
-    required line_painter.LineChartPainter painter,
+    required FlutterChartPainter chartPainter,
+    required ChartViewMaker chartViewMaker,
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
           key: key,
-          painter: painter,
+          painter: chartPainter,
+          chartViewMaker: chartViewMaker,
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
-        );
+        )
+  {
+    // Late initialize [FlutterChartPainter.chart], which is used during [FlutterChartPainter.paint]
+    // by the [chart] member [FlutterChart.chartViewMaker] to create, layout and paint the chart using
+    //    ```dart
+    //          chart.chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+    //    ```
+    chartPainter.chart = this;
+  }
 }

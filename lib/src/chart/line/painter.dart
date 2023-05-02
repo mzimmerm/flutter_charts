@@ -1,6 +1,6 @@
+/*
 // base libraries
 import '../painter.dart';
-import '../view_maker.dart'; // NEW BASE
 
 // this level
 
@@ -13,9 +13,6 @@ import '../view_maker.dart'; // NEW BASE
 class LineChartPainter extends FlutterChartPainter {
   /// Constructor ensures the [LineChartPainter] is initialized with
   /// the [LineChartContainer]
-  LineChartPainter({
-    required ChartViewMaker lineChartViewMaker,
-  }) : super(
-          chartViewMaker: lineChartViewMaker,
-        );
+  LineChartPainter();
 }
+*/

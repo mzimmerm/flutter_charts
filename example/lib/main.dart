@@ -17,6 +17,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
+import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
 // Can import without 'package' here, because the file is under same lib directory.
 import 'src/util/examples_descriptor.dart';
@@ -1000,9 +1001,9 @@ class _ExampleWidgetCreator {
         );
 
         LineChart lineChart = LineChart(
-          painter: LineChartPainter(
-            lineChartViewMaker: lineChartViewMaker,
-          ),
+          // [lineChartViewMaker] makes instance of [LineChartRootContainer]
+          chartViewMaker: lineChartViewMaker,
+          chartPainter: FlutterChartPainter(),
         );
         chartToRun = lineChart;
         break;
@@ -1015,9 +1016,9 @@ class _ExampleWidgetCreator {
         );
 
         BarChart barChart = BarChart(
-          painter: BarChartPainter(
-            barChartViewMaker: barChartViewMaker,
-          ),
+          // [barChartViewMaker] makes instance of [BarChartRootContainer]
+          chartViewMaker: barChartViewMaker,
+          chartPainter: FlutterChartPainter(),
         );
 
         chartToRun = barChart;
