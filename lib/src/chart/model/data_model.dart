@@ -32,15 +32,21 @@ class ChartModel {
   ChartModel({
     required this.valuesRows,
     required this.inputUserLabels,
-    required this.byRowLegends,
     required this.chartOptions,
     this.outputUserLabels,
-    List<ui.Color>? byRowColors,
-  })  :
-        // Initializing of not-nullable final byRowColors which is a not-required argument
-        // must be done in initialized by a not-member function (member methods only in constructor body)
-        byRowColors = byRowColors ?? byRowDefaultColors(valuesRows.length) {
+    required List<String> legendNames,
+    List<ui.Color>? legendColors,
+  })
+  {
     logger.Logger().d('Constructing ChartModel');
+
+    // Initializing of not-nullable final byRowColors which is a not-required argument
+    // must be done in initialized by a not-member function (member methods only in constructor body)
+    legendColors ??= byRowDefaultColors(valuesRows.length);
+    _legendColors = legendColors;
+    _legendNames = legendNames;
+
+    // validate after late finals initialized as they are used in validate.
     validate();
 
     valuesColumns = transposeRowsToColumns(valuesRows);
@@ -60,12 +66,16 @@ class ChartModel {
 
     columnIndex++;
     }
+
+    bigLegendColumn = BigLegendColumn(_legendNames, _legendColors);
   }
 
   // NEW CODE =============================================================
 
   /// List of crossPoints in the model.
   final List<CrossPointsModel> crossPointsModelList = [];
+
+  late final BigLegendColumn bigLegendColumn;
 
   /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -140,6 +150,8 @@ class ChartModel {
   ///
   final List<List<double>> valuesRows;
 
+  int get numRows => valuesRows.length;
+
   /// Data reorganized from rows to columns.
   late final List<List<double>> valuesColumns;
 
@@ -152,12 +164,6 @@ class ChartModel {
   /// in each row in [_valuesRows].
   final List<String> inputUserLabels;
 
-  /// The legends for each row in [_valuesRows].
-  ///
-  /// One Legend String per row.
-  /// Alternative name would be "series names".
-  final List<String> byRowLegends;
-
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
   ///
   /// Can be freehand Strings or numbers converted to Strings.
@@ -167,14 +173,31 @@ class ChartModel {
   ///
   final List<String>? outputUserLabels;
 
+  /// The legends for each row in [_valuesRows].
+  ///
+  /// One Legend String per row.
+  /// Alternative name would be "series names".
+  late final List<String> _legendNames;
+
   /// Colors representing each data row (series) in [ChartModel].
-  final List<ui.Color> byRowColors;
+  late final List<ui.Color> _legendColors;
 
   /// Chart options of this [ChartModel].
   ///
   /// Motivation: [ChartModel] needs this member as options
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
+
+
+  ui.Color colorAtRow(int index) {
+    return _legendColors
+        .elementAt(index % _legendColors.length);
+  }
+
+  String legendAtRow(int index) {
+    return _legendNames
+        .elementAt(index % _legendNames.length);
+  }
 
   // todo-013-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => valuesRows.expand((element) => element).toList();
@@ -188,24 +211,24 @@ class ChartModel {
 
   void validate() {
     //                      But that would require ChartOptions available in ChartModel.
-    if (!(valuesRows.length == byRowLegends.length)) {
-      throw StateError('The number of legend labels provided in parameter "byRowLegends", '
+    if (!(valuesRows.length == _legendNames.length)) {
+      throw StateError('The number of legend labels provided in parameter "legendNames", '
           'does not equal the number of data rows provided in parameter "valuesRows":\n'
-          'Detail reason: Row legend labels must be provided in parameter "byRowLegends", '
+          'Detail reason: Row legend labels must be provided in parameter "legendNames", '
           'and their number must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of byRowLegends: ${byRowLegends.length}].\n'
-          'To fix this: provide ${valuesRows.length} "byRowLegends".');
+          '   [number of valuesRows: ${valuesRows.length}] != [number of legendNames: ${_legendNames.length}].\n'
+          'To fix this: provide ${valuesRows.length} "legendNames".');
     }
-    if (!(valuesRows.length == byRowColors.length)) {
-      throw StateError('The number of legend colors provided in parameter "byRowColors", '
+    if (!(valuesRows.length == _legendColors.length)) {
+      throw StateError('The number of legend colors provided in parameter "legendColors", '
           'does not equal the number of data rows provided in parameter "valuesRows":\n'
-          'Detail reason: If not provided in "byRowColors", legend colors are generated. '
-          'If the parameter "byRowColors" is provided, '
+          'Detail reason: If not provided in "legendColors", legend colors are generated. '
+          'If the parameter "legendColors" is provided, '
           'the number of colors must be the same as number of data rows. '
           'However, in your data definition, that is not the case:\n'
-          '   [number of valuesRows: ${valuesRows.length}] != [number of byRowColors: ${byRowColors.length}].\n'
-          'To fix this: provide ${valuesRows.length} "byRowColors".');
+          '   [number of valuesRows: ${valuesRows.length}] != [number of legendColors: ${_legendColors.length}].\n'
+          'To fix this: provide ${valuesRows.length} "legendColors".');
     }
     // Check explicit log10 used in options. This test does not cover user's explicitly declared transforms.
     if (log10 == chartOptions.dataContainerOptions.yTransform) {
@@ -233,6 +256,35 @@ class ChartModel {
 
 }
 
+// ====================
+// todo-00-progress
+
+// Encapsulate: _byRowLegends and _byRowColors to LegendColumn, _legendColumn is member on ChartModel
+
+class LegendItem {
+  const LegendItem(this.name, this.color);
+  final String   name;
+  final ui.Color color;
+}
+
+class BigLegendColumn {
+  BigLegendColumn(List<String>nameColumn, List<ui.Color> legendColors) {
+    if (nameColumn.length != legendColors.length) {
+      throw StateError('There must be the same number of legend names and colors, but client provided '
+          '${nameColumn.length} names and ${legendColors.length} colors.');
+    }
+
+    for (int row = 0; row < nameColumn.length; row++) {
+      _legendItems.add(LegendItem(nameColumn[row], legendColors[row]));
+    }
+  }
+  final List<LegendItem> _legendItems = [];
+  void addItem(LegendItem item) => _legendItems.add(item);
+  LegendItem getItemAt(int rowIndex) => _legendItems[rowIndex];
+  List<LegendItem> get legendItems => _legendItems;
+}
+
+// =====================
 /// Represents a list of cross-series data values in the [ChartModel], in another words, a column of data values.
 ///
 /// As we consider the [ChartModel] to represent a 2D array 'rows first', in other words,
@@ -442,7 +494,8 @@ class PointModel {
   ///  ask for the label.
   Object get inputUserLabel => ownerCrossPointsModel.ownerChartModel.inputUserLabels[columnIndex];
 
-  ui.Color get color => ownerCrossPointsModel.ownerChartModel.byRowColors[rowIndex];
+  // todo-00-done : ui.Color get color => ownerCrossPointsModel.ownerChartModel.byRowColors[rowIndex];
+  ui.Color get color => ownerCrossPointsModel.ownerChartModel.colorAtRow(rowIndex);
 
   PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,

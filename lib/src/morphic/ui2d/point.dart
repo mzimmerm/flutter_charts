@@ -140,7 +140,7 @@ class PointOffset extends Offset {
   ///         - THIS IS VERTICAL LINE AT X = 0, WHICH GIVES THE CONTAINER WIDTH = 0.
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
-  ///  todo-00         21. [ ] Add tests for PointOffset lextr method - this method. Maybe capture some printlns at runtime, convert to tests?
+  ///  todo-00-next         21. [ ] Add tests for PointOffset lextr method - this method. Maybe capture some printlns at runtime, convert to tests?
   PointOffset lextrToPixelsMaybeTransposeInContextOf({
     required ChartOrientation  chartOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
@@ -201,7 +201,7 @@ class PointOffset extends Offset {
 
         break;
       case ChartOrientation.row:
-      // todo-00 : to convert between column chart and row chart in 2D
+      // todo-00-next : to convert between column chart and row chart in 2D
       //                    is equivalent to diagonal transpose ALL POINTS IN 2D EXCEPT LABEL DIRECTION around Diagonal.LeftToRightUp
       //                    such transpose is equivalent to flipping (transposing) coordinates: x -> y, y -> x
       //                    LETS PREFIX THE NAMES OF TRANSPOSED VARIABLES WITH 'iotrp' for 'input/output transpose of positive values to positive values.

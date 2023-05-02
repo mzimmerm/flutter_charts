@@ -87,21 +87,23 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
   TransposingAxisContainer({
     required super.chartViewMaker,
   }) {
-    _options = chartViewMaker.chartOptions;
+    // todo-00-done : _options = chartViewMaker.chartOptions;
     _outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
     _inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
-    _padGroup = ChartPaddingGroup(fromChartOptions: _options);
+    _padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
 
     // Initially all [LabelContainer]s share same text style object from options.
     _labelStyle = LabelStyle(
-      textStyle: _options.labelCommonOptions.labelTextStyle,
-      textDirection: _options.labelCommonOptions.labelTextDirection,
-      textAlign: _options.labelCommonOptions.labelTextAlign, // center text
-      textScaleFactor: _options.labelCommonOptions.labelTextScaleFactor,
+      textStyle: chartViewMaker.chartOptions.labelCommonOptions.labelTextStyle,
+      textDirection: chartViewMaker.chartOptions.labelCommonOptions.labelTextDirection,
+      textAlign: chartViewMaker.chartOptions.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: chartViewMaker.chartOptions.labelCommonOptions.labelTextScaleFactor,
     );
   }
 
-  late final ChartOptions _options;
+  // Capture some named instances in members for reuse by extensions,
+  // making clear what is needed from params
+  // todo-00-done : late final ChartOptions _options;
   late final ChartPaddingGroup _padGroup;
   late final DataRangeLabelInfosGenerator _outputLabelsGenerator;
   late final DataRangeLabelInfosGenerator _inputLabelsGenerator;

@@ -45,7 +45,8 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
-  })  : _options = chartViewMaker.chartOptions,
+  })  :
+        // todo-00-done : _options = chartViewMaker.chartOptions,
         super(
           chartViewMaker: chartViewMaker,
       ) {
@@ -77,15 +78,16 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
     // ); //  textScaleFactor does nothing ??
   }
 
-  final ChartOptions _options;
+  // todo-00-done : final ChartOptions _options;
 
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
     // todo-013 : this seems incorrect - used for all labels, yet it acts as legend label!!
     //            used only to get label max size in rotated labels.
-    double indicatorSquareSide = _options.legendOptions.legendColorIndicatorWidth;
-    double indicatorToLabelPad = _options.legendOptions.legendItemIndicatorToLabelPad;
-    double betweenLegendItemsPadding = _options.legendOptions.betweenLegendItemsPadding;
+    ChartOptions options = chartViewMaker.chartOptions;
+    double indicatorSquareSide = options.legendOptions.legendColorIndicatorWidth;
+    double indicatorToLabelPad = options.legendOptions.legendItemIndicatorToLabelPad;
+    double betweenLegendItemsPadding = options.legendOptions.betweenLegendItemsPadding;
 
     // labelMaxWidth from options and constraints on class with this mixin
     return constraints.maxSize.width - (indicatorSquareSide + indicatorToLabelPad + betweenLegendItemsPadding);

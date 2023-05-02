@@ -42,7 +42,7 @@ Widget chartToRun() {
       [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
     ],
     inputUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    byRowLegends: const [
+    legendNames: const [
       'Off zero 1',
       'Off zero 2',
     ],

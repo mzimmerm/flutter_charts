@@ -10,17 +10,17 @@ class RandomChartModel extends ChartModel {
   RandomChartModel({
     required valuesRows,
     required inputUserLabels,
-    required byRowLegends,
+    required legendNames,
     required chartOptions,
     outputUserLabels,
-    byRowColors,
+    legendColors,
   }) : super(
           valuesRows: valuesRows,
           inputUserLabels: inputUserLabels,
-          byRowLegends: byRowLegends,
+          legendNames: legendNames,
           chartOptions: chartOptions,
           outputUserLabels: outputUserLabels,
-          byRowColors: byRowColors,
+          legendColors: legendColors,
         );
 
   // Redirecting constructors just redirects to an 'unnamed' constructor on same class - the RandomChartModel(args) constructor.
@@ -37,14 +37,14 @@ class RandomChartModel extends ChartModel {
     bool useMonthNames = true,
     int maxLabelLength = 8,
     bool overlapDataYs = false,
-    byRowColors,
+    legendColors,
   }) : this(
           valuesRows: randomDataYs(numXLabels, numDataRows, overlapDataYs),
           inputUserLabels: randomDataXLabels(numXLabels),
-          byRowLegends: randomDataRowsLegends(numDataRows),
+          legendNames: randomDataRowsLegends(numDataRows),
           chartOptions: chartOptions,
           outputUserLabels: randomDataYLabels(useUserProvidedYLabels),
-          byRowColors: byRowColors,
+          legendColors: legendColors,
         );
 }
 

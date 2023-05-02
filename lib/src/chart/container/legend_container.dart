@@ -56,7 +56,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
     chart_options.ChartOptions options = chartViewMaker.chartOptions;
 
-    List<String> byRowLegends = chartViewMaker.chartModel.byRowLegends;
+    // todo-00-done : List<String> byRowLegends = chartViewMaker.chartModel.byRowLegends;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
@@ -68,7 +68,8 @@ class LegendContainer extends container_common.ChartAreaContainer {
 
     container_base.BoxContainer childLayout;
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
-    var children = _legendItems(byRowLegends, labelStyle, options);
+    // todo-00-done : var children = _legendItems(byRowLegends, labelStyle, options);
+    var children = _legendItems(chartViewMaker, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         childLayout = container_base.Column(
@@ -135,20 +136,22 @@ class LegendContainer extends container_common.ChartAreaContainer {
   }
 
   List<container_base.BoxContainer> _legendItems(
-      List<String> byRowLegends,
+      // todo-00-done : List<String> byRowLegends,
+      view_maker.ChartViewMaker chartViewMaker,
       label_container.LabelStyle labelStyle,
       chart_options.ChartOptions options,
       ) {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
-      for (int index = 0; index < byRowLegends.length; index++)
+      // todo-00-done : for (int index = 0; index < byRowLegends.length; index++)
+      for (int index = 0; index < chartViewMaker.chartModel.numRows; index++)
         LegendItemContainer(
           chartViewMaker: chartViewMaker,
-          label: byRowLegends[index],
+          // todo-00-done : label: byRowLegends[index],
+          label: chartViewMaker.chartModel.legendAtRow(index),
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            ..color = chartViewMaker.chartModel.byRowColors
-                .elementAt(index % chartViewMaker.chartModel.byRowColors.length)),
+            ..color = chartViewMaker.chartModel.colorAtRow(index)),
           options: options,
         ),
     ];

@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Rect, Offset, Paint, Color;
+import 'dart:ui' as ui show Rect, Offset, Paint;
 // base libraries
 import '../presenter.dart';
 import '../container.dart';
@@ -26,8 +26,11 @@ class VerticalBarPointPresenter extends PointPresenter {
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     valuesRowPaint = ui.Paint();
+/* todo-00-done
     List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
     valuesRowPaint.color = byRowColors[rowIndex % byRowColors.length];
+*/
+    valuesRowPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
