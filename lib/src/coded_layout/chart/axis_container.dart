@@ -11,7 +11,7 @@ import '../../chart/container/container_common.dart';
 import '../../chart/container/legend_container.dart';
 import '../../chart/container/axis_container.dart';
 import '../../morphic/container/label_container.dart';
-import '../../chart/view_maker.dart';
+import '../../chart/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show LayoutableBox;
 import '../../chart/options.dart';
@@ -22,9 +22,9 @@ import '../../morphic/container/constraints.dart' show BoxContainerConstraints;
 /// Common base class for containers of axes with their labels - [HorizontalAxisContainerCL] and [VerticalAxisContainerCL].
 abstract class AxisContainerCL extends ChartAreaContainer with PixelRangeProvider {
   AxisContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 }
 
@@ -43,10 +43,10 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available vertical space, and only use necessary horizontal space.
   VerticalAxisContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     double yLabelsMaxHeightFromFirstLayout = 0.0,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   ) {
     yLabelsMaxHeightFromFirstLayout = yLabelsMaxHeightFromFirstLayout;
   }
@@ -63,7 +63,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndReplaceChildren] is that we MAY NOT know until the parent
-  /// [chartViewMaker] is being layed out, how much Y-space there is, therefore,
+  /// [chartViewModel] is being layed out, how much Y-space there is, therefore,
   /// how many Y labels would fit. BUT CURRENTLY, WE DO NOT MAKE USE OF THIS LATENESS ON [VerticalAxisContainerCL],
   /// only on [HorizontalAxisContainerCL] re-layout.
   ///
@@ -78,13 +78,13 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
 
     // Code above MUST run for the side-effects of setting [axisPixels] and extrapolating the [labelInfos].
     // Now can check if labels are shown, set empty children and return.
-    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
       outputLabelContainerCLs = List.empty(growable: false); // must be set for yLabelsMaxHeight to function
       replaceChildrenWith(outputLabelContainerCLs);
       return;
     }
 
-    ChartOptions options = chartViewMaker.chartOptions;
+    ChartOptions options = chartViewModel.chartOptions;
 
     // Initially all [LabelContainer]s share same text style object from options.
     LabelStyle labelStyle = LabelStyle(
@@ -94,9 +94,9 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
       textScaleFactor: options.labelCommonOptions.labelTextScaleFactor,
     );
 
-    for (AxisLabelInfo labelInfo in chartViewMaker.outputLabelsGenerator.labelInfoList) {
+    for (AxisLabelInfo labelInfo in chartViewModel.outputLabelsGenerator.labelInfoList) {
       var outputLabelContainer = AxisLabelContainerCL(
-        chartViewMaker: chartViewMaker,
+        chartViewModel: chartViewModel,
         label: labelInfo.formattedLabel,
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in VerticalAxisContainer
         labelStyle: labelStyle,
@@ -134,12 +134,12 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
     double axisPixelsMin = yLabelsMaxHeightFromFirstLayout / 2;
     // The [_axisYMax] does not end at the constraint size, but leaves space for a vertical tick
     double axisPixelsMax =
-        constraints.size.height - (chartViewMaker.chartOptions.dataContainerOptions.dataBottomTickHeight);
+        constraints.size.height - (chartViewModel.chartOptions.dataContainerOptions.dataBottomTickHeight);
 
     axisPixelsRange = Interval(axisPixelsMin, axisPixelsMax);
 
     // The code above must be performed for axisPixelsRange to initialize
-    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
       // Special no-labels branch must initialize the layoutSize
       layoutSize = const ui.Size(0.0, 0.0); // must be initialized
       return;
@@ -159,21 +159,21 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
 
       // Move the contained LabelContainer to correct position
       outputLabelContainer.applyParentOffset(this,
-        ui.Offset(chartViewMaker.chartOptions.verticalAxisContainerOptions.labelPadLR, labelTopY),
+        ui.Offset(chartViewModel.chartOptions.verticalAxisContainerOptions.labelPadLR, labelTopY),
       );
     }
 
     // Set the [layoutSize]
     double yLabelsContainerWidth =
         outputLabelContainerCLs.map((outputLabelContainer) => outputLabelContainer.layoutSize.width).reduce(math.max) +
-            2 * chartViewMaker.chartOptions.verticalAxisContainerOptions.labelPadLR;
+            2 * chartViewModel.chartOptions.verticalAxisContainerOptions.labelPadLR;
 
     layoutSize = ui.Size(yLabelsContainerWidth, constraints.size.height);
   }
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL outputLabelContainer in outputLabelContainerCLs) {
@@ -183,7 +183,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
 
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewMaker.chartOptions.verticalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.verticalAxisContainerOptions.isShown) {
       return;
     }
     for (AxisLabelContainerCL outputLabelContainer in outputLabelContainerCLs) {
@@ -217,9 +217,9 @@ class HorizontalAxisContainerCL
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   HorizontalAxisContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 
   /// X labels. Can NOT be final or late, as the list changes on [reLayout]
@@ -244,7 +244,7 @@ class HorizontalAxisContainerCL
   ///
   /// The reason the hierarchy-children Y labels are created late in this
   /// method [buildAndReplaceChildren], invoked as first message send in [layout],
-  /// is that we do not know until the [chartViewMaker] on this [ChartAreaContainer]
+  /// is that we do not know until the [chartViewModel] on this [ChartAreaContainer]
   /// is being layed out, how much Y-space there is, therefore, how many X labels would fit.
   /// During re-layout, this [buildAndReplaceChildren] is invoked again, and may build
   /// less children labels in this [inputLabelContainerCLs]
@@ -257,8 +257,8 @@ class HorizontalAxisContainerCL
     // First clear any children that could be created on nested re-layout
     inputLabelContainerCLs = List.empty(growable: true);
 
-    ChartOptions options = chartViewMaker.chartOptions;
-    List<AxisLabelInfo> inputUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
+    ChartOptions options = chartViewModel.chartOptions;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputLabelsGenerator.labelInfoList;
     LabelStyle labelStyle = _styleForLabels(options);
 
     // Core layout loop, creates a AxisLabelContainer from each xLabel,
@@ -266,12 +266,12 @@ class HorizontalAxisContainerCL
 
     for (int xIndex = 0; xIndex < inputUserLabels.length; xIndex++) {
       var inputLabelContainer = AxisLabelContainerCL(
-        chartViewMaker: chartViewMaker,
+        chartViewModel: chartViewModel,
         label: inputUserLabels[xIndex].formattedLabel,
         labelTiltMatrix: labelLayoutStrategy.labelTiltMatrix, // Possibly tilted labels in HorizontalAxisContainer
         labelStyle: labelStyle,
         // In [InputLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
-        labelInfo: chartViewMaker.inputLabelsGenerator.labelInfoList[xIndex],
+        labelInfo: chartViewModel.inputLabelsGenerator.labelInfoList[xIndex],
         ownerChartAreaContainer: this,
       );
       inputLabelContainerCLs.add(inputLabelContainer);
@@ -291,12 +291,12 @@ class HorizontalAxisContainerCL
   void layout() {
     buildAndReplaceChildren();
 
-    ChartOptions options = chartViewMaker.chartOptions;
+    ChartOptions options = chartViewModel.chartOptions;
 
     // Purely artificial on HorizontalAxisContainer for now, we are taking labels from data, or user, NOT generating range.
-    axisPixelsRange = chartViewMaker.chartModel.dataRangeWhenStringLabels;
+    axisPixelsRange = chartViewModel.dataRangeWhenStringLabels;
 
-    List<AxisLabelInfo> inputUserLabels = chartViewMaker.inputLabelsGenerator.labelInfoList;
+    List<AxisLabelInfo> inputUserLabels = chartViewModel.inputLabelsGenerator.labelInfoList;
     double       yTicksWidth =
         options.dataContainerOptions.dataLeftTickWidth + options.dataContainerOptions.dataRightTickWidth;
     double       availableWidth = constraints.size.width - yTicksWidth;
@@ -342,7 +342,7 @@ class HorizontalAxisContainerCL
       xLabelsMaxHeight + 2 * options.horizontalAxisContainerOptions.labelPadTB,
     );
 
-    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
       // If not showing this container, no layout needed, just set size to 0.
       lateReLayoutSize = const ui.Size(0.0, 0.0);
       return;
@@ -381,7 +381,7 @@ class HorizontalAxisContainerCL
 
   @override
   void applyParentOffset(LayoutableBox caller, ui.Offset offset) {
-    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
       return;
     }
     // super.applyParentOffset(caller, offset); // super did double-offset as inputLabelContainer are on 2 places
@@ -408,7 +408,7 @@ class HorizontalAxisContainerCL
   /// which end up in the intended position but rotated counterclockwise.
   @override
   void paint(ui.Canvas canvas) {
-    if (!chartViewMaker.chartOptions.horizontalAxisContainerOptions.isShown) {
+    if (!chartViewModel.chartOptions.horizontalAxisContainerOptions.isShown) {
       return;
     }
     if (labelLayoutStrategy.isRotateLabelsReLayout) {

@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart' as widgets;
 // base libraries
 import '../chart.dart';
 import '../painter.dart' show FlutterChartPainter;
-import '../view_maker.dart' show ChartViewMaker;
+import '../view_model.dart' show ChartViewModel;
 
 /// Provides paint for the vertical bar chart.
 ///
@@ -16,23 +16,23 @@ class BarChart extends FlutterChart {
   BarChart({
     widgets.Key? key,
     required FlutterChartPainter chartPainter,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     widgets.CustomPainter? foregroundPainter,
     widgets.Size size = widgets.Size.zero,
     widgets.Widget? child,
   }) : super(
           key: key,
           painter: chartPainter,
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           foregroundPainter: foregroundPainter,
           size: size,
           child: child,
         )
   {
     // Late initialize [FlutterChartPainter.chart], which is used during [FlutterChartPainter.paint]
-    // by the [chart] member [FlutterChart.chartViewMaker] to create, layout and paint the chart using
+    // by the [chart] member [FlutterChart.chartViewModel] to create, layout and paint the chart using
     //    ```dart
-    //          chart.chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+    //          chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
     //    ```
     chartPainter.chart = this;
   }

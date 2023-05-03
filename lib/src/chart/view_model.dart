@@ -16,24 +16,26 @@ import '../morphic/container/constraints.dart' as constraints;
 import 'model/data_model.dart' as model;
 import 'options.dart' as options;
 import 'container/data_container.dart' as data_container;
+import 'container/axis_container.dart' as axis_container;
 import 'container/container_common.dart' as container_common;
 import 'container/root_container.dart' as root_container;
 import 'iterative_layout_strategy.dart' as strategy;
 import 'model/label_model.dart' as util_labels;
+import '../util/util_dart.dart' as util_dart;
 
 /// Type definition for closures returning a function from model [model.PointModel] 
 /// to container [data_container.PointContainer].
 typedef ClsPointToNullableContainer = data_container.PointContainer? Function (model.PointModel);
 
-/// Abstract base class for view makers.
+/// Abstract base class for view models.
 ///
-/// A view maker is a class that makes (creates, produces, generates) a chart view hierarchy,
+/// A view model is a class that makes (creates, produces, generates) a chart view hierarchy,
 /// starting with a concrete [root_container.ChartRootContainer], with the help of [model.ChartModel].
 ///
-/// This base view maker has access to [model.ChartModel]
+/// This base view model has access to [model.ChartModel]
 ///
-/// This base view maker holds as members:
-///   - the model in [chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
+/// This base view model holds as members:
+///   - the model in [_chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
 ///   - the chart orientation in [chartOrientation]
 ///   - the definition whether the chart is stacked in [chartStacking].
 ///   - the label layout strategy in [inputLabelLayoutStrategyInst]
@@ -41,93 +43,87 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
 /// which is also a late member after it is constructed.
 ///
-/// [ChartViewMaker] is not a BoxContainer, it provides a 'link' between [FlutterChartPainter]
+/// [ChartViewModel] is not a BoxContainer, it provides a 'link' between [FlutterChartPainter]
 /// which [FlutterChartPainter.paint] method is called by the Flutter framework,
 /// and the root of the chart container hierarchy, the [root_container.ChartRootContainer] which it
 /// creates in its [makeChartRootContainer].
 ///
-/// Core methods of [ChartViewMaker] are
+/// Core methods of [ChartViewModel] are
 ///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];
 ///     this method creates, builds, lays out, and paints
 ///     the root of the chart container hierarchy, the [chartRootContainer].
-///   - abstract [makeChartRootContainer]; from it, the extensions of [ChartViewMaker]
-///     (for example, [LineChartViewMaker]) should create and return an instance of the concrete [chartRootContainer]
+///   - abstract [makeChartRootContainer]; from it, the extensions of [ChartViewModel]
+///     (for example, [LineChartViewModel]) should create and return an instance of the concrete [chartRootContainer]
 ///     (for example [LineChartRootContainer]).
-///   - [container.ChartBehavior.extendAxisToOrigin] is on this Maker,
+///   - [container.ChartBehavior.extendAxisToOrigin] is on this [ChartViewModel],
 ///     as it controls how views behave (although does not control view making).
-abstract class ChartViewMaker extends Object with container_common.ChartBehavior {
-  ChartViewMaker({
-    required this.chartModel,
+abstract class ChartViewModel extends Object with container_common.ChartBehavior {
+  ChartViewModel({
+    required model.ChartModel chartModel,
     required this.chartOrientation,
     required this.chartStacking,
     strategy.LabelLayoutStrategy? inputLabelLayoutStrategy,
-  }) : chartOptions = chartModel.chartOptions {
-    logger.Logger().d('Constructing ChartViewMaker');
+  }) : chartOptions = chartModel.chartOptions,
+       _chartModel = chartModel {
+    logger.Logger().d('Constructing ChartViewModel');
 
-    inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: chartModel.chartOptions);
+    inputLabelLayoutStrategy ??= strategy.DefaultIterativeLabelLayoutStrategy(options: _chartModel.chartOptions);
     inputLabelLayoutStrategyInst = inputLabelLayoutStrategy;
 
     // Create [outputLabelsGenerator] which depends on both ChartModel and ChartRootContainer.
-    // We can construct the generator here in [ChartViewMaker] constructor or later
-    // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewMaker] is the first time we can
+    // We can construct the generator here in [ChartViewModel] constructor or later
+    // (e.g. [ChartRootContainer], [VerticalAxisContainer]). But here, in [ChartViewModel] is the first time we can
     // create the [inputLabelsGenerator] and [inputLabelsGenerator] instance of [DataRangeLabelInfosGenerator], so do that.
     outputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      chartModel: chartModel,
+      chartModel: _chartModel,
       dataDependency: DataDependency.outputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.outputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.yInverseTransform,
-      userLabels: chartModel.outputUserLabels,
+      userLabels: _chartModel.outputUserLabels,
     );
 
     // See comment in VerticalAxisContainer constructor
     inputLabelsGenerator = util_labels.DataRangeLabelInfosGenerator(
       chartOrientation: chartOrientation,
       chartStacking: chartStacking,
-      chartModel: chartModel,
+      chartModel: _chartModel,
       dataDependency: DataDependency.inputData,
       extendAxisToOrigin: extendAxisToOrigin,
       valueToLabel: options.inputValueToLabel,
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
-      userLabels: chartModel.inputUserLabels,
+      userLabels: _chartModel.inputUserLabels,
     );
   }
 
-  /// ChartData to hold on before member [chartRootContainer] is created late.
+  /// ChartData held before member [chartRootContainer] is created.
   ///
-  /// After [chartRootContainer] is created and set, This [ChartModel] type member [chartModel]
-  /// should be placed on the member [chartRootContainer.ownerChartModel].
-
-  /// Model for this chart. Created before chart, set in concrete [ChartViewMaker] in constructor.
-  final model.ChartModel chartModel;
-
-  /// Options set from model options in [FlutterChartPainter] constructor from [FlutterChartPainter.chartViewMaker]'s
-  /// [ChartViewMaker.chartModel]'s [ChartOptions].
-  final options.ChartOptions chartOptions;
-
-  final ChartOrientation chartOrientation;
-
-  final ChartStacking chartStacking;
-
-  /// The root container (view) is created by this maker [ChartViewMaker]
-  /// on every [FlutterChartPainter] paint and repaint.
+  /// After [chartRootContainer] is created, this member
+  /// should be placed on the member [chartRootContainer.ownerChartModel]. todo-010-document this is not right
   ///
-  /// While the owner maker survives repaint,
-  /// it's member, this [chartRootContainer] is recreated on each repaint in
-  /// the following code in [FlutterChartPainter.paint]:
-  ///
-  /// ```dart
-  ///         chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
-  /// ```
-  ///
-  /// Because it can be recreated and re-set in [paint], it is not final;
-  ///   it's children, [legendContainer], etc are also not final.
-  late root_container.ChartRootContainer chartRootContainer;
+  /// Model for this chart. Created before chart, set in concrete [ChartViewModel] in constructor. todo-010-document this is not right
+  final model.ChartModel _chartModel;
+
+  @Deprecated('Only use in legacy coded_layout')
+  model.ChartModel get chartModelInLegacy => _chartModel;
+
+  // ------------- Public view into ChartModel
+  List<model.DataColumnModel> get dataColumnModels => List.from(_chartModel.dataColumnModels);
+
+  int get numRows => _chartModel.numRows;
+
+  model.LegendItem getLegendItemAt(index) => _chartModel.getLegendItemAt(index);
+
+  util_dart.Interval get dataRangeWhenStringLabels => _chartModel.dataRangeWhenStringLabels;
+  // -------------
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
+  ///
+  /// Initialized late in this [ChartViewModel] constructor, and held as member
+  /// for scaling to pixels in [data_container.DataContainer] and [axis_container.TransposingAxisContainer].
   ///
   /// The [labelsGenerator]'s interval [DataRangeLabelInfosGenerator.dataRange]
   /// is the data range corresponding to the Y axis pixel range kept in [axisPixelsRange].
@@ -139,27 +135,49 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
 
   late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator; // todo-010 : can this be late final?
 
+  /// Options forwarded from [model.ChartModel] options during this [ChartViewModel]s construction.
+  final options.ChartOptions chartOptions;
+
+  final ChartOrientation chartOrientation;
+
+  final ChartStacking chartStacking;
+
+  /// The root container (view) is created by this view model [ChartViewModel]
+  /// on every [FlutterChartPainter] paint and repaint.
+  ///
+  /// While the owner view model survives repaint,
+  /// it's member, this [chartRootContainer] is recreated on each repaint in
+  /// the following code in [FlutterChartPainter.paint]:
+  ///
+  /// ```dart
+  ///         chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+  /// ```
+  ///
+  /// Because it can be recreated and re-set in [paint], it is not final;
+  ///   it's children, [legendContainer], etc are also not final.
+  late root_container.ChartRootContainer chartRootContainer;
+
   /// Layout strategy, necessary to create the concrete view [ChartRootContainer].
   late final strategy.LabelLayoutStrategy inputLabelLayoutStrategyInst;
 
-  /// Keep track of first run. As this [ChartViewMaker] survives re-paint (but not first paint),
+  /// Keep track of first run. As this [ChartViewModel] survives re-paint (but not first paint),
   /// this can be used to initialize 'late final' members on first paint.
   bool _isFirst = true;
 
   void chartRootContainerCreateBuildLayoutPaint(ui.Canvas canvas, ui.Size size) {
-    // Create the concrete [ChartRootContainer] for this concrete [ChartViewMaker].
+    // Create the concrete [ChartRootContainer] for this concrete [ChartViewModel].
     // After this invocation, the created root container is populated with children
     // HorizontalAxisContainer, VerticalAxisContainer, DataContainer and LegendContainer. Their children are partly populated,
     // depending on the concrete container. For example VerticalAxisContainer is populated with DataRangeLabelInfosGenerator.
 
     String isFirstStr = _debugPrintBegin();
 
-    // Create the view [chartRootContainer] and set on member on this maker [ChartViewMaker].
+    // Create the view [chartRootContainer] and set on member on this view model [ChartViewModel].
     // This happens even on re-paint, so can be done multiple times after state changes in the + button.
-    chartRootContainer = makeChartRootContainer(chartViewMaker: this); // also link from this ViewMaker to ChartRootContainer.
+    chartRootContainer = makeChartRootContainer(chartViewModel: this); // also link from this ViewModel to ChartRootContainer.
 
-    // Only set `chartModel.chartViewMaker = this` ONCE. Reason: member chartModel is created ONCE, same as this ANCHOR.
-    // To have chartModel late final, we have to keep track to only initialize chartModel.chartViewMaker = this on first run.
+    // Only set `_chartModel.chartViewModel = this` ONCE. Reason: member _chartModel is created ONCE, same as this ANCHOR.
+    // To have _chartModel late final, we have to keep track to only initialize _chartModel.chartViewModel = this on first run.
     if (_isFirst) {
       _isFirst = false;
     }
@@ -195,15 +213,15 @@ abstract class ChartViewMaker extends Object with container_common.ChartBehavior
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
   /// [ChartRootContainer.legendContainer],  [ChartRootContainer.verticalAxisContainer],
-  ///  [ChartRootContainer.horizontalAxisContainer], and  [chartRootContainer.chartModelContainer].
+  ///  [ChartRootContainer.horizontalAxisContainer], and  [chartRootContainer.chartModelContainer]. // todo-010-doc this is not right?
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
   /// Important notes:
-  ///   - This controller (ViewMaker) can access both on ChartRootContainer and ChartModel.
+  ///   - This controller (ViewModel) can access both on ChartRootContainer and ChartModel.
   root_container.ChartRootContainer makeChartRootContainer({
-    required covariant ChartViewMaker chartViewMaker,
+    required covariant ChartViewModel chartViewModel,
   });
 
   String _debugPrintBegin() {

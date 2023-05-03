@@ -10,7 +10,7 @@ import '../../morphic/container/layouter_one_dimensional.dart' show Align;
 import '../../morphic/ui2d/point.dart';
 import '../model/label_model.dart';
 import '../chart_label_container.dart';
-import '../view_maker.dart';
+import '../view_model.dart';
 import '../options.dart';
 
 // this level libraries
@@ -23,7 +23,7 @@ import 'line_segment_container.dart';
 ///
 /// Neither this container, not it's end points specify [ChartOrientation], as they are defined
 /// in a coordinate system assuming orientation [ChartOrientation.column].
-/// The orientation is determined by member [chartViewMaker]'s [ChartViewMaker.chartOrientation];
+/// The orientation is determined by member [chartViewModel]'s [ChartViewModel.chartOrientation];
 /// if orientation is set to [ChartOrientation.row], the line is transformed to it's row orientation by
 /// transforming the end points [fromPointOffset] and [toPointOffset]
 /// using their [PointOffset.lextrToPixelsMaybeTransposeInContextOf].
@@ -35,7 +35,7 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     // For the pos/neg to create weight-defined constraints when in Column or Row, ConstraintsWeight must be set.
     super.constraintsWeight = const ConstraintsWeight(weight: 0),
     required super.linePaint,
-    required super.chartViewMaker,
+    required super.chartViewModel,
     super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
@@ -52,12 +52,12 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
   TransposingInputAxisLineContainer({
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
     fromPointOffset: PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
     toPointOffset:   PointOffset(inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
-  linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-  chartViewMaker: chartViewMaker,
+  linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+  chartViewModel: chartViewModel,
   isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
   );
 }
@@ -71,73 +71,71 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
   TransposingOutputAxisLineContainer({
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
           fromPointOffset:
               PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
           toPointOffset:
               PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
-          linePaint: chartViewMaker.chartOptions.dataContainerOptions.gridLinesPaint(),
-          chartViewMaker: chartViewMaker,
+          linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+          chartViewModel: chartViewModel,
           isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
         );
 }
 
 abstract class TransposingAxisContainer extends container_common.ChartAreaContainer {
   TransposingAxisContainer({
-    required super.chartViewMaker,
+    required super.chartViewModel,
   }) {
-    // todo-00-done : _options = chartViewMaker.chartOptions;
-    _outputLabelsGenerator = chartViewMaker.outputLabelsGenerator;
-    _inputLabelsGenerator = chartViewMaker.inputLabelsGenerator;
-    _padGroup = ChartPaddingGroup(fromChartOptions: chartViewMaker.chartOptions);
+    _outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
+    _inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
+    _padGroup = ChartPaddingGroup(fromChartOptions: chartViewModel.chartOptions);
 
     // Initially all [LabelContainer]s share same text style object from options.
     _labelStyle = LabelStyle(
-      textStyle: chartViewMaker.chartOptions.labelCommonOptions.labelTextStyle,
-      textDirection: chartViewMaker.chartOptions.labelCommonOptions.labelTextDirection,
-      textAlign: chartViewMaker.chartOptions.labelCommonOptions.labelTextAlign, // center text
-      textScaleFactor: chartViewMaker.chartOptions.labelCommonOptions.labelTextScaleFactor,
+      textStyle: chartViewModel.chartOptions.labelCommonOptions.labelTextStyle,
+      textDirection: chartViewModel.chartOptions.labelCommonOptions.labelTextDirection,
+      textAlign: chartViewModel.chartOptions.labelCommonOptions.labelTextAlign, // center text
+      textScaleFactor: chartViewModel.chartOptions.labelCommonOptions.labelTextScaleFactor,
     );
   }
 
   // Capture some named instances in members for reuse by extensions,
   // making clear what is needed from params
-  // todo-00-done : late final ChartOptions _options;
   late final ChartPaddingGroup _padGroup;
   late final DataRangeLabelInfosGenerator _outputLabelsGenerator;
   late final DataRangeLabelInfosGenerator _inputLabelsGenerator;
   late final LabelStyle _labelStyle;
 
   factory TransposingAxisContainer.Vertical({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) {
-    switch (chartViewMaker.chartOrientation) {
+    switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingOutputAxisContainer(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
         );
       case ChartOrientation.row:
         return TransposingInputAxisContainer(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
         );
     }
   }
 
   factory TransposingAxisContainer.Horizontal({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) {
-    switch (chartViewMaker.chartOrientation) {
+    switch (chartViewModel.chartOrientation) {
       case ChartOrientation.column:
         return TransposingInputAxisContainer(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
         );
       case ChartOrientation.row:
         return TransposingOutputAxisContainer(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
         );
     }
@@ -173,18 +171,18 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
   /// The passed [BoxContainerConstraints] is (assumed) to direct the expansion to fill
   /// all available horizontal space, and only use necessary vertical space.
   TransposingInputAxisContainer({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     required List<BoxContainer> Function (List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
   }) : super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         ) {
     List<BoxContainer> children =
        directionWrapperAround(
           [TransposingRoller.Column(
-            chartOrientation: chartViewMaker.chartOrientation,
+            chartOrientation: chartViewModel.chartOrientation,
             children: [
             TransposingExternalTicks.Row(
-              chartOrientation: chartViewMaker.chartOrientation,
+              chartOrientation: chartViewModel.chartOrientation,
               mainAxisExternalTicksLayoutProvider: _inputLabelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
@@ -192,7 +190,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
                 for (var labelInfo in _inputLabelsGenerator.labelInfoList)
                   // todo-013 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   AxisLabelContainer(
-                    chartViewMaker: chartViewMaker,
+                    chartViewModel: chartViewModel,
                     label: labelInfo.formattedLabel,
                     labelTiltMatrix: vector_math.Matrix2.identity(),
                     // No tilted labels in VerticalAxisContainer
@@ -211,21 +209,21 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
 
 class TransposingOutputAxisContainer extends TransposingAxisContainer {
   TransposingOutputAxisContainer({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
   }) : super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         ) {
     List<BoxContainer> children = directionWrapperAround(
       [
         // Row with Column of Y labels and Y axis (Output labels and output axis)
         TransposingRoller.Row(
-            chartOrientation: chartViewMaker.chartOrientation,
+            chartOrientation: chartViewModel.chartOrientation,
             mainAxisAlign: Align.start, // default
             isMainAxisAlignFlippedOnTranspose: false, // but do not flip to Align.end, children have no weight=no divide
             children: [
               TransposingExternalTicks.Column(
-                chartOrientation: chartViewMaker.chartOrientation,
+                chartOrientation: chartViewModel.chartOrientation,
                 mainAxisExternalTicksLayoutProvider: _outputLabelsGenerator.asExternalTicksLayoutProvider(
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
@@ -235,7 +233,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                   //   ExternalTicksLayoutProvider.tickValues. See [_outputLabelsGenerator.asExternalTicksLayoutProvider]
                   for (var labelInfo in _outputLabelsGenerator.labelInfoList)
                     AxisLabelContainer(
-                      chartViewMaker: chartViewMaker,
+                      chartViewModel: chartViewModel,
                       label: labelInfo.formattedLabel,
                       labelTiltMatrix: vector_math.Matrix2.identity(),
                       // No tilted labels in VerticalAxisContainer
@@ -247,7 +245,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
               TransposingOutputAxisLineContainer(
                 inputLabelsGenerator: _inputLabelsGenerator,
                 outputLabelsGenerator: _outputLabelsGenerator,
-                chartViewMaker: chartViewMaker,
+                chartViewModel: chartViewModel,
               ),
             ]),
       ],

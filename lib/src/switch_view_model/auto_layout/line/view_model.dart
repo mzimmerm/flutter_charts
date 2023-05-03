@@ -4,7 +4,7 @@ import 'package:logger/logger.dart' as logger;
 // base libraries
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/axis_container.dart';
-import '../../../chart/view_maker.dart';
+import '../../../chart/view_model.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 import '../../../chart/line/container.dart'; // NEW BASE
@@ -12,13 +12,13 @@ import '../../../chart/container/line/root_container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../../morphic/container/chart_support/chart_style.dart';
-import '../../view_maker.dart'; // NEW SWITCH
+import '../../view_model.dart'; // NEW SWITCH
 
-/// Concrete [ChartViewMaker] for [LineChart].
+/// Concrete [ChartViewModel] for [LineChart].
 ///
-/// See [ChartViewMaker] for help.
-class SwitchLineChartViewMaker extends SwitchChartViewMaker {
-  SwitchLineChartViewMaker({
+/// See [ChartViewModel] for help.
+class SwitchLineChartViewModel extends SwitchChartViewModel {
+  SwitchLineChartViewModel({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
@@ -34,14 +34,14 @@ class SwitchLineChartViewMaker extends SwitchChartViewMaker {
 
   /// Concrete implementation returns the root for vertical bar chart.
   @override
-  LineChartRootContainer makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
+  LineChartRootContainer makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainer(
-      legendContainer: LegendContainer(chartViewMaker: this),
-      horizontalAxisContainer: TransposingAxisContainer.Horizontal(chartViewMaker: this),
-      verticalAxisContainerFirst: TransposingAxisContainer.Vertical(chartViewMaker: this),
-      verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewMaker: this),
-      dataContainer: LineChartDataContainer(chartViewMaker: this),
-      chartViewMaker: chartViewMaker,
+      legendContainer: LegendContainer(chartViewModel: this),
+      horizontalAxisContainer: TransposingAxisContainer.Horizontal(chartViewModel: this),
+      verticalAxisContainerFirst: TransposingAxisContainer.Vertical(chartViewModel: this),
+      verticalAxisContainer: TransposingAxisContainer.Vertical(chartViewModel: this),
+      dataContainer: LineChartDataContainer(chartViewModel: this),
+      chartViewModel: chartViewModel,
     );
   }
 

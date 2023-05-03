@@ -7,7 +7,7 @@ import 'package:logger/logger.dart' as logger;
 import 'chart.dart';
 
 // For comments
-import '../chart/view_maker.dart';
+import '../chart/view_model.dart';
 
 
 /// A not-extended implementation of the chart painter; it's core role is
@@ -20,7 +20,7 @@ import '../chart/view_maker.dart';
 ///
 /// Invocation of [paint] of this class does the core of creating, layout, and painting the chart, in
 ///   ```dart
-///   chart.chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+///   chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
 ///   ```
 /// An extension of flutter's [CustomPainter] which provides the
 /// painting of the chart leaf elements - lines, circles, bars - on the [ui.Canvas]
@@ -42,10 +42,10 @@ class FlutterChartPainter extends widgets.CustomPainter {
   ///    ```dart
   ///      flutterChartPainter.flutterChart = this;
   ///    ```
-  /// Then, when this [FlutterChartPainter.paint] is invoked, the [chart] member [FlutterChart.chartViewMaker]
+  /// Then, when this [FlutterChartPainter.paint] is invoked, the [chart] member [FlutterChart.chartViewModel]
   /// is used to create, layout and paint the chart using
   ///   ```dart
-  ///         chart.chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+  ///         chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
   ///   ```
   late final FlutterChart chart;
 
@@ -56,10 +56,10 @@ class FlutterChartPainter extends widgets.CustomPainter {
   /// (see class comment), hence it provides a "hook" into the chart
   /// being able to paint and draw itself.
   ///
-  /// A core role of this [paint] method is to call [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint],
+  /// A core role of this [paint] method is to call [ChartViewModel.chartRootContainerCreateBuildLayoutPaint],
   /// which creates, builds, lays out and paints the concrete [containers.ChartRootContainer].
   ///
-  /// The [chartViewMaker] created in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]
+  /// The [chartViewModel] created in the [ChartViewModel.chartRootContainerCreateBuildLayoutPaint]
   /// needs the [size] to provide top size constraints for it's layout.
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
@@ -77,17 +77,17 @@ class FlutterChartPainter extends widgets.CustomPainter {
     print(' ### Log.Info: $runtimeType. FLUTTER_CHART_PAINTER.PAINT: passed size $size');
 
     // At this point:
-    //   - [ViewMaker] has access to [Model] as it was created with [Model] argument.
+    //   - [ViewModel] has access to [Model] as it was created with [Model] argument.
     //   - On Chart creation, [Model] instance has access to [ChartOptions] directly,
-    //     During [ViewMaker] construction, we copy from [Model.ChartOptions] -> [ViewMaker.ChartOptions]
-    //   - So here, [Options] are on [Model] and [ViewMaker].
-    //   - In the invocation below, when [ViewMaker] creates the [ChartRootContainer] aka View, [ViewMaker]
+    //     During [ViewModel] construction, we copy from [Model.ChartOptions] -> [ViewModel.ChartOptions]
+    //   - So here, [Options] are on [Model] and [ViewModel].
+    //   - In the invocation below, when [ViewModel] creates the [ChartRootContainer] aka View, [ViewModel]
     //     will also copy [Options] to the [View], so View has access to Options as well.
     if (_isFirstPaint) {
       _isFirstPaint = false;
     }
 
-    chart.chartViewMaker.chartRootContainerCreateBuildLayoutPaint(canvas, size);
+    chart.chartViewModel.chartRootContainerCreateBuildLayoutPaint(canvas, size);
 
     _debugPrintEnd();
   }

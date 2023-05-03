@@ -4,7 +4,7 @@ import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 // this level or equivalent
 import '../morphic/container/label_container.dart';
 import 'container/container_common.dart' as container_common show ChartAreaContainer;
-import 'view_maker.dart' as view_maker;
+import 'view_model.dart' as view_model;
 import 'options.dart' show ChartOptions;
 
 /// Container of one label anywhere on the chart, in Labels, Axis, Titles, etc.
@@ -38,17 +38,16 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
   /// Constructs an instance for a label, it's text style, and label's
   /// maximum width.
   ///
-  /// Note: Does not set parent container's [_boxConstraints] and [chartViewMaker].
+  /// Note: Does not set parent container's [_boxConstraints] and [chartViewModel].
   ///       It is currently assumed clients will not call any methods using those members.
   ChartLabelContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
   })  :
-        // todo-00-done : _options = chartViewMaker.chartOptions,
         super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
       ) {
     this.labelTiltMatrix = labelTiltMatrix;
     textPainter = widgets.TextPainter(
@@ -78,13 +77,11 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
     // ); //  textScaleFactor does nothing ??
   }
 
-  // todo-00-done : final ChartOptions _options;
-
   @override
   double calcLabelMaxWidthFromLayoutOptionsAndConstraints() {
     // todo-013 : this seems incorrect - used for all labels, yet it acts as legend label!!
     //            used only to get label max size in rotated labels.
-    ChartOptions options = chartViewMaker.chartOptions;
+    ChartOptions options = chartViewModel.chartOptions;
     double indicatorSquareSide = options.legendOptions.legendColorIndicatorWidth;
     double indicatorToLabelPad = options.legendOptions.legendItemIndicatorToLabelPad;
     double betweenLegendItemsPadding = options.legendOptions.betweenLegendItemsPadding;
@@ -120,12 +117,12 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
 ///
 class AxisLabelContainer extends ChartLabelContainer {
   AxisLabelContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
   }) : super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,

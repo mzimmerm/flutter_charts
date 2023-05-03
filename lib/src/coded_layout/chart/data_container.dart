@@ -7,7 +7,7 @@ import '../../chart/container/container_common.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/container/axis_container.dart';
 import '../../chart/model/data_model.dart';
-import '../../chart/view_maker.dart';
+import '../../chart/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
 import 'line_container.dart';
@@ -16,7 +16,7 @@ import '../../chart/options.dart';
 import '../../morphic/container/container_key.dart' show ContainerKey;
 import '../../morphic/container/morphic_dart_enums.dart';
 
-import '../../switch_view_maker/view_maker_cl.dart';
+import '../../switch_view_model/view_model_cl.dart';
 
 // extension libraries
 import 'line/presenter.dart' as line_presenters;
@@ -28,13 +28,13 @@ import 'bar/presenter.dart' as bar_presenters;
 /// - Data - as columns of bar chart, line chart, or other chart type
 abstract class DataContainerCL extends ChartAreaContainer implements DataContainer {
 
-  /// Constructs instance from [ChartViewMaker].
+  /// Constructs instance from [ChartViewModel].
   ///
-  /// Note: It is assumed that the passed [chartViewMaker]
-  ///       is [SwitchChartViewMakerCL], a derivation of [ChartViewMaker].
-  DataContainerCL({required ChartViewMaker chartViewMaker})
+  /// Note: It is assumed that the passed [chartViewModel]
+  ///       is [SwitchChartViewModelCL], a derivation of [ChartViewModel].
+  DataContainerCL({required ChartViewModel chartViewModel})
       : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 
   /// Keeps data values grouped in columns.
@@ -71,10 +71,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     List<BoxContainer> dataContainerChildren = [];
 
     /// Root of chart, cast to CL version.
-    ChartRootContainerCL chartRootContainer = chartViewMaker.chartRootContainer as ChartRootContainerCL;
+    ChartRootContainerCL chartRootContainer = chartViewModel.chartRootContainer as ChartRootContainerCL;
 
     // Vars that layout needs from the [chartRootContainer] passed to constructor
-    ChartOptions chartOptions = chartViewMaker.chartOptions;
+    ChartOptions chartOptions = chartViewModel.chartOptions;
 
     // ### 1. Vertical Grid (yGrid) layout:
 
@@ -87,12 +87,12 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
     // Construct the GridLinesContainer with children: [LineContainer]s
     _verticalGridLinesContainer = GridLinesContainer(
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
-        double lineX = chartViewMaker.chartStacking.isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
+        double lineX = chartViewModel.chartStacking.isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
         return LineContainerCL(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
           linePaint: chartOptions.dataContainerOptions.gridLinesPaint(),
@@ -105,12 +105,12 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
 
     // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainer]
-    if (chartViewMaker.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
+    if (chartViewModel.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 
       _verticalGridLinesContainer.addChildren([
         LineContainerCL(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           lineFrom: initLineFrom,
           // ui.Offset(lineX, 0.0),
           lineTo: initLineTo,
@@ -133,13 +133,13 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
     // Construct the GridLinesContainer with children: [LineContainer]s
     _horizontalGridLinesContainer = GridLinesContainer(
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
       children:
       // yTickYs create vertical xLineContainers
       // Position the horizontal xGrid at mid-points of labels at yTickY.
       chartRootContainer.yTickYs.map((double yTickY) {
         return LineContainerCL(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           lineFrom: initLineFrom,
           lineTo: initLineTo,
           linePaint: chartOptions.dataContainerOptions.gridLinesPaint(),
@@ -214,18 +214,18 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // 3. Applies the parent offset on the 'data container' [PointsColumns].
     //    This offsets the 'data container' [PointsColumns] to the right of the Y axis,
     //    and to the top of the X axis.
-    // 4. Creates the 'view maker', represented here by [PointPresentersColumns],
+    // 4. Creates the 'view model', represented here by [PointPresentersColumns],
     //    and set it on [pointPresentersColumns].
-    // 5. LATER, in [paint], paints the  'view maker', represented here by [PointPresentersColumns]
+    // 5. LATER, in [paint], paints the  'view model', represented here by [PointPresentersColumns]
 
     // 1. From the [ChartData] model, create the 'data container' (the [PointsColumns])
     //    which represent the list of columns on chart.
-    //    Set the  [PointsColumns] instance on [chartViewMaker.chartModel.pointsColumns].
+    //    Set the  [PointsColumns] instance on [chartViewModel.chartModel.pointsColumns].
     //    The coordinates in [PointsColumns] are relative - 0 based
     pointsColumns = PointsColumns(
-      chartViewMaker: chartViewMaker,
-      pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
-      isStacked: chartViewMaker.chartStacking.isStacked,
+      chartViewModel: chartViewModel,
+      pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
+      isStacked: chartViewModel.chartStacking.isStacked,
       caller: this,
     );
 
@@ -233,19 +233,19 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // Scale the [pointsColumns] to the [VerticalAxisContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
-    _lextrPointsColumns(chartViewMaker.chartModel);
+    _lextrPointsColumns();
 
     // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
     pointsColumns.applyParentOffset(this, offset);
 
-    // 4. Create the 'view maker', represented here by [PointPresentersColumns],
+    // 4. Create the 'view model', represented here by [PointPresentersColumns],
     //    and set it on [pointPresentersColumns].
-    //    Note: The 'view maker' [PointPresentersColumns] is created from the [PointsColumns],
+    //    Note: The 'view model' [PointPresentersColumns] is created from the [PointsColumns],
     //          'data container'.
     pointPresentersColumns = PointPresentersColumns(
       pointsColumns: pointsColumns,
-      chartViewMaker: chartViewMaker,
-      pointPresenterCreator: (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator,
+      chartViewModel: chartViewModel,
+      pointPresenterCreator: (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator,
     );
   }
 
@@ -261,7 +261,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     _horizontalGridLinesContainer.paint(canvas);
 
     // draw vertical grid
-    if (chartViewMaker.chartOptions.verticalAxisContainerOptions.isHorizontalGridLinesShown) {
+    if (chartViewModel.chartOptions.verticalAxisContainerOptions.isHorizontalGridLinesShown) {
       _verticalGridLinesContainer.paint(canvas);
     }
   }
@@ -286,10 +286,10 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// values.
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
-  /// uses the  absolute extrapolated [chartViewMaker.pointsColumns].
-  void _lextrPointsColumns(ChartModel chartModel) {
+  /// uses the  absolute extrapolated [chartViewModel.pointsColumns].
+  void _lextrPointsColumns() {
     // ChartRootContainer, cast to CL version
-    pointsColumns.lextrPointsColumns(chartViewMaker, chartViewMaker.chartRootContainer as ChartRootContainerCL);
+    pointsColumns.lextrPointsColumns(chartViewModel, chartViewModel.chartRootContainer as ChartRootContainerCL);
   }
 
   /// Optionally paint series in reverse order (first to last,
@@ -297,7 +297,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   /// See [DataContainerOptions.valuesRowsPaintingOrder].
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
-    var options = chartViewMaker.chartOptions;
+    var options = chartViewModel.chartOptions;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {
       pointPresenters = pointPresenters.reversed.toList();
     }
@@ -313,7 +313,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   set isMakeComponentsForwardedToOwner(bool isValue) => throw UnimplementedError();
 
   @override
-  PositiveAndNegativeBarsWithInputAxisLineContainer MyBarChartViewMakerPositiveAndNegativeBarsWithInputAxisLineContainer({
+  ContainerForBothBarsAreasAndInputAxisLine makeContainerForBothBarsAreasAndInputAxisLine({
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required BarsContainer negativeBarsContainer,
@@ -323,7 +323,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  BarsContainer MyBarChartViewMakerBarsContainer ({
+  BarsContainer makeBarsContainer ({
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
     ContainerKey? key,
@@ -332,7 +332,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  DataColumnPointsBar MyBarChartViewMakerDataColumnPointsBar({
+  DataColumnPointsBar makeDataColumnPointsBar({
     required DataColumnModel dataColumnModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
@@ -341,14 +341,14 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  PointContainer MyBarChartViewMakerPointContainer({
+  PointContainer makePointContainer({
     required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
 
   @override
-  PointContainer MyBarChartViewMakerPointContainerWithZeroValue({
+  PointContainer makePointContainerWithZeroValue({
     required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
@@ -361,9 +361,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 /// [paint] and [_drawPointPresentersColumns].
 class BarChartDataContainerCL extends DataContainerCL {
   BarChartDataContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 
   /// Draws the actual atomic visual elements representing data on the chart.
@@ -406,9 +406,9 @@ class BarChartDataContainerCL extends DataContainerCL {
 /// [paint] and [drawDataPointPresentersColumns].
 class LineChartDataContainerCL extends DataContainerCL {
   LineChartDataContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 
   /// Draws the actual atomic visual elements representing data on the chart.
@@ -457,11 +457,11 @@ class GridLinesContainer extends ChartAreaContainer {
 
   /// Construct from children [LineContainerCL]s.
   GridLinesContainer({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     required List<LineContainerCL>? children,
   }) : super(
     children: children,
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 
   /// Override from base class sets the layout size.

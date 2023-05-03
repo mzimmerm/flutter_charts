@@ -27,8 +27,8 @@ enum DataDependency {
   outputData,
 }
 
-/// On behalf of [DataColumnPointsModel], represents the sign of the values of [PointModel] points
-/// which should be added to the [DataColumnPointsModel].
+/// On behalf of [DataColumnModel], represents the sign of the values of [PointModel] points
+/// which should be added to the [DataColumnModel].
 ///
 /// Motivation: In order to display both negative and positive values on the bar chart or line chart,
 ///             the [ChartModel] manages the positive and negative values separately in

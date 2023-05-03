@@ -8,7 +8,7 @@ import '../chart_label_container.dart' as chart_label_container;
 import '../../morphic/container/container_edge_padding.dart' as container_edge_padding;
 import '../../morphic/container/container_alignment.dart' as container_alignment;
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_maker.dart' as view_maker;
+import '../view_model.dart' as view_model;
 import '../options.dart' as chart_options;
 import '../../morphic/container/layouter_one_dimensional.dart';
 
@@ -33,10 +33,10 @@ class LegendContainer extends container_common.ChartAreaContainer {
   /// Constructs the container that holds the data series legends labels and
   /// color indicators.
   LegendContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     // List<container_base.BoxContainer>? children, // could add for extensibility by e.g. add legend comment
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   ) {
     // Create children and attach to self
     addChildren(_createChildrenOfLegendContainer());
@@ -44,7 +44,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
     // If option set to hide (not shown), set the member [orderedSkip = true],
     //  which will cause offset and paint of self and all children to be skipped by the default implementations
     //  of [paint] and [applyParentOffset].
-    if (!chartViewMaker.chartOptions.legendOptions.isLegendContainerShown) {
+    if (!chartViewModel.chartOptions.legendOptions.isLegendContainerShown) {
       applyParentOrderedSkip(this, true);
     }
   }
@@ -54,9 +54,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
   /// which contains a list of [LegendItemContainer]s,
   /// created separately in [_legendItems].
   List<container_base.BoxContainer> _createChildrenOfLegendContainer() {
-    chart_options.ChartOptions options = chartViewMaker.chartOptions;
-
-    // todo-00-done : List<String> byRowLegends = chartViewMaker.chartModel.byRowLegends;
+    chart_options.ChartOptions options = chartViewModel.chartOptions;
 
     // Initially all [label_container.LabelContainer]s share same text style object from chart_options.
     label_container.LabelStyle labelStyle = label_container.LabelStyle(
@@ -68,8 +66,7 @@ class LegendContainer extends container_common.ChartAreaContainer {
 
     container_base.BoxContainer childLayout;
     // Create the list of [LegendItemContainer]s, each an indicator and label for one data series
-    // todo-00-done : var children = _legendItems(byRowLegends, labelStyle, options);
-    var children = _legendItems(chartViewMaker, labelStyle, options);
+    var children = _legendItems(chartViewModel, labelStyle, options);
     switch (options.legendOptions.legendAndItemLayoutEnum) {
       case chart_options.LegendAndItemLayoutEnum.legendIsColumnStartLooseItemIsRowStartLoose:
         childLayout = container_base.Column(
@@ -136,24 +133,19 @@ class LegendContainer extends container_common.ChartAreaContainer {
   }
 
   List<container_base.BoxContainer> _legendItems(
-      // todo-00-done : List<String> byRowLegends,
-      view_maker.ChartViewMaker chartViewMaker,
+      view_model.ChartViewModel chartViewModel,
       label_container.LabelStyle labelStyle,
       chart_options.ChartOptions options,
       ) {
     return [
       // Using collections-for to expand to list of LegendItems. But e cannot have a block in collections-for
-      // todo-00-done : for (int index = 0; index < byRowLegends.length; index++)
-      for (int index = 0; index < chartViewMaker.chartModel.numRows; index++)
+      for (int index = 0; index < chartViewModel.numRows; index++)
         LegendItemContainer(
-          chartViewMaker: chartViewMaker,
-          // todo-00-done : label: byRowLegends[index],
-           // todo-00-done : label: chartViewMaker.chartModel.legendAtRow(index),
-          label: chartViewMaker.chartModel.getLegendItemAt(index).name,
+          chartViewModel: chartViewModel,
+          label: chartViewModel.getLegendItemAt(index).name,
           labelStyle: labelStyle,
           indicatorPaint: (ui.Paint()
-            // todo-00-done : ..color = chartViewMaker.chartModel.colorAtRow(index)),
-            ..color = chartViewMaker.chartModel.getLegendItemAt(index).color),
+            ..color = chartViewModel.getLegendItemAt(index).color),
           options: options,
         ),
     ];
@@ -199,7 +191,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
   final String _label;
 
   LegendItemContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     required String label,
     required label_container.LabelStyle labelStyle,
     required ui.Paint indicatorPaint,
@@ -213,7 +205,7 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
         _indicatorPaint = indicatorPaint,
         _options = options,
         super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
       ) {
     // Create children and attach to self
     addChildren(_createChildrenOfLegendItemContainer());
@@ -302,12 +294,12 @@ class LegendItemContainer extends container_common.ChartAreaContainer {
   /// in [RowLayout].
   List<container_base.BoxContainer> _itemIndAndLabel({bool doPadIndAndLabel = false, bool doAlignIndAndLabel = false}) {
     var indRect = LegendIndicatorRectContainer(
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
       indicatorPaint: _indicatorPaint,
       options: _options,
     );
     var label = chart_label_container.ChartLabelContainer(
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
       label: _label,
       labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in LegendItemContainer
       labelStyle: _labelStyle,
@@ -375,7 +367,7 @@ class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
   final ui.Paint _indicatorPaint;
 
   LegendIndicatorRectContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     required ui.Paint indicatorPaint,
     required chart_options.ChartOptions options,
   })  : _indicatorPaint = indicatorPaint,
@@ -385,7 +377,7 @@ class LegendIndicatorRectContainer extends container_common.ChartAreaContainer {
           options.legendOptions.legendColorIndicatorWidth,
         ),
         super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         );
 
   /// Overridden to set the concrete layout size on this leaf.

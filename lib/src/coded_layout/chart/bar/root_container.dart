@@ -2,10 +2,10 @@
 import '../container.dart';
 import '../axis_container.dart';
 import '../data_container.dart';
-import '../../../switch_view_maker/view_maker_cl.dart';
+import '../../../switch_view_model/view_model_cl.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../chart/container/root_container.dart';
-import '../../../chart/view_maker.dart';
+import '../../../chart/view_model.dart';
 
 // this level
 import 'presenter.dart'; // OLD
@@ -19,16 +19,16 @@ class BarChartRootContainerCL extends ChartRootContainerCL implements ChartRootC
     required VerticalAxisContainerCL      verticalAxisContainerFirst,
     required VerticalAxisContainerCL      verticalAxisContainer,
     required DataContainerCL   dataContainer,
-    required ChartViewMaker  chartViewMaker,
+    required ChartViewModel  chartViewModel,
   }) : super(
     legendContainer: legendContainer,
     horizontalAxisContainer: horizontalAxisContainer,
     verticalAxisContainerFirst: verticalAxisContainerFirst,
     verticalAxisContainer: verticalAxisContainer,
     dataContainer: dataContainer,
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   ) {
-    (chartViewMaker as SwitchChartViewMakerCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
+    (chartViewModel as SwitchChartViewModelCL).pointPresenterCreator = VerticalBarLeafPointPresenterCreator();
   }
 
 }

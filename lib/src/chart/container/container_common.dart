@@ -1,6 +1,6 @@
 // this level base libraries or equivalent
 import '../../morphic/container/container_layouter_base.dart' as container_base;
-import '../view_maker.dart' as view_maker;
+import '../view_model.dart' as view_model;
 import '../../morphic/container/container_key.dart';
 import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 
@@ -8,7 +8,7 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 /// all [container_base.BoxContainer] derived classes used on charts.
 ///
 /// In addition to the [container_base.BoxContainer] responsibilities,
-/// this class has access to [chartViewMaker], instance of [ChartViewMaker],
+/// this class has access to [chartViewModel], instance of [ChartViewModel],
 /// which builds the whole [ChartRootContainer] container hierarchy.
 ///
 /// The basic top level chart blocks are:
@@ -28,15 +28,15 @@ import '../iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 /// See [BoxContainer] for discussion of roles of this class.
 /// This extension of  [BoxContainer] has the added ability
 /// to access the container's parent, which is handled by
-/// [chartViewMaker].
+/// [chartViewModel].
 abstract class ChartAreaContainer extends container_base.PositioningBoxContainer {
 
-  /// Constructs instance, by providing (this derived class required) [chartViewMaker].
+  /// Constructs instance, by providing (this derived class required) [chartViewModel].
   ///
-  /// The instance of [ChartViewMaker] is needed on all instances of [ChartAreaContainer]s
+  /// The instance of [ChartViewModel] is needed on all instances of [ChartAreaContainer]s
   /// tha
   ChartAreaContainer({
-    required this.chartViewMaker,
+    required this.chartViewModel,
     List<container_base.BoxContainer>? children,
     ContainerKey? key,
     container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
@@ -46,13 +46,13 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
     constraintsWeight: constraintsWeight,
   );
 
-  /// The instance of [ChartViewMaker] which makes (produces) the chart view:
+  /// The instance of [ChartViewModel] which makes (produces) the chart view:
   /// both the view root, the [ChartRootContainer], and all [ChartAreaContainer]s inside.
   ///
   /// Needed to be held on this [ChartAreaContainer]s for the legacy subsystem
   /// to reach data model, as well as the view.
   // todo-013 : can we move this on a CL class if only needed by legacy?
-  final view_maker.ChartViewMaker chartViewMaker;
+  final view_model.ChartViewModel chartViewModel;
 
   // todo-later : Go over all usages, and move child building to this method
   //              from constructors.
@@ -71,15 +71,15 @@ abstract class ChartAreaContainer extends container_base.PositioningBoxContainer
 /// Extensions can create [ChartAreaContainer]s with default or custom layout strategy.
 abstract class AdjustableLabelsChartAreaContainer extends ChartAreaContainer implements AdjustableLabels {
   /// The strategy of this [AdjustableLabelsChartAreaContainer] and all instances
-  /// is shared from the (single) [ChartViewMaker.inputLabelLayoutStrategyInst].
-  strategy.LabelLayoutStrategy get labelLayoutStrategy => chartViewMaker.inputLabelLayoutStrategyInst;
+  /// is shared from the (single) [ChartViewModel.inputLabelLayoutStrategyInst].
+  strategy.LabelLayoutStrategy get labelLayoutStrategy => chartViewModel.inputLabelLayoutStrategyInst;
 
   AdjustableLabelsChartAreaContainer({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
   }) : super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         ) {
-    chartViewMaker.inputLabelLayoutStrategyInst.onContainer(this);
+    chartViewModel.inputLabelLayoutStrategyInst.onContainer(this);
   }
 }
 

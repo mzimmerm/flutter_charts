@@ -3,7 +3,7 @@ import 'dart:ui' as ui show Rect, Offset, Paint;
 import '../presenter.dart';
 import '../container.dart';
 import '../axis_container.dart';
-import '../../../chart/view_maker.dart';
+import '../../../chart/view_model.dart';
 
 /// PointPresenter of the atomic/leaf element of one data point on the
 /// vertical bar chart - a simple rectangle, in member [presentedRect],
@@ -18,26 +18,21 @@ class VerticalBarPointPresenter extends PointPresenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         ) {
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     valuesRowPaint = ui.Paint();
-/* todo-00-done
-    List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
-    valuesRowPaint.color = byRowColors[rowIndex % byRowColors.length];
-*/
-    // todo-00-done : valuesRowPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
-    valuesRowPaint.color = chartViewMaker.chartModel.getLegendItemAt(rowIndex).color;
+    valuesRowPaint.color = chartViewModel.getLegendItemAt(rowIndex).color;
 
     ui.Offset barMidBottom = point.scaledFrom;
     ui.Offset barMidTop = point.scaledTo;
-    HorizontalAxisContainerCL horizontalAxisContainerCL = chartViewMaker.chartRootContainer.horizontalAxisContainer as HorizontalAxisContainerCL;
+    HorizontalAxisContainerCL horizontalAxisContainerCL = chartViewModel.chartRootContainer.horizontalAxisContainer as HorizontalAxisContainerCL;
     double barWidth = horizontalAxisContainerCL.xGridStep *
-        chartViewMaker.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
+        chartViewModel.chartOptions.dataContainerOptions.gridStepWidthPortionUsedByAtomicPointPresenter;
 
     ui.Offset barLeftTop = barMidTop.translate(-1 * barWidth / 2, 0.0);
     ui.Offset barRightBottom = barMidBottom.translate(1 * barWidth / 2, 0.0);
@@ -58,13 +53,13 @@ class VerticalBarLeafPointPresenterCreator extends PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) {
     return VerticalBarPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
     );
   }
 }

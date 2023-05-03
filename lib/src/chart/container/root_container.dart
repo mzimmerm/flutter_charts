@@ -6,7 +6,7 @@ import 'axis_container.dart';
 import 'data_container.dart';
 import '../../morphic/container/container_layouter_base.dart';
 import '../container/axis_corner_container.dart';
-import '../view_maker.dart';
+import '../view_model.dart';
 
 // comments
 import '../painter.dart';
@@ -14,7 +14,7 @@ import '../painter.dart';
 /// The root [BoxContainer] of the whole chart.
 ///
 /// Concrete [ChartRootContainer] instance is created new on every [FlutterChartPainter.paint] invocation
-/// in the [ChartViewMaker.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewMaker]
+/// in the [ChartViewModel.chartRootContainerCreateBuildLayoutPaint]. Note that [ChartViewModel]
 /// instance is created only once per chart, NOT recreated on every [FlutterChartPainter.paint] invocation.
 ///
 /// Child containers calculate coordinates of chart points used for painting grid, labels, chart points etc.
@@ -27,10 +27,10 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
     required this.verticalAxisContainer,
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
-    required ChartViewMaker   chartViewMaker,
-  }) : super(chartViewMaker: chartViewMaker) {
+    required ChartViewModel   chartViewModel,
+  }) : super(chartViewModel: chartViewModel) {
     logger.Logger().d('    Constructing ChartRootContainer');
-    // Attach children passed in constructor, previously created in Maker, to self
+    // Attach children passed in constructor, previously created in ViewModel, to self
 
     // Create YDEX_cellDefinersTable, with definers arranged the same way as cells,
     //   - with 4 cells, in 2x2 arrangement
@@ -61,7 +61,7 @@ class ChartRootContainer extends container_common.ChartAreaContainer {
       ),
     );
 
-    BoxContainer axisCornerContainer = AxisCornerContainer(chartViewMaker: chartViewMaker);
+    BoxContainer axisCornerContainer = AxisCornerContainer(chartViewModel: chartViewModel);
 
     // verticalAxisContainer and horizontalAxisContainer are already transposed during creation.
     TableLayouter chartBody = TableLayouter(

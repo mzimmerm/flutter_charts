@@ -4,7 +4,7 @@ import 'dart:ui' as ui show Offset, Paint, Canvas;
 
 import '../../morphic/container/container_layouter_base.dart' show LayoutableBox;
 import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
-import '../../chart/view_maker.dart';
+import '../../chart/view_model.dart';
 
 
 /// Manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
@@ -34,7 +34,7 @@ class LineContainerCL extends container_common.ChartAreaContainer {
   double manualLayedOutToY;
 
   LineContainerCL({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
     required this.lineFrom,
     required this.lineTo,
     required this.linePaint,
@@ -43,7 +43,7 @@ class LineContainerCL extends container_common.ChartAreaContainer {
     this.manualLayedOutToX = 0.0,
     this.manualLayedOutToY = 0.0,
   }) : super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         );
 
   // #####  Implementors of method in superclass [Container].

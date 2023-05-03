@@ -48,7 +48,7 @@ Widget chartToRun() {
     ],
     chartOptions: chartOptions,
   );
-  var lineChartViewMaker = SwitchLineChartViewMaker(
+  var lineChartViewModel = SwitchLineChartViewModel(
     chartModel: chartModel,
     chartOrientation: ChartOrientation.column,
     chartStacking: ChartStacking.nonStacked,
@@ -56,7 +56,7 @@ Widget chartToRun() {
   );
 
   var lineChart = LineChart(
-    chartViewMaker: lineChartViewMaker,
+    chartViewModel: lineChartViewModel,
     chartPainter: FlutterChartPainter(),
   );
   return lineChart;

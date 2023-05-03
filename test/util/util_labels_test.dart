@@ -172,7 +172,7 @@ void main() {
 DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrientation, ChartStacking chartStacking, bool extendAxisToOrigin, ChartOptions options, List<List<double>> dataRows, List<String> inputUserLabels, List<String> legendNames) {
   var mockChartModel = _constructMockChartModel(options, dataRows, inputUserLabels, extendAxisToOrigin, legendNames);
   return DataRangeLabelInfosGenerator(
-    /*chartViewMaker: MockChartViewMaker(
+    /*chartViewModel: MockChartViewModel(
       chartModel: mockChartModel,
       chartOrientation: chartOrientation,
       isStacked: true,
@@ -187,8 +187,8 @@ DataRangeLabelInfosGenerator dataRangeLabelsGenerator(ChartOrientation chartOrie
   );
 }
 
-class MockChartViewMaker extends ChartViewMaker {
-  MockChartViewMaker({
+class MockChartViewModel extends ChartViewModel {
+  MockChartViewModel({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
@@ -202,7 +202,7 @@ class MockChartViewMaker extends ChartViewMaker {
   bool get extendAxisToOrigin => false;
 
   @override
-  ChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) => throw UnimplementedError();
+  ChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) => throw UnimplementedError();
 }
 
 
@@ -242,7 +242,7 @@ void rangeTestCore(
     //         In data, min is > max, so this is the correct thing,
     //         but why does makeLabelsGeneratorWithLabelInfosFromDataYsOnScale not adjust?
     DataRangeLabelInfosGenerator labelsGenerator = DataRangeLabelInfosGenerator(
-      /*chartViewMaker: MockChartViewMaker(
+      /*chartViewModel: MockChartViewModel(
         chartModel: chartModel,
         chartOrientation: ChartOrientation.column,
         isStacked: true,

@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Offset, Paint;
 
 // base libraries
 import '../container.dart';
-import '../../../chart/view_maker.dart';
+import '../../../chart/view_model.dart';
 import '../line_container.dart';
 import '../presenter.dart'; // OLD
 
@@ -28,28 +28,23 @@ class LineAndHotspotPointPresenter extends PointPresenter {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
           nextRightColumnValuePoint: nextRightColumnValuePoint,
           rowIndex: rowIndex,
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
         ) {
-    var options = chartViewMaker.chartOptions;
+    var options = chartViewModel.chartOptions;
 
     // todo-1 move colors creation to super (shared for VerticalBar and LineAndHotspot)
     rowDataPaint = ui.Paint();
-/* todo-00-done
-    List<ui.Color> byRowColors = chartViewMaker.chartModel.byRowColors;
-    rowDataPaint.color = byRowColors[rowIndex % byRowColors.length];
-*/
-    // todo-00-done : rowDataPaint.color = chartViewMaker.chartModel.colorAtRow(rowIndex);
-    rowDataPaint.color = chartViewMaker.chartModel.getLegendItemAt(rowIndex).color;
+    rowDataPaint.color = chartViewModel.getLegendItemAt(rowIndex).color;
 
     ui.Offset fromPoint = point.scaledTo;
     ui.Offset? toPoint = nextRightColumnValuePoint?.scaledTo;
     toPoint ??= fromPoint;
     lineContainer = LineContainerCL(
-        chartViewMaker: chartViewMaker,
+        chartViewModel: chartViewModel,
         lineFrom: fromPoint,
         lineTo: toPoint,
         linePaint: rowDataPaint..strokeWidth = options.lineChartOptions.lineStrokeWidth);
@@ -73,13 +68,13 @@ class LineAndHotspotLeafPointPresenterCreator extends PointPresenterCreator {
     required StackableValuePoint point,
     StackableValuePoint? nextRightColumnValuePoint,
     required int rowIndex,
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) {
     return LineAndHotspotPointPresenter(
       point: point,
       nextRightColumnValuePoint: nextRightColumnValuePoint,
       rowIndex: rowIndex,
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
     );
   }
 }

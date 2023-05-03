@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart' as logger;
 
 // base libraries
-import '../../../chart/view_maker.dart';
+import '../../../chart/view_model.dart';
 import '../../../chart/container/legend_container.dart';
 import '../../../coded_layout/chart/axis_container.dart';
 import '../../../coded_layout/chart/data_container.dart';
@@ -13,10 +13,10 @@ import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLay
 import '../../../coded_layout/chart/line/root_container.dart';
 
 import '../../../morphic/container/chart_support/chart_style.dart';
-import '../../view_maker_cl.dart'; // OLD
+import '../../view_model_cl.dart'; // OLD
 
-class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
-  SwitchLineChartViewMakerCL({
+class SwitchLineChartViewModelCL extends SwitchChartViewModelCL {
+  SwitchLineChartViewModelCL({
     required ChartModel chartModel,
     required ChartOrientation chartOrientation,
     required ChartStacking chartStacking,
@@ -31,14 +31,14 @@ class SwitchLineChartViewMakerCL extends SwitchChartViewMakerCL {
   }
 
   @override
-  LineChartRootContainerCL makeChartRootContainer({required ChartViewMaker chartViewMaker}) {
+  LineChartRootContainerCL makeChartRootContainer({required ChartViewModel chartViewModel}) {
     return LineChartRootContainerCL(
-      legendContainer: LegendContainer(chartViewMaker: this),
-      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewMaker: this),
-      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewMaker: this),
-      verticalAxisContainer: VerticalAxisContainerCL(chartViewMaker: this),
-      dataContainer: LineChartDataContainerCL(chartViewMaker: this),
-      chartViewMaker: chartViewMaker,
+      legendContainer: LegendContainer(chartViewModel: this),
+      horizontalAxisContainer: HorizontalAxisContainerCL(chartViewModel: this),
+      verticalAxisContainerFirst: VerticalAxisContainerCL(chartViewModel: this),
+      verticalAxisContainer: VerticalAxisContainerCL(chartViewModel: this),
+      dataContainer: LineChartDataContainerCL(chartViewModel: this),
+      chartViewModel: chartViewModel,
     );
   }
 

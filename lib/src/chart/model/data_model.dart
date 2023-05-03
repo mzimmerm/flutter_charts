@@ -42,24 +42,20 @@ class ChartModel {
 
     // Generate legend colors if not provided.
     legendColors ??= _byRowDefaultColors(dataRows.length);
-/* todo-00-done
-    _legendColors = legendColors;
-    _legendNames = legendNames;
-*/
 
     // validate after late finals initialized as they are used in validate.
     validate(legendNames, legendColors);
 
     _legendColumn = _LegendColumn(legendNames, legendColors);
 
-    valuesColumns = transposeRowsToColumns(dataRows);
+    _dataColumns = transposeRowsToColumns(dataRows);
 
     // Construct the full [ChartModel] as well, so we can use it, and also gradually
     // use it's methods and members in OLD DataContainer.
     // Here, create one [ChartModelSeries] for each data row, and add to member [dataColumnPointsList]
     int columnIndex = 0;
-    for (List<double> valuesColumn in valuesColumns) {
-      dataColumnList.add(
+    for (List<double> valuesColumn in _dataColumns) {
+      dataColumnModels.add(
         DataColumnModel(
           valuesColumn: valuesColumn,
           ownerChartModel: this,
@@ -74,8 +70,13 @@ class ChartModel {
 
   // NEW CODE =============================================================
 
-  /// List of dataColumnPoints in the model.
-  final List<DataColumnModel> dataColumnList = [];
+  /// List of dataColumnPoints in this [ChartModel].
+  ///
+  /// Indexed and can be iterated using
+  ///   ```dart
+  ///   for (int col=0; col < this.numColumns; col++)
+  ///   ```
+  final List<DataColumnModel> dataColumnModels = [];
 
   /// The legends for each row of data.
   ///
@@ -96,7 +97,7 @@ class ChartModel {
   ///   - For [chartStacking] == [ChartStacking.nonStacked],
   ///       the min and max is from [_transformedValuesMin] and max.
   ///
-  /// Implementation detail: maximum and minimum is calculated column-wise [DataColumnPointsModel] first, but could go
+  /// Implementation detail: maximum and minimum is calculated column-wise [DataColumnModel] first, but could go
   /// directly to the flattened list of [PointModel] (max and min over partitions is same as over whole set).
   ///
   Interval valuesInterval({
@@ -149,8 +150,9 @@ class ChartModel {
   // OLD CODE =============================================================
   // Legacy stuff below
 
-  // _valuesRows[columnIndex][rowIndex]
   /// Data in rows.
+  ///
+  /// Legacy use should be removed when legacy layout is removed.
   ///
   /// Each row of data represents one data series.
   /// Legends per row are managed by [byRowLegends].
@@ -160,9 +162,9 @@ class ChartModel {
   int get numRows => dataRows.length;
 
   /// Data reorganized from rows to columns.
-  late final List<List<double>> valuesColumns;
+  late final List<List<double>> _dataColumns;
 
-  int get numColumns => valuesColumns.length;
+  int get _numColumns => _dataColumns.length;
 
   /// Labels on input axis (also named independent axis, x axis).
   ///
@@ -180,34 +182,11 @@ class ChartModel {
   ///
   final List<String>? outputUserLabels;
 
-/* todo-00-done
-  /// The legends for each row in [_valuesRows].
-  ///
-  /// One Legend String per row.
-  /// Alternative name would be "series names".
-  late final List<String> _legendNames;
-
-  /// Colors representing each data row (series) in [ChartModel].
-  late final List<ui.Color> _legendColors;
-*/
-
   /// Chart options of this [ChartModel].
   ///
   /// Motivation: [ChartModel] needs this member as options
   /// affect data transforms and validations.
   final ChartOptions chartOptions;
-
-
-  /* todo-00-done : removed, use LegendColumn instead.
-  ui.Color colorAtRow(int index) {
-    return _legendColors
-        .elementAt(index % _legendColors.length);
-  }
-  String legendAtRow(int index) {
-    return _legendNames
-        .elementAt(index % _legendNames.length);
-  }
-  */
 
   // todo-013-performance : cache valuesMax/Min ond also _flatten
   List<double> get _flatten => dataRows.expand((element) => element).toList();
@@ -248,7 +227,7 @@ class ChartModel {
     }
   }
 
-  /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnPointsModel]s),
+  /// For positive [sign], returns max of all columns (more precisely, of all [DataColumnModel]s),
   ///   or 0.0 if there are no positive columns;
   /// for negative [sign]. returns min of all columns or 0.0 if there are no negative columns
   ///
@@ -259,18 +238,24 @@ class ChartModel {
   /// The returned value represents [PointModel.outputValue]s if [isStacked] is false,
   /// their separately positive or negative values stacked if [isStacked] is true
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
-    return dataColumnList
+    return dataColumnModels
         .map((dataColumnModel) => dataColumnModel.extremeValueWithSign(sign, chartStacking))
         .extremeValueWithSign(sign);
   }
 
 }
 
-// ====================
-// todo-00-progress
-
-// Encapsulate: _byRowLegends and _byRowColors to LegendColumn, _legendColumn is member on ChartModel
-
+/// Data for one legend item, currently it's [name] and [color] used for data it represents.
+///
+/// Motivation: In this project model [ChartModel], we represent chart data as columns,
+///             in [DataColumnModel]. This representation is motivated by a 'stacked column' view of data.
+///             At the same time, list of data that represents one 'series' can be viewed as a row of data.
+///             So
+///               - In the 'row first view',    each row contains data in one series,     for ALL independent (input) labels.
+///               - In the 'column first view', each column contains data 'across series' for ONE independent (input) label.
+///             Each [LegendItem] describes one series of data (one row of data); it's [color] is used
+///             to color data for the the same series.
+///
 class LegendItem {
   const LegendItem(this.name, this.color);
   final String   name;
@@ -309,7 +294,7 @@ class _LegendColumn {
 ///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
-/// Note: [DataColumnPointsModel] replaces the [PointsColumn] in legacy layouter.
+/// Note: [DataColumnModel] replaces the [PointsColumn] in legacy layouter.
 ///
 @immutable
 class DataColumnModel {
@@ -317,16 +302,16 @@ class DataColumnModel {
   /// Constructs a model for one bar of points.
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
-  /// The [ownerChartModel] is the [ChartModel] underlying the [DataColumnPointsModel] instance being created.
-  /// The [columnIndex] is index of the [valuesColumn] in the [ownerChartModel].
+  /// The [ownerChartModel] is the [ChartModel] underlying the [DataColumnModel] instance being created.
+  /// The [_indexInOwner] is index of the [valuesColumn] in the [ownerChartModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
   DataColumnModel({
     required List<double> valuesColumn,
     required this.ownerChartModel,
-    required this.columnIndex,
-  }) {
+    required int columnIndex,
+  }) : _indexInOwner = columnIndex {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_dataColumnPoints]
@@ -342,12 +327,12 @@ class DataColumnModel {
     }
   }
 
-  /// The full [ChartModel] from which data columns this [DataColumnPointsModel] is created.
+  /// The full [ChartModel] from which data columns this [DataColumnModel] is created.
   final ChartModel ownerChartModel;
 
-  /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnPointsModelList].
+  /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnModels].
   ///
-  /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.valuesRows].
+  /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.].
   /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
   ///
   /// The data values of this column are stored in the [pointModelList] list,
@@ -356,25 +341,25 @@ class DataColumnModel {
   /// This is needed to access the legacy arrays such as:
   ///   -  [ChartModel.byRowLegends]
   ///   -  [ChartModel.byRowColors]
-  final int columnIndex;
+  final int _indexInOwner;
 
   /// Calculates inputValue-position (x-position, independent value position) of
-  /// instances of this [DataColumnPointsModel] and it's [PointModel] elements.
+  /// instances of this [DataColumnModel] and it's [PointModel] elements.
   ///
   /// The value is in the middle of the column - there are [ChartModel.numColumns] [_numChartModelColumns] columns that
   /// divide the [dataRange].
   ///
   /// Note: So this is offset from start and end of the Interval.
   ///
-  /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view maker,
+  /// Late, once [util_labels.DataRangeLabelInfosGenerator] is established in view model,
   /// we can use the [_numChartModelColumns] and the [util_labels.DataRangeLabelInfosGenerator.dataRange]
   /// to calculate this value
   double inputValueOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / ownerChartModel.numColumns);
-    return (columnWidth * columnIndex) + (columnWidth / 2);
+    double columnWidth = (dataRange.length / ownerChartModel._numColumns);
+    return (columnWidth * _indexInOwner) + (columnWidth / 2);
   }
 
   /// Points in this column are points in one cross-series column.
@@ -384,12 +369,12 @@ class DataColumnModel {
   ///
   /// In more detail:
   ///   - For [chartStacking] == [ChartStacking.stacked],  returns added (accumulated) [PointModel.outputValue]s
-  ///     for all [PointModel]s in this [DataColumnPointsModel] instance, that have the passed [sign].
+  ///     for all [PointModel]s in this [DataColumnModel] instance, that have the passed [sign].
   ///   - For [chartStacking] == [ChartStacking.nonStacked]
   ///     - For [sign] positive, returns max of positive [PointModel.outputValue]s
-  ///       for all positive [PointModel]s in this [DataColumnPointsModel] instance.
+  ///       for all positive [PointModel]s in this [DataColumnModel] instance.
   ///     - For [sign] negative, returns min of negative [PointModel.outputValue]s
-  ///       for all negative [PointModel]s in this [DataColumnPointsModel] instance.
+  ///       for all negative [PointModel]s in this [DataColumnModel] instance.
   double extremeValueWithSign(Sign sign, ChartStacking chartStacking) {
     switch(chartStacking) {
       case ChartStacking.stacked:
@@ -416,20 +401,20 @@ class DataColumnModel {
 ///
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
-///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerDataColumnPointsModel],
-///     which in turn has access to [ChartModel] through it's member [DataColumnPointsModel._chartModel].
+///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerDataColumnModel],
+///     which in turn has access to [ChartModel] through it's member [DataColumnModel._chartModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
 @immutable
 class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
-  /// Constructs instance from the owner [DataColumnPointsModel] instance [ownerDataColumnPointsModel],
+  /// Constructs instance from the owner [DataColumnModel] instance [ownerDataColumnModel],
   /// and [rowIndex], the index in where the point value [outputValue] is located.
   ///
-  /// Important note: The [ownerDataColumnPointsModel] value on [rowIndex], IS NOT [outputValue],
-  ///                 as the [ownerDataColumnPointsModel] is split from [ChartModel.dataColumns] so
-  ///                 [rowIndex] can only be used to reach `ownerDataColumnPointsModel.chartModel.valuesRows`.
+  /// Important note: The [ownerDataColumnModel] value on [rowIndex], IS NOT [outputValue],
+  ///                 as the [ownerDataColumnModel] is split from [ChartModel.dataColumns] so
+  ///                 [rowIndex] can only be used to reach `ownerDataColumnModel.chartModel.valuesRows`.
   PointModel({
     required double outputValue,
     required this.ownerDataColumnModel,
@@ -453,8 +438,8 @@ class PointModel {
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
-  ///   - column at index [columnIndex], which is also the [ownerDataColumnPointsModel]'s
-  ///     index [DataColumnPointsModel.columnIndex].
+  ///   - column at index [columnIndex], which is also the [ownerDataColumnModel]'s
+  ///     index [DataColumnModel._indexInOwner].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double outputValue;
 
@@ -467,15 +452,15 @@ class PointModel {
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
-  /// Also, this point object is kept in [DataColumnPointsModel.pointModelList] at index [rowIndex].
+  /// Also, this point object is kept in [DataColumnModel.pointModelList] at index [rowIndex].
   ///
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
-  /// Getter of the column index in the owner [ownerDataColumnPointsModel].
+  /// Getter of the column index in the owner [ownerDataColumnModel].
   ///
-  /// Delegated to [ownerDataColumnPointsModel] index [DataColumnPointsModel.columnIndex].
-  int get columnIndex => ownerDataColumnModel.columnIndex;
+  /// Delegated to [ownerDataColumnModel] index [DataColumnModel._indexInOwner].
+  int get columnIndex => ownerDataColumnModel._indexInOwner;
 
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
@@ -494,7 +479,7 @@ class PointModel {
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
-  /// Delegated to [ownerDataColumnPointsModel].
+  /// Delegated to [ownerDataColumnModel].
   double inputValueOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
@@ -507,7 +492,6 @@ class PointModel {
   ///  ask for the label.
   Object get inputUserLabel => ownerDataColumnModel.ownerChartModel.inputUserLabels[columnIndex];
 
-  // todo-00-done : ui.Color get color => ownerDataColumnPointsModel.ownerChartModel.byRowColors[rowIndex];
   ui.Color get color => ownerDataColumnModel.ownerChartModel.getLegendItemAt(rowIndex).color;
 
   PointOffset asPointOffsetOnInputRange({

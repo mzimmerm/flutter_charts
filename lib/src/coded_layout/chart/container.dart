@@ -9,7 +9,7 @@ import '../../chart/container/root_container.dart';
 import '../../chart/container/legend_container.dart';
 import '../../chart/container/data_container.dart';
 import '../../chart/model/data_model.dart';
-import '../../chart/view_maker.dart';
+import '../../chart/view_model.dart';
 import '../../morphic/container/container_layouter_base.dart'
     show BoxContainer, BoxLayouter, LayoutableBox;
 import 'presenter.dart';
@@ -42,10 +42,10 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
     required this.verticalAxisContainer,
     required this.verticalAxisContainerFirst,
     required this.dataContainer,
-    required ChartViewMaker chartViewMaker,
-  })  : super(chartViewMaker: chartViewMaker) {
+    required ChartViewModel chartViewModel,
+  })  : super(chartViewModel: chartViewModel) {
     logger.Logger().d('    Constructing ChartRootContainer');
-    // Attach children passed in constructor, previously created in Maker, to self
+    // Attach children passed in constructor, previously created in view model, to self
     addChildren([legendContainer, horizontalAxisContainer, verticalAxisContainer, dataContainer]);
   }
 
@@ -139,7 +139,7 @@ abstract class ChartRootContainerCL extends ChartAreaContainer implements ChartR
       verticalAxisContainerFirstHeight,
     ));
 
-    // Note: verticalAxisContainerFirst used to be created here as  VerticalAxisContainer( chartViewMaker: chartViewMaker, yLabelsMaxHeightFromFirstLayout: 0.0
+    // Note: verticalAxisContainerFirst used to be created here as  VerticalAxisContainer( chartViewModel: chartViewModel, yLabelsMaxHeightFromFirstLayout: 0.0
     //       verticalAxisContainerFirst._parent, checked in applyParentConstraints => assertCallerIsParent
     //       is not yet set here, as verticalAxisContainerFirst never goes through addChildren which sets _parent on children.
     //       so _parent cannot be late final.
@@ -303,7 +303,7 @@ class StackableValuePoint {
     required this.xLabel,
     required this.dataY,
     required this.valuesRowIndex,
-    required this.chartViewMaker,
+    required this.chartViewModel,
     this.predecessorPoint,
   })  : isStacked = false,
         fromY = 0.0,
@@ -313,7 +313,7 @@ class StackableValuePoint {
   // ### Group 0: Structural
 
   /// Root container added to access verticalAxisContainer.axisPixels min / max
-  late final ChartViewMaker chartViewMaker;
+  late final ChartViewModel chartViewModel;
 
   // ### 1. Group 1, initial values, but also includes [dataY] in group 2
 
@@ -408,7 +408,7 @@ class StackableValuePoint {
     // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in outputLabelsGenerator
     // were calculated using the NEW [ChartModel]
 
-    VerticalAxisContainerCL verticalAxisContainerCL = chartViewMaker.chartRootContainer.verticalAxisContainer as VerticalAxisContainerCL;
+    VerticalAxisContainerCL verticalAxisContainerCL = chartViewModel.chartRootContainer.verticalAxisContainer as VerticalAxisContainerCL;
     double axisPixelsYMin = verticalAxisContainerCL.axisPixelsRange.min;
     double axisPixelsYMax = verticalAxisContainerCL.axisPixelsRange.max;
 
@@ -454,7 +454,7 @@ class StackableValuePoint {
     }
 
     StackableValuePoint unstackedClone = StackableValuePoint(
-      chartViewMaker: chartViewMaker,
+      chartViewModel: chartViewModel,
       xLabel: xLabel,
       dataY: dataY,
       valuesRowIndex: valuesRowIndex,
@@ -564,7 +564,7 @@ class PointsColumn {
 //                 Each PointsColumn is a child in children.
 class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Parent chart container.
-  final ChartViewMaker chartViewMaker;
+  final ChartViewModel chartViewModel;
 
   /// True if chart type presents values stacked.
   final bool _isStacked;
@@ -572,16 +572,16 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   final LayoutableBox _caller;
 
   /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.valuesRows] values in
-  /// the passed [chartViewMaker.ownerChartModel].
+  /// the passed [chartViewModel.ownerChartModel].
   PointsColumns({
-    required this.chartViewMaker,
+    required this.chartViewModel,
     required PointPresenterCreator pointPresenterCreator,
     required bool isStacked,
     required LayoutableBox caller,
   })  : _isStacked = isStacked,
         _caller = caller,
         super(growable: true) {
-    _createStackableValuePointsFromChartData(chartViewMaker.chartModel);
+    _createStackableValuePointsFromChartModel(chartViewModel.chartModelInLegacy);
   }
 
   /// Constructs internals of this object, the [PointsColumns].
@@ -594,7 +594,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Each element is the per column point below the currently processed point.
   /// The currently processed point is (potentially) stacked on it's predecessor.
-  void _createStackableValuePointsFromChartData(ChartModel chartModel) {
+  void _createStackableValuePointsFromChartModel(ChartModel chartModel) {
     List<StackableValuePoint?> rowOfPredecessorPoints =
         List.filled(chartModel.dataRows[0].length, null);
     for (int col = 0; col < chartModel.dataRows[0].length; col++) {
@@ -610,12 +610,12 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
       valuePointArrInRows.add(pointsRow);
       for (int col = 0; col < valuesRow.length; col++) {
         // yTransform data before placing data point on StackableValuePoint.
-        num colValue = chartViewMaker.chartOptions.dataContainerOptions.yTransform(valuesRow[col]);
+        num colValue = chartViewModel.chartOptions.dataContainerOptions.yTransform(valuesRow[col]);
 
         // Create all points unstacked. A later processing can stack them,
         // depending on chart type. See [StackableValuePoint.stackOnAnother]
         var thisPoint = StackableValuePoint(
-            chartViewMaker: chartViewMaker,
+            chartViewModel: chartViewModel,
             xLabel: 'initial',
             dataY: colValue.toDouble(),
             valuesRowIndex: row,
@@ -654,14 +654,14 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///   applying its [StackableValuePoint.lextrToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void lextrPointsColumns(ChartViewMaker chartViewMaker, ChartRootContainerCL chartRootContainer) {
+  void lextrPointsColumns(ChartViewModel chartViewModel, ChartRootContainerCL chartRootContainer) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = chartRootContainer.xTickXs[col];
         point.lextrToPixels(
           scaledX: scaledX,
-          outputLabelsGenerator: chartViewMaker.outputLabelsGenerator,
+          outputLabelsGenerator: chartViewModel.outputLabelsGenerator,
         );
       });
       col++;
@@ -670,8 +670,8 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   /// Makes this [PointsColumns] object a [BoxContainer] - like class,
   ///
-  /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewMaker.chartModel] by the [offset],
-  /// presumable calle from parent [DataContainerCL].
+  /// Offsets the coordinates of this [PointsColumns] kept in [ChartViewModel.chartModel] by the [offset],
+  /// assumed invoked from parent [DataContainerCL].
   ///
   /// When called in DataContainer.applyParentOffset with the offset of DataContainer
   ///             dataContainerOffset = ui.Offset(verticalAxisContainerSize.width, legendContainerSize.height);

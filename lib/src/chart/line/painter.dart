@@ -6,7 +6,7 @@ import '../painter.dart';
 
 
 /// This concrete [FlutterChartPainter] is also the [CustomPainter]; provides a constructor,
-/// requiring [line_containers.LineChartViewMaker]which generates (makes)
+/// requiring [line_containers.LineChartViewModel]which generates (makes)
 /// the view, the [ChartRootContainer] hierarchy.
 ///
 /// See [FlutterChartPainter] for more information.

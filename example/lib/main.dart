@@ -15,7 +15,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
-import 'package:flutter_charts/src/switch_view_maker/view_maker.dart';
+import 'package:flutter_charts/src/switch_view_model/view_model.dart';
 import 'package:flutter_charts/src/util/extensions_dart.dart' show StringExtension;
 import 'package:flutter_charts/src/chart/painter.dart' show FlutterChartPainter;
 
@@ -993,7 +993,7 @@ class _ExampleWidgetCreator {
 
     switch (chartType) {
       case ChartType.lineChart:
-        SwitchChartViewMaker lineChartViewMaker = SwitchChartViewMaker.lineChartViewMakerFactory(
+        SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
           chartOrientation: ChartOrientation.column,
           chartStacking: ChartStacking.nonStacked,
           chartModel: chartModel,
@@ -1001,14 +1001,14 @@ class _ExampleWidgetCreator {
         );
 
         LineChart lineChart = LineChart(
-          // [lineChartViewMaker] makes instance of [LineChartRootContainer]
-          chartViewMaker: lineChartViewMaker,
+          // [lineChartViewModel] makes instance of [LineChartRootContainer]
+          chartViewModel: lineChartViewModel,
           chartPainter: FlutterChartPainter(),
         );
         chartToRun = lineChart;
         break;
       case ChartType.barChart:
-        SwitchChartViewMaker barChartViewMaker = SwitchChartViewMaker.barChartViewMakerFactory(
+        SwitchChartViewModel barChartViewModel = SwitchChartViewModel.barChartViewModelFactory(
           chartModel: chartModel,
           chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
           chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
@@ -1016,8 +1016,8 @@ class _ExampleWidgetCreator {
         );
 
         BarChart barChart = BarChart(
-          // [barChartViewMaker] makes instance of [BarChartRootContainer]
-          chartViewMaker: barChartViewMaker,
+          // [barChartViewModel] makes instance of [BarChartRootContainer]
+          chartViewModel: barChartViewModel,
           chartPainter: FlutterChartPainter(),
         );
 

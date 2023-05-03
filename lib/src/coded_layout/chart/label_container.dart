@@ -5,7 +5,7 @@ import 'container.dart' show PixelRangeProvider;
 import '../../chart/container/container_common.dart' as container_common show ChartAreaContainer;
 import '../../morphic/container/label_container.dart';
 import '../../chart/chart_label_container.dart';
-import '../../chart/view_maker.dart' as view_maker;
+import '../../chart/view_model.dart' as view_model;
 import '../../chart/model/label_model.dart' show AxisLabelInfo;
 
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
@@ -18,7 +18,7 @@ import '../../chart/model/label_model.dart' show AxisLabelInfo;
 ///
 class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
-    required view_maker.ChartViewMaker chartViewMaker,
+    required view_model.ChartViewModel chartViewModel,
     required String label,
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
@@ -27,7 +27,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   })  : _labelInfo = labelInfo,
         _ownerChartAreaContainer = ownerChartAreaContainer,
         super(
-          chartViewMaker: chartViewMaker,
+          chartViewModel: chartViewModel,
           label: label,
           labelTiltMatrix: labelTiltMatrix,
           labelStyle: labelStyle,
@@ -96,7 +96,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE HorizontalAxisContainer / VerticalAxisContainer
     // and place it on [parentOffsetTick]
-    var labelsGenerator = ownerChartAreaContainer.chartViewMaker.outputLabelsGenerator;
+    var labelsGenerator = ownerChartAreaContainer.chartViewModel.outputLabelsGenerator;
 
     parentOffsetTick = labelsGenerator.lextrValueToPixels(
       value: labelInfo.outputValue.toDouble(),

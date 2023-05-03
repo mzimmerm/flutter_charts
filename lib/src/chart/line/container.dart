@@ -1,12 +1,12 @@
 // base libraries
 import '../container/data_container.dart';
-import '../view_maker.dart';
+import '../view_model.dart';
 
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
-    required ChartViewMaker chartViewMaker,
+    required ChartViewModel chartViewModel,
   }) : super(
-    chartViewMaker: chartViewMaker,
+    chartViewModel: chartViewModel,
   );
 }
 
