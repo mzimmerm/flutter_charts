@@ -4,8 +4,11 @@ import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
 
-/// Like [Offset] but in addition, can manage lextr-ing inside chart to chart value domains and pixel domains,
-/// utilizing [lextrToPixelsMaybeTransposeInContextOf] which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
+/// Extension of [Offset] which adds ability to lextr itself inside the chart
+/// from it's value to the chart value domains and pixel domains.
+///
+/// The lextr-ing is done in [lextrToPixelsMaybeTransposeInContextOf],
+/// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value domains and pixel domains.
 class PointOffset extends Offset {
   PointOffset({
@@ -25,7 +28,8 @@ class PointOffset extends Offset {
   /// For [ChartOrientation.column] width is constraints.width on column, height is outputValuePixels
   /// For [ChartOrientation.row]    width is inputValuePixels, height is constraints.height on row
   ///
-  /// Used to get the rectangle representing the bar in chart [BarPointContainer].
+  /// This is the layoutSize of one rectangle bar which is the view of this [PointOffset] (which is created from
+  /// the [BarPointContainer]'s [PointModel]).
   ///
   late final Size barPointRectSize;
 
@@ -294,6 +298,14 @@ class PointOffset extends Offset {
     fromValueLengthInPixels = transform.applyOnlyScaleOnLength(fromValue).abs();
 
     return _ValuePixels(fromValueOnAxisPixels, fromValueLengthInPixels);
+  }
+  
+  /// Present itself as code
+  String asCodeConstructor() {
+    return 'PointOffset('
+        'inputValue: $inputValue,'
+        'outputValue: $outputValue,'
+        ')';
   }
 }
 

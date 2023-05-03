@@ -569,6 +569,7 @@ class BarPointContainer extends PointContainer {
       widthToLextr: widthToLextr,
       isLextrUseSizerInsteadOfConstraint: false,
     );
+    // KEEP : generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
     // which is the [layoutSize] of the rectangle presenting the point.
@@ -589,6 +590,31 @@ class BarPointContainer extends PointContainer {
     paint.color = pointModel.color;
 
     canvas.drawRect(rect, paint);
+  }
+
+  /// Generates code for testing.
+  void generateTestCode(
+    PointOffset pointOffset,
+    DataRangeLabelInfosGenerator inputLabelsGenerator,
+    DataRangeLabelInfosGenerator outputLabelsGenerator,
+    PointOffset pixelPointOffset,
+  ) {
+    var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
+    var callStr = '   pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(\n'
+        '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
+        '       constraintsOnImmediateOwner: ${constraints.asCodeConstructorInsideBox()},\n'
+        '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
+        '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
+        '       heightToLextr: $heightToLextr,\n'
+        '       widthToLextr: $widthToLextr,\n'
+        '       isLextrUseSizerInsteadOfConstraint: false,\n'
+        '     );\n';
+    // var pixelPointOffsetStr = '   pixelPointOffset = ${pixelPointOffset.asCodeConstructor()};\n';
+    // var pixelPointOffsetLayoutSizeStr = '   pixelPointOffsetLayoutSize = ${pixelPointOffset.barPointRectSize.asCodeConstructor()};\n';
+    var assertOffsetSame = '   assertOffsetResultsSame(pixelPointOffset, ${pixelPointOffset.asCodeConstructor()});\n';
+    var assertSizeSame =   '   assertSizeResultsSame(pixelPointOffset.barPointRectSize, ${pixelPointOffset.barPointRectSize.asCodeConstructor()});\n';
+
+    print(' $pointOffsetStr $callStr $assertOffsetSame $assertSizeSame\n\n');
   }
 }
 

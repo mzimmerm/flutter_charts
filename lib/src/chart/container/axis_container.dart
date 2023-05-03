@@ -54,12 +54,14 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
   }) : super(
-    fromPointOffset: PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
-    toPointOffset:   PointOffset(inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
-  linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
-  chartViewModel: chartViewModel,
-  isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
-  );
+          fromPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
+          toPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
+          linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
+          chartViewModel: chartViewModel,
+          isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
+        );
 }
 
 /// Container for the Vertical axis line only, no other elements.
@@ -73,10 +75,10 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
   }) : super(
-          fromPointOffset:
-              PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
-          toPointOffset:
-              PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
+          fromPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
+          toPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
           isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
@@ -172,15 +174,15 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
   /// all available horizontal space, and only use necessary vertical space.
   TransposingInputAxisContainer({
     required ChartViewModel chartViewModel,
-    required List<BoxContainer> Function (List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
+    required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
   }) : super(
           chartViewModel: chartViewModel,
         ) {
-    List<BoxContainer> children =
-       directionWrapperAround(
-          [TransposingRoller.Column(
-            chartOrientation: chartViewModel.chartOrientation,
-            children: [
+    List<BoxContainer> children = directionWrapperAround(
+      [
+        TransposingRoller.Column(
+          chartOrientation: chartViewModel.chartOrientation,
+          children: [
             TransposingExternalTicks.Row(
               chartOrientation: chartViewModel.chartOrientation,
               mainAxisExternalTicksLayoutProvider: _inputLabelsGenerator.asExternalTicksLayoutProvider(
@@ -199,9 +201,10 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               ],
             ),
           ],
-         )],
-         _padGroup,
-      );
+        )
+      ],
+      _padGroup,
+    );
 
     addChildren(children);
   }

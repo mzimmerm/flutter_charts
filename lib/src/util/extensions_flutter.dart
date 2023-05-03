@@ -80,6 +80,12 @@ extension SizeExtension on ui.Size {
 
     return ui.Size(width, height);
   }
+
+  /// Present itself as code
+  String asCodeConstructor() {
+    return 'const Size($width, $height)';
+  }
+
 }
 
 extension RectExtension on ui.Rect {

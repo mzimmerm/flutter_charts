@@ -640,5 +640,11 @@ class BoxContainerConstraints extends BoundingBoxesBase {
       ),
     );
   }
+
+  /// Present itself as code
+  String asCodeConstructorInsideBox() {
+    return 'BoxContainerConstraints.insideBox(size: const Size($width, $height))';
+  }
+
 }
 

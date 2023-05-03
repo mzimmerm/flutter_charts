@@ -280,7 +280,12 @@ class Interval {
   int get hashCode {
     return min.hashCode + 13*max.hashCode + 17*includesMin.hashCode + 23*includesMax.hashCode;
   }
-  
+
+  /// Present itself as code
+  String asCodeConstructor() {
+    return 'const Interval($min, $max)';
+  }
+
 }
 
 class LineSegment extends Interval {

@@ -5,7 +5,7 @@ import 'package:flutter_charts/src/util/extensions_dart.dart';
 
 import 'util_dart.dart';
 
-import 'dart:ui' as ui show Rect, Size;
+import 'dart:ui' as ui show Rect, Size, Offset;
 
 /// Returns the smallest rectangle which contains all passed [rectangles].
 ///
@@ -23,6 +23,15 @@ void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
   if (!(isCloserThanEpsilon(result.width, otherResult.width) ||
       isCloserThanEpsilon(result.height, otherResult.height))) {
     String msg = ' ### Log.Warning: Size results do not match. Result was $result, Other result was $otherResult.';
+    print(msg);
+    throw StateError(msg);
+  }
+}
+
+void assertOffsetResultsSame(ui.Offset result, ui.Offset otherResult) {
+  if (!(isCloserThanEpsilon(result.dx, otherResult.dx) ||
+      isCloserThanEpsilon(result.dy, otherResult.dy))) {
+    String msg = ' ### Log.Warning: Offset results do not match. Result was $result, Other result was $otherResult.';
     print(msg);
     throw StateError(msg);
   }
