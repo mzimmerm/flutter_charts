@@ -14,6 +14,9 @@ extension StringExtension on String {
   /// - If this string does not represent an enum in the passed enumValues,
   ///   a StateError is thrown, indicating the values that failed.
   T asEnum<T extends Enum>(List<T> enumValues) {
+
+
+
     try {
       return enumValues.singleWhere((v) => this == enumName(v));
     } on Error {
@@ -65,3 +68,19 @@ List expandList(List<List> listList) => listList.expand((item) => item).toList()
 // List<List> is List<[E, T]>
 List<List> multiplyListElementsBy<E,T>(List<E> list, List<T> multiplyBy) =>
     list.map((item) => List.generate(multiplyBy.length, (int index) => [item, multiplyBy[index]])).expand((item) => item).toList();
+
+/* KEEP but no practical use as * is not overridable for vector and matrix
+import 'vector/vector_2d.dart';
+import 'vector/matrix_2d.dart';
+extension NumExtension on num {
+  /// Multiply (scale) vector by number, for use in linear algebra.
+  Vector operator *(Vector v) {
+    return v.scaleBy(this);
+  }
+
+  /// Multiply (scale) matrix by number, for use in linear algebra.
+  Matrix operator *(Matrix m) {
+    return m.scaleBy(this);
+  }
+}
+*/
