@@ -17,18 +17,8 @@ class Matrix2D<T, N extends double> {
   int get numRows => _storage.length;
   int get numCols => _storage.isNotEmpty ? _storage[0].length : 0;
 
-/*
-  /// T should be either number or functional,
-  T get zeroOfType => throw UnimplementedError('implement in extensions'); // 0 as T;
-  /// Addition:   number to number it T is number, functional to functional if T is functional
-  T addTs(T t1, T t2) => throw UnimplementedError('implement in extensions');
-  /// Multiplication: number by number it T is number, number by functional if T is functional
-  T multiplyN(num c, T t) => throw UnimplementedError('implement in extensions');
-  /// Multiplication if T is number, composition if T is functional
-  T multiplyTs(T t1, T t2) => throw UnimplementedError('implement in extensions');
-  /// Multiplication if T, N both numbers, call T(n) if T is a functional
-  T multiplyOrApplyTN(T t, N n) => throw UnimplementedError('implement in extensions');
-*/
+  // ********** Support for Function space ********
+  //
   /// T should be either number or functional,
   get zeroOfT => throw UnimplementedError('implement in extensions'); // 0 as T;
   double get zeroOfN => 0.0;
