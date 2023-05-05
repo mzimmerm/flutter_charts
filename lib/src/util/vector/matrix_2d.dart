@@ -1,7 +1,7 @@
 import 'vector_2d.dart';
 import '../util_dart.dart' show transposeRowsToColumns;
 
-class Matrix2D<T, N> {
+class Matrix2D<T, N extends double> {
   Matrix2D(List<List<T>> fromRows)
       : _storage = List.generate(
           fromRows.length,
@@ -41,7 +41,7 @@ class Matrix2D<T, N> {
   /// Multiplication if T is number, composition if T is functional. Result N or T.
   multiplyOrComposeTT(t1, t2) => throw UnimplementedError('implement in extensions');
   /// Multiplication if T, N both numbers, call T(n) if T is a functional. Result always N.
-  multiplyOrApplyTN(t, n) => throw UnimplementedError('implement in extensions');
+  double multiplyOrApplyTN(t, double n) => throw UnimplementedError('implement in extensions');
 
   /// Matrix addition
   Matrix2D operator +(covariant Matrix2D other) {
@@ -156,6 +156,6 @@ class MatrixDouble2D<T extends double> extends Matrix2D {
   multiplyOrComposeTT(t1, t2) => t1 * t2;
   /// Multiplication if T, N both numbers, call T(n) if T is a functional
   @override
-  multiplyOrApplyTN(t, n) => t * n;
+  multiplyOrApplyTN(t, double n) => t * n;
 
 }

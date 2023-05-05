@@ -11,18 +11,39 @@ extension DoubleToDoubleFunctional on DoubleToDoubleFunction {
   DoubleToDoubleFunction addT(DoubleToDoubleFunction other) => (double arg) => this(arg) + other(arg);
   DoubleToDoubleFunction multiplyN(double number) => (double arg) => number * this(arg);
   DoubleToDoubleFunction multiplyT(DoubleToDoubleFunction other) => (double arg) => this(other(arg)); // * is compose
+/*
   DoubleToDoubleFunction applyOnN(double number) => (double arg) => this(arg); // function(number)
+*/
+  double applyOnN(double arg) => this(arg); // function(number)
+
+}
+
+class Functional {
+  Functional(this.fun);
+  final DoubleToDoubleFunction fun;
+
+  call(double number) {
+    return fun(number);
+  }
+
+  DoubleToDoubleFunction addT(DoubleToDoubleFunction other) => (double arg) => fun(arg) + other(arg);
+  DoubleToDoubleFunction multiplyN(double number) => (double arg) => number * fun(arg);
+  DoubleToDoubleFunction multiplyT(DoubleToDoubleFunction other) => (double arg) => fun(other(arg)); // * is compose
+  double applyOnN(double arg) => fun(arg); // function(number)
+
 }
 
 DoubleToDoubleFunction toZero = (double x) => 0.0;
 DoubleToDoubleFunction identityDD = (double x) => x;
 
-class FunctionMatrix2D<T extends DoubleToDoubleFunction> extends Matrix2D {
+// class FunctionMatrix2D<T extends DoubleToDoubleFunction> extends Matrix2D {
+class FunctionMatrix2D<T extends Functional> extends Matrix2D {
   FunctionMatrix2D(List<List<T>> from) : super(from);
 
   /// T should be either number or functional,
   @override
   get zeroOfT => toZero;
+/*
   /// Addition:   number to number it T is number, functional to functional if T is functional
   @override
   addTT(t1, t2) => t1.addT(t2);
@@ -35,6 +56,20 @@ class FunctionMatrix2D<T extends DoubleToDoubleFunction> extends Matrix2D {
   /// Multiplication if T, N both numbers, call T(n) if T is a functional
   @override
   multiplyOrApplyTN(t, n) => t.applyOnN(n);
+*/
+  /// Addition:   number to number it T is number, functional to functional if T is functional
+  @override
+  addTT(t1, t2) => t1.addT(t2);
+  /// Multiplication: number by number it T is number, number by functional if T is functional
+  @override
+  multiplyNT(double number, t) => t.multiplyNT(number);
+  /// Multiplication if T is number, composition if T is functional
+  @override
+  multiplyOrComposeTT(t1, t2) => t1.multiplyT(t2);
+  /// Multiplication if T, N both numbFunctionalers, call T(n) if T is a functional
+  @override
+  multiplyOrApplyTN(t, double n) => t.applyOnN(n);
+
 
 }
 

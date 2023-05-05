@@ -7,13 +7,30 @@ import '../../../lib/src/util/vector/matrix_2d.dart';
 import '../../../lib/src/util/vector/function_matrix_2d.dart';
 
 void main() {
-  test('vectors 1', () {
+  test('double matrices and vectors', () {
     var v1 = Vector([1.0, 2.0]);
     var m1 = MatrixDouble2D<double>([
       [10.0, 20.0],
       [100.0, 200.0],
     ]);
     var m1v1Result = Vector([50.0, 500.0]);
+
+    /* expect(ToPixelsLTransform1D(
+      fromValues: const Interval(1.0, 2.0),
+      toPixels: const Interval(10.0, 20.0),
+    ).apply(1.0),
+      10.0,);*/
+    expect (m1v1Result == m1.applyOnVector(v1), true);
+  });
+
+  test('functional matrices and vectors', () {
+    var v1 = Vector([1.0, 2.0]);
+    // var m1 = FunctionMatrix2D<DoubleToDoubleFunction>([
+    var m1 = FunctionMatrix2D<Functional>([
+      [Functional((x) => x), Functional((x) => 2*x)],
+      [Functional((x) => 3*x), Functional((x) => 4*x)],
+    ]);
+    var m1v1Result = Vector([5.0, 11.0]);
 
     /* expect(ToPixelsLTransform1D(
       fromValues: const Interval(1.0, 2.0),
