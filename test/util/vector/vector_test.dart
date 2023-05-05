@@ -20,26 +20,55 @@ void main() {
       expect(result == m.applyOnVector(v), true);
     });
 
-/*
     test('matrix * matrix', () {
       var m1 = MatrixDouble2D<double>([
         [10.0, 20.0],
         [100.0, 200.0],
       ]);
       var m2 = MatrixDouble2D<double>([
+        [1.0, 2.0],
+        [3.0, 4.0],
+      ]);
+      var result = MatrixDouble2D<double>([
+        [70.0, 100.0],
+        [700.0, 1000.0],
+      ]);
+      var wrongResult = MatrixDouble2D<double>([
+        [70.0, 100.0],
+        [700.0, 1111.0],
+      ]);
+
+      expect(result == (m1 * m2), true);
+
+      expect(wrongResult == (m1 * m2), false);
+    });
+
+    test('matrix + matrix', () {
+      var m1 = MatrixDouble2D<double>([
         [10.0, 20.0],
         [100.0, 200.0],
       ]);
-      var m1v1Result = Vector([50.0, 500.0]);
+      var m2 = MatrixDouble2D<double>([
+        [1.0, 2.0],
+        [3.0, 4.0],
+      ]);
+      var result = MatrixDouble2D<double>([
+        [11.0, 22.0],
+        [103.0, 204.0],
+      ]);
+      var wrongResult = MatrixDouble2D<double>([
+        [11.0, 22.0],
+        [103.0, 1111.0],
+      ]);
 
-      expect(m1v1Result == m1.applyOnVector(v1), true);
+      expect(result == (m1 + m2), true);
+
+      expect(wrongResult == (m1 + m2), false);
     });
-*/
-
   });
 
   group('functional matrices and vectors', () {
-    test('applyOnVector 1', () {
+    test('applyOnVector', () {
       var v = Vector([1.0, 2.0]);
       var m = FunctionalMatrix2D<Functional>([
         [Functional((x) => 10 * x), Functional((x) => 20 * x)],
@@ -49,7 +78,10 @@ void main() {
 
       expect(result == m.applyOnVector(v), true);
     });
+  });
 
+
+  /* todo-010 : probably remove
     test('applyOnVector 2', () {
       var v = Vector([1.0, 2.0]);
       var m = FunctionalMatrix2D<Functional>([
@@ -60,8 +92,8 @@ void main() {
 
       expect(result == m.applyOnVector(v), true);
     });
-  });
 
+   */
   // todo-010 : move to function_test.dart
   group('Functions', () {
     group('Functions == : Same result producing functions are not ==', () {

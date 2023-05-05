@@ -63,10 +63,21 @@ class FunctionalMatrix2D<T extends Functional> extends Matrix2D {
   /// Multiplication if T is number, composition if T is functional
   @override
   multiplyOrComposeTT(t1, t2) => t1.multiplyT(t2);
-  /// Multiplication if T, N both numbFunctionalers, call T(n) if T is a functional
+  /// Multiplication if T, N both numbers, call T(n) if T is a functional
   @override
   multiplyOrApplyTN(t, double n) => t.applyOnN(n);
 
+  /// This test of equality a fake. There is no way (mirrors?) to define 'natural' equality between functions.
+  /// We fake it, for test purposes, by applying on two numbers, 1 and 2
+  @override
+  bool equalsTT(first, second) {
+    for (double d in [1.0, 2.0]) {
+      if (multiplyOrApplyTN(first, d) != multiplyOrApplyTN(second, d)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 

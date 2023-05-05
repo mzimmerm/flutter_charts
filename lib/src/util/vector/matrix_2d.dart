@@ -33,7 +33,9 @@ class Matrix2D<T, N extends double> {
   /// Multiplication if T, N both numbers, call T(n) if T is a functional. Result always N.
   double multiplyOrApplyTN(t, double n) => throw UnimplementedError('implement in extensions');
 
-  /// Matrix addition
+  bool equalsTT(T first, T second) => throw UnimplementedError('implement in extensions');
+
+      /// Matrix addition
   Matrix2D operator +(covariant Matrix2D other) {
     if (numRows != other.numRows || numCols != other.numCols) {
       throw StateError('$runtimeType: Uneven length');
@@ -54,16 +56,14 @@ class Matrix2D<T, N extends double> {
         numRows,
         (rowInd) => List.generate(numCols, (colInd) {
               T dotProductInRowColCurr = zeroOfT;
-              for (int thisColInd = 0; thisColInd < numCols; thisColInd++) {
-                for (int otherRowInd = 0; otherRowInd < other.numRows; otherRowInd++) {
+              for (int freeInd = 0; freeInd < numCols; freeInd++) {
                   dotProductInRowColCurr = addTT(
                     dotProductInRowColCurr,
                     multiplyOrComposeTT(
-                      _storage[rowInd][thisColInd],
-                      other._storage[otherRowInd][colInd],
+                      _storage[rowInd][freeInd],
+                      other._storageByColumn[colInd][freeInd],
                     ),
                   );
-                }
               }
               return dotProductInRowColCurr;
             }).toList(growable: false)));
@@ -126,6 +126,24 @@ class Matrix2D<T, N extends double> {
       throw StateError('Only square matrices supported ATM.');
     }
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! Matrix2D) return false;
+    if (numRows != other.numRows || numCols != other.numCols) return false;
+
+    for (int rowIndex = 0; rowIndex < _storage.length; rowIndex++) {
+      for (int colIndex = 0; colIndex < _storage[rowIndex].length; colIndex++) {
+        if (!equalsTT(_storage[rowIndex][colIndex], other._storage[rowIndex][colIndex])) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode => _storage.hashCode;
   
 }
 
@@ -147,5 +165,8 @@ class MatrixDouble2D<T extends double> extends Matrix2D {
   /// Multiplication if T, N both numbers, call T(n) if T is a functional
   @override
   multiplyOrApplyTN(t, double n) => t * n;
+
+  @override
+  bool equalsTT(first, second) => first == second;
 
 }

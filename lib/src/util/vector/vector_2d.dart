@@ -35,7 +35,6 @@ class Vector<T extends num> {
     if (length != other.length) throw StateError('$runtimeType: Uneven length, this=$length, other=${other.length}');
   }
 
-  ///
   @override
   bool operator ==(Object other) {
     if (other is! Vector) return false;
