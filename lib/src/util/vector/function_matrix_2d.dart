@@ -45,9 +45,9 @@ typedef DoubleToDoubleFunction = double Function(double);
 /// and the "apply" operation, same as application of it's member function [fun] .
 /// All functions this class defines:
 ///   -
-///   - The "+"       (FSet, FSet) -> FSet : DoubleToDoubleFunction addT(DoubleToDoubleFunction other)       => (double arg) => fun(arg) + other(arg);
+///   - The "+"       (FSet, FSet) -> FSet : Functional addT(Functional other) => Functional((double arg) => fun(arg) + other.fun(arg));
 ///   - The "*"       (F, FSet)    -> FSet : DoubleToDoubleFunction multiplyN(double number) => (double arg) => number * fun(arg);
-///   - The "compose" (FSet, FSet) -> FSet : (DoubleToDoubleFunction composeT(DoubleToDoubleFunction other)  => (double arg) => fun(other(arg));
+///   - The "compose" (FSet, FSet) -> FSet : Functional composeT(Functional other) => Functional((double arg) => fun(other.fun(arg))); // * is compose
 ///     - This is possible to define only if f: X -> V is composable X -> V -> V, that is, X = V, that is, X is also a Vector space.
 ///     - In our situation this is true, because we use: X = V = double
 ///   - The "apply"   X -> V               : double applyOnN(double arg)                                      => fun(arg); // function(number)
@@ -86,10 +86,10 @@ class Functional {
         'Functional supports only Object methods, and methods defined on it.');
   }
 
-  DoubleToDoubleFunction addT(DoubleToDoubleFunction other) => (double arg) => fun(arg) + other(arg);
-  DoubleToDoubleFunction multiplyN(double number) => (double arg) => number * fun(arg);
-  DoubleToDoubleFunction composeT(DoubleToDoubleFunction other) => (double arg) => fun(other(arg)); // * is compose
-  double applyOnN(double arg) => fun(arg); // function(number)
+  Functional             addT(Functional other)     => Functional((double arg) => fun(arg) + other.fun(arg));
+  DoubleToDoubleFunction multiplyN(double number)   => (double arg) => number * fun(arg);
+  Functional             composeT(Functional other) => Functional((double arg) => fun(other.fun(arg))); // * is compose
+  double                 applyOnN(double arg)       => fun(arg); // function(number)
 
 }
 
@@ -102,16 +102,17 @@ class FunctionalMatrix2D<T extends Functional> extends Matrix2D {
 
   /// T should be either number or functional,
   @override
-  get zeroOfT => _toZeroD;
+// todo-00-done  get zeroOfT => _toZeroD;
+  get zeroOfT => Functional.zero();
   /// Addition:   number to number it T is number, functional to functional if T is functional
   @override
-  addTT(t1, t2) => t1.addT(t2.fun);
+  addTT(t1, t2) => t1.addT(t2);
   /// Multiplication: number by number it T is number, number by functional if T is functional
   @override
-  multiplyNT(double number, t) => t.multiplyNT(number);
+  multiplyNT(double number, t) => t.multiplyN(number);
   /// Multiplication if T is number, composition if T is functional
   @override
-  multiplyOrComposeTT(t1, t2) => t1.composeT(t2.fun);
+  multiplyOrComposeTT(t1, t2) => t1.composeT(t2);
   /// Multiplication if T, N both numbers, call T(n) if T is a functional
   @override
   multiplyOrApplyTN(t, double n) => t.applyOnN(n);
