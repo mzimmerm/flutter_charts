@@ -9,7 +9,7 @@ import '../../../lib/src/util/vector/function_matrix_2d.dart';
 void main() {
   group('double matrices and vectors', () {
 
-    test('matrix.applyOnVector', () {
+    test('doubleMatrix.applyOnVector', () {
       var v = Vector([1.0, 2.0]);
       var m = MatrixDouble2D<double>([
         [10.0, 20.0],
@@ -20,7 +20,7 @@ void main() {
       expect(result == m.applyOnVector(v), true);
     });
 
-    test('matrix * matrix', () {
+    test('doubleMatrix * doubleMatrix', () {
       var m1 = MatrixDouble2D<double>([
         [10.0, 20.0],
         [100.0, 200.0],
@@ -43,7 +43,7 @@ void main() {
       expect(wrongResult == (m1 * m2), false);
     });
 
-    test('matrix + matrix', () {
+    test('doubleMatrix + doubleMatrix', () {
       var m1 = MatrixDouble2D<double>([
         [10.0, 20.0],
         [100.0, 200.0],
@@ -68,7 +68,7 @@ void main() {
   });
 
   group('functional matrices and vectors', () {
-    test('applyOnVector', () {
+    test('funcMatrix.applyOnVector', () {
       var v = Vector([1.0, 2.0]);
       var m = FunctionalMatrix2D<Functional>([
         [Functional((x) => 10 * x), Functional((x) => 20 * x)],
@@ -78,6 +78,30 @@ void main() {
 
       expect(result == m.applyOnVector(v), true);
     });
+
+    test('funcMatrix * funcMatrix', () {
+      var m1 = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 10 * x), Functional((x) => 20 * x)],
+        [Functional((x) => 100 * x), Functional((x) => 200 * x)],
+      ]);
+      var m2 = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 1 * x), Functional((x) => 2 * x)],
+        [Functional((x) => 3 * x), Functional((x) => 4 * x)],
+      ]);
+      var result = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 70 * x), Functional((x) => 100 * x)],
+        [Functional((x) => 700 * x), Functional((x) => 1000 * x)],
+      ]);
+      var wrongResult = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 70 * x), Functional((x) => 100 * x)],
+        [Functional((x) => 700 * x), Functional((x) => 1111 * x)],
+      ]);
+
+      expect(result == (m1 * m2), true);
+
+      expect(wrongResult == (m1 * m2), false);
+    });
+
   });
 
 
@@ -126,7 +150,7 @@ void main() {
 
     for (var valuesRow in data) {
       expect(
-        isCloserThanEpsilon(
+        isCloserThanEpsilon( Během pře
             DomainLTransform1D(
               fromDomainStart: valuesRow[1],
               fromDomainEnd: valuesRow[2],
