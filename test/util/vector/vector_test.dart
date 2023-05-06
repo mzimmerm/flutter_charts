@@ -102,6 +102,29 @@ void main() {
       expect(wrongResult == (m1 * m2), false);
     });
 
+    test('funcMatrix + funcMatrix', () {
+      var m1 = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 10 * x), Functional((x) => 20 * x)],
+        [Functional((x) => 100 * x), Functional((x) => 200 * x)],
+      ]);
+      var m2 = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 1 * x), Functional((x) => 2 * x)],
+        [Functional((x) => 3 * x), Functional((x) => 4 * x)],
+      ]);
+      var result = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 11 * x), Functional((x) => 22 * x)],
+        [Functional((x) => 103 * x), Functional((x) => 204 * x)],
+      ]);
+      var wrongResult = FunctionalMatrix2D<Functional>([
+        [Functional((x) => 11 * x), Functional((x) => 22 * x)],
+        [Functional((x) => 103 * x), Functional((x) => 1111 * x)],
+      ]);
+
+      expect(result == (m1 + m2), true);
+
+      expect(wrongResult == (m1 + m2), false);
+    });
+
   });
 
 

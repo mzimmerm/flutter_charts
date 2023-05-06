@@ -77,8 +77,8 @@ class Functional {
   /// The function defining this functional.
   final DoubleToDoubleFunction fun;
 
-  static final Functional _identity = Functional( _identityDD );
-  static final Functional _zero = Functional( _toZeroD );
+  static final Functional _identity = Functional( (double x) => x );
+  static final Functional _zero = Functional( (double x) => 0.0 );
 
   call(double number) {
     // return fun(number);
@@ -93,16 +93,12 @@ class Functional {
 
 }
 
-DoubleToDoubleFunction _toZeroD = (double x) => 0.0;
-DoubleToDoubleFunction _identityDD = (double x) => x;
-
 // class FunctionMatrix2D<T extends DoubleToDoubleFunction> extends Matrix2D {
 class FunctionalMatrix2D<T extends Functional> extends Matrix2D {
   FunctionalMatrix2D(List<List<T>> from) : super(from);
 
   /// T should be either number or functional,
   @override
-// todo-00-done  get zeroOfT => _toZeroD;
   get zeroOfT => Functional.zero();
   /// Addition:   number to number it T is number, functional to functional if T is functional
   @override

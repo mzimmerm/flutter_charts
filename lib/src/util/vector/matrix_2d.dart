@@ -84,14 +84,13 @@ class Matrix2D<T, N extends double> {
         vector.length,
             (rowInd) {
           double dotProductInRowCol0Curr = zeroOfN;
-          // todo-00-last : add to constructor : if (_storageByColumn.length != vector.length) throw StateError('inconsistent lengths');
           for (int thisColInd = 0; thisColInd < numCols; thisColInd++) {
             // for (int otherRowInd = 0; otherRowInd < vector._storage[otherRowInd].length; otherRowInd++) {
               dotProductInRowCol0Curr = addNN(
                 dotProductInRowCol0Curr,
                 multiplyOrApplyTN( // result is number
                   _storage[rowInd][thisColInd],
-                  vector[thisColInd] as N, // todo-00-last
+                  vector[thisColInd] as N, // as N required here
                 ),
               );
             // }
