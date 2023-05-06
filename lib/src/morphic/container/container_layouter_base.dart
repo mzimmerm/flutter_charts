@@ -35,13 +35,6 @@ abstract class BoxContainerHierarchy extends Object with UniqueKeyedObjectsManag
   @override
   List<Keyed> get keyedMembers => _children;
 
-  /* KEEP
-  /// Remove ability to create instance on extensions, encouraging use of [BoxContainerHierarchy]
-  /// as mixin only. BUT IT IS NOT CLEAR HOW TO DO THIS AS  BoxContainer extends BoxContainerHierarchy,
-  /// to change BoxContainerHierarchy to mixin, more work.
-  BoxContainerHierarchy._internal();
-  */
-
   /// The parent of this [BoxContainer], initialized to null here, set to in one of 2 places:
   ///   1. In the [BoxContainer] constructor, if [__children] are not-null,
   ///      parent is set on all children as `child.parent = this`.
@@ -3848,7 +3841,7 @@ class _MainAndCrossPositionedSegments {
 // Functions and Helper classes ----------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------------------
-/* END of BoxContainer: KEEP
+/* END of BoxContainer:
   // todo-04 : Replace ParentOffset with ParentTransform. ParentTransform can be ParentOffsetTransform,
   //           ParentTiltTransform, ParentSheerTransform etc.
   /// Maintains current tiltMatrix, a sum of all tiltMatrixs

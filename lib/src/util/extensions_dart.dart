@@ -69,7 +69,7 @@ List expandList(List<List> listList) => listList.expand((item) => item).toList()
 List<List> multiplyListElementsBy<E,T>(List<E> list, List<T> multiplyBy) =>
     list.map((item) => List.generate(multiplyBy.length, (int index) => [item, multiplyBy[index]])).expand((item) => item).toList();
 
-/* KEEP but no practical use as * is not overridable for vector and matrix
+/* No practical use as * is not overridable for vector and matrix
 import 'vector/vector_2d.dart';
 import 'vector/matrix_2d.dart';
 extension NumExtension on num {

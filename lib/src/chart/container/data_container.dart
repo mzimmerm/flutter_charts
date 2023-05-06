@@ -250,7 +250,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
     ContainerKey? key,
   }) : super(
           chartViewModel: chartViewModel,
-          // KEEP - no children passed, they are created in place
+          // No children passed, they are created in place
           key: key,
         ) {
     if (barsAreaSign == Sign.any) {
@@ -569,7 +569,7 @@ class BarPointContainer extends PointContainer {
       widthToLextr: widthToLextr,
       isLextrUseSizerInsteadOfConstraint: false,
     );
-    // KEEP : generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
+    // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
     // which is the [layoutSize] of the rectangle presenting the point.

@@ -92,8 +92,11 @@ class FlutterChartPainter extends widgets.CustomPainter {
     _debugPrintEnd();
   }
 
+  void _debugPrintBegin(ui.Size size) {}
+  void _debugPrintEnd() {}
+
+  /* KEEP debug logging
   void _debugPrintBegin(ui.Size size) {
-    /* KEEP
     var log = logger.Logger();
     log.d('in debug log');
 
@@ -106,11 +109,9 @@ class FlutterChartPainter extends widgets.CustomPainter {
     } else {
       dart_developer.log('    invoked === SECOND TIME === with size=$size', name: 'charts.debug.log');
     }
-    */
   }
 
   void _debugPrintEnd() {
-    /* KEEP
     // clip canvas to size - this does nothing
     // canvas.clipRect  causes the paint() to be called again. why??
     // canvas.clipRect(ui.Offset.zero & size);
@@ -119,8 +120,8 @@ class FlutterChartPainter extends widgets.CustomPainter {
         name: 'charts.debug.log');
     dart_developer.log('', name: 'charts.debug.log');
     dart_developer.log('', name: 'charts.debug.log');
-    */
   }
+  */
 
   /// Implementing abstract in super.
   ///

@@ -212,7 +212,7 @@ class LayedoutLengthsPositioner {
     required this.lengthsPositionerProperties,
     required this.lengthsConstraint,
   }) {
-    // KEEP COMMENT 2-23-04027: : assert only positive or 0 lengths. Later we can use negative positioning
+    // 2023-04-27: Added assert only positive or 0 lengths allowed. Later we can use negative positioning
     for(var length in lengths) {
       assert (length >= 0.0);
     }
