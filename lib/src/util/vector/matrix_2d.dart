@@ -146,8 +146,8 @@ class Matrix2D<T, N extends double> {
   
 }
 
-class MatrixDouble2D<T extends double> extends Matrix2D {
-  MatrixDouble2D(List<List<T>> from) : super(from);
+class DoubleMatrix2D<T extends double> extends Matrix2D {
+  DoubleMatrix2D(List<List<T>> from) : super(from);
 
   /// T should be either number or functional,
   @override

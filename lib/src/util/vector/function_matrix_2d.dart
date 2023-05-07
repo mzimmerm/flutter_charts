@@ -95,7 +95,8 @@ class Functional {
 
 // class FunctionMatrix2D<T extends DoubleToDoubleFunction> extends Matrix2D {
 class FunctionalMatrix2D<T extends Functional> extends Matrix2D {
-  FunctionalMatrix2D(List<List<T>> from) : super(from);
+  FunctionalMatrix2D(List<List<DoubleToDoubleFunction>> from)
+      : super(from.map((lf) => lf.map((f) => Functional(f)).toList()).toList());
 
   /// T should be either number or functional,
   @override
