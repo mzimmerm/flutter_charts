@@ -527,13 +527,13 @@ class DomainLTransform1D {
   /// Returns the size of a segment in the 'to' domain
   /// scaled from a segment with [length] size in the 'from' domain.
   ///
-  /// This method's name, 'applyOnlyScaleOnLength', and the parameter name, 'length', is used to express
+  /// This method's name, 'applyOnlyLinearScale', and the parameter name, 'length', is used to express
   /// the use pattern of this method: It should be used in situations where we only care about
   /// length change between the value domain and the pixel domain, not about change in position.
   ///
   /// Negative lengths are supported. Direction matters - that means, a segment of a positive length can
   /// turn into a negative length. if the [_domainStretch] is negative (this means inverted domain directions).
-  double applyOnlyScaleOnLength(double length) {
+  double applyOnlyLinearScale(double length) {
     return length * _domainStretch;
   }
 

@@ -70,11 +70,54 @@ class PointOffset extends Offset {
     //BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
     // todo-00 : finish this
-    // Create a functional matrices:
-    //   for column, Matrix.affineTransform
-    //   for row,    Matrix.transposeThenAffineTransform(transposeAroundDiagonal: Diagonal.leftToRightUp)
-    // both have function elements that correspond to how the affineTransform should work.
-    // The affineTransforms:
+    // On PointOffset
+    //   - add method toVector, and fromVector
+    // On Size extension
+    //   - add method toVector, fromVector
+    // Based on orientation:
+    //   - set horizontalPixelsRange, verticalPixelsRange, based on same logic as in method
+    //   - create 4 ToPixelsLTransform1D instances for data range combination:
+    //     - column
+    //       column00 (in->px)
+    //         fromValuesRange: inputDataRange,
+    //         toPixelsRange: horizontalPixelsRange,
+    //         doInvertDomain: false,
+    //       column11 (out->py)
+    //         fromValuesRange: outputDataRange,
+    //         toPixelsRange: verticalPixelsRange,
+    //         doInvertDomain: true,
+    //
+    //     - row
+    //       row10 (in->py)
+    //         fromValuesRange: inputDataRange,
+    //         toPixelsRange: verticalPixelsRange,
+    //         doInvertDomain: false,
+    //       row01 (out->px)
+    //         fromValuesRange: outputDataRange,
+    //         toPixelsRange: horizontalPixelsRange,
+    //         doInvertDomain: true,
+    //   - Note: the doInvert on row seems not right but works. Why?
+    //
+    //
+    //   - Create 4 functional matrices (2 in each switch section), with function elements that correspond to how the affineTransform should work
+    //     for column, affineTransformer = Matrix.affineTransformer
+    //                   (column00.apply, column11.apply, rest Functional.identity)
+    //     for column, linearTransformer = Matrix.linearTransformer
+    //                   (column00.applyOnlyLinearScale, column11.applyOnlyLinearScale, rest Functional.identity)
+    //     for row,    affineTransformer = Matrix.transposeThenAffineTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
+    //                   (row10.apply, row01.apply, rest Functional identity)
+    //     for row,    linearTransformer = Matrix.transposeThenLinearTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
+    //                   (row10.applyOnlyLinearScale, row01.applyOnlyLinearScale, rest Functional identity)
+    //
+    //   - Call:
+    //     pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOn(this.toVector));
+    //     pointOffsetPixels.barPointRectSize = Size.fromVector(linearTransformer.applyOn(this.toVector));
+    //   - Return pointOffsetPixels. THAT IS ALL
+    //
+    //
+    // - rename : lextrToPixelsMaybeTransposeInContextOf => afftransfMaybeTransposeToPixelsInContextOf
+    // - Convert names LinearTransform etc to AffineTransform
+    // - Try to make AffineTransform constructors constant, as it seems they are repeated for every point.
     return this;
   }
 /* */
@@ -136,7 +179,7 @@ class PointOffset extends Offset {
   ///         - fromPointOffset: (100, 3,400) is drawn as PIXEL (300, 0)
   ///         - THIS IS HORIZONTAL LINE AT Y = 0, WHICH GIVES THE CONTAINER HEIGHT=0.
   ///           LAYOUT PLACES THE LINE BETWEEN POSITIVE AND NEGATIVE SECTIONS
-  ///alue
+  ///
   ///
   ///   2. The [ChartOrientation.row] performs 2 consecutive transforms
   ///      This first transform transposes a [PointOffset] around [Diagonal.leftToRightUp],
@@ -302,7 +345,7 @@ class PointOffset extends Offset {
     );
     double pixelPositionForValue, pixelLengthForValue;
     pixelPositionForValue = transform.apply(fromValue);
-    pixelLengthForValue = transform.applyOnlyScaleOnLength(fromValue).abs();
+    pixelLengthForValue = transform.applyOnlyLinearScale(fromValue).abs();
 
     return _ValuePixels(pixelPositionForValue, pixelLengthForValue);
   }
