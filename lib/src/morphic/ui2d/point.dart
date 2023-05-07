@@ -3,13 +3,21 @@ import 'dart:ui' show Offset, Size;
 import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
+import '../../chart/container/data_container.dart' as doc_data_container;
 
-/// Extension of [Offset] which adds ability to lextr itself inside the chart
-/// from it's value to the chart value domains and pixel domains.
+/// Extension of [Offset] which adds ability to lextr to a new [PointOffset] instance
+/// created from it's instance data value in it's value domain to the pixel position in the pixel domains.
+///
+/// Note: This class position is renamed from [Offset.dx] and dy to [PointOffset.inputValue] and outputValue.
+///
+/// In addition to it's position inherited from [Offset], this class calculates and creates, during [layout],
+/// it's member [barPointRectSize], the [Size] of the rectangle which presents the data value of this [PointOffset]
+/// in the chart on a bar chart.
 ///
 /// The lextr-ing is done in [lextrToPixelsMaybeTransposeInContextOf],
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value domains and pixel domains.
+///
 class PointOffset extends Offset {
   PointOffset({
     required double inputValue,
@@ -22,14 +30,16 @@ class PointOffset extends Offset {
           outputValue: offset.dy,
         );
 
-  /// Size of the rectangle which represents one value point on either horizontal bar or vertical bar,
-  /// depending on chart orientation. Calculated by the call to [lextrToPixelsMaybeTransposeInContextOf].
+  /// Pixel [Size] of the rectangle which presents this [PointOffset] on either horizontal bar or vertical bar,
+  /// constructed late in [lextrToPixelsMaybeTransposeInContextOf], according to the [ChartOrientation] passed to
+  /// [lextrToPixelsMaybeTransposeInContextOf].
   ///
-  /// For [ChartOrientation.column] width is constraints.width on column, height is outputValuePixels
-  /// For [ChartOrientation.row]    width is inputValuePixels, height is constraints.height on row
+  /// The [Size] width and height is calculated as follows:
+  ///   - For [ChartOrientation.column] the width is constraints.width on column, height is outputValuePixels.
+  ///   - For [ChartOrientation.row]    the width is inputValuePixels,            height is constraints.height on row.
   ///
-  /// This is the layoutSize of one rectangle bar which is the view of this [PointOffset] (which is created from
-  /// the [BarPointContainer]'s [PointModel]).
+  /// It becomes the [layoutSize] of the rectangle which presents this [PointOffset]; The [PointOffset]
+  /// is created from [PointModel] member the [doc_data_container.PointContainer.pointModel].
   ///
   late final Size barPointRectSize;
 
@@ -48,6 +58,27 @@ class PointOffset extends Offset {
 
   Offset get asOffset => Offset(inputValue, outputValue);
 
+  PointOffset lextrToPixelsMaybeTransposeInContextOfNEW({
+    required ChartOrientation  chartOrientation,
+    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required Interval                inputDataRange,
+    required Interval                outputDataRange,
+    required double                  heightToLextr,
+    required double                  widthToLextr,
+    required bool                    isLextrUseSizerInsteadOfConstraint, // default false
+  }) {
+    //ChartOrientation orientation = chartOrientation;
+    //BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+
+    // todo-00 : finish this
+    // Create a functional matrixes:
+    //   for column, Matrix.affineTransform
+    //   for row,    Matrix.transposeThenAffineTransform(transposeAroundDiagonal: Diagonal.leftToRightUp)
+    // both have function elements that correspond to how the affineTransform should work.
+    // The affineTransforms:
+    return this;
+  }
+/* */
   /// Lextr this [PointOffset] to it's pixel scale, first possibly transposing
   /// it if [chartOrientation] is [ChartOrientation.row].
   ///
@@ -110,7 +141,7 @@ class PointOffset extends Offset {
   ///         - fromPointOffset: (100, 3,400) is drawn as PIXEL (300, 0)
   ///         - THIS IS HORIZONTAL LINE AT Y = 0, WHICH GIVES THE CONTAINER HEIGHT=0.
   ///           LAYOUT PLACES THE LINE BETWEEN POSITIVE AND NEGATIVE SECTIONS
-  ///
+  ///alue
   ///
   ///   2. The [ChartOrientation.row] performs 2 consecutive transforms
   ///      This first transform transposes a [PointOffset] around [Diagonal.leftToRightUp],
@@ -183,7 +214,7 @@ class PointOffset extends Offset {
           toPixelsRange: toPixelsRange1,
           doInvertDomain: doInvertDomain1,
         );
-        inputPixels = inputValuePixels.fromValueOnAxisPixels;
+        inputPixels = inputValuePixels.pixelPositionForValue;
 
         // 1.2.1:
         fromValuesRange2 = outputDataRange;
@@ -197,11 +228,11 @@ class PointOffset extends Offset {
           toPixelsRange: toPixelsRange2,
           doInvertDomain: doInvertDomain2,
         );
-        outputPixels =  fromValueOutputPixels.fromValueOnAxisPixels;
+        outputPixels =  fromValueOutputPixels.pixelPositionForValue;
 
         // Width and height of
         barPointRectWidth  = toPixelsRange1.length;
-        barPointRectHeight = fromValueOutputPixels.fromValueLengthInPixels;
+        barPointRectHeight = fromValueOutputPixels.pixelLengthForValue;
 
         break;
       case ChartOrientation.row:
@@ -233,7 +264,7 @@ class PointOffset extends Offset {
           toPixelsRange: verticalPixelsRange,
           doInvertDomain: false,
         );
-        outputPixels = fromValueOutputPixels.fromValueOnAxisPixels;
+        outputPixels = fromValueOutputPixels.pixelPositionForValue;
 
         // 1.1.2:
         // Transform 2 : iotrpIn -> pixels on horizontal x axis (horizontalPixels)
@@ -245,9 +276,9 @@ class PointOffset extends Offset {
           toPixelsRange: horizontalPixelsRange,
           doInvertDomain: true,
         );
-        inputPixels = fromValueInputPixels.fromValueOnAxisPixels;
+        inputPixels = fromValueInputPixels.pixelPositionForValue;
 
-        barPointRectWidth  = fromValueInputPixels.fromValueLengthInPixels;
+        barPointRectWidth  = fromValueInputPixels.pixelLengthForValue;
         barPointRectHeight = verticalPixelsRange.length;
 
         break;
@@ -280,26 +311,28 @@ class PointOffset extends Offset {
   }) {
     assert (toPixelsRange.min == 0.0);
 
-    var portion = _FromAndToPortionForFromValue(
-      fromValue: fromValue,
-      fromValuesRange: fromValuesRange,
-      toPixelsRange: toPixelsRange,
-    );
-    fromValuesRange = portion.fromValuesPortion;
-    toPixelsRange = portion.toPixelsPortion;
+    // todo-00-done
+    // var portion = _FromAndToPortionForFromValue(
+    //   fromValue: fromValue,
+    //   fromValuesRange: fromValuesRange,
+    //   toPixelsRange: toPixelsRange,
+    // );
+    // fromValuesRange = portion.fromValuesPortion;
+    // toPixelsRange = portion.toPixelsPortion;
 
     var transform = ToPixelsLTransform1D(
         fromValues: Interval(fromValuesRange.min, fromValuesRange.max),
         toPixels:   Interval(toPixelsRange.min, toPixelsRange.max),
         doInvertToDomain: doInvertDomain,
     );
-    double fromValueOnAxisPixels, fromValueLengthInPixels;
-    fromValueOnAxisPixels = transform.apply(fromValue);
-    fromValueLengthInPixels = transform.applyOnlyScaleOnLength(fromValue).abs();
+    double pixelPositionForValue, pixelLengthForValue;
+    pixelPositionForValue = transform.apply(fromValue);
+    pixelLengthForValue = transform.applyOnlyScaleOnLength(fromValue).abs();
 
-    return _ValuePixels(fromValueOnAxisPixels, fromValueLengthInPixels);
+    return _ValuePixels(pixelPositionForValue, pixelLengthForValue);
   }
-  
+/* */
+
   /// Present itself as code
   String asCodeConstructor() {
     return 'PointOffset('
@@ -310,11 +343,12 @@ class PointOffset extends Offset {
 }
 
 class _ValuePixels {
-  _ValuePixels(this.fromValueOnAxisPixels, this.fromValueLengthInPixels);
-  final double fromValueOnAxisPixels;
-  final double fromValueLengthInPixels;
+  _ValuePixels(this.pixelPositionForValue, this.pixelLengthForValue);
+  final double pixelPositionForValue;
+  final double pixelLengthForValue;
 }
 
+/* todo-00-done : unused now
 /// Helper class mutates [fromValuesRange] and [toPixelsRange] for lextr-ing only using
 /// the portions corresponding to sign of [fromValue];
 class _FromAndToPortionForFromValue {
@@ -335,11 +369,13 @@ class _FromAndToPortionForFromValue {
   late final Interval fromValuesPortion;
   late final Interval toPixelsPortion;
 }
+*/
 
 /// Identifies a diagonal for transpose transfer.
 ///
 /// [leftToRightUp] identifies the diagonal around which a coordinate system would
 /// rotate to get from a vertical bar chart to a horizontal bar chart.
+// todo-010 : move to an enum file - representing geometry
 enum Diagonal {
   leftToRightDown,
   leftToRightUp,
