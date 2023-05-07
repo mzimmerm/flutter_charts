@@ -42,7 +42,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     this.fromPointOffset,
     this.toPointOffset,
     required this.linePaint,
-    this.isLextrUseSizerInsteadOfConstraint = false,
+    // todo-00-last-last-done : this.isLextrUseSizerInsteadOfConstraint = false,
     required super.chartViewModel,
     super.constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
   });
@@ -67,7 +67,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///   - if true           : [container_base.HeightSizerLayouterChildMixin.heightToLextr]
   ///     is used to set pixel range.
   ///
-  final bool isLextrUseSizerInsteadOfConstraint;
+  // todo-00-last-last-done : final bool isLextrUseSizerInsteadOfConstraint;
 
   // ##### Full [layout] override.
 
@@ -106,7 +106,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+      // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
     _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
@@ -115,7 +115,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+      // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child
@@ -168,12 +168,12 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
     required ui.Paint linePaint,
     required view_model.ChartViewModel chartViewModel,
     container_base.ConstraintsWeight constraintsWeight = container_base.ConstraintsWeight.defaultWeight,
-    isLextrUseSizerInsteadOfConstraint = false,
+    // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint = false,
   }) : super(
           linePaint: linePaint,
           chartViewModel: chartViewModel,
           constraintsWeight: constraintsWeight,
-          isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
+    // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: isLextrUseSizerInsteadOfConstraint,
         );
 
   /// Model contains the transformed, not-extrapolated values of the point where the line starts.

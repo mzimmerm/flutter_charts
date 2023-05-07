@@ -65,7 +65,7 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    required bool                    isLextrUseSizerInsteadOfConstraint, // default false
+    // todo-00-last-last-done : required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     //ChartOrientation orientation = chartOrientation;
     //BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -183,7 +183,7 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    required bool                    isLextrUseSizerInsteadOfConstraint, // default false
+    // todo-00-last-last-done : required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     ChartOrientation orientation = chartOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -204,7 +204,8 @@ class PointOffset extends Offset {
       case ChartOrientation.column:
         // 1.1.1:
         fromValuesRange1 = inputDataRange;
-        toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        // todo-00-last-last-done : toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        toPixelsRange1   = Interval(0.0, constraints.width);
         doInvertDomain1  = false;
         fromValue1       = inputValue;
 
@@ -257,7 +258,8 @@ class PointOffset extends Offset {
 
         // 1.2.2:
         // Transform 2 : iotrpOut -> pixels on vertical y axis (verticalPixels)
-        var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
+        // todo-00-last-last-done : var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
+        var verticalPixelsRange   = Interval(0.0, constraints.height);
         var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
           fromValue: iotrpPoint.outputValue,
           fromValuesRange: iotrpOutputDataRange,
