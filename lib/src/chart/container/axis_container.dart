@@ -36,7 +36,6 @@ class AxisLineContainer extends LineBetweenPointOffsetsContainer {
     super.constraintsWeight = const ConstraintsWeight(weight: 0),
     required super.linePaint,
     required super.chartViewModel,
-    // todo-00-last-last-done : super.isLextrUseSizerInsteadOfConstraint = false,
   });
 }
 
@@ -60,7 +59,6 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
               inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-          // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
         );
 }
 
@@ -81,7 +79,6 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
               inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
-    // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: true, // Lextr to full Sizer Height, AND Ltransf, not Lscale
         );
 }
 

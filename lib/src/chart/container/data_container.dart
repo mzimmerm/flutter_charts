@@ -567,7 +567,6 @@ class BarPointContainer extends PointContainer {
       outputDataRange: outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      // todo-00-last-last-done : // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: false,
     );
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
@@ -607,7 +606,7 @@ class BarPointContainer extends PointContainer {
         '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       heightToLextr: $heightToLextr,\n'
         '       widthToLextr: $widthToLextr,\n'
-        '       // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: false,\n'
+        '       //  isLextrUseSizerInsteadOfConstraint: false,\n'
         '     );\n';
     // var pixelPointOffsetStr = '   pixelPointOffset = ${pixelPointOffset.asCodeConstructor()};\n';
     // var pixelPointOffsetLayoutSizeStr = '   pixelPointOffsetLayoutSize = ${pixelPointOffset.barPointRectSize.asCodeConstructor()};\n';
@@ -665,7 +664,6 @@ class ZeroValueBarPointContainer extends BarPointContainer {
       outputDataRange: outputLabelsGenerator.dataRange,
       heightToLextr: heightToLextr,
       widthToLextr: widthToLextr,
-      // todo-00-last-last-done : // todo-00-last-last-done : isLextrUseSizerInsteadOfConstraint: false,
     );
 
     // Make the layoutSize zero in the direction of the chart orientation

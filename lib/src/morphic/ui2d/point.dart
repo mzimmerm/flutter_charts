@@ -65,13 +65,12 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    // todo-00-last-last-done : required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     //ChartOrientation orientation = chartOrientation;
     //BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
     // todo-00 : finish this
-    // Create a functional matrixes:
+    // Create a functional matrices:
     //   for column, Matrix.affineTransform
     //   for row,    Matrix.transposeThenAffineTransform(transposeAroundDiagonal: Diagonal.leftToRightUp)
     // both have function elements that correspond to how the affineTransform should work.
@@ -92,15 +91,11 @@ class PointOffset extends Offset {
   ///       - first transforms value on each axis to value on cross-axis, using their respective value-domains,
   ///       - second on each cross axis, from value-domain to pixel-domain
   ///
-  ///   - [constraintsOnImmediateOwner] constraints set the width and height of the the pixel-domains;
-  ///     used IF [isLextrUseSizerInsteadOfConstraint] is false (default).
   ///   - [heightToLextr] is the height used for pixel-domain,
   ///     used IF  [isLextrUseSizerInsteadOfConstraint] is true. Flip use with [constraintsOnImmediateOwner]
   ///   - [widthToLextr] - equivalent to [heightToLextr]
   ///   - [inputDataRange] is the data value-range on the input domain (1st coordinate, x)
   ///   - [outputDataRange] is the data value-range on the output domain (2nd coordinate, y)
-  ///   - [isLextrUseSizerInsteadOfConstraint] if true, processing uses [heightToLextr] and [widthToLextr]
-  ///      instead of [constraintsOnImmediateOwner] to set height and width of the pixel-domains. Default false.
   ///
   /// Items below summarize the rules for lextr-ing [PointOffset] depending on it's [chartOrientation]
   /// being [ChartOrientation.column] or the [ChartOrientation.row].
@@ -175,7 +170,6 @@ class PointOffset extends Offset {
   ///         - THIS IS VERTICAL LINE AT X = 0, WHICH GIVES THE CONTAINER WIDTH = 0.
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
-  ///  todo-00-next         21. [ ] Add tests for PointOffset lextr method - this method. Maybe capture some printlns at runtime, convert to tests?
   PointOffset lextrToPixelsMaybeTransposeInContextOf({
     required ChartOrientation  chartOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
@@ -183,18 +177,13 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  heightToLextr,
     required double                  widthToLextr,
-    // todo-00-last-last-done : required bool                    isLextrUseSizerInsteadOfConstraint, // default false
   }) {
     ChartOrientation orientation = chartOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
-    double inputPixels = 0.0;
-    double outputPixels = 0.0;
+    double horizontalPixels = 0.0;
+    double verticalPixels = 0.0;
 
-    Interval fromValuesRange1 , fromValuesRange2;
-    Interval toPixelsRange1   , toPixelsRange2  ;
-    bool     doInvertDomain1  , doInvertDomain2 ;
-    double   fromValue1       , fromValue2      ;
 
     // Width and height of the bar rectangle in pixels.
     // The bar rectangle represents this point on bar chart.
@@ -203,37 +192,31 @@ class PointOffset extends Offset {
     switch (orientation) {
       case ChartOrientation.column:
         // 1.1.1:
-        fromValuesRange1 = inputDataRange;
-        // todo-00-last-last-done : toPixelsRange1   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
-        toPixelsRange1   = Interval(0.0, constraints.width);
-        doInvertDomain1  = false;
-        fromValue1       = inputValue;
+        // KEEP : var horizontalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        var horizontalPixelsRange   = Interval(0.0, constraints.width);
 
-        var inputValuePixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue1,
-          fromValuesRange: fromValuesRange1,
-          toPixelsRange: toPixelsRange1,
-          doInvertDomain: doInvertDomain1,
+        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: inputValue,
+          fromValuesRange: inputDataRange,
+          toPixelsRange: horizontalPixelsRange,
+          doInvertDomain: false,
         );
-        inputPixels = inputValuePixels.pixelPositionForValue;
+        horizontalPixels = horizontalValuePixels.pixelPositionForValue;
 
         // 1.2.1:
-        fromValuesRange2 = outputDataRange;
-        toPixelsRange2   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
-        doInvertDomain2  = true;
-        fromValue2       = outputValue;
+        var verticalPixelsRange   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
 
-        var fromValueOutputPixels    = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: fromValue2,
-          fromValuesRange: fromValuesRange2,
-          toPixelsRange: toPixelsRange2,
-          doInvertDomain: doInvertDomain2,
+        var verticalValuePixels    = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: outputValue,
+          fromValuesRange: outputDataRange,
+          toPixelsRange: verticalPixelsRange,
+          doInvertDomain: true,
         );
-        outputPixels =  fromValueOutputPixels.pixelPositionForValue;
+        verticalPixels =  verticalValuePixels.pixelPositionForValue;
 
-        // Width and height of
-        barPointRectWidth  = toPixelsRange1.length;
-        barPointRectHeight = fromValueOutputPixels.pixelLengthForValue;
+        // Width and height of the rectangle layoutSize
+        barPointRectWidth  = horizontalPixelsRange.length;
+        barPointRectHeight = verticalValuePixels.pixelLengthForValue;
 
         break;
       case ChartOrientation.row:
@@ -252,43 +235,42 @@ class PointOffset extends Offset {
         // Transpose all points in chart around [Diagonal.leftToRightUp].
         // This changes the chart from vertical bar chart to horizontal bar chart.
         // Transform 1 : iotrp transform: (in, out) -> (iotrpIn=out, iotrpOut=in)
-        Interval iotrpOutputDataRange = Interval.from(inputDataRange);
-        Interval iotrpInputDataRange = Interval.from(outputDataRange);
-        PointOffset iotrpPoint = PointOffset(inputValue: outputValue, outputValue: inputValue);
 
         // 1.2.2:
         // Transform 2 : iotrpOut -> pixels on vertical y axis (verticalPixels)
-        // todo-00-last-last-done : var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
+        // KEEP: var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
         var verticalPixelsRange   = Interval(0.0, constraints.height);
-        var fromValueOutputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: iotrpPoint.outputValue,
-          fromValuesRange: iotrpOutputDataRange,
+
+        var verticalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: inputValue,
+          fromValuesRange: inputDataRange,
           toPixelsRange: verticalPixelsRange,
           doInvertDomain: false,
         );
-        outputPixels = fromValueOutputPixels.pixelPositionForValue;
+        verticalPixels = verticalValuePixels.pixelPositionForValue;
 
         // 1.1.2:
         // Transform 2 : iotrpIn -> pixels on horizontal x axis (horizontalPixels)
         var horizontalPixelsRange   = Interval(0.0, widthToLextr);
 
-        var fromValueInputPixels = _lextrFromValueToPixelsOnSameAxis(
-          fromValue: iotrpPoint.inputValue,
-          fromValuesRange: iotrpInputDataRange,
+        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+          fromValue: outputValue,
+          fromValuesRange: outputDataRange,
           toPixelsRange: horizontalPixelsRange,
           doInvertDomain: true,
         );
-        inputPixels = fromValueInputPixels.pixelPositionForValue;
+        horizontalPixels = horizontalValuePixels.pixelPositionForValue;
 
-        barPointRectWidth  = fromValueInputPixels.pixelLengthForValue;
+        // Width and height of the rectangle layoutSize
+        barPointRectWidth  = horizontalValuePixels.pixelLengthForValue;
         barPointRectHeight = verticalPixelsRange.length;
 
         break;
     }
 
     PointOffset pointOffsetPixels = PointOffset(
-      inputValue: inputPixels,
-      outputValue: outputPixels,
+      inputValue: horizontalPixels,
+      outputValue: verticalPixels,
     );
 
     // The size of small rectangle representing the point on bar chart, adjusted for orientation.
@@ -312,15 +294,6 @@ class PointOffset extends Offset {
     required bool     doInvertDomain,
   }) {
     assert (toPixelsRange.min == 0.0);
-
-    // todo-00-done
-    // var portion = _FromAndToPortionForFromValue(
-    //   fromValue: fromValue,
-    //   fromValuesRange: fromValuesRange,
-    //   toPixelsRange: toPixelsRange,
-    // );
-    // fromValuesRange = portion.fromValuesPortion;
-    // toPixelsRange = portion.toPixelsPortion;
 
     var transform = ToPixelsLTransform1D(
         fromValues: Interval(fromValuesRange.min, fromValuesRange.max),
