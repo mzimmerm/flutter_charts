@@ -1,8 +1,15 @@
 import 'dart:ui' show Offset, Size;
 
+
 import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
+import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
+import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
+import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart'
+    show DoubleToDoubleFunction, Functional, FunctionalMatrix2D;
+
+// Docs only, not used in code.
 import '../../chart/container/data_container.dart' as doc_data_container;
 
 /// Extension of [Offset] which adds ability to lextr to a new [PointOffset] instance
@@ -19,6 +26,7 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 /// position and chart value domains and pixel domains.
 ///
 class PointOffset extends Offset {
+
   PointOffset({
     required double inputValue,
     required double outputValue,
@@ -29,6 +37,11 @@ class PointOffset extends Offset {
           inputValue: offset.dx,
           outputValue: offset.dy,
         );
+
+  factory PointOffset.fromVector(Vector<double> vector) {
+    vector.ensureLength(2, elseMessage: 'PointOffset can only be created from vector with 2 elements.');
+    return PointOffset(inputValue: vector[0], outputValue: vector[1]);
+  }
 
   /// Pixel [Size] of the rectangle which presents this [PointOffset] on either horizontal bar or vertical bar,
   /// constructed late in [lextrToPixelsMaybeTransposeInContextOf], according to the [ChartOrientation] passed to
@@ -45,6 +58,10 @@ class PointOffset extends Offset {
 
   double get inputValue => dx;
   double get outputValue => dy;
+
+  // no need. PointOffset IS Offset. Offset get asOffset => Offset(inputValue, outputValue);
+  Vector<double> toVector() => Vector<double>([inputValue, outputValue]);
+
   @override
   PointOffset operator +(Offset other) => PointOffset(
         inputValue: inputValue + other.dx,
@@ -56,71 +73,7 @@ class PointOffset extends Offset {
     outputValue: outputValue - other.dy,
   );
 
-  Offset get asOffset => Offset(inputValue, outputValue);
-
-  PointOffset lextrToPixelsMaybeTransposeInContextOfNEW({
-    required ChartOrientation  chartOrientation,
-    required BoxContainerConstraints constraintsOnImmediateOwner,
-    required Interval                inputDataRange,
-    required Interval                outputDataRange,
-    required double                  heightToLextr,
-    required double                  widthToLextr,
-  }) {
-    //ChartOrientation orientation = chartOrientation;
-    //BoxContainerConstraints constraints = constraintsOnImmediateOwner;
-
-    // todo-00 : finish this
-    // On PointOffset
-    //   - add method toVector, and fromVector
-    // On Size extension
-    //   - add method toVector, fromVector
-    // Based on orientation:
-    //   - set horizontalPixelsRange, verticalPixelsRange, based on same logic as in method
-    //   - create 4 ToPixelsLTransform1D instances for data range combination:
-    //     - column
-    //       column00 (in->px)
-    //         fromValuesRange: inputDataRange,
-    //         toPixelsRange: horizontalPixelsRange,
-    //         doInvertDomain: false,
-    //       column11 (out->py)
-    //         fromValuesRange: outputDataRange,
-    //         toPixelsRange: verticalPixelsRange,
-    //         doInvertDomain: true,
-    //
-    //     - row
-    //       row10 (in->py)
-    //         fromValuesRange: inputDataRange,
-    //         toPixelsRange: verticalPixelsRange,
-    //         doInvertDomain: false,
-    //       row01 (out->px)
-    //         fromValuesRange: outputDataRange,
-    //         toPixelsRange: horizontalPixelsRange,
-    //         doInvertDomain: true,
-    //   - Note: the doInvert on row seems not right but works. Why?
-    //
-    //
-    //   - Create 4 functional matrices (2 in each switch section), with function elements that correspond to how the affineTransform should work
-    //     for column, affineTransformer = Matrix.affineTransformer
-    //                   (column00.apply, column11.apply, rest Functional.identity)
-    //     for column, linearTransformer = Matrix.linearTransformer
-    //                   (column00.applyOnlyLinearScale, column11.applyOnlyLinearScale, rest Functional.identity)
-    //     for row,    affineTransformer = Matrix.transposeThenAffineTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
-    //                   (row10.apply, row01.apply, rest Functional identity)
-    //     for row,    linearTransformer = Matrix.transposeThenLinearTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
-    //                   (row10.applyOnlyLinearScale, row01.applyOnlyLinearScale, rest Functional identity)
-    //
-    //   - Call:
-    //     pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOn(this.toVector));
-    //     pointOffsetPixels.barPointRectSize = Size.fromVector(linearTransformer.applyOn(this.toVector));
-    //   - Return pointOffsetPixels. THAT IS ALL
-    //
-    //
-    // - rename : lextrToPixelsMaybeTransposeInContextOf => afftransfMaybeTransposeToPixelsInContextOf
-    // - Convert names LinearTransform etc to AffineTransform
-    // - Try to make AffineTransform constructors constant, as it seems they are repeated for every point.
-    return this;
-  }
-/* */
+  /// todo-010 change, shorten, fix documentation
   /// Lextr this [PointOffset] to it's pixel scale, first possibly transposing
   /// it if [chartOrientation] is [ChartOrientation.row].
   ///
@@ -221,6 +174,156 @@ class PointOffset extends Offset {
     required double                  heightToLextr,
     required double                  widthToLextr,
   }) {
+    // No-op rename input params to shorted version.
+    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+    ChartOrientation orientation = chartOrientation;
+
+    // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
+    //
+    // Create 4 ToPixelsLTransform1D instances for data range transforms;
+    //   their methods [apply] and [applyOnlyLinearScale] will become elements
+    //   of the Functional transformation matrices.
+    // The XX and YY versions are used in column orientation, which does not swap X and Y;
+    // The XY and YX versions are used in row    orientation, which swaps X and Y before
+    //
+    // Create 4 functional matrices (2 in each switch section), with function elements that correspond
+    //   to how the affineTransform should work
+    //     for column, affineTransformer = Matrix.affineTransformer
+    //                   (transf00.apply, transf11.apply, rest Functional.identity)
+    //     for column, linearTransformer = Matrix.linearTransformer
+    //                   (transf00.applyOnlyLinearScale, transf11.applyOnlyLinearScale, rest Functional.identity)
+    //     for transf, affineTransformer = Matrix.transposeThenAffineTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
+    //                   (transf10.apply, transf01.apply, rest Functional identity)
+    //     for row,    linearTransformer = Matrix.transposeThenLinearTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
+    //                   (transf10.applyOnlyLinearScale, transf01.applyOnlyLinearScale, rest Functional identity)
+
+    // Transforms values between domains using affine `scale * x + shift`. May switch X and Y before transform
+    FunctionalMatrix2D affineTransformer;
+    // Transforms lengths between domains using linear `scale * x`.  May switch X and Y before transform
+    FunctionalMatrix2D linearTransformer;
+    // Zero transform.
+    DoubleToDoubleFunction zero = Functional.zero().fun;
+
+    // Horizontal and vertical pixels ranges to which we transform come from Constraints or Sizer,
+    //   depending on orientation.
+    // Need them to survive switch, as, in the orientation cross-direction, the unscaled-divided-constraint
+    //   bar length is used, see [barPointRectSize] at the end of this method.
+    Interval horizontalPixelsRange, verticalPixelsRange;
+
+    switch (orientation) {
+      case ChartOrientation.column:
+        horizontalPixelsRange = Interval(0.0, constraints.width);
+        verticalPixelsRange   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
+
+        // Used for orientation.column
+        //   m[0,0] (in->px)
+        var transfXX = ToPixelsLTransform1D(
+          fromValues: inputDataRange,
+          toPixels: horizontalPixelsRange,
+          doInvertToDomain: false,
+        );
+
+        //   m[1,1] (out->py)
+        var transfYY = ToPixelsLTransform1D(
+          fromValues: outputDataRange,
+          toPixels: verticalPixelsRange,
+          doInvertToDomain: true,
+        );
+
+        // affineTransformer: x -> x, y -> y,
+        //   followed by affine coordinates transfer: x -> ax + b, y -> cx + d)
+        affineTransformer = FunctionalMatrix2D([
+          [transfXX.apply, zero],
+          [zero,           transfYY.apply],
+        ]);
+        linearTransformer = FunctionalMatrix2D([
+          [transfXX.applyOnlyLinearScale, zero],
+          [zero,                          transfYY.applyOnlyLinearScale],
+        ]);
+
+        break;
+      case ChartOrientation.row:
+        horizontalPixelsRange = Interval(0.0, widthToLextr);
+        verticalPixelsRange   = Interval(0.0, constraints.height);
+
+        // todo-00-next : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
+
+        // Used for orientation.row
+        //   m[1,0] (in->py)
+        var transfXY = ToPixelsLTransform1D(
+          fromValues: inputDataRange,
+          toPixels: verticalPixelsRange,
+          doInvertToDomain: false,
+        );
+        //   m[0,1] (out->px)
+        var transfYX = ToPixelsLTransform1D(
+          fromValues: outputDataRange,
+          toPixels: horizontalPixelsRange,
+          doInvertToDomain: true,
+        );
+
+        // affineTransformer: transposes around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
+        //   followed by affine coordinates transfer: x -> ax + b, y -> cx + d)
+        affineTransformer = FunctionalMatrix2D([
+          [zero,           transfYX.apply],
+          [transfXY.apply, zero ],
+        ]);
+        linearTransformer = FunctionalMatrix2D([
+          [zero,                          transfYX.applyOnlyLinearScale],
+          [transfXY.applyOnlyLinearScale, zero ],
+        ]);
+
+        break;
+    }
+
+    // Use transformers to transform point using affine transformer, and rectangle Size using linear transformer.
+
+    Vector<double> thisToVector = toVector();
+    PointOffset pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOnVector(thisToVector));
+    Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
+    // On the rect size, we do NOT scale both directions. In the direction where constraint
+    //   is used (which is ALWAYS the orientation main axis), use scaled size, BUT in the cross direction,
+    //   use the full size coming from the divided constraint
+    pointOffsetPixels.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
+      other: Size(horizontalPixelsRange.max, verticalPixelsRange.max),
+      axis: orientation.mainLayoutAxis,);
+
+    // todo-010
+    //   - rename : lextrToPixelsMaybeTransposeInContextOf => afftransfMaybeTransposeToPixelsInContextOf
+    //   - Convert names LinearTransform etc to AffineTransform
+    //   - Try to make AffineTransform constructors constant, as it seems they are repeated for every point.
+
+    return pointOffsetPixels;
+  }
+
+  /// Present itself as code
+  String asCodeConstructor() {
+    return 'PointOffset('
+        'inputValue: $inputValue,'
+        'outputValue: $outputValue,'
+        ')';
+  }
+}
+
+/// Identifies a diagonal for transpose transfer.
+///
+/// [leftToRightUp] identifies the diagonal around which a coordinate system would
+/// rotate to get from a vertical bar chart to a horizontal bar chart.
+// todo-010 : move to an enum file - representing geometry
+enum Diagonal {
+  leftToRightDown,
+  leftToRightUp,
+}
+
+/* KEEP : Old version of PointOffset lextr
+  PointOffset lextrToPixelsMaybeTransposeInContextOfOLD({
+    required ChartOrientation  chartOrientation,
+    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required Interval                inputDataRange,
+    required Interval                outputDataRange,
+    required double                  heightToLextr,
+    required double                  widthToLextr,
+  }) {
     ChartOrientation orientation = chartOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
 
@@ -238,7 +341,7 @@ class PointOffset extends Offset {
         // KEEP : var horizontalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
         var horizontalPixelsRange   = Interval(0.0, constraints.width);
 
-        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
           fromValuesRange: inputDataRange,
           toPixelsRange: horizontalPixelsRange,
@@ -249,7 +352,7 @@ class PointOffset extends Offset {
         // 1.2.1:
         var verticalPixelsRange   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
 
-        var verticalValuePixels    = _lextrFromValueToPixelsOnSameAxis(
+        var verticalValuePixels    = _lextrFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
           fromValuesRange: outputDataRange,
           toPixelsRange: verticalPixelsRange,
@@ -263,18 +366,6 @@ class PointOffset extends Offset {
 
         break;
       case ChartOrientation.row:
-      // todo-00-next : to convert between column chart and row chart in 2D
-      //                    is equivalent to diagonal transpose ALL POINTS IN 2D EXCEPT LABEL DIRECTION around Diagonal.LeftToRightUp
-      //                    such transpose is equivalent to flipping (transposing) coordinates: x -> y, y -> x
-      //                    LETS PREFIX THE NAMES OF TRANSPOSED VARIABLES WITH 'iotrp' for 'input/output transpose of positive values to positive values.
-      //                    Notes:
-      //                      - Transpose around Diagonal.LeftToRightDown is equivalent to : x -> -y, y -> -x, would be named iotrn
-      //                      - Rotation around z axis by 90 degrees clockwise is equivalent to : x -> -y, y -> x, would be named iorotqc for 'io rotation by a quarter circle clockwise.
-      //                Naming used in code:
-      //                    point=this=(input, output) -> iotrpPoint
-      //                    inputDataRange             -> iotrpOutputDataRange (this is just a rename, but make a copy)
-      //                    outputDataRange            -> iotrpInputDataRange
-      //
         // Transpose all points in chart around [Diagonal.leftToRightUp].
         // This changes the chart from vertical bar chart to horizontal bar chart.
         // Transform 1 : iotrp transform: (in, out) -> (iotrpIn=out, iotrpOut=in)
@@ -284,7 +375,7 @@ class PointOffset extends Offset {
         // KEEP: var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
         var verticalPixelsRange   = Interval(0.0, constraints.height);
 
-        var verticalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+        var verticalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
           fromValuesRange: inputDataRange,
           toPixelsRange: verticalPixelsRange,
@@ -296,7 +387,7 @@ class PointOffset extends Offset {
         // Transform 2 : iotrpIn -> pixels on horizontal x axis (horizontalPixels)
         var horizontalPixelsRange   = Interval(0.0, widthToLextr);
 
-        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxis(
+        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
           fromValuesRange: outputDataRange,
           toPixelsRange: horizontalPixelsRange,
@@ -330,7 +421,7 @@ class PointOffset extends Offset {
   /// possibly inverting the domains by setting [doInvertDomain].
   ///
   ///
-  _ValuePixels _lextrFromValueToPixelsOnSameAxis({
+  _ValuePixels _lextrFromValueToPixelsOnSameAxisOLD({
     required double   fromValue,
     required Interval fromValuesRange,
     required Interval toPixelsRange,
@@ -349,16 +440,6 @@ class PointOffset extends Offset {
 
     return _ValuePixels(pixelPositionForValue, pixelLengthForValue);
   }
-/* */
-
-  /// Present itself as code
-  String asCodeConstructor() {
-    return 'PointOffset('
-        'inputValue: $inputValue,'
-        'outputValue: $outputValue,'
-        ')';
-  }
-}
 
 class _ValuePixels {
   _ValuePixels(this.pixelPositionForValue, this.pixelLengthForValue);
@@ -366,35 +447,5 @@ class _ValuePixels {
   final double pixelLengthForValue;
 }
 
-/* todo-00-done : unused now
-/// Helper class mutates [fromValuesRange] and [toPixelsRange] for lextr-ing only using
-/// the portions corresponding to sign of [fromValue];
-class _FromAndToPortionForFromValue {
-  _FromAndToPortionForFromValue({
-    required this.fromValue,
-    required this.fromValuesRange,
-    required this.toPixelsRange,
-  }) {
-    // 0.0 <= fromValue
-    fromValuesPortion = fromValuesRange;
-    toPixelsPortion = toPixelsRange;
-  }
-
-  final double fromValue;
-  final Interval fromValuesRange;
-  final Interval toPixelsRange;
-
-  late final Interval fromValuesPortion;
-  late final Interval toPixelsPortion;
-}
 */
 
-/// Identifies a diagonal for transpose transfer.
-///
-/// [leftToRightUp] identifies the diagonal around which a coordinate system would
-/// rotate to get from a vertical bar chart to a horizontal bar chart.
-// todo-010 : move to an enum file - representing geometry
-enum Diagonal {
-  leftToRightDown,
-  leftToRightUp,
-}

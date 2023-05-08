@@ -574,6 +574,7 @@ class DomainLTransform1D {
 ///  we generally stay with the [doInvertToDomain] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
+// todo-010 : rename fromValues to fromValuesRange, toValues to toValuesRange, doInvertToDomain to isFlip
 class ToPixelsLTransform1D extends DomainLTransform1D {
   ToPixelsLTransform1D({
     required Interval fromValues,
@@ -610,11 +611,6 @@ class ToPixelsLTransform1D extends DomainLTransform1D {
     return '${super.toString()}, _doInvertToDomain=$doInvertToDomain';
   }
 }
-
-/// todo-00-next : Adding a 2D linear transform of function vectors. The function vector elements might be LTransform1D.apply??
-///           Research and think through.
-// 22. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-///
 
 // ################ Functions ########################
 

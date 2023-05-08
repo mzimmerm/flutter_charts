@@ -1,6 +1,6 @@
 
 /// Vector. Equivalent to 1 Dimensional matrix.
-class Vector<T extends num> {
+class Vector<T extends double> {
   Vector(List<T> from)
     : _storage = from;
 
@@ -21,6 +21,10 @@ class Vector<T extends num> {
 
   T operator [](int index) => _storage[index];
 
+  Vector abs() {
+    return Vector(_storage.map((element) => element.abs()).toList());
+  }
+
   /// Inner product
   num innerProduct(Vector other) {
     _validate(other);
@@ -31,8 +35,14 @@ class Vector<T extends num> {
     return Vector(List.generate(length, (index) => scale * this[index])); // this[index] == _storage[index]
   }
 
-  void _validate(Vector<num> other) {
+  void _validate(Vector other) {
     if (length != other.length) throw StateError('$runtimeType: Uneven length, this=$length, other=${other.length}');
+  }
+
+  void ensureLength(int length, {String? elseMessage}) {
+    if (this.length != length) {
+      throw StateError('$runtimeType instance=$this ${elseMessage ?? ""}');
+    }
   }
 
   @override

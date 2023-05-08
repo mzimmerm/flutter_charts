@@ -1,7 +1,7 @@
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:test/test.dart'; // Dart test package
 import 'dart:ui' show Rect, Size;
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/morphic/container/constraints.dart';
 import 'package:flutter_charts/src/util/util_flutter.dart';
 import 'package:flutter_charts/src/util/util_dart.dart';
@@ -17,8 +17,7 @@ void main() {
     );
   });
 
-  group('LTransform lextr', ()
-  {
+  group('LTransform lextr', () {
     PointOffset pointOffset;
     PointOffset pixelPointOffset;
 

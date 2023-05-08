@@ -2,6 +2,9 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui show Rect, Offset, Size; // dart:ui is actually Flutter package
 
+import 'package:flutter_charts/src/morphic/ui2d/point.dart';
+import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
+
 import '../morphic/container/container_edge_padding.dart' as edge_padding show EdgePadding;
 import '../morphic/container/morphic_dart_enums.dart' show LayoutAxis;
 
@@ -79,6 +82,16 @@ extension SizeExtension on ui.Size {
     if (height == 0.0) height = other.height;
 
     return ui.Size(width, height);
+  }
+
+  PointOffset toPointOffset() {
+    return PointOffset(inputValue: width, outputValue: height);
+  }
+
+  static ui.Size fromVector(Vector<double> vector) {
+    vector.ensureLength(2, elseMessage: 'Size can only be created from vector with 2 elements.');
+
+    return ui.Size(vector[0], vector[1]);
   }
 
   /// Present itself as code
