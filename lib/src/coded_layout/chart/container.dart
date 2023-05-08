@@ -401,11 +401,11 @@ class StackableValuePoint {
   /// "within [ChartPainter] absolute" x coordinate (generally the center
   /// of the corresponding x label).
   ///
-  StackableValuePoint lextrToPixels({
+  StackableValuePoint affmapToPixels({
     required double scaledX,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
   }) {
-    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating domains in outputLabelsGenerator
+    // Scales fromY of from the OLD [ChartData] BUT all the extrapolating ranges in outputLabelsGenerator
     // were calculated using the NEW [ChartModel]
 
     VerticalAxisContainerCL verticalAxisContainerCL = chartViewModel.chartRootContainer.verticalAxisContainer as VerticalAxisContainerCL;
@@ -414,7 +414,7 @@ class StackableValuePoint {
 
     scaledFrom = ui.Offset(
       scaledX,
-      outputLabelsGenerator.lextrValueToPixels(
+      outputLabelsGenerator.affmapValueToPixels(
         value: fromY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -422,7 +422,7 @@ class StackableValuePoint {
     );
     scaledTo = ui.Offset(
       scaledX,
-      outputLabelsGenerator.lextrValueToPixels(
+      outputLabelsGenerator.affmapValueToPixels(
         value: toY,
         axisPixelsMin: axisPixelsYMin,
         axisPixelsMax: axisPixelsYMax,
@@ -651,15 +651,15 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   /// Notes:
   /// - Iterates this object's internal list of [PointsColumn], then the contained
   ///   [PointsColumn.stackableValuePoints], and extrapolates each point by
-  ///   applying its [StackableValuePoint.lextrToPixels] method.
+  ///   applying its [StackableValuePoint.affmapToPixels] method.
   /// - No extrapolating of the internal representation stored in [_valuePointArrInRows]
   ///   or [_valuePointArrInColumns].
-  void lextrPointsColumns(ChartViewModel chartViewModel, ChartRootContainerCL chartRootContainer) {
+  void affmapPointsColumns(ChartViewModel chartViewModel, ChartRootContainerCL chartRootContainer) {
     int col = 0;
     for (PointsColumn column in this) {
       column.allPoints().forEach((StackableValuePoint point) {
         double scaledX = chartRootContainer.xTickXs[col];
-        point.lextrToPixels(
+        point.affmapToPixels(
           scaledX: scaledX,
           outputLabelsGenerator: chartViewModel.outputLabelsGenerator,
         );

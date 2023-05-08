@@ -26,7 +26,7 @@ import 'line_segment_container.dart';
 /// The orientation is determined by member [chartViewModel]'s [ChartViewModel.chartOrientation];
 /// if orientation is set to [ChartOrientation.row], the line is transformed to it's row orientation by
 /// transforming the end points [fromPointOffset] and [toPointOffset]
-/// using their [PointOffset.lextrToPixelsMaybeTransposeInContextOf].
+/// using their [PointOffset.affmapToPixelsMaybeTransposeInContextOf].
 ///
 class AxisLineContainer extends LineBetweenPointOffsetsContainer {
   AxisLineContainer({
@@ -47,7 +47,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
   ///   must be 0 after all transforms.
   /// To achieve the 0 inner y pixel coordinates after all transforms, we need to start at the point
   ///   in y dataRange which transforms to 0 pixels. That point is y dataRange MAX, which we use here.
-  /// See documentation in [PointOffset.lextrInContextOf] column section for details.
+  /// See documentation in [PointOffset.affmapInContextOf] column section for details.
   TransposingInputAxisLineContainer({
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
@@ -67,7 +67,7 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
 class TransposingOutputAxisLineContainer extends AxisLineContainer {
   /// Here we use the magic of PointOffset transforms to define a HORIZONTAL line, which after
   ///   PointOffset transforms becomes VERTICAL due to the transpose of coordinates.
-  /// See documentation in [PointOffset.lextrInContextOf] row section for details.
+  /// See documentation in [PointOffset.affmapInContextOf] row section for details.
   TransposingOutputAxisLineContainer({
     required DataRangeLabelInfosGenerator inputLabelsGenerator,
     required DataRangeLabelInfosGenerator outputLabelsGenerator,

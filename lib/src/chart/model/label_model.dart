@@ -25,8 +25,8 @@ class DataRangeLabelInfosGenerator {
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
   /// by this [DataRangeLabelInfosGenerator].
   ///
-  /// If [userLabels] list of user labels is passed, user labels will be used and distributed linearly between the
-  /// passed [chartModel] minimum and maximum.
+  /// If [userLabels] list of user labels is passed, user labels will be used and distributed evenly (linearly)
+  /// between the passed [chartModel] minimum and maximum.
   /// Otherwise, new labels are automatically generated with values of
   /// highest order of numeric values in the passed [chartModel].
   ///
@@ -75,7 +75,7 @@ class DataRangeLabelInfosGenerator {
         case DataDependency.inputData:
           // On independent (X) axis, any stand-in interval will suffice, so pick <0.0-100.0>. Whatever
           //   the interval is, once the pixels range on the axis is available,
-          //   it will be lextr-ed to the pixel range.
+          //   it will be affmap-ed to the pixel range.
           // We COULD return the same valuesInterval(isStacked: isStacked) but
           //   as that is for dependent data, it would be confusing.
           dataEnvelope = chartModel.dataRangeWhenStringLabels;
@@ -163,7 +163,7 @@ class DataRangeLabelInfosGenerator {
   /// Calculated in the constructor, from [ChartModelPoint]s.
   /// as the merged outer interval of generated labels and [ChartModelPoint] values.
   ///
-  /// This [Interval] is displayed on the axis pixel domain [AxisContainer.axisPixelsRange].
+  /// This [Interval] is displayed on the axis pixel range [AxisContainer.axisPixelsRange].
   /// Extrapolation is done between those intervals.
   late final util_dart.Interval dataRange;
 
@@ -196,19 +196,19 @@ class DataRangeLabelInfosGenerator {
       chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) == LayoutAxis.horizontal;
 
   /// Extrapolates [value] from extended data range [dataRange],
-  /// to the pixels domain passed in the passed [axisPixelsMin], [axisPixelsMax],
+  /// to the pixels range passed in the passed [axisPixelsMin], [axisPixelsMax],
   /// in the direction defined by [isAxisAndLabelsSameDirection].
   ///
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
   ///            after the axis size is calculated.
-  double lextrValueToPixels({
+  double affmapValueToPixels({
     required double value,
     required double axisPixelsMin,
     required double axisPixelsMax,
   }) {
 
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
-    // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
+    // Affmap the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
       if (!isOnHorizontalAxis) {
@@ -218,12 +218,12 @@ class DataRangeLabelInfosGenerator {
       }
       return pixels;
     }
-    // lextr the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
+    // affmap the data value range [dataRange] on this [DataRangeLabelInfosGenerator] to the pixel range.
     // The pixel range must be the pixel range available to axis after [BoxLayouter.layout].
-    return util_dart.ToPixelsLTransform1D(
-      fromValues: util_dart.Interval(dataRange.min, dataRange.max),
-      toPixels: util_dart.Interval(axisPixelsMin, axisPixelsMax),
-      doInvertToDomain: !isOnHorizontalAxis,
+    return util_dart.ToPixelsAffineMap1D(
+      fromValuesRange: util_dart.Interval(dataRange.min, dataRange.max),
+      toPixelsRange: util_dart.Interval(axisPixelsMin, axisPixelsMax),
+      isFlipToRange: !isOnHorizontalAxis,
     ).apply(value);
   }
 
@@ -236,7 +236,7 @@ class DataRangeLabelInfosGenerator {
     required ExternalTickAtPosition externalTickAtPosition,
   }) {
     // Return [ExternalTicksLayoutProvider] and provide ticks.
-    // The ticks must be lextr-ed to pixels, once ticksPixelsDomain is known.
+    // The ticks must be affmap-ed to pixels, once ticksPixelsRange is known.
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
 
@@ -246,7 +246,7 @@ class DataRangeLabelInfosGenerator {
 
     return ExternalTicksLayoutProvider(
       tickValues: tickValues,
-      tickValuesDomain: dataRange,
+      tickValuesRange: dataRange,
       isOnHorizontalAxis: isOnHorizontalAxis,
       externalTickAtPosition: externalTickAtPosition,
     );
@@ -281,8 +281,8 @@ class DataRangeLabelInfosGenerator {
   ///        is at  at `interval.min + points_equidistance`, the last point is at [interval.max].
   ///    3. As this method simply divides the available interval into [labelPointsCount],
   ///       it is not relevant whether the interval is translated or extrapolated or not, as long as it is linear
-  ///       (which it would be even for logarithmic scale). The interval represents transformed (ususally identity),
-  ///       not-lextr-ed values.
+  ///       (which it would be even for logarithmic scale). The interval represents transformed (usually identity),
+  ///       not-affmap-ed values.
   List<double> _placeLabelPointsInInterval({
     required util_dart.Interval interval,
     required int labelPointsCount,
@@ -314,7 +314,7 @@ class DataRangeLabelInfosGenerator {
   }
 
   /// Automatically generates values (anywhere from zero to nine values) intended to
-  /// be displayed as label in [interval], which represents a domain
+  /// be displayed as label in [interval], which represents a range
   ///
   /// More precisely, all generated label values are inside, or slightly protruding from,
   /// the passed [interval], which was created as tight envelope of all data values.
@@ -415,7 +415,7 @@ class DataRangeLabelInfosGenerator {
 /// The values used and shown on the chart undergo the following processing:
 ///    1. [_rawOutputValue] -- using [DataContainerOptions.yTransform] (or [DataContainerOptions.xTransform])
 ///       ==> [outputValue] (transformed)
-///    2. [outputValue]    -- using [DataRangeLabelInfosGenerator.lextrValueToPixels]
+///    2. [outputValue]    -- using [DataRangeLabelInfosGenerator.affmapValueToPixels]
 ///       ==> [parentOffsetTick]
 ///    3. [_rawOutputValue] -- using formatted String-value
 ///       ==> [_formattedLabel]
@@ -452,10 +452,10 @@ class DataRangeLabelInfosGenerator {
 ///        // which does
 ///        return extrapolateValue(
 ///            value: value.toDouble(),
-///            fromDomainMin: mergedLabelYsIntervalWithDataYsEnvelop.min.toDouble(),
-///            fromDomainMax: mergedLabelYsIntervalWithDataYsEnvelop.max.toDouble(),
-///            toDomainMin: _axisYMin,
-///            toDomainMax: _axisYMax);
+///            fromRangeMin: mergedLabelYsIntervalWithDataYsEnvelop.min.toDouble(),
+///            fromRangeMax: mergedLabelYsIntervalWithDataYsEnvelop.max.toDouble(),
+///            toRangeMin: _axisYMin,
+///            toRangeMax: _axisYMax);
 ///     ```
 /// 4. The [_formattedLabel] : The formatted String-value of [_rawOutputValue].
 ///

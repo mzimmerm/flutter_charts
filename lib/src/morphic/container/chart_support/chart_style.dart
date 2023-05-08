@@ -90,7 +90,7 @@ enum ChartOrientation {
   /// Motivation: For any chart orientation, and any axis on the chart, we need to know if the data values axis
   ///   and the pixel axis which displays them, run in the same direction; this knowledge is equivalent to the knowledge whether
   ///   displayed pixels are on the horizontal or vertical axis. This information is used to extrapolate data values
-  ///   to pixels, on either axis, to answer this question: should the value to pixels lextr invert sign?
+  ///   to pixels, on either axis, to answer this question: should the value to pixels affmap invert sign?
   LayoutAxis layoutAxisForDataDependency({required DataDependency dataDependency}) {
     // for ChartOrientation.column, and inputOrOutputData DataDependency.inputData,   return LayoutAxis.horizontal
     // for ChartOrientation.column, and inputOrOutputData DataDependency.outputData,  return LayoutAxis.vertical

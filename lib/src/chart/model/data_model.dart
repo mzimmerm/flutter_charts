@@ -142,8 +142,8 @@ class ChartModel {
   ///
   /// Motivation:
   ///   When labels for input values or output values are not-numeric or cannot be
-  ///   converted to numeric, there must still be some way to lextr values to pixels.
-  ///   This member provides a default 'from' range for such lextr-ing.
+  ///   converted to numeric, there must still be some way to affmap values to pixels.
+  ///   This member provides a default 'from' range for such affmap-ing.
   ///
   final Interval dataRangeWhenStringLabels = const Interval(0.0, 100.0);
 
@@ -470,9 +470,9 @@ class PointModel {
   ///   defined by [ChartModel.inputUserLabels] or similar approach, so to get inputValue
   ///   of this instance seems irrelevant or incorrect to ask for.
   ///   However, when positioning a [PointContainer] representing a [PointModel],
-  ///   we need to place the [PointModel] an some inputValue, which can be lextr-ed to
+  ///   we need to place the [PointModel] an some inputValue, which can be affmap-ed to
   ///   it's pixel display position.  Assigning an inputValue by itself would not help;
-  ///   To lextr the inputValue to some pixel value, we need to affix the inputValue
+  ///   To affmap the inputValue to some pixel value, we need to affix the inputValue
   ///   to a range. This method, [inputValueOnInputRange] does just that:
   ///   Given the passed [dataRangeLabelInfosGenerator], using its data range
   ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue

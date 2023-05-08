@@ -1,7 +1,7 @@
 import 'dart:ui' show Offset, Size;
 
 
-import '../../util/util_dart.dart' show Interval, ToPixelsLTransform1D;
+import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -12,8 +12,8 @@ import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart'
 // Docs only, not used in code.
 import '../../chart/container/data_container.dart' as doc_data_container;
 
-/// Extension of [Offset] which adds ability to lextr to a new [PointOffset] instance
-/// created from it's instance data value in it's value domain to the pixel position in the pixel domains.
+/// Extension of [Offset] which adds ability to affmap to a new [PointOffset] instance
+/// created from it's instance data value in it's value range to the pixel position in the pixel ranges.
 ///
 /// Note: This class position is renamed from [Offset.dx] and dy to [PointOffset.inputValue] and outputValue.
 ///
@@ -21,9 +21,9 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 /// it's member [barPointRectSize], the [Size] of the rectangle which presents the data value of this [PointOffset]
 /// in the chart on a bar chart.
 ///
-/// The lextr-ing is done in [lextrToPixelsMaybeTransposeInContextOf],
+/// The affmap-ing is done in [affmapToPixelsMaybeTransposeInContextOf],
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
-/// position and chart value domains and pixel domains.
+/// position and chart value ranges and pixel ranges.
 ///
 class PointOffset extends Offset {
 
@@ -44,8 +44,8 @@ class PointOffset extends Offset {
   }
 
   /// Pixel [Size] of the rectangle which presents this [PointOffset] on either horizontal bar or vertical bar,
-  /// constructed late in [lextrToPixelsMaybeTransposeInContextOf], according to the [ChartOrientation] passed to
-  /// [lextrToPixelsMaybeTransposeInContextOf].
+  /// constructed late in [affmapToPixelsMaybeTransposeInContextOf], according to the [ChartOrientation] passed to
+  /// [affmapToPixelsMaybeTransposeInContextOf].
   ///
   /// The [Size] width and height is calculated as follows:
   ///   - For [ChartOrientation.column] the width is constraints.width on column, height is outputValuePixels.
@@ -74,31 +74,31 @@ class PointOffset extends Offset {
   );
 
   /// todo-010 change, shorten, fix documentation
-  /// Lextr this [PointOffset] to it's pixel scale, first possibly transposing
+  /// Affmap this [PointOffset] to it's pixel scale, first possibly transposing
   /// it if [chartOrientation] is [ChartOrientation.row].
   ///
-  /// The Lextr takes into account chart orientation [chartOrientation],
+  /// The Affmap takes into account chart orientation [chartOrientation],
   /// which may cause the x and y (input and output) values to transpose
-  /// around [Diagonal.leftToRightUp] during the lextr.
+  /// around [Diagonal.leftToRightUp] during the affmap.
   ///
   ///   - [chartOrientation] describes the orientation. [ChartOrientation.column] transforms
-  ///     only once on each axis: between value-domain and pixel-domain on the same axis.
+  ///     only once on each axis: between value-range and pixel-range on the same axis.
   ///     [ChartOrientation.column] transforms twice on each axis:
-  ///       - first transforms value on each axis to value on cross-axis, using their respective value-domains,
-  ///       - second on each cross axis, from value-domain to pixel-domain
+  ///       - first transforms value on each axis to value on cross-axis, using their respective value-ranges,
+  ///       - second on each cross axis, from value-range to pixel-range
   ///
-  ///   - [heightToLextr] is the height used for pixel-domain,
-  ///     used IF  [isLextrUseSizerInsteadOfConstraint] is true. Flip use with [constraintsOnImmediateOwner]
-  ///   - [widthToLextr] - equivalent to [heightToLextr]
-  ///   - [inputDataRange] is the data value-range on the input domain (1st coordinate, x)
-  ///   - [outputDataRange] is the data value-range on the output domain (2nd coordinate, y)
+  ///   - [sizerHeight] is the height used for pixel-range,
+  ///     used IF  [isAffmapUseSizerInsteadOfConstraint] is true. Flip use with [constraintsOnImmediateOwner]
+  ///   - [sizerWidth] - equivalent to [sizerHeight]
+  ///   - [inputDataRange] is the data value-range on the input range (1st coordinate, x)
+  ///   - [outputDataRange] is the data value-range on the output range (2nd coordinate, y)
   ///
-  /// Items below summarize the rules for lextr-ing [PointOffset] depending on it's [chartOrientation]
+  /// Items below summarize the rules for affmap-ing [PointOffset] depending on it's [chartOrientation]
   /// being [ChartOrientation.column] or the [ChartOrientation.row].
   ///
   /// Below:
   ///   - 'x' means the same as in-code 'inputValue', 'y' the same as 'outputValue'.
-  ///   - 'min' means the same as in-code 'domainStart', 'max' the same as 'domainEnd'
+  ///   - 'min' means the same as in-code 'rangeStart', 'max' the same as 'rangeEnd'
   ///   - the transforms are depicting starting on the left.
   ///   - 'row' causes 2 transforms, 'column' 1 transform
   ///
@@ -166,13 +166,13 @@ class PointOffset extends Offset {
   ///         - THIS IS VERTICAL LINE AT X = 0, WHICH GIVES THE CONTAINER WIDTH = 0.
   ///           LAYOUT PLACES THE LINE JUST AFTER LABELS
   ///
-  PointOffset lextrToPixelsMaybeTransposeInContextOf({
-    required ChartOrientation  chartOrientation,
+  PointOffset affmapToPixelsMaybeTransposeInContextOf({
+    required ChartOrientation        chartOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
-    required double                  heightToLextr,
-    required double                  widthToLextr,
+    required double                  sizerHeight,
+    required double                  sizerWidth,
   }) {
     // No-op rename input params to shorted version.
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -197,9 +197,9 @@ class PointOffset extends Offset {
     //     for row,    linearTransformer = Matrix.transposeThenLinearTransformer(transposeAroundDiagonal: Diagonal.leftToRightUp-others exception)
     //                   (transf10.applyOnlyLinearScale, transf01.applyOnlyLinearScale, rest Functional identity)
 
-    // Transforms values between domains using affine `scale * x + shift`. May switch X and Y before transform
+    // Transforms values between ranges using affmap `scale * x + shift`. May switch X and Y before transform
     FunctionalMatrix2D affineTransformer;
-    // Transforms lengths between domains using linear `scale * x`.  May switch X and Y before transform
+    // Transforms lengths between ranges using linear `scale * x`.  May switch X and Y before transform
     FunctionalMatrix2D linearTransformer;
     // Zero transform.
     DoubleToDoubleFunction zero = Functional.zero().fun;
@@ -213,21 +213,21 @@ class PointOffset extends Offset {
     switch (orientation) {
       case ChartOrientation.column:
         horizontalPixelsRange = Interval(0.0, constraints.width);
-        verticalPixelsRange   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
+        verticalPixelsRange   = Interval(0.0, sizerHeight); // NOT inverted range - pixels are within some container!!
 
         // Used for orientation.column
         //   m[0,0] (in->px)
-        var transfXX = ToPixelsLTransform1D(
-          fromValues: inputDataRange,
-          toPixels: horizontalPixelsRange,
-          doInvertToDomain: false,
+        var transfXX = ToPixelsAffineMap1D(
+          fromValuesRange: inputDataRange,
+          toPixelsRange: horizontalPixelsRange,
+          isFlipToRange: false,
         );
 
         //   m[1,1] (out->py)
-        var transfYY = ToPixelsLTransform1D(
-          fromValues: outputDataRange,
-          toPixels: verticalPixelsRange,
-          doInvertToDomain: true,
+        var transfYY = ToPixelsAffineMap1D(
+          fromValuesRange: outputDataRange,
+          toPixelsRange: verticalPixelsRange,
+          isFlipToRange: true,
         );
 
         // affineTransformer: x -> x, y -> y,
@@ -243,23 +243,23 @@ class PointOffset extends Offset {
 
         break;
       case ChartOrientation.row:
-        horizontalPixelsRange = Interval(0.0, widthToLextr);
+        horizontalPixelsRange = Interval(0.0, sizerWidth);
         verticalPixelsRange   = Interval(0.0, constraints.height);
 
-        // todo-00-next : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
+        // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
         // Used for orientation.row
         //   m[1,0] (in->py)
-        var transfXY = ToPixelsLTransform1D(
-          fromValues: inputDataRange,
-          toPixels: verticalPixelsRange,
-          doInvertToDomain: false,
+        var transfXY = ToPixelsAffineMap1D(
+          fromValuesRange: inputDataRange,
+          toPixelsRange: verticalPixelsRange,
+          isFlipToRange: false,
         );
         //   m[0,1] (out->px)
-        var transfYX = ToPixelsLTransform1D(
-          fromValues: outputDataRange,
-          toPixels: horizontalPixelsRange,
-          doInvertToDomain: true,
+        var transfYX = ToPixelsAffineMap1D(
+          fromValuesRange: outputDataRange,
+          toPixelsRange: horizontalPixelsRange,
+          isFlipToRange: true,
         );
 
         // affineTransformer: transposes around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
@@ -276,7 +276,7 @@ class PointOffset extends Offset {
         break;
     }
 
-    // Use transformers to transform point using affine transformer, and rectangle Size using linear transformer.
+    // Transform this point with the affine transformer, and it's presented rectangle Size with the linear transformer.
 
     Vector<double> thisToVector = toVector();
     PointOffset pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOnVector(thisToVector));
@@ -289,8 +289,6 @@ class PointOffset extends Offset {
       axis: orientation.mainLayoutAxis,);
 
     // todo-010
-    //   - rename : lextrToPixelsMaybeTransposeInContextOf => afftransfMaybeTransposeToPixelsInContextOf
-    //   - Convert names LinearTransform etc to AffineTransform
     //   - Try to make AffineTransform constructors constant, as it seems they are repeated for every point.
 
     return pointOffsetPixels;
@@ -315,14 +313,14 @@ enum Diagonal {
   leftToRightUp,
 }
 
-/* KEEP : Old version of PointOffset lextr
-  PointOffset lextrToPixelsMaybeTransposeInContextOfOLD({
+/* KEEP : Old version of PointOffset affmap
+  PointOffset affmapToPixelsMaybeTransposeInContextOfOLD({
     required ChartOrientation  chartOrientation,
     required BoxContainerConstraints constraintsOnImmediateOwner,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
-    required double                  heightToLextr,
-    required double                  widthToLextr,
+    required double                  sizerHeight,
+    required double                  sizerWidth,
   }) {
     ChartOrientation orientation = chartOrientation;
     BoxContainerConstraints constraints = constraintsOnImmediateOwner;
@@ -338,25 +336,25 @@ enum Diagonal {
     switch (orientation) {
       case ChartOrientation.column:
         // 1.1.1:
-        // KEEP : var horizontalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? widthToLextr : constraints.width);
+        // KEEP : var horizontalPixelsRange   = Interval(0.0, isAffmapUseSizerInsteadOfConstraint ? sizerWidth : constraints.width);
         var horizontalPixelsRange   = Interval(0.0, constraints.width);
 
-        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
+        var horizontalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
           fromValuesRange: inputDataRange,
           toPixelsRange: horizontalPixelsRange,
-          doInvertDomain: false,
+          doInvertRange: false,
         );
         horizontalPixels = horizontalValuePixels.pixelPositionForValue;
 
         // 1.2.1:
-        var verticalPixelsRange   = Interval(0.0, heightToLextr); // NOT inverted domain - pixels are within some container!!
+        var verticalPixelsRange   = Interval(0.0, sizerHeight); // NOT inverted range - pixels are within some container!!
 
-        var verticalValuePixels    = _lextrFromValueToPixelsOnSameAxisOLD(
+        var verticalValuePixels    = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
           fromValuesRange: outputDataRange,
           toPixelsRange: verticalPixelsRange,
-          doInvertDomain: true,
+          doInvertRange: true,
         );
         verticalPixels =  verticalValuePixels.pixelPositionForValue;
 
@@ -372,26 +370,26 @@ enum Diagonal {
 
         // 1.2.2:
         // Transform 2 : iotrpOut -> pixels on vertical y axis (verticalPixels)
-        // KEEP: var verticalPixelsRange   = Interval(0.0, isLextrUseSizerInsteadOfConstraint ? heightToLextr : constraints.height);
+        // KEEP: var verticalPixelsRange   = Interval(0.0, isAffmapUseSizerInsteadOfConstraint ? sizerHeight : constraints.height);
         var verticalPixelsRange   = Interval(0.0, constraints.height);
 
-        var verticalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
+        var verticalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: inputValue,
           fromValuesRange: inputDataRange,
           toPixelsRange: verticalPixelsRange,
-          doInvertDomain: false,
+          doInvertRange: false,
         );
         verticalPixels = verticalValuePixels.pixelPositionForValue;
 
         // 1.1.2:
         // Transform 2 : iotrpIn -> pixels on horizontal x axis (horizontalPixels)
-        var horizontalPixelsRange   = Interval(0.0, widthToLextr);
+        var horizontalPixelsRange   = Interval(0.0, sizerWidth);
 
-        var horizontalValuePixels = _lextrFromValueToPixelsOnSameAxisOLD(
+        var horizontalValuePixels = _affmapFromValueToPixelsOnSameAxisOLD(
           fromValue: outputValue,
           fromValuesRange: outputDataRange,
           toPixelsRange: horizontalPixelsRange,
-          doInvertDomain: true,
+          doInvertRange: true,
         );
         horizontalPixels = horizontalValuePixels.pixelPositionForValue;
 
@@ -417,22 +415,22 @@ enum Diagonal {
     return pointOffsetPixels;
   }
 
-  /// Lextr [fromValue] assumed to be in the [fromValuesRange], to pixels in range [toPixelsRange],
-  /// possibly inverting the domains by setting [doInvertDomain].
+  /// Affmap [fromValue] assumed to be in the [fromValuesRange], to pixels in range [toPixelsRange],
+  /// possibly inverting the ranges by setting [doInvertRange].
   ///
   ///
-  _ValuePixels _lextrFromValueToPixelsOnSameAxisOLD({
+  _ValuePixels _affmapFromValueToPixelsOnSameAxisOLD({
     required double   fromValue,
     required Interval fromValuesRange,
     required Interval toPixelsRange,
-    required bool     doInvertDomain,
+    required bool     doInvertRange,
   }) {
     assert (toPixelsRange.min == 0.0);
 
     var transform = ToPixelsLTransform1D(
         fromValues: Interval(fromValuesRange.min, fromValuesRange.max),
         toPixels:   Interval(toPixelsRange.min, toPixelsRange.max),
-        doInvertToDomain: doInvertDomain,
+        isFlipToRange: doInvertRange,
     );
     double pixelPositionForValue, pixelLengthForValue;
     pixelPositionForValue = transform.apply(fromValue);

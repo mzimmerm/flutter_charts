@@ -174,11 +174,11 @@ void main() {
     for (var valuesRow in data) {
       expect(
         isCloserThanEpsilon( Během pře
-            DomainLTransform1D(
-              fromDomainStart: valuesRow[1],
-              fromDomainEnd: valuesRow[2],
-              toDomainStart: valuesRow[4],
-              toDomainEnd: valuesRow[3],
+            RangeLTransform1D(
+              fromRangeStart: valuesRow[1],
+              fromRangeEnd: valuesRow[2],
+              toRangeStart: valuesRow[4],
+              toRangeEnd: valuesRow[3],
             ).apply(valuesRow[0]),
             valuesRow[5]
         ),

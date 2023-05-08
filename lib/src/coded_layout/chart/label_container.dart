@@ -11,7 +11,7 @@ import '../../chart/model/label_model.dart' show AxisLabelInfo;
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:
 ///   1. overrides method [layout_Post_Leaf_SetSize_FromInternals] to use the
-///      (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange to lextr label data values to pixels
+///      (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange to affmap label data values to pixels
 ///   2. has member parentOffsetTick to keep location (from build to manual layout?).
 ///
 ///  Legacy label containers [InputLabelContainerCL] and [OutputLabelContainerCL] should extend this
@@ -80,7 +80,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
   /// added logic to set pixels. Used on legacy X and Y axis labels.
   ///
   /// Uses the [VerticalAxisContainerCL.labelsGenerator] instance of [DataRangeLabelInfosGenerator] to
-  /// lextr the [labelInfo] value [AxisLabelInfo.outputValue] and places the result on [parentOffsetTick].
+  /// affmap the [labelInfo] value [AxisLabelInfo.outputValue] and places the result on [parentOffsetTick].
   ///
   /// Must ONLY be invoked after container layout when the axis pixels range (axisPixelsRange)
   /// is determined.
@@ -98,7 +98,7 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     // and place it on [parentOffsetTick]
     var labelsGenerator = ownerChartAreaContainer.chartViewModel.outputLabelsGenerator;
 
-    parentOffsetTick = labelsGenerator.lextrValueToPixels(
+    parentOffsetTick = labelsGenerator.affmapValueToPixels(
       value: labelInfo.outputValue.toDouble(),
       axisPixelsMin: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
       axisPixelsMax: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,

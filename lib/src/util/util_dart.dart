@@ -169,7 +169,7 @@ class Interval {
   /// 0.0 value represents there are only negative values,
   /// 1.0 represents there are only positive or zero values.
   ///
-  /// Motivation: Used during lextr related to data ranges.
+  /// Motivation: Used during affmap related to data ranges.
   double ratioOfPositivePortion() {
     if (min >= max) {
       // Arbitrary portion if interval is collapsed
@@ -306,9 +306,9 @@ enum LineSegmentPosition {
 }
 
 
-/// Encapsulates the concept of linear transformations in 1D.
+/// Encapsulates the concept of affine map in 1D.
 ///
-/// The unnamed generative constructor [LTransform1D] creates a transformation which,
+/// The unnamed generative constructor [AffineMap1D] creates a transformation which,
 /// applied on a value, first extrapolates the value by the factor [_scaleBy],
 /// then translates by the translation amount is [_moveOriginBy].
 ///
@@ -324,24 +324,24 @@ enum LineSegmentPosition {
 ///     This is the same as scaling by -1 (as noted above).
 ///
 /// Commutation notes:
-///   - any combination of scaling and inversion commute (scale1, scale2), (scale, inverse), (inverse1, inverse2). This is a consequence of multiplication being commutative
+///   - any combination of scaling and inversion commute:  (scale1, scale2), (scale, inverse), (inverse1, inverse2).
+///      This is a consequence of multiplication being commutative
 ///   - any combination of translations commute
 ///   - any other combination (that is, with translate) does NOT commute.
-/// todo-00-next : Add tests for easier refactoring
-class LTransform1D {
+class AffineMap1D {
   final double _scaleBy;
   final double _moveOriginBy;
 
-  const LTransform1D({
+  const AffineMap1D({
     required scaleBy,
     required moveOriginBy,
   }) : _scaleBy = scaleBy, _moveOriginBy = moveOriginBy;
 
   /// Constructs transformation which scales (stretches or compresses),
-  /// all points on the axis by the multiplying [_scaleBy] factor.
+  /// all points on the axis by the multiplying [scaleBy] factor.
   ///
   /// Origin (double 0.0) is the fixed point, of [scaleAtOrigin].
-  const LTransform1D.scaleAtOrigin({
+  const AffineMap1D.scaleAtOrigin({
     required scaleBy,
   }) : this(scaleBy: scaleBy, moveOriginBy: 0.0,);
 
@@ -349,18 +349,16 @@ class LTransform1D {
   /// all points on the axis with origin as the fixed point by the additive [_moveOriginBy] value.
   ///
   /// This transform has no fixed point (so no 'origin' in the name).
-  const LTransform1D.moveOriginBy({
+  const AffineMap1D.moveOriginBy({
     required moveAmount,
   }) : this(scaleBy: 1.0, moveOriginBy: moveAmount,);
 
   /// Constructs transformation which inverts (flips, reverses),
   /// all points on the axis with origin as the fixed point.
   ///
-  /// This transform is equivalent to
-  /// ```
-  ///    LinearTransform1D.scaleAtOrigin(-1.0)
-  /// ```
-  const LTransform1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
+  /// This is a linear transform, which [apply] flips values around origin.
+  ///
+  const AffineMap1D.inverse() : this(scaleBy: -1.0, moveOriginBy: 0.0,);
 
 
   /// Default transformation first scales, then translates the passed [fromValue].
@@ -374,184 +372,191 @@ class LTransform1D {
   }
 }
 
-/// A linear transformation in 1D that linearly extrapolates a value in the 'from' domain to
-/// a value in the 'to' domain.
-///
-/// The extrapolation is a combination of
-///   - translation (move) of origin in the 'from' domain by [_fromMoveOriginBy]
-///   - followed by linear stretching by [_domainStretch]
-///   - followed by translation (move) of origin in the in the 'to' domain by  [_toMoveOriginBy]
+/// Affine map in 1D that transforms a value in the 'from' range to
+/// a value in the 'to' range, so that the start and end points of the from/to ranges map to each other
+/// (start to start, end to end).
+/// 
+/// The mapping is a combination of
+///   - translation (move) of origin in the 'from' range by [_fromMoveOriginBy]
+///   - followed with linear stretching by [_rangeScale]
+///   - followed by translation (move) of origin in the in the 'to' range by  [_toMoveOriginBy]
 ///
 /// Both the stretching factor and move factors are determined
-/// by the starts and ends of the 'from' and 'to' domains,
-///   - [_fromDomainStart]
-///   - [_fromDomainEnd]
-///   - [_toDomainStart]
-///   - [_toDomainEnd]
+/// by the starts and ends of the 'from' and 'to' ranges,
+///   - [_fromRangeStart]
+///   - [_fromRangeEnd]
+///   - [_toRangeStart]
+///   - [_toRangeEnd]
 /// as follows:
-///   - [_domainStretch] = ([_toDomainEnd] - [_toDomainStart]) / ([_fromDomainEnd] - [_fromDomainStart])
-///   - [_fromMoveOriginBy] = [_fromDomainStart]
-///   - [_toMoveOriginBy] = -1 * [_toDomainStart]
+///   - [_rangeScale] = ([_toRangeEnd] - [_toRangeStart]) / ([_fromRangeEnd] - [_fromRangeStart])
+///   - [_fromMoveOriginBy] = [_fromRangeStart]
+///   - [_toMoveOriginBy] = -1 * [_toRangeStart]
 ///
-/// Note that the stretching includes inversion of axis if  [_domainStretch] is negative.
-/// Also note how the move factors are inverse signs of the start points in the 'from' and 'to' domains.
+/// A few obvious notes:
+///   - stretching includes inversion of axis if  [_rangeScale] is negative.
+///   - the move factors have inverse signs of the range start points in the 'from' and 'to' ranges.
 ///
-/// The [apply] method, invoked on a double value in the 'from' domain,
-/// performs the extrapolation, and answers a the linearly extrapolated value
-/// in the 'to' domain which is stretched by the [_domainStretch].
+/// The [apply] method, invoked on a double value in the 'from' range,
+/// performs the affine mapping, and answers a the value
+/// in the 'to' range which is stretched by the [_rangeScale].
 ///
 /// Preconditions:
 ///   - ```dart
-///      (fromDomainStart != fromDomainEnd && toDomainStart != toDomainEnd) == true;
+///      (fromRangeStart != fromRangeEnd && toRangeStart != toRangeEnd) == true;
 ///      ```
 ///
 /// Notes:
-///   - This does not extend [LTransform1D]; however, any [DomainLTransform1D]
-///     can be replaced with two suitably chosen [LTransform1D] applied consequently.
-///   - DomainLTransform1D (DLT)
+///   - This does not extend [AffineMap1D]; however, any [AffineRangedMap1D]
+///     can be replaced with three suitably chosen [AffineMap1D] applied consequently.
+///   - AffineRangedMap1D (ARM)
 ///
-///     - DLT definition:
+///     - ARM definition:
 ///              ```
-///              Given: domainStretch = (_toDomainEnd - _toDomainStart) / (_fromDomainEnd - _fromDomainStart)
-///              DLT(fromValue) = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
+///              Given: rangeScale = s = (_toRangeEnd - _toRangeStart) / (_fromRangeEnd - _fromRangeStart)
+///                     toValue = ARM(fromValue) = _rangeScale * (fromValue - _fromRangeStart) + _toRangeStart;
+///              (1) s  = (te - ts) / (fe - fs);      // just a short form
+///              (2) tv = ARM(fv) = s*(fv - fs) + ts; // just a short form
 ///              ```
+///     - Facts about ARM be shown by using the above definition:
 ///
-///     - Facts about DLT be shown by using the above definition:
-///
-///       - Lemma 1 : 'linearity lemma' : DLT is a linear transform
+///       - Lemma 1 : 'affinity lemma' : ARM is an affine transform but NOT a linear transform (only showing this):
 ///              ```
-///              DLT(A * (a1 + a2)) == A * (DLT(a1) + DLT(a2))
+///              ARM(fv1) + ARM(fv2) = s*(fv1 - fs) + ts + s*(fv2 - fs) + ts = [s*((fv1 + fv2)) - fs) + ts] - s*fs + ts
+///                             = ARM(fv1 + fv2) - s*fs + ts != ARM(fv1 + fv2)
 ///              ```
-///          - Easy to prove by substituting A, a1, a2 to the DLT definition
-///
-///       - Lemma 2 : 'fixed points lemma' : DLT has start and end points fixed - they map into each other.
+///       - Lemma 2 : 'inverse lemma' : ARM has an inverse, call in ARI,  ARI(tv) = fv, with the following formula:
+///             ```
+///               (2)     ((tv - ts) / s) + fs = fv
+///                 we can show (2) is true
+///                 Proof:
+///                 ((tv - ts) / s) + fs = .. subs tv from (2), definition of ARM .. = ((s*(fv-fs) + ts -ts) / s + fs
+///                 = s*(fv-fs)/s + fs = (fv-fs) + fs = fv QED
+///             ```
+///       - Lemma 3 : 'fixed points lemma' : ARM has start and end points fixed - they map into each other.
 ///              ```
-///                // 'fixed points lemma'
-///                DLT(fromStart) == toStart
-///                DLT(fromEnd) == toEnd
-///              ```
-///          - Easy to prove by substituting start and end to the DLT definition
-///          - Lemma 2 'fixed points lemma' is NOT a consequence of linearity, but a consequence of the DLT definition.
-///
-///       - Lemma: Taking a point in the middle of the 'from' domain
+///                (3) ARM(fromStart) = ARM(fs) = s*(fs-fs) + ts = ts = toStart
+///                (4) ARM(fromEnd) = ARM(fe) = s*(fe-fs) + ts = .. use (1) subs for s ..
+///                             = [(te - ts) / (fe - fs)] * (fe-fs) + ts = (te - ts)  + ts = te QED///              ```
+///       - Lemma 4: Taking a point in the middle of the 'from' range
 ///            (in the geometrical sense, no matter start and end values),
-///            is transformed to the middle of the 'to' domain, in the same geometrical sense.
+///            is transformed to the middle of the 'to' range, in the same geometrical sense.
 ///
-///            Lemma, stated formally:
+///            More precisely:
 ///            ```
-///              DLT(1/2 (fromStart + fromEnd)) == 1/2 * (toStart + toEnd)
+///              ARM(1/2 (fromStart + fromEnd)) == 1/2 * (toStart + toEnd)
 ///            ```
 ///
-///            Note: Lemma is a consequence of definition of DLT, via Lemma 1 and Lemma 2
+///            Note: Lemma is a consequence of definition of ARM, via Lemma 1 and Lemma 2
 ///
 ///              Proof of Lemma: For x = 1/2 (fromStart + fromEnd):
 ///              ```
-///                DLT(x) = DLT(1/2 (fromStart + fromEnd))  = // Use Lemma 1, linearity
-///                  1/2 * (DLT(fromStart) + DLT(fromEnd)) =  // Use Lemma 2, fixed points
+///                ARM(x) = ARM(1/2 (fromStart + fromEnd))  = // Use Lemma 1, linearity
+///                  1/2 * (ARM(fromStart) + ARM(fromEnd)) =  // Use Lemma 2, fixed points
 ///                  1/2 * (toStart + toEnd)
 ///              ```
-/// todo-011: Add tests, then extend from LTransform1D. Also remove _domainStretch, this is parent _scaleBy
-class DomainLTransform1D {
-  DomainLTransform1D({
-    required double fromDomainStart,
-    required double fromDomainEnd,
-    required double toDomainStart,
-    required double toDomainEnd,
+/// Later: Extend from [AffineMap1D]. Also remove _rangeScale, this is parent _scaleBy
+class AffineRangedMap1D {
+  AffineRangedMap1D({
+    required double fromRangeStart,
+    required double fromRangeEnd,
+    required double toRangeStart,
+    required double toRangeEnd,
   })
       :
-        // Allow the TO domain to be collapsed, but not the FROM domain, which is in denominator -
-        //  DomainExtrapolation1D.apply would not be a function.
-        assert (fromDomainStart != fromDomainEnd),
-        _fromDomainStart = fromDomainStart,
-        _fromDomainEnd = fromDomainEnd,
-        _toDomainStart = toDomainStart,
-        _toDomainEnd = toDomainEnd,
-        _domainStretch = (toDomainEnd - toDomainStart) / (fromDomainEnd - fromDomainStart),
-        _fromMoveOriginBy = fromDomainStart,
-        _toMoveOriginBy = -1 * toDomainStart {
-    if (isCloserThanEpsilon(toDomainStart, toDomainEnd)) {
-      print( ' ### Log.Info: to domain is collapsed or closer than epsilon: '
-          'toDomainStart $_toDomainStart == toDomainEnd = $_toDomainEnd');
+        // Allow the TO range to be collapsed, but not the FROM range, which is in denominator -
+        //  RangeExtrapolation1D.apply would not be a function.
+        assert (fromRangeStart != fromRangeEnd),
+        _fromRangeStart = fromRangeStart,
+        _fromRangeEnd = fromRangeEnd,
+        _toRangeStart = toRangeStart,
+        _toRangeEnd = toRangeEnd,
+        _rangeScale = (toRangeEnd - toRangeStart) / (fromRangeEnd - fromRangeStart),
+        _fromMoveOriginBy = fromRangeStart,
+        _toMoveOriginBy = -1 * toRangeStart {
+    if (isCloserThanEpsilon(toRangeStart, toRangeEnd)) {
+      print( ' ### Log.Info: to range is collapsed or closer than epsilon: '
+          'toRangeStart $_toRangeStart == toRangeEnd = $_toRangeEnd');
     }
   }
 
-  /// First point of the 'from' domain. If larger than [_fromDomainEnd], represents reversed direction.
-  final double _fromDomainStart;
-  final double _fromDomainEnd;
-  final double _toDomainStart;
-  final double _toDomainEnd;
+  /// First point of the 'from' range. If larger than [_fromRangeEnd], represents reversed direction.
+  final double _fromRangeStart;
+  final double _fromRangeEnd;
+  final double _toRangeStart;
+  final double _toRangeEnd;
 
-  /// This is the scaling factor, equivalent to [LTransform1D._scaleBy].
-  final double _domainStretch;
-  /// 'from' domain is translated by moving origin by this number;
-  /// this causes `value` in 'from' domain to be `value - _fromMoveOriginBy` in 'to' domain.
+  /// This is the scaling factor, equivalent to [AffineMap1D._scaleBy].
+  final double _rangeScale;
+  /// 'from' range is translated by moving origin by this number;
+  /// this causes `value` in 'from' range to be `value - _fromMoveOriginBy` in 'to' range.
   final double _fromMoveOriginBy;
   final double _toMoveOriginBy;
 
-  /// Transform [fromValue] from the 'from' domain to it's corresponding linearly
-  /// extrapolated value it the 'to' domain.
+  /// Transform [fromValue] from the 'from' range to the 'to' range.
   ///
-  /// In detail: If [fromValue] is a point's value on the 'from' domain, the point's distances to [_fromDomainStart]
-  /// and [_fromDomainEnd] are at a certain ratio, call it R.
-  /// This returns a value of point in the 'to' domain, which ratio of distances to the
-  /// [_toDomainStart] and [_toDomainEnd] is same as R.
+  /// In detail: If [fromValue] is a point's value on the 'from' range, the point's distances to [_fromRangeStart]
+  /// and [_fromRangeEnd] are at a certain ratio, call it R.
+  /// [apply] returns a value of point in the 'to' range, which ratio of distances to the
+  /// [_toRangeStart] and [_toRangeEnd] is same as R.
   ///
-  /// This transform includes BOTH stretching AND translation of origin, in that order
+  /// This transform includes scaling the segment of positive length [fromValue] - [_fromRangeStart],
+  /// stretching it by the positive [_rangeScale] THEN adding the result to [_toRangeStart].
   ///
-  /// Note: Assuming 'from' domain is the interval of values we want to display,
-  ///       and the 'to' domain is the downwards oriented Y axis on screen (0 on top)
-  ///       on which we want for display the values, then:
-  ///
-  ///       This linearly transforms a point in the 'from' domain, to the point in the 'to' domain.
-  ///
-  ///       The term 'pixels' in this method name may be misleading, as the 'to' domain does not have to be
-  ///       pixels or coordinates on screen, but it does reflect the predominant use of this method in this application.
+  /// Note: The context of use is a chart situation where the 'from' range is the interval of values we want to display,
+  ///       and the 'to' range is the downwards oriented Y pixel axis on screen (0 on top)
+  ///       on which we want for display the values. The term 'pixels' in the 'to range'
+  ///       reflects the predominant use of this method in this application.
   ///
   double apply(double fromValue) {
-    double movedInFrom = LTransform1D.moveOriginBy(moveAmount: _fromDomainStart).apply(fromValue);
-    double scaled = LTransform1D.scaleAtOrigin(scaleBy: _domainStretch).apply(movedInFrom);
-    double scaledAndMovedInTo = LTransform1D.moveOriginBy(moveAmount: -1 * _toDomainStart).apply(scaled);
+    double result = _rangeScale * (fromValue - _fromRangeStart) + _toRangeStart;
 
-    double result = _domainStretch * (fromValue - _fromDomainStart) + _toDomainStart;
+    return result;
+
+    /* KEEP
+    double movedInFrom = AffineMap1D.moveOriginBy(moveAmount: _fromRangeStart).apply(fromValue);
+    double scaled = AffineMap1D.scaleAtOrigin(scaleBy: _rangeScale).apply(movedInFrom);
+    double scaledAndMovedInTo = AffineMap1D.moveOriginBy(moveAmount: -1 * _toRangeStart).apply(scaled);
+
+    double result = _rangeScale * (fromValue - _fromRangeStart) + _toRangeStart;
 
     assertDoubleResultsSame(
       scaledAndMovedInTo,
       result,
-      'in caller $this: fromValue=$fromValue, _domainStretch=$_domainStretch, '
+      'in caller $this: fromValue=$fromValue, _rangeScale=$_rangeScale, '
           'scaled=$scaled, scaledAndMoved=$scaledAndMovedInTo',
     );
+    */
 
-    return result;
   }
 
-  /// Returns the size of a segment in the 'to' domain
-  /// scaled from a segment with [length] size in the 'from' domain.
+  /// Returns the size of a segment in the 'to' range
+  /// scaled from a segment with [length] size in the 'from' range.
   ///
-  /// This method's name, 'applyOnlyLinearScale', and the parameter name, 'length', is used to express
-  /// the use pattern of this method: It should be used in situations where we only care about
-  /// length change between the value domain and the pixel domain, not about change in position.
+  /// This method's name, [applyOnlyLinearScale], and the parameter name, 'length', is used to express
+  /// the main use context of this method: It should be used in situations where we only care about
+  /// the linear length change between the value range and the pixel range, not about the affine change in position.
   ///
   /// Negative lengths are supported. Direction matters - that means, a segment of a positive length can
-  /// turn into a negative length. if the [_domainStretch] is negative (this means inverted domain directions).
+  /// turn into a negative length. if the [_rangeScale] is negative (this means inverted range directions).
   double applyOnlyLinearScale(double length) {
-    return length * _domainStretch;
+    return length * _rangeScale;
   }
 
   @override
   String toString() {
-    return '_fromDomainStart = $_fromDomainStart, '
-        '_fromDomainEnd = $_fromDomainEnd,'
-        '_toDomainStart   = $_toDomainStart,'
-        '_toDomainEnd   = $_toDomainEnd, '
-        '_domainStretch = $_domainStretch'
-        '_fromDomainTranslateBy = $_fromMoveOriginBy'
-        '_tomDomainTranslateBy = $_toMoveOriginBy'
+    return '_fromRangeStart = $_fromRangeStart, '
+        '_fromRangeEnd = $_fromRangeEnd,'
+        '_toRangeStart   = $_toRangeStart,'
+        '_toRangeEnd   = $_toRangeEnd, '
+        '_rangeScale = $_rangeScale'
+        '_fromRangeTranslateBy = $_fromMoveOriginBy'
+        '_tomRangeTranslateBy = $_toMoveOriginBy'
     ;
   }
 }
 
-/// Extension of [DomainLTransform1D] which makes the assumption that both 'from' domain
-/// and 'to' domain are in the same direction, in the sense that
+/// Extension of [AffineRangedMap1D] which makes the assumption that both 'from' range
+/// and 'to' range are in the same direction, in the sense that
 ///
 ///   ```dart
 ///    (fromValuesMin < fromValuesMax && toPixelsMin < toPixelsMax) == true;
@@ -561,54 +566,53 @@ class DomainLTransform1D {
 /// Exists solely for reading clarity when used in an application that needs to
 /// extrapolate data values to pixels, to be clear which parameters ore values and which are pixels.
 ///
-/// However, it also provides ability to invert the extrapolation, by setting [doInvertToDomain] to true,
+/// However, it also provides ability to invert the extrapolation, by setting [isFlipToRange] to true,
 /// which causes the extrapolation to behave as if
 ///   ```dart
 ///    (toPixelsMin > toPixelsMax) == true; // Note min is GREATER than max
 ///   ```
 ///
-///  [doInvertToDomain] default is [false]. Setting [doInvertToDomain] to [true] is useful
-///  if the 'to' domain represents the Y axis and  we are *extrapolating data values*,
+///  [isFlipToRange] default is [false]. Setting [isFlipToRange] to [true] is useful
+///  if the 'to' range represents the Y axis and  we are *extrapolating data values*,
 ///  as smaller data values end up showing on larger pixel values.
 ///  However, when we are *extrapolating sizes* (which is technically *scaling sizes*),
-///  we generally stay with the [doInvertToDomain] default [false],
+///  we generally stay with the [isFlipToRange] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
-// todo-010 : rename fromValues to fromValuesRange, toValues to toValuesRange, doInvertToDomain to isFlip
-class ToPixelsLTransform1D extends DomainLTransform1D {
-  ToPixelsLTransform1D({
-    required Interval fromValues,
-    required Interval toPixels,
-    this.doInvertToDomain = false,
+class ToPixelsAffineMap1D extends AffineRangedMap1D {
+  ToPixelsAffineMap1D({
+    required Interval fromValuesRange,
+    required Interval toPixelsRange,
+    this.isFlipToRange = false,
   }) : super(
-    fromDomainStart: fromValues.min,
-    fromDomainEnd: fromValues.max,
-    toDomainStart: doInvertToDomain ? toPixels.max : toPixels.min,
-    toDomainEnd: doInvertToDomain ? toPixels.min : toPixels.max,
+    fromRangeStart: fromValuesRange.min,
+    fromRangeEnd: fromValuesRange.max,
+    toRangeStart: isFlipToRange ? toPixelsRange.max : toPixelsRange.min,
+    toRangeEnd: isFlipToRange ? toPixelsRange.min : toPixelsRange.max,
   ) {
-    assert(fromValues.min < fromValues.max && toPixels.min <= toPixels.max);
+    assert(fromValuesRange.min < fromValuesRange.max && toPixelsRange.min <= toPixelsRange.max);
     
-    // Allow the TO pixels domain to be collapsed, but not the FROM values domain, which is in the denominator of [_scaleBy] in super.
-    if (!(fromValues.min < fromValues.max)) {
-      throw StateError('$runtimeType: fromValues.min=$fromValues.min < fromValues.max=$fromValues.max NOT true on $this.');
+    // Allow the TO pixels range to be collapsed, but not the FROM values range, which is in the denominator of [_scaleBy] in super.
+    if (!(fromValuesRange.min < fromValuesRange.max)) {
+      throw StateError('$runtimeType: fromValues.min=$fromValuesRange.min < fromValues.max=$fromValuesRange.max NOT true on $this.');
     }
-    if (!(toPixels.min <= toPixels.max)) {
-      throw StateError('$runtimeType: toPixels.min=$toPixels.min <= toPixels.max=$toPixels.max NOT true on $this.');
+    if (!(toPixelsRange.min <= toPixelsRange.max)) {
+      throw StateError('$runtimeType: toPixels.min=$toPixelsRange.min <= toPixels.max=$toPixelsRange.max NOT true on $this.');
     }
-    if (toPixels.min == toPixels.max)  {
-      print(' ### Log.Info: $runtimeType: TO domain is COLLAPSED: '
-          'toPixels.min=$toPixels.min == toPixels.max=$toPixels.max TRUE on $this.');
+    if (toPixelsRange.min == toPixelsRange.max)  {
+      print(' ### Log.Info: $runtimeType: TO range is COLLAPSED: '
+          'toPixels.min=$toPixelsRange.min == toPixels.max=$toPixelsRange.max TRUE on $this.');
     }
 
   }
 
-  /// Explicitly invert domains, which are assumed in the same direction,
+  /// Explicitly invert ranges, which are assumed in the same direction,
   /// due to the precondition `fromValues.min < fromValues.max && toPixels.min <= toPixels.max`
-  final bool doInvertToDomain;
+  final bool isFlipToRange;
 
   @override
   String toString() {
-    return '${super.toString()}, _doInvertToDomain=$doInvertToDomain';
+    return '${super.toString()}, isFlipToRange=$isFlipToRange';
   }
 }
 

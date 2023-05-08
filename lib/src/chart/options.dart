@@ -367,7 +367,7 @@ class LabelCommonOptions {
 /// Motivation and reason for existence:
 ///   Some areas of any chart need to have the same width or height in pixels when shown.
 ///   For example, the [TransposingOutputAxisContainer] and [DataContainer] should have the same height into which
-///   y labels, and data y values are lextr-ed (linearly extrapolated).
+///   y labels, and data y values are affmap-ed (extrapolated).
 ///   Such areas, if padded from top or bottom, or from left or right (in this example, top and bottom)
 ///   should be padded with the same padding height, otherwise the size in pixels, left out
 ///   for [TransposingOutputAxisContainer] and [DataContainer] would not have the same height.

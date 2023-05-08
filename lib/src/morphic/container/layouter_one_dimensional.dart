@@ -408,7 +408,7 @@ class LayedoutLengthsPositioner {
     util_dart.Interval envelope = positionedSegments[0].envelope(positionedSegments);
 
     totalPositionedLengthIncludesPadding = envelope.length;
-    isOverflown = !ticksProvider.tickValuesDomain.containsFully(envelope);
+    isOverflown = !ticksProvider.tickValuesRange.containsFully(envelope);
 
     return positionedSegments;
   }

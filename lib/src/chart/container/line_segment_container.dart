@@ -57,20 +57,20 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   late PointOffset _fromOffsetPixels;
   late PointOffset _toOffsetPixels;
 
-  /// Controls whether layout lextr on points, when setting pixel ranges, uses the full length of sizer
+  /// Controls whether layout affmap on points, when setting pixel ranges, uses the full length of sizer
   /// such as [container_base.HeightSizerLayouter] or uses constraints from
   /// the parent Row or Column container.
   ///
   ///   - if false (default): constraints width or height from the parent Row or Column container
   ///     is used to set pixel range.
-  ///   - if true           : [container_base.HeightSizerLayouterChildMixin.heightToLextr]
+  ///   - if true           : [container_base.HeightSizerLayouterChildMixin.sizerHeight]
   ///     is used to set pixel range.
   ///
-  // KEEP for now : final bool isLextrUseSizerInsteadOfConstraint;
+  // KEEP for now : final bool isAffmapUseSizerInsteadOfConstraint;
 
   // ##### Full [layout] override.
 
-  /// Overrides [layout] by lextr-transforming the data-valued [PointModel]s [fromPointOffset] and [toPointOffset],
+  /// Overrides [layout] by affmap-transforming the data-valued [PointModel]s [fromPointOffset] and [toPointOffset],
   /// into their pixel equivalents [PointOffset]s [_fromOffsetPixels] and [_toOffsetPixels].
   ///
   /// The
@@ -94,25 +94,25 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
 
     // Code here takes care of the pixel positioning of the points, aka layout.
 
-    // Lextr the pointOffsets to their pixel values using [lextrInContextOf].
+    // Affmap the pointOffsets to their pixel values using [affmapInContextOf].
     // The method  takes into account chart orientation, which may cause the x and y (input and output) values
-    //   to flip (invert) during the lextr.
+    //   to flip (invert) during the affmap.
     // Passing [this.constraints] is correct here, see [layout] documentation.
-    _fromOffsetPixels = fromPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
+    _fromOffsetPixels = fromPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
-      heightToLextr: heightToLextr,
-      widthToLextr: widthToLextr,
+      sizerHeight: sizerHeight,
+      sizerWidth: sizerWidth,
     );
-    _toOffsetPixels = toPointOffset!.lextrToPixelsMaybeTransposeInContextOf(
+    _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
-      heightToLextr: heightToLextr,
-      widthToLextr: widthToLextr,
+      sizerHeight: sizerHeight,
+      sizerWidth: sizerWidth,
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child

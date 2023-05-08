@@ -15,7 +15,7 @@ import 'constraints.dart' show BoundingBoxesBase, BoxContainerConstraints;
 import 'chart_support/chart_style.dart' show ChartOrientation;
 import '../../util/extensions_flutter.dart' show SizeExtension, RectExtension;
 import '../../util/util_dart.dart' as util_dart
-    show LineSegment, Interval, ToPixelsLTransform1D,
+    show LineSegment, Interval, ToPixelsAffineMap1D,
     transposeRowsToColumns, assertDoubleResultsSame;
 import '../../util/util_flutter.dart' as util_flutter
     show boundingRect, assertSizeResultsSame;
@@ -563,7 +563,7 @@ class RootSandboxSizers {
 ///       [RootSandboxSizers.__heightSizer].
 ///     - Single member [length] provides the ability to hold on the mixed layouter width or height,
 ///       for a later retrieval by the [WidthSizerLayouterChildMixin] or [HeightSizerLayouterChildMixin],
-///       using their method [WidthSizerLayouterChildMixin.widthToLextr] or [HeightSizerLayouterChildMixin.heightToLextr].
+///       using their method [WidthSizerLayouterChildMixin.sizerWidth] or [HeightSizerLayouterChildMixin.sizerHeight].
 ///
 /// In addition, any mixing class should do the following:
 ///   - Use the full width or height component of its [BoxContainer.constraints] to set its [layoutSize]
@@ -585,7 +585,7 @@ class RootSandboxSizers {
 ///
 /// The [length] is assumed to be in units pixel -
 /// this is the width or height in pixels, to which the far-away children
-/// will linearly extrapolate (lextr) their width or height.  In other words,
+/// will linearly extrapolate their width or height.  In other words,
 /// the far-away children will fill the [length] in the appropriate direction.
 ///
 mixin FromConstraintsSizerMixin on BoxContainer {
@@ -726,7 +726,7 @@ class WidthSizerLayouter extends TransposingSizerLayouter {
 /// full height component of [constraints], and set the height on the [length] member.
 ///
 /// The [length] can be accessed by hierarchy-children of [HeightSizerLayouter] if they mixin
-/// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.heightToLextr] member.
+/// the [HeightSizerLayouterChildMixin] and ask it's [HeightSizerLayouterChildMixin.sizerHeight] member.
 class HeightSizerLayouter extends TransposingSizerLayouter {
 
   /// The required generative constructor
@@ -758,19 +758,19 @@ class HeightSizerLayouter extends TransposingSizerLayouter {
 ///   where the child *need to know and fill part or the whole of the parent's width*.
 ///
 /// The phrase *need to know and fill part or the whole of the parent's width*,
-///   means that the child will lextr to (use up part of) the width [widthToLextr]
+///   means that the child will affmap to (use up part of) the width [sizerWidth]
 ///   set by the parent.
 ///
-/// This mixin method [widthToLextr] finds the far-away parent's width to which
-///   this child instance should lextr to.
+/// This mixin method [sizerWidth] finds the far-away parent's width to which
+///   this child instance should affmap to.
 mixin WidthSizerLayouterChildMixin on BoxContainer {
 
   /// Width in pixels of a far-away parent, a [WidthSizerLayouter],
-  ///   which this child's width will use partly or fully, most likely by lextr-ing it's
-  ///   value width to the [widthToLextr] pixel width.
+  ///   which this child's width will use partly or fully, most likely by affmap-ing it's
+  ///   value width to the [sizerWidth] pixel width.
   ///
-  /// The lextr-ed result is in the coordinates of the far-away parent, in the sense that
-  ///   if this child [layoutSize] width component is set to [widthToLextr],
+  /// The affmap-ed result is in the coordinates of the far-away parent, in the sense that
+  ///   if this child [layoutSize] width component is set to [sizerWidth],
   ///   and no parents between the child and the far-away parent extend the layout width,
   ///   the container hierarchy between the far-away parent and this child
   ///   will fill exactly, the far-away parent's [layoutSize] width component.
@@ -781,7 +781,7 @@ mixin WidthSizerLayouterChildMixin on BoxContainer {
   ///     which is instance of [WidthSizerLayouter]
   ///   - The
   /// We do the not-null cast without checking. Should be improved to provide good hints to users.
-  double get widthToLextr =>
+  double get sizerWidth =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).widthSizerEnsuredLength;
 }
 
@@ -791,10 +791,10 @@ mixin WidthSizerLayouterChildMixin on BoxContainer {
 /// documentation applies to height on this class's documentation.
 mixin HeightSizerLayouterChildMixin on BoxContainer {
 
-  /// Height in pixels of a far-away parent to which this instance will be lextr-ed.
+  /// Height in pixels of a far-away parent to which this instance will be affmap-ed.
   ///
-  /// See [WidthSizerLayouterChildMixin.widthToLextr] for details.
-  double get heightToLextr =>
+  /// See [WidthSizerLayouterChildMixin.sizerWidth] for details.
+  double get sizerHeight =>
       (root.sandbox![RootSandboxSizers.keyInSandbox] as RootSandboxSizers).heightSizerEnsuredLength;
 }
 
@@ -2143,7 +2143,7 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
   /// - set [layoutSize] to full constraint size in main axis direction (NOT
   ///   just outer envelope of children)
   /// - before positioning children in [_MainAndCrossPositionedSegments], the
-  ///   [ExternalTicksLayoutProvider.tickPixelsDomain] must be set to the full constraints size in main
+  ///   [ExternalTicksLayoutProvider.tickPixelsRange] must be set to the full constraints size in main
   ///   axis direction (the full constraints size will become layoutSize in that direction, per point above).
   ///
   /// See [BoxLayouter.layout_Post_NotLeaf_PositionChildren] for more requirements and definitions.
@@ -2163,17 +2163,17 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     }
     // External ticks layouter is greedy along the main axis - MUST take full constraints along main axis direction.
     // Along main axis direction:
-    //   - the constraints are ALSO the pixel domain to which the ticks will be lextr-ed!
+    //   - the constraints are ALSO the pixel range to which the ticks will be affmap-ed!
     //   - the constraints will ALSO become the layout size! See [_layout_Post_NotLeaf_SetSize_FromPositionedChildren]
     //     for how the layoutSize is set
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
-    // So, knowing the size to which to lextr, create the domain to which the [externalTicksLayoutProvider]
-    //   will be lextr-ed, apply the pixel domain on the [externalTicksLayoutProvider], and lextr the ticks to pixels.
-    var tickPixelsDomainFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
-    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsDomainAndLextrTickValuesToPixels(tickPixelsDomainFromOwnerConstraints);
+    // So, knowing the size to which to affmap, create the range to which the [externalTicksLayoutProvider]
+    //   will be affmap-ed, apply the pixel range on the [externalTicksLayoutProvider], and affmap the ticks to pixels.
+    var tickPixelsRangeFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
+    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerConstraints);
 
-    // The set ticks pixel domain to which to lextr, and the ticks lextr MUST be done before layout (positioning) below,
-    //   as the positioning works on pixels. ACTUALLY: The ticks pixel domain MUST be set, lextr could
+    // The set ticks pixel range to which to affmap, and the ticks affmap MUST be done before layout (positioning) below,
+    //   as the positioning works on pixels. ACTUALLY: The ticks pixel range MUST be set, affmap could
     //   be done after positioning.
     return _MainAndCrossPositionedSegments(
       parentBoxLayouter: this,
@@ -3550,15 +3550,15 @@ class Aligner extends PositioningBoxLayouter {
 /// It manages all the directives the [ExternalTicksRolling] need to position their children
 /// in their main axis direction.
 ///
-/// It's useful role is provided by the method [lextrValuesToPixels], which,
+/// It's useful role is provided by the method [affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), extrapolates the [tickValues]
 /// to layouter-relative positions on the axis, to which the layouter children will be positioned.
 ///
 /// Specifically, this class provides the following directives for the layouters
 /// that are [ExternalTicksRolling]:
 ///   - [tickValues] is the relative positions on which the children are placed
-///   - [tickValuesDomain] is the interval in which the relative positions [tickValues] are.
-///     [tickValuesDomain] must include all [tickValues];
+///   - [tickValuesRange] is the interval in which the relative positions [tickValues] are.
+///     [tickValuesRange] must include all [tickValues];
 ///     it's boundaries may be larger than the envelope of all [tickValues]
 ///   - [isOnHorizontalAxis] defines whether the axis pixel positions and [tickValues]
 ///     are run in the same direction.
@@ -3575,7 +3575,7 @@ class ExternalTicksLayoutProvider {
 
   ExternalTicksLayoutProvider({
     required this.tickValues,
-    required this.tickValuesDomain,
+    required this.tickValuesRange,
     required this.isOnHorizontalAxis,
     required this.externalTickAtPosition,
 });
@@ -3584,31 +3584,31 @@ class ExternalTicksLayoutProvider {
   /// by this ticks provider [ExternalTicksLayoutProvider].
   /// 
   /// By 'future positions' we mean the [tickValues] after extrapolation to axis pixels, 
-  /// to be precise, [tickValues] extrapolated by [lextrValuesToPixels] when passed axis pixels range.
+  /// to be precise, [tickValues] extrapolated by [affmapValuesToPixels] when passed axis pixels range.
   /// 
   final List<double> tickValues;
 
-  final util_dart.Interval tickValuesDomain;
+  final util_dart.Interval tickValuesRange;
 
-  /// Calculated late, after tickPixelsDomain is set
+  /// Calculated late, after tickPixelsRange is set
   late final List<double> tickPixels;
 
   /// Set late, during layout, Post, after children are layed out, from the full constraints along main axis.
   /// Actually equals the [layoutSize] portion along main axis, which is also the constraints of the owner
   /// [ExternalTicksBoxLayouter].
-  late final util_dart.Interval tickPixelsDomain;
+  late final util_dart.Interval tickPixelsRange;
 
   final bool isOnHorizontalAxis;
 
   final ExternalTickAtPosition externalTickAtPosition;
 
-  /// Sets the domain for the ticks in [tickValues]; this is pixel-lextr-equivalent of [tickValuesDomain].
-  void setTickPixelsDomainAndLextrTickValuesToPixels(util_dart.Interval tickPixelsDomainFromOwnerConstraints) {
-    tickPixelsDomain = tickPixelsDomainFromOwnerConstraints;
-    tickPixels = lextrValuesToPixels();
+  /// Sets the range for the ticks in [tickValues]; this is pixel-affmap-equivalent of [tickValuesRange].
+  void setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerConstraints) {
+    tickPixelsRange = tickPixelsRangeFromOwnerConstraints;
+    tickPixels = affmapValuesToPixels();
   }
 
-  /// Returns tha [tickPixels], calculated as [tickValues] Linearly extrapolated to the passed [axisPixelsRange].
+  /// Returns tha [tickPixels], which are the [tickValues] affmap-ed to the passed [axisPixelsRange].
   ///
   /// Important Implementation Notes:
   ///
@@ -3629,10 +3629,10 @@ class ExternalTicksLayoutProvider {
   ///   The [isOnHorizontalAxis] should be set to true if this [ExternalTicksLayoutProvider] is laying
   ///   out labels in Row on the horizontal axis, false on the vertical axis.
   ///
-  List<double> lextrValuesToPixels() {
+  List<double> affmapValuesToPixels() {
     /* todo-02 Maybe something like this is needed for the special case of collapsed-to-origin Interval
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
-    // Lerp the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
+    // Affmap the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
     if (dataRange == const util_dart.Interval(0.0, 0.0)) {
       double pixels;
       if (!isOnHorizontalAxis) {
@@ -3645,10 +3645,10 @@ class ExternalTicksLayoutProvider {
     */
     
     return tickValues
-        .map((double value) => util_dart.ToPixelsLTransform1D(
-              fromValues: util_dart.Interval(tickValuesDomain.min, tickValuesDomain.max),
-              toPixels: util_dart.Interval(tickPixelsDomain.min, tickPixelsDomain.max),
-              doInvertToDomain: !isOnHorizontalAxis,
+        .map((double value) => util_dart.ToPixelsAffineMap1D(
+              fromValuesRange: util_dart.Interval(tickValuesRange.min, tickValuesRange.max),
+              toPixelsRange: util_dart.Interval(tickPixelsRange.min, tickPixelsRange.max),
+              isFlipToRange: !isOnHorizontalAxis,
             ).apply(value))
         .toList();
   }

@@ -527,7 +527,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 /// See [LegendIndicatorRectContainer] for similar implementation.
 ///
 /// It implements the mixins [WidthSizerLayouterChildMixin] and [HeightSizerLayouterChildMixin]
-/// needed to lextr the [pointModel] to a position on the chart.
+/// needed to affmap the [pointModel] to a position on the chart.
 class BarPointContainer extends PointContainer {
 
   /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
@@ -556,17 +556,17 @@ class BarPointContainer extends PointContainer {
 
     // Create PointOffset from this [pointModel] by giving it a range,
     // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be lextr-ed to it's target value depending on chart direction.
+    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
     PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
           dataRangeLabelInfosGenerator: inputLabelsGenerator,
         );
-    PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
+    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
-      heightToLextr: heightToLextr,
-      widthToLextr: widthToLextr,
+      sizerHeight: sizerHeight,
+      sizerWidth: sizerWidth,
     );
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
@@ -575,7 +575,7 @@ class BarPointContainer extends PointContainer {
     // The offset, [pixelPointOffset] is used in line chart.
     //
     // The [layoutSize] is also the size of the rectangle, which, when positioned
-    // by the parent layouter, is the pixel-lextr-ed value of the [pointModel]
+    // by the parent layouter, is the pixel-affmap-ed value of the [pointModel]
     // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
@@ -599,14 +599,14 @@ class BarPointContainer extends PointContainer {
     PointOffset pixelPointOffset,
   ) {
     var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
-    var callStr = '   pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(\n'
+    var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
         '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
         '       constraintsOnImmediateOwner: ${constraints.asCodeConstructorInsideBox()},\n'
         '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
-        '       heightToLextr: $heightToLextr,\n'
-        '       widthToLextr: $widthToLextr,\n'
-        '       //  isLextrUseSizerInsteadOfConstraint: false,\n'
+        '       sizerHeight: $sizerHeight,\n'
+        '       sizerWidth: $sizerWidth,\n'
+        '       //  isAffmapUseSizerInsteadOfConstraint: false,\n'
         '     );\n';
     // var pixelPointOffsetStr = '   pixelPointOffset = ${pixelPointOffset.asCodeConstructor()};\n';
     // var pixelPointOffsetLayoutSizeStr = '   pixelPointOffsetLayoutSize = ${pixelPointOffset.barPointRectSize.asCodeConstructor()};\n';
@@ -653,17 +653,17 @@ class ZeroValueBarPointContainer extends BarPointContainer {
 
     // Create PointOffset from this [pointModel] by giving it a range,
     // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be lextr-ed to it's target value depending on chart direction.
+    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
     PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
       dataRangeLabelInfosGenerator: inputLabelsGenerator,
     );
-    PointOffset pixelPointOffset = pointOffset.lextrToPixelsMaybeTransposeInContextOf(
+    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       constraintsOnImmediateOwner: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
-      heightToLextr: heightToLextr,
-      widthToLextr: widthToLextr,
+      sizerHeight: sizerHeight,
+      sizerWidth: sizerWidth,
     );
 
     // Make the layoutSize zero in the direction of the chart orientation

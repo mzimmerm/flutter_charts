@@ -233,7 +233,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     // Scale the [pointsColumns] to the [VerticalAxisContainer]'s extrapolate.
     // This is effectively a [layout] of the lines and bars pointPresenters, currently
     //   done in [VerticalBarPointPresenter] and [LineChartPointPresenter]
-    _lextrPointsColumns();
+    _affmapPointsColumns();
 
     // 3. Apply offset to the lines and bars (the 'data container' [PointsColumns]).
     pointsColumns.applyParentOffset(this, offset);
@@ -287,9 +287,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   ///
   /// Must be called before [setupPointPresentersColumns] as [setupPointPresentersColumns]
   /// uses the  absolute extrapolated [chartViewModel.pointsColumns].
-  void _lextrPointsColumns() {
+  void _affmapPointsColumns() {
     // ChartRootContainer, cast to CL version
-    pointsColumns.lextrPointsColumns(chartViewModel, chartViewModel.chartRootContainer as ChartRootContainerCL);
+    pointsColumns.affmapPointsColumns(chartViewModel, chartViewModel.chartRootContainer as ChartRootContainerCL);
   }
 
   /// Optionally paint series in reverse order (first to last,
