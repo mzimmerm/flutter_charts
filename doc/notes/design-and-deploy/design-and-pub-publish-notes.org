@@ -1849,10 +1849,9 @@ Notes or Later:
 - [X] Create new objects from ~DataContainer~ down in a new library ~new_data_container.dart~, classes from bottom:
 - [X] ~NewValueContainer~, ~NewValuesColumnContainer~, ~NewValuesColumnsContainer~ - the last is equivalent to ~DataContainer~
  
-** DONE 9. ~Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers~
+** DONE 9. Add auto layouts that fully support building the chart, and build the chart fully from auto-layouted BoxContainers
 
-  
-** IN-PROGRESS-NOW 10. ~CURRENT WORK~
+** DONE 10. Transposing layouters
 
 1. [X] Finish design with note about class hierarchy of TransposingRoller layouters
 2. [X] Add TransposingRoller.Column, Row between RollingLayouter and Column/Row
@@ -1903,19 +1902,56 @@ Notes or Later:
 18. [X] Change  Row -> Transposing.Row and  ExternalTicksRow -> TransposingExternalTicks.Row in code, but NOT TransposingSizer
 19. [X] Remove       ~chartSeriesOrientation: chartSeriesOrientation~ in all places where ~chartViewMaker~ is provided. This is generally in extensions of ChartAreaContainer, but NOT in layouter or transposing layouters.
 20. [X] ~TransposableRoller.Row constructor hardcodes mainAxisAlign. Should it use otherEndAlign, if set in TransposableRoller.Row???~      
-21. [ ] Rename ChartViewMaker to ChartViewModel, implement ChartModel and add forwarding methods to ChartModel:
-    1. [ ] Remove ChartModel from signatures, and use ChartViewModel instead
-    2. [ ] Pull LabelLayoutStrategy to ChartViewModel
-22. [ ] Add tests for PointOffset lextr method
-23. [ ] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
-24. [ ] Exclude from backups:
-    1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
-    2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
-    3. 
-25. 
-26.
+21. [X] Rename ChartViewMaker to ChartViewModel, implement ChartModel and add forwarding methods to ChartModel:
+    1. [X] Remove ChartModel from signatures, and use ChartViewModel instead
+    2. [X] Pull LabelLayoutStrategy to ChartViewModel
+22. [X] Add tests for PointOffset lextr method
+23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
+** IN-PROGRESS-NOW 11. ~CURRENT WORK: ADD LINE CHART~
+- [-] Rename LegendColumn to ByRowLegends
+  - [X] Rename LegendColumn to ByRowLegends
+  - [ ] Write up here what else to rename
+- [ ] Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.
+- [ ] Refactor DataContainer in BarChart:
+  - [ ] Bar chart: DataContainer : create extension BarChartDataContainer in container/bar/data_container.dart:
+    - [ ] Use the existing mechanism, override the 3 methods that throw UnimplementedError, this does not need to override all data_container classes, and keep the core layout intact
+      - [ ] makeDataColumnPointsBar
+      - [ ] makePointContainer
+      - [ ] makePointContainerWithZeroValue
+    - [ ] df 
+    - [ ] watch bar chart specific methods there - mostly around BarPointContainer and DataColumnPointsBar.makePointContainer
+      - [ ] DataColumnPointsBar.makePointContainer what to do, how?
+    - [ ] Get Bar Chart working again in the new structure
+  - [ ] Line Chart: 
+
+
+- [ ] Exclude from backups:
+  1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
+  2. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/test/tmp (may already be, see above)
+  3. 
+
+
+- review use and impl of layout_Post_NotLeaf_PositionChildren and _layout_Post_NotLeaf_OffsetChildren ; some of them are likely not needed and can be simplified.
+- review again, all uses of applyParentOffset, esp between positioning and BoxLayouter
+- should ChartAreaContainer extend PositioningLayouter instead of BoxLayouter?
+- Rename boundingRect to envelopeRect
+- [ ]
+
+
+** TODO FUTURE WORK
+
+- [ ] Create a test app that can:
+  1. [ ] delay
+  2. [ ] take screenshot from the app,
+  3. [ ] delay
+  4. [ ] run another chart
+  5. [ ] back to 1.
+- [ ] Add spacing
+- 
+
+  
 
 ** Add Spacing to chart
 

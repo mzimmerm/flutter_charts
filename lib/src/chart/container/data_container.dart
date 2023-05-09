@@ -330,7 +330,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
 /// Each [PointContainer] views one [model.PointModel] in [model.DataColumnModel.pointModelList].
 ///
 /// Each instance is visually presented as a horizontal or vertical bar
-/// displaying [PointContainer] rectangles or lines.
+/// displaying [PointContainer]s as rectangles or lines.
 /// Each rectangle or line represents a data point [model.PointModel].
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
@@ -370,10 +370,10 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
     // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
     // stacked and nonStacked, and positive and negative, distinctly.
     List<PointContainer> pointContainers = dataColumnModel.pointModelList
-    // Map applies function converting [PointModel] to [PointContainer],
-    // calling the hook [MyBarChartViewModelPointContainer]
+        // Map applies function converting the [PointModel] to [PointContainer],
+        // calling the hook [MyBarChartViewModelPointContainer]
         .map(clsPointToNullableContainerForSign(barsAreaSign))
-    // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
+        // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
         .where((containerElm) => containerElm != null)
         .map((containerElm) => containerElm!)
         .toList();
@@ -418,7 +418,14 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
   }
 
   /// Function closure, when called with argument [barsAreaSign],
-  /// returns [PointContainer] yielding function with one free parameter, the [PointModel].
+  /// returns function with one free parameter, the [model.PointModel].
+  ///
+  /// The returned function, when invoked with [model.PointModel] as a parameter,
+  /// returns either a [PointContainer] or null using following logic depending by the currier [barsAreaSign] :
+  ///   - If the passed [model.PointModel.sign] is the same as [barsAreaSign] a [PointContainer] is returned.
+  ///     This [PointContainer] is created by the callback [DataColumnPointsBar.makePointContainer];
+  ///     it presents the passed [PointModel].
+  ///   - else, null is returned. Caller should respond by
   ///
   /// Encapsulates the logic of creating [PointContainer] from [PointModel] for
   /// all possible values of [ChartViewModel.chartStacking] and [barsAreaSign].

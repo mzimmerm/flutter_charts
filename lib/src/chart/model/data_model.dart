@@ -46,7 +46,7 @@ class ChartModel {
     // validate after late finals initialized as they are used in validate.
     validate(legendNames, legendColors);
 
-    _legendColumn = _LegendColumn(legendNames, legendColors);
+    _byDataRowLegends = _ByDataRowLegends(legendNames, legendColors);
 
     _dataColumns = transposeRowsToColumns(dataRows);
 
@@ -81,9 +81,9 @@ class ChartModel {
   /// The legends for each row of data.
   ///
   /// There is one Legend per data row. Alternative name would be "series names and colors".
-  late final _LegendColumn _legendColumn;
+  late final _ByDataRowLegends _byDataRowLegends;
 
-  LegendItem getLegendItemAt(int index) => _legendColumn.getItemAt(index);
+  LegendItem getLegendItemAt(int index) => _byDataRowLegends.getItemAt(index);
 
   /// Returns the minimum and maximum transformed, not-extrapolated data values calculated from [ChartModel],
   /// specific for the passed [isStacked].
@@ -265,8 +265,8 @@ class LegendItem {
 /// Descriptors of legends; each descriptor
 ///
 ///
-class _LegendColumn {
-  _LegendColumn(List<String>nameColumn, List<ui.Color> legendColors) {
+class _ByDataRowLegends {
+  _ByDataRowLegends(List<String>nameColumn, List<ui.Color> legendColors) {
     if (nameColumn.length != legendColors.length) {
       throw StateError('There must be the same number of legend names and colors, but client provided '
           '${nameColumn.length} names and ${legendColors.length} colors.');
