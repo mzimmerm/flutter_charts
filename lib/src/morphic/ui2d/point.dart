@@ -1,6 +1,8 @@
 import 'dart:ui' show Offset, Size;
 
 
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+
 import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
@@ -73,28 +75,35 @@ class PointOffset extends Offset {
     outputValue: outputValue - other.dy,
   );
 
-  /// todo-010 change, shorten, fix documentation
-  /// Affmap this [PointOffset] to it's pixel scale, first possibly transposing
-  /// it if [chartOrientation] is [ChartOrientation.row].
+  /// Creates and returns copy of this [PointOffset], affmap-ed to it's pixel scale; the copy's member
+  /// [barPointRectSize] is filled with the [Size] that can and should be used as [layoutSize] of the bar
+  /// representing this [PointOffset] on bar charts.
   ///
-  /// The Affmap takes into account chart orientation [chartOrientation],
-  /// which may cause the x and y (input and output) values to transpose
-  /// around [Diagonal.leftToRightUp] during the affmap.
+  /// The Affmap takes into account [chartOrientation], which may cause the x and y (input and output)
+  /// values to transpose around the [Diagonal.leftToRightUp] during the affmap.
   ///
-  ///   - [chartOrientation] describes the orientation. [ChartOrientation.column] transforms
-  ///     only once on each axis: between value-range and pixel-range on the same axis.
-  ///     [ChartOrientation.column] transforms twice on each axis:
-  ///       - first transforms value on each axis to value on cross-axis, using their respective value-ranges,
-  ///       - second on each cross axis, from value-range to pixel-range
+  /// While [PointOffset] can be used generically, the documentation here concentrates
+  /// on it's use representing [PointModel] in one bar in the bar chart.
   ///
-  ///   - [sizerHeight] is the height used for pixel-range,
-  ///     used IF  [isAffmapUseSizerInsteadOfConstraint] is true. Flip use with [constraintsOnImmediateOwner]
-  ///   - [sizerWidth] - equivalent to [sizerHeight]
+  /// The passed instances:
+  ///
+  ///   - [chartOrientation] describes the orientation.
+  ///     - [ChartOrientation.column] transforms only once on each axis:
+  ///       - affmap between value-range and pixel-range on the same axis.
+  ///     - [ChartOrientation.row] transforms twice on each axis:
+  ///       - first transposes value on each axis to value on cross-axis, using their respective value-ranges,
+  ///       - second is affmap on each cross axis, from value-range to pixel-range
+  ///   - [constraintsOnImmediateOwner] should be the constraints of a [Row] or [Column]
+  ///     [RollingBoxLayouter] in which the [PointModel] represented by this [PointOffset] is presented.
   ///   - [inputDataRange] is the data value-range on the input range (1st coordinate, x)
   ///   - [outputDataRange] is the data value-range on the output range (2nd coordinate, y)
+  ///   - [sizerHeight] is the height used for pixel-range
+  ///   - [sizerWidth] - equivalent to [sizerHeight]
   ///
-  /// Items below summarize the rules for affmap-ing [PointOffset] depending on it's [chartOrientation]
-  /// being [ChartOrientation.column] or the [ChartOrientation.row].
+  /// Note that the [constraintsOnImmediateOwner] or [sizerHeight] and [sizerWidth] is used
+  /// to calculate the size of [barPointRectSize] on the copy.
+  ///
+  /// Items below summarize the rules for affmap-ing [PointOffset] depending on it's [chartOrientation].
   ///
   /// Below:
   ///   - 'x' means the same as in-code 'inputValue', 'y' the same as 'outputValue'.
@@ -104,14 +113,15 @@ class PointOffset extends Offset {
   ///
   /// Description of transforms:
   ///
-  ///   1. The [ChartOrientation.column] performs 1 transform, which transforms a [PointOffset]
+  ///   1. The [chartOrientation] value [ChartOrientation.column] performs 1 affmap transform, a [PointOffset]
   ///      from values-range to pixels-range on both axes.
   ///     - Transform steps, shown here on min and max values:
-  ///       - 1st coordinate : x min -> x pixel min (placed in 1st coordinate)
-  ///       - 1st coordinate : x max -> x pixel max (placed in 1st coordinate)
-  ///       - 2nd coordinate : y min -> y pixel max (placed in 2nd coordinate)
-  ///       - 2nd coordinate : y max -> y pixel min (placed in 2nd coordinate)
-  ///     -  Ex: AxisLineContainer FOR X AXIS LINE: we define a HORIZONTAL line, which draws HORIZONTAL line
+  ///       - 1st coordinate : x min -> x pixel min (placed in 1st coordinate) affmap
+  ///       - 1st coordinate : x max -> x pixel max (placed in 1st coordinate) affmap
+  ///       - 2nd coordinate : y min -> y pixel max (placed in 2nd coordinate) affmap
+  ///       - 2nd coordinate : y max -> y pixel min (placed in 2nd coordinate) affmap
+  ///
+  ///     -  Example: AxisLineContainer FOR X AXIS LINE: we define a HORIZONTAL line, which draws HORIZONTAL line
   ///            on position Y pixels corresponding to outputValue 0
   ///            (in the middle of a chart, if both positive and negative present)
   ///       ``` dart
@@ -135,17 +145,18 @@ class PointOffset extends Offset {
   ///
   ///
   ///   2. The [ChartOrientation.row] performs 2 consecutive transforms
-  ///      This first transform transposes a [PointOffset] around [Diagonal.leftToRightUp],
+  ///      This first transform is a transpose a [PointOffset] around [Diagonal.leftToRightUp],
   ///      representing a (x -> y, y -> x) transform,
-  ///      the second transforms a [PointOffset] from values-range to pixels-range on both axes.
-  ///      Note: the first transform is equivalent to rotation clock-wise by 90 degrees (y -> x, x -> -y),
-  ///      followed by flipping around horizontal axis (y -> -y).
-  ///     - Transforms steps , shown here on min and max values:
-  ///       - 1st coordinate : x min -> y min -> y pixel max (placed in 2nd coordinate)
-  ///       - 1st coordinate : x max -> y max -> y pixel min (placed in 2nd coordinate)
-  ///       - 2nd coordinate : y min -> x min -> x pixel min (placed in 1st coordinate)
-  ///       - 2nd coordinate : y max -> x max -> x pixel max (placed in 1st coordinate)
-  ///     -  Ex: AxisLineContainer FOR Y AXIS LINE : we define a HORIZONTAL line, which draws VERTICAL line
+  ///      the second transform is affmap of a [PointOffset] from values-range to pixels-range on both axes.
+  ///      Note: the first transpose is equivalent to rotation clock-wise by 90 degrees (y -> x, x -> -y),
+  ///            followed by flipping around horizontal axis (y -> -y).
+  ///     - Transform steps , shown here on min and max values:
+  ///       - 1st coordinate : x min -> y min -> y pixel max (placed in 2nd coordinate) transpose, then affmap
+  ///       - 1st coordinate : x max -> y max -> y pixel min (placed in 2nd coordinate) transpose, then affmap
+  ///       - 2nd coordinate : y min -> x min -> x pixel min (placed in 1st coordinate) transpose, then affmap
+  ///       - 2nd coordinate : y max -> x max -> x pixel max (placed in 1st coordinate) transpose, then affmap
+  ///
+  ///     -  Example: AxisLineContainer FOR Y AXIS LINE : we define a HORIZONTAL line, which draws VERTICAL line
   ///            on position X pixels = 0 (in DataContainer coordinates) due to the transpose of coordinates:
   ///       ``` dart
   ///         fromPointOffset: PointOffset(inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
@@ -230,7 +241,7 @@ class PointOffset extends Offset {
           isFlipToRange: true,
         );
 
-        // affineTransformer: x -> x, y -> y,
+        // affineTransformer: identity x -> x, y -> y,
         //   followed by affine coordinates transfer: x -> ax + b, y -> cx + d)
         affineTransformer = FunctionalMatrix2D([
           [transfXX.apply, zero],
@@ -262,8 +273,8 @@ class PointOffset extends Offset {
           isFlipToRange: true,
         );
 
-        // affineTransformer: transposes around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
-        //   followed by affine coordinates transfer: x -> ax + b, y -> cx + d)
+        // affineTransformer: transpose around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
+        //   followed by coordinates affmap: x -> ax + b, y -> cx + d)
         affineTransformer = FunctionalMatrix2D([
           [zero,           transfYX.apply],
           [transfXY.apply, zero ],
@@ -277,7 +288,6 @@ class PointOffset extends Offset {
     }
 
     // Transform this point with the affine transformer, and it's presented rectangle Size with the linear transformer.
-
     Vector<double> thisToVector = toVector();
     PointOffset pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOnVector(thisToVector));
     Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
@@ -287,9 +297,6 @@ class PointOffset extends Offset {
     pointOffsetPixels.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
       other: Size(horizontalPixelsRange.max, verticalPixelsRange.max),
       axis: orientation.mainLayoutAxis,);
-
-    // todo-010
-    //   - Try to make AffineTransform constructors constant, as it seems they are repeated for every point.
 
     return pointOffsetPixels;
   }
@@ -307,7 +314,7 @@ class PointOffset extends Offset {
 ///
 /// [leftToRightUp] identifies the diagonal around which a coordinate system would
 /// rotate to get from a vertical bar chart to a horizontal bar chart.
-// todo-010 : move to an enum file - representing geometry
+// todo-014 : move to an enum file - representing geometry
 enum Diagonal {
   leftToRightDown,
   leftToRightUp,

@@ -579,7 +579,9 @@ class AffineRangedMap1D {
 ///  we generally stay with the [isFlipToRange] default [false],
 ///  as we normally want sizes positive after extrapolation.
 ///
+/// todo-014 : try to make all 1D constructors const.
 class ToPixelsAffineMap1D extends AffineRangedMap1D {
+
   ToPixelsAffineMap1D({
     required Interval fromValuesRange,
     required Interval toPixelsRange,

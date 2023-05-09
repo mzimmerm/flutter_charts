@@ -1807,8 +1807,7 @@ abstract class RollingBoxLayouter extends MainAndCrossAxisBoxLayouter {
       print(' ### Log.Warning: Allowing all children full self constraints while Align is not "start" along '
           'main axis will likely cause overflows during a stressed layout. Either create this instance '
           'using "mainAxisLayout: Align.start", or divide self constraints by setting weights on all children '
-          'using "constraintsWeight: ConstraintsWeight". \n'
-          'This instance=$this');
+          'using "constraintsWeight: ConstraintsWeight". This instance=$this');
     }
     for (var child in children) {
       child.applyParentConstraints(this, constraints);

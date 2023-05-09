@@ -1,5 +1,8 @@
 import 'dart:ui' as ui show Canvas, Size;
 
+import 'package:flutter_charts/src/chart/chart.dart';
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
 
@@ -7,9 +10,6 @@ import 'package:logger/logger.dart' as logger;
 
 import '../morphic/container/chart_support/chart_style.dart';
 import '../morphic/container/morphic_dart_enums.dart';
-//import '../morphic/container/container_edge_padding.dart';
-//import '../morphic/container/container_layouter_base.dart' as container_base;
-//import '../morphic/container/layouter_one_dimensional.dart';
 import '../morphic/container/constraints.dart' as constraints;
 
 // this level or equivalent
@@ -27,12 +27,19 @@ import '../util/util_dart.dart' as util_dart;
 /// to container [data_container.PointContainer].
 typedef ClsPointToNullableContainer = data_container.PointContainer? Function (model.PointModel);
 
-/// Abstract base class for view models.
+/// Abstract base class for chart view models.
 ///
-/// A view model is a class that makes (creates, produces, generates) a chart view hierarchy,
-/// starting with a concrete [root_container.ChartRootContainer], with the help of [model.ChartModel].
+/// See [FlutterChart] documentation for chart structure and lifecycle.
 ///
-/// This base view model has access to [model.ChartModel]
+/// Roles of this class:
+///   1. Provides all data needed for the chart view hierarchy.
+///      Data are provided both by pulling from the member [_chartModel],
+///      but can contain, (or pull, or be notified about), additional view-specific information.
+///      One example of such view-specific information is member [chartOrientation].
+///   2. Creates (produces, generates) the chart view hierarchy,
+///      starting with a concrete [root_container.ChartRootContainer].
+///
+/// This base view model has access to [model.ChartModel] through private [_chartModel].
 ///
 /// This base view model holds as members:
 ///   - the model in [_chartModel]. It's member [model.ChartModel.chartOptions] provides access to [options.ChartOptions]
@@ -43,10 +50,10 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
 /// which is also a late member after it is constructed.
 ///
-/// [ChartViewModel] is not a BoxContainer, it provides a 'link' between [FlutterChartPainter]
-/// which [FlutterChartPainter.paint] method is called by the Flutter framework,
-/// and the root of the chart container hierarchy, the [root_container.ChartRootContainer] which it
-/// creates in its [makeChartRootContainer].
+/// [ChartViewModel] instance provides a 'link' between the [ChartModel] through it's member
+/// [_chartModel] and the chart root [BoxContainer], the [root_container.ChartRootContainer], through it's member
+/// [chartRootContainer].
+///
 ///
 /// Core methods of [ChartViewModel] are
 ///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];
@@ -55,8 +62,7 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 ///   - abstract [makeChartRootContainer]; from it, the extensions of [ChartViewModel]
 ///     (for example, [LineChartViewModel]) should create and return an instance of the concrete [chartRootContainer]
 ///     (for example [LineChartRootContainer]).
-///   - [container.ChartBehavior.extendAxisToOrigin] is on this [ChartViewModel],
-///     as it controls how views behave (although does not control view making).
+///
 abstract class ChartViewModel extends Object with container_common.ChartBehavior {
   ChartViewModel({
     required model.ChartModel chartModel,
@@ -98,18 +104,17 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     );
   }
 
-  /// ChartData held before member [chartRootContainer] is created.
+  /// Privately held chart model through which every instance of this [ChartViewModel] should obtain data
+  /// and data updates. Must be initialized before member [chartRootContainer] is created.
   ///
-  /// After [chartRootContainer] is created, this member
-  /// should be placed on the member [chartRootContainer.ownerChartModel]. todo-010-document this is not right
-  ///
-  /// Model for this chart. Created before chart, set in concrete [ChartViewModel] in constructor. todo-010-document this is not right
+  /// See top doc for [ChartViewModel] and doc for [FlutterChart] for chart structure and lifecycle.
   final model.ChartModel _chartModel;
 
   @Deprecated('Only use in legacy coded_layout')
   model.ChartModel get chartModelInLegacy => _chartModel;
 
-  // ------------- Public view into ChartModel
+  /// The methods [dataColumnModels], [numRows], [getLegendItemAt], [dataRangeWhenStringLabels]
+  /// are legacy public views of [ChartViewModel] into [model.ChartModel] and may be removed.
   List<model.DataColumnModel> get dataColumnModels => List.from(_chartModel.dataColumnModels);
 
   int get numRows => _chartModel.numRows;
@@ -117,7 +122,6 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   model.LegendItem getLegendItemAt(index) => _chartModel.getLegendItemAt(index);
 
   util_dart.Interval get dataRangeWhenStringLabels => _chartModel.dataRangeWhenStringLabels;
-  // -------------
 
   /// The generator and holder of labels in the form of [LabelInfos],
   /// as well as the range of the axis values.
@@ -131,9 +135,9 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Important note: This should NOT be part of model,
   ///                 as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
-  late util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator; // todo-010 : can this be late final?
+  late final util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
 
-  late util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator; // todo-010 : can this be late final?
+  late final util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
 
   /// Options forwarded from [model.ChartModel] options during this [ChartViewModel]s construction.
   final options.ChartOptions chartOptions;
@@ -205,21 +209,24 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
     _debugPrintEnd(isFirstStr);
   }
 
-  /// Should create a concrete instance of [ChartRootContainer], bind it to member [chartRootContainer],
-  /// and return it.
+  /// Should create a concrete instance of [root_container.ChartRootContainer],
+  /// which is the view of this [ChartViewModel].
   ///
-  /// Generally, the created [ChartRootContainer]'s immediate children should also be created and added to it,
-  /// but deeper children may or may not be created.
+  /// Caller should bind the returned value to member [chartRootContainer].
+  ///
+  /// Generally, the created [root_container.ChartRootContainer]'s immediate children and deeper
+  /// children of the [root_container.ChartRootContainer] may be created either in this method,
+  /// as part of [root_container.ChartRootContainer]'s creation, or hierarchically,
+  /// in [BoxContainer.buildAndReplaceChildren] which is invoked later, during [layout].
   ///
   /// In the default implementations, the [chartRootContainer]'s children created are
-  /// [ChartRootContainer.legendContainer],  [ChartRootContainer.verticalAxisContainer],
-  ///  [ChartRootContainer.horizontalAxisContainer], and  [chartRootContainer.chartModelContainer]. // todo-010-doc this is not right?
+  /// [root_container.ChartRootContainer.legendContainer],  [root_container.ChartRootContainer.verticalAxisContainer],
+  ///  [root_container.ChartRootContainer.horizontalAxisContainer],
+  ///  and [root_container.ChartRootContainer.dataContainer].
   ///
   /// If an extension uses an implementation that does not adhere to the above
   /// description, the [ChartRootContainer.layout] should be overridden.
   ///
-  /// Important notes:
-  ///   - This controller (ViewModel) can access both on ChartRootContainer and ChartModel.
   root_container.ChartRootContainer makeChartRootContainer({
     required covariant ChartViewModel chartViewModel,
   });

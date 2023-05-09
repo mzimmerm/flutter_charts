@@ -128,20 +128,7 @@ void main() {
   });
 
 
-  /* todo-010 : probably remove
-    test('applyOnVector 2', () {
-      var v = Vector([1.0, 2.0]);
-      var m = FunctionalMatrix2D<Functional>([
-        [Functional((x) => x), Functional((x) => 2 * x)],
-        [Functional((x) => 3 * x), Functional((x) => 4 * x)],
-      ]);
-      var result = Vector([5.0, 11.0]);
-
-      expect(result == m.applyOnVector(v), true);
-    });
-
-   */
-  // todo-010 : move to function_test.dart
+  // todo-014 : move to function_test.dart
   group('Functions', () {
     group('Functions == : Same result producing functions are not ==', () {
       double f(double arg) => arg * arg;
@@ -157,35 +144,5 @@ void main() {
       });
     });
 
-  /* todo-010 remove
-  test('vectors2', () {
-    var data = [
-      [-65.0, -40.0, -20.0,      8.0, 413.42857142857144,  920.2142857142858],
-      [-70.0, -40.0, -20.0,      8.0, 413.42857142857144,  1021.5714285714286],
-      [0.0, -40.0, -20.0,        8.0, 413.42857142857144,  -397.428571428571434],
-    ];
-
-    expect(ToPixelsLTransform1D(
-      fromValues: const Interval(1.0, 2.0),
-      toPixels: const Interval(10.0, 20.0),
-    ).apply(1.0),
-      10.0,);
-
-    for (var valuesRow in data) {
-      expect(
-        isCloserThanEpsilon( Během pře
-            RangeLTransform1D(
-              fromRangeStart: valuesRow[1],
-              fromRangeEnd: valuesRow[2],
-              toRangeStart: valuesRow[4],
-              toRangeEnd: valuesRow[3],
-            ).apply(valuesRow[0]),
-            valuesRow[5]
-        ),
-        true,
-      );
-    }
-  });
-*/
 }
 

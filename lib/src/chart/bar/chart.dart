@@ -22,7 +22,7 @@ class BarChart extends FlutterChart {
     widgets.Widget? child,
   }) : super(
           key: key,
-          painter: chartPainter,
+          chartPainter: chartPainter,
           chartViewModel: chartViewModel,
           foregroundPainter: foregroundPainter,
           size: size,
