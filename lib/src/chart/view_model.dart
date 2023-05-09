@@ -29,7 +29,7 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 
 /// Abstract base class for chart view models.
 ///
-/// See [FlutterChart] documentation for chart structure and lifecycle.
+/// See [FlutterChart] documentation for chart classes' structure and their lifecycle.
 ///
 /// Roles of this class:
 ///   1. Provides all data needed for the chart view hierarchy.
@@ -50,10 +50,11 @@ typedef ClsPointToNullableContainer = data_container.PointContainer? Function (m
 /// All the members above are needed to construct the view container hierarchy root, the [chartRootContainer],
 /// which is also a late member after it is constructed.
 ///
-/// [ChartViewModel] instance provides a 'link' between the [ChartModel] through it's member
-/// [_chartModel] and the chart root [BoxContainer], the [root_container.ChartRootContainer], through it's member
-/// [chartRootContainer].
-///
+/// [ChartViewModel] instance provides a 'reference link' between the [ChartModel],
+///   and the chart root [BoxContainer], the [root_container.ChartRootContainer],
+///   through it's members:
+///   - [_chartModel], reference -> to [ChartModel]
+///   - [chartRootContainer], reference -> to [root_container.ChartRootContainer]
 ///
 /// Core methods of [ChartViewModel] are
 ///   - [chartRootContainerCreateBuildLayoutPaint], which should be called in [FlutterChartPainter.paint];

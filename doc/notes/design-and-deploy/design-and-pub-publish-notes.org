@@ -1910,10 +1910,17 @@ Notes or Later:
 
 
 ** IN-PROGRESS-NOW 11. ~CURRENT WORK: ADD LINE CHART~
+
+Wherever there is a natural hierarchy of inner classes, where outer creates inner in an abstract way, use this term for the method that creates there inner instance:
+
+makeInner
+
+- [ ] Make all fields named 'owner' to be final; also rename them to 'outer'
+
+
 - [-] Rename LegendColumn to ByRowLegends
   - [X] Rename LegendColumn to ByRowLegends
   - [ ] Write up here what else to rename
-- [ ] Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.
 - [ ] Refactor DataContainer in BarChart:
   - [ ] Bar chart: DataContainer : create extension BarChartDataContainer in container/bar/data_container.dart:
     - [ ] Use the existing mechanism, override the 3 methods that throw UnimplementedError, this does not need to override all data_container classes, and keep the core layout intact
@@ -1939,6 +1946,21 @@ Notes or Later:
 - Rename boundingRect to envelopeRect
 - [ ]
 
+
+
+** TODO Remove all usages of Model classes in data_container.dart files. Only talk to ChartViewModel.
+
+Not sure if to do this ... Need to think through the separation of View and ViewModel.
+
+- [ ] In common view_model.dart add classes that mirror ChartModel:
+  - [ ] ChartViewModel for ChartModel (already done)
+    - [ ] Constructed from ChartModel
+    - [ ] It's api is same as ChartModel - todo - check what this means
+  - [ ] LegendItem with ChartLegendItem
+  - [ ] DataColumnModel with DataColumnViewModel
+  - [ ] PointModel with PointViewModel
+- [ ] Search all  *data_container*dart for import of data_model.dart
+  - [ ] replace all imports, and usages of classes from  data_model.dart with corresponding classes from view_model.dart
 
 ** TODO FUTURE WORK
 

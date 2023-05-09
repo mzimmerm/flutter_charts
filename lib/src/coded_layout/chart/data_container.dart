@@ -313,17 +313,18 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   set isMakeComponentsForwardedToOwner(bool isValue) => throw UnimplementedError();
 
   @override
-  ContainerForBothBarsAreasAndInputAxisLine makeContainerForBothBarsAreasAndInputAxisLine({
+  ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required BarsContainer negativeBarsContainer,
+    required DataContainer ownerDataContainer,
     ContainerKey? key,
   }) {
     throw UnimplementedError();
   }
 
   @override
-  BarsContainer makeBarsContainer ({
+  BarsContainer makeInnerBarsContainer ({
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
     ContainerKey? key,
@@ -332,23 +333,24 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   }
 
   @override
-  DataColumnPointsBar makeDataColumnPointsBar({
+  DataColumnPointsBar makeDeepInnerDataColumnPointsBar({
     required DataColumnModel dataColumnModel,
-    required DataContainer ownerDataContainer,
+    // todo-00-done : required DataContainer ownerDataContainer,
+    required BarsContainer ownerBarsContainer,
     required Sign barsAreaSign,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
 
   @override
-  PointContainer makePointContainer({
+  PointContainer makeDeepInnerPointContainer({
     required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
 
   @override
-  PointContainer makePointContainerWithZeroValue({
+  PointContainer makeDeepInnerPointContainerWithZeroValue({
     required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
