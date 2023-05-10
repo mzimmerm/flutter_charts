@@ -1,29 +1,29 @@
 import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
 // chart/container common
-import '../data_container.dart';
+import '../../../container/data_container.dart';
 
 // this level base libraries or equivalent
 // import 'package:flutter_charts/src/chart/painter.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
-import '../../../morphic/container/chart_support/chart_style.dart';
-import '../../../morphic/container/morphic_dart_enums.dart' show Sign;
-import '../../../morphic/ui2d/point.dart';
-import '../../model/label_model.dart';
+import '../../../../morphic/container/chart_support/chart_style.dart';
+import '../../../../morphic/container/morphic_dart_enums.dart' show Sign;
+import '../../../../morphic/ui2d/point.dart';
+import '../../../model/label_model.dart';
 // import '../axis_container.dart';
 // import '../container_common.dart' as container_common;
-import '../../../morphic/container/container_layouter_base.dart';
-import '../../model/data_model.dart' as model;
-import '../../view_model.dart';
+import '../../../../morphic/container/container_layouter_base.dart';
+import '../../../model/data_model.dart' as model;
+import '../../../view_model.dart';
 // import '../../../morphic/container/container_edge_padding.dart';
 // import '../../../morphic/container/layouter_one_dimensional.dart';
 // import '../../options.dart';
-import '../../../morphic/container/container_key.dart';
+import '../../../../morphic/container/container_key.dart';
 
 /// Concrete
-class LineChartDataContainer extends DataContainer {
-  LineChartDataContainer({
+class BarChartDataContainer extends DataContainer {
+  BarChartDataContainer({
     required ChartViewModel chartViewModel,
   }) : super(
     chartViewModel: chartViewModel,
@@ -35,7 +35,7 @@ class LineChartDataContainer extends DataContainer {
     required Sign barsAreaSign,
     ContainerKey? key,
   })  {
-    return LineChartBarsContainer(
+    return BarChartBarsContainer(
       chartViewModel: chartViewModel,
       ownerDataContainer: ownerDataContainer,
       barsAreaSign: barsAreaSign,
@@ -44,9 +44,9 @@ class LineChartDataContainer extends DataContainer {
   }
 }
 
-class LineChartBarsContainer extends BarsContainer {
+class BarChartBarsContainer extends BarsContainer {
 
-  LineChartBarsContainer({
+  BarChartBarsContainer({
     required ChartViewModel chartViewModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
@@ -72,7 +72,7 @@ class LineChartBarsContainer extends BarsContainer {
         barsAreaSign: barsAreaSign,
       );
     }
-    return LineChartDataColumnPointsBar(
+    return BarChartDataColumnPointsBar(
       chartViewModel: chartViewModel,
       ownerDataContainer: ownerDataContainer,
       barsAreaSign: barsAreaSign,
@@ -82,20 +82,20 @@ class LineChartBarsContainer extends BarsContainer {
 }
 
 ////////////////// vvvvvvvv
-class LineChartDataColumnPointsBar extends DataColumnPointsBar {
+class BarChartDataColumnPointsBar extends DataColumnPointsBar {
 
-  LineChartDataColumnPointsBar({
+  BarChartDataColumnPointsBar({
     required ChartViewModel chartViewModel,
     required DataContainer ownerDataContainer,
     required Sign barsAreaSign,
     required model.DataColumnModel dataColumnModel,
     ContainerKey? key,
   }) : super(
-    chartViewModel: chartViewModel,
-    ownerDataContainer: ownerDataContainer,
-    barsAreaSign: barsAreaSign,
-    dataColumnModel: dataColumnModel,
-    key: key,
+     chartViewModel: chartViewModel,
+     ownerDataContainer: ownerDataContainer,
+     barsAreaSign: barsAreaSign,
+     dataColumnModel: dataColumnModel,
+     key: key,
   );
 
   @override
@@ -107,7 +107,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
         pointModel: pointModel,
       );
     }
-    return LinePointContainer(
+    return BarPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
       ownerDataColumnPointsBar: this, // todo-00-done : added
@@ -124,7 +124,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
         pointModel: pointModel,
       );
     }
-    return ZeroValueLinePointContainer(
+    return ZeroValueBarPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
       ownerDataColumnPointsBar: this, // todo-00-done : added
@@ -142,12 +142,12 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
 ///
 /// It implements the mixins [WidthSizerLayouterChildMixin] and [HeightSizerLayouterChildMixin]
 /// needed to affmap the [pointModel] to a position on the chart.
-class LinePointContainer extends PointContainer {
+class BarPointContainer extends PointContainer {
 
-  /// Generate view for this single leaf [PointModel] - a single [LinePointContainer].
+  /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  LinePointContainer({
+  BarPointContainer({
     required model.PointModel pointModel,
     required ChartViewModel chartViewModel,
     required DataColumnPointsBar ownerDataColumnPointsBar, // todo-00-done added
@@ -192,7 +192,7 @@ class LinePointContainer extends PointContainer {
     //
     // The [layoutSize] is also the size of the rectangle, which, when positioned
     // by the parent layouter, is the pixel-affmap-ed value of the [pointModel]
-    // in the main axis direction of the layouter which owns this [LinePointContainer].
+    // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
 
@@ -233,12 +233,12 @@ class LinePointContainer extends PointContainer {
   }
 }
 
-/// A zero-height (thus 'invisible') [LinePointContainer] extension.
+/// A zero-height (thus 'invisible') [BarPointContainer] extension.
 ///
 /// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
-class ZeroValueLinePointContainer extends LinePointContainer {
+class ZeroValueBarPointContainer extends BarPointContainer {
 
-  ZeroValueLinePointContainer({
+  ZeroValueBarPointContainer({
     required model.PointModel pointModel,
     required ChartViewModel chartViewModel,
     required DataColumnPointsBar ownerDataColumnPointsBar, // todo-00-done added

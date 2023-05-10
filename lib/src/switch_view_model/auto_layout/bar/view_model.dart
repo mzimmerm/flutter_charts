@@ -6,11 +6,11 @@ import '../../../chart/container/axis_container.dart';
 // base libraries
 import '../../../chart/view_model.dart';
 import '../../../morphic/container/chart_support/chart_style.dart';
-import '../../../chart/container/bar/root_container.dart';
+import '../../../chart/chart_type/bar/container/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 // import '../../../chart/bar/container_delete.dart';
-import '../../../chart/container/bar/data_container.dart';
+import '../../../chart/chart_type/bar/container/data_container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../view_model.dart'; // NEW SWITCH

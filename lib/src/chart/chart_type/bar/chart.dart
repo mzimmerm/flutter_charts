@@ -1,26 +1,19 @@
 import 'package:flutter/widgets.dart' as widgets;
 
 // base libraries
-import '../chart.dart';
-import '../painter.dart' show FlutterChartPainter;
-import '../view_model.dart' show ChartViewModel;
+import '../../chart.dart';
+import '../../painter.dart' show FlutterChartPainter;
+import '../../view_model.dart' show ChartViewModel;
 
-/// Provides paint for the line chart.
+/// Provides paint for the vertical bar chart.
 ///
 /// It extends [CustomPaint] which is the flutter widget
 /// that provides a canvas on which to draw during the paint phase.
 /// The core override is to set the concrete [ChartContainer], and
 /// it's [ChartContainer.isStacked] setting.
-///
-/// Note: The [LineChart] constructor shows how to call a super
-///       with named parameters. The super's [CustomPaint] single constructor is
-///         `const CustomPaint({ Key key, this.painter, this.foregroundPainter,
-///                              this.size: Size.zero, Widget child })`
-///       and syntax of a constructor with named parameters
-///       can be seen in the [LineChart] constructor.
-class LineChart extends FlutterChart {
+class BarChart extends FlutterChart {
   /// Default constructor accepts size
-  LineChart({
+  BarChart({
     widgets.Key? key,
     required FlutterChartPainter chartPainter,
     required ChartViewModel chartViewModel,
@@ -43,4 +36,5 @@ class LineChart extends FlutterChart {
     //    ```
     chartPainter.chart = this;
   }
+
 }

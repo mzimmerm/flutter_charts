@@ -9,9 +9,9 @@ import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
 // import '../../../chart/line/container_delete.dart';
 // import '../../../chart/container/line/data_container.dart';
-import '../../../chart/container/line/data_container.dart';
+import '../../../chart/chart_type/line/container/data_container.dart';
 
-import '../../../chart/container/line/root_container.dart';
+import '../../../chart/chart_type/line/container/root_container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../../morphic/container/chart_support/chart_style.dart';
