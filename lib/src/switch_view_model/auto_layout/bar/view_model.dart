@@ -9,7 +9,8 @@ import '../../../morphic/container/chart_support/chart_style.dart';
 import '../../../chart/container/bar/root_container.dart';
 import '../../../chart/model/data_model.dart';
 import '../../../chart/iterative_layout_strategy.dart' as strategy show LabelLayoutStrategy;
-import '../../../chart/bar/container.dart';
+// import '../../../chart/bar/container_delete.dart';
+import '../../../chart/container/bar/data_container.dart';
 
 // this level: switch/auto_layout/bar
 import '../../view_model.dart'; // NEW SWITCH

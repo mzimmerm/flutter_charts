@@ -145,11 +145,9 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 export 'src/chart/line/chart.dart';
 export 'src/chart/line/painter.dart';
 export 'src/chart/line/options.dart';
-export 'src/chart/line/container.dart';
 export 'src/chart/bar/chart.dart';
 export 'src/chart/bar/painter.dart';
 export 'src/chart/bar/options.dart';
-export 'src/chart/bar/container.dart';
 export 'src/chart/chart_label_container.dart';
 export 'src/chart/view_model.dart';
 export 'src/chart/container/axis_container.dart';
