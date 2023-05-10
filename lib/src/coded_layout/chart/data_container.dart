@@ -317,7 +317,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required BarsContainer negativeBarsContainer,
-    required DataContainer ownerDataContainer,
+    required DataContainer outerDataContainer,
     ContainerKey? key,
   }) {
     throw UnimplementedError();
@@ -325,7 +325,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
 
   @override
   BarsContainer makeInnerBarsContainer ({
-    required DataContainer ownerDataContainer,
+    required DataContainer outerDataContainer,
     required Sign barsAreaSign,
     ContainerKey? key,
   }) {
@@ -335,8 +335,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   @override
   DataColumnPointsBar makeDeepInnerDataColumnPointsBar({
     required DataColumnModel dataColumnModel,
-    // todo-00-done : required DataContainer ownerDataContainer,
-    required BarsContainer ownerBarsContainer,
+    required BarsContainer outerBarsContainer,
     required Sign barsAreaSign,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');

@@ -8,19 +8,28 @@
 import 'package:flutter_charts/src/chart/painter.dart';
 // import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
-import '../../morphic/container/chart_support/chart_style.dart';
-import '../../morphic/container/morphic_dart_enums.dart' show Sign;
-// import '../../morphic/ui2d/point.dart';
-// import '../model/label_model.dart';
-import 'axis_container.dart';
-import 'container_common.dart' as container_common;
-import '../../morphic/container/container_layouter_base.dart';
-import '../model/data_model.dart' as model;
-import '../view_model.dart';
-import '../../morphic/container/container_edge_padding.dart';
-import '../../morphic/container/layouter_one_dimensional.dart';
-import '../options.dart';
-import '../../morphic/container/container_key.dart';
+import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
+
+
+// this level
+import 'package:flutter_charts/src/chart/container/container_common.dart' as container_common show ChartAreaContainer;
+import 'package:flutter_charts/src/chart/container/axis_container.dart';
+
+// up chart level
+import 'package:flutter_charts/src/chart/options.dart';
+import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer;
+import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
+
+// morphic
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
+import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
+import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
+
 
 
 /// Container for data on the chart.
@@ -71,10 +80,8 @@ import '../../morphic/container/container_key.dart';
 ///
 abstract class DataContainer extends container_common.ChartAreaContainer {
   DataContainer({
-    required ChartViewModel chartViewModel,
-  }) : super(
-          chartViewModel: chartViewModel,
-        );
+    required super.chartViewModel,
+  });
 
   @override
   void buildAndReplaceChildren() {
@@ -97,7 +104,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                   // Row with columns of positive values
                   positiveBarsContainer: makeInnerBarsContainer(
                     barsAreaSign: Sign.positiveOr0,
-                    ownerDataContainer: this,
+                    outerDataContainer: this,
                   ),
                   // X axis line. Could place in Row with main constraints weight=0.0
                   inputAxisLine: TransposingInputAxisLineContainer(
@@ -108,9 +115,9 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
                   // Row with columns of negative values
                   negativeBarsContainer: makeInnerBarsContainer(
                     barsAreaSign: Sign.negative,
-                    ownerDataContainer: this,
+                    outerDataContainer: this,
                   ),
-                  ownerDataContainer: this,
+                  outerDataContainer: this,
                 ),
               ],
             ),
@@ -139,7 +146,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     required BarsContainer positiveBarsContainer,
     required TransposingInputAxisLineContainer inputAxisLine,
     required BarsContainer negativeBarsContainer,
-    required DataContainer ownerDataContainer,
+    required DataContainer outerDataContainer,
     ContainerKey? key,
   }) {
     return ContainerForBothBarsAreasAndInputAxisLine(
@@ -147,20 +154,20 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
       positiveBarsContainer: positiveBarsContainer,
       inputAxisLine: inputAxisLine,
       negativeBarsContainer: negativeBarsContainer,
-      ownerDataContainer: ownerDataContainer,
+      outerDataContainer: outerDataContainer,
       key: key,
     );
   }
 
   /// [DataContainer] client-overridable method hook for extending [BarsContainer].
   BarsContainer makeInnerBarsContainer ({
-      required DataContainer ownerDataContainer,
+      required DataContainer outerDataContainer,
       required Sign barsAreaSign,
       ContainerKey? key,
   }) {
     return BarsContainer(
       chartViewModel: chartViewModel,
-      ownerDataContainer: ownerDataContainer,
+      outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
       key: key,
     );
@@ -173,16 +180,15 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   /// the overridden view elements.
   ///
   DataColumnPointsBar makeDeepInnerDataColumnPointsBar({
-    required model.DataColumnModel dataColumnModel,
-    // todo-00-done : required DataContainer ownerDataContainer,
-    required BarsContainer ownerBarsContainer,
+    required DataColumnModel dataColumnModel,
+    required BarsContainer outerBarsContainer,
     required Sign barsAreaSign,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
 
   PointContainer makeDeepInnerPointContainer({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
@@ -191,7 +197,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   ///
   /// Likely not needed by any client.
   PointContainer makeDeepInnerPointContainerWithZeroValue({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
     throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
   }
@@ -211,23 +217,21 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
 /// for [ChartViewModel.chartOrientation] = [ChartOrientation.row]    a [Row] is built.
 class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAreaContainer {
   ContainerForBothBarsAreasAndInputAxisLine({
-    required ChartViewModel chartViewModel,
+    required super.chartViewModel,
     required this.positiveBarsContainer,
     required this.inputAxisLine,
     required this.negativeBarsContainer,
-    required this.ownerDataContainer,
-    ContainerKey? key,
-  }) : super(
-          chartViewModel: chartViewModel, // KEEP comment - no children to super, added in buildAndReplaceChildren
-          key: key,
-        );
+    required this.outerDataContainer,
+    super.key,
+    // KEEP comment - no children to super, added in buildAndReplaceChildren
+  });
 
   final BarsContainer positiveBarsContainer;
   final TransposingInputAxisLineContainer inputAxisLine;
   final BarsContainer negativeBarsContainer;
 
   /// non-child, kept to establish inner/outer ownership
-  final DataContainer ownerDataContainer;
+  final DataContainer outerDataContainer;
 
   @override
   void buildAndReplaceChildren() {
@@ -252,15 +256,11 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
 class BarsContainer extends container_common.ChartAreaContainer {
 
   BarsContainer({
-    required ChartViewModel chartViewModel,
-    required this.ownerDataContainer,
+    required super.chartViewModel,
+    required this.outerDataContainer,
     required this.barsAreaSign,
-    ContainerKey? key,
-  }) : super(
-          chartViewModel: chartViewModel,
-          // No children passed, they are created in place
-          key: key,
-        ) {
+    super.key,
+  }) {
     if (barsAreaSign == Sign.any) {
       throw StateError('$runtimeType is designed to hold elements with the same sign.');
     }
@@ -268,7 +268,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
 
   /// The sign of bars for which this container is built.
   final Sign barsAreaSign;
-  final DataContainer ownerDataContainer;
+  final DataContainer outerDataContainer;
 
   @override
   void buildAndReplaceChildren() {
@@ -298,8 +298,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
         children: chartViewModel.dataColumnModels
             .map((dataColumnModel) => makeInnerDataColumnPointsBar(
                   dataColumnModel: dataColumnModel,
-                  ownerDataContainer: ownerDataContainer,
-                  // todo-00 : added and removed : ownerBarsContainer: this,
+                  outerDataContainer: outerDataContainer,
                   barsAreaSign: barsAreaSign,
                 ))
             .map((dataColumnPointsBar) => Padder(
@@ -313,21 +312,20 @@ class BarsContainer extends container_common.ChartAreaContainer {
 
   /// [BarsContainer] client-overridable method hook for extending [DataColumnPointsBar].
   DataColumnPointsBar makeInnerDataColumnPointsBar({
-    required model.DataColumnModel dataColumnModel,
-    required DataContainer ownerDataContainer,
+    required DataColumnModel dataColumnModel,
+    required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerDataColumnPointsBar(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerDataColumnPointsBar(
         dataColumnModel: dataColumnModel,
-        // todo-00-done : ownerDataContainer: ownerDataContainer,
-        ownerBarsContainer: this,
+        outerBarsContainer: this,
         barsAreaSign: barsAreaSign,
       );
     }
     return DataColumnPointsBar(
       chartViewModel: chartViewModel,
-      ownerDataContainer: ownerDataContainer,
+      outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
       dataColumnModel: dataColumnModel,
     );
@@ -335,32 +333,28 @@ class BarsContainer extends container_common.ChartAreaContainer {
 
 }
 
-/// View for one [model.DataColumnModel], in other words, a bar of [PointContainer]s.
+/// View for one [DataColumnModel], in other words, a bar of [PointContainer]s.
 ///
-/// Each [PointContainer] views one [model.PointModel] in [model.DataColumnModel.pointModelList].
+/// Each [PointContainer] views one [PointModel] in [DataColumnModel.pointModelList].
 ///
 /// Each instance is visually presented as a horizontal or vertical bar
 /// displaying [PointContainer]s as rectangles or lines.
-/// Each rectangle or line represents a data point [model.PointModel].
+/// Each rectangle or line represents a data point [PointModel].
 ///
 /// See [buildAndReplaceChildren] for how the container is built.
 ///
 class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
   DataColumnPointsBar({
-    required ChartViewModel chartViewModel,
-    required this.ownerDataContainer,
+    required super.chartViewModel,
+    required this.outerDataContainer,
     required this.barsAreaSign,
     required this.dataColumnModel,
-    ContainerKey? key,
-  }) : super(
-    chartViewModel: chartViewModel,
-    // KEEP comment - no children to super, added in buildAndReplaceChildren
-    key: key,
-  );
+    super.key,
+  });
 
-  final model.DataColumnModel dataColumnModel;
-  final DataContainer ownerDataContainer;
+  final DataColumnModel dataColumnModel;
+  final DataContainer outerDataContainer;
   final Sign barsAreaSign;
 
   /// Builds a container for one bar with [PointContainer]s.
@@ -428,11 +422,11 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
   }
 
   /// Function closure, when called with argument [barsAreaSign],
-  /// returns function with one free parameter, the [model.PointModel].
+  /// returns function with one free parameter, the [PointModel].
   ///
-  /// The returned function, when invoked with [model.PointModel] as a parameter,
+  /// The returned function, when invoked with [PointModel] as a parameter,
   /// returns either a [PointContainer] or null using following logic depending by the currier [barsAreaSign] :
-  ///   - If the passed [model.PointModel.sign] is the same as [barsAreaSign] a [PointContainer] is returned.
+  ///   - If the passed [PointModel.sign] is the same as [barsAreaSign] a [PointContainer] is returned.
   ///     This [PointContainer] is created by the callback [DataColumnPointsBar.makePointContainer];
   ///     it presents the passed [PointModel].
   ///   - else, null is returned. Caller should respond by
@@ -440,7 +434,7 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
   /// Encapsulates the logic of creating [PointContainer] from [PointModel] for
   /// all possible values of [ChartViewModel.chartStacking] and [barsAreaSign].
   ClsPointToNullableContainer clsPointToNullableContainerForSign(Sign barsAreaSign) {
-    return (model.PointModel pointModelElm) {
+    return (PointModel pointModelElm) {
       PointContainer? pointContainer;
       switch (chartViewModel.chartStacking) {
         case ChartStacking.stacked:
@@ -480,22 +474,15 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
 
   /// [BarsContainer] client-overridable method hook for extending [PointContainer].
   PointContainer makePointContainer({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerPointContainer(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerPointContainer(
         pointModel: pointModel,
       );
     }
-    /* todo-00-done
-    return BarPointContainer(
-      pointModel: pointModel,
-      chartViewModel: chartViewModel,
-      ownerDataColumnPointsBar: this, // todo-00-done : added
-    );
-    */
     throw UnimplementedError('$runtimeType.makePointContainer: '
-        'The value of ownerDataContainer.isMakeComponentsForwardedToOwner '
+        'The value of outerDataContainer.isMakeComponentsForwardedToOwner '
         'is false, this method must be overridden in a subclass.');
   }
 
@@ -503,23 +490,16 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
   ///
   /// Likely not needed by any client.
   PointContainer makePointContainerWithZeroValue({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
-    /* todo-00-done
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerPointContainerWithZeroValue(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
     }
-    return ZeroValueBarPointContainer(
-      pointModel: pointModel,
-      chartViewModel: chartViewModel,
-      ownerDataColumnPointsBar: this, // todo-00-done : added
-    );
-    */
     throw UnimplementedError('$runtimeType.makePointContainerWithZeroValue: '
-        'The value of ownerDataContainer.isMakeComponentsForwardedToOwner '
+        'The value of outerDataContainer.isMakeComponentsForwardedToOwner '
         'is false, this method must be overridden in a subclass.');
   }
 
@@ -536,21 +516,43 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
 abstract class PointContainer extends container_common.ChartAreaContainer  with WidthSizerLayouterChildMixin, HeightSizerLayouterChildMixin {
 
   PointContainer({
+    required super.chartViewModel,
     required this.pointModel,
-    required ChartViewModel chartViewModel,
-    required this.ownerDataColumnPointsBar, // todo-00-done added
+    required this.outerDataColumnPointsBar,
     // To allow extensions to compose, keep children in signature.
-    List<BoxContainer>? children,
-    ContainerKey? key,
-  }) : super(
-    chartViewModel: chartViewModel,
-    children: children,
-    key: key,
-  );
+    super.children,
+    super.key,
+  });
 
   /// The [PointModel] presented by this container.
-  model.PointModel pointModel;
+  PointModel pointModel;
 
-  final DataColumnPointsBar ownerDataColumnPointsBar;
+  final DataColumnPointsBar outerDataColumnPointsBar;
+
+  /// Generates code for testing.
+  void generateTestCode(
+      PointOffset pointOffset,
+      DataRangeLabelInfosGenerator inputLabelsGenerator,
+      DataRangeLabelInfosGenerator outputLabelsGenerator,
+      PointOffset pixelPointOffset,
+      ) {
+    var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
+    var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
+        '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
+        '       constraintsOnImmediateOwner: ${constraints.asCodeConstructorInsideBox()},\n'
+        '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
+        '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
+        '       sizerHeight: $sizerHeight,\n'
+        '       sizerWidth: $sizerWidth,\n'
+        '       //  isAffmapUseSizerInsteadOfConstraint: false,\n'
+        '     );\n';
+    // var pixelPointOffsetStr = '   pixelPointOffset = ${pixelPointOffset.asCodeConstructor()};\n';
+    // var pixelPointOffsetLayoutSizeStr = '   pixelPointOffsetLayoutSize = ${pixelPointOffset.barPointRectSize.asCodeConstructor()};\n';
+    var assertOffsetSame = '   assertOffsetResultsSame(pixelPointOffset, ${pixelPointOffset.asCodeConstructor()});\n';
+    var assertSizeSame =   '   assertSizeResultsSame(pixelPointOffset.barPointRectSize, ${pixelPointOffset.barPointRectSize.asCodeConstructor()});\n';
+
+    print(' $pointOffsetStr $callStr $assertOffsetSame $assertSizeSame\n\n');
+  }
+
 }
 

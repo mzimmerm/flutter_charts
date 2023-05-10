@@ -1,27 +1,30 @@
+/// Library for concrete [LineChartDataContainer] extension of [DataContainer] and it's inner classes.
+///
+/// Each class here extends it's abstract base in ../data_container.dart,
+/// and implements methods named 'makeInner', which allow all internals
+/// of the [DataContainer] to be overridden and extended.
 import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 
-// chart/container common
-import '../../../container/data_container.dart';
+// this chart/chart_type/line level
 
-// this level base libraries or equivalent
-// import 'package:flutter_charts/src/chart/painter.dart';
-import 'package:flutter_charts/src/util/extensions_flutter.dart';
+// up 1 level
 
-import '../../../../morphic/container/chart_support/chart_style.dart';
-import '../../../../morphic/container/morphic_dart_enums.dart' show Sign;
-import '../../../../morphic/ui2d/point.dart';
-import '../../../model/label_model.dart';
-// import '../axis_container.dart';
-// import '../container_common.dart' as container_common;
-import '../../../../morphic/container/container_layouter_base.dart';
-import '../../../model/data_model.dart' as model;
-import '../../../view_model.dart';
-// import '../../../morphic/container/container_edge_padding.dart';
-// import '../../../morphic/container/layouter_one_dimensional.dart';
-// import '../../options.dart';
-import '../../../../morphic/container/container_key.dart';
+// up 2 level chart
+import 'package:flutter_charts/src/chart/container/data_container.dart' show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer;
+import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
+import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
+import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
-/// Concrete
+// util
+import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
+
+// morphic
+import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
+import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
+
+/// Concrete [DataContainer] for bar chart.
 class LineChartDataContainer extends DataContainer {
   LineChartDataContainer({
     required ChartViewModel chartViewModel,
@@ -31,13 +34,13 @@ class LineChartDataContainer extends DataContainer {
 
   @override
   BarsContainer makeInnerBarsContainer ({
-    required DataContainer ownerDataContainer,
+    required DataContainer outerDataContainer,
     required Sign barsAreaSign,
     ContainerKey? key,
   })  {
     return LineChartBarsContainer(
       chartViewModel: chartViewModel,
-      ownerDataContainer: ownerDataContainer,
+      outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
       key: key,
     );
@@ -47,94 +50,78 @@ class LineChartDataContainer extends DataContainer {
 class LineChartBarsContainer extends BarsContainer {
 
   LineChartBarsContainer({
-    required ChartViewModel chartViewModel,
-    required DataContainer ownerDataContainer,
-    required Sign barsAreaSign,
-    ContainerKey? key,
-  }) : super(
-    chartViewModel: chartViewModel,
-    ownerDataContainer: ownerDataContainer,
-    barsAreaSign: barsAreaSign,
-    key: key,
-  );
+    required super.chartViewModel,
+    required super.outerDataContainer,
+    required super.barsAreaSign,
+    super.key,
+  });
 
   @override
   DataColumnPointsBar makeInnerDataColumnPointsBar({
-    required model.DataColumnModel dataColumnModel,
-    required DataContainer ownerDataContainer,
+    required DataColumnModel dataColumnModel,
+    required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerDataColumnPointsBar(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerDataColumnPointsBar(
         dataColumnModel: dataColumnModel,
-        // todo-00-done : ownerDataContainer: ownerDataContainer,
-        ownerBarsContainer: this,
+        outerBarsContainer: this,
         barsAreaSign: barsAreaSign,
       );
     }
     return LineChartDataColumnPointsBar(
       chartViewModel: chartViewModel,
-      ownerDataContainer: ownerDataContainer,
+      outerDataContainer: outerDataContainer,
       barsAreaSign: barsAreaSign,
       dataColumnModel: dataColumnModel,
     );
   }
 }
 
-////////////////// vvvvvvvv
 class LineChartDataColumnPointsBar extends DataColumnPointsBar {
 
   LineChartDataColumnPointsBar({
-    required ChartViewModel chartViewModel,
-    required DataContainer ownerDataContainer,
-    required Sign barsAreaSign,
-    required model.DataColumnModel dataColumnModel,
-    ContainerKey? key,
-  }) : super(
-    chartViewModel: chartViewModel,
-    ownerDataContainer: ownerDataContainer,
-    barsAreaSign: barsAreaSign,
-    dataColumnModel: dataColumnModel,
-    key: key,
-  );
+    required super.chartViewModel,
+    required super.outerDataContainer,
+    required super.barsAreaSign,
+    required super.dataColumnModel,
+    super.key,
+  }) ;
 
   @override
   PointContainer makePointContainer({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerPointContainer(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerPointContainer(
         pointModel: pointModel,
       );
     }
-    return LinePointContainer(
+    return BarPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
-      ownerDataColumnPointsBar: this, // todo-00-done : added
+      outerDataColumnPointsBar: this,
     );
   }
 
   @override
   PointContainer makePointContainerWithZeroValue({
-    required model.PointModel pointModel,
+    required PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
-    if (ownerDataContainer.isMakeComponentsForwardedToOwner) {
-      return ownerDataContainer.makeDeepInnerPointContainerWithZeroValue(
+    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+      return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
     }
-    return ZeroValueLinePointContainer(
+    return ZeroValueBarPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
-      ownerDataColumnPointsBar: this, // todo-00-done : added
+      outerDataColumnPointsBar: this,
     );
   }
 
 }
-
-////////////////// ^^^^
-
 
 /// Container presents it's [pointModel] as a point on a line, or a rectangle in a bar chart.
 ///
@@ -142,24 +129,18 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
 ///
 /// It implements the mixins [WidthSizerLayouterChildMixin] and [HeightSizerLayouterChildMixin]
 /// needed to affmap the [pointModel] to a position on the chart.
-class LinePointContainer extends PointContainer {
+class BarPointContainer extends PointContainer {
 
-  /// Generate view for this single leaf [PointModel] - a single [LinePointContainer].
+  /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  LinePointContainer({
-    required model.PointModel pointModel,
-    required ChartViewModel chartViewModel,
-    required DataColumnPointsBar ownerDataColumnPointsBar, // todo-00-done added
-    List<BoxContainer>? children,
-    ContainerKey? key,
-  }) : super(
-    pointModel: pointModel,
-    chartViewModel: chartViewModel,
-    ownerDataColumnPointsBar: ownerDataColumnPointsBar, // todo-00-done added
-    children: children,
-    key: key,
-  );
+  BarPointContainer({
+    required super.pointModel,
+    required super.chartViewModel,
+    required super.outerDataColumnPointsBar,
+    super.children,
+    super.key,
+  });
 
   /// Full [layout] implementation calculates and sets the pixel width and height of the Rectangle
   /// that represents data.
@@ -192,7 +173,7 @@ class LinePointContainer extends PointContainer {
     //
     // The [layoutSize] is also the size of the rectangle, which, when positioned
     // by the parent layouter, is the pixel-affmap-ed value of the [pointModel]
-    // in the main axis direction of the layouter which owns this [LinePointContainer].
+    // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
 
@@ -207,50 +188,20 @@ class LinePointContainer extends PointContainer {
     canvas.drawRect(rect, paint);
   }
 
-  /// Generates code for testing.
-  void generateTestCode(
-      PointOffset pointOffset,
-      DataRangeLabelInfosGenerator inputLabelsGenerator,
-      DataRangeLabelInfosGenerator outputLabelsGenerator,
-      PointOffset pixelPointOffset,
-      ) {
-    var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
-    var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
-        '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
-        '       constraintsOnImmediateOwner: ${constraints.asCodeConstructorInsideBox()},\n'
-        '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
-        '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
-        '       sizerHeight: $sizerHeight,\n'
-        '       sizerWidth: $sizerWidth,\n'
-        '       //  isAffmapUseSizerInsteadOfConstraint: false,\n'
-        '     );\n';
-    // var pixelPointOffsetStr = '   pixelPointOffset = ${pixelPointOffset.asCodeConstructor()};\n';
-    // var pixelPointOffsetLayoutSizeStr = '   pixelPointOffsetLayoutSize = ${pixelPointOffset.barPointRectSize.asCodeConstructor()};\n';
-    var assertOffsetSame = '   assertOffsetResultsSame(pixelPointOffset, ${pixelPointOffset.asCodeConstructor()});\n';
-    var assertSizeSame =   '   assertSizeResultsSame(pixelPointOffset.barPointRectSize, ${pixelPointOffset.barPointRectSize.asCodeConstructor()});\n';
-
-    print(' $pointOffsetStr $callStr $assertOffsetSame $assertSizeSame\n\n');
-  }
 }
 
-/// A zero-height (thus 'invisible') [LinePointContainer] extension.
+/// A zero-height (thus 'invisible') [BarPointContainer] extension.
 ///
 /// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
-class ZeroValueLinePointContainer extends LinePointContainer {
+class ZeroValueBarPointContainer extends BarPointContainer {
 
-  ZeroValueLinePointContainer({
-    required model.PointModel pointModel,
-    required ChartViewModel chartViewModel,
-    required DataColumnPointsBar ownerDataColumnPointsBar, // todo-00-done added
-    List<BoxContainer>? children,
-    ContainerKey? key,
-  }) : super(
-    pointModel: pointModel,
-    chartViewModel: chartViewModel,
-    ownerDataColumnPointsBar: ownerDataColumnPointsBar, // todo-00-done added
-    children: children,
-    key: key,
-  );
+  ZeroValueBarPointContainer({
+    required super.pointModel,
+    required super.chartViewModel,
+    required super.outerDataColumnPointsBar,
+    super.children,
+    super.key,
+  });
 
   /// Layout this container by calling super, then set the [layoutSize] in the value direction
   /// (owner layouter mainAxisDirection) to be zero.

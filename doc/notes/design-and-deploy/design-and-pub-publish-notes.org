@@ -1909,30 +1909,36 @@ Notes or Later:
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
-** IN-PROGRESS-NOW 11. ~CURRENT WORK: ADD LINE CHART~
+** IN-PROGRESS-NOW 11. ~CURRENT WORK: RENAME TO OUTER~
 
 Wherever there is a natural hierarchy of inner classes, where outer creates inner in an abstract way, use this term for the method that creates there inner instance:
 
-makeInner
+- [X] Make all fields named 'owner' to be final; also rename them to 'outer'
+  - [X] ownerDataColumnPointsBar => outerDataColumnPointsBar : also check if it is set as member and used in some way!!!
+  - [X] ownerBarsContainer => outerBarsContainer : also check if it is set as member and used in some way!!!
+  - [X] ownerDataContainer => outerDataContainer
+- [ ] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'
+  
+** IN-PROGRESS-NOW 12. ~CURRENT WORK: ADD LINE CHART~
 
-- [ ] Make all fields named 'owner' to be final; also rename them to 'outer'
+Bar Chart:
 
-
-- [-] Rename LegendColumn to ByRowLegends
+- [X] Rename LegendColumn to ByRowLegends
   - [X] Rename LegendColumn to ByRowLegends
-  - [ ] Write up here what else to rename
-- [ ] Refactor DataContainer in BarChart:
-  - [ ] Bar chart: DataContainer : create extension BarChartDataContainer in container/bar/data_container.dart:
-    - [ ] Use the existing mechanism, override the 3 methods that throw UnimplementedError, this does not need to override all data_container classes, and keep the core layout intact
-      - [ ] makeDataColumnPointsBar
-      - [ ] makePointContainer
-      - [ ] makePointContainerWithZeroValue
-    - [ ] df 
-    - [ ] watch bar chart specific methods there - mostly around BarPointContainer and DataColumnPointsBar.makePointContainer
-      - [ ] DataColumnPointsBar.makePointContainer what to do, how?
-    - [ ] Get Bar Chart working again in the new structure
-  - [ ] Line Chart: 
+- [X] Refactor DataContainer in BarChart:
+  - [X] Bar chart: DataContainer : create extension BarChartDataContainer in container/bar/data_container.dart:
+    - [X] Use the existing mechanism, override the 3 methods that throw UnimplementedError, this does not need to override all data_container classes, and keep the core layout intact
+      - [X] makeDataColumnPointsBar
+      - [X] makePointContainer
+      - [X] makePointContainerWithZeroValue
+    - [X] Get Bar Chart working again in the new structure
 
+
+Line chart:
+
+- [ ] Line Chart: 
+
+** IN-PROGRESS-NOW 12. ~CURRENT WORK: BACKUP AND LONG TERM CAPTURED TODOS IN LAYOUT~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*
