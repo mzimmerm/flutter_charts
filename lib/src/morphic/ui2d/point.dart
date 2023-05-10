@@ -93,14 +93,14 @@ class PointOffset extends Offset {
   ///     - [ChartOrientation.row] transforms twice on each axis:
   ///       - first transposes value on each axis to value on cross-axis, using their respective value-ranges,
   ///       - second is affmap on each cross axis, from value-range to pixel-range
-  ///   - [constraintsOnImmediateOwner] should be the constraints of a [Row] or [Column]
+  ///   - [constraintsOnParentLayouter] should be the constraints of a [Row] or [Column]
   ///     [RollingBoxLayouter] in which the [PointModel] represented by this [PointOffset] is presented.
   ///   - [inputDataRange] is the data value-range on the input range (1st coordinate, x)
   ///   - [outputDataRange] is the data value-range on the output range (2nd coordinate, y)
   ///   - [sizerHeight] is the height used for pixel-range
   ///   - [sizerWidth] - equivalent to [sizerHeight]
   ///
-  /// Note that the [constraintsOnImmediateOwner] or [sizerHeight] and [sizerWidth] is used
+  /// Note that the [constraintsOnParentLayouter] or [sizerHeight] and [sizerWidth] is used
   /// to calculate the size of [barPointRectSize] on the copy.
   ///
   /// Items below summarize the rules for affmap-ing [PointOffset] depending on it's [chartOrientation].
@@ -179,14 +179,14 @@ class PointOffset extends Offset {
   ///
   PointOffset affmapToPixelsMaybeTransposeInContextOf({
     required ChartOrientation        chartOrientation,
-    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required BoxContainerConstraints constraintsOnParentLayouter,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
     required double                  sizerHeight,
     required double                  sizerWidth,
   }) {
     // No-op rename input params to shorted version.
-    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+    BoxContainerConstraints constraints = constraintsOnParentLayouter;
     ChartOrientation orientation = chartOrientation;
 
     // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
@@ -323,14 +323,14 @@ enum Diagonal {
 /* KEEP : Old version of PointOffset affmap
   PointOffset affmapToPixelsMaybeTransposeInContextOfOLD({
     required ChartOrientation  chartOrientation,
-    required BoxContainerConstraints constraintsOnImmediateOwner,
+    required BoxContainerConstraints constraintsOnParentLayouter,
     required Interval                inputDataRange,
     required Interval                outputDataRange,
     required double                  sizerHeight,
     required double                  sizerWidth,
   }) {
     ChartOrientation orientation = chartOrientation;
-    BoxContainerConstraints constraints = constraintsOnImmediateOwner;
+    BoxContainerConstraints constraints = constraintsOnParentLayouter;
 
     double horizontalPixels = 0.0;
     double verticalPixels = 0.0;

@@ -3587,6 +3587,10 @@ class ExternalTicksLayoutProvider {
   /// 
   final List<double> tickValues;
 
+  /// The range of tick values. This should be the full extend of axis values, rather than the extend from
+  /// the first tick to the last tick. todo-010 Check this out
+  ///
+  ///  [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   final util_dart.Interval tickValuesRange;
 
   /// Calculated late, after tickPixelsRange is set
@@ -3611,9 +3615,14 @@ class ExternalTicksLayoutProvider {
   ///
   /// Important Implementation Notes:
   ///
-  ///   1. [tickValues] are in increasing order for [ChartOrientation]
-  ///      value [ChartOrientation.column], in decreasing order for [ChartOrientation.row].
-  ///      This is determined by [isOwnerLayouterDirectionAgainstDisplayOrderDirection]; the motivation
+  ///   1. The passed [isOnHorizontalAxis] set to true is used to make the [tickValues]
+  ///      list be ordered against the 'natural' direction; in other words:
+  ///      - If [isOnHorizontalAxis] is false, the [tickValues] generated increase in the list from position 0 to last,
+  ///        the largest value is on the last position.
+  ///      - If [isOnHorizontalAxis] is true, the [tickValues] generated increase in the list from position last to 0,
+  ///        the largest value is on the first position.
+  ///
+  ///      There is also [isParentLayouterAndDisplayDirectionsOpposite]; the motivation
   ///      for this order is for horizontal axis always show numeric labels in increasing order left to right,
   ///      and for vertical axis always show numeric labels in increasing order bottom to top.
   ///      The vertical axis for row is complicated : [tickValues] list is reversed to decreasing after their creation
@@ -3621,11 +3630,12 @@ class ExternalTicksLayoutProvider {
   ///      in corresponding [tickPixels] to be decreasing (e.g. [200, 100, 0]. When layed out on vertical axis (Column),
   ///      the order, top to bottom, is [200, 100, 0] which is what we want.
   ///
-  ///   2. [axisPixelsRange] minimum is less than maximum.
+  ///   2. [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   ///
   ///   When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
   ///   the vertical pixels axis is always ordered top-to-bottom
-  ///   The [isOnHorizontalAxis] should be set to true if this [ExternalTicksLayoutProvider] is laying
+  ///   // TODO-010 GO OVER THIS
+  ///   IMPORTANT: The [isOnHorizontalAxis] should be set to true if this [ExternalTicksLayoutProvider] is laying
   ///   out labels in Row on the horizontal axis, false on the vertical axis.
   ///
   List<double> affmapValuesToPixels() {

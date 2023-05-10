@@ -114,7 +114,8 @@ enum ChartOrientation {
     }
   }
 
-  bool get isOwnerLayouterDirectionAgainstDisplayOrderDirection {
+  // todo-010 : check out usage, maybe can get rid of this? This does not make much sense!! The NEED FOR THIS seems to be interplay with another bug somewhere????
+  bool get isParentLayouterAndDisplayDirectionsOpposite {
     switch (this) {
       case ChartOrientation.column:
         return false;

@@ -240,7 +240,9 @@ class DataRangeLabelInfosGenerator {
     // See [ExternalTicksBoxLayouter].
     var tickValues = labelInfoList.map((labelInfo) => labelInfo.outputValue).toList(growable: false);
 
-    if (chartOrientation.isOwnerLayouterDirectionAgainstDisplayOrderDirection) {
+    // todo-010 : There is something weird about the use of isParentLayouterAndDisplayDirectionsOpposite
+    //            and also isOnHorizontalAxis. Maybe isParentLayouterAndDisplayDirectionsOpposite is NOT NEEDED???
+    if (chartOrientation.isParentLayouterAndDisplayDirectionsOpposite) {
       tickValues = tickValues.reversed.toList();
     }
 

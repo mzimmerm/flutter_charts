@@ -308,9 +308,9 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   //   all throw [UnimplementedError].
 
   @override
-  bool get isMakeComponentsForwardedToOwner => throw UnimplementedError();
+  bool get isOuterMakingInnerContainers => throw UnimplementedError();
   @override
-  set isMakeComponentsForwardedToOwner(bool isValue) => throw UnimplementedError();
+  set isOuterMakingInnerContainers(bool isValue) => throw UnimplementedError();
 
   @override
   ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({

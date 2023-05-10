@@ -1917,7 +1917,7 @@ Wherever there is a natural hierarchy of inner classes, where outer creates inne
   - [X] ownerDataColumnPointsBar => outerDataColumnPointsBar : also check if it is set as member and used in some way!!!
   - [X] ownerBarsContainer => outerBarsContainer : also check if it is set as member and used in some way!!!
   - [X] ownerDataContainer => outerDataContainer
-- [ ] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'
+- [ ] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'. FINISH THIS. LOOK FOR OWNER, BUT NOT IN unused.dart
   
 ** IN-PROGRESS-NOW 12. ~CURRENT WORK: ADD LINE CHART~
 

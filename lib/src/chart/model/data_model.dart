@@ -58,7 +58,7 @@ class ChartModel {
       dataColumnModels.add(
         DataColumnModel(
           valuesColumn: valuesColumn,
-          ownerChartModel: this,
+          outerChartModel: this,
           columnIndex: columnIndex,
         ),
       );
@@ -302,16 +302,16 @@ class DataColumnModel {
   /// Constructs a model for one bar of points.
   ///
   /// The [valuesColumn] is a cross-series (column-wise) list of data values.
-  /// The [ownerChartModel] is the [ChartModel] underlying the [DataColumnModel] instance being created.
-  /// The [_indexInOwner] is index of the [valuesColumn] in the [ownerChartModel].
+  /// The [outerChartModel] is the [ChartModel] underlying the [DataColumnModel] instance being created.
+  /// The [_indexInOuterChartModel] is index of the [valuesColumn] in the [outerChartModel].
   /// The [numChartModelColumns] allows to later calculate this point's input value using [inputValueOnInputRange],
   ///   which assumes this point is on an axis with data range given by a [util_labels.DataRangeLabelInfosGenerator]
   ///   instance.
   DataColumnModel({
     required List<double> valuesColumn,
-    required this.ownerChartModel,
+    required this.outerChartModel,
     required int columnIndex,
-  }) : _indexInOwner = columnIndex {
+  }) : _indexInOuterChartModel = columnIndex {
     // Construct data points from the passed [valuesRow] and add each point to member _points
     int rowIndex = 0;
     // Convert the positive/negative values of the passed [valuesColumn], into positive or negative [_dataColumnPoints]
@@ -319,7 +319,7 @@ class DataColumnModel {
     for (double outputValue in valuesColumn) {
       var point = PointModel(
         outputValue: outputValue,
-        ownerDataColumnModel: this,
+        outerDataColumnModel: this,
         rowIndex: rowIndex,
       );
       pointModelList.add(point);
@@ -328,7 +328,7 @@ class DataColumnModel {
   }
 
   /// The full [ChartModel] from which data columns this [DataColumnModel] is created.
-  final ChartModel ownerChartModel;
+  final ChartModel outerChartModel;
 
   /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnModels].
   ///
@@ -341,7 +341,7 @@ class DataColumnModel {
   /// This is needed to access the legacy arrays such as:
   ///   -  [ChartModel.byRowLegends]
   ///   -  [ChartModel.byRowColors]
-  final int _indexInOwner;
+  final int _indexInOuterChartModel;
 
   /// Calculates inputValue-position (x-position, independent value position) of
   /// instances of this [DataColumnModel] and it's [PointModel] elements.
@@ -358,8 +358,8 @@ class DataColumnModel {
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
     Interval dataRange = dataRangeLabelInfosGenerator.dataRange;
-    double columnWidth = (dataRange.length / ownerChartModel._numColumns);
-    return (columnWidth * _indexInOwner) + (columnWidth / 2);
+    double columnWidth = (dataRange.length / outerChartModel._numColumns);
+    return (columnWidth * _indexInOuterChartModel) + (columnWidth / 2);
   }
 
   /// Points in this column are points in one cross-series column.
@@ -401,7 +401,7 @@ class DataColumnModel {
 ///
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
-///   - Has private access to the owner [ChartModel] to which it belongs through it's member [ownerDataColumnModel],
+///   - Has private access to the owner [ChartModel] to which it belongs through it's member [outerDataColumnModel],
 ///     which in turn has access to [ChartModel] through it's member [DataColumnModel._chartModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
@@ -409,23 +409,23 @@ class DataColumnModel {
 class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
-  /// Constructs instance from the owner [DataColumnModel] instance [ownerDataColumnModel],
+  /// Constructs instance from the owner [DataColumnModel] instance [outerDataColumnModel],
   /// and [rowIndex], the index in where the point value [outputValue] is located.
   ///
-  /// Important note: The [ownerDataColumnModel] value on [rowIndex], IS NOT [outputValue],
-  ///                 as the [ownerDataColumnModel] is split from [ChartModel.dataColumns] so
-  ///                 [rowIndex] can only be used to reach `ownerDataColumnModel.chartModel.valuesRows`.
+  /// Important note: The [outerDataColumnModel] value on [rowIndex], IS NOT [outputValue],
+  ///                 as the [outerDataColumnModel] is split from [ChartModel.dataColumns] so
+  ///                 [rowIndex] can only be used to reach `outerDataColumnModel.chartModel.valuesRows`.
   PointModel({
     required double outputValue,
-    required this.ownerDataColumnModel,
+    required this.outerDataColumnModel,
     required this.rowIndex,
   })
-    : outputValue = ownerDataColumnModel.ownerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
+    : outputValue = outerDataColumnModel.outerChartModel.chartOptions.dataContainerOptions.yTransform(outputValue).toDouble(),
     sign = outputValue >= 0.0 ? Sign.positiveOr0 : Sign.negative
   {
     assertDoubleResultsSame(
-      ownerDataColumnModel.ownerChartModel.chartOptions.dataContainerOptions
-          .yTransform(ownerDataColumnModel.ownerChartModel.dataRows[rowIndex][columnIndex])
+      outerDataColumnModel.outerChartModel.chartOptions.dataContainerOptions
+          .yTransform(outerDataColumnModel.outerChartModel.dataRows[rowIndex][columnIndex])
           .toDouble(),
       this.outputValue,
     );
@@ -438,8 +438,8 @@ class PointModel {
   ///
   /// This instance of [PointModel] has [outputValue] of the [ChartModel.valuesRows] using the indexes:
   ///   - row at index [rowIndex]
-  ///   - column at index [columnIndex], which is also the [ownerDataColumnModel]'s
-  ///     index [DataColumnModel._indexInOwner].
+  ///   - column at index [columnIndex], which is also the [outerDataColumnModel]'s
+  ///     index [DataColumnModel._indexInOuterChartModel].
   ///  Those indexes are also a way to access the original for comparisons and asserts in the algorithms.
   final double outputValue;
 
@@ -448,7 +448,7 @@ class PointModel {
   final Sign sign;
 
   /// References the data column (dataColumnPoints list) this point belongs to
-  final DataColumnModel ownerDataColumnModel;
+  final DataColumnModel outerDataColumnModel;
 
   /// Refers to the row index in [ChartModel.valuesRows] from which this point was created.
   ///
@@ -457,10 +457,10 @@ class PointModel {
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
-  /// Getter of the column index in the owner [ownerDataColumnModel].
+  /// Getter of the column index in the owner [outerDataColumnModel].
   ///
-  /// Delegated to [ownerDataColumnModel] index [DataColumnModel._indexInOwner].
-  int get columnIndex => ownerDataColumnModel._indexInOwner;
+  /// Delegated to [outerDataColumnModel] index [DataColumnModel._indexInOuterChartModel].
+  int get columnIndex => outerDataColumnModel._indexInOuterChartModel;
 
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
@@ -479,20 +479,20 @@ class PointModel {
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
-  /// Delegated to [ownerDataColumnModel].
+  /// Delegated to [outerDataColumnModel].
   double inputValueOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
   }) {
-    return ownerDataColumnModel.inputValueOnInputRange(
+    return outerDataColumnModel.inputValueOnInputRange(
       dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
     );
   }
 
   /// Once the x labels are established, either as [inputUserLabels] or generated, clients can
   ///  ask for the label.
-  Object get inputUserLabel => ownerDataColumnModel.ownerChartModel.inputUserLabels[columnIndex];
+  Object get inputUserLabel => outerDataColumnModel.outerChartModel.inputUserLabels[columnIndex];
 
-  ui.Color get color => ownerDataColumnModel.ownerChartModel.getLegendItemAt(rowIndex).color;
+  ui.Color get color => outerDataColumnModel.outerChartModel.getLegendItemAt(rowIndex).color;
 
   PointOffset asPointOffsetOnInputRange({
     required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,

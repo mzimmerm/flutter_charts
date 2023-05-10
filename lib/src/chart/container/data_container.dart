@@ -75,7 +75,7 @@ import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 ///       2. Easier override provided by [MyBarChartViewModel] methods pulled up to [DataContainer]:
 ///         - 1.1, 1.2 are the same.
 ///         - But we do NOT need to create [MyBarsContainer] and [MyDataColumnPointsBar] 1.3 and 1.4
-///         - override [MyDataContainer.isMakeComponentsForwardedToOwner] to true.
+///         - override [MyDataContainer.isOuterMakingInnerContainers] to true.
 ///         - 1.5, 1.6 and 1.7 are the same
 ///
 abstract class DataContainer extends container_common.ChartAreaContainer {
@@ -139,7 +139,7 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
   ///             [PointContainer], and [PointContainerWithZeroValue] or the default base instances - although at least
   ///             one should return an extension instance for any functional changes compared to default.
 
-  bool isMakeComponentsForwardedToOwner = false;
+  bool isOuterMakingInnerContainers = false;
 
   /// [DataContainer] client-overridable method hook for extending [PositiveAndNegativeBarsWithInputAxisLineContainer].
   ContainerForBothBarsAreasAndInputAxisLine makeInnerContainerForBothBarsAreasAndInputAxisLine({
@@ -316,7 +316,7 @@ class BarsContainer extends container_common.ChartAreaContainer {
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerDataColumnPointsBar(
         dataColumnModel: dataColumnModel,
         outerBarsContainer: this,
@@ -476,7 +476,7 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
   PointContainer makePointContainer({
     required PointModel pointModel,
   }) {
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainer(
         pointModel: pointModel,
       );
@@ -493,7 +493,7 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
     required PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
@@ -539,7 +539,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
     var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
         '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
-        '       constraintsOnImmediateOwner: ${constraints.asCodeConstructorInsideBox()},\n'
+        '       constraintsOnParentLayouter: ${constraints.asCodeConstructorInsideBox()},\n'
         '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       sizerHeight: $sizerHeight,\n'

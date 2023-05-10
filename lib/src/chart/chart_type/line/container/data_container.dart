@@ -62,7 +62,7 @@ class LineChartBarsContainer extends BarsContainer {
     required DataContainer outerDataContainer,
     required Sign barsAreaSign,
   }) {
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerDataColumnPointsBar(
         dataColumnModel: dataColumnModel,
         outerBarsContainer: this,
@@ -92,7 +92,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
   PointContainer makePointContainer({
     required PointModel pointModel,
   }) {
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainer(
         pointModel: pointModel,
       );
@@ -109,7 +109,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     required PointModel pointModel,
   }) {
     // return BarPointContainer with 0 layoutSize in the value orientation
-    if (outerDataContainer.isMakeComponentsForwardedToOwner) {
+    if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
@@ -159,7 +159,7 @@ class BarPointContainer extends PointContainer {
     );
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnImmediateOwner: constraints,
+      constraintsOnParentLayouter: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
@@ -228,7 +228,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
     );
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnImmediateOwner: constraints,
+      constraintsOnParentLayouter: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,

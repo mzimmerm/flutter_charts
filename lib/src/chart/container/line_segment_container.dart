@@ -82,7 +82,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///
   ///   - We MUST ASSUME this [LineBetweenPointModelsContainer] was placed into a Row or Column without specifying weights on self;
   ///     Such Row or Column layouters pass their full constraints to children (instances of this [LineBetweenPointModelsContainer]).
-  //      As a consequence, `this.constraints == constraintsOnImmediateOwner`!
+  //      As a consequence, `this.constraints == constraintsOnParentLayouter`!
   ///   - As this leaf container overrides [layout] here, it does not need to
   ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
   @override
@@ -100,7 +100,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnImmediateOwner: constraints,
+      constraintsOnParentLayouter: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
@@ -108,7 +108,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
     _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnImmediateOwner: constraints,
+      constraintsOnParentLayouter: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
