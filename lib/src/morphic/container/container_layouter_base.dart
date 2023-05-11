@@ -2245,7 +2245,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
       case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
         return ExternalTicksRow(
-          children: children.reversed.toList(),
+          // todo-00-done : children: children.reversed.toList(), // todo-00 : this is the problem we need to reverse for row!!
+          children: children, // todo-00 : this is the problem we need to reverse for row!!
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
@@ -2278,7 +2279,8 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
         );
       case ChartOrientation.row:
         return ExternalTicksColumn(
-          children: children.reversed.toList(),
+          // todo-00-done : children: children.reversed.toList(), // todo-00 : why reversing here??
+          children: children, // todo-00-done : removed reversed
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
@@ -3588,8 +3590,11 @@ class ExternalTicksLayoutProvider {
   /// 
   final List<double> tickValues;
 
-  /// The range of tick values. This should be the full extend of axis values, rather than the extend from
-  /// the first tick to the last tick. todo-010 Check this out
+  /// The full range of data values for which the ticks are calculated.
+  ///
+  /// This should be the full extend of data values to be shown on an axis,
+  /// rather than the envelope from the first tick to the last tick. Reason is, often we do not place
+  /// a tick at the maximum value on an axis.
   ///
   ///  [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   final util_dart.Interval tickValuesRange;
@@ -3602,8 +3607,9 @@ class ExternalTicksLayoutProvider {
 
   /// The outermost pixel interval available for the ticks corresponding to [tickValues] to be layed out at.
   ///
-  /// It is set late, during Post section in [ExternalTicksBoxLayouter.layout], after children of
-  /// the [ExternalTicksBoxLayouter] are layed out, from the full constraints along main axis. todo-010 check this out
+  /// It is set late, during Post section in [ExternalTicksBoxLayouter.layout], specifically
+  /// in [ExternalTicksBoxLayouter.layout_Post_NotLeaf_PositionChildren], after children of
+  /// the [ExternalTicksBoxLayouter] are layed out, from the full constraints along main axis.
   ///
   /// Spans always from pixel 0, to this instance's [layoutSize] length along the main axis.
   /// The maximum is also the [constraints] length along the main axis of the [ExternalTicksBoxLayouter],
@@ -3666,7 +3672,8 @@ class ExternalTicksLayoutProvider {
         .map((double value) => util_dart.ToPixelsAffineMap1D(
               fromValuesRange: util_dart.Interval(tickValuesRange.min, tickValuesRange.max),
               toPixelsRange: util_dart.Interval(tickPixelsRange.min, tickPixelsRange.max),
-              isFlipToRange: !isOnHorizontalAxis,
+              // todo-00-done isFlipToRange: !isOnHorizontalAxis, // todo-010 go over this
+              isFlipToRange: !isOnHorizontalAxis, // todo-010 go over this
             ).apply(value))
         .toList();
   }

@@ -1918,8 +1918,14 @@ Wherever there is a natural hierarchy of inner classes, where outer creates inne
   - [X] ownerBarsContainer => outerBarsContainer : also check if it is set as member and used in some way!!!
   - [X] ownerDataContainer => outerDataContainer
 - [ ] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'. FINISH THIS. LOOK FOR OWNER, BUT NOT IN unused.dart
-  
-** IN-PROGRESS-NOW 12. ~CURRENT WORK: ADD LINE CHART~
+
+
+problem: The affmapToPixels is only called in CL code. Need to fix this first!!!
+
+NO: This is vs affmapValuesToPixels!!! compare them
+
+
+** LATER 12. ~CURRENT WORK: ADD LINE CHART~
 
 Bar Chart:
 
@@ -1938,7 +1944,7 @@ Line chart:
 
 - [ ] Line Chart: 
 
-** IN-PROGRESS-NOW 12. ~CURRENT WORK: BACKUP AND LONG TERM CAPTURED TODOS IN LAYOUT~
+** LATER 12. ~CURRENT WORK: BACKUP AND LONG TERM CAPTURED TODOS IN LAYOUT~
 
 - [ ] Exclude from backups:
   1. [ ] /home/mzimmermann/dev/my-projects-source/public-on-github/flutter_charts_v2/integration_test/screenshots_tested # do it for flutter_charts*

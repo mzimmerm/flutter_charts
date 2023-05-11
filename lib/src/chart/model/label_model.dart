@@ -152,11 +152,20 @@ class DataRangeLabelInfosGenerator {
   /// The labels are always ordered - numerically increasing by value for numerical
   /// labels, or in the order initialized by user in [userLabels].
   ///
-  /// The labels are always in increasing order: For data labels, they are numerically increasing,
-  /// for user labels, their order given by user is considered ordered the same order as provided.
+  /// - For the default [isReversed] false, the labels are always in increasing order in the list :
+  ///   For data labels, they are numerically increasing,
+  ///   for user labels, their order given by user is considered ordered the same order as provided.
+  /// - For [isReversed] true, the labels list is reversed from the above default.
   ///
-  List<AxisLabelInfo> get labelInfoList => List.from(_labelInfos._labelInfoList, growable: false);
-
+  // todo-00-done : List<AxisLabelInfo> get labelInfoList => List.from(_labelInfos._labelInfoList, growable: false);
+  List<AxisLabelInfo> reversibleLabelInfoList({bool isReversed = false}) {
+    List<AxisLabelInfo> labels = List.from(_labelInfos._labelInfoList, growable: false);
+    if (isReversed) {
+      labels = labels.reversed.toList(growable: false);
+    }
+    return labels;
+  }
+  List<AxisLabelInfo> get labelInfoList => reversibleLabelInfoList(isReversed: false);
 
   /// The numerical range of data.
   ///
@@ -242,9 +251,11 @@ class DataRangeLabelInfosGenerator {
 
     // todo-010 : There is something weird about the use of isParentLayouterAndDisplayDirectionsOpposite
     //            and also isOnHorizontalAxis. Maybe isParentLayouterAndDisplayDirectionsOpposite is NOT NEEDED???
+    /* todo-00-done
     if (chartOrientation.isParentLayouterAndDisplayDirectionsOpposite) {
       tickValues = tickValues.reversed.toList();
     }
+    */
 
     return ExternalTicksLayoutProvider(
       tickValues: tickValues,

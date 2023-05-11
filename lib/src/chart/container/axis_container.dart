@@ -114,11 +114,13 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
         return TransposingOutputAxisContainer(
           chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
+          isLabelsReversed: false, // todo-00-done : false worked before changing reversed in ExternalTicksRow
         );
       case ChartOrientation.row:
         return TransposingInputAxisContainer(
           chartViewModel: chartViewModel,
           directionWrapperAround: _verticalWrapperAround,
+          isLabelsReversed: false, // todo-00-done : true worked before changing reversed in ExternalTicksRow
         );
     }
   }
@@ -131,11 +133,13 @@ abstract class TransposingAxisContainer extends container_common.ChartAreaContai
         return TransposingInputAxisContainer(
           chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
+          isLabelsReversed: false, // todo-00-done : false worked before changing reversed in ExternalTicksRow
         );
       case ChartOrientation.row:
         return TransposingOutputAxisContainer(
           chartViewModel: chartViewModel,
           directionWrapperAround: _horizontalWrapperAround,
+          isLabelsReversed: false, // todo-00-done : true worked before changing reversed in ExternalTicksRow
         );
     }
   }
@@ -172,6 +176,7 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
   TransposingInputAxisContainer({
     required ChartViewModel chartViewModel,
     required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
+    bool isLabelsReversed = false, // todo-00-done : added
   }) : super(
           chartViewModel: chartViewModel,
         ) {
@@ -185,8 +190,9 @@ class TransposingInputAxisContainer extends TransposingAxisContainer {
               mainAxisExternalTicksLayoutProvider: _inputLabelsGenerator.asExternalTicksLayoutProvider(
                 externalTickAtPosition: ExternalTickAtPosition.childCenter,
               ),
-              children: [
-                for (var labelInfo in _inputLabelsGenerator.labelInfoList)
+              children:  [
+                // todo-00-done : for (var labelInfo in _inputLabelsGenerator.labelInfoList)
+                for (var labelInfo in _inputLabelsGenerator.reversibleLabelInfoList(isReversed: isLabelsReversed))
                   // todo-013 : check how X labels are created. Wolf, Deer, Owl etc positions seem fine, but how was it created?
                   AxisLabelContainer(
                     chartViewModel: chartViewModel,
@@ -211,6 +217,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
   TransposingOutputAxisContainer({
     required ChartViewModel chartViewModel,
     required List<BoxContainer> Function(List<BoxContainer>, ChartPaddingGroup) directionWrapperAround,
+    bool isLabelsReversed = false, // todo-00-done : added
   }) : super(
           chartViewModel: chartViewModel,
         ) {
@@ -231,7 +238,8 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                   // [labelInfo] in [labelInfoList] is numerically increasing. Their pixel layout order will be determined
                   //   by order of ExternalTicksLayoutProvider.tickPixels created and possibly reversed from
                   //   ExternalTicksLayoutProvider.tickValues. See [_outputLabelsGenerator.asExternalTicksLayoutProvider]
-                  for (var labelInfo in _outputLabelsGenerator.labelInfoList)
+                  // todo-00-done for (var labelInfo in _outputLabelsGenerator.labelInfoList)
+                  for (var labelInfo in _outputLabelsGenerator.reversibleLabelInfoList(isReversed: isLabelsReversed))
                     AxisLabelContainer(
                       chartViewModel: chartViewModel,
                       label: labelInfo.formattedLabel,
