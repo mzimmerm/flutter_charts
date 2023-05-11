@@ -157,15 +157,16 @@ enum ConstraintsDivideMethod {
 /// for the 1-dimensional [LayedoutLengthsPositioner], where it serves to describe the 1-dimensional packing and alignment.
 class LengthsPositionerProperties {
 
-  final Align align;
-  final Packing packing;
-  final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
-
   const LengthsPositionerProperties({
     required this.align,
     required this.packing,
     this.externalTicksLayoutProvider,
   });
+
+  final Align align;
+  final Packing packing;
+  final ExternalTicksLayoutProvider? externalTicksLayoutProvider;
+
 }
 
 /// A 1-dimensional layouter for segments represented only by [lengths] of the segments.

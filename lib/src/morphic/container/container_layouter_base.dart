@@ -2169,7 +2169,8 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     // So, knowing the size to which to affmap, create the range to which the [externalTicksLayoutProvider]
     //   will be affmap-ed, apply the pixel range on the [externalTicksLayoutProvider], and affmap the ticks to pixels.
     var tickPixelsRangeFromOwnerLayouterConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
-    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerLayouterConstraints);
+    mainAxisLayoutProperties.externalTicksLayoutProvider!
+        ._setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerLayouterConstraints);
 
     // The set ticks pixel range to which to affmap, and the ticks affmap MUST be done before layout (positioning) below,
     //   as the positioning works on pixels. ACTUALLY: The ticks pixel range MUST be set, affmap could
@@ -2245,8 +2246,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
       case ChartOrientation.row:
         // All factory parameters listed, reversed, and passed
         return ExternalTicksRow(
-          // todo-00-done : children: children.reversed.toList(), // todo-00 : this is the problem we need to reverse for row!!
-          children: children, // todo-00 : this is the problem we need to reverse for row!!
+          children: children,
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
@@ -2279,8 +2279,7 @@ abstract class TransposingExternalTicks extends ExternalTicksBoxLayouter {
         );
       case ChartOrientation.row:
         return ExternalTicksColumn(
-          // todo-00-done : children: children.reversed.toList(), // todo-00 : why reversing here??
-          children: children, // todo-00-done : removed reversed
+          children: children,
           mainAxisAlign: mainAxisAlign.otherEndAlign(),
           crossAxisAlign: crossAxisAlign.otherEndAlign(),
           crossAxisPacking: crossAxisPacking,
@@ -3554,7 +3553,7 @@ class Aligner extends PositioningBoxLayouter {
 /// Instances of this [ExternalTicksLayoutProvider] manage all the directives their client [ExternalTicksBoxLayouter]
 /// needs to position its children in its main axis direction.
 ///
-/// It's useful role is provided by the method [affmapValuesToPixels], which,
+/// It's useful role is provided by the method [_affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]
 /// to layouter-relative positions on the axis, the [tickPixels], to which the layouter children will be positioned.
 ///
@@ -3586,7 +3585,7 @@ class ExternalTicksLayoutProvider {
   /// by this ticks provider [ExternalTicksLayoutProvider].
   /// 
   /// By 'future positions' we mean the [tickValues] after extrapolation to axis pixels, 
-  /// to be precise, [tickValues] extrapolated by [affmapValuesToPixels] when passed axis pixels range.
+  /// to be precise, [tickValues] extrapolated by [_affmapValuesToPixels] when passed axis pixels range.
   /// 
   final List<double> tickValues;
 
@@ -3603,6 +3602,23 @@ class ExternalTicksLayoutProvider {
   ///
   /// Calculated late, after the [tickPixelsRange] is set, by affmap-ing from the [tickPixelsRange] values.
   ///
+  /// Important notes:
+  ///
+  ///   - Created during [ExternalTicksBoxLayouter]s layout in this
+  ///     [ExternalTicksBoxLayouter.layout_Post_NotLeaf_PositionChildren], further in
+  ///     [ExternalTicksBoxLayouter._setTickPixelsRangeAndAffmapTickValuesToPixels].
+  ///   - Determines the labels' pixel layout placing.
+  ///   - Determines positions of rectangles of labels in [DataRangeLabelInfosGenerator.labelInfoList].
+  ///   - Contains
+  ///     - NUMERICALLY DECREASING values IF this [ExternalTicksLayoutProvider] is on vertical axis
+  ///       ([isOnHorizontalAxis] is false during call to method [_affmapValuesToPixels]).
+  ///       [ExternalTicksLayoutProvider.tickValues].
+  ///     - INCREASING values otherwise.
+  ///
+  /// See [ChartViewModel.outputLabelsGenerator] returned by [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider].
+  ///
+  /// See [DataRangeLabelInfosGenerator.labelInfoList] which returns the labels positioned by this list
+  /// (both lists order first to last).
   late final List<double> tickPixels;
 
   /// The outermost pixel interval available for the ticks corresponding to [tickValues] to be layed out at.
@@ -3616,44 +3632,47 @@ class ExternalTicksLayoutProvider {
   /// for which this instance provides the ticks.
   late final util_dart.Interval tickPixelsRange;
 
+
+  /// Describes this instance of [ExternalTicksLayoutProvider] represents horizontal ticks.
+  ///
+  /// Should be set to true if this [ExternalTicksLayoutProvider] instance is laying
+  /// out labels on the horizontal axis, false on the vertical axis.
+  ///
+  /// Used by member method [_affmapValuesToPixels] to calculate pixel positions [tickPixels]
+  /// of labels' [tickValues].
+  ///
+  ///   - If false, the [tickPixels] increase in the list from position 0 to last,
+  ///     the largest value is on the last position.
+  ///   - If true, the [tickPixels] increase in the list from position last to 0,
+  ///     the largest value is on the first position.
   final bool isOnHorizontalAxis;
 
   final ExternalTickAtPosition externalTickAtPosition;
 
-  /// Sets the range for the ticks in [tickValues]; this is pixel-affmap-equivalent of [tickValuesRange].
-  void setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerLayouterConstraints) {
+  /// Calculates and sets [tickPixels], the range for the ticks in [tickValues].
+  ///
+  /// The passed [tickPixelsRangeFromOwnerLayouterConstraints] is pixel-affmap-equivalent of [tickValuesRange],
+  /// and should be set to be *Interval <0, constraints.fullLengthAlongMainAxis>* for constraints set on the
+  /// [ExternalTicksBoxLayouter] which owns this [ExternalTicksLayoutProvider] instance through
+  /// [ExternalTicksBoxLayouter.mainAxisLayoutProperties] member [LengthsPositionerProperties.externalTicksLayoutProvider].
+  void _setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerLayouterConstraints) {
     tickPixelsRange = tickPixelsRangeFromOwnerLayouterConstraints;
-    tickPixels = affmapValuesToPixels();
+    tickPixels = _affmapValuesToPixels();
   }
 
   /// Returns tha [tickPixels], which are the [tickValues] affmap-ed to the passed [axisPixelsRange].
   ///
-  /// Important Implementation Notes:
+  /// Notes:
   ///
-  ///   1. The passed [isOnHorizontalAxis] set to true is used to make the [tickValues]
-  ///      list be ordered against the 'natural' direction; in other words:
-  ///      - If [isOnHorizontalAxis] is false, the [tickValues] generated increase in the list from position 0 to last,
-  ///        the largest value is on the last position.
-  ///      - If [isOnHorizontalAxis] is true, the [tickValues] generated increase in the list from position last to 0,
-  ///        the largest value is on the first position.
-  ///
-  ///      There is also [isParentLayouterAndDisplayDirectionsOpposite]; the motivation
-  ///      for this order is for horizontal axis always show numeric labels in increasing order left to right,
-  ///      and for vertical axis always show numeric labels in increasing order bottom to top.
-  ///      The vertical axis for row is complicated : [tickValues] list is reversed to decreasing after their creation
-  ///      from labels, see [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], e.g. [0, 1000, 2000]. This results
-  ///      in corresponding [tickPixels] to be decreasing (e.g. [200, 100, 0]. When layed out on vertical axis (Column),
-  ///      the order, top to bottom, is [200, 100, 0] which is what we want.
+  ///   1. See member [isOnHorizontalAxis] for details of how position on vertical or horizontal axis determines
+  ///      calculated [tickPixels].
   ///
   ///   2. [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   ///
   ///   When displayed on screen, the horizontal pixels axis is always ordered left-to-right,
   ///   the vertical pixels axis is always ordered top-to-bottom
-  ///   // TODO-010 GO OVER THIS
-  ///   IMPORTANT: The [isOnHorizontalAxis] should be set to true if this [ExternalTicksLayoutProvider] is laying
-  ///   out labels in Row on the horizontal axis, false on the vertical axis.
   ///
-  List<double> affmapValuesToPixels() {
+  List<double> _affmapValuesToPixels() {
     /* todo-02 Maybe something like this is needed for the special case of collapsed-to-origin Interval
     // Special case, if _labelsGenerator.dataRange=(0.0,0.0), there are either no data, or all data 0.
     // Affmap the result to either start or end of the axis pixels, depending on [isAxisAndLabelsSameDirection]
@@ -3672,8 +3691,7 @@ class ExternalTicksLayoutProvider {
         .map((double value) => util_dart.ToPixelsAffineMap1D(
               fromValuesRange: util_dart.Interval(tickValuesRange.min, tickValuesRange.max),
               toPixelsRange: util_dart.Interval(tickPixelsRange.min, tickPixelsRange.max),
-              // todo-00-done isFlipToRange: !isOnHorizontalAxis, // todo-010 go over this
-              isFlipToRange: !isOnHorizontalAxis, // todo-010 go over this
+              isFlipToRange: !isOnHorizontalAxis,
             ).apply(value))
         .toList();
   }
