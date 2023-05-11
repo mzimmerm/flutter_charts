@@ -11,10 +11,35 @@ import '../../chart/model/label_model.dart' show AxisLabelInfo;
 /// Extension of [AxisLabelContainer] for legacy manual layout axis labels container,
 /// with added behavior needed for manual layout:
 ///   1. overrides method [layout_Post_Leaf_SetSize_FromInternals] to use the
-///      (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange to affmap label data values to pixels
+///      (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange to affmap label data values to pixels
 ///   2. has member parentOffsetTick to keep location (from build to manual layout?).
 ///
 ///  Legacy label containers [InputLabelContainerCL] and [OutputLabelContainerCL] should extend this
+///
+///
+/// This subclass of [ChartLabelContainer] also stores this container's center [parentOffsetTick]
+/// in parent's coordinates.
+///
+/// **This violates independence of container parents not needing their contained children.
+/// Instances of this class are used in container parent [HorizontalAxisContainer] (which is OK),
+/// but the parent is storing some of it's properties on children (which is not OK,
+/// effectively, this class uses it's children as sandboxes).**
+///
+/// [parentOffsetTick] can be thought of as position of the "tick" showing
+/// the label's value on axis - the immediate parent
+/// decides whether this position represents X or Y.
+///
+/// Can be used by clients to create, layout, and center labels on X and Y axis,
+/// and the label's graph "ticks".
+///
+/// Generally, the immediate parent container (parent) of this object decides what
+/// the [parentOffsetTick]s are:
+/// - If the parent is a [VerticalAxisContainer], all positions are relative to the top of
+///   the container of y labels
+/// - If parent is a [HorizontalAxisContainer] all positions are relative to the left
+///   of the container of x labels
+/// - If parent is Area [ChartContainer], all positions are relative
+///   to the top of the available [chartArea].
 ///
 class AxisLabelContainerCL extends AxisLabelContainer {
   AxisLabelContainerCL({
@@ -23,9 +48,9 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     required vector_math.Matrix2 labelTiltMatrix,
     required LabelStyle labelStyle,
     required AxisLabelInfo labelInfo,
-    required container_common.ChartAreaContainer ownerChartAreaContainer,
+    required container_common.ChartAreaContainer outerChartAreaContainer,
   })  : _labelInfo = labelInfo,
-        _ownerChartAreaContainer = ownerChartAreaContainer,
+        _outerChartAreaContainer = outerChartAreaContainer,
         super(
           chartViewModel: chartViewModel,
           label: label,
@@ -34,8 +59,8 @@ class AxisLabelContainerCL extends AxisLabelContainer {
         );
 
   /// The [container_common.ChartAreaContainer] on which this [AxisLabelContainer] is shown.
-  final container_common.ChartAreaContainer _ownerChartAreaContainer;
-  container_common.ChartAreaContainer get ownerChartAreaContainer => _ownerChartAreaContainer;
+  final container_common.ChartAreaContainer _outerChartAreaContainer;
+  container_common.ChartAreaContainer get outerChartAreaContainer => _outerChartAreaContainer;
 
   /// Maintains the LabelInfo from which this [ChartLabelContainer] was created,
   /// for use during [layout] of self or parents.
@@ -96,12 +121,12 @@ class AxisLabelContainerCL extends AxisLabelContainer {
     // We now know how long the Y axis is in pixels,
     // so we can calculate this label pixel position IN THE HorizontalAxisContainer / VerticalAxisContainer
     // and place it on [parentOffsetTick]
-    var labelsGenerator = ownerChartAreaContainer.chartViewModel.outputLabelsGenerator;
+    var labelsGenerator = outerChartAreaContainer.chartViewModel.outputLabelsGenerator;
 
     parentOffsetTick = labelsGenerator.affmapValueToPixels(
       value: labelInfo.outputValue.toDouble(),
-      axisPixelsMin: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
-      axisPixelsMax: (ownerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
+      axisPixelsMin: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.min,
+      axisPixelsMax: (outerChartAreaContainer as PixelRangeProvider).axisPixelsRange.max,
     );
 
     super.layout_Post_Leaf_SetSize_FromInternals();

@@ -1059,7 +1059,7 @@ mixin BoxLayouter on BoxContainerHierarchy implements LayoutableBox, Keyed {
   ///   - This implementation and any common layout: pass it's constraints onto it's children unchanged.
   ///     As a result, each child will be allowed to get up to it's parent constraints size.
   ///     If all children were to use the constraint sizes fully, and set their sizes that large,
-  ///     the owner layouter would overflow, but the assumption is children only use a fraction of available constraints.
+  ///     the layouter parent would overflow, but the assumption is children only use a fraction of available constraints.
   ///   - Specific implementation (e.g. [IndividualChildConstrainingRow])
   ///     may 'divide' it's constraints evenly or unevenly to children, passing each
   ///     a fraction of it's constraint.
@@ -2168,8 +2168,8 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     double lengthAlongMainAxis = constraints.maxLengthAlongAxis(mainLayoutAxis);
     // So, knowing the size to which to affmap, create the range to which the [externalTicksLayoutProvider]
     //   will be affmap-ed, apply the pixel range on the [externalTicksLayoutProvider], and affmap the ticks to pixels.
-    var tickPixelsRangeFromOwnerConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
-    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerConstraints);
+    var tickPixelsRangeFromOwnerLayouterConstraints = util_dart.Interval(0.0, lengthAlongMainAxis);
+    mainAxisLayoutProperties.externalTicksLayoutProvider!.setTickPixelsRangeAndAffmapTickValuesToPixels(tickPixelsRangeFromOwnerLayouterConstraints);
 
     // The set ticks pixel range to which to affmap, and the ticks affmap MUST be done before layout (positioning) below,
     //   as the positioning works on pixels. ACTUALLY: The ticks pixel range MUST be set, affmap could
@@ -3543,31 +3543,32 @@ class Aligner extends PositioningBoxLayouter {
 
 // Helper classes ------------------------------------------------------------------------------------------------------
 
-/// This class controls how layouters implementing the mixin [ExternalTicksRolling] position their children
+/// Controls how layouters implementing [ExternalTicksBoxLayouter] do position their children
 /// along their main axis.
 ///
-/// It manages all the directives the [ExternalTicksRolling] need to position their children
-/// in their main axis direction.
+/// Each instance of this [ExternalTicksLayoutProvider] is owned by its client (and owner),
+/// an [ExternalTicksBoxLayouter].
+///
+/// Instances of this [ExternalTicksLayoutProvider] manage all the directives their client [ExternalTicksBoxLayouter]
+/// needs to position its children in its main axis direction.
 ///
 /// It's useful role is provided by the method [affmapValuesToPixels], which,
-/// given the axis pixels range, (assumed in the pixel coordinate range), extrapolates the [tickValues]
-/// to layouter-relative positions on the axis, to which the layouter children will be positioned.
+/// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]
+/// to layouter-relative positions on the axis, the [tickPixels], to which the layouter children will be positioned.
 ///
-/// Specifically, this class provides the following directives for the layouters
-/// that are [ExternalTicksRolling]:
-///   - [tickValues] is the relative positions on which the children are placed
-///   - [tickValuesRange] is the interval in which the relative positions [tickValues] are.
-///     [tickValuesRange] must include all [tickValues];
-///     it's boundaries may be larger than the envelope of all [tickValues]
+/// Specifically, an instance provides the following directives for the layouters
+/// that are [ExternalTicksBoxLayouter] :
+///   - [tickValues] are the relative positions on which the children are placed.
+///   - [tickValuesRange] is the [Interval] which contains, and may be bigger than, the envelop of all [tickValues].
 ///   - [isOnHorizontalAxis] defines whether the axis pixel positions and [tickValues]
 ///     are run in the same direction.
 ///   - [externalTickAtPosition] the information what point on the child should be placed at the tick value:
 ///     child's start, center, or end. This is expressed by [ExternalTickAtPosition.childStart] etc.
 ///
 /// Note: The parameter names use the term 'value' not 'position', as they represent
-///        data values ('transformed' but NOT 'extrapolated to pixels').
+///        data values ('transformed' but NOT 'affmap-ed to pixels').
 ///
-/// Important note: Although not clear from this class, should ONLY position along the main axis.
+/// Important note: Although not clear from this class, it should ONLY position along the main axis.
 ///                 This is reflected in one-dimensionality of [tickValues] and [externalTickAtPosition]
 ///
 class ExternalTicksLayoutProvider {
@@ -3593,12 +3594,20 @@ class ExternalTicksLayoutProvider {
   ///  [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   final util_dart.Interval tickValuesRange;
 
-  /// Calculated late, after tickPixelsRange is set
+  /// Pixel positions corresponding to values in [tickValues].
+  ///
+  /// Calculated late, after the [tickPixelsRange] is set, by affmap-ing from the [tickPixelsRange] values.
+  ///
   late final List<double> tickPixels;
 
-  /// Set late, during layout, Post, after children are layed out, from the full constraints along main axis.
-  /// Actually equals the [layoutSize] portion along main axis, which is also the constraints of the owner
-  /// [ExternalTicksBoxLayouter].
+  /// The outermost pixel interval available for the ticks corresponding to [tickValues] to be layed out at.
+  ///
+  /// It is set late, during Post section in [ExternalTicksBoxLayouter.layout], after children of
+  /// the [ExternalTicksBoxLayouter] are layed out, from the full constraints along main axis. todo-010 check this out
+  ///
+  /// Spans always from pixel 0, to this instance's [layoutSize] length along the main axis.
+  /// The maximum is also the [constraints] length along the main axis of the [ExternalTicksBoxLayouter],
+  /// for which this instance provides the ticks.
   late final util_dart.Interval tickPixelsRange;
 
   final bool isOnHorizontalAxis;
@@ -3606,8 +3615,8 @@ class ExternalTicksLayoutProvider {
   final ExternalTickAtPosition externalTickAtPosition;
 
   /// Sets the range for the ticks in [tickValues]; this is pixel-affmap-equivalent of [tickValuesRange].
-  void setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerConstraints) {
-    tickPixelsRange = tickPixelsRangeFromOwnerConstraints;
+  void setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerLayouterConstraints) {
+    tickPixelsRange = tickPixelsRangeFromOwnerLayouterConstraints;
     tickPixels = affmapValuesToPixels();
   }
 

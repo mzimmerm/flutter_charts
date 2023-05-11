@@ -401,7 +401,7 @@ class DataColumnModel {
 ///
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
-///   - Has private access to the owner [ChartModel] to which it belongs through it's member [outerDataColumnModel],
+///   - Has private access to the outer [ChartModel] to which it belongs through it's member [outerDataColumnModel],
 ///     which in turn has access to [ChartModel] through it's member [DataColumnModel._chartModel].
 ///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
 ///
@@ -409,7 +409,7 @@ class DataColumnModel {
 class PointModel {
 
   // ===================== CONSTRUCTOR ============================================
-  /// Constructs instance from the owner [DataColumnModel] instance [outerDataColumnModel],
+  /// Constructs instance and from [DataColumnModel] instance [outerDataColumnModel],
   /// and [rowIndex], the index in where the point value [outputValue] is located.
   ///
   /// Important note: The [outerDataColumnModel] value on [rowIndex], IS NOT [outputValue],
@@ -457,7 +457,7 @@ class PointModel {
   /// See [outputValue] for details of the column index from which this point was created.
   final int rowIndex;
 
-  /// Getter of the column index in the owner [outerDataColumnModel].
+  /// Getter of the column index in the [outerDataColumnModel].
   ///
   /// Delegated to [outerDataColumnModel] index [DataColumnModel._indexInOuterChartModel].
   int get columnIndex => outerDataColumnModel._indexInOuterChartModel;

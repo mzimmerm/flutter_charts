@@ -76,7 +76,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   /// The
   ///
   /// Ensures the [layoutSize] is set as the maximum value of [_fromOffsetPixels] and [_toOffsetPixels] in the
-  /// parent layouter main direction, and the [constraints] component in the parent layouter cross-direction.
+  /// parent container/layouter main direction, and the [constraints] component in the parent's cross-direction.
   ///
   /// Important notes:
   ///

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart' as widgets show TextSpan, TextPainter;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // this level or equivalent
@@ -91,29 +92,11 @@ class ChartLabelContainer extends container_common.ChartAreaContainer with Tilta
   }
 }
 
-/// Container of axis label, this subclass of [ChartLabelContainer] also stores
-/// this container's center [parentOffsetTick] in parent's coordinates.
+/// Container of an axis label, a marker extension of [ChartLabelContainer] with no additional operations to it's
+/// superclass.
 ///
-/// **This violates independence of container parents not needing their contained children.
-/// Instances of this class are used in container parent [HorizontalAxisContainer] (which is OK),
-/// but the parent is storing some of it's properties on children (which is not OK,
-/// effectively, this class uses it's children as sandboxes).**
-///
-/// [parentOffsetTick] can be thought of as position of the "tick" showing
-/// the label's value on axis - the immediate parent
-/// decides whether this position represents X or Y.
-///
-/// Can be used by clients to create, layout, and center labels on X and Y axis,
-/// and the label's graph "ticks".
-///
-/// Generally, the owner (immediate parent) of this object decides what
-/// the [parentOffsetTick]s are:
-/// - If owner is a [VerticalAxisContainer], all positions are relative to the top of
-///   the container of y labels
-/// - If owner is a [HorizontalAxisContainer] All positions are relative to the left
-///   of the container of x labels
-/// - If owner is Area [ChartContainer], all positions are relative
-///   to the top of the available [chartArea].
+/// Should be used for axis labels, and layed out with any standard layouters,
+/// most likely an extension of the [ExternalTicksBoxLayouter].
 ///
 class AxisLabelContainer extends ChartLabelContainer {
   AxisLabelContainer({

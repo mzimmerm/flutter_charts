@@ -101,7 +101,7 @@ class VerticalAxisContainerCL extends AxisContainerCL implements TransposingOutp
         labelTiltMatrix: vector_math.Matrix2.identity(), // No tilted labels in VerticalAxisContainer
         labelStyle: labelStyle,
         labelInfo: labelInfo,
-        ownerChartAreaContainer: this,
+        outerChartAreaContainer: this,
       );
 
       outputLabelContainerCLs.add(outputLabelContainer);
@@ -272,7 +272,7 @@ class HorizontalAxisContainerCL
         labelStyle: labelStyle,
         // In [InputLabelContainer], [labelInfo] is NOT used, as we do not create LabelInfo for XAxis
         labelInfo: chartViewModel.inputLabelsGenerator.labelInfoList[xIndex],
-        ownerChartAreaContainer: this,
+        outerChartAreaContainer: this,
       );
       inputLabelContainerCLs.add(inputLabelContainer);
     }

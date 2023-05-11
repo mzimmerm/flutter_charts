@@ -94,10 +94,10 @@ abstract class AdjustableLabels {
   bool labelsOverlap();
 }
 
-/// The behavior mixin allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
+/// The behavior mixin class allows to plug in to the [ChartRootContainer] a behavior that is specific for a line chart
 /// or vertical bar chart.
 ///
-/// The behavior is plugged in the container, not the container owner chart.
+/// The behavior is plugged in the [view_model.ChartViewModel].
 abstract class ChartBehavior {
   /// Behavior allows to start Y axis at data minimum (rather than 0).
   ///

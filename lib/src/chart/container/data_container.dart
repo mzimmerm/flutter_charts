@@ -159,7 +159,28 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     );
   }
 
-  /// [DataContainer] client-overridable method hook for extending [BarsContainer].
+  /// [DataContainer] client-overridable method hook for extending [BarsContainer]. Rare use
+  ///
+  /// One of child component maker delegates to outer [DataContainer].
+  ///
+  /// Client can provide their own subclass of [BarsContainer], return an instance from this method,
+  /// and this new instance will be placed inside the [DataContainer.buildAndReplaceChildren]
+  /// instead of the base instance.
+  ///
+  /// The reason for the word 'makeInner' is: The created [BarsContainer] is 'inner' to the [DataContainer] instance,
+  /// (in other words, has a reference back to it's outer (owner) [DataContainer] instance).
+  /// The 'inner' instances, can be created from their 'outer' instances, without the need to extend all intermediate
+  /// classes used deep in the [DataContainer].
+  ///
+  /// In this base [DataContainer], the returned [BarsContainer] becomes a 'child of
+  /// a child': specifically, a child of this [DataContainer]'s child [ContainerForBothBarsAreasAndInputAxisLine].
+  /// (It is given a name [ContainerForBothBarsAreasAndInputAxisLine.positiveBarsContainer]
+  /// or [ContainerForBothBarsAreasAndInputAxisLine.positiveBarsContainer].)
+  /// See code in [DataContainer.buildAndReplaceChildren].
+  ///
+  /// The reason for the above inconsistency (something named inner is child of a child, rather than immediate child),
+  /// is no named instance holds on the [ContainerForBothBarsAreasAndInputAxisLine] instance in [DataContainer].
+  /// We could change that later.
   BarsContainer makeInnerBarsContainer ({
       required DataContainer outerDataContainer,
       required Sign barsAreaSign,
@@ -173,7 +194,13 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     );
   }
 
-  /// Child component makers delegated to owner [DataContainer] -----------
+  /// [DataContainer] client-overridable method hook for extending [DataColumnPointsBar]. Rare use.
+  ///
+  /// One of child component maker delegates to outer [DataContainer].
+  ///
+  /// Client can provide their own subclass of [BarsContainer], return an instance from this method,
+  /// and this new instance will be placed inside the [DataContainer.buildAndReplaceChildren]
+  /// instead of the base instance.
   ///
   /// For now, throw [UnimplementedError]. Extensions who want to change something about the chart view elements
   /// should override the view elements returned, then override these methods, and create and return from them
@@ -184,22 +211,33 @@ abstract class DataContainer extends container_common.ChartAreaContainer {
     required BarsContainer outerBarsContainer,
     required Sign barsAreaSign,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 
+  /// [DataContainer] client-overridable method hook for extending [PointContainer]. Frequent use by clients.
+  ///
+  /// One of child component maker delegates to outer [DataContainer].
+  ///
+  /// Client can provide their own subclass of [PointContainer], return an instance from this method,
+  /// and this new instance will be placed inside the [DataContainer.buildAndReplaceChildren]
+  /// instead of the base instance.
+  ///
+  /// See discussion in [makeInnerBarsContainer] for 'inner' and 'outer' naming conventions.
   PointContainer makeDeepInnerPointContainer({
     required PointModel pointModel,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 
+  /// Child component maker delegated to outer [DataContainer].
+  ///
   /// [BarsContainer] client-overridable method hook for extending [ZeroValueBarPointContainer].
   ///
   /// Likely not needed by any client.
   PointContainer makeDeepInnerPointContainerWithZeroValue({
     required PointModel pointModel,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 }
 
@@ -230,7 +268,7 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
   final TransposingInputAxisLineContainer inputAxisLine;
   final BarsContainer negativeBarsContainer;
 
-  /// non-child, kept to establish inner/outer ownership
+  /// non-child, kept to establish inner/outer relationship
   final DataContainer outerDataContainer;
 
   @override
@@ -482,7 +520,7 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
       );
     }
     throw UnimplementedError('$runtimeType.makePointContainer: '
-        'The value of outerDataContainer.isMakeComponentsForwardedToOwner '
+        'The value of outerDataContainer.isOuterMakingInnerContainers '
         'is false, this method must be overridden in a subclass.');
   }
 
@@ -499,7 +537,7 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
       );
     }
     throw UnimplementedError('$runtimeType.makePointContainerWithZeroValue: '
-        'The value of outerDataContainer.isMakeComponentsForwardedToOwner '
+        'The value of outerDataContainer.isOuterMakingInnerContainers '
         'is false, this method must be overridden in a subclass.');
   }
 

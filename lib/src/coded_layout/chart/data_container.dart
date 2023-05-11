@@ -338,21 +338,21 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     required BarsContainer outerBarsContainer,
     required Sign barsAreaSign,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 
   @override
   PointContainer makeDeepInnerPointContainer({
     required PointModel pointModel,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 
   @override
   PointContainer makeDeepInnerPointContainerWithZeroValue({
     required PointModel pointModel,
   }) {
-    throw UnimplementedError('Must be implemented if invoked directly, or if isMakeComponentsForwardedToOwner is true');
+    throw UnimplementedError('If invoked directly, or isOuterMakingInnerContainers=true, subclass must implement');
   }
 }
 

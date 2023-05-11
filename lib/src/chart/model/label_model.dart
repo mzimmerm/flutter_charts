@@ -118,7 +118,7 @@ class DataRangeLabelInfosGenerator {
         .map((transformedLabelValue) =>
         AxisLabelInfo(
           outputValue: transformedLabelValue,
-          labelsGenerator: this,
+          outerLabelsGenerator: this,
         ))
         .toList();
     _labelInfos = _AxisLabelInfos(
@@ -467,18 +467,18 @@ class DataRangeLabelInfosGenerator {
 ///
 class AxisLabelInfo {
 
-  /// Constructs from value at the label, holding on the owner [labelsGenerator],
+  /// Constructs from value at the label, holding on the [outerLabelsGenerator],
   /// which provides data range corresponding to axis range.
   AxisLabelInfo({
     required this.outputValue,
-    required DataRangeLabelInfosGenerator labelsGenerator,
+    required DataRangeLabelInfosGenerator outerLabelsGenerator,
   })  :
-        _labelsGenerator = labelsGenerator {
-    var yInverseTransform = _labelsGenerator._inverseTransform;
+        _outerLabelsGenerator = outerLabelsGenerator {
+    var yInverseTransform = _outerLabelsGenerator._inverseTransform;
     _rawOutputValue = yInverseTransform(outputValue);
   }
 
-  final DataRangeLabelInfosGenerator _labelsGenerator;
+  final DataRangeLabelInfosGenerator _outerLabelsGenerator;
 
   /// not-extrapolated and not-transformed label value.
   ///

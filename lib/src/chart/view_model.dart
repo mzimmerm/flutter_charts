@@ -150,7 +150,7 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// The root container (view) is created by this view model [ChartViewModel]
   /// on every [FlutterChartPainter] paint and repaint.
   ///
-  /// While the owner view model survives repaint,
+  /// While the owner [ChartViewModel] instance survives repaint,
   /// it's member, this [chartRootContainer] is recreated on each repaint in
   /// the following code in [FlutterChartPainter.paint]:
   ///

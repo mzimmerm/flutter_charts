@@ -172,7 +172,7 @@ class BarPointContainer extends PointContainer {
     // The offset, [pixelPointOffset] is used in line chart.
     //
     // The [layoutSize] is also the size of the rectangle, which, when positioned
-    // by the parent layouter, is the pixel-affmap-ed value of the [pointModel]
+    // by the parent container/layouter, is the pixel-affmap-ed value of the [pointModel]
     // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
@@ -192,7 +192,7 @@ class BarPointContainer extends PointContainer {
 
 /// A zero-height (thus 'invisible') [BarPointContainer] extension.
 ///
-/// Has zero [layoutSize] in the direction of the input data axis. See [layout] for details.
+/// Has a zero [layoutSize] in the direction of the input data axis. See [layout] for details.
 class ZeroValueBarPointContainer extends BarPointContainer {
 
   ZeroValueBarPointContainer({
@@ -204,7 +204,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   });
 
   /// Layout this container by calling super, then set the [layoutSize] in the value direction
-  /// (owner layouter mainAxisDirection) to be zero.
+  /// (parent container/layouter mainAxisDirection) to be zero.
   ///
   /// To be precise, the value direction is defined as input data axis, [ChartOrientation.inputDataAxisOrientation].
   ///
