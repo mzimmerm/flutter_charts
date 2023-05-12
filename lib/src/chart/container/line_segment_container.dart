@@ -105,6 +105,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
       sizerWidth: sizerWidth,
+      isFromChartPointForAsserts: false,
     );
     _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
@@ -113,6 +114,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
       sizerWidth: sizerWidth,
+      isFromChartPointForAsserts: false,
     );
 
     // The [layoutSize] is a hard nut. If we restrict our thinking to this [LineSegmentContainer] being a child

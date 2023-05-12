@@ -3739,6 +3739,7 @@ class ExternalTicksLayoutProvider {
 
 }
 
+// todo-010 : move this as method on LayoutAxis
 LayoutAxis axisPerpendicularTo(LayoutAxis layoutAxis) {
   switch (layoutAxis) {
     case LayoutAxis.horizontal:

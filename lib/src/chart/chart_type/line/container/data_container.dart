@@ -241,8 +241,9 @@ class LineAndPointContainer extends PointContainer {
     // Store pixelPointOffset as member for paint to use
     _pixelPointOffset = pixelPointOffset;
 
-    // Must set layoutSize same as passed constraints, for the rudimentary StackContainer to layout and paint
-    // this child correctly.
+    // Must set layoutSize same as passed constraints, for the rudimentary [StackLayouter] to layout and paint
+    // this child correctly - the rudimentary [StackLayouter] relies on all children to paint into its not-offset
+    // rectangle that has size = constraints size.
     layoutSize = constraints.size;
   }
 
@@ -254,6 +255,12 @@ class LineAndPointContainer extends PointContainer {
     // todo-00 paint a circle of some fixed size at position OF TOP LEFT POINT OF pixelPointOffset.barPointRectSize which is INSIDE THE layoutSize, DEFINED BY the FULL COLUMN CONSTRAINTS
     ui.Paint paint = ui.Paint();
     paint.color = pointModel.color;
+
+    /* KEEP
+    print(' ### Log.Info: $runtimeType.paint: color=${paint.color}, _pixelPointOffset = $_pixelPointOffset, '
+        '_pixelPointOffset.barPointRectSize=${_pixelPointOffset.barPointRectSize}, '
+        'layoutSize=$layoutSize, accumulated offset=$offset');
+    */
 
     // todo-00 ui.Offset circleAtOffset = offset + ui.Offset(_pixelPointOffset.barPointRectSize.width, _pixelPointOffset.barPointRectSize.height);
     ui.Offset circleAtOffset = offset + _pixelPointOffset;
@@ -309,6 +316,7 @@ class ZeroValueLineAndPointContainer extends LineAndPointContainer {
       outputDataRange: outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
       sizerWidth: sizerWidth,
+      isFromChartPointForAsserts: false,
     );
 
     // Make the layoutSize zero in the direction of the chart orientation

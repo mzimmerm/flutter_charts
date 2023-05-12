@@ -233,6 +233,7 @@ class ZeroValueBarPointContainer extends BarPointContainer {
       outputDataRange: outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
       sizerWidth: sizerWidth,
+      isFromChartPointForAsserts: false,
     );
 
     // Make the layoutSize zero in the direction of the chart orientation

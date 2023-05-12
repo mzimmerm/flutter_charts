@@ -101,6 +101,15 @@ extension SizeExtension on ui.Size {
 
 }
 
+/* Any time this was needed, we can use instead:
+     Size + Offset which yields Size
+extension OffsetExtension on ui.Offset {
+  ui.Size toSize() {
+    return ui.Size(dx, dy);
+  }
+}
+*/
+
 extension RectExtension on ui.Rect {
 
   /// Inflates self on each side of self, by the padding portion corresponding to the side.

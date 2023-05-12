@@ -19,6 +19,12 @@ import '../morphic_dart_enums.dart' show LayoutAxis, DataDependency;
 ///      - column: mainLayoutAxis = vertical (column) ; inputDataAxisOrientation = horizontal (horizontal bar chart, line chart)
 ///      - row:    mainLayoutAxis = horizontal (row)  ; inputDataAxisOrientation = vertical  (vertical bar chart, inverted line chart)
 enum ChartOrientation {
+  // todo-010: consider rename:
+  //    column                   -> inputAxisHorizontal
+  //    row                      -> inputAxisVertical
+  //    inputDataAxisOrientation -> inputAxis  ; also change this to getter: cross to outputAxis
+  //    mainLayoutAxis           -> outputAxis ; also change this to getter: if this == inputAxisHorizontal => vertical, and the other way around
+
   column(
     mainLayoutAxis: LayoutAxis.vertical,
     inputDataAxisOrientation: LayoutAxis.horizontal,

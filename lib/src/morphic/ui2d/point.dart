@@ -2,8 +2,9 @@ import 'dart:ui' show Offset, Size;
 
 
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+// todo-00-done import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 
-import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D;
+import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D, assertDoubleResultsSame;
 import '../container/constraints.dart';
 import '../container/chart_support/chart_style.dart';
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -16,6 +17,9 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 
 /// Extension of [Offset] which adds ability to affmap to a new [PointOffset] instance
 /// created from it's instance data value in it's value range to the pixel position in the pixel ranges.
+///
+/// Instances are intended to be created from instances of [PointModel]s to provide ability to be
+/// transferred (transposed and affmap-ed) for [PointModel]s visual presentation on a chart.
 ///
 /// Note: This class position is renamed from [Offset.dx] and dy to [PointOffset.inputValue] and outputValue.
 ///
@@ -75,9 +79,12 @@ class PointOffset extends Offset {
     outputValue: outputValue - other.dy,
   );
 
-  /// Creates and returns copy of this [PointOffset], affmap-ed to it's pixel scale; the copy's member
-  /// [barPointRectSize] is filled with the [Size] that can and should be used as [layoutSize] of the bar
+  /// Creates and returns copy of this [PointOffset], first (if orientation is row) transposed
+  /// around [Diagonal.leftToRightUp], then affmap-ed to it's pixel scale; the copy's member
+  /// [barPointRectSize] is filled with the [Size] that is the size of the bar
   /// representing this [PointOffset] on bar charts.
+  ///
+  /// On the bar chart, [barPointRectSize] can and should be used as [layoutSize] of th
   ///
   /// The Affmap takes into account [chartOrientation], which may cause the x and y (input and output)
   /// values to transpose around the [Diagonal.leftToRightUp] during the affmap.
@@ -99,6 +106,9 @@ class PointOffset extends Offset {
   ///   - [outputDataRange] is the data value-range on the output range (2nd coordinate, y)
   ///   - [sizerHeight] is the height used for pixel-range
   ///   - [sizerWidth] - equivalent to [sizerHeight]
+  ///   - [isFromChartPointForAsserts] flag if true, causes to run more asserts that assume the
+  ///     this [PointOffset] is from [PointModel] on a chart, rather than a straight [PointOffset] from [AxisLineContainer].
+  ///     Default to true, so places in code that create [PointOffset] from a line should set to false.
   ///
   /// Note that the [constraintsOnParentLayouter] or [sizerHeight] and [sizerWidth] is used
   /// to calculate the size of [barPointRectSize] on the copy.
@@ -184,10 +194,13 @@ class PointOffset extends Offset {
     required Interval                outputDataRange,
     required double                  sizerHeight,
     required double                  sizerWidth,
+    bool isFromChartPointForAsserts = true,
   }) {
+/* todo-00-done
     // No-op rename input params to shorted version.
     BoxContainerConstraints constraints = constraintsOnParentLayouter;
     ChartOrientation orientation = chartOrientation;
+*/
 
     // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
     //
@@ -221,20 +234,19 @@ class PointOffset extends Offset {
     //   bar length is used, see [barPointRectSize] at the end of this method.
     Interval horizontalPixelsRange, verticalPixelsRange;
 
-    switch (orientation) {
+    switch (chartOrientation) {
       case ChartOrientation.column:
-        horizontalPixelsRange = Interval(0.0, constraints.width);
+        horizontalPixelsRange = Interval(0.0, constraintsOnParentLayouter.width);
         verticalPixelsRange   = Interval(0.0, sizerHeight); // NOT inverted range - pixels are within some container!!
 
-        // Used for orientation.column
-        //   m[0,0] (in->px)
+        //   m[0,0] (input->px)
         var transfXX = ToPixelsAffineMap1D(
           fromValuesRange: inputDataRange,
           toPixelsRange: horizontalPixelsRange,
           isFlipToRange: false,
         );
 
-        //   m[1,1] (out->py)
+        //   m[1,1] (output->py)
         var transfYY = ToPixelsAffineMap1D(
           fromValuesRange: outputDataRange,
           toPixelsRange: verticalPixelsRange,
@@ -255,18 +267,17 @@ class PointOffset extends Offset {
         break;
       case ChartOrientation.row:
         horizontalPixelsRange = Interval(0.0, sizerWidth);
-        verticalPixelsRange   = Interval(0.0, constraints.height);
+        verticalPixelsRange   = Interval(0.0, constraintsOnParentLayouter.height);
 
         // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
-        // Used for orientation.row
-        //   m[1,0] (in->py)
+        //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
           fromValuesRange: inputDataRange,
           toPixelsRange: verticalPixelsRange,
           isFlipToRange: false,
         );
-        //   m[0,1] (out->px)
+        //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
           fromValuesRange: outputDataRange,
           toPixelsRange: horizontalPixelsRange,
@@ -292,13 +303,74 @@ class PointOffset extends Offset {
     PointOffset pointOffsetPixels = PointOffset.fromVector(affineTransformer.applyOnVector(thisToVector));
     Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
     // On the rect size, we do NOT scale both directions. In the direction where constraint
-    //   is used (which is ALWAYS the orientation main axis), use scaled size, BUT in the cross direction,
-    //   use the full size coming from the divided constraint
+    //   is used (which is ALWAYS the orientation's main axis: column->vertical, row->horizontal),
+    //   use scaled size, BUT in the cross direction, use the full size from the divided constraint, placed into
+    // the PixelsRange max
     pointOffsetPixels.barPointRectSize = barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
       other: Size(horizontalPixelsRange.max, verticalPixelsRange.max),
-      axis: orientation.mainLayoutAxis,);
+      axis: chartOrientation.mainLayoutAxis,);
+
+    // Before return, validate inputs and outputs
+    _validateAffmapToPixelMethodInputsOutputs(
+      chartOrientation: chartOrientation,
+      constraintsOnParentLayouter: constraintsOnParentLayouter,
+      sizerWidth: sizerWidth,
+      sizerHeight: sizerHeight,
+      pointOffsetPixels: pointOffsetPixels,
+      // Only assert for pointOffsetPixels.barPointRectSize + pointOffsetPixels == constraintsOnParentLayouter
+      //   if no range is across 0.0
+      // todo-010 : why does the assert fail for mixed sign?
+      isFromChartPointForAsserts: isFromChartPointForAsserts && !inputDataRange.isAcrossZero() && !outputDataRange.isAcrossZero(),
+    );
 
     return pointOffsetPixels;
+  }
+
+  void _validateAffmapToPixelMethodInputsOutputs({
+    required ChartOrientation chartOrientation,
+    required BoxContainerConstraints constraintsOnParentLayouter,
+    required double sizerWidth,
+    required double sizerHeight,
+    required PointOffset pointOffsetPixels,
+    required bool isFromChartPointForAsserts,
+  }) {
+    Size sizerSize = Size(sizerWidth, sizerHeight);
+
+    // Assert that: in orientation.mainLayoutAxis, constraintsOnParentLayouter == sizerSize
+    assertDoubleResultsSame(
+        constraintsOnParentLayouter.size.lengthAlong(chartOrientation.mainLayoutAxis),
+        sizerSize.lengthAlong(chartOrientation.mainLayoutAxis),
+        '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
+        'result from constraints.size, otherResult from sizerSize. '
+        'constraintsOnParentLayouter.size=${constraintsOnParentLayouter.size}, sizerSize=$sizerSize ');
+
+    if (pointOffsetPixels.inputValue < 0 || pointOffsetPixels.outputValue < 0) {
+      throw StateError('Failed assumption about pointOffsetPixels always positive or 0, $pointOffsetPixels');
+    }
+
+    if (isFromChartPointForAsserts) {
+      // Assert that, in orientation.mainLayoutAxis, the pointOffsetPixels + pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
+      //  Impl note: Size + Offset exists, yields Size
+      Size pointOffsetSizePlusBarSize = pointOffsetPixels.barPointRectSize + pointOffsetPixels;
+      assertDoubleResultsSame(
+          constraintsOnParentLayouter.size.lengthAlong(chartOrientation.mainLayoutAxis),
+          pointOffsetSizePlusBarSize.lengthAlong(chartOrientation.mainLayoutAxis),
+          '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
+          'result from constraints.size, otherResult from pointOffsetSizePlusBarSize. '
+          'constraintsOnParentLayouter.size=${constraintsOnParentLayouter.size}, '
+          'pointOffsetSizePlusBarSize=$pointOffsetSizePlusBarSize ');
+    }
+
+    // Assert that, in orientation.crossAxis pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
+    var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
+    Size barPointRectSize = pointOffsetPixels.barPointRectSize;
+    assertDoubleResultsSame(
+        constraintsOnParentLayouter.size.lengthAlong(crossOrientationAxis),
+        barPointRectSize.lengthAlong(crossOrientationAxis),
+        '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
+            'result from constraints.size, otherResult from barPointRectSize. '
+            'constraintsOnParentLayouter.size=${constraintsOnParentLayouter.size}, '
+            'barPointRectSize=$barPointRectSize ');
   }
 
   /// Present itself as code
