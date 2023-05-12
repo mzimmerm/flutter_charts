@@ -3365,7 +3365,48 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
   DefaultNonPositioningBoxLayouter({
     List<BoxContainer>? children,
   }) : super(children: children);
+}
 
+// todo-00-progress
+/// A minimalistic layouter which positions each of it's children's rectangles on top of each other,
+/// so that the children's rectangles top left is on the top left position of it's constraint.
+///
+/// A perhaps better description is that this layouter does not change positions of it's children in itself at all -
+/// it is simply a non-positioning layouter.
+///
+/// Passes the same [constraints] it receives from parent to each of it's children.
+///
+/// For this layouter to act as stack layouter, a bit of cooperation from the parent and children is needed, as follows:
+///   - Parent must ensure that the full constraints passed to this layouter do not overflow in some way.
+///     This is not a strong requirement, almost (every?) parent layouter must endure this.
+///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
+///     the stack layouter parent.
+///
+/// 3. todo-010 LATER: Create a better StackLayouter, so that:
+///          - allows to obtain constraints that are in some sense limited (divided in both directions)
+///          - defines the StackingOrigin (maybe something exists for it???)  topLeft, topRight, bottomLeft, bottomRight
+///            the StackingOrigin is absolute in the Box of StackLayouter constraints
+///          - lays out children, each child rectangle is aligned with the same corner and same direction as StackingOrigin
+///          - the layoutSize is the envelope of child rectangles.
+class TransposingStackLayouter extends NonPositioningBoxLayouter {
+
+  TransposingStackLayouter({
+    List<BoxContainer>? children,
+  }) : super(children: children);
+
+  // todo-010 The Column/Row must be distinguished
+  factory TransposingStackLayouter.Column({
+    List<BoxContainer>? children,
+  }) {
+    return TransposingStackLayouter(children: children);
+  }
+
+  // todo-010 The Column/Row must be distinguished
+  factory TransposingStackLayouter.Row({
+    List<BoxContainer>? children,
+  }) {
+    return TransposingStackLayouter(children: children);
+  }
 }
 
 /// Layouter which lays out it's single child surrounded by [EdgePadding] within itself.

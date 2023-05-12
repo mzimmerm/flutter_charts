@@ -408,6 +408,12 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
       start: 1.0,
       end: 1.0,
     );
+
+    /// todo-00-next : Separate creation of pointContainers in this section up to before padding, from the padding,
+    ///                AND MOST IMPORTANT FROM THE WRAPpING IN TransposingRoller.Column . THIS MAY MEAN TO ADD ANOTHER INNER MAKER METHOD.
+    ///                THE GOAL IS TO SHARE THE (ARGUABLY DIFFICULT BUT NICELY ABSTRACTED) CREATION OF   List<PointContainer> pointContainers
+    ///                with extensions, [BarChartDataColumnPointsBar] and [LineChartDataColumnPointsBar]
+
     // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].
     // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
     // stacked and nonStacked, and positive and negative, distinctly.
@@ -426,6 +432,9 @@ class DataColumnPointsBar extends container_common.ChartAreaContainer {
               child: pointContainer,
             ))
         .toList();
+
+    // todo-00-next : separate this section into it's own overridable method, and inject children, rather
+    //                than creating children above.
 
     TransposingRoller pointContainersLayouter;
     switch (chartViewModel.chartStacking) {

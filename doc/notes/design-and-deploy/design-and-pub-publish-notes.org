@@ -1925,6 +1925,13 @@ problem: The affmapToPixels is only called in CL code. Need to fix this first!!!
 NO: This is vs affmapValuesToPixels!!! compare them
 
 
+  ///      The vertical axis for row is complicated : [tickValues] list is reversed to decreasing after their creation
+  ///      from labels, see [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], e.g. [0, 1000, 2000]. This results
+  ///      in corresponding [tickPixels] to be decreasing (e.g. [200, 100, 0]. When layed out on vertical axis (Column),
+  ///      the order, top to bottom, is [200, 100, 0] which is what we want.
+  ///
+
+
 ** LATER 12. ~CURRENT WORK: ADD LINE CHART~
 
 Bar Chart:

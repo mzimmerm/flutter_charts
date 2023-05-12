@@ -167,6 +167,8 @@ class ExamplesDescriptor {
     //
     const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
         ChartType.barChart),
+    const Tuple2(ExamplesEnum.ex75AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenPadded,
+        ChartType.lineChart),
     //
     const Tuple2(ExamplesEnum.ex76AnimalsBySeasonLegendIsRowStartTightItemIsRowStartTightItemChildrenAligned,
         ChartType.barChart),

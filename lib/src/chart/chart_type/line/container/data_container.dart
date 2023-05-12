@@ -3,7 +3,7 @@
 /// Each class here extends it's abstract base in ../data_container.dart,
 /// and implements methods named 'makeInner', which allow all internals
 /// of the [DataContainer] to be overridden and extended.
-import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
+import 'dart:ui' as ui show Paint, Canvas, Size, Offset;
 
 // this chart/chart_type/line level
 
@@ -20,8 +20,9 @@ import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtens
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
+import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show TransposingStackLayouter;
 import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
-import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart' show Sign;
 
 /// Concrete [DataContainer] for bar chart.
@@ -88,6 +89,43 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     super.key,
   }) ;
 
+  // todo-00-progress vvvvvvvvv
+  @override
+  void buildAndReplaceChildren() {
+    // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].
+    // The code in [clsPointToNullableContainerForSign] contains logic that processes all combinations of
+    // stacked and nonStacked, and positive and negative, distinctly.
+    List<PointContainer> pointContainers = dataColumnModel.pointModelList
+        // Map applies function converting the [PointModel] to [PointContainer],
+        // calling the hook [MyBarChartViewModelPointContainer]
+        .map(clsPointToNullableContainerForSign(barsAreaSign))
+        // Filters in only non null containers (impl detail of clsPointToNullableContainerForSign)
+        .where((containerElm) => containerElm != null)
+        .map((containerElm) => containerElm!)
+        .toList();
+
+    TransposingStackLayouter pointContainersLayouter;
+    switch (chartViewModel.chartStacking) {
+      case ChartStacking.stacked:
+        pointContainersLayouter = TransposingStackLayouter.Column(
+          children: barsAreaSign == Sign.positiveOr0 ? pointContainers.reversed.toList() : pointContainers,
+        );
+        break;
+      case ChartStacking.nonStacked:
+        pointContainersLayouter = TransposingStackLayouter.Row(
+          children: pointContainers,
+        );
+        break;
+    }
+    // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([pointContainersLayouter])
+    addChildren([pointContainersLayouter]);
+  }
+  // todo-00-progress ^^^^^^^^
+
+
+
+
+
   @override
   PointContainer makePointContainer({
     required PointModel pointModel,
@@ -97,7 +135,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
         pointModel: pointModel,
       );
     }
-    return BarPointContainer(
+    return LineAndPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
       outerDataColumnPointsBar: this,
@@ -108,13 +146,13 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
   PointContainer makePointContainerWithZeroValue({
     required PointModel pointModel,
   }) {
-    // return BarPointContainer with 0 layoutSize in the value orientation
+    // return LineAndPointContainer with 0 layoutSize in the value orientation
     if (outerDataContainer.isOuterMakingInnerContainers) {
       return outerDataContainer.makeDeepInnerPointContainerWithZeroValue(
         pointModel: pointModel,
       );
     }
-    return ZeroValueBarPointContainer(
+    return ZeroValueLineAndPointContainer(
       pointModel: pointModel,
       chartViewModel: chartViewModel,
       outerDataColumnPointsBar: this,
@@ -129,18 +167,21 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
 ///
 /// It implements the mixins [WidthSizerLayouterChildMixin] and [HeightSizerLayouterChildMixin]
 /// needed to affmap the [pointModel] to a position on the chart.
-class BarPointContainer extends PointContainer {
+class LineAndPointContainer extends PointContainer {
 
-  /// Generate view for this single leaf [PointModel] - a single [BarPointContainer].
+  /// Generate view for this single leaf [PointModel] - a single [LineAndPointContainer].
   ///
   /// Note: On the leaf, we return single element by agreement, higher ups return lists.
-  BarPointContainer({
+  LineAndPointContainer({
     required super.pointModel,
     required super.chartViewModel,
     required super.outerDataColumnPointsBar,
     super.children,
     super.key,
   });
+
+  /// todo-00-done : storing offset calculated by affmap to move from [layout] to [paint].
+  late final PointOffset _pixelPointOffset;
 
   /// Full [layout] implementation calculates and sets the pixel width and height of the Rectangle
   /// that represents data.
@@ -173,29 +214,64 @@ class BarPointContainer extends PointContainer {
     //
     // The [layoutSize] is also the size of the rectangle, which, when positioned
     // by the parent container/layouter, is the pixel-affmap-ed value of the [pointModel]
-    // in the main axis direction of the layouter which owns this [BarPointContainer].
-    layoutSize = pixelPointOffset.barPointRectSize;
+    // in the main axis direction of the layouter which owns this [LineAndPointContainer].
+
+    // todo-00 keep pixelPointOffset as member to remember position
+    //   todo-00 column mode: the parent container/layouter is Row (nonStacked) or Column (stacked).
+    //        1. Line chart is always nonStacked. Irrespective, We need to use Column for LineChart.
+    ///          The whole Column area - the FULL COLUMN CONSTRAINTS (given to the Column by parent) MUST BE available for this point (AND SIBLINGS)
+    ///          to paint.
+    ///       2. INITIALLY, add StackLayouter a NonPositioning layouter extension (puts all children to its TOP LEFT)
+    ///       3. FIGURE OUT THE FULL COLUMN CONSTRAINTS PASSED TO PARENT CONTAINER/LAYOUTER
+    ///       4. INITIALLY
+    ///           - set layoutSize to the FULL COLUMN CONSTRAINTS
+    ///           - Just paint into the FULL COLUMN CONSTRAINTS
+    ///           - Position to paint is  pixelPointOffset.barPointRectSize,
+    ///       5. REPLACE THE PARENT CONTAINER/LAYOUTER WITH StackLayouter for lineChart
+    ///
+    ///   LATER
+    ///       2. WHAT SHOULD BE THE POSITION OF THE POINT (AND LINE)?? SAME AS pixelPointOffset.barPointRectSize,
+    ///          AS THAT REPRESENTS THE HEIGHT OF POINT ABOVE THE 0 LINE.
+    ///       3. LATER: Change [doc_container_base.StackLayouter] here.
+    ///
+    ///       4. LATER: This layoutSize is pixelPointOffset.barPointRectSize (hmm maybe a bit bigger)
+
+    // todo-00-done : layoutSize = pixelPointOffset.barPointRectSize;
+
+    // Store pixelPointOffset as member for paint to use
+    _pixelPointOffset = pixelPointOffset;
+
+    // Must set layoutSize same as passed constraints, for the rudimentary StackContainer to layout and paint
+    // this child correctly.
+    layoutSize = constraints.size;
   }
 
   @override paint(ui.Canvas canvas) {
 
-    ui.Rect rect = offset & layoutSize;
+    // todo-00-done : unused : ui.Rect rect = offset & layoutSize;
 
     // Rectangle color should be from pointModel's color.
+    // todo-00 paint a circle of some fixed size at position OF TOP LEFT POINT OF pixelPointOffset.barPointRectSize which is INSIDE THE layoutSize, DEFINED BY the FULL COLUMN CONSTRAINTS
     ui.Paint paint = ui.Paint();
     paint.color = pointModel.color;
 
-    canvas.drawRect(rect, paint);
+    // todo-00 ui.Offset circleAtOffset = offset + ui.Offset(_pixelPointOffset.barPointRectSize.width, _pixelPointOffset.barPointRectSize.height);
+    ui.Offset circleAtOffset = offset + _pixelPointOffset;
+    canvas.drawCircle(
+      circleAtOffset,
+      10.0,
+      paint,
+    );
   }
 
 }
 
-/// A zero-height (thus 'invisible') [BarPointContainer] extension.
+/// A zero-height (thus 'invisible') [LineAndPointContainer] extension.
 ///
 /// Has a zero [layoutSize] in the direction of the input data axis. See [layout] for details.
-class ZeroValueBarPointContainer extends BarPointContainer {
+class ZeroValueLineAndPointContainer extends LineAndPointContainer {
 
-  ZeroValueBarPointContainer({
+  ZeroValueLineAndPointContainer({
     required super.pointModel,
     required super.chartViewModel,
     required super.outerDataColumnPointsBar,

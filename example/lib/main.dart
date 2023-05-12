@@ -95,6 +95,7 @@ void main() {
   var exampleComboToRun = requestedExampleToRun();
   if (!ExamplesDescriptor.allExamples().exampleComboIsAllowed(exampleComboToRun)) {
     // Better: SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    print(' ### Log.Error: The passed combination of example enum and chart type is not allowed, exiting!');
     io.exit(0);
   }
 

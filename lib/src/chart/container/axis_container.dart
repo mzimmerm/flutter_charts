@@ -231,12 +231,7 @@ class TransposingOutputAxisContainer extends TransposingAxisContainer {
                   externalTickAtPosition: ExternalTickAtPosition.childCenter,
                 ),
                 children: [
-                  // Add all labels from generator as children. Labels were created and placed in [labelInfoList]
-                  //   in the [DataRangeLabelInfosGenerator] constructor called in the  [ChartViewModel]  constructor,
-                  //   where both input and output [DataRangeLabelInfosGenerator]s are created.
-                  // [labelInfo] in [labelInfoList] is numerically always increasing. Their pixel layout order will be determined
-                  //   by order of ExternalTicksLayoutProvider.tickPixels created and possibly reversed from
-                  //   ExternalTicksLayoutProvider.tickValues. See [_outputLabelsGenerator.asExternalTicksLayoutProvider]
+                  // Add all labels from generator as children. See comment in TransposingInputAxisContainer
                   for (var labelInfo in _outputLabelsGenerator.labelInfoList)
                     AxisLabelContainer(
                       chartViewModel: chartViewModel,
