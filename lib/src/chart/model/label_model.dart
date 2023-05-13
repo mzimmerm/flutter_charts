@@ -217,11 +217,12 @@ class DataRangeLabelInfosGenerator {
       chartOrientation.layoutAxisForDataDependency(dataDependency: dataDependency) == LayoutAxis.horizontal;
 
   /// Extrapolates [value] from extended data range [dataRange],
-  /// to the pixels range passed in the passed [axisPixelsMin], [axisPixelsMax],
-  /// in the direction defined by [isAxisAndLabelsSameDirection].
+  /// to the pixels range passed in the passed [axisPixelsMin], [axisPixelsMax].
   ///
   /// Lifecycle: This method must be invoked in or after [BoxLayouter.layout],
   ///            after the axis size is calculated.
+  ///
+  /// todo-010: Is this used only for CL?????
   double affmapValueToPixels({
     required double value,
     required double axisPixelsMin,

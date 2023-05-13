@@ -142,8 +142,8 @@ class BarPointContainer extends PointContainer {
     super.key,
   }) ;
 
-  /// Full [layout] implementation calculates and sets the pixel width and height of the Rectangle
-  /// that represents data.
+  /// Full [layout] implementation calculates and sets [PointOffset.barPointRectSize] for this instance,
+  /// which is the pixel width and height of the Rectangle bar that represents the data point.
   @override
   void layout() {
     buildAndReplaceChildren();

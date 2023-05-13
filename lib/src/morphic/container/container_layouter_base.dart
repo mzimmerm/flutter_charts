@@ -2075,8 +2075,12 @@ class Column extends TransposingRoller {
   }
 }
 
-/// Layouter which positions it's children to a externally passed grid along the
+/// Layouter which positions it's children along it's layout axis to a externally passed grid along the
 /// main axis.
+///
+/// The layout axis along which children are positioned is defined by the [ExternalTicksLayoutProvider]
+/// passed to the constructor; to be precise, by the [ExternalTicksLayoutProvider]'s member
+/// [ExternalTicksLayoutProvider.isOnHorizontalAxis].
 ///
 /// The 1D points on the grid are referred to as 'ticks'.
 ///
@@ -2084,13 +2088,13 @@ class Column extends TransposingRoller {
 /// using a rolling one-row (or one-column) [Packing] layout along the main axis, and a [Packing] layout
 /// within the one-row (or one-column) along the cross axis.
 ///
-/// It is similar to [RollingBoxLayouter], but has a very different layout, so it is made to be  a sibling
+/// It is similar to [RollingBoxLayouter], but has a very different layout, so it is a sibling
 /// class to it.
 ///
-/// Importantly, it differs in the [layout] method from the [RollingBoxLayouter], in using
+/// Importantly, it differs from the [RollingBoxLayouter] in the [layout] method, in using
 /// a different constraints distribution to children, and a different order of children [layout]
 /// (in [RollingBoxLayouter] it is not-greedy first, greedy last, on this derived class
-/// it is just in order of the ticks)
+/// layout positions are determined solely by the tick values in [ExternalTicksLayoutProvider])
 ///
 /// See comments in [layout_Post_NotLeaf_PositionChildren] for comments on core goals
 /// of this class [layout] method and how it differs from it's base and sibling classes.
@@ -2105,6 +2109,8 @@ abstract class ExternalTicksBoxLayouter extends MainAndCrossAxisBoxLayouter {
     // External ticks layouter: weights make no sense.
     // If anything, weights could be generated from ticks, if asked by an argument.
     //   ConstraintsWeight constraintsWeight = ConstraintsWeight.defaultWeight,
+    /// Defines the main axis along which the layouter works; the positions of children
+    /// are determined by the ticks in [ExternalTicksLayoutProvider.tickPixels].
     required ExternalTicksLayoutProvider mainAxisExternalTicksLayoutProvider,
     this.isDistributeConstraintsBasedOnTickSpacing = false,
   }) : super(
@@ -3382,12 +3388,17 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///   - Children must all return their [layoutSize] to be the same as the [constraints] it receives from
 ///     the stack layouter parent.
 ///
-/// 3. todo-010 LATER: Create a better StackLayouter, so that:
+/// 1. todo-010 LATER: Create a better StackLayouter, so that:
 ///          - allows to obtain constraints that are in some sense limited (divided in both directions)
-///          - defines the StackingOrigin (maybe something exists for it???)  topLeft, topRight, bottomLeft, bottomRight
-///            the StackingOrigin is absolute in the Box of StackLayouter constraints
+///          - defines the StackingOrigin (maybe something EXISTS for it??? I THINK SO)
+///            topLeft, topRight, bottomLeft, bottomRight, center, maybe a kind of offset.
+///            the StackingOrigin is absolute in the Box of TransposingStackLayouter constraints
 ///          - lays out children, each child rectangle is aligned with the same corner and same direction as StackingOrigin
-///          - the layoutSize is the envelope of child rectangles.
+///          - the result layoutSize is the envelope of child rectangles.
+/// 2. todo-010 : By extending NonPositioningBoxLayouter:
+///           - layoutSize is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
+///           - all children Just paint into the FULL CONSTRAINTS == layoutSize
+///
 class TransposingStackLayouter extends NonPositioningBoxLayouter {
 
   TransposingStackLayouter({
@@ -3585,25 +3596,27 @@ class Aligner extends PositioningBoxLayouter {
 
 // Helper classes ------------------------------------------------------------------------------------------------------
 
-/// Controls how layouters implementing [ExternalTicksBoxLayouter] do position their children
-/// along their main axis.
+/// Defines the owner's ([ExternalTicksBoxLayouter]'s) main layout axis,
+/// positions where the owner places its children, and other layout directives for the owner.
 ///
 /// Each instance of this [ExternalTicksLayoutProvider] is owned by its client (and owner),
-/// an [ExternalTicksBoxLayouter].
+/// an [ExternalTicksBoxLayouter], on which behalf it works.
 ///
-/// Instances of this [ExternalTicksLayoutProvider] manage all the directives their client [ExternalTicksBoxLayouter]
-/// needs to position its children in its main axis direction.
+/// See [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], which is used to create instance of this class.
 ///
-/// It's useful role is provided by the method [_affmapValuesToPixels], which,
+/// The main role of this class is provided by the method [_affmapValuesToPixels], which,
 /// given the axis pixels range, (assumed in the pixel coordinate range), affmap-s the [tickValues]
-/// to layouter-relative positions on the axis, the [tickPixels], to which the layouter children will be positioned.
+/// to owner-layouter-relative children positions on the axis, the [tickPixels]. The owner then uses
+/// [tickPixels] to position it's children along its main axis defined by [isOnHorizontalAxis].
 ///
-/// Specifically, an instance provides the following directives for the layouters
-/// that are [ExternalTicksBoxLayouter] :
-///   - [tickValues] are the relative positions on which the children are placed.
+/// In more details, provides the following directives on behalf of the owner layouter [ExternalTicksBoxLayouter] :
+///   - [tickValues] define the value of positions on which the children are placed.
+///     The value is in the range of data, rather than range of pixels; see [tickPixels]
+///   - [tickPixels] define the pixel position (relative in owner layouter coordinate system) where children
+///     are positioned, in the order of children.
 ///   - [tickValuesRange] is the [Interval] which contains, and may be bigger than, the envelop of all [tickValues].
-///   - [isOnHorizontalAxis] defines whether the axis pixel positions and [tickValues]
-///     are run in the same direction.
+///   - [isOnHorizontalAxis] defines the main layout axis for the owner layouter; the positions in [tickPixels]
+///     ore in the main layout axis pixel range.
 ///   - [externalTickAtPosition] the information what point on the child should be placed at the tick value:
 ///     child's start, center, or end. This is expressed by [ExternalTickAtPosition.childStart] etc.
 ///
@@ -3639,7 +3652,9 @@ class ExternalTicksLayoutProvider {
   ///  [tickValuesRange] and [tickPixelsRange] is an [Interval], so minimum is always less or equal to maximum.
   final util_dart.Interval tickValuesRange;
 
-  /// Pixel positions corresponding to values in [tickValues].
+  /// Pixel values on which the client [ExternalTicksBoxLayouter] positions it's children.
+  ///
+  /// Correspond to values in [tickValues].
   ///
   /// Calculated late, after the [tickPixelsRange] is set, by affmap-ing from the [tickPixelsRange] values.
   ///
@@ -3674,10 +3689,11 @@ class ExternalTicksLayoutProvider {
   late final util_dart.Interval tickPixelsRange;
 
 
-  /// Describes this instance of [ExternalTicksLayoutProvider] represents horizontal ticks.
+  /// Defines which axis this instance of [ExternalTicksLayoutProvider] represents; also implies the axis
+  /// along which the owner [ExternalTicksBoxLayouter] positions its children.
   ///
-  /// Should be set to true if this [ExternalTicksLayoutProvider] instance is laying
-  /// out labels on the horizontal axis, false on the vertical axis.
+  /// If true, the represented (and
+  /// horizontal or vertical axis..
   ///
   /// Used by member method [_affmapValuesToPixels] to calculate pixel positions [tickPixels]
   /// of labels' [tickValues].
@@ -3686,6 +3702,7 @@ class ExternalTicksLayoutProvider {
   ///     the largest value is on the last position.
   ///   - If true, the [tickPixels] increase in the list from position last to 0,
   ///     the largest value is on the first position.
+  ///     todo-010  : instead of boolean, convert it mainLayoutAxis, set to horizontal or vertical! Call in mainLayoutAxis, or ownerMainLayoutAxis.
   final bool isOnHorizontalAxis;
 
   final ExternalTickAtPosition externalTickAtPosition;
@@ -3696,6 +3713,21 @@ class ExternalTicksLayoutProvider {
   /// and should be set to be *Interval <0, constraints.fullLengthAlongMainAxis>* for constraints set on the
   /// [ExternalTicksBoxLayouter] which owns this [ExternalTicksLayoutProvider] instance through
   /// [ExternalTicksBoxLayouter.mainAxisLayoutProperties] member [LengthsPositionerProperties.externalTicksLayoutProvider].
+  ///
+  /// This code is used to layout labels : the [ExternalTicksBoxLayouter] is currently ONLY used for labels.
+  ///
+  /// Example: affmap-ing labels for VERTICAL axis (column or row)
+  ///
+  ///    We may have labels, children of this container, with [tickValues] = [0, 1000, 2000].
+  ///    Note: Labels in `_AxisLabelInfos._labelInfoList`, returned from [DataRangeLabelInfosGenerator.labelInfoList]
+  ///    are (by construction) always in the same, numerically increasing order as [tickValues].
+  ///    Calling this method results in corresponding [tickPixels] to be decreasing, for example,
+  ///    [tickPixels] = [200, 100, 0].
+  ///    When layed out on vertical axis (Column), then, we lay out :
+  ///      - label with tickValue    0 is layed out first,  placed on vertical pixel 200 (bottom)
+  ///      - label with tickValue 1000 is layed out second, placed on vertical pixel 100 (middle)
+  ///      - label with tickValue 3000 is layed out third,  placed on vertical pixel 0   (top)
+  ///
   void _setTickPixelsRangeAndAffmapTickValuesToPixels(util_dart.Interval tickPixelsRangeFromOwnerLayouterConstraints) {
     tickPixelsRange = tickPixelsRangeFromOwnerLayouterConstraints;
     tickPixels = _affmapValuesToPixels();

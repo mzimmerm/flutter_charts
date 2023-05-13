@@ -180,15 +180,30 @@ class LineAndPointContainer extends PointContainer {
     super.key,
   });
 
-  /// todo-00-done : storing offset calculated by affmap to move from [layout] to [paint].
+  /// Stores offset calculated by during [layout] for use in [paint].
   late final PointOffset _pixelPointOffset;
 
-  /// Full [layout] implementation calculates and sets the pixel width and height of the Rectangle
-  /// that represents data.
+  /// Full [layout] implementation calculates and sets the pixel point [_pixelPointOffset]
+  /// that represents the line point data.
+  ///
+  /// This implementation is somewhat tied to the rudimentary implementation of [TransposingStackLayouter]
+  /// the intended layouter of [LineAndPointContainer]s, in the following:
+  ///   1. It is assumed that the [TransposingStackLayouter] obtains full constraints of it's parent layouter,
+  ///     the [DataColumnPointsBar].
+  ///   2. It is assumed that all sibling children ([LineAndPointContainer]s) of the [TransposingStackLayouter]
+  ///     also obtain the same full constraints. In other words, it is assumed that
+  ///       - [DataColumnPointsBar]
+  ///       - it's child [TransposingStackLayouter]
+  ///       - all it's children, the [LineAndPointContainer]s
+  ///     all get same constraints.
+  ///   3. As a result of 2. all [LineAndPointContainer]s above one label (in the [DataColumnPointsBar])
+  ///      can [layout] and [paint] it's points and connecting lines
+  ///      into the same [constraints] area (which is like the canvas into which one vertical stack of data is painted).
   @override
   void layout() {
     buildAndReplaceChildren();
 
+    // todo-00-next : Place this is a common parent method on [PointContainer], reuse here and in [BarPointContainer]
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
     DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
@@ -198,6 +213,9 @@ class LineAndPointContainer extends PointContainer {
     PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
       dataRangeLabelInfosGenerator: inputLabelsGenerator,
     );
+
+    // The affmap-ed [pixelPointOffset] is the offset, inside the common [constraints],
+    // where the data circle will be painted!
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       constraintsOnParentLayouter: constraints,
@@ -208,65 +226,35 @@ class LineAndPointContainer extends PointContainer {
     );
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
-    // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
-    // which is the [layoutSize] of the rectangle presenting the point.
-    // The offset, [pixelPointOffset] is used in line chart.
-    //
-    // The [layoutSize] is also the size of the rectangle, which, when positioned
-    // by the parent container/layouter, is the pixel-affmap-ed value of the [pointModel]
-    // in the main axis direction of the layouter which owns this [LineAndPointContainer].
-
-    // todo-00 keep pixelPointOffset as member to remember position
-    //   todo-00 column mode: the parent container/layouter is Row (nonStacked) or Column (stacked).
-    //        1. Line chart is always nonStacked. Irrespective, We need to use Column for LineChart.
-    ///          The whole Column area - the FULL COLUMN CONSTRAINTS (given to the Column by parent) MUST BE available for this point (AND SIBLINGS)
-    ///          to paint.
-    ///       2. INITIALLY, add StackLayouter a NonPositioning layouter extension (puts all children to its TOP LEFT)
-    ///       3. FIGURE OUT THE FULL COLUMN CONSTRAINTS PASSED TO PARENT CONTAINER/LAYOUTER
-    ///       4. INITIALLY
-    ///           - set layoutSize to the FULL COLUMN CONSTRAINTS
-    ///           - Just paint into the FULL COLUMN CONSTRAINTS
-    ///           - Position to paint is  pixelPointOffset.barPointRectSize,
-    ///       5. REPLACE THE PARENT CONTAINER/LAYOUTER WITH StackLayouter for lineChart
-    ///
-    ///   LATER
-    ///       2. WHAT SHOULD BE THE POSITION OF THE POINT (AND LINE)?? SAME AS pixelPointOffset.barPointRectSize,
-    ///          AS THAT REPRESENTS THE HEIGHT OF POINT ABOVE THE 0 LINE.
-    ///       3. LATER: Change [doc_container_base.StackLayouter] here.
-    ///
-    ///       4. LATER: This layoutSize is pixelPointOffset.barPointRectSize (hmm maybe a bit bigger)
-
-    // todo-00-done : layoutSize = pixelPointOffset.barPointRectSize;
-
-    // Store pixelPointOffset as member for paint to use
+    // Store pixelPointOffset as member for paint to use as added offset
     _pixelPointOffset = pixelPointOffset;
 
     // Must set layoutSize same as passed constraints, for the rudimentary [StackLayouter] to layout and paint
-    // this child correctly - the rudimentary [StackLayouter] relies on all children to paint into its not-offset
-    // rectangle that has size = constraints size.
+    //   this child correctly - the rudimentary [StackLayouter] relies on all children to paint into its not-offset
+    //   rectangle that has size = constraints size.
+    // Note: For [BarPointContainer]: layoutSize = pixelPointOffset.barPointRectSize;
     layoutSize = constraints.size;
   }
 
   @override paint(ui.Canvas canvas) {
 
-    // todo-00-done : unused : ui.Rect rect = offset & layoutSize;
-
-    // Rectangle color should be from pointModel's color.
-    // todo-00 paint a circle of some fixed size at position OF TOP LEFT POINT OF pixelPointOffset.barPointRectSize which is INSIDE THE layoutSize, DEFINED BY the FULL COLUMN CONSTRAINTS
-    ui.Paint paint = ui.Paint();
-    paint.color = pointModel.color;
-
-    /* KEEP
+    /* KEEP print info about what is painted
     print(' ### Log.Info: $runtimeType.paint: color=${paint.color}, _pixelPointOffset = $_pixelPointOffset, '
         '_pixelPointOffset.barPointRectSize=${_pixelPointOffset.barPointRectSize}, '
         'layoutSize=$layoutSize, accumulated offset=$offset');
     */
 
-    // todo-00 ui.Offset circleAtOffset = offset + ui.Offset(_pixelPointOffset.barPointRectSize.width, _pixelPointOffset.barPointRectSize.height);
+    ui.Paint paint = ui.Paint();
+    paint.color = pointModel.color;
+
+    // Note: For [BarPointContainer], we paint: ui.Rect rect = offset & layoutSize;
+    // Note: For non-zero-crossing, in chartOrientation direction: pixelPointOffset +  pixelPointOffset.barPointRectSize == constraints.size == layoutSize,
+    //       See [PointOffset._validateAffmapToPixelMethodInputsOutputs]
+
     ui.Offset circleAtOffset = offset + _pixelPointOffset;
     canvas.drawCircle(
       circleAtOffset,
-      10.0,
+      chartViewModel.chartOptions.lineChartOptions.hotspotOuterRadius,
       paint,
     );
   }

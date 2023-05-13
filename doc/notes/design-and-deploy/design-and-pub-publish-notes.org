@@ -1909,7 +1909,7 @@ Notes or Later:
 23. [X] Replace PointOffset lextr method and use with proper 2d transforms thought through in Terra Cotta
 
 
-** IN-PROGRESS-NOW 11. ~CURRENT WORK: RENAME TO OUTER~
+** DONE 11.1. Rename to outer
 
 Wherever there is a natural hierarchy of inner classes, where outer creates inner in an abstract way, use this term for the method that creates there inner instance:
 
@@ -1917,24 +1917,9 @@ Wherever there is a natural hierarchy of inner classes, where outer creates inne
   - [X] ownerDataColumnPointsBar => outerDataColumnPointsBar : also check if it is set as member and used in some way!!!
   - [X] ownerBarsContainer => outerBarsContainer : also check if it is set as member and used in some way!!!
   - [X] ownerDataContainer => outerDataContainer
-- [ ] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'. FINISH THIS. LOOK FOR OWNER, BUT NOT IN unused.dart
+- [X] Look for OWNER, consider if it needs rename to outer. Usually, this should be accompanied with a 'make' method, which should be renamed to 'makeInner'. FINISH THIS. LOOK FOR OWNER, BUT NOT IN unused.dart
 
-
-problem: The affmapToPixels is only called in CL code. Need to fix this first!!!
-
-NO: This is vs affmapValuesToPixels!!! compare them
-
-
-  ///      The vertical axis for row is complicated : [tickValues] list is reversed to decreasing after their creation
-  ///      from labels, see [DataRangeLabelInfosGenerator.asExternalTicksLayoutProvider], e.g. [0, 1000, 2000]. This results
-  ///      in corresponding [tickPixels] to be decreasing (e.g. [200, 100, 0]. When layed out on vertical axis (Column),
-  ///      the order, top to bottom, is [200, 100, 0] which is what we want.
-  ///
-
-
-
-
-** LATER 12. ~CURRENT WORK: ADD LINE CHART~
+** IN-PROGRESS-NOW 11.2. ~CURRENT WORK: ADD LINE CHART~
 
 Bar Chart:
 
@@ -1951,7 +1936,27 @@ Bar Chart:
 
 Line chart:
 
-- [ ] Line Chart: 
+- [-] Line Chart
+  - [X] Simplify code, remove extra comments
+  - [ ] Figure out to paint circle in the middle of the bar!!
+  - [ ] Abstract out the affmapToPixelsMaybeTransposeInContextOf to interface, which is both on PointModel and PointOffset, returning PointOffset.
+    - [ ] In PointModel, it first creates PointOffset WITH INDEPENDENT (INPUT) VALUE IN THE MIDDLE OF CONSTRAINT, then calls the PointOffset version
+    - [ ] In PointOffset, as is.
+  - [ ] Get orientation=row working
+  - [ ] Add lines connecting points to both column and row
+- [ ] Go over todo-010 on Bar Chart first and implement generalizations:
+  - [ ] The zero points - simplify for both Bar and Line
+  - [ ] Figure out the generalization split into a new Inner maker
+- [ ] Can we get stacked Line chart working? What would it take?
+  
+
+
+Two more things:
+
+- [ ] problem: The affmapToPixels is only called in CL code. Need to fix this first!!! - maybe use the new method affmapValuesToPixels instead??
+- [ ] The above vs affmapValuesToPixels!!! compare them
+
+
 
 ** LATER 12. ~CURRENT WORK: BACKUP AND LONG TERM CAPTURED TODOS IN LAYOUT~
 

@@ -2,7 +2,6 @@ import 'dart:ui' show Offset, Size;
 
 
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
-// todo-00-done import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 
 import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D, assertDoubleResultsSame;
 import '../container/constraints.dart';
@@ -196,11 +195,6 @@ class PointOffset extends Offset {
     required double                  sizerWidth,
     bool isFromChartPointForAsserts = true,
   }) {
-/* todo-00-done
-    // No-op rename input params to shorted version.
-    BoxContainerConstraints constraints = constraintsOnParentLayouter;
-    ChartOrientation orientation = chartOrientation;
-*/
 
     // Based on orientation, define horizontalPixelsRange, verticalPixelsRange
     //
@@ -336,7 +330,7 @@ class PointOffset extends Offset {
   }) {
     Size sizerSize = Size(sizerWidth, sizerHeight);
 
-    // Assert that: in orientation.mainLayoutAxis, constraintsOnParentLayouter == sizerSize
+    // Assert that: in orientation.mainLayoutAxis: constraintsOnParentLayouter == sizerSize
     assertDoubleResultsSame(
         constraintsOnParentLayouter.size.lengthAlong(chartOrientation.mainLayoutAxis),
         sizerSize.lengthAlong(chartOrientation.mainLayoutAxis),
@@ -349,7 +343,7 @@ class PointOffset extends Offset {
     }
 
     if (isFromChartPointForAsserts) {
-      // Assert that, in orientation.mainLayoutAxis, the pointOffsetPixels + pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
+      // Assert that, in orientation.mainLayoutAxis: pointOffsetPixels + pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
       //  Impl note: Size + Offset exists, yields Size
       Size pointOffsetSizePlusBarSize = pointOffsetPixels.barPointRectSize + pointOffsetPixels;
       assertDoubleResultsSame(
@@ -361,7 +355,7 @@ class PointOffset extends Offset {
           'pointOffsetSizePlusBarSize=$pointOffsetSizePlusBarSize ');
     }
 
-    // Assert that, in orientation.crossAxis pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
+    // Assert that, in orientation.crossAxis: pointOffsetPixels.barPointRectSize == constraintsOnParentLayouter
     var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
     Size barPointRectSize = pointOffsetPixels.barPointRectSize;
     assertDoubleResultsSame(
