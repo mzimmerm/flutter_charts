@@ -201,26 +201,6 @@ class ZeroValueBarPointContainer extends BarPointContainer {
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
-/* todo-00-done
-    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
-    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
-
-    // Create PointOffset from this [pointModel] by giving it a range,
-    // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
-    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
-      dataRangeLabelInfosGenerator: inputLabelsGenerator,
-    );
-    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-      chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
-      isFromChartPointForAsserts: false,
-    );
-*/
 
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(

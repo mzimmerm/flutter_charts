@@ -204,28 +204,7 @@ class LineAndPointContainer extends PointContainer {
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
-/* todo-00-done
-    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
-    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
-    // Create PointOffset from this [pointModel] by giving it a range,
-    // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
-    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
-      dataRangeLabelInfosGenerator: inputLabelsGenerator,
-    );
-
-    // The affmap-ed [pixelPointOffset] is the offset, inside the common [constraints],
-    // where the data circle will be painted!
-    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-      chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
-    );
- */
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // Store pixelPointOffset as member for paint to use as added offset
@@ -291,26 +270,7 @@ class ZeroValueLineAndPointContainer extends LineAndPointContainer {
     buildAndReplaceChildren();
 
     PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
-/* todo-00-done
-    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
-    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
-    // Create PointOffset from this [pointModel] by giving it a range,
-    // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
-    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
-      dataRangeLabelInfosGenerator: inputLabelsGenerator,
-    );
-    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-      chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
-      isFromChartPointForAsserts: false,
-    );
-*/
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(
       axis: chartViewModel.chartOrientation.inputDataAxisOrientation,
