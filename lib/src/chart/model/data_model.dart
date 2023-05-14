@@ -41,7 +41,7 @@ class ChartModel {
     logger.Logger().d('Constructing ChartModel');
 
     // Generate legend colors if not provided.
-    legendColors ??= _byRowDefaultColors(dataRows.length);
+    legendColors ??= _byRowDefaultLegendColors(dataRows.length);
 
     // validate after late finals initialized as they are used in validate.
     validate(legendNames, legendColors);
@@ -111,7 +111,7 @@ class ChartModel {
           extremeValueWithSign(Sign.positiveOr0, chartStacking),
         );
       case ChartStacking.nonStacked:
-        // not-Stacked values can just use values from ChartModel [_valuesRows] transformed values.
+        // not-Stacked values can just use values from [ChartModel.dataRows] transformed values.
         return Interval(
           _transformedValuesMin,
           _transformedValuesMax,
@@ -119,7 +119,7 @@ class ChartModel {
     }
   }
 
-  /// Returns the interval that envelopes all data values in [ChartModel.valuesRows], possibly extended to 0.
+  /// Returns the interval that envelopes all data values in [ChartModel.dataRows], possibly extended to 0.
   ///
   /// The [isStacked] controls whether the interval is created from values in [PointModel.outputValue]
   /// or their stacked values.
@@ -170,7 +170,7 @@ class ChartModel {
   ///
   /// It is assumed labels are defined, by the client
   /// and their number is the same as number of points
-  /// in each row in [_valuesRows].
+  /// in each row in [dataRows].
   final List<String> inputUserLabels;
 
   /// User defined labels to be used by the chart, instead of labels auto-generated from data.
@@ -291,7 +291,7 @@ class _ByDataRowLegends {
 ///   - The list of data values in this object represent one column in the 2D array (cross-series values),
 ///     oriented 'top-to-bottom'.
 ///   - We can also consider the list of data values represented by
-///     this object to be created by diagonal transpose of the [ChartModel._valuesRows] and
+///     this object to be created by diagonal transpose of the [ChartModel.dataRows] and
 ///     looking at one row in the transpose, left-to-right.
 ///
 /// Note: [DataColumnModel] replaces the [PointsColumn] in legacy layouter.
@@ -333,10 +333,10 @@ class DataColumnModel {
   /// Index of this column (dataColumnPoints list) in the [ChartModel.dataColumnModels].
   ///
   /// Also indexes one column, top-to-bottom, in the two dimensional [ChartModel.].
-  /// Also indexes one row, left-to-right, in the `transpose(ChartModel.valuesRows)`.
+  /// Also indexes one row, left-to-right, in the `transpose(ChartModel.dataRows)`.
   ///
   /// The data values of this column are stored in the [pointModelList] list,
-  /// values and order as in top-to-bottom column in [ChartModel.valuesRows].
+  /// values and order as in top-to-bottom column in [ChartModel.dataRows].
   ///
   /// This is needed to access the legacy arrays such as:
   ///   -  [ChartModel.byRowLegends]
@@ -402,8 +402,9 @@ class DataColumnModel {
 /// Notes:
 ///   - [PointModel] replaces the [StackableValuePoint] in legacy layouter.
 ///   - Has private access to the outer [ChartModel] to which it belongs through it's member [outerDataColumnModel],
-///     which in turn has access to [ChartModel] through it's member [DataColumnModel._chartModel].
-///     This access is used for model colors and row and column indexes to [ChartModel.valuesRows].
+///     which in turn has access to [ChartModel] through it's private [DataColumnModel]
+///     member `DataColumnModel._chartModel`.
+///     This access is used for model colors and row and column indexes to [ChartModel.dataRows].
 ///
 @immutable
 class PointModel {
@@ -464,6 +465,14 @@ class PointModel {
 
   /// Gets or calculates the inputValue-position (x value) of this [PointModel] instance.
   ///
+  /// Delegated to the same name method on [outerDataColumnModel] - the [DataColumnModel.inputValueOnInputRange] -
+  /// given the passed [inputDataRangeLabelInfosGenerator].
+  ///
+  /// The delegated method divides the input data range into the number of columns,
+  /// and places this instance input value in the middle of the column at which this [PointModel] lives.
+  ///
+  /// See documentation of the delegated  [DataColumnModel.inputValueOnInputRange].
+  ///
   /// Motivation:
   ///
   ///   [PointModel]'s inputValue (x values, independent values) is often not-numeric,
@@ -474,17 +483,16 @@ class PointModel {
   ///   it's pixel display position.  Assigning an inputValue by itself would not help;
   ///   To affmap the inputValue to some pixel value, we need to affix the inputValue
   ///   to a range. This method, [inputValueOnInputRange] does just that:
-  ///   Given the passed [dataRangeLabelInfosGenerator], using its data range
+  ///   Given the passed [inputDataRangeLabelInfosGenerator], using its data range
   ///   [util_labels.DataRangeLabelInfosGenerator.dataRange], we can assign an inputValue
   ///   to this [PointModel] by dividing the data range into equal portions,
   ///   and taking the center of the corresponding portion as the returned inputValue.
   ///
-  /// Delegated to [outerDataColumnModel].
   double inputValueOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
   }) {
     return outerDataColumnModel.inputValueOnInputRange(
-      dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
+      dataRangeLabelInfosGenerator: inputDataRangeLabelInfosGenerator,
     );
   }
 
@@ -494,12 +502,15 @@ class PointModel {
 
   ui.Color get color => outerDataColumnModel.outerChartModel.getLegendItemAt(rowIndex).color;
 
-  PointOffset asPointOffsetOnInputRange({
-    required util_labels.DataRangeLabelInfosGenerator dataRangeLabelInfosGenerator,
+  /// Converts this [PointModel] to [PointOffset] with the same output value (the [PointModel.outputValue]
+  /// is copied to [PointOffset.outputValue]), and the [PointOffset]'s [PointOffset.inputValue]
+  /// created by evenly dividing the passed input range of the passed [inputDataRangeLabelInfosGenerator].
+  PointOffset toPointOffsetOnInputRange({
+    required util_labels.DataRangeLabelInfosGenerator inputDataRangeLabelInfosGenerator,
   }) =>
       PointOffset(
         inputValue: inputValueOnInputRange(
-          dataRangeLabelInfosGenerator: dataRangeLabelInfosGenerator,
+          inputDataRangeLabelInfosGenerator: inputDataRangeLabelInfosGenerator,
         ),
         outputValue: outputValue,
       );
@@ -512,7 +523,7 @@ class PointModel {
 /// Sets up colors for legends, first several explicitly, rest randomly.
 ///
 /// This is used if user does not set colors.
-List<ui.Color> _byRowDefaultColors(int dataRowsCount) {
+List<ui.Color> _byRowDefaultLegendColors(int dataRowsCount) {
   List<ui.Color> rowsColors = List.empty(growable: true);
 
   if (dataRowsCount >= 1) {

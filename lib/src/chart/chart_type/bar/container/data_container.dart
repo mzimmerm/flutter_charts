@@ -13,7 +13,7 @@ import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
 import 'package:flutter_charts/src/chart/container/data_container.dart' show DataContainer, BarsContainer, DataColumnPointsBar, PointContainer;
 import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel;
-import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
+// import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
 // util
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
@@ -148,23 +148,7 @@ class BarPointContainer extends PointContainer {
   void layout() {
     buildAndReplaceChildren();
 
-    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
-    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
-
-    // Create PointOffset from this [pointModel] by giving it a range,
-    // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
-    PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
-      dataRangeLabelInfosGenerator: inputLabelsGenerator,
-    );
-    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-      chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnParentLayouter: constraints,
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
-    );
+    PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
     // KEEP generateTestCode(pointOffset, inputLabelsGenerator, outputLabelsGenerator, pixelPointOffset);
 
     // In the bar container, we only need the [pixelPointOffset.barPointRectSize]
@@ -176,7 +160,6 @@ class BarPointContainer extends PointContainer {
     // in the main axis direction of the layouter which owns this [BarPointContainer].
     layoutSize = pixelPointOffset.barPointRectSize;
   }
-
   @override paint(ui.Canvas canvas) {
 
     ui.Rect rect = offset & layoutSize;
@@ -217,24 +200,27 @@ class ZeroValueBarPointContainer extends BarPointContainer {
   void layout() {
     buildAndReplaceChildren();
 
+    PointOffset pixelPointOffset = affmapLayoutToConstraintsAsPointOffset();
+/* todo-00-done
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
     DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
     // Create PointOffset from this [pointModel] by giving it a range,
     // positions the [pointModel] on the x axis on it's label x coordinate.
     // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
-    PointOffset pointOffset = pointModel.asPointOffsetOnInputRange(
+    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
       dataRangeLabelInfosGenerator: inputLabelsGenerator,
     );
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnParentLayouter: constraints,
+      withinConstraints: constraints,
       inputDataRange: inputLabelsGenerator.dataRange,
       outputDataRange: outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
       sizerWidth: sizerWidth,
       isFromChartPointForAsserts: false,
     );
+*/
 
     // Make the layoutSize zero in the direction of the chart orientation
     layoutSize = pixelPointOffset.barPointRectSize.fromMySideAlongPassedAxisOtherSideAlongCrossAxis(

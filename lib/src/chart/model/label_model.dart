@@ -11,15 +11,24 @@ import '../options.dart';
 
 import '../../util/util_dart.dart' as util_dart;
 
-/// Generates and manages the data range of values displayed on chart, as well as label values displayed.
+/// Generates and manages the data range of values shown on chart, as well as label values,
+/// and the tick values shown.
 ///
-/// This includes data range and label manipulation such as: transformations, formatting, extrapolation to axis pixels.
+/// Responsibility includes
+///   1. management of data range,
+///   2. management of labels
+///   3. management of label values and positions (ticks),
+///   4. transformations, formatting and affmap-ing (layout) of label positions to axis pixels.
+///
+/// The last step (4.) is delegated to [ExternalTicksLayoutProvider] by converting this instance to it,
+/// using method [asExternalTicksLayoutProvider].
 ///
 /// During construction, decides how many labels will be created, and generates points on which the labels
 /// will be placed (these points are also values of the labels).
 ///
 /// Data range and label values are generated using values in [ChartModel], unless labels are user defined.
 ///
+// todo-010 : rename to DataRangeTicksAndLabelsDefiner
 class DataRangeLabelInfosGenerator {
 
   /// Generative constructor allows to create and manage labels, irrespective whether user defined, or generated
@@ -254,6 +263,7 @@ class DataRangeLabelInfosGenerator {
   /// As this [DataRangeLabelInfosGenerator] holds on everything about relative (data ranged)
   /// position of labels, it can be converted to a provider of these label positions
   /// for layouts that use externally defined positions to layout their children.
+  // todo-010 : rename to asExternalTicksLayoutDefiner
   ExternalTicksLayoutProvider asExternalTicksLayoutProvider({
     required ExternalTickAtPosition externalTickAtPosition,
   }) {

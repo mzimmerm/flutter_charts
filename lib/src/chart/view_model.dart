@@ -136,8 +136,10 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
   /// Important note: This should NOT be part of model,
   ///                 as different views would have a different instance of it.
   ///                 Reason: Different views may have different labels, esp. on the output (Y) axis.
+  ///                 // todo-010 : rename to outputTicksAndLabelsDefiner
   late final util_labels.DataRangeLabelInfosGenerator outputLabelsGenerator;
 
+  ///                 // todo-010 : rename to inputTicksAndLabelsDefiner
   late final util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
 
   /// Options forwarded from [model.ChartModel] options during this [ChartViewModel]s construction.

@@ -139,8 +139,7 @@ library flutter_charts; // Not necessary, would default to file name 'flutter_ch
 /// - 'rawData' 'rawDataY' represents original not-transformed data.
 ///   - Most of the code deals with 'transformed data', named 'data', which is nice and short.
 ///     Places in code where we see 'rawData' are not-transformed original data,
-///     except in 'ChartData.valuesRows' which contains raw data.
-///
+///     except in `ChartModel.dataRows` which contains raw data.
 ///
 
 export 'src/chart/chart_type/line/chart.dart';

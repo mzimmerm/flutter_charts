@@ -272,7 +272,7 @@ mixin PixelRangeProvider on ChartAreaContainer {
   late Interval axisPixelsRange;
 }
 
-/// Represents one Y numeric value in the [DeprecatedChartData.valuesRows],
+/// Represents one Y numeric value in the [ChartModel.dataRows],
 /// with added information about the X coordinate (display coordinate).
 ///
 /// Instances are stacked if [isStacked] is true.
@@ -474,13 +474,13 @@ class StackableValuePoint {
 
 /// Represents a column of [StackableValuePoint]s, with support for both stacked and Not-Stacked charts.
 ///
-/// Corresponds to one column of data from [DeprecatedChartData.valuesRows], ready for presentation by [PointPresenter]s.
+/// Corresponds to one column of data from [ChartModel.dataRows], ready for presentation by [PointPresenter]s.
 ///
 /// The
 /// - unstacked (such as in the line chart),  in which case it manages
-///   [stackableValuePoints] that have values from [DeprecatedChartData.valuesRows].
+///   [stackableValuePoints] that have values from [ChartModel.dataRows].
 /// - stacked (such as in the bar chart), in which case it manages
-///   [stackableValuePoints] that have values added up from [DeprecatedChartData.valuesRows].
+///   [stackableValuePoints] that have values added up from [ChartModel.dataRows].
 ///
 /// Negative and positive points must be stacked separately,
 /// to support correctly displayed stacked values above and below zero.
@@ -548,9 +548,9 @@ class PointsColumn {
   }
 }
 
-/// A list of [PointsColumn] instances, created from user data rows [DeprecatedChartData.valuesRows].
+/// A list of [PointsColumn] instances, created from user data rows [ChartModel.dataRows].
 ///
-/// Represents the chart data created from the [DeprecatedChartData.valuesRows], but is an internal format suitable for
+/// Represents the chart data created from the [ChartModel.dataRows], but is an internal format suitable for
 /// presenting by the chart [PointPresenter] instances.
 ///
 /// Passed to the [PointPresenter] instances, which use this instance's data to
@@ -571,7 +571,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   final LayoutableBox _caller;
 
-  /// Constructor creates a [PointsColumns] instance from [DeprecatedChartData.valuesRows] values in
+  /// Constructor creates a [PointsColumns] instance from [ChartModel.dataRows] values in
   /// the passed [chartViewModel.outerChartModel].
   PointsColumns({
     required this.chartViewModel,
@@ -586,7 +586,7 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
 
   /// Constructs internals of this object, the [PointsColumns].
   ///
-  /// Transposes data passed as rows in [chartModel.valuesRows]
+  /// Transposes data passed as rows in [chartModel] member [ChartModel.dataRows]
   /// to [_valuePointArrInRows] and to [_valuePointArrInColumns].
   ///
   /// Creates links on "this column" to "successor in stack on the right",
@@ -695,7 +695,6 @@ class PointsColumns extends custom_collection.CustomList<PointsColumn> {
   ///
   /// Use in containers for unstacked charts (e.g. line chart)
   List<double> flattenUnstackedPointsDataYs() {
-    // todo 1 replace with expand like in: valuesRows.expand((i) => i).toList()
     List<double> flat = [];
     for (PointsColumn column in this) {
       for (StackableValuePoint point in column.stackableValuePoints) {

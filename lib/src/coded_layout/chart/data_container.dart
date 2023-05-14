@@ -295,7 +295,7 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
   /// Optionally paint series in reverse order (first to last,
   /// vs last to first which is default).
   ///
-  /// See [DataContainerOptions.valuesRowsPaintingOrder].
+  /// See [DataContainerOptions.dataRowsPaintingOrder].
   List<PointPresenter> optionalPaintOrderReverse(List<PointPresenter> pointPresenters) {
     var options = chartViewModel.chartOptions;
     if (options.dataContainerOptions.dataRowsPaintingOrder == DataRowsPaintingOrder.firstToLast) {

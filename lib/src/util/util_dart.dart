@@ -12,8 +12,6 @@
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart' as decimal;
 
-// import 'test/generate_test_data_from_app_runs.dart';
-
 /// A minimal polynomial needed for Y label and axis extrapolating.
 ///
 /// Not fully a polynomial. Uses the [decimal] package.
@@ -624,11 +622,11 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
 
 // ################ Functions ########################
 
-/// Transposes, as if across it's top-to-bottom / left-to-right diagonal,
-/// the [_valuesRows] 2D array List<List<Object>>, so that
+/// Transposes, as if across it's [Diagonal.leftToRightUp],
+/// the data rows 2D array List<List<Object>>, so that
 /// for each row and column index in valid range,
 /// ```dart
-///   _valuesRows[row][column] = transposed[column][row];
+///   dataRows[row][column] = transposed[column][row];
 /// ```
 /// The original and transposed example
 /// ```
@@ -646,7 +644,7 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
 /// ```
 List<List<T>> transposeRowsToColumns<T>(List<List<T>> rows) {
   List<List<T>> columns = [];
-  // Walk length of first row (if exists) and fill all columns assuming fixed size of _valuesRows
+  // Walk length of first row (if exists) and fill all columns assuming fixed size of [ChartMode.dataRows]
   if (rows.isNotEmpty) {
     for (int column = 0; column < rows[0].length; column++) {
       List<T> dataColumn = [];

@@ -82,7 +82,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///
   ///   - We MUST ASSUME this [LineBetweenPointModelsContainer] was placed into a Row or Column without specifying weights on self;
   ///     Such Row or Column layouters pass their full constraints to children (instances of this [LineBetweenPointModelsContainer]).
-  //      As a consequence, `this.constraints == constraintsOnParentLayouter`!
+  //      As a consequence, `this.constraints == withinConstraints`!
   ///   - As this leaf container overrides [layout] here, it does not need to
   ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
   @override
@@ -100,7 +100,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnParentLayouter: constraints,
+      withinConstraints: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
@@ -109,7 +109,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
     _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      constraintsOnParentLayouter: constraints,
+      withinConstraints: constraints,
       inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
       outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
       sizerHeight: sizerHeight,
@@ -161,6 +161,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
 /// [view_model.ChartViewModel.chartOrientation].
 ///
 class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
+  // todo-00-next : this is currently not used. What was the intent???
   LineBetweenPointModelsContainer({
     required this.fromPointModel,
     required this.toPointModel,
@@ -193,12 +194,12 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   ///
   /// Both points are on x axis, so the inputLabelsGenerator is used as input dataRange for both from/to points.
   @override
-  PointOffset get fromPointOffset => fromPointModel.asPointOffsetOnInputRange(
-        dataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator,
+  PointOffset get fromPointOffset => fromPointModel.toPointOffsetOnInputRange(
+        inputDataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator,
       );
 
   /// See [fromPointOffset].
   @override
   PointOffset get toPointOffset =>
-      toPointModel.asPointOffsetOnInputRange(dataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator);
+      toPointModel.toPointOffsetOnInputRange(inputDataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator);
 }

@@ -558,7 +558,7 @@ class _ExampleWidgetCreator {
           ],
           chartOptions: chartOptions,
         );
-        // chartModel.valuesRowsDefaultColors(); // if not set, called in constructor
+        // chartModel._byRowDefaultLegendColors(); // if not set, called in constructor
         break;
 
       case ExamplesEnum.ex31SomeNegativeValues:
@@ -703,14 +703,14 @@ class _ExampleWidgetCreator {
       case ExamplesEnum.ex40LanguagesWithYOrdinalUserLabelsAndUserColors:
         // User-Provided Data (Y values), User-Provided X Labels, User-Provided Data Rows Legends, User-Provided Y Labels, User-Provided Colors
         // This example shows user defined Y Labels that derive order from data.
-        //   When setting Y labels by user, the valuesRows value extrapolate
+        //   When setting output labels by user, the [ChartModel.dataRows] value extrapolate
         //   is irrelevant. User can use for example interval <0, 1>,
         //   <0, 10>, or any other, even negative ranges. Here we use <0-10>.
         //   The only thing that matters is  the relative values in the data Rows.
         // Current implementation sets
-        //   the minimum of valuesRows range (1.0 in this example)
+        //   the minimum of [ChartModel.dataRows] range (1.0 in this example)
         //     on the level of the first Y Label ("Low" in this example),
-        //   and the maximum  of valuesRows range (10.0 in this example)
+        //   and the maximum  of [ChartModel.dataRows] range (10.0 in this example)
         //     on the level of the last Y Label ("High" in this example).
         chartModel = ChartModel(
           dataRows: const [
@@ -967,9 +967,7 @@ class _ExampleWidgetCreator {
 
       case ExamplesEnum.ex900ErrorFixUserDataAllZero:
 
-        /// Currently, setting [ChartDate.valuesRows] requires to also set all of
-        /// [chartModel.inputUserLabels], [chartModel.byRowLegends], [chartModel.byRowColors]
-        // Fix was: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
+        /// Bug Fix: Add default legend to ChartData constructor AND fix extrapolating util_dart.dart extrapolateValue.
         chartModel = ChartModel(
           dataRows: const [
             [0.0, 0.0, 0.0],
@@ -995,9 +993,9 @@ class _ExampleWidgetCreator {
     switch (chartType) {
       case ChartType.lineChart:
         SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
-          chartOrientation: ChartOrientation.column,
-          chartStacking: ChartStacking.nonStacked,
           chartModel: chartModel,
+          chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
+          chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

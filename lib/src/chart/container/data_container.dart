@@ -576,6 +576,39 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
   final DataColumnPointsBar outerDataColumnPointsBar;
 
+  /// Transforms (transposes and affmap-s) this [PointModel] to it's [PointOffset] position,
+  /// determined by its values [PointModel.inputValue]
+  PointOffset affmapLayoutToConstraintsAsPointOffset() {
+    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
+    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
+
+    /* todo-00-done
+    // Create PointOffset from this [pointModel] by giving it a range,
+    // positions the [pointModel] on the x axis on it's label x coordinate.
+    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
+    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
+      inputDataRangeLabelInfosGenerator: inputLabelsGenerator,
+    );
+    */
+    // Create [PointOffset] with outputValue same as [PointModel], inputValue in the middle of the
+    PointOffset pointOffset = PointOffset(
+      inputValue: constraints.size.width, // todo-00-next: This works, but why not width / 2 to get middle??
+      outputValue: pointModel.outputValue,
+    );
+
+    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+      chartOrientation: chartViewModel.chartOrientation,
+      // withinConstraints is used to define
+      withinConstraints: constraints,
+      inputDataRange: inputLabelsGenerator.dataRange,
+      outputDataRange: outputLabelsGenerator.dataRange,
+      sizerHeight: sizerHeight,
+      sizerWidth: sizerWidth,
+    );
+    return pixelPointOffset;
+  }
+
+
   /// Generates code for testing.
   void generateTestCode(
       PointOffset pointOffset,
@@ -586,7 +619,7 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     var pointOffsetStr = '   pointOffset = ${pointOffset.asCodeConstructor()};\n';
     var callStr = '   pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(\n'
         '       chartOrientation: ChartOrientation.${chartViewModel.chartOrientation.name},\n'
-        '       constraintsOnParentLayouter: ${constraints.asCodeConstructorInsideBox()},\n'
+        '       withinConstraints: ${constraints.asCodeConstructorInsideBox()},\n'
         '       inputDataRange: ${inputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       outputDataRange: ${outputLabelsGenerator.dataRange.asCodeConstructor()},\n'
         '       sizerHeight: $sizerHeight,\n'
