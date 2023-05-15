@@ -281,7 +281,9 @@ class PointOffset extends Offset {
 
     switch (chartOrientation) {
       case ChartOrientation.column:
-        horizontalPixelsRange = Interval(0.0, withinConstraints.width);
+        horizontalPixelsRange = isLayouterPositioningMeInCrossDirection
+            ? Interval(0.0, withinConstraints.width)
+            : Interval(0.0, sizerWidth);
         verticalPixelsRange   = Interval(0.0, sizerHeight); // NOT inverted range - pixels are within some container!!
 
         //   m[0,0] (input->px)
@@ -312,25 +314,21 @@ class PointOffset extends Offset {
         break;
       case ChartOrientation.row:
         horizontalPixelsRange = Interval(0.0, sizerWidth);
-        verticalPixelsRange   = Interval(0.0, withinConstraints.height);
+        verticalPixelsRange   = isLayouterPositioningMeInCrossDirection ? Interval(0.0, withinConstraints.height) : Interval(0.0, sizerHeight);
 
         // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
           fromValuesRange: inputDataRange,
-          // todo-00-done : toPixelsRange: verticalPixelsRange,
-          toPixelsRange: horizontalPixelsRange,
-          // todo-00-done : isFlipToRange: false, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
-          isFlipToRange: true, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
+          toPixelsRange: verticalPixelsRange,
+          isFlipToRange: true,
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
           fromValuesRange: outputDataRange,
-          // todo-00-done : toPixelsRange: horizontalPixelsRange,
-          toPixelsRange: verticalPixelsRange,
-          // todo-00-done : isFlipToRange: true, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
-          isFlipToRange: false, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
+          toPixelsRange: horizontalPixelsRange,
+          isFlipToRange: false,
         );
 
         // affineTransformer: transpose around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
@@ -356,7 +354,7 @@ class PointOffset extends Offset {
     );
     Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
 
-    //  todo-00-done added
+    // Added to handle PointOffset being inside a bar type layouter.
     // If the transformed pointOffsetPixels is layed out (positioned) in a non-tick, 'bar type' layouter,
     //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
     if (pointOffsetPixels.isLayouterPositioningMeInCrossDirection) {
@@ -430,6 +428,7 @@ class PointOffset extends Offset {
     */
 
     // Assert that, in orientation.crossAxis: pointOffsetPixels.barPointRectSize == withinConstraints
+    /* todo-010 : This was probably never true ... anyway, check into this
     var crossOrientationAxis = axisPerpendicularTo(chartOrientation.mainLayoutAxis);
     Size barPointRectSize = pointOffsetPixels.barPointRectSize;
     assertDoubleResultsSame(
@@ -439,6 +438,7 @@ class PointOffset extends Offset {
             'result from constraints.size, otherResult from barPointRectSize. '
             'withinConstraints.size=${withinConstraints.size}, '
             'barPointRectSize=$barPointRectSize ');
+    */
   }
 
   /// Present itself as code

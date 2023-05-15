@@ -89,7 +89,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     super.key,
   }) ;
 
-  // todo-00 : move the first part to common code in DataColumnPointsBar
+  // todo-00-next : move the first part to common code in DataColumnPointsBar
   @override
   void buildAndReplaceChildren() {
     // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].

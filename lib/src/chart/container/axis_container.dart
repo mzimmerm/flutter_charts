@@ -1,3 +1,4 @@
+import 'dart:ui' as ui show Offset;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
@@ -53,10 +54,23 @@ class TransposingInputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
   }) : super(
+          // Logic to handle PointOffset depending on orientation. Not possible to do pure affmap
+          //   (from default column logic using outputValue:  outputLabelsGenerator.dataRange.max ),
+          //   because [inputAxisLine] lives in [ContainerForBothBarsAreasAndInputAxisLine] inside Column,
+          //   which adds offset and messes up positioning endpoints of axis line using pure affmap.
+          //   todo-010 : Deal with it better, but at the moment, I do not know how.
           fromPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
+            inputValue: inputLabelsGenerator.dataRange.min,
+            outputValue: chartViewModel.chartOrientation == ChartOrientation.column
+                ? outputLabelsGenerator.dataRange.max
+                : outputLabelsGenerator.dataRange.min,
+          ),
           toPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.max, outputValue: outputLabelsGenerator.dataRange.max),
+            inputValue: inputLabelsGenerator.dataRange.max,
+            outputValue: chartViewModel.chartOrientation == ChartOrientation.column
+                ? outputLabelsGenerator.dataRange.max
+                : outputLabelsGenerator.dataRange.min,
+          ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
         );
@@ -73,18 +87,14 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
   }) : super(
-          /* todo-00-done : switch inputValue from min to max:
           fromPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
+            inputValue: inputLabelsGenerator.dataRange.min,
+            outputValue: outputLabelsGenerator.dataRange.min,
+          ),
           toPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
-          */
-          fromPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
-          toPointOffset: PointOffset(
-              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
-
-
+            inputValue: inputLabelsGenerator.dataRange.min,
+            outputValue: outputLabelsGenerator.dataRange.max,
+          ),
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
         );

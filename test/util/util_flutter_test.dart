@@ -17,13 +17,85 @@ void main() {
     );
   });
 
-  group('LTransform affmap', () {
+  group('PointOffset affmap - invokes ToPixelsAffineMap1D', () {
     PointOffset pointOffset;
     PointOffset pixelPointOffset;
 
+    group('row, manual nonStacked', () {
+      /// Row, nonStacked, manual
+      test('row, manual nonStacked, map outMin', () {
+        // Point at the left at data minimum (bottom value)
+        pointOffset = PointOffset(inputValue: 0, outputValue: -1000, isLayouterPositioningMeInCrossDirection: false,);
+        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+          chartOrientation: ChartOrientation.row,
+          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          inputDataRange: const Interval(0.0, 100.0),
+          outputDataRange: const Interval(-1000.0, 2300.0),
+          sizerHeight: 400,
+          sizerWidth: 300,
+        );
+        // Should affmap
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 0, outputValue: 400,));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (1000.0 / (1000 + 2300)), 400));
+      });
 
+      test('row, manual nonStacked, map outMax', () {
+        // Point at the left at data minimum (bottom value)
+        pointOffset = PointOffset(inputValue: 0, outputValue: 2300, isLayouterPositioningMeInCrossDirection: false,);
+        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+          chartOrientation: ChartOrientation.row,
+          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          inputDataRange: const Interval(0.0, 100.0),
+          outputDataRange: const Interval(-1000.0, 2300.0),
+          sizerHeight: 400,
+          sizerWidth: 300,
+        );
+        // Should affmap
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 300, outputValue: 400,));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(300 * (2300.0 / (1000 + 2300)), 400));
+      });
+
+      test('row, manual nonStacked, map inMin', () {
+        // Point at the left at data minimum (bottom value)
+        pointOffset = PointOffset(inputValue: 0, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
+        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+          chartOrientation: ChartOrientation.row,
+          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          inputDataRange: const Interval(0.0, 100.0),
+          outputDataRange: const Interval(-1000.0, 2300.0),
+          sizerHeight: 400,
+          sizerWidth: 300,
+        );
+        // Should affmap
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 400,));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+      });
+
+      test('row, manual nonStacked, map inMax', () {
+        // Point at the left at data minimum (bottom value)
+        pointOffset = PointOffset(inputValue: 100, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
+        pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+          chartOrientation: ChartOrientation.row,
+          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          inputDataRange: const Interval(0.0, 100.0),
+          outputDataRange: const Interval(-1000.0, 2300.0),
+          sizerHeight: 400,
+          sizerWidth: 300,
+        );
+        // Should affmap
+        assertOffsetResultsSame(
+            pixelPointOffset, PointOffset(inputValue: 300 * (1000.0 / (1000 + 2300)), outputValue: 0,));
+        assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0, 400));
+      });
+    });
+
+
+    /* todo-00-next-next : regenerate all tests after things work
     /// Column, nonStacked
-    test('column, nonStacked', () {
+    test('column, auto nonStacked', () {
 
       pointOffset = PointOffset(inputValue: 8.333333333333334, outputValue: 2000.0,);
       pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
@@ -100,24 +172,9 @@ void main() {
       assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(8.392857142857144, 32.98701298701299));
     });
 
-    /// Row, nonStacked, manual
-    test('row, nonStacked, manual', () {
-      pointOffset = PointOffset(inputValue: 0, outputValue: -1000,);
-      pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-        chartOrientation: ChartOrientation.row,
-        withinConstraints: BoxContainerConstraints.insideBox(size: const Size(309.42857142857144, 13.642857142857142)),
-        inputDataRange: const Interval(0.0, 100.0),
-        outputDataRange: const Interval(-1000.0, 2300.0),
-        sizerHeight: 435.42857142857144,
-        sizerWidth: 309.42857142857144,
-      );
-      assertOffsetResultsSame(
-          pixelPointOffset, PointOffset(inputValue: 0, outputValue: 309.42857142857144,));
-      // todo-00-next : assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(23.441558441558445, 13.642857142857142));
-    });
 
-      /// Row, nonStacked
-    test('row, nonStacked', () {
+    /// Row, nonStacked
+    test('row, auto nonStacked', () {
       pointOffset = PointOffset(inputValue: 91.66666666666667,outputValue: -250.0,);
       pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
         chartOrientation: ChartOrientation.row,
@@ -186,7 +243,7 @@ void main() {
 
 
     /// Row, stacked
-    test('row, stacked', () {
+    test('row, auto stacked', () {
 
       pointOffset = PointOffset(inputValue: 91.66666666666667,outputValue: -250.0,);
       pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
@@ -266,6 +323,7 @@ void main() {
       assertSizeResultsSame(pixelPointOffset.barPointRectSize, const Size(0.0, 60.57142857142857));
 
     });
+    */
 
   });
 

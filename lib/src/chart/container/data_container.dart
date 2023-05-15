@@ -279,7 +279,7 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
         mainAxisAlign: Align.start, // default
         children: [
           positiveBarsContainer,
-          // todo-00-PUT BACK KEEP : inputAxisLine,
+          inputAxisLine,
           negativeBarsContainer,
         ],
       )

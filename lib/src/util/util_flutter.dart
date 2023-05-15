@@ -20,7 +20,7 @@ ui.Rect boundingRect(List<ui.Rect> rectangles, /*{double Function()? orElse}*/) 
 }
 
 void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
-  if (!(isCloserThanEpsilon(result.width, otherResult.width) ||
+  if (!(isCloserThanEpsilon(result.width, otherResult.width) &&
       isCloserThanEpsilon(result.height, otherResult.height))) {
     String msg = ' ### Log.Warning: Size results do not match. Result was $result, Other result was $otherResult.';
     print(msg);
@@ -29,7 +29,7 @@ void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
 }
 
 void assertOffsetResultsSame(ui.Offset result, ui.Offset otherResult) {
-  if (!(isCloserThanEpsilon(result.dx, otherResult.dx) ||
+  if (!(isCloserThanEpsilon(result.dx, otherResult.dx) &&
       isCloserThanEpsilon(result.dy, otherResult.dy))) {
     String msg = ' ### Log.Warning: Offset results do not match. Result was $result, Other result was $otherResult.';
     print(msg);
