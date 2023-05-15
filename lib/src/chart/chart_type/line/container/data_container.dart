@@ -89,7 +89,7 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     super.key,
   }) ;
 
-  // todo-00-progress vvvvvvvvv
+  // todo-00 : move the first part to common code in DataColumnPointsBar
   @override
   void buildAndReplaceChildren() {
     // Creates a list of [PointContainer]s from all points of the passed [dataColumnModel], pads each [PointContainer].
@@ -120,11 +120,6 @@ class LineChartDataColumnPointsBar extends DataColumnPointsBar {
     // KEEP: Note : if children are passed to super, we need instead: replaceChildrenWith([pointContainersLayouter])
     addChildren([pointContainersLayouter]);
   }
-  // todo-00-progress ^^^^^^^^
-
-
-
-
 
   @override
   PointContainer makePointContainer({

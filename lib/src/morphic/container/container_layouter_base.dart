@@ -3373,7 +3373,6 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
   }) : super(children: children);
 }
 
-// todo-00-progress
 /// A minimalistic layouter which positions each of it's children's rectangles on top of each other,
 /// so that the children's rectangles top left is on the top left position of it's constraint.
 ///
@@ -3395,7 +3394,7 @@ class DefaultNonPositioningBoxLayouter extends NonPositioningBoxLayouter {
 ///            the StackingOrigin is absolute in the Box of TransposingStackLayouter constraints
 ///          - lays out children, each child rectangle is aligned with the same corner and same direction as StackingOrigin
 ///          - the result layoutSize is the envelope of child rectangles.
-/// 2. todo-010 : By extending NonPositioningBoxLayouter:
+/// 2. By extending NonPositioningBoxLayouter:
 ///           - layoutSize is set to the FULL CONSTRAINTS passed (todo-confirm) )from parent (Column or Row in our use)
 ///           - all children Just paint into the FULL CONSTRAINTS == layoutSize
 ///
@@ -3405,14 +3404,20 @@ class TransposingStackLayouter extends NonPositioningBoxLayouter {
     List<BoxContainer>? children,
   }) : super(children: children);
 
-  // todo-010 The Column/Row must be distinguished
+  /// Column oriented [TransposingStackLayouter].
+  ///
+  /// Currently there is no difference between Row and Column. Once StackingOrigin (topLeft, topRight etc)
+  /// is used, Column and Row should flip the StackingOrigin.
   factory TransposingStackLayouter.Column({
     List<BoxContainer>? children,
   }) {
     return TransposingStackLayouter(children: children);
   }
 
-  // todo-010 The Column/Row must be distinguished
+  /// Column oriented [TransposingStackLayouter].
+  ///
+  /// Currently there is no difference between Row and Column. Once StackingOrigin (topLeft, topRight etc)
+  /// is used, Column and Row should flip the StackingOrigin.
   factory TransposingStackLayouter.Row({
     List<BoxContainer>? children,
   }) {

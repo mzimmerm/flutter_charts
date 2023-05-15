@@ -80,8 +80,8 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   ///
   /// Important notes:
   ///
-  ///   - We MUST ASSUME this [LineBetweenPointModelsContainer] was placed into a Row or Column without specifying weights on self;
-  ///     Such Row or Column layouters pass their full constraints to children (instances of this [LineBetweenPointModelsContainer]).
+  ///   - We MUST ASSUME this [LineBetweenPointOffsetsContainer] was placed into a Row or Column without specifying weights on self;
+  ///     Such Row or Column layouters pass their full constraints to children (instances of this [LineBetweenPointOffsetsContainer]).
   //      As a consequence, `this.constraints == withinConstraints`!
   ///   - As this leaf container overrides [layout] here, it does not need to
   ///     override [layout_Post_Leaf_SetSize_FromInternals] or any other internal layout methods.
@@ -155,13 +155,14 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
   }
 }
 
+/* KEEP todo-010 : this is currently not used. What was the intent???
+
 /// Leaf container manages [lineFrom] and [lineTo] positions and [linePaint] for a line segment.
 ///
 /// Does NOT define [chart_orientation.ChartOrientation]. Will transform according to member
 /// [view_model.ChartViewModel.chartOrientation].
 ///
 class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
-  // todo-00-next : this is currently not used. What was the intent???
   LineBetweenPointModelsContainer({
     required this.fromPointModel,
     required this.toPointModel,
@@ -203,3 +204,4 @@ class LineBetweenPointModelsContainer extends LineBetweenPointOffsetsContainer {
   PointOffset get toPointOffset =>
       toPointModel.toPointOffsetOnInputRange(inputDataRangeLabelInfosGenerator: chartViewModel.inputLabelsGenerator);
 }
+*/

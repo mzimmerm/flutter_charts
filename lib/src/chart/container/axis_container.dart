@@ -73,10 +73,18 @@ class TransposingOutputAxisLineContainer extends AxisLineContainer {
     required DataRangeLabelInfosGenerator outputLabelsGenerator,
     required ChartViewModel chartViewModel,
   }) : super(
+          /* todo-00-done : switch inputValue from min to max:
           fromPointOffset: PointOffset(
               inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
           toPointOffset: PointOffset(
               inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
+          */
+          fromPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.min),
+          toPointOffset: PointOffset(
+              inputValue: inputLabelsGenerator.dataRange.min, outputValue: outputLabelsGenerator.dataRange.max),
+
+
           linePaint: chartViewModel.chartOptions.dataContainerOptions.gridLinesPaint(),
           chartViewModel: chartViewModel,
         );

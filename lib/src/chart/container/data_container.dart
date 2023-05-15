@@ -279,7 +279,7 @@ class ContainerForBothBarsAreasAndInputAxisLine extends container_common.ChartAr
         mainAxisAlign: Align.start, // default
         children: [
           positiveBarsContainer,
-          inputAxisLine,
+          // todo-00-PUT BACK KEEP : inputAxisLine,
           negativeBarsContainer,
         ],
       )
@@ -582,27 +582,10 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
     DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
 
-    /* todo-00-previous-done
-    // Create PointOffset from this [pointModel] by giving it a range,
-    // positions the [pointModel] on the x axis on it's label x coordinate.
-    // The [pointOffset] can be affmap-ed to it's target value depending on chart direction.
     PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
       inputDataRangeLabelInfosGenerator: inputLabelsGenerator,
     );
-    */
 
-    /* todo-00-done
-    // Create [PointOffset] with outputValue same as [PointModel], inputValue in the middle of the
-    PointOffset pointOffset = PointOffset(
-      inputValue: constraints.size.width, // todo-00-next: This works, but why not width / 2 to get middle??
-      outputValue: pointModel.outputValue,
-    );
-    */
-
-    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
-      inputDataRangeLabelInfosGenerator: inputLabelsGenerator,
-    );
-    // todo-00-done
     // This PointOffset is in DataContainer, so one coordinate (the 'cross' to ChartOrientation)
     //   will be set in the middle of constraints
     pointOffset = PointOffset(

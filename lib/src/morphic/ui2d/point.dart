@@ -32,6 +32,12 @@ import '../../chart/container/data_container.dart' as doc_data_container;
 /// which returns a new [PointOffset] in pixels, created from this [PointOffset]'s
 /// position and chart value ranges and pixel ranges.
 ///
+/// todo-00-ideas-from-walk
+///   - Rename [PointOffset] to [RangedPointOffset]
+///   - Add [RollingLayouterRangedPointOffset] extends   [RangedPointOffset]; this adds the behavior
+///     and members [isLayouterPositioningMeInCrossDirection] and [mainLayoutAxis], also the
+///     [fromMyPositionAlongMainDirectionFromSizeInCrossDirection]
+///
 class PointOffset extends Offset {
 
   PointOffset({
@@ -40,14 +46,6 @@ class PointOffset extends Offset {
     this.isLayouterPositioningMeInCrossDirection = false,
     this.mainLayoutAxis,
   }) : super(inputValue, outputValue);
-
-  /* todo-00-done removed
-  PointOffset.fromOffset(Offset offset)
-      : this(
-          inputValue: offset.dx,
-          outputValue: offset.dy,
-        );
-  */
 
   factory PointOffset.fromVector(
     Vector<double> vector, {
@@ -79,11 +77,13 @@ class PointOffset extends Offset {
   double get inputValue => dx;  // todo-010 make this final? 
   double get outputValue => dy;
 
-  // vvvvvvv todo-00-progress
-  // todo-010 wrap into one object
+  // todo-0100 wrap into one object
   final bool isLayouterPositioningMeInCrossDirection;
   final LayoutAxis? mainLayoutAxis;
 
+  /// For [PointOffset] which is also [RollingLayouterRangedPointOffset],
+  /// set the value ([inputValue] or [outputValue]) in the layouter cross direction
+  /// to the middle of the layouter constraint where this [RollingLayouterRangedPointOffset] lives.
   PointOffset fromMyPositionAlongMainDirectionFromSizeInCrossDirection(Size size, Align align) {
     if (align != Align.center) throw StateError('Only Align.center is currently supported.');
 
@@ -102,7 +102,6 @@ class PointOffset extends Offset {
         );
     }
   }
-  // ^^^^^^^
 
   // no need. PointOffset IS Offset. Offset get asOffset => Offset(inputValue, outputValue);
   Vector<double> toVector() => Vector<double>([inputValue, outputValue]);
@@ -273,7 +272,7 @@ class PointOffset extends Offset {
     //   bar length is used, see [barPointRectSize] at the end of this method.
     Interval horizontalPixelsRange, verticalPixelsRange;
 
-    // todo-00-next : PROBABLY NOT we need vars for both affTransfXX, linTransfXX, and for all others.
+    // todo-00-next : we need vars for both affTransfXX, linTransfXX, and for all others.
     //                their creation differs, in the pixels range (horizontal in column, vertical in row),
     //                where it should use ranges (both inputDataRange and outputDataRange) as follows:
     //                column:
@@ -320,16 +319,18 @@ class PointOffset extends Offset {
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
           fromValuesRange: inputDataRange,
-          toPixelsRange: verticalPixelsRange,
-          // todo-00-done : isFlipToRange: false,
-          isFlipToRange: false,
+          // todo-00-done : toPixelsRange: verticalPixelsRange,
+          toPixelsRange: horizontalPixelsRange,
+          // todo-00-done : isFlipToRange: false, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
+          isFlipToRange: true, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
           fromValuesRange: outputDataRange,
-          toPixelsRange: horizontalPixelsRange,
-          // todo-00-done : isFlipToRange: true,
-          isFlipToRange: true,
+          // todo-00-done : toPixelsRange: horizontalPixelsRange,
+          toPixelsRange: verticalPixelsRange,
+          // todo-00-done : isFlipToRange: true, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
+          isFlipToRange: false, // todo-010 : this seems just the opposite of what should be. BUT changing it breaks axis lines
         );
 
         // affineTransformer: transpose around Diagonal.LeftToRightUp (coordinates transfer: x -> y, y -> x),
@@ -355,7 +356,7 @@ class PointOffset extends Offset {
     );
     Size barPointRectSize = SizeExtension.fromVector(linearTransformer.applyOnVector(thisToVector).abs());
 
-    // ------------ vvvvvvvvvv todo-00-progress
+    //  todo-00-done added
     // If the transformed pointOffsetPixels is layed out (positioned) in a non-tick, 'bar type' layouter,
     //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
     if (pointOffsetPixels.isLayouterPositioningMeInCrossDirection) {
@@ -364,7 +365,6 @@ class PointOffset extends Offset {
         Align.center,
       );
     }
-    // ------------^^^^^^^^^^^
 
     // On the rect size, we do NOT scale both directions. In the direction where constraint
     //   is used (which is ALWAYS the orientation's main axis: column->vertical, row->horizontal),
@@ -408,13 +408,13 @@ class PointOffset extends Offset {
         'result from constraints.size, otherResult from sizerSize. '
         'withinConstraints.size=${withinConstraints.size}, sizerSize=$sizerSize ');
 
-    /* todo-00-done
+    /* todo-010 - put back when only-positive / only-negative range is used
     if (pointOffsetPixels.inputValue < 0 || pointOffsetPixels.outputValue < 0) {
       throw StateError('Failed assumption about pointOffsetPixels always positive or 0, $pointOffsetPixels');
     }
     */
 
-    /* todo-00-done
+    /*  todo-010 - put back when only-positive / only-negative range is used
     if (isFromChartPointForAsserts) {
       // Assert that, in orientation.mainLayoutAxis: pointOffsetPixels + pointOffsetPixels.barPointRectSize == withinConstraints
       //  Impl note: Size + Offset exists, yields Size
