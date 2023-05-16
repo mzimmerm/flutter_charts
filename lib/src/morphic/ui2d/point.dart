@@ -234,7 +234,7 @@ class PointOffset extends Offset {
   ///
   PointOffset affmapToPixelsMaybeTransposeInContextOf({
     required ChartOrientation        chartOrientation,
-    required BoxContainerConstraints withinConstraints,
+    // todo-00-done : required BoxContainerConstraints withinConstraints,
     required FromTransposing2DValueRange fromTransposing2DValueRange,
     required To2DPixelRange to2DPixelRange,
     bool isFromChartPointForAsserts = true,
@@ -281,9 +281,12 @@ class PointOffset extends Offset {
 
     switch (chartOrientation) {
       case ChartOrientation.column:
+        /* todo-00-done
         horizontalPixelsRange = isLayouterPositioningMeInCrossDirection
             ? Interval(0.0, withinConstraints.width)
             : to2DPixelRange.horizontalPixelRange;
+        */
+        horizontalPixelsRange = to2DPixelRange.horizontalPixelRange;
         verticalPixelsRange   = to2DPixelRange.verticalPixelRange;
 
         //   m[0,0] (input->px)
@@ -314,10 +317,12 @@ class PointOffset extends Offset {
         break;
       case ChartOrientation.row:
         horizontalPixelsRange =  to2DPixelRange.horizontalPixelRange;
+        verticalPixelsRange = to2DPixelRange.verticalPixelRange;
+        /* todo-00-done
         verticalPixelsRange = isLayouterPositioningMeInCrossDirection
             ? Interval(0.0, withinConstraints.height)
             : to2DPixelRange.verticalPixelRange;
-
+        */
         // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
         //   m[1,0] (input->py)
@@ -361,7 +366,8 @@ class PointOffset extends Offset {
     //   such as Column or Row, in the 'cross direction' of the layouter, position it in the middle of the constraint.
     if (pointOffsetPixels.isLayouterPositioningMeInCrossDirection) {
       pointOffsetPixels = pointOffsetPixels.fromMyPositionAlongMainDirectionFromSizeInCrossDirection(
-        withinConstraints.size,
+        // todo-00-done : withinConstraints.size,
+        to2DPixelRange.size,
         Align.center,
       );
     }
@@ -377,7 +383,7 @@ class PointOffset extends Offset {
     // Before return, validate inputs and outputs
     _validateAffmapToPixelMethodInputsOutputs(
       chartOrientation: chartOrientation,
-      withinConstraints: withinConstraints,
+      // todo-00-done : withinConstraints: withinConstraints,
       to2DPixelRange: to2DPixelRange,
       pointOffsetPixels: pointOffsetPixels,
       // Only assert for pointOffsetPixels.barPointRectSize + pointOffsetPixels == withinConstraints
@@ -391,7 +397,7 @@ class PointOffset extends Offset {
 
   void _validateAffmapToPixelMethodInputsOutputs({
     required ChartOrientation chartOrientation,
-    required BoxContainerConstraints withinConstraints,
+    // todo-00-done : required BoxContainerConstraints withinConstraints,
     required To2DPixelRange to2DPixelRange,
     required PointOffset pointOffsetPixels,
     required bool isFromChartPointForAsserts,
@@ -400,11 +406,12 @@ class PointOffset extends Offset {
 
     // Assert that: in orientation.mainLayoutAxis: withinConstraints == sizerSize
     assertDoubleResultsSame(
-        withinConstraints.size.lengthAlong(chartOrientation.mainLayoutAxis),
+      // todo-00-done : withinConstraints.size.lengthAlong(chartOrientation.mainLayoutAxis),
+        to2DPixelRange.size.lengthAlong(chartOrientation.mainLayoutAxis),
         sizerSize.lengthAlong(chartOrientation.mainLayoutAxis),
         '$runtimeType.affmapToPixelsMaybeTransposeInContextOf: Failed assertion. '
         'result from constraints.size, otherResult from sizerSize. '
-        'withinConstraints.size=${withinConstraints.size}, sizerSize=$sizerSize ');
+        'to2DPixelRange.size=${to2DPixelRange.size}, sizerSize=$sizerSize ');
 
     /* todo-010 - put back when only-positive / only-negative range is used
     if (pointOffsetPixels.inputValue < 0 || pointOffsetPixels.outputValue < 0) {

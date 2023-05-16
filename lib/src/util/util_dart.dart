@@ -10,6 +10,7 @@
 // todo 1 - Functions here should eventually be held by a Utility class
 
 import 'dart:math' as math;
+import 'dart:ui' show Size;
 import 'package:decimal/decimal.dart' as decimal;
 
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
@@ -622,8 +623,6 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
   }
 }
 
-
-
 class FromTransposing2DValueRange {
 
   FromTransposing2DValueRange ({
@@ -666,6 +665,7 @@ class To2DPixelRange {
   final Interval horizontalPixelRange;
   final Interval verticalPixelRange;
 
+  Size get size => Size(horizontalPixelRange.max, verticalPixelRange.max);
 }
 
 // ################ Functions ########################

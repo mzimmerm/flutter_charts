@@ -103,7 +103,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     // Passing [this.constraints] is correct here, see [layout] documentation.
     _fromOffsetPixels = fromPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
+      // todo-00-done : withinConstraints: constraints,
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
@@ -117,7 +117,7 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     );
     _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
+      // todo-00-done : withinConstraints: constraints,
       fromTransposing2DValueRange: FromTransposing2DValueRange(
         chartOrientation: chartViewModel.chartOrientation,
         inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,

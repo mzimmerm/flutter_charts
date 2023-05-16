@@ -649,7 +649,8 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
+      // todo-00-done withinConstraints: constraints,
+
       // todo-00-progress
       //      - Further, the 'to range', defined by the container-parent bar's [constraints]
       //        ALWAYS represents either positive or negative value,
