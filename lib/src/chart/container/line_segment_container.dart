@@ -101,19 +101,29 @@ class LineBetweenPointOffsetsContainer extends container_common.ChartAreaContain
     _fromOffsetPixels = fromPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       withinConstraints: constraints,
-      inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
-      outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
+      fromTransposing2DValueRange: FromTransposing2DValueRange(
+        chartOrientation: chartViewModel.chartOrientation,
+        inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
+        outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
+      ),
+      to2DPixelRange: To2DPixelRange(
+        height: sizerHeight,
+        width: sizerWidth,
+      ),
       isFromChartPointForAsserts: false,
     );
     _toOffsetPixels = toPointOffset!.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       withinConstraints: constraints,
-      inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
-      outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
+      fromTransposing2DValueRange: FromTransposing2DValueRange(
+        chartOrientation: chartViewModel.chartOrientation,
+        inputDataRange: chartViewModel.inputLabelsGenerator.dataRange,
+        outputDataRange: chartViewModel.outputLabelsGenerator.dataRange,
+      ),
+      to2DPixelRange: To2DPixelRange(
+        height: sizerHeight,
+        width: sizerWidth,
+      ),
       isFromChartPointForAsserts: false,
     );
 

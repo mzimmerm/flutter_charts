@@ -28,7 +28,7 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
-import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset, FromTransposing2DValueRange, To2DPixelRange;
 
 
 
@@ -599,10 +599,15 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       chartOrientation: chartViewModel.chartOrientation,
       // withinConstraints is used to define
       withinConstraints: constraints,
-      inputDataRange: inputLabelsGenerator.dataRange,
-      outputDataRange: outputLabelsGenerator.dataRange,
-      sizerHeight: sizerHeight,
-      sizerWidth: sizerWidth,
+      fromTransposing2DValueRange: FromTransposing2DValueRange(
+        chartOrientation: chartViewModel.chartOrientation,
+        inputDataRange: inputLabelsGenerator.dataRange,
+        outputDataRange: outputLabelsGenerator.dataRange,
+      ),
+      to2DPixelRange: To2DPixelRange(
+        height: sizerHeight,
+        width: sizerWidth,
+      ),
     );
     return pixelPointOffset;
   }

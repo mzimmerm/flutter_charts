@@ -501,6 +501,7 @@ class _ExampleWidgetCreator {
     ChartType chartType = descriptorOfExampleToRun.item2;
     ChartOrientation chartOrientation = descriptorOfExampleToRun.item3;
     ChartStacking chartStacking = descriptorOfExampleToRun.item4;
+    bool isUseOldLayouter = descriptorOfExampleToRun.item5;
     // bool isUseOldLayouter = descriptorOfExampleToRun.item5;
 
     // Declare chartModel; the data object will be different in every examples.
@@ -994,8 +995,10 @@ class _ExampleWidgetCreator {
       case ChartType.lineChart:
         SwitchChartViewModel lineChartViewModel = SwitchChartViewModel.lineChartViewModelFactory(
           chartModel: chartModel,
-          chartOrientation: chartOrientation, // transpose column/row is set in env var CHART_ORIENTATION
-          chartStacking: chartStacking, // stacking/sideBySide is set in env var CHART_STACKING
+          // transpose column/row is set in env var CHART_ORIENTATION
+          chartOrientation: chartOrientation,
+          // stacking/sideBySide is set in env var CHART_STACKING. OLD LineChart always nonStacked
+          chartStacking: isUseOldLayouter ? ChartStacking.nonStacked : chartStacking,
           inputLabelLayoutStrategy: inputLabelLayoutStrategy,
         );
 

@@ -233,10 +233,8 @@ class PointOffset extends Offset {
   PointOffset affmapToPixelsMaybeTransposeInContextOf({
     required ChartOrientation        chartOrientation,
     required BoxContainerConstraints withinConstraints,
-    required Interval                inputDataRange,
-    required Interval                outputDataRange,
-    required double                  sizerHeight,
-    required double                  sizerWidth,
+    required FromTransposing2DValueRange fromTransposing2DValueRange,
+    required To2DPixelRange to2DPixelRange,
     bool isFromChartPointForAsserts = true,
   }) {
 
@@ -283,19 +281,19 @@ class PointOffset extends Offset {
       case ChartOrientation.column:
         horizontalPixelsRange = isLayouterPositioningMeInCrossDirection
             ? Interval(0.0, withinConstraints.width)
-            : Interval(0.0, sizerWidth);
-        verticalPixelsRange   = Interval(0.0, sizerHeight); // NOT inverted range - pixels are within some container!!
+            : to2DPixelRange.horizontalPixelRange;
+        verticalPixelsRange   = to2DPixelRange.verticalPixelRange;
 
         //   m[0,0] (input->px)
         var transfXX = ToPixelsAffineMap1D(
-          fromValuesRange: inputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.inputDataRange,
           toPixelsRange: horizontalPixelsRange,
           isFlipToRange: false,
         );
 
         //   m[1,1] (output->py)
         var transfYY = ToPixelsAffineMap1D(
-          fromValuesRange: outputDataRange,
+          fromValuesRange:  fromTransposing2DValueRange.outputDataRange,
           toPixelsRange: verticalPixelsRange,
           isFlipToRange: true,
         );
@@ -313,20 +311,22 @@ class PointOffset extends Offset {
 
         break;
       case ChartOrientation.row:
-        horizontalPixelsRange = Interval(0.0, sizerWidth);
-        verticalPixelsRange   = isLayouterPositioningMeInCrossDirection ? Interval(0.0, withinConstraints.height) : Interval(0.0, sizerHeight);
+        horizontalPixelsRange =  to2DPixelRange.horizontalPixelRange;
+        verticalPixelsRange = isLayouterPositioningMeInCrossDirection
+            ? Interval(0.0, withinConstraints.height)
+            : to2DPixelRange.verticalPixelRange;
 
         // todo-013 : the doInvert true/false seems INCORRECTLY reversed but RESULT OK. Why?
 
         //   m[1,0] (input->py)
         var transfXY = ToPixelsAffineMap1D(
-          fromValuesRange: inputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.inputDataRange,
           toPixelsRange: verticalPixelsRange,
           isFlipToRange: true,
         );
         //   m[0,1] (output->px)
         var transfYX = ToPixelsAffineMap1D(
-          fromValuesRange: outputDataRange,
+          fromValuesRange: fromTransposing2DValueRange.outputDataRange,
           toPixelsRange: horizontalPixelsRange,
           isFlipToRange: false,
         );
@@ -376,13 +376,12 @@ class PointOffset extends Offset {
     _validateAffmapToPixelMethodInputsOutputs(
       chartOrientation: chartOrientation,
       withinConstraints: withinConstraints,
-      sizerWidth: sizerWidth,
-      sizerHeight: sizerHeight,
+      to2DPixelRange: to2DPixelRange,
       pointOffsetPixels: pointOffsetPixels,
       // Only assert for pointOffsetPixels.barPointRectSize + pointOffsetPixels == withinConstraints
       //   if no range is across 0.0
       // todo-010 : why does the assert fail for mixed sign?
-      isFromChartPointForAsserts: isFromChartPointForAsserts && !inputDataRange.isAcrossZero() && !outputDataRange.isAcrossZero(),
+      isFromChartPointForAsserts: isFromChartPointForAsserts && !fromTransposing2DValueRange.inputDataRange.isAcrossZero() && !fromTransposing2DValueRange.outputDataRange.isAcrossZero(),
     );
 
     return pointOffsetPixels;
@@ -391,12 +390,11 @@ class PointOffset extends Offset {
   void _validateAffmapToPixelMethodInputsOutputs({
     required ChartOrientation chartOrientation,
     required BoxContainerConstraints withinConstraints,
-    required double sizerWidth,
-    required double sizerHeight,
+    required To2DPixelRange to2DPixelRange,
     required PointOffset pointOffsetPixels,
     required bool isFromChartPointForAsserts,
   }) {
-    Size sizerSize = Size(sizerWidth, sizerHeight);
+    Size sizerSize = Size(to2DPixelRange.horizontalPixelRange.max, to2DPixelRange.verticalPixelRange.max);
 
     // Assert that: in orientation.mainLayoutAxis: withinConstraints == sizerSize
     assertDoubleResultsSame(
@@ -450,6 +448,45 @@ class PointOffset extends Offset {
   }
 }
 
+// todo-00-progress
+class FromTransposing2DValueRange {
+
+  FromTransposing2DValueRange ({
+    required this.inputDataRange,
+    required this.outputDataRange,
+    required this.chartOrientation,
+  });
+
+  final Interval inputDataRange;
+  final Interval outputDataRange;
+  final ChartOrientation chartOrientation;
+
+  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
+    return FromTransposing2DValueRange(
+      inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
+      outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+      chartOrientation: chartOrientation,
+    );
+  }
+
+}
+
+/// Pixel 2D range always starts both dimensions from 0
+class To2DPixelRange {
+
+  To2DPixelRange({
+    // sizerWidth or constraints width
+    required double width,
+    // sizerHeight or constraints height
+    required double height,
+  }) : horizontalPixelRange = Interval(0, width), verticalPixelRange = Interval(0, height);
+
+  final Interval horizontalPixelRange;
+  final Interval verticalPixelRange;
+
+}
+
+// todo-00-progress
 /// Identifies a diagonal for transpose transfer.
 ///
 /// [leftToRightUp] identifies the diagonal around which a coordinate system would

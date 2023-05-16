@@ -1,6 +1,8 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 
 // this level or equivalent
+import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
+
 import 'axis_container.dart';
 import 'container.dart';
 import '../../chart/container/container_common.dart';
@@ -90,6 +92,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
       chartViewModel: chartViewModel,
       children: chartRootContainer.xTickXs.map((double xTickX) {
         // Add vertical yGrid line in the middle of label (stacked bar chart) or on label left edge (line chart)
+        // this legacy uses isStacked to define isLineChart : double lineX = chartViewModel.chartStacking.isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
+        // double lineX = (this is LineChartDataContainer || this is LineChartDataContainerCL) ? xTickX : xTickX - chartRootContainer.xGridStep / 2;
         double lineX = chartViewModel.chartStacking.isStacked ? xTickX - chartRootContainer.xGridStep / 2 : xTickX;
         return LineContainerCL(
           chartViewModel: chartViewModel,
@@ -105,6 +109,8 @@ abstract class DataContainerCL extends ChartAreaContainer implements DataContain
     );
 
     // For stacked, we need to add last right vertical yGrid line - one more child to  [_verticalGridLinesContainer]
+    // this legacy uses isStacked to determine isLineChart : if (chartViewModel.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
+    // if (!(this is LineChartDataContainer || this is LineChartDataContainerCL) && chartRootContainer.xTickXs.isNotEmpty) {
     if (chartViewModel.chartStacking.isStacked && chartRootContainer.xTickXs.isNotEmpty) {
       double lineX = chartRootContainer.xTickXs.last + chartRootContainer.xGridStep / 2;
 

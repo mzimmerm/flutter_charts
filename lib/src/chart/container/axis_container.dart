@@ -1,4 +1,3 @@
-import 'dart:ui' as ui show Offset;
 import 'package:vector_math/vector_math.dart' as vector_math show Matrix2;
 
 // base libraries
