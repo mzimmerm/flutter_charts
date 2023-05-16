@@ -2,7 +2,10 @@
 ///
 /// This includes the top level [DataContainer], as well as classes used
 ///   to present elements inside it, such as [PointContainer]
-// import 'dart:ui' as ui show Rect, Paint, Canvas, Size;
+///
+
+// ui
+import 'dart:ui' as ui show Size;
 
 // this level base libraries or equivalent
 import 'package:flutter_charts/src/chart/painter.dart';
@@ -633,22 +636,47 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       isLayouterPositioningMeInCrossDirection: true,
     );
 
-    ///      - Further, the container-parent bar's [constraints] ALWAYS represents either positive or negative value,
-    ///        this method must AFFMAP the positive or negative 'from range' to the [constraints]
-    ///        and it's constraint is sized like this:
-    //        - in the layouter Main direction,  length is the dataRange of positive values (the positive portion of data range)
-    //        - in the layouter Cross direction, length is the width of the bar
-    //    - So the affmap ranges are:
-    //       - fromInputRange = positive or negative portion for the sign of PointModel.inputValue
-    //       - fromOutputRange = as above, for outputValue
-    //       - pixelRange : height = constraints height, width = constraints width
+    // todo-00-progress
     //    - After affmap, we position the PointOffset, in the cross direction, in the middle of the constraint
     //    - set barPointRectSize:
     //      - in the main direction = affmapped value (PointOffset.outputValue)
     //      - in the cross direction = constraints size in that direction
+
+    // Prepare clearly-named variables to pass to the affmap
+    double inputValueForSign = pointOffset.inputValue;
+    double outputValueForSign = pointOffset.outputValue;
+    ui.Size toPixelRangeSize = constraints.size;
+
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      // withinConstraints is used to define
+      withinConstraints: constraints,
+      // todo-00-progress
+      //      - Further, the 'to range', defined by the container-parent bar's [constraints]
+      //        ALWAYS represents either positive or negative value,
+      //        so this method must AFFMAP TO the positive or negative 'from range' to the 'to range' [constraints]
+      //        where constraints are sized like this:
+      //        - in the layouter Main direction,  length is the dataRange of positive values (the positive portion of data range)
+      //        - in the layouter Cross direction, length is the width of the bar
+      //    - So the affmap ranges are:
+      //       - fromInputRange = positive or negative portion for the sign of PointModel.inputValue
+      //       - fromOutputRange = as above, for outputValue
+      //       - pixelRange : height = constraints height, width = constraints width
+      fromTransposing2DValueRange:
+      chartViewModel.fromTransposing2DValueRange,
+     /* chartViewModel.fromTransposing2DValueRange.subsetForSignsOf(
+        inputValue: inputValueForSign,
+        outputValue: outputValueForSign,
+      ),*/
+      to2DPixelRange: To2DPixelRange(
+        width: toPixelRangeSize.width, // todo-00-done : toPixelRangeSize.width, // todo-00-done : sizerWidth,
+        height: toPixelRangeSize.height, // todo-00-done : toPixelRangeSize.height, // todo-00-done : sizerHeight,
+      ),
+    );
+
+
+/* todo-00-done : ori
+    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+      chartOrientation: chartViewModel.chartOrientation,
       withinConstraints: constraints,
       fromTransposing2DValueRange: chartViewModel.fromTransposing2DValueRange,
       to2DPixelRange: To2DPixelRange(
@@ -656,6 +684,8 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
         width: sizerWidth,
       ),
     );
+*/
+
     return pixelPointOffset;
   }
 
