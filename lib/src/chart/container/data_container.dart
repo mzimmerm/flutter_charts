@@ -668,20 +668,25 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
         outputValue: outputValueForSign,
       ),*/
       to2DPixelRange: To2DPixelRange(
-        width: toPixelRangeSize.width, // todo-00-done : toPixelRangeSize.width, // todo-00-done : sizerWidth,
-        height: toPixelRangeSize.height, // todo-00-done : toPixelRangeSize.height, // todo-00-done : sizerHeight,
+        width: toPixelRangeSize.width, // todo-00-done-prev : sizerWidth,
+        height: toPixelRangeSize.height, // todo-00-done-prev : sizerHeight,
       ),
     );
 
 
-/* todo-00-done : ori
+/* todo-00-done : ori works on all new tests
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       withinConstraints: constraints,
-      fromTransposing2DValueRange: chartViewModel.fromTransposing2DValueRange,
+      fromTransposing2DValueRange:
+      chartViewModel.fromTransposing2DValueRange,
+     /* chartViewModel.fromTransposing2DValueRange.subsetForSignsOf(
+        inputValue: inputValueForSign,
+        outputValue: outputValueForSign,
+      ),*/
       to2DPixelRange: To2DPixelRange(
-        height: sizerHeight,
-        width: sizerWidth,
+        width: toPixelRangeSize.width,
+        height: toPixelRangeSize.height,
       ),
     );
 */

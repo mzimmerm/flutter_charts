@@ -28,6 +28,7 @@ void main() {
         inputDataRange: const Interval(0.0, 100.0),
         outputDataRange: const Interval(-1000.0, 2300.0),
       );
+      var withinConstraints = BoxContainerConstraints.insideBox(size: const Size(300, 20));
       var to2DPixelRange = To2DPixelRange(
         width: 300,
         height: 400,
@@ -37,7 +38,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -50,7 +51,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -63,7 +64,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -76,7 +77,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -93,6 +94,7 @@ void main() {
         inputDataRange: const Interval(0.0, 100.0),
         outputDataRange: const Interval(-1000.0, 2300.0),
       );
+      var withinConstraints = BoxContainerConstraints.insideBox(size: const Size(300, 20));
       var to2DPixelRange = To2DPixelRange(
         width: 300,
         height: 400,
@@ -103,7 +105,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: -1000, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -117,7 +119,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: 2300, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -131,7 +133,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 0, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
@@ -145,7 +147,7 @@ void main() {
         pointOffset = PointOffset(inputValue: 100, outputValue: 0, isLayouterPositioningMeInCrossDirection: false,);
         pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
           chartOrientation: chartOrientation,
-          withinConstraints: BoxContainerConstraints.insideBox(size: const Size(300, 20)),
+          withinConstraints: withinConstraints,
           fromTransposing2DValueRange: fromTransposing2DValueRange,
           to2DPixelRange: to2DPixelRange,
         );
