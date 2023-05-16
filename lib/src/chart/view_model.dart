@@ -2,6 +2,7 @@ import 'dart:ui' as ui show Canvas, Size;
 
 import 'package:flutter_charts/src/chart/chart.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
+import 'package:flutter_charts/src/util/util_dart.dart' show FromTransposing2DValueRange;
 
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;
@@ -103,6 +104,13 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
       inverseTransform: chartOptions.dataContainerOptions.xInverseTransform,
       userLabels: _chartModel.inputUserLabels,
     );
+
+    // Convenience wrapper for ranges of input and output values of all chart data
+    fromTransposing2DValueRange = FromTransposing2DValueRange(
+      inputDataRange: inputLabelsGenerator.dataRange,
+      outputDataRange: outputLabelsGenerator.dataRange,
+      chartOrientation: chartOrientation,
+    );
   }
 
   /// Privately held chart model through which every instance of this [ChartViewModel] should obtain data
@@ -141,6 +149,9 @@ abstract class ChartViewModel extends Object with container_common.ChartBehavior
 
   ///                 // todo-010 : rename to inputTicksAndLabelsDefiner
   late final util_labels.DataRangeLabelInfosGenerator inputLabelsGenerator;
+
+  /// Wraps the ranges of input values and output values this view model contains.
+  late final FromTransposing2DValueRange fromTransposing2DValueRange;
 
   /// Options forwarded from [model.ChartModel] options during this [ChartViewModel]s construction.
   final options.ChartOptions chartOptions;

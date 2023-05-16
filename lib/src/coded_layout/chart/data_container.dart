@@ -1,7 +1,7 @@
 import 'dart:ui' as ui show Size, Offset, Canvas;
 
 // this level or equivalent
-import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
+// import 'package:flutter_charts/src/chart/chart_type/line/container/data_container.dart';
 
 import 'axis_container.dart';
 import 'container.dart';

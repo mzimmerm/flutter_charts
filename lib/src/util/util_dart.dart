@@ -12,6 +12,8 @@
 import 'dart:math' as math;
 import 'package:decimal/decimal.dart' as decimal;
 
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
+
 /// A minimal polynomial needed for Y label and axis extrapolating.
 ///
 /// Not fully a polynomial. Uses the [decimal] package.
@@ -618,6 +620,52 @@ class ToPixelsAffineMap1D extends AffineRangedMap1D {
   String toString() {
     return '${super.toString()}, isFlipToRange=$isFlipToRange';
   }
+}
+
+
+
+class FromTransposing2DValueRange {
+
+  FromTransposing2DValueRange ({
+    required this.inputDataRange,
+    required this.outputDataRange,
+    required this.chartOrientation,
+  });
+
+  final Interval inputDataRange;
+  final Interval outputDataRange;
+  final ChartOrientation chartOrientation;
+
+  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
+    return FromTransposing2DValueRange(
+      inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
+      outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+      chartOrientation: chartOrientation,
+    );
+  }
+
+}
+
+/// Pixel 2D range encapsulates the 'to range' of values that ore affmap-ed
+/// from a [FromTransposing2DValueRange] instance.
+///
+/// Always starts both dimensions from 0.
+///
+/// Although this mentions 'pixels', it should be part of model,
+/// as the name is merely a convenience to define a 'to range' of
+/// values that ore affmap-ed from [FromTransposing2DValueRange].
+class To2DPixelRange {
+
+  To2DPixelRange({
+    // sizerWidth or constraints width
+    required double width,
+    // sizerHeight or constraints height
+    required double height,
+  }) : horizontalPixelRange = Interval(0, width), verticalPixelRange = Interval(0, height);
+
+  final Interval horizontalPixelRange;
+  final Interval verticalPixelRange;
+
 }
 
 // ################ Functions ########################

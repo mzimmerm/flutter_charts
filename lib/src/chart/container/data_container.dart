@@ -6,20 +6,21 @@
 
 // this level base libraries or equivalent
 import 'package:flutter_charts/src/chart/painter.dart';
-// import 'package:flutter_charts/src/util/extensions_flutter.dart';
 
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 
 
-// this level
+// this level chart
 import 'package:flutter_charts/src/chart/container/container_common.dart' as container_common show ChartAreaContainer;
 import 'package:flutter_charts/src/chart/container/axis_container.dart';
 
-// up chart level
+// up level chart
 import 'package:flutter_charts/src/chart/options.dart';
 import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnModel, PointModel;
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer;
 import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
+
+import 'package:flutter_charts/src/util/util_dart.dart' show FromTransposing2DValueRange, To2DPixelRange;
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
@@ -28,7 +29,7 @@ import 'package:flutter_charts/src/morphic/container/container_layouter_base.dar
 import 'package:flutter_charts/src/morphic/container/container_edge_padding.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart';
 import 'package:flutter_charts/src/morphic/container/container_key.dart' show ContainerKey;
-import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset, FromTransposing2DValueRange, To2DPixelRange;
+import 'package:flutter_charts/src/morphic/ui2d/point.dart' show PointOffset;
 
 
 
@@ -583,7 +584,6 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
   /// Transforms (transposes and affmap-s) this [PointModel] to it's [PointOffset] position,
   /// determined by its values [PointModel.inputValue]
   ///
-  // todo-00-last : changes that allow the caller define the FromTransposing2DValueRange and To2DPixelRange from constraints, rather than inside the method:
   /// Motivation and implementation:
   ///
   ///   1. As this method is invoked from [PointContainer.layout]
@@ -633,6 +633,50 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
       isLayouterPositioningMeInCrossDirection: true,
     );
 
+    ///      - Further, the container-parent bar's [constraints] ALWAYS represents either positive or negative value,
+    ///        this method must AFFMAP the positive or negative 'from range' to the [constraints]
+    ///        and it's constraint is sized like this:
+    //        - in the layouter Main direction,  length is the dataRange of positive values (the positive portion of data range)
+    //        - in the layouter Cross direction, length is the width of the bar
+    //    - So the affmap ranges are:
+    //       - fromInputRange = positive or negative portion for the sign of PointModel.inputValue
+    //       - fromOutputRange = as above, for outputValue
+    //       - pixelRange : height = constraints height, width = constraints width
+    //    - After affmap, we position the PointOffset, in the cross direction, in the middle of the constraint
+    //    - set barPointRectSize:
+    //      - in the main direction = affmapped value (PointOffset.outputValue)
+    //      - in the cross direction = constraints size in that direction
+    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
+      chartOrientation: chartViewModel.chartOrientation,
+      // withinConstraints is used to define
+      withinConstraints: constraints,
+      fromTransposing2DValueRange: chartViewModel.fromTransposing2DValueRange,
+      to2DPixelRange: To2DPixelRange(
+        height: sizerHeight,
+        width: sizerWidth,
+      ),
+    );
+    return pixelPointOffset;
+  }
+
+/* todo-00-last-KEEP : ORI version
+  PointOffset affmapLayoutToConstraintsAsPointOffsetORI() {
+    DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
+    DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;
+
+    PointOffset pointOffset = pointModel.toPointOffsetOnInputRange(
+      inputDataRangeLabelInfosGenerator: inputLabelsGenerator,
+    );
+
+    // This PointOffset is in DataContainer, so one coordinate (the 'cross' to ChartOrientation)
+    //   will be set in the middle of constraints
+    pointOffset = PointOffset(
+      inputValue: pointOffset.inputValue,
+      outputValue: pointOffset.outputValue,
+      mainLayoutAxis:  chartViewModel.chartOrientation.mainLayoutAxis,
+      isLayouterPositioningMeInCrossDirection: true,
+    );
+
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
       // withinConstraints is used to define
@@ -650,8 +694,10 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
     return pixelPointOffset;
   }
 
+ */
 
   /// Generates code for testing.
+  // todo-010 : fix this after changes in API of this class
   void generateTestCode(
       PointOffset pointOffset,
       DataRangeLabelInfosGenerator inputLabelsGenerator,

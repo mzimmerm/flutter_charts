@@ -1,17 +1,19 @@
 import 'dart:ui' show Offset, Size;
 
-
+// morphic
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart' show axisPerpendicularTo;
 import 'package:flutter_charts/src/morphic/container/morphic_dart_enums.dart';
 import 'package:flutter_charts/src/morphic/container/layouter_one_dimensional.dart' show Align;
 
-import '../../util/util_dart.dart' show Interval, ToPixelsAffineMap1D, assertDoubleResultsSame;
-import '../container/constraints.dart';
-import '../container/chart_support/chart_style.dart';
+// util
+import 'package:flutter_charts/src/util/util_dart.dart' show Interval, ToPixelsAffineMap1D, assertDoubleResultsSame, FromTransposing2DValueRange, To2DPixelRange;
 import 'package:flutter_charts/src/util/extensions_flutter.dart' show SizeExtension;
 import 'package:flutter_charts/src/util/vector/vector_2d.dart' show Vector;
 import 'package:flutter_charts/src/util/vector/function_matrix_2d.dart'
     show DoubleToDoubleFunction, Functional, FunctionalMatrix2D;
+
+import '../container/constraints.dart';
+import '../container/chart_support/chart_style.dart';
 
 // Docs only, not used in code.
 import '../../chart/container/data_container.dart' as doc_data_container;
@@ -446,43 +448,6 @@ class PointOffset extends Offset {
         'outputValue: $outputValue,'
         ')';
   }
-}
-
-class FromTransposing2DValueRange {
-
-  FromTransposing2DValueRange ({
-    required this.inputDataRange,
-    required this.outputDataRange,
-    required this.chartOrientation,
-  });
-
-  final Interval inputDataRange;
-  final Interval outputDataRange;
-  final ChartOrientation chartOrientation;
-
-  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
-    return FromTransposing2DValueRange(
-      inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
-      outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
-      chartOrientation: chartOrientation,
-    );
-  }
-
-}
-
-/// Pixel 2D range always starts both dimensions from 0
-class To2DPixelRange {
-
-  To2DPixelRange({
-    // sizerWidth or constraints width
-    required double width,
-    // sizerHeight or constraints height
-    required double height,
-  }) : horizontalPixelRange = Interval(0, width), verticalPixelRange = Interval(0, height);
-
-  final Interval horizontalPixelRange;
-  final Interval verticalPixelRange;
-
 }
 
 /// Identifies a diagonal for transpose transfer.

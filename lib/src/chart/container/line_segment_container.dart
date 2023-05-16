@@ -7,8 +7,11 @@ import '../../morphic/container/container_layouter_base.dart' as container_base;
 import '../../morphic/container/chart_support/chart_style.dart' as chart_orientation;
 import '../view_model.dart' as view_model;
 // import '../root_container.dart' as container;
-import '../model/data_model.dart' as model;
+import '../model/data_model.dart' as model; // todo-010 : should this be view_model?
 // import '../../util/label_model.dart' as util_labels;
+
+import 'package:flutter_charts/src/util/util_dart.dart' show FromTransposing2DValueRange, To2DPixelRange;
+
 
 /// Leaf container lays out and draws a line segment between [fromPointOffset] and [toPointOffset] using [linePaint].
 ///
