@@ -23,7 +23,7 @@ import 'package:flutter_charts/src/chart/model/data_model.dart' show DataColumnM
 import 'package:flutter_charts/src/chart/view_model.dart' show ChartViewModel, ClsPointToNullableContainer;
 import 'package:flutter_charts/src/chart/model/label_model.dart' show DataRangeLabelInfosGenerator;
 
-import 'package:flutter_charts/src/util/util_dart.dart' show FromTransposing2DValueRange, To2DPixelRange;
+import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange, To2DPixelRange;
 
 // morphic
 import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation, ChartStacking;
@@ -649,7 +649,6 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
     PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
       chartOrientation: chartViewModel.chartOrientation,
-      // todo-00-done withinConstraints: constraints,
 
       // todo-00-progress
       //      - Further, the 'to range', defined by the container-parent bar's [constraints]
@@ -676,20 +675,6 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
 
 /* todo-00-done : ori works on all new tests
-    PointOffset pixelPointOffset = pointOffset.affmapToPixelsMaybeTransposeInContextOf(
-      chartOrientation: chartViewModel.chartOrientation,
-      withinConstraints: constraints,
-      fromTransposing2DValueRange:
-      chartViewModel.fromTransposing2DValueRange,
-     /* chartViewModel.fromTransposing2DValueRange.subsetForSignsOf(
-        inputValue: inputValueForSign,
-        outputValue: outputValueForSign,
-      ),*/
-      to2DPixelRange: To2DPixelRange(
-        width: toPixelRangeSize.width,
-        height: toPixelRangeSize.height,
-      ),
-    );
 */
 
     return pixelPointOffset;

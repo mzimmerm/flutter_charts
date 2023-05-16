@@ -2,7 +2,7 @@ import 'dart:ui' as ui show Canvas, Size;
 
 import 'package:flutter_charts/src/chart/chart.dart';
 import 'package:flutter_charts/src/morphic/container/container_layouter_base.dart';
-import 'package:flutter_charts/src/util/util_dart.dart' show FromTransposing2DValueRange;
+import 'package:flutter_charts/src/util/util_flutter.dart' show FromTransposing2DValueRange;
 
 import 'painter.dart';
 import 'package:logger/logger.dart' as logger;

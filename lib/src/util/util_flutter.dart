@@ -1,25 +1,26 @@
 /// Utility that contain only Dart code BUT DOES import 'dart:ui' or anything Flutter.
 /// See util_dart.dart for reason.
 import 'dart:math' as math;
+import 'dart:ui' show Rect, Size, Offset;
+
 import 'package:flutter_charts/src/util/extensions_dart.dart';
-
 import 'util_dart.dart';
+import 'package:flutter_charts/src/morphic/container/chart_support/chart_style.dart' show ChartOrientation;
 
-import 'dart:ui' as ui show Rect, Size, Offset;
 
 /// Returns the smallest rectangle which contains all passed [rectangles].
 ///
 /// If the [rectangles] list is empty, an origin-based, zero-sized rectangle is returned.
-ui.Rect boundingRect(List<ui.Rect> rectangles, /*{double Function()? orElse}*/) {
-  return ui.Rect.fromLTRB(
-    rectangles.map((ui.Rect rectangle) => rectangle.left).reduceOrElse(math.min, orElse: () => 0.0), // left
-    rectangles.map((ui.Rect rectangle) => rectangle.top).reduceOrElse(math.min, orElse: () => 0.0), // top,
-    rectangles.map((ui.Rect rectangle) => rectangle.right).reduceOrElse(math.max, orElse: () => 0.0), // right
-    rectangles.map((ui.Rect rectangle) => rectangle.bottom).reduceOrElse(math.max, orElse: () => 0.0), // bottom
+Rect boundingRect(List<Rect> rectangles, /*{double Function()? orElse}*/) {
+  return Rect.fromLTRB(
+    rectangles.map((Rect rectangle) => rectangle.left).reduceOrElse(math.min, orElse: () => 0.0), // left
+    rectangles.map((Rect rectangle) => rectangle.top).reduceOrElse(math.min, orElse: () => 0.0), // top,
+    rectangles.map((Rect rectangle) => rectangle.right).reduceOrElse(math.max, orElse: () => 0.0), // right
+    rectangles.map((Rect rectangle) => rectangle.bottom).reduceOrElse(math.max, orElse: () => 0.0), // bottom
   );
 }
 
-void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
+void assertSizeResultsSame(Size result, Size otherResult) {
   if (!(isCloserThanEpsilon(result.width, otherResult.width) &&
       isCloserThanEpsilon(result.height, otherResult.height))) {
     String msg = ' ### Log.Warning: Size results do not match. Result was $result, Other result was $otherResult.';
@@ -28,11 +29,56 @@ void assertSizeResultsSame(ui.Size result, ui.Size otherResult) {
   }
 }
 
-void assertOffsetResultsSame(ui.Offset result, ui.Offset otherResult) {
+void assertOffsetResultsSame(Offset result, Offset otherResult) {
   if (!(isCloserThanEpsilon(result.dx, otherResult.dx) &&
       isCloserThanEpsilon(result.dy, otherResult.dy))) {
     String msg = ' ### Log.Warning: Offset results do not match. Result was $result, Other result was $otherResult.';
     print(msg);
     throw StateError(msg);
   }
+}
+
+class FromTransposing2DValueRange {
+
+  FromTransposing2DValueRange ({
+    required this.inputDataRange,
+    required this.outputDataRange,
+    required this.chartOrientation,
+  });
+
+  final Interval inputDataRange;
+  final Interval outputDataRange;
+  final ChartOrientation chartOrientation;
+
+  FromTransposing2DValueRange subsetForSignsOf({required double inputValue, required double outputValue,}) {
+    return FromTransposing2DValueRange(
+      inputDataRange: inputDataRange.portionForSignOfValue(inputValue),
+      outputDataRange: outputDataRange.portionForSignOfValue(outputValue),
+      chartOrientation: chartOrientation,
+    );
+  }
+
+}
+
+/// Pixel 2D range encapsulates the 'to range' of values that ore affmap-ed
+/// from a [FromTransposing2DValueRange] instance.
+///
+/// Always starts both dimensions from 0.
+///
+/// Although this mentions 'pixels', it should be part of model,
+/// as the name is merely a convenience to define a 'to range' of
+/// values that ore affmap-ed from [FromTransposing2DValueRange].
+class To2DPixelRange {
+
+  To2DPixelRange({
+    // sizerWidth or constraints width
+    required double width,
+    // sizerHeight or constraints height
+    required double height,
+  }) : horizontalPixelRange = Interval(0, width), verticalPixelRange = Interval(0, height);
+
+  final Interval horizontalPixelRange;
+  final Interval verticalPixelRange;
+
+  Size get size => Size(horizontalPixelRange.max, verticalPixelRange.max);
 }
