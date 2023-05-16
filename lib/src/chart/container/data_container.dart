@@ -576,8 +576,46 @@ abstract class PointContainer extends container_common.ChartAreaContainer  with 
 
   final DataColumnPointsBar outerDataColumnPointsBar;
 
+  /// Intended to be called during [PointContainer.layout] of [PointContainer] or subclasses,
+  /// calculates the [offset] and [layoutSize] of this container to represent the position of
+  /// [pointModel] on the chart, in any [ChartOrientation] and [ChartStacking] situation.
+  ///
   /// Transforms (transposes and affmap-s) this [PointModel] to it's [PointOffset] position,
   /// determined by its values [PointModel.inputValue]
+  ///
+  // todo-00-last : changes that allow the caller define the FromTransposing2DValueRange and To2DPixelRange from constraints, rather than inside the method:
+  /// Motivation and implementation:
+  ///
+  ///   1. As this method is invoked from [PointContainer.layout]
+  ///      by a container (and also owner) layouter [outerDataColumnPointsBar]
+  ///      (which creates a [Row] or a [Column] parent layouter for this instance),
+  ///      this code is always running as a container-child of a [Column] or a [Row].
+  ///      We may call this container-parent [Row] or [Column] a container-parent bar below.
+  ///   2. The intent of this method is to position (set [offset]) this container to represent its [pointModel]'s position
+  ///      RELATIVE to (inside of) its container-parent bar mentioned above.
+  ///   3. The above mentioned positioning is implemented by affmap-ing the [pointModel]'s [PointModel.inputValue]
+  ///      and [PointModel.outputValue] to the position relative to this [PointContainer]'s container-parent bar.
+  ///      This implementation uses affmap because if allows to transfer a position between two coordinate systems
+  ///      with different origins, in any [ChartOrientation] and [ChartStacking] situation.
+  ///   4. To use affmap on a point, we need to know the 'from range' and the 'to range'. Several important facts
+  ///      regarding the 'from range' and 'to range':
+  ///      - Because the 'to range' is always given by [constraints] of the container-parent bar mentioned
+  ///        in item 1, this method does ALWAYS MUST AFFMAP TO THE [constraints] of the container-parent bar
+  ///        NOT TO THE FULL [sizerHeight] or [sizerWidth].
+  ///      - Further, the container-parent bar's [constraints] ALWAYS represents either positive or negative value,
+  ///        this method must AFFMAP the positive or negative 'from range' to the [constraints]
+  ///      todo-00-last : start doc here, finished above
+  ///        and it's constraint is sized like this:
+  //        - in the layouter Main direction,  length is the dataRange of positive values (the positive portion of data range)
+  //        - in the layouter Cross direction, length is the width of the bar
+  //    - So the affmap ranges are:
+  //       - fromInputRange = positive or negative portion for the sign of PointModel.inputValue
+  //       - fromOutputRange = as above, for outputValue
+  //       - pixelRange : height = constraints height, width = constraints width
+  //    - After affmap, we position the PointOffset, in the cross direction, in the middle of the constraint
+  //    - set barPointRectSize:
+  //      - in the main direction = affmapped value (PointOffset.outputValue)
+  //      - in the cross direction = constraints size in that direction
   PointOffset affmapLayoutToConstraintsAsPointOffset() {
     DataRangeLabelInfosGenerator inputLabelsGenerator = chartViewModel.inputLabelsGenerator;
     DataRangeLabelInfosGenerator outputLabelsGenerator = chartViewModel.outputLabelsGenerator;

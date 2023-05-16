@@ -448,7 +448,6 @@ class PointOffset extends Offset {
   }
 }
 
-// todo-00-progress
 class FromTransposing2DValueRange {
 
   FromTransposing2DValueRange ({
@@ -486,7 +485,6 @@ class To2DPixelRange {
 
 }
 
-// todo-00-progress
 /// Identifies a diagonal for transpose transfer.
 ///
 /// [leftToRightUp] identifies the diagonal around which a coordinate system would
